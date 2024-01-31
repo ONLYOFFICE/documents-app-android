@@ -17,6 +17,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.UploadFile
@@ -186,6 +187,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     val currentFolderAccess: ApiContract.Access
         get() = ApiContract.Access.get(modelExplorerStack.currentFolderAccess)
+
+    val currentFolder: Current?
+        get() = modelExplorerStack.last()?.current
 
     override fun onDestroy() {
         super.onDestroy()
@@ -1211,7 +1215,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         } ?: Explorer()
     }
 
-    protected open fun openFolder(id: String?, position: Int) {
+    open fun openFolder(id: String?, position: Int) {
         modelExplorerStack.listPosition = position
         viewState.onSwipeEnable(true)
         getItemsById(id)

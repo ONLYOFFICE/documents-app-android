@@ -8,7 +8,9 @@ import android.view.View
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.os.bundleOf
 import androidx.fragment.app.clearFragmentResultListener
+import androidx.fragment.app.setFragmentResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -421,7 +423,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             if (cloudFolder != null && !isCopy) {
                 onRefresh()
             } else {
-                cloudPresenter.getItemsById(args.getString("id"))
+                openRoom(id = args.getString("id"))
             }
         }
         AddRoomDialog.newInstance(type, cloudFolder, isCopy)
@@ -468,6 +470,18 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    private fun openRoom(id: String?) {
+        try {
+            requireActivity().supportFragmentManager
+                .fragments
+                .filterIsInstance<IMainPagerFragment>()
+                .first()
+                .setPagerPosition(ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+                    setFragmentResult(KEY_ROOM_CREATED_REQUEST, bundleOf(DocsRoomFragment.KEY_RESULT_ROOM_ID to id))
+                }
+        } catch (_: NoSuchElementException) { }
+    }
+
     override fun onLeaveRoomDialog(title: Int, question: Int, tag: String, isOwner: Boolean) {
         showQuestionDialog(
             title = getString(title),
@@ -490,6 +504,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         const val KEY_SECTION = "section"
         const val KEY_PATH = "path"
         const val KEY_ACCOUNT = "key_account"
+        const val KEY_ROOM_CREATED_REQUEST = "key_room_created_result"
 
         fun newInstance(stringAccount: String, section: Int, rootPath: String): DocsCloudFragment {
             return DocsCloudFragment().apply {

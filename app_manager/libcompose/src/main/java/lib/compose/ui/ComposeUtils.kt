@@ -3,9 +3,13 @@
 package lib.compose.ui
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
+import lib.toolkit.base.managers.utils.UiUtils
 
 @Composable
 fun <T> Modifier.addIfNotNull(obj: T?, modifier: @Composable Modifier.(T) -> Modifier) =
@@ -20,3 +24,18 @@ fun Modifier.visible(visible: Boolean) = addIf(!visible) { alpha(0f) }
 
 @Composable
 fun Modifier.enabled(enabled: Boolean) = addIf(!enabled) { alpha(0.4f) }
+
+@Composable
+@SuppressLint("ComposableNaming")
+fun rememberWaitingDialog(title: Int, onCancel: () -> Unit): Dialog {
+    val context = LocalContext.current
+    val wrapper = remember {
+        UiUtils.getWaitingDialog(
+            context = context,
+            isCircle = true,
+            title = context.getString(title),
+            cancelListener = onCancel
+        )
+    }
+    return wrapper
+}
