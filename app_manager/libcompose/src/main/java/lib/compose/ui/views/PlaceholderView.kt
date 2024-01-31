@@ -1,5 +1,6 @@
 package lib.compose.ui.views
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -20,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
+import lib.compose.ui.theme.colorTextTertiary
 
 @Composable
 fun PlaceholderView(image: Int, title: String, subtitle: String) {
@@ -39,7 +42,7 @@ fun PlaceholderView(image: Int, title: String, subtitle: String) {
                         .padding(bottom = 60.dp)
                         .width(IntrinsicSize.Max),
                     imageVector = ImageVector.vectorResource(image),
-                    alpha = 0.4f,
+                    colorFilter = ColorFilter.tint(MaterialTheme.colors.colorTextTertiary),
                     contentDescription = null
                 )
                 Text(
@@ -59,7 +62,7 @@ fun PlaceholderView(image: Int, title: String, subtitle: String) {
     }
 }
 
-@Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun Preview() {
     ManagerTheme {

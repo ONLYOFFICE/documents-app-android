@@ -43,10 +43,6 @@ class RoomInfoViewModel(private val roomProvider: RoomProvider, private val room
 
     private var operationJob: Job? = null
 
-    override fun onCleared() {
-        operationJob?.cancel()
-    }
-
     fun fetchRoomInfo() {
         viewModelScope.launch(Dispatchers.IO) {
             try {

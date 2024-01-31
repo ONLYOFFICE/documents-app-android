@@ -8,6 +8,7 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludePlaceholdersTextBinding
+import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.PlaceholderView
 import lib.toolkit.base.managers.tools.ResourcesProvider
 
@@ -98,11 +99,13 @@ class PlaceholderViews(val view: View?) {
                 with(binding.composeView) {
                     isVisible = true
                     setContent {
-                        PlaceholderView(
-                            image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
-                            title = context.getString(R.string.room_placeholder_created_room_title),
-                            subtitle = context.getString(R.string.room_placeholder_created_room_subtitle)
-                        )
+                        ManagerTheme {
+                            PlaceholderView(
+                                image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
+                                title = context.getString(R.string.room_placeholder_created_room_title),
+                                subtitle = context.getString(R.string.room_placeholder_created_room_subtitle)
+                            )
+                        }
                     }
                 }
             }
