@@ -102,6 +102,7 @@ import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.TimeUtils
+import lib.toolkit.base.managers.utils.capitalize
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
 import lib.toolkit.base.ui.fragments.base.BaseFragment
@@ -307,17 +308,23 @@ private fun MainScreen(
         AppScaffold(topBar = {
             AppTopBar(
                 backListener = onBackPressed,
-                title = if (isEdit) stringResource(id = R.string.list_context_edit_room) else stringResource(id = R.string.dialog_create_room),
+                title = if (isEdit)
+                        stringResource(id = R.string.list_context_edit_room) else
+                        stringResource(id = R.string.dialog_create_room),
                 isClose = true,
                 actions = {
-                    TextButton(onClick = { onBackPressed() }, enabled = viewState !is ViewState.Loading) {
+                    TextButton(
+                        onClick = { create(roomState.type, name.value, roomState.imageUri) },
+                        enabled = viewState !is ViewState.Loading
+                    ) {
                         Text(
-                            text = if (isEdit) "Edit" else stringResource(id = R.string.login_create_signin_create_button),
-                            modifier = Modifier.clickable {
-                                create(roomState.type, name.value, roomState.imageUri)
-                            })
+                            text = if (isEdit)
+                                stringResource(id = lib.editors.gbase.R.string.common_done) else
+                                stringResource(id = R.string.login_create_signin_create_button).capitalize(),
+                        )
                     }
-                })
+                }
+            )
         }, useTablePaddings = false) {
             Column {
                 if (viewState is ViewState.Loading) {

@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.work.WorkManager
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.webdav.WebDavService
@@ -695,13 +696,17 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         showAccount(isVisible)
         showNavigationButton(!isVisible)
         if (isVisible) {
-            if (viewBinding.appBarTabs.visibility != View.VISIBLE) {
+            if (!viewBinding.appBarTabs.isVisible) {
                 viewBinding.appBarLayout.postDelayed({
-                    viewBinding.appBarTabs.expand(100)
+                    viewBinding.appBarTabs.expand(200)
                 }, 10)
             }
         } else {
-            viewBinding.appBarTabs.collapse()
+            if (viewBinding.appBarTabs.isVisible) {
+                viewBinding.appBarLayout.postDelayed({
+                    viewBinding.appBarTabs.collapse()
+                }, 10)
+            }
         }
     }
 

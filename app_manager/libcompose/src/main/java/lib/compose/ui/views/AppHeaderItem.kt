@@ -13,17 +13,17 @@ import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.colorTextSecondary
 
 @Composable
-fun AppHeaderItem(@StringRes title: Int, startIndent: Dp = 16.dp) {
-    AppHeaderItem(title = stringResource(id = title), startIndent)
+fun AppHeaderItem(@StringRes title: Int, startIndent: Dp = 16.dp, modifier: Modifier = Modifier) {
+    AppHeaderItem(modifier = modifier, title = stringResource(id = title), startIndent = startIndent)
 }
 
 @Composable
-fun AppHeaderItem(title: String, startIndent: Dp = 16.dp) {
+fun AppHeaderItem(title: String, startIndent: Dp = 16.dp, modifier: Modifier = Modifier) {
     Text(
         text = title,
         style = MaterialTheme.typography.subtitle2,
         color = MaterialTheme.colors.colorTextSecondary,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(startIndent, 16.dp, 16.dp, 4.dp)
     )
