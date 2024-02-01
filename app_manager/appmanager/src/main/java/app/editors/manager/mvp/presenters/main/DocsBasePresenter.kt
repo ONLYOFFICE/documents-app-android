@@ -72,7 +72,6 @@ import java.io.File
 import java.net.UnknownHostException
 import java.util.Date
 import java.util.TreeMap
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
 
@@ -114,7 +113,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     private var placeholderViewType: PlaceholderViews.Type = PlaceholderViews.Type.NONE
     protected var destFolderId: String? = null
     protected var operationStack: ExplorerStackMap? = null
-    private var isSubmitted = false
     private var uploadUri: Uri? = null
     private var sendingFile: File? = null
 
@@ -171,7 +169,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     protected var uploadDisposable: Disposable? = null
     protected var downloadDisposable: Disposable? = null
     private var sendDisposable: Disposable? = null
-    private var filterRun: Runnable? = null
     private var isTerminate = false
     private var isAccessDenied = false
 
@@ -244,14 +241,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-    open fun filter(value: String, isSubmitted: Boolean): Boolean {
+    open fun filter(value: String) {
         if (isFilteringMode) {
-            this.isSubmitted = isSubmitted
             modelExplorerStack.currentId?.let { id ->
                 filteringValue = value
                 fileProvider?.let { provider ->
                     provider.getFiles(id, getArgs(value).putFilters())
-                        .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
                         .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
                         .subscribe({ explorer ->
                             modelExplorerStack.setFilter(explorer)
@@ -259,23 +254,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                                 if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.SEARCH else
                                     PlaceholderViews.Type.NONE
                             )
-                            updateViewsState()
                             viewState.onDocsFilter(getListWithHeaders(modelExplorerStack.last(), true))
                         }, this::fetchError)
                 }
-            }
-        }
-        return false
-    }
-
-    fun filterWait(value: String) {
-        if (!isSubmitted) {
-            filterRun?.let { runnable ->
-                handler.removeCallbacks(runnable)
-            }
-
-            filterRun = Runnable { filter(value, false) }.apply {
-                handler.postDelayed(this, FILTERING_DELAY)
             }
         }
     }
@@ -1116,7 +1097,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * */
 
     fun setFiltering(isFiltering: Boolean) {
-        isSubmitted = false
         if (isFilteringMode != isFiltering) {
             isFilteringMode = isFiltering
             if (!isFiltering) {
@@ -1698,6 +1678,5 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
          * */
 
         private const val ITEMS_PER_PAGE = 25
-        private const val FILTERING_DELAY = 500L
     }
 }

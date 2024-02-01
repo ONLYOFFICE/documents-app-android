@@ -54,7 +54,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     private var activity: IMainActivity? = null
     private var adapter: RecentAdapter? = null
-    private var filterValue: CharSequence? = null
     private var clearItem: MenuItem? = null
 
     private val recentListener: (recent: Recent) -> Unit = { recent ->
@@ -113,18 +112,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (savedInstanceState?.containsKey(KEY_FILTER) == true) {
-            filterValue = savedInstanceState.getCharSequence(KEY_FILTER)
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putCharSequence(KEY_FILTER, searchView?.query)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         presenter.setSectionType(ApiContract.SectionType.CLOUD_RECENT)
@@ -137,18 +124,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         mainItem?.isVisible = true
         clearItem?.let { item ->
             UiUtils.setMenuItemTint(requireContext(), item, lib.toolkit.base.R.color.colorPrimary)
-        }
-    }
-
-    override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
-        super.onStateUpdateFilter(isFilter, value)
-        if (isFilter) {
-            activity?.setAppBarStates(false)
-            searchView?.setQuery(filterValue, true)
-            filterValue = ""
-        } else {
-            activity?.setAppBarStates(false)
-            activity?.showNavigationButton(false)
         }
     }
 
@@ -258,16 +233,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    override fun onQueryTextChange(newText: String): Boolean {
-        searchCloseButton?.isEnabled = newText.isNotEmpty()
-        presenter.searchRecent(newText)
-        return false
-    }
-
-    override fun onQueryTextSubmit(query: String): Boolean {
-        return false
-    }
-
     override fun onDeleteItem(position: Int) {
         adapter?.let { recentAdapter ->
             recentAdapter.removeItem(position)
@@ -303,6 +268,11 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     private fun setEmpty() {
         setMenuVisibility(false)
         placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.EMPTY)
+    }
+
+    override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
+        super.onStateUpdateFilter(isFilter, value)
+        activity?.showNavigationButton(isFilter)
     }
 
     override fun onOpenFile(state: OpenState) {
@@ -393,7 +363,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             return DocsRecentFragment()
         }
 
-        private const val KEY_FILTER = "KEY_FILTER"
     }
 
 }

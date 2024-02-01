@@ -158,13 +158,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         }
     }
 
-    override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
-        super.onStateMenuDefault(sortBy, isAsc)
-        searchCloseButton?.setOnClickListener {
-            onBackPressed()
-        }
-    }
-
     override fun onFileWebView(file: CloudFile) {
         activity?.showWebViewer(file)
     }

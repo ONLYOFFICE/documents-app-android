@@ -8,7 +8,6 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.DropboxFileProvider
 import app.documents.core.providers.GoogleDriveFileProvider
 import app.documents.core.providers.OneDriveFileProvider
@@ -138,10 +137,11 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    fun searchRecent(newText: String?) {
+    override fun filter(value: String) {
+        filteringValue = value
         presenterScope.launch {
             val list = recentDao.getRecents()
-                .filter { it.name.contains(newText ?: "", true) }
+                .filter { it.name.contains(value, true) }
                 .sort()
 
             withContext(Dispatchers.Main) {
@@ -300,7 +300,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         val extension = StringUtils.getExtensionFromPath(recent.name)
         val explorerFile = CloudFile()
         explorerFile.pureContentLength = recent.size
-//        explorerFile.setId(recent.id)
+        //        explorerFile.setId(recent.id)
         explorerFile.fileExst = extension
         explorerFile.title = recent.name
         explorerFile.isClicked = true
