@@ -1,5 +1,6 @@
 package lib.toolkit.base.ui.views.search
 
+import android.content.res.ColorStateList
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.utils.UiUtils
 
 
 @OptIn(FlowPreview::class)
@@ -30,6 +32,8 @@ class CommonSearchView(
     }
 
     private val closeButton: ImageView by lazy { searchView.findViewById(androidx.appcompat.R.id.search_close_btn) }
+
+    private val primaryColor: Int by lazy { UiUtils.getPrimaryColor(searchView.context) }
 
     private var closeButtonEnabled: Boolean
         get() = closeButton.isEnabled
@@ -54,6 +58,7 @@ class CommonSearchView(
             maxWidth = Int.MAX_VALUE
             isIconified = !isExpanded
 
+            closeButton.imageTintList = ColorStateList.valueOf(primaryColor)
             closeButton.setOnClickListener { this@CommonSearchView.query = "" }
             setOnQueryTextListener(this@CommonSearchView)
             setOnSearchClickListener {
