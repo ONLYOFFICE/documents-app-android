@@ -511,14 +511,8 @@
     <string name="list_context_unpin">Désépingler</string>
     <string name="list_context_info">Info</string>
     <string name="list_context_add_users">Ajouter des utilisateurs</string>
-    <string name="rooms_add_filling_forms">Salle de remplissage de formulaires</string>
-    <string name="rooms_add_filling_forms_des">Créez, partagez et remplissez des modèles de documents ou utilisez les modèles prêts à l\'emploi pour créer rapidement des documents de tout type</string>
     <string name="rooms_add_collaboration">Salle de collaboration</string>
     <string name="rooms_add_collaboration_des">Collaborez avec votre équipe sur un ou plusieurs documents</string>
-    <string name="rooms_add_review">Salle de révision</string>
-    <string name="rooms_add_review_des">Demandez une révision ou des commentaires sur les documents</string>
-    <string name="rooms_add_view_only">Salle de lecture seule</string>
-    <string name="rooms_add_view_only_des">Partagez les documents prêts à l\'emploi, les rapports, la documentation et autres fichiers pour les afficher</string>
     <string name="rooms_add_custom">Salle personnalisée</string>
     <string name="rooms_add_custom_des">Appliquez vos propres paramètres pour utiliser cette salle à des fins personnalisées</string>
     <string name="rooms_filter_type_filling_forms">Remplissage de formulaires</string>

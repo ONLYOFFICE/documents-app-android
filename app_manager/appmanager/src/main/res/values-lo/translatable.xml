@@ -664,14 +664,8 @@
     <string name="list_context_unpin">ຖອນປັກໝຸດ</string>
     <string name="list_context_info">ຂໍ້ມູນ</string>
     <string name="list_context_add_users">ເພີ່ມຜູ້ໃຊ້</string>
-    <string name="rooms_add_filling_forms">ຊ່ອງຕື່ມແບບຟອມ</string>
-    <string name="rooms_add_filling_forms_des">ສ້າງ, ແບ່ງປັນ ແລະ ຕື່ມຂໍ້ມູນໃສ່ແມ່ແບບເອກະສານ (templates) ຫຼື ເຮັດວຽກກັບ ແບບຢ່າງທີ່ພ້ອມແລ້ວເພື່ອສ້າງເອກະສານປະເພດໃດກໍ່ໄດ້ໃຫ້ໄວຂື້ນ</string>
     <string name="rooms_add_collaboration">ຫ້ອງແກ້ຮ່ວມກັນ</string>
     <string name="rooms_add_collaboration_des">ແກ້ໄຂຮ່ວມ ເອກະສານໜຶ່ງສະບັບ ຫຼື ເອກະສານຫຼາຍສະບັບກັບທີມງານຂອງທ່ານ</string>
-    <string name="rooms_add_review">ຫ້ອງທົບທວນ</string>
-    <string name="rooms_add_review_des">ຮ້ອງຂໍໃຫ້ມີການທົບທວນຄືນຫຼືຄໍາເຫັນກ່ຽວກັບເອກະສານ</string>
-    <string name="rooms_add_view_only">ຫ້ອງເບິ່ງເທົ່ານັ້ນ</string>
-    <string name="rooms_add_view_only_des">ແບ່ງປັນເອກະສານທີ່ກຽມພ້ອມ, ບົດລາຍງານ, ເອກະສານ, ແລະໄຟລ໌ອື່ນໆສໍາລັບການເບິ່ງ</string>
     <string name="rooms_add_custom">ກຳນົດຫ້ອງເອງ</string>
     <string name="rooms_add_custom_des">ນຳໃຊ້ການຕັ້ງຄ່າຫ້ອງຂອງທ່ານເອງ ເພື່ອໃຫ້ແທດເໝາະກັບທ່ານ</string>
     <string name="rooms_filter_type_filling_forms">ການຕື່ມແບບຟອມ</string>

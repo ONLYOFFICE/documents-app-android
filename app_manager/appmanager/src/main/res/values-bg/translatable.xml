@@ -511,14 +511,8 @@
     <string name="list_context_unpin">Откачи</string>
     <string name="list_context_info">Информация</string>
     <string name="list_context_add_users">Добави потребители</string>
-    <string name="rooms_add_filling_forms">Стая за попълване на формуляри</string>
-    <string name="rooms_add_filling_forms_des">Създавайте, споделяйте и попълвайте шаблони на документи или работете с готовите предварително зададени настройки за бързо създаване на документи от всякакъв тип</string>
     <string name="rooms_add_collaboration">Стая за сътрудничество</string>
     <string name="rooms_add_collaboration_des">Работете съвместно върху един или няколко документа с вашия екип</string>
-    <string name="rooms_add_review">Стая за преглед</string>
-    <string name="rooms_add_review_des">Поискайте преглед или коментари по документите</string>
-    <string name="rooms_add_view_only">Стая само за преглед</string>
-    <string name="rooms_add_view_only_des">Споделяйте всякакви готови документи, отчети, документация и други файлове за преглед</string>
     <string name="rooms_add_custom">Персонализирана стая</string>
     <string name="rooms_add_custom_des">Приложете свои собствени настройки, за да използвате тази стая за всяка персонализирана цел</string>
     <string name="rooms_filter_type_filling_forms">Формуляр за попълване</string>
