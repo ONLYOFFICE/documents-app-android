@@ -633,4 +633,85 @@
     <string name="share_expected_member">等待成员</string>
     <string name="app_settings_main_help">帮助</string>
     <string name="clear_recents">"删除最近记录?"</string>
+    <string name="list_context_leave_room">离开房间</string>
+    <string name="list_context_copy_general_link">复制通用链接</string>
+    <string name="list_context_edit_room">编辑房间</string>
+    <string name="list_action_image_from_library">图库中的图片</string>
+    <string name="list_action_delete_link">删除链接</string>
+    <string name="placeholder_other_accounts">这里还没有其他帐户</string>
+    <string name="context_room_move_to_archive">移至归档</string>
+    <plurals name="context_rooms_unarchive_message" tools:ignore="UnusedQuantity">
+        <item quantity="one">房间成功恢复</item>
+        <item quantity="other">房间成功恢复</item>
+    </plurals>
+    <string name="rooms_choose_room">选择房间类型</string>
+    <string name="room_name_hint">房间名称</string>
+    <string name="room_add_tag_hint">添加标签</string>
+    <string name="rooms_error_name">房间名称不能为空</string>
+    <string name="rooms_error_create">创建房间错误</string>
+    <string name="rooms_error_edit">编辑房间错误</string>
+    <string name="leave_room_title">离开房间</string>
+    <string name="leave_room_owner_desc">您是此房间的所有者。在离开房间之前，您必须将所有者的角色转移给另一个用户。</string>
+    <string name="leave_room_desc">您确定要离开此房间吗？您可以通过房间管理员的新邀请再次加入。</string>
+    <string name="leave_room_assign">指定所有者</string>
+    <string name="leave_room_message">您已离开房间</string>
+    <string name="room_set_owner_title">更改房间所有者</string>
+    <string name="room_search_not_found">未找到用户</string>
+    <string name="room_search_not_found_desc">曾被邀请到协作空间或独立房间的用户列表将显示在此处。</string>
+
+    <plurals name="rooms_restore_title" tools:ignore="UnusedQuantity">
+        <item quantity="one">恢复这个房间?</item>
+        <item quantity="other">恢复这些房间?</item>
+    </plurals>
+
+    <plurals name="rooms_restore_desc" tools:ignore="UnusedQuantity">
+        <item quantity="one">房间中的所有共享链接将将被激活，所有拥有链接的人都能访问其中的内容。您要恢复房间吗?</item>
+        <item quantity="other">房间中的所有共享链接将将被激活，所有拥有链接的人都能访问其中的内容。您要恢复房间吗?</item>
+    </plurals>
+    <string name="rooms_add_public_room">公共房间</string>
+    <string name="rooms_add_public_room_des">通过共享链接邀请用户，无需注册即可查看文档。您还可以将此房间嵌入任何网络界面。</string>
+    <string name="rooms_move_to_public_title">移至公共房间</string>
+    <string name="rooms_move_to_public_title_desc">所有拥有链接的人都能访问该房间及其内容。您要继续吗?</string>
+    <string name="rooms_info_access_desc">所有拥有链接的人都能访问该房间。外部用户对所有文件只有查看权限。</string>
+    <string name="rooms_info_general_link">通用链接</string>
+    <string name="rooms_info_additional_link">附加链接</string>
+    <string name="rooms_info_additional_links">"附加链接 (%d/%d)"</string>
+    <string name="rooms_info_create_link">创建并复制</string>
+    <string name="rooms_info_create_link_complete">链接已成功创建并复制到剪贴板</string>
+    <string name="rooms_info_delete_link">删除链接</string>
+    <string name="rooms_info_delete_link_complete">链接已删除</string>
+    <string name="rooms_info_delete_link_desc">链接将被永久删除。您将无法撤销此操作。</string>
+    <string name="rooms_info_revoke_link">撤销链接</string>
+    <string name="rooms_info_revoke_link_desc">先前的链接将不可用。将创建一个新的通用链接。</string>
+    <string name="rooms_info_revoke_link_complete">链接已撤销</string>
+    <string name="rooms_info_revoke">撤销</string>
+    <string name="rooms_info_copy_link">复制链接</string>
+    <string name="rooms_info_copy_link_and_password">复制链接和密码</string>
+    <string name="rooms_info_copy_link_to_clipboard">链接已成功复制到剪贴板</string>
+    <string name="rooms_info_admin_title">管理 (%d)</string>
+    <string name="rooms_info_users_title">用户 (%1d)</string>
+    <string name="rooms_info_expected_title">预期用户 (%1d)</string>
+    <string name="rooms_info_link_expired">链接已过期</string>
+    <string name="rooms_info_link_expired_full">链接已过期并已被禁用</string>
+    <string name="rooms_info_link_name">链接名称</string>
+    <string name="rooms_info_password_access">密码访问</string>
+    <string name="rooms_info_file_rectrict">限制文件内容的复制、下载和打印</string>
+    <string name="rooms_info_file_rectrict_desc">开启此设置，通过链接共享的房间中的文件和文件夹将被限制下载</string>
+    <string name="rooms_info_time_limit_title">时间限制</string>
+    <string name="rooms_info_time_limit">启用时间限制</string>
+    <string name="rooms_info_valid_through">有效期至</string>
+    <string name="rooms_info_save_link_title">保存链接</string>
+    <string name="rooms_info_save_link_question">您确定要保存并退出吗?</string>
+    <string name="rooms_info_save_button">保存</string>
+    <string name="rooms_info_dont_save_button">不保存</string>
+    <string name="rooms_filter_type_public">公共</string>
+    <string name="share_access_room_owner">所有者</string>
+    <string name="settings_language_confirmation_message">现在应用程序使用英语语言，因为系统语言已更改</string>
+    <string name="settings_language_confirmation_accept">好的</string>
+    <string name="settings_language_continue_using_app_language">继续使用 %1$s</string>
+    <string name="conversion_dialog_title">转换并打开文档</string>
+    <string name="conversion_dialog_message">您打开的文档不是OOXML（Office Open XML）文件。将其转换为OOXML格式以实现更快的查看和编辑。</string>
+    <string name="conversion_dialog_open_in_view_mode">在查看模式中打开</string>
+    <string name="conversion_dialog_convert_to">转换为 %1s</string>
+    <string name="conversion_dialog_converting_to">正在转换为 %1s</string>
 </resources>
