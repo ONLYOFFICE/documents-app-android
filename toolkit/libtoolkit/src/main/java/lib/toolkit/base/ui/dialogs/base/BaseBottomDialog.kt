@@ -92,6 +92,8 @@ abstract class BaseBottomDialog : MvpBottomSheetDialogFragment(), DialogInterfac
     override fun onDestroyView() {
         super.onDestroyView()
         bottomSheetCallback?.let { bottomSheetBehavior?.removeBottomSheetCallback(it) }
+        bottomSheetBehavior = null
+        bottomSheetCallback = null
     }
 
     override fun onDialogAdded() {
