@@ -110,9 +110,7 @@ object FirebaseUtils {
             config.fetch(if (BuildConfig.DEBUG) 0 else TIME_FETCH).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     config.activate()
-                    // TODO For test. Remove after 2024-02-04
-                    block(Pair(first = true, second = false))
-//                    block(Pair(first = config.getBoolean(KEY_ALLOW_COAUTHORING), second = config.getBoolean(KEY_SDK_FULLY)))
+                    block(Pair(first = config.getBoolean(KEY_ALLOW_COAUTHORING), second = config.getBoolean(KEY_SDK_FULLY)))
                 } else {
                     block(Pair(true, false))
                 }
