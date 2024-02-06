@@ -245,14 +245,14 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun setFileData(fileData: String) {
-        viewBinding?.root?.postDelayed({
-            childFragmentManager.fragments.find { it is DocsCloudFragment }?.let { fragment ->
+        viewBinding?.root?.post {
+            childFragmentManager.fragments.find { it is DocsRoomFragment || it is DocsCloudFragment}?.let { fragment ->
                 if (fragment.isAdded) {
                     (fragment as DocsCloudFragment).setFileData(fileData)
                     requireActivity().intent.data = null
                 }
             }
-        }, 1000)
+        }
     }
 
     override fun onSwitchAccount(data: OpenDataModel, isToken: Boolean) {
