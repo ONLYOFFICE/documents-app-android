@@ -29,7 +29,6 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -95,10 +94,13 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     private suspend fun switchAccount(saveState: Bundle? = null) {
         val data = Json.decodeFromString<OpenDataModel>(preferenceTool.fileData)
-        accountDao.getAccountByLogin(data.email?.lowercase() ?: "")?.let { cloudAccount ->
-            checkLogin(cloudAccount)
-        } ?: run {
-            getTokens(accountDao.getAccounts(), saveState)
+        accountDao.getAccounts()
+            .find { account ->
+                data.getPortalWithoutScheme()?.equals(account.portal,true) == true && data.email?.equals(account.login,true) == true
+            }?.let { cloudAccount ->
+                checkLogin(cloudAccount)
+            } ?: run {
+                getTokens(accountDao.getAccounts(), saveState)
         }
     }
 

@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
@@ -21,7 +22,6 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentShareSettingsListBinding
-import app.editors.manager.databinding.IncludeButtonPopupBinding
 import app.editors.manager.databinding.IncludeShareSettingsHeaderBinding
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
@@ -57,7 +57,6 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
 
     private var viewBinding: FragmentShareSettingsListBinding? = null
     private var headerBinding: IncludeShareSettingsHeaderBinding? = null
-    private var popupBinding: IncludeButtonPopupBinding? = null
 
     private val item: Item
         get() = arguments?.getSerializableExt(TAG_ITEM, Item::class.java) as Item
@@ -96,7 +95,6 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     ): View? {
         viewBinding = FragmentShareSettingsListBinding.inflate(inflater, container, false)
         headerBinding = viewBinding?.shareSettingsHeader
-        popupBinding = headerBinding?.shareSettingsAccessButtonLayout
         return viewBinding?.root
     }
 
@@ -113,7 +111,6 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         }
         shareActivity = null
         viewBinding = null
-        popupBinding = null
         headerBinding = null
     }
 
@@ -140,7 +137,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     private fun initClickListeners() {
         viewBinding?.shareSettingsAddItem?.setOnClickListener { settingsPresenter.addShareItems() }
         headerBinding?.let { binding ->
-            binding.shareSettingsAccessButtonLayout.root.setOnClickListener { showAccessPopup() }
+            binding.shareSettingsAccessButtonLayout.setOnClickListener { showAccessPopup() }
             binding.shareSettingsExternalCopyLink.setOnClickListener {
                 copySharedLinkToClipboard(
                     settingsPresenter.externalLink,
@@ -295,6 +292,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             binding.shareMainListOfItems.adapter = shareSettingsAdapter
 
             with(binding.shareSettingsListSwipeRefresh) {
+                setOnRefreshListener(this@SettingsFragment)
                 setColorSchemeResources(lib.toolkit.base.R.color.colorSecondary)
                 setProgressBackgroundColorSchemeResource(lib.toolkit.base.R.color.colorSurface)
                 binding.shareMainListOfItems.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -374,8 +372,13 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                 messageRes = R.string.share_access_success
                 onButtonState(true)
             }
+            ApiContract.ShareCode.CUSTOM_FILTER -> {
+                iconRes = R.drawable.ic_access_custom_filter
+                messageRes = R.string.share_access_success
+                onButtonState(true)
+            }
         }
-        popupBinding?.buttonPopupImage?.setImageResource(iconRes)
+        headerBinding?.shareSettingsAccessButtonLayout?.setIconResource(iconRes)
         if (isMessage) {
             showSnackBar(messageRes)
         }
@@ -389,28 +392,18 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
     }
 
     override fun onPopupState(state: Boolean) {
-        popupBinding?.let { binding ->
-            binding.buttonPopupImage.visibility = View.GONE
-            binding.buttonPopupArrow.visibility = View.GONE
-        }
+        headerBinding?.shareSettingsAccessButtonLayout?.isVisible = false
     }
 
     override fun onShowPopup(sharePosition: Int, isVisitor: Boolean) {
         viewBinding?.shareMainListOfItems.let { recyclerView: RecyclerView? ->
             recyclerView?.post {
                 if (sharePosition != 0) {
-                    setPopup(recyclerView.layoutManager?.findViewByPosition(sharePosition)?.findViewById(R.id.button_popup_arrow), isVisitor)
+//                 TODO   setPopup(recyclerView.layoutManager?.findViewByPosition(sharePosition)?.findViewById(R.id.button_popup_arrow), isVisitor)
                 } else {
                     showAccessPopup()
                 }
             } ?: setPopup(viewBinding?.shareSettingsListContentLayout, isVisitor)
-        }
-    }
-
-    override fun onUpdateAvatar(share: ShareUi) {
-        shareSettingsAdapter?.let { adapter ->
-            val position = adapter.updateItem(share)
-            adapter.notifyItemChanged(position, ShareAdapter.PAYLOAD_AVATAR)
         }
     }
 
@@ -424,7 +417,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
             setFullAccess(false)
             setItem(item)
             showDropAt(
-                checkNotNull(headerBinding?.shareSettingsAccessButtonLayout?.root),
+                checkNotNull(headerBinding?.shareSettingsAccessButtonLayout),
                 requireActivity()
             )
         }
@@ -447,6 +440,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                 R.id.deleteItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.NONE)
                 R.id.commentItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.COMMENT)
                 R.id.fillFormItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.FILL_FORMS)
+                R.id.customFilterItem -> settingsPresenter.setItemAccess(ApiContract.ShareCode.CUSTOM_FILTER)
             }
         }
     }
@@ -461,6 +455,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
                 R.id.denyItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.NONE)
                 R.id.commentItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.COMMENT)
                 R.id.fillFormItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.FILL_FORMS)
+                R.id.customFilterItem -> settingsPresenter.getExternalLink(ApiContract.ShareType.CUSTOM_FILTER)
             }
         }
     }
@@ -471,7 +466,7 @@ class SettingsFragment : BaseAppFragment(), SettingsView, OnRefreshListener {
         private const val TAG_SHOW_POPUP = "TAG_SHOW_POPUP"
         private const val TAG_POSITION_POPUP = "TAG_POSITION_POPUP"
 
-        fun newInstance(item: Item): SettingsFragment {
+        fun newInstance(item: Item?): SettingsFragment {
             return SettingsFragment().apply {
                 arguments = Bundle(1).apply {
                     putSerializable(TAG_ITEM, item)

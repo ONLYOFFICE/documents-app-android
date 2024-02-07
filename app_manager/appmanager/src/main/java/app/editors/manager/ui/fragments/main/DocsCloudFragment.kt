@@ -5,13 +5,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.os.bundleOf
 import androidx.fragment.app.clearFragmentResultListener
+import androidx.fragment.app.setFragmentResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
@@ -29,12 +34,17 @@ import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
+import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
+import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import lib.toolkit.base.managers.tools.LocalContentTools
+import lib.toolkit.base.managers.utils.DialogUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.getSerializable
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -47,17 +57,20 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     @InjectPresenter
     lateinit var cloudPresenter: DocsCloudPresenter
 
-    private val filterActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            onRefresh()
-        }
-    }
-
     @ProvidePresenter
     fun providePresenter(): DocsCloudPresenter {
         val account = getApp().appComponent.accountOnline
         return account?.let { DocsCloudPresenter(it) }
-            ?: throw RuntimeException("Cloud account can't be null")
+            ?: run {
+                (requireActivity() as IMainActivity).onLogOut()
+                DocsCloudPresenter(CloudAccount(id = ""))
+            }
+    }
+
+    private val filterActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            onRefresh()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -68,16 +81,19 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     val folder = data?.getSerializable(StorageActivity.TAG_RESULT, CloudFolder::class.java)
                     cloudPresenter.addFolderAndOpen(folder, linearLayoutManager?.findFirstVisibleItemPosition() ?: -1)
                 }
+
                 BaseActivity.REQUEST_ACTIVITY_SHARE -> {
                     if (data?.hasExtra(ShareActivity.TAG_RESULT) == true) {
                         cloudPresenter.setItemsShared(data.getBooleanExtra(ShareActivity.TAG_RESULT, false))
                     }
                 }
+
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
                     cameraUri?.let { uri ->
                         cloudPresenter.upload(uri, null)
                     }
                 }
+
                 FilterActivity.REQUEST_ACTIVITY_FILTERS_CHANGED -> {
                     onRefresh()
                 }
@@ -112,6 +128,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    override fun onBackPressed(): Boolean {
+        return if (cloudPresenter.interruptConversion()) true else super.onBackPressed()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.toolbar_item_filter -> showFilter()
@@ -141,8 +161,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         recyclerView?.scrollToPosition(0)
     }
 
-    override fun showMoveCopyDialog(names: ArrayList<String>, action: String, titleFolder: String) {
-        moveCopyDialog = MoveCopyDialog.newInstance(names, action, titleFolder)
+    override fun showMoveCopyDialog(names: ArrayList<String>, action: String, title: String) {
+        moveCopyDialog = MoveCopyDialog.newInstance(names, action, title)
         moveCopyDialog?.dialogButtonOnClick = this
         moveCopyDialog?.show(parentFragmentManager, MoveCopyDialog.TAG)
     }
@@ -152,6 +172,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             ActionBottomDialog.Buttons.STORAGE -> {
                 showStorageActivity(cloudPresenter.isUserSection)
             }
+
             else -> {
                 super.onActionButtonClick(buttons)
             }
@@ -168,15 +189,19 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    override fun onCancelClick(dialogs: Dialogs?, tag: String?) {
+        when (tag) {
+            DocsBasePresenter.TAG_DIALOG_CANCEL_CONVERSION -> cloudPresenter.interruptConversion()
+            else -> super.onCancelClick(dialogs, tag)
+        }
+    }
+
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            ExplorerContextItem.Edit -> cloudPresenter.onEditContextClick()
             ExplorerContextItem.Share -> showShareActivity(cloudPresenter.itemClicked)
-            ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
             ExplorerContextItem.Location -> cloudPresenter.openLocation()
-            ExplorerContextItem.RoomInfo -> ShareActivity.show(this, cloudPresenter.itemClicked, true)
-            is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
-            is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
+            ExplorerContextItem.CreateRoom -> cloudPresenter.createRoomFromFolder()
+            ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             ExplorerContextItem.ShareDelete -> showQuestionDialog(
                 title = getString(R.string.dialogs_question_share_remove),
                 string = "${cloudPresenter.itemClicked?.title}",
@@ -185,6 +210,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 tag = DocsBasePresenter.TAG_DIALOG_CONTEXT_SHARE_DELETE,
                 acceptErrorTint = true
             )
+
+            is ExplorerContextItem.Edit -> cloudPresenter.onEditContextClick()
+            is ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
+            is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
+            is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
             else -> super.onContextButtonClick(contextItem)
         }
         contextBottomDialog?.dismiss()
@@ -290,17 +320,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     protected val section: Int
         get() = arguments?.getInt(KEY_SECTION) ?: ApiContract.SectionType.UNKNOWN
 
-    private fun disableMenu() {
-        menu?.let {
-            deleteItem?.isEnabled = false
-        }
-    }
-
-    private fun init() {
-        explorerAdapter?.isSectionMy = section == ApiContract.SectionType.CLOUD_USER
-        cloudPresenter.checkBackStack()
-    }
-
     override fun onSwipeRefresh(): Boolean {
         if (!super.onSwipeRefresh()) {
             cloudPresenter.getItemsById(arguments?.getString(KEY_PATH))
@@ -314,12 +333,17 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         cloudPresenter.getItemsById(arguments?.getString(KEY_PATH))
     }
 
-    override fun onArchiveRoom(isArchived: Boolean) {
-        if (isArchived) {
-            onSnackBar(getString(R.string.context_room_archive_message))
+    override fun onArchiveRoom(isArchived: Boolean, count: Int) {
+        val message = if (isArchived) {
+            if (count > 1) {
+                getString(R.string.context_rooms_archive_message)
+            } else {
+                getString(R.string.context_room_archive_message)
+            }
         } else {
-            onSnackBar(getString(R.string.context_room_unarchive_message))
+            resources.getQuantityString(R.plurals.context_rooms_unarchive_message, count)
         }
+        onSnackBar(message)
         explorerAdapter?.removeItem(presenter.itemClicked)
         if (explorerAdapter?.itemList?.none { it !is Header } == true) {
             onPlaceholder(PlaceholderViews.Type.EMPTY)
@@ -327,7 +351,12 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onArchiveSelectedRooms(rooms: List<Entity>) {
-        onSnackBar(getString(R.string.context_rooms_archive_message))
+        val message = if (rooms.size > 1) {
+            R.string.context_rooms_archive_message
+        } else {
+            R.string.context_room_archive_message
+        }
+        onSnackBar(getString(message))
         rooms.forEach { explorerAdapter?.removeItem(it) }
         if (explorerAdapter?.itemList?.none { it !is Header } == true) {
             onPlaceholder(PlaceholderViews.Type.EMPTY)
@@ -339,16 +368,96 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         else super.onUpdateFavoriteItem()
     }
 
+    override fun onConversionQuestion() {
+        contextBottomDialog?.dismiss()
+        (presenter.itemClicked as? CloudFile)?.let { file ->
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.conversion_dialog_title)
+                .setMessage(R.string.conversion_dialog_message)
+                .setPositiveButton(
+                    getString(
+                        R.string.conversion_dialog_convert_to,
+                        LocalContentTools.toOOXML(file.clearExt)
+                    )
+                ) { dialog, _ ->
+                    dialog.dismiss()
+                    cloudPresenter.convertToOOXML()
+                }
+                .setNegativeButton(R.string.conversion_dialog_open_in_view_mode) { dialog, _ ->
+                    dialog.dismiss()
+                    cloudPresenter.getFileInfo()
+                }
+                .create()
+                .apply {
+                    window?.setLayout(
+                        DialogUtils.getWidth(requireContext()),
+                        WindowManager.LayoutParams.WRAP_CONTENT
+                    )
+                }
+                .show()
+        }
+    }
+
+    override fun onConversionProgress(progress: Int, extension: String?) {
+        if (progress > 0) {
+            updateProgressDialog(100, progress)
+        } else {
+            showProgressDialog(
+                title = getString(R.string.conversion_dialog_converting_to, extension),
+                isHideButton = false,
+                cancelTitle = getString(R.string.dialogs_common_cancel_button),
+                tag = DocsBasePresenter.TAG_DIALOG_CANCEL_CONVERSION
+            )
+            updateProgressDialog(100, 0)
+        }
+    }
+
+    override fun onCreateRoom(type: Int, item: Item, isCopy: Boolean) {
+        showAddRoomFragment(type, item, isCopy)
+    }
+
+    protected fun showAddRoomFragment(type: Int, cloudFolder: Item? = null, isCopy: Boolean = false) {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            AddRoomFragment.TAG_RESULT, this
+        ) { _, args ->
+            if (cloudFolder != null && !isCopy) {
+                onRefresh()
+            } else {
+                openRoom(id = args.getString("id"))
+            }
+        }
+        AddRoomDialog.newInstance(type, cloudFolder, isCopy)
+            .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
+    }
+
     protected open fun getFilters(): Boolean {
         val filter = presenter.preferenceTool.filter
         return filter.type != FilterType.None || filter.author.id.isNotEmpty() || filter.excludeSubfolder
+    }
+
+    private fun init() {
+        explorerAdapter?.isSectionMy = section == ApiContract.SectionType.CLOUD_USER
+        cloudPresenter.checkBackStack()
+    }
+
+    private fun disableMenu() {
+        menu?.let {
+            deleteItem?.isEnabled = false
+        }
+    }
+
+    private fun showRoomInfoFragment() {
+        (presenter.itemClicked as? CloudFolder)?.let { room ->
+            RoomInfoFragment.newInstance(room)
+                .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
+        }
     }
 
     private fun showFilter() {
         if (isTablet) {
             FilterDialogFragment.newInstance(presenter.folderId, section, presenter.isRoot)
                 .show(requireActivity().supportFragmentManager, FilterDialogFragment.TAG)
-            
+
             requireActivity().supportFragmentManager
                 .setFragmentResultListener(REQUEST_KEY_REFRESH, this) { _, bundle ->
                     if (bundle.getBoolean(BUNDLE_KEY_REFRESH, true)) {
@@ -361,6 +470,33 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    private fun openRoom(id: String?) {
+        try {
+            requireActivity().supportFragmentManager
+                .fragments
+                .filterIsInstance<IMainPagerFragment>()
+                .first()
+                .setPagerPosition(ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+                    setFragmentResult(KEY_ROOM_CREATED_REQUEST, bundleOf(DocsRoomFragment.KEY_RESULT_ROOM_ID to id))
+                }
+        } catch (_: NoSuchElementException) { }
+    }
+
+    override fun onLeaveRoomDialog(title: Int, question: Int, tag: String, isOwner: Boolean) {
+        showQuestionDialog(
+            title = getString(title),
+            string = getString(question),
+            acceptButton = if (isOwner) getString(R.string.leave_room_assign) else getString(R.string.dialogs_question_accept_yes),
+            cancelButton = getString(R.string.dialogs_common_cancel_button),
+            tag = tag
+        )
+    }
+
+    override fun showSetOwnerFragment(cloudFolder: CloudFolder) {
+        hideDialog()
+        ShareActivity.show(fragment = this, item = cloudFolder, isInfo = false, leave = true)
+    }
+
     val isRoot: Boolean
         get() = presenter.isRoot
 
@@ -368,6 +504,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         const val KEY_SECTION = "section"
         const val KEY_PATH = "path"
         const val KEY_ACCOUNT = "key_account"
+        const val KEY_ROOM_CREATED_REQUEST = "key_room_created_result"
 
         fun newInstance(stringAccount: String, section: Int, rootPath: String): DocsCloudFragment {
             return DocsCloudFragment().apply {

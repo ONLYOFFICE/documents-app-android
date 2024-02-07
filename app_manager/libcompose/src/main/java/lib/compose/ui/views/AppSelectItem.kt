@@ -22,6 +22,7 @@ import lib.toolkit.base.R
 @Composable
 fun AppSelectItem(
     title: String,
+    titleColor: Color = MaterialTheme.colors.onSurface,
     selected: Boolean,
     subtitle: String? = null,
     enabled: Boolean = true,
@@ -32,6 +33,7 @@ fun AppSelectItem(
 ) {
     AppListItem(
         title = title,
+        titleColor = titleColor,
         subtitle = subtitle,
         enabled = enabled,
         startIcon = startIcon,

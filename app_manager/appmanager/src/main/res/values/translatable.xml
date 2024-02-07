@@ -330,6 +330,9 @@
     <string name="list_context_upload_to_portal">Upload to portal</string>
     <string name="list_context_add_to_favorite">Add to Favorites</string>
     <string name="list_context_delete_from_favorite">Delete from Favorites</string>
+    <string name="list_context_leave_room">Leave the room</string>
+    <string name="list_context_copy_general_link">Copy general link</string>
+    <string name="list_context_edit_room">Edit room</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">Spreadsheet</string>
@@ -340,6 +343,8 @@
     <string name="list_action_upload">Upload file</string>
     <string name="list_action_storage">Connect third-party storage</string>
     <string name="list_action_import">Import file</string>
+    <string name="list_action_image_from_library">Picture from Library</string>
+    <string name="list_action_delete_link">Delete link</string>
     <!-- Dialog info -->
 
     <!-- Pager -->
@@ -367,6 +372,7 @@
     <string name="placeholder_loading_files">Loading files…</string>
     <string name="placeholder_loading_users">Loading users…</string>
     <string name="placeholder_loading_groups">Loading groups…</string>
+    <string name="placeholder_other_accounts">No other accounts here yet</string>
 
     <!-- Time marks-->
     <string name="list_headers_folder">Folders</string>
@@ -400,6 +406,7 @@
     <string name="share_popup_access_deny_remove">Remove user</string>
     <string name="share_popup_access_fill_forms">Fill forms</string>
     <string name="share_popup_access_comment">Comment</string>
+    <string name="share_popup_access_custom_filter">Custom filter</string>
 
     <string name="share_snackbar_remove_user">User is removed</string>
 
@@ -687,31 +694,94 @@
     <string name="filter_show_results">Show %1$s results</string>
     <string name="filter_button_reset">RESET</string>
 
-    <string name="context_room_archive">Archive</string>
+    <string name="context_room_move_to_archive">Move to archive</string>
     <string name="context_room_archive_message">Room moved to archive</string>
     <string name="context_rooms_archive_message">Rooms moved to archive</string>
-    <string name="context_room_unarchive">Move from archive</string>
-    <string name="context_room_unarchive_message">Room removed from archive</string>
+
+    <plurals name="context_rooms_unarchive_message">
+        <item quantity="one">Room successfully restored</item>
+        <item quantity="other">Rooms successfully restored</item>
+    </plurals>
+
     <string name="list_context_pin_to_top">Pin to top</string>
     <string name="list_rooms_title">Rooms</string>
     <string name="list_context_unpin">Unpin</string>
     <string name="list_context_info">Info</string>
     <string name="list_context_add_users">Add users</string>
 
-    <string name="rooms_add_filling_forms">Filling forms room</string>
-    <string name="rooms_add_filling_forms_des">Build, share and fill document templates or work with the ready presets to quickly create documents of any type</string>
     <string name="rooms_add_collaboration">Collaboration room</string>
     <string name="rooms_add_collaboration_des">Collaborate on one or multiple documents with your team</string>
-    <string name="rooms_add_review">Review room</string>
-    <string name="rooms_add_review_des">Request a review or comments on the documents</string>
-    <string name="rooms_add_view_only">View-only room</string>
-    <string name="rooms_add_view_only_des">Share any ready documents, reports, documentation, and other files for viewing</string>
+    <string name="rooms_add_public_room">Public room</string>
+    <string name="rooms_add_public_room_des">Invite users via shared links to view documents without registration. You can also embed this room into any web interface.</string>
     <string name="rooms_add_custom">Custom room</string>
     <string name="rooms_add_custom_des">Apply your own settings to use this room for any custom purpose</string>
+    <string name="rooms_choose_room">Choose room type</string>
+    <string name="room_name_hint">Room name</string>
+    <string name="room_add_tag_hint">Add tags</string>
+    <string name="rooms_error_name">Room name cannot be empty</string>
+    <string name="rooms_error_create">Error create room</string>
+    <string name="rooms_error_edit">Error edit room</string>
+    <string name="leave_room_title">Leave the room</string>
+    <string name="leave_room_owner_desc">You are the owner of this room. Before you leave the room, you must transfer the owner’s role to another user.</string>
+    <string name="leave_room_desc">Do you really want to leave this room? You will be able to join it again via new invitation by a room admin.</string>
+    <string name="leave_room_assign">Assign Owner</string>
+    <string name="leave_room_message">You have left the room</string>
+    <string name="room_set_owner_title">Change the Room Owner</string>
+    <string name="room_search_not_found">No users found</string>
+    <string name="room_search_not_found_desc">The list of users previously invited to DocSpace or separate rooms will appear here.</string>
+    <string name="room_placeholder_created_room_title">Room created!</string>
+    <string name="room_placeholder_created_room_subtitle">Create new folders to organize your files.</string>
+
+    <plurals name="rooms_restore_title">
+        <item quantity="one">Restore room?</item>
+        <item quantity="other">Restore rooms?</item>
+    </plurals>
+
+    <plurals name="rooms_restore_desc">
+        <item quantity="one">All shared links in room will become active, and its contents will be available to everyone with the link. Do you want to restore room?</item>
+        <item quantity="other">All shared links in rooms will become active, and its contents will be available to everyone with the link. Do you want to restore rooms?</item>
+    </plurals>
+
+    <string name="rooms_move_to_public_title">Move to Public room</string>
+    <string name="rooms_move_to_public_title_desc">This room and all its contents are available to anyone with the link. Do you want to continue?</string>
+
+    <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.</string>
+    <string name="rooms_info_general_link">General link</string>
+    <string name="rooms_info_additional_link">Additional link</string>
+    <string name="rooms_info_additional_links">"Additional links (%d/%d)"</string>
+    <string name="rooms_info_create_link">Create and copy</string>
+    <string name="rooms_info_create_link_complete">Link successfully created and copied to clipboard</string>
+    <string name="rooms_info_delete_link">Delete link</string>
+    <string name="rooms_info_delete_link_complete">Link was deleted</string>
+    <string name="rooms_info_delete_link_desc">The link will be deleted permanently. You will not be able to undo this action.</string>
+    <string name="rooms_info_revoke_link">Revoke link</string>
+    <string name="rooms_info_revoke_link_desc">The previous link will become unavailable. A new general link will be created.</string>
+    <string name="rooms_info_revoke_link_complete">Link was revoked</string>
+    <string name="rooms_info_revoke">Revoke</string>
+    <string name="rooms_info_copy_link">Copy link</string>
+    <string name="rooms_info_copy_link_and_password">Copy link and password</string>
+    <string name="rooms_info_copy_link_to_clipboard">Link successfully copied to clipboard</string>
+    <string name="rooms_info_admin_title">Administration (%d)</string>
+    <string name="rooms_info_users_title">Users (%1d)</string>
+    <string name="rooms_info_expected_title">Expected users (%1d)</string>
+    <string name="rooms_info_link_expired">The link has expired</string>
+    <string name="rooms_info_link_expired_full">The link has expired and has been disabled</string>
+    <string name="rooms_info_link_name">Link name</string>
+    <string name="rooms_info_password_access">Password access</string>
+    <string name="rooms_info_file_rectrict">Restrict file content copy, file download and printing</string>
+    <string name="rooms_info_file_rectrict_desc">Enable this setting to disable downloads of files and folders from this room shared via a link</string>
+    <string name="rooms_info_time_limit_title">Time limit</string>
+    <string name="rooms_info_time_limit">Enable time limit</string>
+    <string name="rooms_info_valid_through">Valid through</string>
+    <string name="rooms_info_save_link_title">Save link</string>
+    <string name="rooms_info_save_link_question">Are you sure you want to save and exit?</string>
+    <string name="rooms_info_save_button">Save</string>
+    <string name="rooms_info_dont_save_button">Don\'t save</string>
 
     <string name="rooms_filter_type_filling_forms">Filling form</string>
     <string name="rooms_filter_type_collaboration">Collaboration</string>
     <string name="rooms_filter_type_review">Review</string>
+    <string name="rooms_filter_type_public">Public</string>
     <string name="rooms_filter_type_view_only">View-only</string>
     <string name="rooms_filter_type_custom">Custom</string>
     <string name="rooms_filter_author_other_users">Other users…</string>
@@ -720,6 +790,7 @@
     <string name="dialog_create_room">Create room</string>
     <string name="dialog_create_room_value">New room</string>
     <string name="invite_by_email">Invite users by email</string>
+    <string name="share_access_room_owner">Owner</string>
     <string name="share_access_room_admin">Room admin</string>
     <string name="share_access_room_power_user">Power user</string>
     <string name="share_access_room_editor">Editor</string>
@@ -739,12 +810,28 @@
     <string name="app_settings_main_help">Help</string>
     <string name="settings_language">Language</string>
     <string name="clear_recents">"Clear recents?"</string>
-
+    <string name="context_protection_title">Protection</string>
     <!--  TODO example  -->
     <string name="settings_language_confirmation_message">
         Now application is using english language because of the system language has changed
     </string>
     <string name="settings_language_confirmation_accept">Good</string>
     <string name="settings_language_continue_using_app_language">Continue using %1$s</string>
+
+    // TODO: show question dialog
+    // Convert and open document
+    //
+    // The document you open is not OOXML (Office Open XML) file.
+    // Convert it to OOXML format for faster viewing and editing.
+    //
+    // Open in view mode / Convert to $ext
+    showQuestionDialog()
+
+    <!-- For example  -->
+    <string name="conversion_dialog_title">Convert and open document</string>
+    <string name="conversion_dialog_message">The document you open is not OOXML (Office Open XML) file. Convert it to OOXML format for faster viewing and editing.</string>
+    <string name="conversion_dialog_open_in_view_mode">Open in view mode</string>
+    <string name="conversion_dialog_convert_to">Convert to %1s</string>
+    <string name="conversion_dialog_converting_to">Converting to %1s</string>
 
 </resources>

@@ -40,7 +40,7 @@ object ApiContract {
     const val VALUE_ACCEPT = "application/json"
     const val VALUE_CACHE = "no-cache"
 
-    const val DOWNLOAD_ZIP_NAME = "download.tgz"
+    const val DOWNLOAD_ZIP_NAME = "download.zip"
 
     object Social {
         const val TWITTER = "twitter"
@@ -98,7 +98,7 @@ object ApiContract {
         const val REVIEW = "Review"
         const val COMMENT = "Comment"
         const val FILL_FORMS = "FillForms"
-        const val CUSTOM_FILLER = "CustomFilter"
+        const val CUSTOM_FILTER = "CustomFilter"
         const val ROOM_ADMIN = "RoomAdmin"
         const val EDITOR = "Editor"
 
@@ -112,7 +112,7 @@ object ApiContract {
                 REVIEW -> ShareCode.REVIEW
                 COMMENT -> ShareCode.COMMENT
                 FILL_FORMS -> ShareCode.FILL_FORMS
-                CUSTOM_FILLER -> ShareCode.CUSTOM_FILLER
+                CUSTOM_FILTER -> ShareCode.CUSTOM_FILTER
                 EDITOR -> ShareCode.EDITOR
                 ROOM_ADMIN -> ShareCode.ROOM_ADMIN
                 else -> ShareCode.NONE
@@ -129,7 +129,7 @@ object ApiContract {
         object Review : Access(ShareType.REVIEW, ShareCode.REVIEW)
         object Comment : Access(ShareType.COMMENT, ShareCode.COMMENT)
         object FillForms : Access(ShareType.FILL_FORMS, ShareCode.FILL_FORMS)
-        object CustomFiller : Access(ShareType.CUSTOM_FILLER, ShareCode.CUSTOM_FILLER)
+        object CustomFiller : Access(ShareType.CUSTOM_FILTER, ShareCode.CUSTOM_FILTER)
         object Editor : Access(ShareType.EDITOR, ShareCode.EDITOR)
         object RoomAdmin : Access(ShareType.ROOM_ADMIN, ShareCode.ROOM_ADMIN)
 
@@ -144,7 +144,7 @@ object ApiContract {
                     ShareCode.REVIEW -> Review
                     ShareCode.COMMENT -> Comment
                     ShareCode.FILL_FORMS -> FillForms
-                    ShareCode.CUSTOM_FILLER -> CustomFiller
+                    ShareCode.CUSTOM_FILTER -> CustomFiller
                     ShareCode.ROOM_ADMIN -> Editor
                     ShareCode.EDITOR -> RoomAdmin
                     else -> None
@@ -165,7 +165,7 @@ object ApiContract {
         const val REVIEW = 5
         const val COMMENT = 6
         const val FILL_FORMS = 7
-        const val CUSTOM_FILLER = 8
+        const val CUSTOM_FILTER = 8
         const val ROOM_ADMIN = 9
         const val EDITOR = 10
         const val POWER_USER = 11
@@ -178,7 +178,7 @@ object ApiContract {
                 RESTRICT -> ShareType.RESTRICT
                 VARIES -> ShareType.VARIES
                 REVIEW -> ShareType.REVIEW
-                CUSTOM_FILLER -> ShareType.CUSTOM_FILLER
+                CUSTOM_FILTER -> ShareType.CUSTOM_FILTER
                 EDITOR -> ShareType.EDITOR
                 ROOM_ADMIN -> ShareType.ROOM_ADMIN
                 else -> ShareType.NONE
@@ -231,6 +231,7 @@ object ApiContract {
         const val VAL_SORT_BY_SIZE = "size"
         const val VAL_SORT_BY_OWNER = "Author"
         const val VAL_SORT_BY_NAME = "name"
+        const val VAL_SORT_BY_FIRST_NAME = "firstname"
         const val VAL_SORT_BY_DISPLAY_NAME = "displayName"
         const val VAL_SORT_BY_ROOM_TYPE = "roomType"
         const val VAL_SORT_BY_TAGS = "Tags"
@@ -249,11 +250,6 @@ object ApiContract {
         const val CLOUD_RECENT = 11
         const val CLOUD_PRIVATE_ROOM = 13
         const val CLOUD_VIRTUAL_ROOM = 14
-        const val CLOUD_FILLING_FORMS_ROOM = 15
-        const val CLOUD_EDITING_ROOM = 16
-        const val CLOUD_REVIEW_ROOM = 17
-        const val CLOUD_READ_ONLY_ROOM = 18
-        const val CLOUD_CUSTOM_ROOM = 19
         const val CLOUD_ARCHIVE_ROOM = 20
 
         const val WEB_DAV = 100
@@ -261,7 +257,7 @@ object ApiContract {
         const val DROPBOX = 111
         const val ONEDRIVE = 112
 
-        fun isRoom(type: Int): Boolean = type >= 14
+        fun isRoom(type: Int): Boolean = type == 14
         fun isArchive(type: String): Boolean = isArchive(type.toInt())
         fun isArchive(type: Int): Boolean = type == CLOUD_ARCHIVE_ROOM
     }
@@ -281,11 +277,7 @@ object ApiContract {
             object Private : Room(SectionType.CLOUD_PRIVATE_ROOM)
             object Virtual : Room(SectionType.CLOUD_VIRTUAL_ROOM)
             object Archive : Room(SectionType.CLOUD_ARCHIVE_ROOM)
-            class FillingForms(val restrictionType: Int = RoomType.FILLING_FORM_ROOM) : Room(SectionType.CLOUD_FILLING_FORMS_ROOM)
-            class Editing(val restrictionType: Int = RoomType.EDITING_ROOM) : Room(SectionType.CLOUD_EDITING_ROOM)
-            class Review(val restrictionType: Int = RoomType.REVIEW_ROOM) : Room(SectionType.CLOUD_REVIEW_ROOM)
-            class ReadOnly(val restrictionType: Int = RoomType.READ_ONLY_ROOM) : Room(SectionType.CLOUD_READ_ONLY_ROOM)
-            class Custom(val restrictionType: Int = RoomType.CUSTOM_ROOM) : Room(SectionType.CLOUD_CUSTOM_ROOM)
+
         }
 
         sealed class Storage(type: Int) : Section(type) {
@@ -313,22 +305,17 @@ object ApiContract {
                     SectionType.CLOUD_PRIVATE_ROOM -> Room.Private
                     SectionType.CLOUD_VIRTUAL_ROOM -> Room.Virtual
                     SectionType.CLOUD_ARCHIVE_ROOM -> Room.Archive
-                    SectionType.CLOUD_FILLING_FORMS_ROOM -> Room.FillingForms()
-                    SectionType.CLOUD_EDITING_ROOM -> Room.Editing()
-                    SectionType.CLOUD_REVIEW_ROOM -> Room.Review()
-                    SectionType.CLOUD_READ_ONLY_ROOM -> Room.ReadOnly()
-                    SectionType.CLOUD_CUSTOM_ROOM -> Room.Custom()
                     else -> Common
                 }
         }
     }
 
     object RoomType {
-        const val FILLING_FORM_ROOM = 1
-        const val EDITING_ROOM = 2
-        const val REVIEW_ROOM = 3
-        const val READ_ONLY_ROOM = 4
+        const val COLLABORATION_ROOM = 2
         const val CUSTOM_ROOM = 5
+        const val PUBLIC_ROOM = 6
+
+        fun hasExternalLink(roomType: Int?): Boolean = arrayOf(CUSTOM_ROOM, PUBLIC_ROOM).contains(roomType)
     }
 
     object SectionPath {
@@ -338,7 +325,7 @@ object ApiContract {
         const val PROJECTS = "@projects"
         const val TRASH = "@trash"
         const val FAVORITES = "@favorites"
-        const val ROOMS ="rooms"
+        const val ROOMS = "rooms"
     }
 
     object Operation {

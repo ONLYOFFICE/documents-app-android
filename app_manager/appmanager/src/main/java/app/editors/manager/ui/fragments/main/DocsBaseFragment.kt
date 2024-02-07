@@ -7,6 +7,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.Menu
@@ -28,6 +29,7 @@ import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
+import app.editors.manager.app.accountOnline
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
@@ -61,6 +63,7 @@ import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
+import lib.toolkit.base.managers.utils.RequestPermission
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
@@ -90,7 +93,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         const val REQUEST_PDF = 10004
         const val REQUEST_DOWNLOAD = 10005
         const val REQUEST_STORAGE_ACCESS = 10006
-
     }
 
     /*
@@ -257,8 +259,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         if (item != null && !isFastClick) {
             val state = ExplorerContextState(
                 item = item,
-                section = getSection(),
-                folderAccess = presenter.currentFolderAccess,
+                headerInfo = app.editors.manager.managers.utils.StringUtils.getCloudItemInfo(
+                    context = requireContext(),
+                    item = item,
+                    userId = requireContext().accountOnline?.id
+                ),
+                sectionType = getSection().type,
                 isSearching = presenter.isFilteringMode,
                 isRoot = presenter.isRoot
             )
@@ -341,7 +347,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            ExplorerContextItem.Edit -> presenter.getFileInfo()
             ExplorerContextItem.Move -> presenter.moveCopyOperation(OperationsState.OperationType.MOVE)
             ExplorerContextItem.Copy -> presenter.moveCopyOperation(OperationsState.OperationType.COPY)
             ExplorerContextItem.Send -> presenter.sendCopy()
@@ -355,6 +360,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 cancelButton = getString(R.string.dialogs_common_cancel_button),
                 suffix = presenter.itemExtension
             )
+            is ExplorerContextItem.Edit -> presenter.getFileInfo()
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
             else -> {}
         }
@@ -436,6 +442,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME -> presenter.rename(value)
                     DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER -> presenter.createFolder(value)
                     DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED -> presenter.deleteItems()
+                    DocsBasePresenter.TAG_DIALOG_MOVE_TO_PUBLIC -> presenter.move()
                     DocsBasePresenter.TAG_DIALOG_ACTION_SHEET -> presenter.createDocs(
                         value
                                 + "." + ApiContract.Extension.XLSX.lowercase()
@@ -460,6 +467,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             when (it) {
                 DocsBasePresenter.TAG_DIALOG_CANCEL_DOWNLOAD -> presenter.cancelDownload()
                 DocsBasePresenter.TAG_DIALOG_CANCEL_UPLOAD -> presenter.cancelUpload()
+                DocsBasePresenter.TAG_DIALOG_CLEAR_DISPOSABLE -> presenter.clearDisposable()
                 DocsBasePresenter.TAG_DIALOG_CANCEL_SINGLE_OPERATIONS -> presenter.cancelSingleOperationsRequests()
                 DocsBasePresenter.TAG_DIALOG_CANCEL_BATCH_OPERATIONS -> {
                     presenter.terminate()
@@ -882,7 +890,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onActionDialogClose() {
         (requireActivity() as? OnBottomDialogCloseListener)?.onBottomDialogClose()
-
     }
 
     override fun onCloseCommonDialog() {
@@ -1098,6 +1105,16 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
             else -> {
             }
+        }
+    }
+
+    override fun checkNotificationPermission(function: () -> Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            RequestPermission(requireActivity().activityResultRegistry, {
+                function()
+            }, Manifest.permission.POST_NOTIFICATIONS).request()
+        } else {
+            function()
         }
     }
 

@@ -13,8 +13,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,7 +32,7 @@ object GlideUtils {
         )
     }
 
-    fun getCorrectLoad(url: String, token: String): Any {
+    fun getCorrectLoad(url: String?, token: String): Any {
         return GlideUrl(
             url, LazyHeaders.Builder()
                 .addHeader(ApiContract.HEADER_AUTHORIZATION, token)
@@ -55,7 +53,7 @@ object GlideUtils {
             .placeholder(R.drawable.ic_account_placeholder)
             .circleCrop()
 
-    suspend fun getAvatarFromUrl(context: Context, avatarUrl: String): Drawable? =
+    suspend fun setAvatarFromUrl(context: Context, avatarUrl: String): Drawable? =
         withContext(Dispatchers.IO) {
             return@withContext try {
                 context.accountOnline?.let { account ->
@@ -78,28 +76,6 @@ object GlideUtils {
         }
 
     /**
-     * Load avatar into ImageView
-     * */
-    fun ImageView.getAvatarFromUrl(avatar: String) {
-        val placeholderDrawable = R.drawable.drawable_list_share_image_item_user_placeholder
-        context.accountOnline?.let { account ->
-            val token = checkNotNull(AccountUtils.getToken(context, account.getAccountName()))
-            val url = getCorrectLoad(account.scheme + account.portal + avatar, token)
-            Glide.with(context)
-                .load(url)
-                .apply(
-                    RequestOptions().skipMemoryCache(true)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .timeout(30 * 1000)
-                        .circleCrop()
-                        .error(placeholderDrawable)
-                        .placeholder(placeholderDrawable)
-                )
-                .into(this)
-        }
-    }
-
-    /**
      * Set Drawable avatar into ImageView
      * */
     @SuppressLint("CheckResult")
@@ -120,9 +96,30 @@ object GlideUtils {
                     RequestOptions()
                         .timeout(30 * 1000)
                         .error(placeholder)
-                        .transform(CenterCrop(), RoundedCorners(16))
                 )
                 .into(this)
         }
+    }
+}
+
+/**
+ * Load avatar into ImageView
+ * */
+fun ImageView.setAvatarFromUrl(avatar: String) {
+    val placeholderDrawable = R.drawable.drawable_list_share_image_item_user_placeholder
+    context.accountOnline?.let { account ->
+        val token = checkNotNull(AccountUtils.getToken(context, account.getAccountName()))
+        val url = GlideUtils.getCorrectLoad(account.scheme + account.portal + avatar, token)
+        Glide.with(context)
+            .load(url)
+            .apply(
+                RequestOptions().skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .timeout(30 * 1000)
+                    .circleCrop()
+                    .error(placeholderDrawable)
+                    .placeholder(placeholderDrawable)
+            )
+            .into(this)
     }
 }

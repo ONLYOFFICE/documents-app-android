@@ -1,9 +1,19 @@
 package lib.toolkit.base.managers.utils
 
 
+import android.content.Context
+import android.text.format.DateFormat
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 object TimeUtils {
 
@@ -19,7 +29,7 @@ object TimeUtils {
     /*
     * Patterns
     * */
-    val OUTPUT_PATTERN_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZ"
+    val OUTPUT_PATTERN_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss"
     private val OUTPUT_PATTERN_DATE = "dd MMM yyyy"
     private val OUTPUT_PATTERN_TIME = "dd MMM yyyy HH:mm"
     private val OUTPUT_PATTERN_FILE = "yyyyMMdd_HHmmssSSS"
@@ -27,7 +37,7 @@ object TimeUtils {
     /*
     * Objects
     * */
-    private val DEFAULT_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DEFAULT)
+    val DEFAULT_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DEFAULT)
     private val OUTPUT_TIME_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_TIME)
     private val OUTPUT_DATE_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DATE)
 
@@ -119,6 +129,55 @@ object TimeUtils {
     @JvmStatic
     fun isJustCreated(ms: Long): Boolean {
         return Calendar.getInstance().timeInMillis - ms <= ONE_MINUT_MS
+    }
+
+    fun parseDate(string: String?): Date? {
+        val time = DEFAULT_FORMAT.parse(string ?: return null)?.time
+        return if (time != null) Date(time) else null
+    }
+
+    fun showDateTimePickerDialog(context: Context, onDateTimeSet: (Date) -> Unit) {
+        val fragmentManager = (context as? AppCompatActivity)?.supportFragmentManager
+        val tmp = Calendar.getInstance()
+
+        val timePickerDialog = MaterialTimePicker.Builder()
+            .setTimeFormat(if (DateFormat.is24HourFormat(context)) TimeFormat.CLOCK_24H else TimeFormat.CLOCK_12H)
+            .build()
+            .apply {
+                addOnPositiveButtonClickListener {
+                    tmp.set(Calendar.HOUR_OF_DAY, hour)
+                    tmp.set(Calendar.MINUTE, minute)
+                    onDateTimeSet.invoke(tmp.time)
+                }
+            }
+
+        fragmentManager?.let {
+            MaterialDatePicker.Builder
+                .datePicker()
+                .setCalendarConstraints(
+                    CalendarConstraints.Builder()
+                        .setValidator(DateValidatorPointForward.from(System.currentTimeMillis()))
+                        .build()
+                )
+                .build()
+                .apply {
+                    addOnPositiveButtonClickListener { date ->
+                        with(Calendar.getInstance().also { it.time = Date(date) }) {
+                            tmp.set(
+                                get(Calendar.YEAR),
+                                get(Calendar.MONTH),
+                                get(Calendar.DAY_OF_MONTH)
+                            )
+                            timePickerDialog.show(fragmentManager, null)
+                        }
+                    }
+                }
+                .show(fragmentManager, null)
+        }
+    }
+
+    fun getCurrentLocale(context: Context): Locale? {
+        return context.resources.configuration.locales.get(0);
     }
 
 }

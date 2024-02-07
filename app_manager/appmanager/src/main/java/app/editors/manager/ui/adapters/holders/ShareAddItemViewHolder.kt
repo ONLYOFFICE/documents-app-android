@@ -1,6 +1,5 @@
 package app.editors.manager.ui.adapters.holders
 
-import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isInvisible
@@ -8,10 +7,9 @@ import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.base.ItemProperties
 import app.editors.manager.R
 import app.editors.manager.databinding.ListShareAddItemBinding
-import app.editors.manager.managers.utils.GlideUtils.setAvatar
+import app.editors.manager.managers.utils.setAvatarFromUrl
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.UserUi
-import app.editors.manager.ui.adapters.ShareAdapter
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
 import lib.toolkit.base.ui.adapters.holder.ViewType
@@ -24,34 +22,21 @@ class ShareAddItemViewHolder(
     private val binding = ListShareAddItemBinding.bind(view)
 
     override fun bind(item: ViewType, payloads: List<Any>) {
-        if (item is UserUi && ShareAdapter.PAYLOAD_AVATAR in payloads) {
-            setAvatar(item.avatar)
-            setSelected(item)
-        }
-    }
-
-    private fun setAvatar(avatar: Drawable?) {
-        with(binding) {
-            if (avatar != null) {
-                shareAddItemAvatar.setAvatar(avatar)
-            } else {
-                shareAddItemAvatar.setImageResource(R.drawable.drawable_list_share_image_item_user_placeholder)
-            }
-        }
+        setSelected(item)
     }
 
     private fun setSelected(item: ViewType) {
         with(binding) {
             if (item is ItemProperties && item.isSelected) {
                 shareAddItemAvatar.foreground =
-                    AppCompatResources.getDrawable(root.context, R.drawable.drawable_list_image_select_mask)
+                    AppCompatResources.getDrawable(root.context, R.drawable.drawable_list_image_select_foreground)
             } else {
                 shareAddItemAvatar.foreground = null
             }
         }
     }
 
-    fun bind(item: ViewType, mode: BaseAdapter.Mode, previousItem: ViewType?) {
+    fun bind(item: ViewType, mode: BaseAdapter.Mode, previousItem: ViewType?, firstLetterVisible: Boolean) {
         with(binding) {
             when (item) {
                 is UserUi -> {
@@ -62,13 +47,14 @@ class ShareAddItemViewHolder(
                         } else {
                             shareAddItemLetter.isInvisible = true
                         }
+                        shareAddItemLetter.isVisible = firstLetterVisible
                     } else {
                         shareAddItemLetter.isVisible = false
                     }
                     shareAddItemInfo.isVisible = item.department.isNotEmpty()
                     shareAddItemInfo.text = item.department.trim()
                     shareAddItemTitle.text = item.getDisplayNameHtml
-                    setAvatar(item.avatar)
+                    shareAddItemAvatar.setAvatarFromUrl(item.avatarUrl)
                 }
                 is GroupUi -> {
                     shareAddItemAvatar.setImageResource(R.drawable.drawable_list_share_image_item_group_placeholder)

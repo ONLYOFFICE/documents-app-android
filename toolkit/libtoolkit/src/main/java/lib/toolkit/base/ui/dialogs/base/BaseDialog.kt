@@ -16,11 +16,13 @@ import android.view.Gravity
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.view.isInvisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
+import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -94,7 +96,11 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return getCustomDialog().apply {
             requestWindowFeature(Window.FEATURE_NO_TITLE)
-            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            if (!UiUtils.isDarkMode(requireContext())) {
+                window?.setBackgroundDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.drawable_dialog_rounded))
+            } else {
+                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            }
             window?.decorView?.setPadding(0, 0, 0, 0)
             setCanceledOnTouchOutside(true)
             setOnShowListener(this@BaseDialog)

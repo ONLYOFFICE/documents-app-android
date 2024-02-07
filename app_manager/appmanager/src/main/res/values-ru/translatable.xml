@@ -522,24 +522,15 @@
     <string name="share_invite_user">Пригласить пользователей</string>
     <string name="storage_web_dav_settings_server">Сервер</string>
     <string name="storage_web_dav_settings_required">Требуется</string>
-    <string name="context_room_archive">Архив</string>
     <string name="context_room_archive_message">Комната перемещена в архив</string>
     <string name="context_rooms_archive_message">Комнаты перемещены в архив</string>
-    <string name="context_room_unarchive">Переместить из архива</string>
-    <string name="context_room_unarchive_message">Комната перемещена из архива</string>
     <string name="list_context_pin_to_top">Закрепить вверху</string>
     <string name="list_rooms_title">Комнаты</string>
     <string name="list_context_unpin">Открепить</string>
     <string name="list_context_info">Информация</string>
     <string name="list_context_add_users">Добавить пользователей</string>
-    <string name="rooms_add_filling_forms">Комната для заполнения форм</string>
-    <string name="rooms_add_filling_forms_des">Создавайте, заполняйте шаблоны документов и предоставляйте к ним доступ или используйте готовые предустановки для быстрого создания любых документов</string>
     <string name="rooms_add_collaboration">Комната для совместной работы</string>
     <string name="rooms_add_collaboration_des">Работайте над одним или несколькими документами совместно с вашей командой</string>
-    <string name="rooms_add_review">Комната для рецензирования</string>
-    <string name="rooms_add_review_des">Запросить рецензирование или комментарии к документам</string>
-    <string name="rooms_add_view_only">Комната только для просмотра</string>
-    <string name="rooms_add_view_only_des">Предоставляйте доступ к любым готовым документам, отчетам, документации и другим файлам для просмотра</string>
     <string name="rooms_add_custom">Пользовательская комната</string>
     <string name="rooms_add_custom_des">Примените собственные параметры, чтобы использовать эту комнату для любых пользовательских целей</string>
     <string name="rooms_filter_type_filling_forms">Заполнение формы</string>
@@ -566,10 +557,6 @@
     <string name="room_delete_success">Комната удалена</string>
     <string name="switch_account_title">Сменить аккаунт?</string>
     <string name="switch_account_description">Войдите на портал %1$s, чтобы открыть документ.</string>
-
-    <string name="settings_language_confirmation_message">Приложение теперь на русском языке, потому что вы изменили язык всей системы</string>
-    <string name="settings_language_confirmation_accept">Хорошо</string>
-    <string name="settings_language_continue_using_app_language">Продолжить использовать %1$s</string>
     <plurals name="dialogs_question_message_delete">
         <item quantity="one" tools:ignore="ImpliedQuantity">Он будет безвозвратно удален.\nЭто действие необратимо.</item>
         <item quantity="many">Они будут безвозвратно удалены.\nЭто действие необратимо.</item>
@@ -605,5 +592,89 @@
     <string name="share_expected_member">Ожидайте участников</string>
     <string name="app_settings_main_help">Помощь</string>
     <string name="clear_recents">"Очистить последние?"</string>
-
+    <string name="list_context_leave_room">Покинуть комнату</string>
+    <string name="list_context_copy_general_link">Скопировать общую ссылку</string>
+    <string name="list_context_edit_room">Редактировать комнату</string>
+    <string name="list_action_image_from_library">Изображение из библиотеки</string>
+    <string name="list_action_delete_link">Удалить ссылку</string>
+    <string name="placeholder_other_accounts">Здесь пока нет других аккаунтов</string>
+    <string name="context_room_move_to_archive">Переместить в архив</string>
+    <plurals name="context_rooms_unarchive_message">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Комната успешно восстановлена</item>
+        <item quantity="few">Комнаты успешно восстановлены</item>
+        <item quantity="many">Комнаты успешно восстановлены</item>
+        <item quantity="other">Комнаты успешно восстановлены</item>
+    </plurals>
+    <string name="rooms_choose_room">Выбрать тип комнаты</string>
+    <string name="room_name_hint">Название комнаты</string>
+    <string name="room_add_tag_hint">Добавить теги</string>
+    <string name="rooms_error_name">Название комнаты не может быть пустым</string>
+    <string name="rooms_error_create">Ошибка при создании комнаты</string>
+    <string name="rooms_error_edit">Ошибка при редактировании комнаты</string>
+    <string name="leave_room_title">Покинуть комнату</string>
+    <string name="leave_room_owner_desc">Вы являетесь владельцем этой комнаты. Прежде чем вы покинете комнату, передайте роль владельца другому пользователю.</string>
+    <string name="leave_room_desc">Вы действительно хотите покинуть эту комнату? Вы сможете войти в нее снова по новому приглашению от администратора комнаты.</string>
+    <string name="leave_room_assign">Назначить владельца</string>
+    <string name="leave_room_message">Вы покинули комнату</string>
+    <string name="room_set_owner_title">Изменить владельца комнаты</string>
+    <string name="room_search_not_found">Пользователи не найдены</string>
+    <string name="room_search_not_found_desc">Здесь появится список пользователей, ранее приглашенных в DocSpace или в отдельные комнаты.</string>
+    <plurals name="rooms_restore_title">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Восстановить комнату?</item>
+        <item quantity="few">Восстановить комнаты?</item>
+        <item quantity="many">Восстановить комнаты?</item>
+        <item quantity="other">Восстановить комнаты?</item>
+    </plurals>
+    <plurals name="rooms_restore_desc">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Все ссылки с открытым доступом в комнате станут активными, а ее содержимое будет доступно всем, у кого есть ссылка. Восстановить комнату?</item>
+        <item quantity="few">Все ссылки с открытым доступом в комнатах станут активными, а их содержимое будет доступно всем, у кого есть ссылка. Восстановить комнаты?</item>
+        <item quantity="many">Все ссылки с открытым доступом в комнатах станут активными, а их содержимое будет доступно всем, у кого есть ссылка. Восстановить комнаты?</item>
+        <item quantity="other">Все ссылки с открытым доступом в комнатах станут активными, а их содержимое будет доступно всем, у кого есть ссылка. Восстановить комнаты?</item>
+    </plurals>
+    <string name="rooms_add_public_room">Публичная комната</string>
+    <string name="rooms_add_public_room_des">Приглашайте пользователей с помощью ссылок, к которым предоставлен доступ, для просмотра документов без регистрации. Вы также можете встроить эту комнату в любой веб-интерфейс.</string>
+    <string name="rooms_move_to_public_title">Переместить в Публичную комнату</string>
+    <string name="rooms_move_to_public_title_desc">Эта комната и все ее содержимое доступны всем, у кого есть ссылка. Продолжить?</string>
+    <string name="rooms_info_access_desc">Эта комната доступна всем, у кого есть ссылка. Сторонние пользователи получат разрешение только на просмотр для всех файлов.</string>
+    <string name="rooms_info_general_link">Общая ссылка</string>
+    <string name="rooms_info_additional_link">Дополнительная ссылка</string>
+    <string name="rooms_info_additional_links">"Дополнительные ссылки (%d/%d)"</string>
+    <string name="rooms_info_create_link">Создать и скопировать</string>
+    <string name="rooms_info_create_link_complete">Ссылка успешно создана и скопирована в буфер обмена</string>
+    <string name="rooms_info_delete_link">Удалить ссылку</string>
+    <string name="rooms_info_delete_link_complete">Ссылка удалена</string>
+    <string name="rooms_info_delete_link_desc">Ссылка будет удалена навсегда. Вы не сможете отменить это действие.</string>
+    <string name="rooms_info_revoke_link">Отозвать ссылку</string>
+    <string name="rooms_info_revoke_link_desc">Предыдущая ссылка станет недоступной. Будет создана новая общая ссылка.</string>
+    <string name="rooms_info_revoke_link_complete">Ссылка отозвана</string>
+    <string name="rooms_info_revoke">Отозвать</string>
+    <string name="rooms_info_copy_link">Скопировать ссылку</string>
+    <string name="rooms_info_copy_link_and_password">Скопировать ссылку и пароль</string>
+    <string name="rooms_info_copy_link_to_clipboard">Ссылка успешно скопирована в буфер обмена</string>
+    <string name="rooms_info_admin_title">Администрация (%d)</string>
+    <string name="rooms_info_users_title">Пользователи (%1d)</string>
+    <string name="rooms_info_expected_title">Ожидаемые пользователи (%1d)</string>
+    <string name="rooms_info_link_expired">Срок действия ссылки истек</string>
+    <string name="rooms_info_link_expired_full">Срок действия ссылки истек, и она была отключена</string>
+    <string name="rooms_info_link_name">Название ссылки</string>
+    <string name="rooms_info_password_access">Доступ по паролю</string>
+    <string name="rooms_info_file_rectrict">Ограничить копирование содержимого файла, загрузку и печать файлов</string>
+    <string name="rooms_info_file_rectrict_desc">Включите этот параметр, чтобы запретить загрузку файлов и папок из этой комнаты, к которой предоставлен доступ по ссылке</string>
+    <string name="rooms_info_time_limit_title">Ограничение по времени</string>
+    <string name="rooms_info_time_limit">Включить ограничение по времени</string>
+    <string name="rooms_info_valid_through">Действительно до</string>
+    <string name="rooms_info_save_link_title">Сохранить ссылку</string>
+    <string name="rooms_info_save_link_question">Вы уверены, что хотите сохранить и выйти?</string>
+    <string name="rooms_info_save_button">Сохранить</string>
+    <string name="rooms_info_dont_save_button">Не сохранять</string>
+    <string name="rooms_filter_type_public">Публичная</string>
+    <string name="share_access_room_owner">Владелец</string>
+    <string name="settings_language_confirmation_message">Приложение использует английский язык, поскольку язык системы изменился</string>
+    <string name="settings_language_confirmation_accept">Хорошо</string>
+    <string name="settings_language_continue_using_app_language">Продолжить использование %1$s</string>
+    <string name="conversion_dialog_title">Конвертировать и открыть документ</string>
+    <string name="conversion_dialog_message">Документ, который вы открываете, не является файлом OOXML (Office Open XML). Преобразуйте его в формат OOXML для более быстрого просмотра и редактирования.</string>
+    <string name="conversion_dialog_open_in_view_mode">Открыть в режиме просмотра</string>
+    <string name="conversion_dialog_convert_to">Конвертировать в %1s</string>
+    <string name="conversion_dialog_converting_to">Конвертирование в %1s</string>
 </resources>

@@ -55,9 +55,11 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     private val readStorage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_CANCELED) {
-            preferenceTool?.isShowStorageAccess = false
-            presenter.recreateStack()
-            presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+            launchAfterResume {
+                preferenceTool?.isShowStorageAccess = false
+                presenter.recreateStack()
+                presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+            }
         }
     }
 
@@ -141,6 +143,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             ActionBottomDialog.Buttons.IMPORT -> {
                 importFile.launch(arrayOf(ActivitiesUtils.PICKER_NO_FILTER))
             }
+
             else -> {
                 super.onActionButtonClick(buttons)
             }
@@ -157,18 +160,23 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME -> string?.let {
                     presenter.rename(it)
                 }
+
                 DocsBasePresenter.TAG_DIALOG_ACTION_SHEET -> presenter.createDocs(
                     "$string." + ApiContract.Extension.XLSX.lowercase(Locale.ROOT)
                 )
+
                 DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION -> presenter.createDocs(
                     "$string." + ApiContract.Extension.PPTX.lowercase(Locale.ROOT)
                 )
+
                 DocsBasePresenter.TAG_DIALOG_ACTION_DOC -> presenter.createDocs(
                     "$string." + ApiContract.Extension.DOCX.lowercase(Locale.ROOT)
                 )
+
                 DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER -> string?.let {
                     presenter.createFolder(it)
                 }
+
                 DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT -> presenter.deleteFile()
                 else -> {
                 }
@@ -186,10 +194,10 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            ExplorerContextItem.Edit -> presenter.getFileInfo(false)
             ExplorerContextItem.Upload -> presenter.upload()
             ExplorerContextItem.Copy -> showFolderChooser(OperationsState.OperationType.COPY)
             ExplorerContextItem.Move -> showFolderChooser(OperationsState.OperationType.MOVE)
+            is ExplorerContextItem.Edit -> presenter.getFileInfo(false)
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT)
             else -> super.onContextButtonClick(contextItem)
         }
@@ -257,9 +265,11 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 LocalContentTools.DOCX_EXTENSION -> {
                     onActionButtonClick(ActionBottomDialog.Buttons.DOC)
                 }
+
                 LocalContentTools.XLSX_EXTENSION -> {
                     onActionButtonClick(ActionBottomDialog.Buttons.SHEET)
                 }
+
                 LocalContentTools.PPTX_EXTENSION -> {
                     onActionButtonClick(ActionBottomDialog.Buttons.PRESENTATION)
                 }
@@ -289,6 +299,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> {
                 requestReadWritePermission()
             }
+
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                 requestAccessStorage()
             }

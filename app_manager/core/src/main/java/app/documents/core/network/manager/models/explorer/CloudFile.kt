@@ -1,7 +1,6 @@
 package app.documents.core.network.manager.models.explorer
 
 import app.documents.core.network.common.models.BaseResponse
-import app.documents.core.network.manager.models.base.ItemProperties
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -67,6 +66,10 @@ open class CloudFile : Item() {
     @Expose
     var isDenySharing = false
 
+    @SerializedName("encrypted")
+    @Expose
+    var encrypted = false
+
     val nextVersion: Int
         get() = ++version
 
@@ -84,6 +87,9 @@ open class CloudFile : Item() {
         fileExst = file.fileExst
         comment = file.comment
     }
+
+    val clearExt: String
+        get() = fileExst.replace(".", "")
 
     override fun clone(): CloudFile {
         return super.clone() as CloudFile

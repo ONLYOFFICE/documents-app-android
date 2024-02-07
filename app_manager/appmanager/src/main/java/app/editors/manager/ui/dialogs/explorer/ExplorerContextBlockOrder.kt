@@ -7,19 +7,15 @@ sealed interface ExplorerContextBlockOrder {
         override val order: Int get() = 0
     }
 
-    interface Edit : ExplorerContextBlockOrder {
+    interface Common : ExplorerContextBlockOrder {
         override val order: Int get() = 1
     }
 
-    interface Share : ExplorerContextBlockOrder {
+    interface Operation : ExplorerContextBlockOrder {
         override val order: Int get() = 2
     }
 
-    interface Operation : ExplorerContextBlockOrder {
-        override val order: Int get() = 3
-    }
-
     interface Remove : ExplorerContextBlockOrder {
-        override val order: Int get() = 4
+        override val order: Int get() = 3
     }
 }

@@ -2,14 +2,19 @@ package app.editors.manager.ui.fragments.share
 
 import android.content.Context
 import android.os.Bundle
-import android.view.*
-import androidx.core.view.isVisible
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import app.editors.manager.R
-import app.editors.manager.databinding.FragmentShareAddPagerBinding
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.editors.manager.R
+import app.editors.manager.databinding.FragmentShareAddPagerBinding
 import app.editors.manager.mvp.models.models.ModelShareStack
+import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.animation.HeightValueAnimator
@@ -202,19 +207,19 @@ class AddPagerFragment : BaseAppFragment(), SharePanelViews.OnEventListener {
             if (inputItem is CloudFolder && (inputItem as CloudFolder).isRoom) {
                 return listOf(
                     ViewPagerAdapter.Container(
-                        AddFragment.newInstance(inputItem, AddFragment.Type.USERS),
+                        AddFragment.newInstance(inputItem, AddPresenter.Type.Users),
                         getString(R.string.share_tab_users).capitalize()
                     )
                 )
             } else {
                 return listOf(
                     ViewPagerAdapter.Container(
-                        AddFragment.newInstance(inputItem, AddFragment.Type.USERS),
+                        AddFragment.newInstance(inputItem, AddPresenter.Type.Users),
                         getString(R.string.share_tab_users).capitalize()
                     ),
 
                     ViewPagerAdapter.Container(
-                        AddFragment.newInstance(inputItem, AddFragment.Type.GROUPS),
+                        AddFragment.newInstance(inputItem, AddPresenter.Type.Groups),
                         getString(R.string.share_tab_groups).capitalize()
                     )
                 )

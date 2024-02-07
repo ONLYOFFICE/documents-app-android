@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import lib.toolkit.base.R
 import lib.toolkit.base.databinding.ActionPopupItemListBinding
 import lib.toolkit.base.databinding.ActionPopupLayoutBinding
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.adapters.factory.inflate
 
 abstract class BasePopupItem(val title: Int, val withDivider: Boolean = false)
@@ -62,14 +63,12 @@ abstract class ActionBarPopup<T : BasePopupItem>(
     }
 
     fun show(view: View) {
+        val horizontalGravity = if (UiUtils.isRTL()) Gravity.START else Gravity.END
+        val insets = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+            view.rootWindowInsets.displayCutout?.safeInsetTop else 0
         viewBinding?.popupView?.adapter = popupAdapter.also { it.items = items }
         setBackgroundDrawable(shape)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val insets = view.rootWindowInsets.displayCutout?.safeInsetTop ?: 0
-            showAtLocation(view, Gravity.END or Gravity.TOP, margin, margin + insets)
-        } else {
-            showAtLocation(view, Gravity.END or Gravity.TOP, margin, margin)
-        }
+        showAtLocation(view, horizontalGravity or Gravity.TOP, margin, margin + (insets ?: 0))
     }
 
     override fun dismiss() {

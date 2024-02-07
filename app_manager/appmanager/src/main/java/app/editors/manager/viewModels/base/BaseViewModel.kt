@@ -1,7 +1,6 @@
 package app.editors.manager.viewModels.base
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import app.editors.manager.managers.tools.ErrorHandler
 import app.editors.manager.mvp.models.error.AppErrors

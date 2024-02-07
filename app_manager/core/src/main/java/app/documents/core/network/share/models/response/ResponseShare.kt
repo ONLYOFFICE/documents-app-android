@@ -5,4 +5,4 @@ import app.documents.core.network.share.models.Share
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ResponseShare(val response: List<Share> = emptyList()) : BaseResponse()
+class ResponseShare(val response: List<Share> = emptyList()) : BaseResponse()

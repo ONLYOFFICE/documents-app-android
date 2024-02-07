@@ -2,7 +2,7 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
@@ -13,6 +13,9 @@ class ExplorerContextViewModel : ViewModel() {
 
     @Inject
     lateinit var preferenceTool: PreferenceTool
+
+    @Inject
+    lateinit var networkSettings: NetworkSettings
 
     init {
         App.getApp().appComponent.inject(this)
@@ -27,28 +30,26 @@ class ExplorerContextViewModel : ViewModel() {
 
             state.section == ApiContract.Section.Recent -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Edit,
+                ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Delete(state)
             )
 
-            state.section is ApiContract.Section.Room && state.isRoot -> listOf(
-                ExplorerContextItem.Header(
-                    state = state,
-                    logo = if (state.item is CloudFolder) state.item.logo?.large.takeIf { !it.isNullOrEmpty() } else null
-                ),
-                ExplorerContextItem.Share,
+            state.section.isRoom && state.isRoot -> listOf(
+                ExplorerContextItem.Header(state),
                 ExplorerContextItem.RoomInfo,
-                ExplorerContextItem.AddUsers,
-                ExplorerContextItem.Rename,
                 ExplorerContextItem.Pin(state.pinned),
+                ExplorerContextItem.Edit(state),
+                ExplorerContextItem.AddUsers,
+                ExplorerContextItem.ExternalLink(state),
+                ExplorerContextItem.Download,
                 ExplorerContextItem.Archive,
-                ExplorerContextItem.Restore(true),
+                ExplorerContextItem.Restore,
                 ExplorerContextItem.Delete(state)
             )
 
             state.section is ApiContract.Section.Storage -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Edit,
+                ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Move,
                 ExplorerContextItem.Copy,
@@ -58,7 +59,7 @@ class ExplorerContextViewModel : ViewModel() {
 
             state.section is ApiContract.Section.Device -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Edit,
+                ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Move,
                 ExplorerContextItem.Copy,
@@ -69,9 +70,10 @@ class ExplorerContextViewModel : ViewModel() {
 
             else -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Edit,
-                ExplorerContextItem.Share,
-                ExplorerContextItem.ExternalLink,
+                ExplorerContextItem.Edit(state),
+                ExplorerContextItem.Share.takeIf { !networkSettings.isDocSpace },
+                ExplorerContextItem.CreateRoom.takeIf { networkSettings.isDocSpace },
+                ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.favorite),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Location,
@@ -80,11 +82,13 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Download,
                 ExplorerContextItem.Upload,
                 ExplorerContextItem.Rename,
-                ExplorerContextItem.Restore(false),
+                ExplorerContextItem.Restore,
                 ExplorerContextItem.ShareDelete,
                 ExplorerContextItem.Delete(state)
             )
-        }.mapNotNull { item -> item.get(state) }.sortedBy { item -> item.order }
+        }.filterNotNull()
+            .mapNotNull { item -> item.get(state) }
+            .sortedBy { item -> item.order }
     }
 
 }

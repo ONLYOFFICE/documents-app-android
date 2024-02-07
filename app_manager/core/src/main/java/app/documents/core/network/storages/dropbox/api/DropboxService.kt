@@ -1,13 +1,10 @@
 package app.documents.core.network.storages.dropbox.api
 
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.utils.DropboxUtils
-import app.documents.core.network.storages.dropbox.models.explorer.DropboxItem
 import app.documents.core.network.storages.dropbox.models.operations.MoveCopyBatchCheck
 import app.documents.core.network.storages.dropbox.models.request.*
 import app.documents.core.network.storages.dropbox.models.response.*
 import io.reactivex.Single
-import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*

@@ -132,7 +132,7 @@ class ChooseAccessFragment : BaseAppFragment() {
         viewBinding?.let { binding ->
             binding.sharePanelLayout.sharePanelResetButton.isVisible = false
             binding.sharePanelLayout.sharePanelCountSelectedText.isVisible = false
-            binding.sharePanelLayout.buttonPopupLayout.buttonPopupLayout.isVisible = false
+            binding.sharePanelLayout.buttonPopupLayout.isVisible = false
 
             binding.sharePanelLayout.sharePanelAddButton.setText(R.string.share_invite_title)
             binding.sharePanelLayout.sharePanelMessageButton.setOnClickListener {

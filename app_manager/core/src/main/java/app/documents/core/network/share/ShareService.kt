@@ -2,13 +2,20 @@ package app.documents.core.network.share
 
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
-import app.documents.core.network.models.share.response.ResponseRoomShare
+import app.documents.core.network.room.models.ResponseRoomShare
 import app.documents.core.network.share.models.request.*
 import app.documents.core.network.share.models.response.ResponseExternal
 import app.documents.core.network.share.models.response.ResponseGroups
 import app.documents.core.network.share.models.response.ResponseShare
 import app.documents.core.network.share.models.response.ResponseUsers
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.HTTP
+import retrofit2.http.Header
+import retrofit2.http.Headers
+import retrofit2.http.PUT
+import retrofit2.http.Path
+import retrofit2.http.QueryMap
 
 interface ShareService {
 

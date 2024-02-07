@@ -25,6 +25,10 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.ActivitiesUtils.IMAGE_TYPE
 import java.io.File
@@ -65,32 +69,6 @@ object ActivitiesUtils {
     private fun getIntentMultipleFilePicker(): Intent {
         return getIntentSingleFilePicker()
             .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-    }
-
-    @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    @JvmStatic
-    fun showMultipleFilePicker(fragment: Fragment, title: String?, requestCode: Int) {
-        fragment.startActivityForResult(Intent.createChooser(getIntentMultipleFilePicker(), title), requestCode)
-    }
-
-    @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    @JvmStatic
-    fun showMultipleFilePicker(fragment: Fragment, @StringRes titleId: Int, requestCode: Int) {
-        showMultipleFilePicker(
-            fragment,
-            fragment.getString(titleId),
-            requestCode
-        )
-    }
-
-    @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-    @JvmStatic
-    fun showMultipleFilePicker(fragment: Fragment, requestCode: Int) {
-        showMultipleFilePicker(
-            fragment,
-            null,
-            requestCode
-        )
     }
 
     @RequiresPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -178,7 +156,7 @@ object ActivitiesUtils {
     fun showEmail(context: Context, chooseTitle: String, to: String, subject: String, body: String) {
         val selectorIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"))
         val intent = Intent(Intent.ACTION_SEND)
-        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(to));
+        intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(to))
         intent.putExtra(Intent.EXTRA_SUBJECT, subject)
         intent.putExtra(Intent.EXTRA_TEXT, body)
         intent.selector = selectorIntent
@@ -269,6 +247,13 @@ object ActivitiesUtils {
     }
 }
 
+fun Intent.clearIntent() {
+    replaceExtras(Bundle())
+    action = ""
+    data = null
+    flags = 0
+}
+
 class DocumentsPicker(
     activityResultRegistry: ActivityResultRegistry,
     private val callback: (uris: List<Uri>?) -> Unit,
@@ -291,12 +276,12 @@ class CreateDocument : ActivityResultContract<String, Uri?>() {
             .putExtra(Intent.EXTRA_TITLE, input)
     }
 
-    final override fun getSynchronousResult(
+    override fun getSynchronousResult(
         context: Context,
         input: String
     ): SynchronousResult<Uri?>? = null
 
-    final override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+    override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
         return intent.takeIf { resultCode == Activity.RESULT_OK }?.data
     }
 }
@@ -354,7 +339,10 @@ class LaunchActivityForResult(
 ) {
 
     private val launchActivity: ActivityResultLauncher<Intent> =
-        activityResultRegistry.register("EditorsForResult", ActivityResultContracts.StartActivityForResult()) { result ->
+        activityResultRegistry.register(
+            "EditorsForResult",
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
             callback.invoke(result)
         }
 
@@ -377,6 +365,7 @@ class FontPicker(
     }
 
 }
+
 @Suppress("DEPRECATION", "UNCHECKED_CAST")
 fun <T : Serializable> Intent.getSerializable(key: String, clazz: Class<T>): T {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -448,5 +437,23 @@ fun FragmentActivity.openSendFileActivity(title: Int, uri: Uri) {
     } else {
         startActivity(getSendFileIntent(title, file = uri.toFile()))
     }
+}
 
+fun Context.openSendTextActivity(title: String, text: String) {
+    val sendIntent = Intent().apply {
+        action = Intent.ACTION_SEND
+        putExtra(Intent.EXTRA_TEXT, text)
+        type = "text/plain"
+    }
+
+    val shareIntent = Intent.createChooser(sendIntent, title)
+    startActivity(shareIntent)
+}
+
+fun Fragment.launchAfterResume(block: () -> Unit) {
+    lifecycleScope.launch {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            block()
+        }
+    }
 }

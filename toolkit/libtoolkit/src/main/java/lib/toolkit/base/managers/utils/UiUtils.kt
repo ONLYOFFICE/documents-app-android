@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
@@ -11,6 +12,8 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.hardware.display.DisplayManager
 import android.os.Build
+import android.text.Html
+import android.text.TextUtils
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.*
@@ -30,6 +33,7 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.R
@@ -73,6 +77,10 @@ object UiUtils {
     @JvmStatic
     fun isTablet(context: Context): Boolean {
         return context.resources.getInteger(R.integer.screen_size) > 0
+    }
+
+    fun isRTL(): Boolean {
+        return TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) == View.LAYOUT_DIRECTION_RTL
     }
 
     @JvmStatic
@@ -483,7 +491,6 @@ object UiUtils {
         return activity.window.decorView.rootWindowInsets.systemWindowInsetTop
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @JvmStatic
     fun getNavigationBarHeightInsets(activity: Activity): Int {
         return activity.window.decorView.rootWindowInsets.systemWindowInsetBottom
@@ -553,11 +560,7 @@ object UiUtils {
 
     @JvmStatic
     fun isMultiWindow(activity: Activity): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            activity.isInMultiWindowMode
-        } else {
-            false
-        }
+        return activity.isInMultiWindowMode
     }
 
     @JvmStatic
@@ -604,10 +607,14 @@ object UiUtils {
         params.topMargin = context.resources.getDimensionPixelSize(R.dimen.default_margin_large)
         params.gravity = Gravity.CENTER
 
-        val progress = ProgressBar(context, null, if (isCircle) android.R.attr.progressBarStyle else android.R.attr.progressBarStyleHorizontal)
+        val progress = ProgressBar(
+            context,
+            null,
+            if (isCircle) android.R.attr.progressBarStyle else android.R.attr.progressBarStyleHorizontal
+        )
             .apply {
+                if (!isCircle) layoutParams = params
                 isIndeterminate = true
-                layoutParams = params
 
                 val color = MaterialColors.getColor(this, androidx.appcompat.R.attr.colorPrimary)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -618,20 +625,14 @@ object UiUtils {
             }
 
         container.addView(progress)
-        return AlertDialog.Builder(context)
+        return MaterialAlertDialogBuilder(context, R.style.App_Dialog_Alert)
             .setTitle(title)
             .setNegativeButton(cancelTitle) { dialog, _ ->
                 cancelListener()
                 dialog.dismiss()
             }
             .setView(container)
-            .show()
-    }
-
-    fun getProgressDialog(
-        context: Context
-    ): Dialog {
-        return AlertDialog.Builder(context).create()
+            .create()
     }
 
     fun showEditDialog(
@@ -656,12 +657,10 @@ object UiUtils {
         text.setText(value)
         text.setSelection(value?.length ?: 0)
         text.layoutParams = params
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            text.focusable = View.FOCUSABLE
-        }
+        text.focusable = View.FOCUSABLE
         container.addView(text)
 
-        AlertDialog.Builder(context)
+        MaterialAlertDialogBuilder(context, R.style.App_Dialog_Alert)
             .setTitle(title)
             .setMessage(description)
             .setPositiveButton(acceptTitle) { dialog, _ ->
@@ -688,22 +687,48 @@ object UiUtils {
         title: String,
         description: String? = null,
         acceptListener: () -> Unit,
+        neutralListener: (() -> Unit)? = null,
         cancelListener: (() -> Unit)? = null,
         acceptTitle: String? = context.getString(android.R.string.ok),
+        acceptErrorTint: Boolean = false,
+        neutralTitle: String? = null,
         cancelTitle: String? = context.getString(android.R.string.cancel)
     ) {
-        AlertDialog.Builder(context)
+        val errorColor = "<font color='${
+            java.lang.String.format(
+                "#%06X",
+                0xFFFFFF and ContextCompat.getColor(context, R.color.colorError)
+            )
+        }'>$acceptTitle</font>"
+
+        MaterialAlertDialogBuilder(context, R.style.App_Dialog_Alert)
             .setTitle(title)
             .setMessage(description)
-            .setPositiveButton(acceptTitle) { dialog, _ ->
+            .setPositiveButton(acceptTitle?.capitalize()) { dialog, _ ->
                 acceptListener.invoke()
                 dialog.dismiss()
             }
-            .setNegativeButton(cancelTitle) { dialog, _ ->
+            .apply {
+                if (neutralListener != null && neutralTitle != null) {
+                    setNeutralButton(neutralTitle.capitalize()) { dialog, _ ->
+                        neutralListener.invoke()
+                        dialog.dismiss()
+                    }
+                }
+            }
+            .setNegativeButton(cancelTitle?.capitalize()) { dialog, _ ->
                 cancelListener?.invoke()
                 dialog.dismiss()
             }
-            .show()
+            .show().apply {
+                if (acceptErrorTint) {
+                    getButton(DialogInterface.BUTTON_POSITIVE).text =
+                        Html.fromHtml(errorColor, Html.FROM_HTML_MODE_LEGACY)
+                }
+                getButton(DialogInterface.BUTTON_POSITIVE).isAllCaps = false
+                getButton(DialogInterface.BUTTON_NEGATIVE).isAllCaps = false
+                getButton(DialogInterface.BUTTON_NEUTRAL).isAllCaps = false
+            }
     }
 
     fun isDarkMode(context: Context): Boolean {
@@ -722,7 +747,7 @@ object UiUtils {
                 timeZone = TimeZone.getTimeZone("UTC")
             }
 
-            addOnPositiveButtonClickListener{ time -> listener.invoke(dateFormat.format(time))}
+            addOnPositiveButtonClickListener { time -> listener.invoke(dateFormat.format(time)) }
         }
     }
 

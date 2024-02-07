@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,19 +20,24 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import lib.compose.ui.addIf
 import lib.compose.ui.addIfNotNull
 import lib.compose.ui.enabled
 import lib.compose.ui.theme.ManagerTheme
@@ -41,6 +47,7 @@ import lib.toolkit.base.R
 fun AppListItem(
     modifier: Modifier = Modifier,
     title: String,
+    titleColor: Color = MaterialTheme.colors.onSurface,
     subtitle: String? = null,
     background: Color? = null,
     @DrawableRes startIcon: Int? = null,
@@ -49,12 +56,17 @@ fun AppListItem(
     paddingEnd: Dp = 16.dp,
     dividerVisible: Boolean = true,
     enabled: Boolean = true,
+    singleLine: Boolean = true,
     onClick: (() -> Unit)? = null
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .then(
+                if (singleLine)
+                    Modifier.height(48.dp) else
+                    Modifier.height(IntrinsicSize.Max)
+            )
             .addIfNotNull(onClick) { clickable(enabled = enabled, onClick = it) }
             .addIfNotNull(background) { background(it) },
         verticalArrangement = Arrangement.SpaceBetween
@@ -64,6 +76,7 @@ fun AppListItem(
                 .fillMaxWidth()
                 .fillMaxHeight()
                 .padding(start = 16.dp, end = paddingEnd)
+                .addIf(!singleLine) { padding(vertical = 8.dp) }
                 .weight(1f),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -94,9 +107,9 @@ fun AppListItem(
                 Column(modifier = Modifier.enabled(enabled)) {
                     Text(
                         text = title,
-                        color = MaterialTheme.colors.onSurface,
+                        color = titleColor,
                         style = MaterialTheme.typography.body1,
-                        maxLines = 1,
+                        maxLines = if (singleLine) 1 else 2,
                         overflow = TextOverflow.Ellipsis
                     )
                     subtitle?.let {
@@ -124,7 +137,7 @@ fun AppListItem(
 @Composable
 fun AppListItemsInteractivePreview() {
     var state by remember { mutableStateOf(false) }
-    var stepperState by remember { mutableStateOf(0) }
+    var stepperState by remember { mutableIntStateOf(0) }
 
     ManagerTheme {
         AppScaffold(topBar = {
@@ -137,6 +150,11 @@ fun AppListItemsInteractivePreview() {
                 AppHeaderItem(title = "Arrow item")
                 AppArrowItem(
                     title = R.string.app_title,
+                    startIcon = R.drawable.drawable_ic_logo,
+                )
+                AppArrowItem(
+                    title = "Restrict file content copy, file download and printing",
+                    singleLine = false,
                     startIcon = R.drawable.drawable_ic_logo,
                 )
                 AppArrowItem(
@@ -190,4 +208,12 @@ fun AppListItemsInteractivePreview() {
 @Composable
 fun AppListItemsInteractivePreviewDark() {
     AppListItemsInteractivePreview()
+}
+
+@Preview(widthDp = 360, heightDp = 640)
+@Composable
+fun AppListItemsInteractivePreviewRTL() {
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        AppListItemsInteractivePreview()
+    }
 }

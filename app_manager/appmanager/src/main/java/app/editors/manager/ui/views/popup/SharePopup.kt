@@ -31,26 +31,28 @@ class SharePopup(
 
     override fun bind(view: View) {
         viewBinding = PopupShareMenuBinding.bind(view).apply {
-            fullAccessItem.popupItemLayout.setOnClickListener()
-            powerUserItem.popupItemLayout.setOnClickListener()
-            fillFormItem.popupItemLayout.setOnClickListener()
-            commentItem.popupItemLayout.setOnClickListener()
-            reviewItem.popupItemLayout.setOnClickListener()
-            editorItem.popupItemLayout.setOnClickListener()
-            deleteItem.popupItemLayout.setOnClickListener()
-            viewItem.popupItemLayout.setOnClickListener()
-            denyItem.popupItemLayout.setOnClickListener()
+            arrayOf(
+                fullAccessItem.popupItemLayout,
+                powerUserItem.popupItemLayout,
+                fillFormItem.popupItemLayout,
+                commentItem.popupItemLayout,
+                reviewItem.popupItemLayout,
+                editorItem.popupItemLayout,
+                deleteItem.popupItemLayout,
+                viewItem.popupItemLayout,
+                denyItem.popupItemLayout,
+                customFilterItem.popupItemLayout
+            ).forEach { view ->
+                view.setOnClickListener {
+                    contextListener?.onContextClick(view, this@SharePopup)
+                }
+            }
         }
     }
 
     override fun hide() {
         super.hide()
         viewBinding = null
-    }
-
-    private fun View.setOnClickListener(): View {
-        setOnClickListener { v -> contextListener?.onContextClick(v, this@SharePopup) }
-        return this
     }
 
     private fun disableViews(vararg views: View?) {
@@ -128,12 +130,13 @@ class SharePopup(
 
     @Suppress("KotlinConstantConditions")
     private fun setItemsForExtension(title: String) {
-        val ext = StringUtils.getExtensionFromPath(title)
-        when (StringUtils.getExtension(ext).takeIf { it != StringUtils.Extension.FORM }
-            ?: StringUtils.getFormExtension(ext)) {
+        val extString = StringUtils.getExtensionFromPath(title)
+        when (val ext = StringUtils.getExtension(extString).takeIf { it != StringUtils.Extension.FORM }
+            ?: StringUtils.getFormExtension(extString)) {
             StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION -> {
                 setFillFormItem(false)
                 setReviewItem(false)
+                if (ext == StringUtils.Extension.SHEET) setCustomItem(true)
             }
             StringUtils.Extension.DOC, StringUtils.Extension.DOCXF -> {
                 setFillFormItem(false)
@@ -153,6 +156,14 @@ class SharePopup(
                 setReviewItem(false)
                 setFillFormItem(false)
             }
+        }
+    }
+
+    private fun setCustomItem(isVisible: Boolean) {
+        viewBinding?.let { binding ->
+            binding.customFilterItem.popupItemLayout.isVisible = isVisible
+            binding.customFilterItem.itemIcon.setImageResource(R.drawable.ic_access_custom_filter)
+            binding.customFilterItem.itemText.setText(R.string.share_popup_access_custom_filter)
         }
     }
 
@@ -212,28 +223,28 @@ class SharePopup(
             }
 
             when (cloudFolder.roomType) {
-                ApiContract.RoomType.FILLING_FORM_ROOM -> {
-                    binding.commentItem.popupItemLayout.isVisible = false
-                    binding.reviewItem.popupItemLayout.isVisible = false
-                }
-                ApiContract.RoomType.EDITING_ROOM -> {
+
+                ApiContract.RoomType.PUBLIC_ROOM -> {
                     binding.editorItem.popupItemLayout.isVisible = true
                     binding.editorItem.itemIcon.setImageResource(R.drawable.ic_access_full)
                     binding.editorItem.itemText.setText(R.string.share_access_room_editor)
                     binding.fillFormItem.popupItemLayout.isVisible = false
                     binding.reviewItem.popupItemLayout.isVisible = false
                     binding.commentItem.popupItemLayout.isVisible = false
+                    binding.editorItem.popupItemLayout.isVisible = false
+                    binding.viewItem.popupItemLayout.isVisible = false
                 }
-                ApiContract.RoomType.REVIEW_ROOM -> {
-                    binding.fillFormItem.popupItemLayout.isVisible = false
-                }
-                ApiContract.RoomType.READ_ONLY_ROOM -> {
+                ApiContract.RoomType.COLLABORATION_ROOM -> {
+                    binding.editorItem.popupItemLayout.isVisible = true
+                    binding.editorItem.itemIcon.setImageResource(R.drawable.ic_access_full)
+                    binding.editorItem.itemText.setText(R.string.share_access_room_editor)
+                    binding.viewItem.popupItemLayout.isVisible = true
                     binding.fillFormItem.popupItemLayout.isVisible = false
                     binding.reviewItem.popupItemLayout.isVisible = false
                     binding.commentItem.popupItemLayout.isVisible = false
                 }
                 ApiContract.RoomType.CUSTOM_ROOM -> {
-                    binding.viewItem.popupItemLayout.isVisible = false
+                    binding.viewItem.popupItemLayout.isVisible = true
                     binding.editorItem.popupItemLayout.isVisible = true
                     binding.editorItem.itemIcon.setImageResource(R.drawable.ic_access_full)
                     binding.editorItem.itemText.setText(R.string.share_access_room_editor)

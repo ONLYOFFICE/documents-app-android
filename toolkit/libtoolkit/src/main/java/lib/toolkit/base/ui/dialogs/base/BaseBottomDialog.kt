@@ -1,7 +1,6 @@
 package lib.toolkit.base.ui.dialogs.base
 
 import android.app.Dialog
-import android.content.Context
 import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
@@ -35,18 +34,28 @@ abstract class BaseBottomDialog : MvpBottomSheetDialogFragment(), DialogInterfac
         val TAG: String = BaseBottomDialog::class.java.simpleName
     }
 
-    protected lateinit var baseActivity: BaseActivity
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
+    protected var baseActivity: BaseActivity? = null
+    private var bottomSheetBehavior: BottomSheetBehavior<View>? = null
     private var bottomSheetCallback: BottomSheetDialogCallback? = null
     private var closeHandler: Handler = Handler(Looper.getMainLooper())
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         try {
             baseActivity = context as BaseActivity
         } catch (e: ClassCastException) {
             throw RuntimeException("${BaseBottomDialog::class.java.simpleName} - must implement - ${BaseActivity::class.java.simpleName}")
         }
+    }
+
+    // Leak memory
+    override fun onDestroy() {
+        if (requireActivity() is BaseActivity) {
+            (requireActivity() as BaseActivity).removeDialogListener(this)
+
+        }
+        baseActivity = null
+        super.onDestroy()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,8 +91,11 @@ abstract class BaseBottomDialog : MvpBottomSheetDialogFragment(), DialogInterfac
 
     override fun onDestroyView() {
         super.onDestroyView()
-        bottomSheetCallback?.let { bottomSheetBehavior.removeBottomSheetCallback(it) }
+        bottomSheetCallback?.let { bottomSheetBehavior?.removeBottomSheetCallback(it) }
+        bottomSheetBehavior = null
+        bottomSheetCallback = null
     }
+
     override fun onDialogAdded() {
 
     }
@@ -102,12 +114,12 @@ abstract class BaseBottomDialog : MvpBottomSheetDialogFragment(), DialogInterfac
     }
 
     protected fun hideDialog() {
-        baseActivity.hideDialog()
+        baseActivity?.hideDialog()
     }
 
     protected fun showWaitingDialog(title: String?, cancelButton: String?, tag: String?) {
-        baseActivity.addDialogListener(this)
-        baseActivity.showWaitingDialog(title, cancelButton, WaitingHolder.ProgressType.HORIZONTAL, tag)
+        baseActivity?.addDialogListener(this)
+        baseActivity?.showWaitingDialog(title, cancelButton, WaitingHolder.ProgressType.HORIZONTAL, tag)
     }
 
     override fun onShow(dialogInterface: DialogInterface) {
@@ -156,9 +168,9 @@ abstract class BaseBottomDialog : MvpBottomSheetDialogFragment(), DialogInterfac
         val bottomSheet = bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
         bottomSheetCallback = BottomSheetDialogCallback()
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet!!)
-        bottomSheetBehavior.peekHeight = 0
-        bottomSheetCallback?.let { bottomSheetBehavior.addBottomSheetCallback(it) }
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetBehavior?.peekHeight = 0
+        bottomSheetCallback?.let { bottomSheetBehavior?.addBottomSheetCallback(it) }
+        bottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     protected open fun onStateChanged(bottomSheet: View, @BottomSheetBehavior.State newState: Int) {
@@ -183,7 +195,7 @@ abstract class BaseBottomDialog : MvpBottomSheetDialogFragment(), DialogInterfac
         if (childFragmentManager.fragments.isEmpty()) {
             onShowContentFragment()
         }
-        baseActivity.addDialogListener(this)
+        baseActivity?.addDialogListener(this)
     }
 
     /*

@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.work.WorkManager
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.webdav.WebDavService
@@ -37,7 +38,6 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.*
@@ -165,10 +165,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             fragment.getArgs(intent)
         }
 
-        intent?.apply {
-            data = null
-            clipData = null
-        }
+        intent?.clearIntent()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -226,6 +223,13 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
         recentViewModel.isRecent.observe(this) { recents ->
             viewBinding.bottomNavigation.menu.getItem(0).isEnabled = recents.isNotEmpty()
+        }
+
+        if (intent?.action == Intent.ACTION_VIEW) {
+            intent.data?.let {
+                presenter.checkFileData(it)
+                intent.clearIntent()
+            }
         }
     }
 
@@ -692,13 +696,17 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         showAccount(isVisible)
         showNavigationButton(!isVisible)
         if (isVisible) {
-            if (viewBinding.appBarTabs.visibility != View.VISIBLE) {
+            if (!viewBinding.appBarTabs.isVisible) {
                 viewBinding.appBarLayout.postDelayed({
-                    viewBinding.appBarTabs.expand(100)
+                    viewBinding.appBarTabs.expand(200)
                 }, 10)
             }
         } else {
-            viewBinding.appBarTabs.collapse()
+            if (viewBinding.appBarTabs.isVisible) {
+                viewBinding.appBarLayout.postDelayed({
+                    viewBinding.appBarTabs.collapse()
+                }, 10)
+            }
         }
     }
 

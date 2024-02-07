@@ -1,8 +1,9 @@
 package app.editors.manager.mvp.presenters.share
 
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.contracts.ApiContract.Access
+import app.documents.core.network.common.extensions.checkStatusCode
 import app.documents.core.network.common.extensions.request
-import app.documents.core.network.common.extensions.requestZip
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
@@ -13,34 +14,70 @@ import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
+import app.editors.manager.app.roomProvider
 import app.editors.manager.app.shareApi
-import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.models.ModelShareStack
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.ShareHeaderUi
 import app.editors.manager.mvp.models.ui.UserUi
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.share.AddView
-import app.editors.manager.ui.fragments.share.AddFragment
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.InjectViewState
 import moxy.presenterScope
+import java.io.Serializable
 
 @InjectViewState
 class AddPresenter(
     val item: Item,
-    val type: AddFragment.Type
+    val type: Type
 ) : BasePresenter<AddView>() {
+
+    sealed class Type : Serializable {
+        data object Users : Type()
+        data object Groups : Type()
+        data object Common : Type()
+    }
 
     companion object {
         val TAG: String = AddPresenter::class.java.simpleName
     }
 
     private val shareStack: ModelShareStack = ModelShareStack.getInstance()
-    private var isCommon: Boolean = false
     private var searchValue: String? = null
     private var job: Job? = null
+
+    private val userListItems: List<UserUi>
+        get() = shareStack.userSet.sortedBy { it.displayName }
+
+    private val groupListItems: List<GroupUi>
+        get() = shareStack.groupSet.sortedWith(groupComparator())
+
+    val countChecked: Int
+        get() = shareStack.countChecked
+
+    val isSelectedAll: Boolean
+        get() = when (type) {
+            Type.Users -> shareStack.userSet.any { !it.isSelected }
+            Type.Groups -> shareStack.groupSet.any { !it.isSelected }
+            else -> false
+        }
+
+    val isSelected: Boolean
+        get() = when (type) {
+            Type.Users -> shareStack.userSet.any { it.isSelected }
+            Type.Groups -> shareStack.groupSet.any { it.isSelected }
+            else -> false
+        }
+
+    var accessCode: Int
+        get() = shareStack.accessCode
+        set(accessCode) {
+            shareStack.accessCode = accessCode
+        }
 
     init {
         App.getApp().appComponent.inject(this)
@@ -56,97 +93,52 @@ class AddPresenter(
         job = null
     }
 
-    private suspend fun getUsers() {
-        isCommon = false
-        request(
-            func = shareApi::getUsers,
-            map = { response ->
-                response.response.filter { it.id != account.id && it.id != item.createdBy.id }.map { user ->
-                    UserUi(
-                        id = user.id,
-                        department = user.department,
-                        displayName = user.displayName.takeIf { name -> name.isNotEmpty() } ?: user.email ?: "",
-                        avatarUrl = user.avatar,
-                        status = user.activationStatus)
-                }.sortedBy { it.status } },
-            onSuccess = { users ->
-                shareStack.addUsers(users)
-                viewState.onGetUsers(userListItems)
-                loadAvatars()
-            }, onError = ::fetchError
-        )
-    }
+    private suspend fun getUsers(searchValue: String = ""): List<UserUi> {
 
-    private suspend fun getGroups() {
-        isCommon = false
-        request(
-            func = shareApi::getGroups,
-            map = { response -> response.response.map { GroupUi(it.id, it.name, it.manager ?: "null") } },
-            onSuccess = { response ->
-                shareStack.addGroups(response.toMutableList().also {
-                    it.add(GroupUi(GroupUi.GROUP_ADMIN_ID, "", ""))
-                    it.add(GroupUi(GroupUi.GROUP_EVERYONE_ID, "", ""))
-                })
-                viewState.onGetGroups(groupListItems)
-            }, onError = ::fetchError
-        )
-    }
-
-    fun getCommons() {
-        isCommon = true
-        presenterScope.launch {
-            requestZip(
-                func1 = shareApi::getUsers,
-                func2 = shareApi::getGroups,
-                onSuccess = { users, groups ->
-                    shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
-                    shareStack.addUsers(users.response.filter { it.id != account.id }.map { user ->
-                        UserUi(
-                            id = user.id,
-                            department = user.department,
-                            displayName = user.displayName.takeIf { it.isNotEmpty() } ?: user.email ?: "",
-                            avatarUrl = user.avatarMedium, status = user.activationStatus)
-                    })
-                    viewState.onGetCommon(commonList)
-                    loadAvatars()
-                }, onError = ::fetchError
-            )
+        val invitedUsersId = if ((item as? CloudFolder)?.isRoom == true) {
+            context.roomProvider.getRoomUsers(item.id).map { it.sharedTo.id }
+        } else {
+            emptyList()
         }
+
+        return shareApi.getUsers(getOptions(searchValue))
+            .checkStatusCode(::fetchError)
+            .response
+            .filter { user ->
+                user.id != account.id
+                        && user.id != item.createdBy.id
+                        && user.displayName.isNotEmpty()
+                        && !invitedUsersId.contains(user.id)
+            }
+            .map { user ->
+                UserUi(
+                    id = user.id,
+                    department = user.department,
+                    displayName = user.displayName,
+                    avatarUrl = user.avatar,
+                    status = user.activationStatus,
+                    isAdmin = user.isAdmin
+                )
+            }.sortedBy { it.status }
     }
 
-    fun getFilter(searchValue: String) {
-        isCommon = true
-        presenterScope.launch {
-            requestZip(
-                func1 = { shareApi.getUsers(getOptions(searchValue)) },
-                func2 = { shareApi.getGroups(getOptions(searchValue, true)) },
-                onSuccess = { users, groups ->
-                    shareStack.clearModel()
-                    shareStack.addGroups(groups.response.map { GroupUi(it.id, it.name, it.manager ?: "null") })
-                    shareStack.addUsers(users.response.filter { it.id != account.id }.map { user ->
-                        UserUi(
-                            id = user.id,
-                            department = user.department,
-                            displayName = user.displayName.takeIf { it.isNotEmpty() } ?: user.email ?: "",
-                            avatarUrl = user.avatarMedium,
-                            status = user.activationStatus
-                        )
-                    })
-                    viewState.onGetCommon(commonList)
-                    loadAvatars()
-                }, onError = ::fetchError
-            )
-        }
-    }
+    private suspend fun getGroups(searchValue: String = ""): List<GroupUi> {
+        return shareApi.getGroups(getOptions(searchValue, true))
+            .checkStatusCode(::fetchError)
+            .response
+            .map {
+                GroupUi(
+                    id = it.id,
+                    name = it.name,
+                    manager = it.manager.orEmpty()
+                )
+            }
+            .toMutableList()
+            .also { list ->
+                list.add(GroupUi(GroupUi.GROUP_ADMIN_ID, "", ""))
+                list.add(GroupUi(GroupUi.GROUP_EVERYONE_ID, "", ""))
+            }
 
-    private fun loadAvatars() {
-        presenterScope.launch {
-            shareStack.userSet.request(
-                func = { user -> GlideUtils.getAvatarFromUrl(context, user.avatarUrl) },
-                map = { user, avatar -> user.also { user.avatar = avatar } },
-                onEach = viewState::onUpdateAvatar
-            )
-        }
     }
 
     private suspend fun shareFileTo(id: String) {
@@ -177,32 +169,33 @@ class AddPresenter(
     private val requestShare: RequestShare?
         get() {
             val shareItems: MutableList<RequestShareItem> = ArrayList()
+            val isRoom = (item as? CloudFolder)?.isRoom == true
 
             // Get users access list
-            for (item in shareStack.userSet) {
-                if (item.isSelected) {
-                    val idItem = item.id
-                    val accessCode = shareStack.accessCode
-                    shareItems.add(RequestShareItem(shareTo = idItem, access = accessCode.toString()))
+            for (user in shareStack.userSet) {
+                if (user.isSelected) {
+                    val accessCode = if (isRoom && user.isAdmin) Access.RoomAdmin.code else shareStack.accessCode
+                    shareItems.add(RequestShareItem(shareTo = user.id, access = accessCode.toString()))
                 }
             }
 
             // Get groups access list
-            for (item in shareStack.groupSet) {
-                if (item.isSelected) {
-                    val idItem = item.id
+            for (group in shareStack.groupSet) {
+                if (group.isSelected) {
                     val accessCode = shareStack.accessCode
-                    shareItems.add(RequestShareItem(shareTo = idItem, access = accessCode.toString()))
+                    shareItems.add(RequestShareItem(shareTo = group.id, access = accessCode.toString()))
                 }
             }
+
             if (shareItems.isNotEmpty()) {
                 val message = shareStack.message
                 return RequestShare(
                     share = shareItems,
                     isNotify = !message.isNullOrEmpty(),
-                    sharingMessage = message ?: ""
+                    sharingMessage = message.orEmpty()
                 )
             }
+
             return null
         }
 
@@ -227,7 +220,9 @@ class AddPresenter(
     private fun getOptions(value: String, isGroup: Boolean = false): Map<String, String> =
         mapOf(
             ApiContract.Parameters.ARG_FILTER_VALUE to value,
-            ApiContract.Parameters.ARG_FILTER_BY to if (isGroup) ApiContract.Parameters.VAL_SORT_BY_NAME else ApiContract.Parameters.VAL_SORT_BY_DISPLAY_NAME,
+            ApiContract.Parameters.ARG_FILTER_BY to if (isGroup)
+                ApiContract.Parameters.VAL_SORT_BY_NAME else
+                ApiContract.Parameters.VAL_SORT_BY_DISPLAY_NAME,
             ApiContract.Parameters.ARG_FILTER_OP to ApiContract.Parameters.VAL_FILTER_OP_CONTAINS
         )
 
@@ -240,16 +235,27 @@ class AddPresenter(
         }
     }
 
-    val shared: Unit
-        get() {
-            presenterScope.launch {
-                if (type == AddFragment.Type.USERS) {
-                    getUsers()
-                } else {
-                    getGroups()
+    fun fetchSharedList(searchValue: String = "") {
+        presenterScope.launch {
+            when (type) {
+                Type.Common -> {
+                    shareStack.clearModel()
+                    shareStack.addGroups(getGroups(searchValue))
+                    shareStack.addUsers(getUsers(searchValue))
+                    viewState.onGetCommon(commonList)
+                }
+                Type.Groups -> {
+                    shareStack.addGroups(getGroups(searchValue))
+                    viewState.onGetGroups(groupListItems)
+                }
+                Type.Users -> {
+                    shareStack.clearModel()
+                    shareStack.addUsers(getUsers(searchValue))
+                    viewState.onGetUsers(userListItems)
                 }
             }
         }
+    }
 
     fun shareItem() {
         presenterScope.launch {
@@ -260,73 +266,21 @@ class AddPresenter(
         }
     }
 
-    /*
-    * Update states
-    * */
     fun updateTypeSharedListState() {
         when (type) {
-            AddFragment.Type.USERS -> viewState.onGetUsers(userListItems)
-            AddFragment.Type.GROUPS -> viewState.onGetGroups(groupListItems)
-            else -> {}
+            Type.Common -> viewState.onGetCommon(commonList)
+            Type.Groups -> viewState.onGetGroups(groupListItems)
+            Type.Users -> viewState.onGetUsers(userListItems)
         }
-    }
-
-    fun updateCommonSharedListState() {
-        viewState.onGetCommon(commonList)
     }
 
     fun updateSearchState() {
         viewState.onSearchValue(searchValue)
     }
 
-    /*
-    * Getters/Setters
-    * */
-
-    private val userListItems: List<UserUi>
-        get() = shareStack.userSet.toMutableList().sortedBy { it.displayName }
-
-    private val groupListItems: List<GroupUi>
-        get() = shareStack.groupSet.toMutableList().sortedWith(groupComparator())
-
-    val countChecked: Int
-        get() = shareStack.countChecked
-
-    fun isSelectedAll(type: AddFragment.Type): Boolean {
-        return if (shareStack.userSet.size > 0 || shareStack.groupSet.size > 0) {
-            when (type) {
-                AddFragment.Type.USERS ->
-                    shareStack.userSet.filter { it.isSelected }.size == shareStack.userSet.size
-                AddFragment.Type.GROUPS ->
-                    shareStack.groupSet.filter { it.isSelected }.size == shareStack.groupSet.size
-                else -> {
-                    false
-                }
-            }
-        } else {
-            false
-        }
-    }
-
-    fun isSelected(type: AddFragment.Type): Boolean {
-        return when (type) {
-            AddFragment.Type.USERS -> shareStack.userSet.any { it.isSelected }
-            AddFragment.Type.GROUPS -> shareStack.groupSet.any { it.isSelected }
-            else -> {
-                false
-            }
-        }
-    }
-
     fun resetChecked() {
         shareStack.resetChecked()
     }
-
-    var accessCode: Int
-        get() = shareStack.accessCode
-        set(accessCode) {
-            shareStack.accessCode = accessCode
-        }
 
     fun setMessage(message: String?) {
         shareStack.message = message
@@ -337,7 +291,7 @@ class AddPresenter(
         job?.cancel()
         job = presenterScope.launch {
             delay(350L)
-            getFilter(searchValue.orEmpty())
+            fetchSharedList(searchValue.orEmpty())
         }
     }
 }

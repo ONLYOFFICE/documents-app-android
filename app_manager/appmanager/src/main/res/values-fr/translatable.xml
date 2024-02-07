@@ -504,24 +504,15 @@
     <string name="share_invite_user">Inviter des utilisateurs</string>
     <string name="storage_web_dav_settings_server">Serveur</string>
     <string name="storage_web_dav_settings_required">Obligatoire</string>
-    <string name="context_room_archive">Archive</string>
     <string name="context_room_archive_message">Salle déplacée vers l\'archive</string>
     <string name="context_rooms_archive_message">Salles déplacées vers l\'archive</string>
-    <string name="context_room_unarchive">Déplacer à partir de l\'archive</string>
-    <string name="context_room_unarchive_message">Salle retirée de l\'archive</string>
     <string name="list_context_pin_to_top">Épingler en haut</string>
     <string name="list_rooms_title">Salles</string>
     <string name="list_context_unpin">Désépingler</string>
     <string name="list_context_info">Info</string>
     <string name="list_context_add_users">Ajouter des utilisateurs</string>
-    <string name="rooms_add_filling_forms">Salle de remplissage de formulaires</string>
-    <string name="rooms_add_filling_forms_des">Créez, partagez et remplissez des modèles de documents ou utilisez les modèles prêts à l\'emploi pour créer rapidement des documents de tout type</string>
     <string name="rooms_add_collaboration">Salle de collaboration</string>
     <string name="rooms_add_collaboration_des">Collaborez avec votre équipe sur un ou plusieurs documents</string>
-    <string name="rooms_add_review">Salle de révision</string>
-    <string name="rooms_add_review_des">Demandez une révision ou des commentaires sur les documents</string>
-    <string name="rooms_add_view_only">Salle de lecture seule</string>
-    <string name="rooms_add_view_only_des">Partagez les documents prêts à l\'emploi, les rapports, la documentation et autres fichiers pour les afficher</string>
     <string name="rooms_add_custom">Salle personnalisée</string>
     <string name="rooms_add_custom_des">Appliquez vos propres paramètres pour utiliser cette salle à des fins personnalisées</string>
     <string name="rooms_filter_type_filling_forms">Remplissage de formulaires</string>
@@ -583,4 +574,89 @@
     <string name="share_expected_member">Membres attendus</string>
     <string name="app_settings_main_help">Aide</string>
     <string name="clear_recents">"Supprimer les récents ?"</string>
+    <string name="list_context_leave_room">Quitter la salle</string>
+    <string name="list_context_copy_general_link">Copier le lien général</string>
+    <string name="list_context_edit_room">Modifier la salle</string>
+    <string name="list_action_image_from_library">Image à partir de la bibliothèque</string>
+    <string name="list_action_delete_link">Supprimer le lien</string>
+    <string name="placeholder_other_accounts">Aucun autre compte ici pour le moment</string>
+    <string name="context_room_move_to_archive">Déplacer dans l\'achive</string>
+    <plurals name="context_rooms_unarchive_message">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Salle restaurée avec succès</item>
+        <item quantity="other">Salles restaurées avec succès</item>
+        <item quantity="many">Salles restaurées avec succès</item>
+
+    </plurals>
+    <string name="rooms_choose_room">Choisir le type de salle</string>
+    <string name="room_name_hint">Nom de la salle</string>
+    <string name="room_add_tag_hint">Ajouter une étiquette</string>
+    <string name="rooms_error_name">Le nom de la salle ne peut pas être vide</string>
+    <string name="rooms_error_create">Erreur de création d\'une salle</string>
+    <string name="rooms_error_edit">Erreur d\'édition de la salle</string>
+    <string name="leave_room_title">Quitter la salle</string>
+    <string name="leave_room_owner_desc">Vous êtes le propriétaire de cette salle. Avant de quitter la salle, vous devez transférer le rôle du propriétaire à un autre utilisateur.</string>
+    <string name="leave_room_desc">Voulez-vous vraiment quitter cette salle ? Vous pourrez le rejoindre à nouveau via une nouvelle invitation d\'un administrateur de la salle.</string>
+    <string name="leave_room_assign">Attribuer un propriétaire</string>
+    <string name="leave_room_message">Vous avez quitté la salle</string>
+    <string name="room_set_owner_title">Changer le propriétaire de la salle</string>
+    <string name="room_search_not_found">Aucun utilisateur trouvé</string>
+    <string name="room_search_not_found_desc">La liste des utilisateurs précédemment invités à DocSpace ou à des salles séparées apparaît ici.</string>
+
+    <plurals name="rooms_restore_title">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Restaurer la salle ?</item>
+        <item quantity="other">Restaurer les salles ?</item>
+        <item quantity="many">Restaurer les salles ?</item>
+    </plurals>
+
+    <plurals name="rooms_restore_desc">
+        <item quantity="one" tools:ignore="ImpliedQuantity">Tous les liens partagés de la salle deviendront actifs et leur contenu sera accessible à tous ceux qui possèdent le lien. Voulez-vous restaurer la salle ?</item>
+        <item quantity="other">Tous les liens partagés dans les salles deviendront actifs et leur contenu sera accessible à tous les utilisateurs du lien. Voulez-vous restaurer les salles ?</item>
+        <item quantity="many">Tous les liens partagés dans les salles deviendront actifs et leur contenu sera accessible à tous les utilisateurs du lien. Voulez-vous restaurer les salles ?</item>
+    </plurals>
+    <string name="rooms_add_public_room">Salle publique</string>
+    <string name="rooms_add_public_room_des">Invitez les utilisateurs par via des liens partagés à consulter les documents sans inscription. Vous pouvez également intégrer cette salle dans n\'importe quelle interface web.</string>
+    <string name="rooms_move_to_public_title">Déplacer dans la salle publique</string>
+    <string name="rooms_move_to_public_title_desc">Cette salle et tout son contenu sont accessibles à toute personne disposant du lien. Voulez-vous continuer ?</string>
+    <string name="rooms_info_access_desc">Cette salle est accessible à toute personne possédant le lien. Les utilisateurs externes auront le droit de consulter uniquement tous les fichiers.</string>
+    <string name="rooms_info_general_link">Lien général</string>
+    <string name="rooms_info_additional_link">Lien supplémentaire</string>
+    <string name="rooms_info_additional_links">"Liens supplémentaires (%d/%d)"</string>
+    <string name="rooms_info_create_link">Créer et copier</string>
+    <string name="rooms_info_create_link_complete">Lien créé avec succès et copié dans le presse-papiers</string>
+    <string name="rooms_info_delete_link">Supprimer le lien</string>
+    <string name="rooms_info_delete_link_complete">Lien supprimé</string>
+    <string name="rooms_info_delete_link_desc">Le lien sera définitivement supprimé. Vous ne pourrez pas annuler cette action.</string>
+    <string name="rooms_info_revoke_link">Révoquer le lien</string>
+    <string name="rooms_info_revoke_link_desc">Le lien précédent devient indisponible. Un nouveau lien général sera créé.</string>
+    <string name="rooms_info_revoke_link_complete">Le lien a été révoqué</string>
+    <string name="rooms_info_revoke">Révoquer</string>
+    <string name="rooms_info_copy_link">Copier le lien</string>
+    <string name="rooms_info_copy_link_and_password">Copier le lien et le mot de passe</string>
+    <string name="rooms_info_copy_link_to_clipboard">Lien copié avec succès dans le presse-papiers</string>
+    <string name="rooms_info_admin_title">Administration (%d)</string>
+    <string name="rooms_info_users_title">Utilisateurs (%1d)</string>
+    <string name="rooms_info_expected_title">Utilisateurs attendus (%1d)</string>
+    <string name="rooms_info_link_expired">Le lien a expiré</string>
+    <string name="rooms_info_link_expired_full">Le lien a expiré et a été désactivé</string>
+    <string name="rooms_info_link_name">Nom du lien</string>
+    <string name="rooms_info_password_access">Accès par mot de passe</string>
+    <string name="rooms_info_file_rectrict">Restreindre la copie du contenu des fichiers, le téléchargement et l\'impression</string>
+    <string name="rooms_info_file_rectrict_desc">Activez ce paramètre pour désactiver les téléchargements de fichiers et de dossiers de cette salle partagés via un lien</string>
+    <string name="rooms_info_time_limit_title">Délai</string>
+    <string name="rooms_info_time_limit">Activer le délai</string>
+    <string name="rooms_info_valid_through">Valable jusqu\'au</string>
+    <string name="rooms_info_save_link_title">Sauvegarder le lien</string>
+    <string name="rooms_info_save_link_question">Êtes-vous sûr de vouloir sauvegarder et quitter ?</string>
+    <string name="rooms_info_save_button">Sauvegarder</string>
+    <string name="rooms_info_dont_save_button">Ne pas sauvegarder</string>
+    <string name="rooms_filter_type_public">Publique</string>
+    <string name="share_access_room_owner">Propriétaire</string>
+    <string name="settings_language_confirmation_message">Maintenant, l\'application utilise la langue anglaise parce que la langue du système a changé</string>
+    <string name="settings_language_confirmation_accept">Bien</string>
+    <string name="settings_language_continue_using_app_language">Continuer à utiliser %1$s</string>
+    <string name="conversion_dialog_title">Convertir et ouvrir le document</string>
+    <string name="conversion_dialog_message">Le document que vous ouvrez n\'est pas un fichier OOXML (Office Open XML). Convertissez-le au format OOXML pour une lecture et une modification plus rapides.</string>
+    <string name="conversion_dialog_open_in_view_mode">Ouvrir en mode affichage</string>
+    <string name="conversion_dialog_convert_to">Convertir en %1s</string>
+    <string name="conversion_dialog_converting_to">Conversion en %1s</string>
 </resources>

@@ -7,7 +7,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -18,12 +23,14 @@ import lib.compose.ui.theme.ManagerTheme
 fun AppSwitchItem(
     modifier: Modifier = Modifier,
     title: String,
+    titleColor: Color = MaterialTheme.colors.onSurface,
     checked: Boolean,
     subtitle: String? = null,
     enabled: Boolean = true,
     @DrawableRes startIcon: Int? = null,
     startIconTint: Color = MaterialTheme.colors.primary,
     dividerVisible: Boolean = true,
+    singleLine: Boolean = true,
     onCheck: (Boolean) -> Unit
 ) {
     var checkedState by remember { mutableStateOf(checked) }
@@ -35,11 +42,13 @@ fun AppSwitchItem(
     AppListItem(
         modifier = modifier,
         title = title,
+        titleColor = titleColor,
         subtitle = subtitle,
         startIcon = startIcon,
         startIconTint = startIconTint,
         dividerVisible = dividerVisible,
         enabled = enabled,
+        singleLine = singleLine,
         endContent = {
             Switch(
                 checked = checkedState,
@@ -68,6 +77,7 @@ fun AppSwitchItem(
     @DrawableRes startIcon: Int? = null,
     startIconTint: Color = MaterialTheme.colors.primary,
     dividerVisible: Boolean = true,
+    singleLine: Boolean = true,
     onCheck: (Boolean) -> Unit
 ) {
     AppSwitchItem(
@@ -76,6 +86,7 @@ fun AppSwitchItem(
         subtitle = subtitle?.let { stringResource(it) },
         checked = checked,
         enabled = enabled,
+        singleLine = singleLine,
         startIcon = startIcon,
         startIconTint = startIconTint,
         dividerVisible = dividerVisible,
@@ -90,7 +101,12 @@ private fun AppSwitchItemPreview() {
         Surface {
             Column {
                 AppSwitchItem(title = "1231231231", checked = true) {}
-                AppSwitchItem(title = "1231231231", checked = true, enabled = false) {}
+                AppSwitchItem(
+                    title = "1231231232131231231231231212312312311231",
+                    singleLine = false,
+                    checked = true,
+                    enabled = false
+                ) {}
                 AppSwitchItem(title = "1231231231", checked = true) {}
             }
         }

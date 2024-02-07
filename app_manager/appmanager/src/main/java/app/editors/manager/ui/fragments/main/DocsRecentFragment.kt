@@ -38,10 +38,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.LaunchActivityForResult
+import lib.toolkit.base.managers.utils.RequestPermissions
+import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.TimeUtils
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
-import java.util.*
+import java.util.Date
 
 class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
@@ -63,8 +67,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                 title = recent.name
                 fileExst = recent.name.split(".").let { if (it.size > 1) it[it.size - 1] else "" }
             },
-            section = ApiContract.Section.Recent,
-            folderAccess = ApiContract.Access.ReadWrite,
+            sectionType = ApiContract.Section.Recent.type,
             headerInfo = "${if (recent.isLocal) getString(R.string.this_device) else recent.source}" +
                     getString(R.string.placeholder_point) +
                     TimeUtils.formatDate(Date(recent.date))
@@ -274,7 +277,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            ExplorerContextItem.Edit -> presenter.fileClick()
+            is ExplorerContextItem.Edit -> presenter.fileClick()
             is ExplorerContextItem.Delete -> presenter.deleteRecent()
             else -> super.onContextButtonClick(contextItem)
         }

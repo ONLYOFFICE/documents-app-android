@@ -2,11 +2,10 @@ package app.editors.manager.mvp.presenters.base
 
 import android.content.Context
 import android.util.Log
-import app.documents.core.storage.account.AccountDao
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.storage.account.AccountDao
 import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
-import app.editors.manager.managers.exceptions.NoConnectivityException
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.models.states.OperationsState
@@ -172,9 +171,6 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
      * */
     protected fun onFailureHandle(error: Throwable) {
         when (error) {
-            is NoConnectivityException -> {
-                viewState.onError(context.getString(R.string.errors_connection_error))
-            }
             is UnknownHostException -> {
                 viewState.onError(context.getString(R.string.errors_unknown_host_error))
             }

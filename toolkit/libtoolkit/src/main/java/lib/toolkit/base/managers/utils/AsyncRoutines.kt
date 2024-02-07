@@ -1,6 +1,8 @@
 package lib.toolkit.base.managers.utils
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.coroutines.CoroutineContext
 
 class AsyncRoutines(backgroundContext: CoroutineContext = Dispatchers.Default) {
@@ -42,4 +44,17 @@ class AsyncRoutines(backgroundContext: CoroutineContext = Dispatchers.Default) {
             mScope = MainScope()
         }
     }
+}
+
+fun <T> Flow<T>.mutableStateIn(
+    scope: CoroutineScope,
+    initialValue: T
+): MutableStateFlow<T> {
+    val flow = MutableStateFlow(initialValue)
+
+    scope.launch {
+        this@mutableStateIn.collect(flow)
+    }
+
+    return flow
 }

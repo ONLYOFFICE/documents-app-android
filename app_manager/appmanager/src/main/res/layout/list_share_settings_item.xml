@@ -53,22 +53,21 @@
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/contextBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             app:barrierDirection="start"
-            app:constraint_referenced_ids="list_share_settings_owner, list_share_settings_context_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
+            app:constraint_referenced_ids="list_share_settings_owner, list_share_settings_context_layout" />
 
-        <include
+        <app.editors.manager.ui.views.custom.AccessIconButton
             android:id="@+id/list_share_settings_context_layout"
-            layout="@layout/include_button_popup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/screen_margin_large"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            app:layout_constraintTop_toTopOf="parent"
+            style="@style/Widget.Common.Button.IconButton.Secondary"
+            android:layout_marginEnd="@dimen/default_margin_large"
+            android:visibility="gone"
+            app:icon="@drawable/ic_access_deny"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:visibility="gone" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/list_share_settings_owner"

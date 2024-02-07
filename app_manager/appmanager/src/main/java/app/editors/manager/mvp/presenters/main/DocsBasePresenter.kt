@@ -17,6 +17,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.UploadFile
@@ -33,7 +34,6 @@ import app.documents.core.storage.recent.RecentDao
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.managers.exceptions.NoConnectivityException
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
@@ -188,6 +188,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     val currentFolderAccess: ApiContract.Access
         get() = ApiContract.Access.get(modelExplorerStack.currentFolderAccess)
 
+    val currentFolder: Current?
+        get() = modelExplorerStack.last()?.current
+
     override fun onDestroy() {
         super.onDestroy()
         disposable.clear()
@@ -292,7 +295,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
         modelExplorerStack.currentId?.let { id ->
             val requestCreate = RequestCreate().apply {
-                this.title = title?.takeIf { title.isNotEmpty() } ?: context.getString(R.string.dialogs_edit_create_docs)
+                this.title =
+                    title?.takeIf { title.isNotEmpty() } ?: context.getString(R.string.dialogs_edit_create_docs)
             }
 
             fileProvider?.let { provider ->
@@ -464,10 +468,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         modelExplorerStack.currentId?.also { destFolder ->
             destFolderId = destFolder
             operationStack?.let { stack ->
-                if (destFolder == stack.currentId) {
-                    viewState.onError(context.getString(R.string.operation_error_move_to_same))
-                    return false
-                }
                 if (stack.selectedItems > 0) {
                     if (isContainsPathInPath(stack.selectedFoldersIds)) {
                         viewState.onError(context.getString(R.string.operation_error_move_to_same_subfolder))
@@ -555,11 +555,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         modelExplorerStack.currentId?.also { destFolder ->
             destFolderId = destFolder
             operationStack?.let { stack ->
-                if (destFolder == stack.currentId) {
-                    viewState.onError(context.getString(R.string.operation_error_move_to_same))
-                    return false
-                }
-
                 if (stack.selectedItems > 0) {
                     if (isContainsPathInPath(stack.selectedFoldersIds)) {
                         viewState.onError(context.getString(R.string.operation_error_move_to_same_subfolder))
@@ -614,15 +609,18 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     open fun download(downloadTo: Uri) {
-        if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
-            viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
-        } else if (modelExplorerStack.countSelectedItems > 0) {
-            downloadSelected(downloadTo)
-        } else {
-            itemClicked?.let { item ->
-                when (item) {
-                    is CloudFolder -> bulkDownload(null, listOf(item), downloadTo)
-                    is CloudFile -> startDownloadWork(downloadTo, item.id, item.viewUrl, null)
+        viewState.checkNotificationPermission {
+            if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
+                viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
+            } else if (modelExplorerStack.countSelectedItems > 0) {
+                downloadSelected(downloadTo)
+            } else {
+                itemClicked?.let { item ->
+
+                    when (item) {
+                        is CloudFolder -> bulkDownload(null, listOf(item), downloadTo)
+                        is CloudFile -> startDownloadWork(downloadTo, item.id, item.viewUrl, null)
+                    }
                 }
             }
         }
@@ -807,22 +805,25 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     protected open fun Map<String, String>.putFilters(): Map<String, String> {
-        val filter = preferenceTool.filter
         return plus(
             mutableMapOf<String, String>().apply {
-                put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
-                if (filter.type != FilterType.None || isFilteringMode && filteringValue.isNotEmpty())
-                    put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
-                if (App.getApp().accountOnline?.isPersonal() == false) {
-                    if (ApiContract.SectionType.isRoom(currentSectionType)) {
-                        put(ApiContract.Parameters.ARG_FILTER_BY_SUBJECT_ID, filter.author.id)
-                    } else {
+                val filter = preferenceTool.filter
+                if (ApiContract.SectionType.isRoom(currentSectionType) && isRoot) {
+                    if (filter.roomType != RoomFilterType.None) {
+                        put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filter.roomType.filterVal.toString())
+                    }
+                    put(ApiContract.Parameters.ARG_FILTER_BY_SUBJECT_ID, filter.author.id)
+                } else {
+                    put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
+                    if (filter.type != FilterType.None || isFilteringMode && filteringValue.isNotEmpty()) {
+                        put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
+                    }
+                    if (App.getApp().accountOnline?.isPersonal() == false) {
                         put(ApiContract.Parameters.ARG_FILTER_BY_AUTHOR, filter.author.id)
                     }
                 }
-                if (filter.roomType != RoomFilterType.None)
-                    put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filter.roomType.filterVal.toString())
-            })
+            }
+        )
     }
 
     private fun cancelGetRequests() {
@@ -914,121 +915,119 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * */
 
     protected fun getListWithHeaders(explorer: Explorer?, isResetHeaders: Boolean): List<Entity> {
-        explorer?.let {
-            val entityList: MutableList<Entity> = mutableListOf()
+        if (explorer == null) return emptyList()
+        val entityList: MutableList<Entity> = mutableListOf()
 
-            // Reset headers, when new list
-            if (isResetHeaders) {
-                resetDatesHeaders()
+        // Reset headers, when new list
+        if (isResetHeaders) {
+            resetDatesHeaders()
+        }
+
+        UploadWork.getUploadFiles(modelExplorerStack.currentId)?.let { uploadFiles ->
+            if (uploadFiles.size != 0) {
+                entityList.add(Header(context.getString(R.string.upload_manager_progress_title)))
+                entityList.addAll(uploadFiles)
             }
+        }
 
-            UploadWork.getUploadFiles(modelExplorerStack.currentId)?.let { uploadFiles ->
-                if (uploadFiles.size != 0) {
-                    entityList.add(Header(context.getString(R.string.upload_manager_progress_title)))
-                    entityList.addAll(uploadFiles)
+        // Set folders headers
+        if (explorer.folders.isNotEmpty()) {
+            if (!isFolderHeader) {
+                isFolderHeader = true
+
+                val header = if (isRoot && currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM) {
+                    Header(context.getString(R.string.list_rooms_title))
+                } else {
+                    Header(context.getString(R.string.list_headers_folder))
                 }
+                entityList.add(header)
             }
+            entityList.addAll(explorer.folders)
+        }
 
-            // Set folders headers
-            if (explorer.folders.isNotEmpty()) {
-                if (!isFolderHeader) {
-                    isFolderHeader = true
+        // Set files headers
+        if (explorer.files.isNotEmpty() && !isFoldersMode) {
+            val sortBy = preferenceTool.sortBy
+            val sortOrder = preferenceTool.sortOrder
+            val fileList = explorer.files
 
-                    val header = if (isRoot && currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM) {
-                        Header(context.getString(R.string.list_rooms_title))
+            if (ApiContract.Parameters.VAL_SORT_BY_UPDATED == sortBy) { // For date sort add times headers
+                val todayMs = TimeUtils.todayMs
+                val yesterdayMs = TimeUtils.yesterdayMs
+                val weekMs = TimeUtils.weekMs
+                val monthMs = TimeUtils.monthMs
+                val yearMs = TimeUtils.yearMs
+                var itemMs: Long
+
+                // Set time headers
+                fileList.sortWith { o1: CloudFile, o2: CloudFile -> o1.updated.compareTo(o2.updated) }
+
+                if (sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_DESC) {
+                    fileList.reverse()
+                }
+
+                for (item in fileList) {
+                    itemMs = item.updated.time
+
+                    // Check created property
+                    if (item.isJustCreated) {
+                        if (!isCreatedHeader) {
+                            isCreatedHeader = true
+                            entityList.add(Header(context.getString(R.string.list_headers_created)))
+                        }
                     } else {
-                        Header(context.getString(R.string.list_headers_folder))
-                    }
-                    entityList.add(header)
-                }
-                entityList.addAll(explorer.folders)
-            }
 
-            // Set files headers
-            if (explorer.files.isNotEmpty() && !isFoldersMode) {
-                val sortBy = preferenceTool.sortBy
-                val sortOrder = preferenceTool.sortOrder
-                val fileList = explorer.files
-
-                if (ApiContract.Parameters.VAL_SORT_BY_UPDATED == sortBy) { // For date sort add times headers
-                    val todayMs = TimeUtils.todayMs
-                    val yesterdayMs = TimeUtils.yesterdayMs
-                    val weekMs = TimeUtils.weekMs
-                    val monthMs = TimeUtils.monthMs
-                    val yearMs = TimeUtils.yearMs
-                    var itemMs: Long
-
-                    // Set time headers
-                    fileList.sortWith { o1: CloudFile, o2: CloudFile -> o1.updated.compareTo(o2.updated) }
-
-                    if (sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_DESC) {
-                        fileList.reverse()
-                    }
-
-                    for (item in fileList) {
-                        itemMs = item.updated.time
-
-                        // Check created property
-                        if (item.isJustCreated) {
-                            if (!isCreatedHeader) {
-                                isCreatedHeader = true
-                                entityList.add(Header(context.getString(R.string.list_headers_created)))
+                        // Check time intervals
+                        if (itemMs >= todayMs) {
+                            if (!isTodayHeader) {
+                                isTodayHeader = true
+                                entityList.add(Header(context.getString(R.string.list_headers_today)))
                             }
-                        } else {
-
-                            // Check time intervals
-                            if (itemMs >= todayMs) {
-                                if (!isTodayHeader) {
-                                    isTodayHeader = true
-                                    entityList.add(Header(context.getString(R.string.list_headers_today)))
-                                }
-                            } else if (itemMs in (yesterdayMs + 1) until todayMs) {
-                                if (!isYesterdayHeader) {
-                                    isYesterdayHeader = true
-                                    entityList.add(Header(context.getString(R.string.list_headers_yesterday)))
-                                }
-                            } else if (itemMs in (weekMs + 1) until yesterdayMs) {
-                                if (!isWeekHeader) {
-                                    isWeekHeader = true
-                                    entityList.add(Header(context.getString(R.string.list_headers_week)))
-                                }
-                            } else if (itemMs in (monthMs + 1) until weekMs) {
-                                if (!isMonthHeader) {
-                                    isMonthHeader = true
-                                    entityList.add(Header(context.getString(R.string.list_headers_month)))
-                                }
-                            } else if (itemMs in (yearMs + 1) until monthMs) {
-                                if (!isYearHeader) {
-                                    isYearHeader = true
-                                    entityList.add(Header(context.getString(R.string.list_headers_year)))
-                                }
-                            } else if (itemMs < yearMs) {
-                                if (!isMoreYearHeader) {
-                                    isMoreYearHeader = true
-                                    entityList.add(Header(context.getString(R.string.list_headers_more_year)))
-                                }
+                        } else if (itemMs in (yesterdayMs + 1) until todayMs) {
+                            if (!isYesterdayHeader) {
+                                isYesterdayHeader = true
+                                entityList.add(Header(context.getString(R.string.list_headers_yesterday)))
+                            }
+                        } else if (itemMs in (weekMs + 1) until yesterdayMs) {
+                            if (!isWeekHeader) {
+                                isWeekHeader = true
+                                entityList.add(Header(context.getString(R.string.list_headers_week)))
+                            }
+                        } else if (itemMs in (monthMs + 1) until weekMs) {
+                            if (!isMonthHeader) {
+                                isMonthHeader = true
+                                entityList.add(Header(context.getString(R.string.list_headers_month)))
+                            }
+                        } else if (itemMs in (yearMs + 1) until monthMs) {
+                            if (!isYearHeader) {
+                                isYearHeader = true
+                                entityList.add(Header(context.getString(R.string.list_headers_year)))
+                            }
+                        } else if (itemMs < yearMs) {
+                            if (!isMoreYearHeader) {
+                                isMoreYearHeader = true
+                                entityList.add(Header(context.getString(R.string.list_headers_more_year)))
                             }
                         }
-                        entityList.add(item)
                     }
-                } else {
-                    if (!isFileHeader) {
-                        isFileHeader = true
-                        entityList.add(Header(context.getString(R.string.list_headers_files)))
-                    }
-                    entityList.addAll(fileList)
+                    entityList.add(item)
                 }
-            }
-
-            if (isFilteringMode) {
-                setPlaceholderType(if (entityList.isEmpty()) PlaceholderViews.Type.SEARCH else PlaceholderViews.Type.NONE)
             } else {
-                setPlaceholderType(if (entityList.isEmpty()) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                if (!isFileHeader) {
+                    isFileHeader = true
+                    entityList.add(Header(context.getString(R.string.list_headers_files)))
+                }
+                entityList.addAll(fileList)
             }
-
-            return entityList
         }
-        return emptyList()
+
+        if (isFilteringMode) {
+            setPlaceholderType(if (entityList.isEmpty()) PlaceholderViews.Type.SEARCH else PlaceholderViews.Type.NONE)
+        } else {
+            setPlaceholderType(if (entityList.isEmpty()) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+        }
+
+        return entityList
     }
 
     /**
@@ -1216,7 +1215,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         } ?: Explorer()
     }
 
-    protected open fun openFolder(id: String?, position: Int) {
+    open fun openFolder(id: String?, position: Int) {
         modelExplorerStack.listPosition = position
         viewState.onSwipeEnable(true)
         getItemsById(id)
@@ -1521,10 +1520,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     private fun onFailureHandle(throwable: Throwable?) {
         when (throwable) {
-            is NoConnectivityException -> {
-                viewState.onError(context.getString(R.string.errors_connection_error))
-                onNetworkHandle()
-            }
             is UnknownHostException -> {
                 viewState.onError(context.getString(R.string.errors_unknown_host_error))
             }
@@ -1622,6 +1617,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         sendDisposable?.dispose()
     }
 
+    fun clearDisposable() {
+        disposable.clear()
+    }
+
     protected fun checkSdkVersion(version: String? = null, result: (isCoauthoring: Boolean) -> Unit) {
         FirebaseUtils.getSdk { pair ->
             if (!pair.first) {
@@ -1694,6 +1693,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         const val TAG_DIALOG_CANCEL_UPLOAD = "TAG_DIALOG_CANCEL_UPLOAD"
         const val TAG_DIALOG_CANCEL_SINGLE_OPERATIONS = "TAG_DIALOG_CANCEL_SINGLE_OPERATIONS"
         const val TAG_DIALOG_CANCEL_BATCH_OPERATIONS = "TAG_DIALOG_CANCEL_BATCH_OPERATIONS"
+        const val TAG_DIALOG_CANCEL_CONVERSION = "TAG_DIALOG_CANCEL_CONVERSION"
+        const val TAG_DIALOG_CLEAR_DISPOSABLE = "TAG_DIALOG_CLEAR_DISPOSABLE"
+        const val TAG_DIALOG_MOVE_TO_PUBLIC = "TAG_DIALOG_MOVE_TO_PUBLIC"
 
         /**
          * Requests values

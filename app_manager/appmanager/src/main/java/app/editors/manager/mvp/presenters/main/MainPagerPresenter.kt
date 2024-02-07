@@ -138,7 +138,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 Json.decodeFromString(CryptUtils.decodeUri(fileData?.query))
             }
             preferenceTool.fileData = ""
-            if (dataModel.portal?.equals(
+            if (dataModel.getPortalWithoutScheme()?.equals(
                     account.portal,
                     ignoreCase = true
                 ) == true && dataModel.email?.equals(

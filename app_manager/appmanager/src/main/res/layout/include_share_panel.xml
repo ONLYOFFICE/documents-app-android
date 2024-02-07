@@ -14,8 +14,8 @@
         android:paddingBottom="8dp">
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Common.TextInputLayout.Surface"
             android:id="@+id/share_panel_message_edit_layout"
+            style="@style/Widget.Common.TextInputLayout.Surface"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/screen_margin_large"
@@ -41,26 +41,20 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_panel_reset_button"
             style="@style/Widget.Common.Button.IconButton.Secondary"
-            android:layout_width="@dimen/image_size"
-            android:layout_height="@dimen/image_size"
             android:layout_marginStart="@dimen/screen_margin_large"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="false"
-            android:padding="@dimen/image_padding_icon"
             app:icon="@drawable/ic_access_panel_close"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout"
-            app:tint="@color/colorOnSurface"
             tools:ignore="ContentDescription" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/share_panel_count_selected_text"
             style="@style/Widget.Common.TextView.Secondary"
-            android:layout_width="@dimen/image_size"
-            android:layout_height="@dimen/image_size"
-            android:layout_marginStart="@dimen/screen_margin_medium"
+            android:layout_width="@dimen/item_one_line_height"
+            android:layout_height="@dimen/item_one_line_height"
             android:gravity="center"
+            android:includeFontPadding="false"
             android:text="0"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -70,12 +64,10 @@
             app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout"
             tools:ignore="HardcodedText" />
 
-        <include
+        <app.editors.manager.ui.views.custom.AccessIconButton
             android:id="@+id/button_popup_layout"
-            layout="@layout/include_button_popup"
-            android:layout_width="@dimen/image_size"
-            android:layout_height="@dimen/image_size"
-            android:layout_marginStart="@dimen/screen_margin_medium"
+            style="@style/Widget.Common.Button.IconButton.Secondary"
+            app:icon="@drawable/ic_access_deny"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/share_panel_count_selected_text"
             app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout" />
@@ -83,10 +75,6 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/share_panel_message_button"
             style="@style/Widget.Common.Button.IconButton.Secondary"
-            android:layout_width="@dimen/image_size"
-            android:layout_height="@dimen/image_size"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             android:padding="@dimen/image_padding_icon"
@@ -94,7 +82,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/button_popup_layout"
             app:layout_constraintTop_toBottomOf="@+id/share_panel_message_edit_layout"
-            app:tint="@color/colorOnSurface"
             tools:ignore="ContentDescription" />
 
         <com.google.android.material.button.MaterialButton
