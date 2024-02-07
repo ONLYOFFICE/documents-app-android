@@ -91,7 +91,7 @@ fun AppTextField(
                     onValueChange(value)
                 } ?: run {
                     state.value = value
-                    if (value.isEmpty()) errorState?.value = null
+                    errorState?.value = null
                 }
             },
             singleLine = singleLine,
