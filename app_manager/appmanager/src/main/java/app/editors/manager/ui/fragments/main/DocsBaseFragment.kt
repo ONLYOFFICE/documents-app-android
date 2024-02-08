@@ -14,13 +14,13 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
@@ -53,7 +53,6 @@ import app.editors.manager.ui.popup.MainPopup
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopup
 import app.editors.manager.ui.popup.SelectPopupItem
-import app.editors.manager.ui.views.custom.CommonSearchView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.CameraPicker
@@ -76,11 +75,12 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.OnCommonDialogClose
 import lib.toolkit.base.ui.dialogs.common.holders.WaitingHolder
+import lib.toolkit.base.ui.views.search.CommonSearchView
 import java.io.File
 
 abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnItemClickListener,
     OnItemContextListener, BaseAdapter.OnItemLongClickListener, ExplorerContextBottomDialog.OnClickListener,
-    ActionBottomDialog.OnClickListener, SearchView.OnQueryTextListener, DialogButtonOnClick, LifecycleObserver {
+    ActionBottomDialog.OnClickListener, DialogButtonOnClick, LifecycleObserver {
 
 
     companion object {
@@ -103,9 +103,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     protected var deleteItem: MenuItem? = null
     protected var restoreItem: MenuItem? = null
     protected var filterItem: MenuItem? = null
-    protected var searchView: SearchView? = null
-    protected var searchCloseButton: ImageView? = null
     protected var explorerAdapter: ExplorerAdapter? = null
+
+    protected var searchView: CommonSearchView? = null
 
     var actionBottomDialog: ActionBottomDialog? = null
     var moveCopyDialog: MoveCopyDialog? = null
@@ -228,23 +228,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     /*
      * Views callbacks
      * */
-    override fun onQueryTextSubmit(query: String): Boolean {
-        presenter.filter(query, true)
-        searchView?.onActionViewCollapsed()
-        return false
-    }
-
-    override fun onQueryTextChange(newText: String): Boolean {
-        val isEmpty = newText.isEmpty()
-        if (isEmpty) {
-            searchCloseButton?.alpha = 0.5f
-        } else {
-            searchCloseButton?.alpha = 1.0f
-        }
-        searchCloseButton?.isEnabled = !isEmpty
-        presenter.filterWait(newText)
-        return false
-    }
 
     override fun onItemContextClick(position: Int) {
         val item = explorerAdapter?.getItem(position) as? Item
@@ -565,22 +548,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             if (isFilter) {
                 setViewsModalState(true)
                 // Set previous text in search field
-                if (searchView?.query.toString().isEmpty()) {
-                    searchView?.setQuery(value, false)
-                }
-
-                // Set close button visibility
-                searchCloseButton?.let {
-                    val isEmpty = value?.isEmpty() ?: false
-                    it.isEnabled = !isEmpty
-                }
+                searchView?.query = value
             } else {
-                searchView?.let {
-                    it.setQuery("", false)
-                    if (!it.isIconified) {
-                        it.isIconified = true
-                    }
-                }
+                searchView?.collapse()
             }
         }
     }
@@ -615,7 +585,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     mainItem = menu.findItem(R.id.toolbar_item_main)
                     filterItem = menu.findItem(R.id.toolbar_item_filter)
                     searchItem = menu.findItem(R.id.toolbar_item_search)
-                    searchView = initSearchView(searchItem?.actionView as? SearchView)
+                    searchView = initSearchView(checkNotNull(searchItem?.actionView as? SearchView))
                     presenter.initMenuSearch()
                     presenter.initMenuState()
                 }
@@ -623,16 +593,14 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    private fun initSearchView(searchView: SearchView?): SearchView {
+    private fun initSearchView(actionView: SearchView): CommonSearchView {
         return CommonSearchView(
-            searchView = searchView,
-            isIconified = !presenter.isFilteringMode,
-            queryTextListener = this@DocsBaseFragment,
-            searchClickListener = { presenter.setFiltering(true) },
-            closeClickListener = { if (!isSearchViewClear) onBackPressed() }
-        ).also {
-            searchCloseButton = it.closeButton
-        }.build()
+            coroutineScope = lifecycleScope,
+            searchView = actionView,
+            isExpanded = presenter.isFilteringMode,
+            onQuery = presenter::filter,
+            onExpand = { presenter.setFiltering(true) },
+        )
     }
 
     override fun onStateMenuSelection() {
@@ -887,18 +855,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         (requireActivity() as? OnCommonDialogClose)?.onCommonClose()
         presenter.interruptFileSending()
     }
-
-    /*
-     * Clear SearchView
-     * */
-    private val isSearchViewClear: Boolean
-        private get() {
-            if (searchView?.query?.isNotEmpty() == true) {
-                searchView?.setQuery("", true)
-                return true
-            }
-            return false
-        }
 
     /*
      * On pager scroll callback

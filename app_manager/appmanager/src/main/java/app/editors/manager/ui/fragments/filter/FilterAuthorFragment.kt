@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.setFragmentResult
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import app.editors.manager.R
 import app.editors.manager.mvp.models.filter.Author
@@ -20,11 +20,11 @@ import app.editors.manager.ui.adapters.AuthorAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.AuthorDiffUtilsCallback
 import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
 import app.editors.manager.ui.fragments.base.ListFragment
-import app.editors.manager.ui.views.custom.CommonSearchView
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import lib.toolkit.base.ui.views.search.CommonSearchView
 import moxy.presenter.InjectPresenter
 
-class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQueryTextListener {
+class FilterAuthorFragment : ListFragment(), FilterAuthorView {
 
     companion object {
         private const val KEY_AUTHOR_ID = "key_author_id"
@@ -50,9 +50,8 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
     lateinit var presenter: FilterAuthorPresenter
 
     private var authorAdapter: AuthorAdapter? = null
-    private var searchView: SearchView? = null
+    private var searchView: CommonSearchView? = null
     private var searchItem: MenuItem? = null
-    private var searchCloseButton: ImageView? = null
     private var activity: IFilterActivity? = null
     private val dialog: IBaseDialogFragment? get() = getDialogFragment()
 
@@ -92,19 +91,18 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
         } else {
             menu.findItem(R.id.toolbar_item_search)
         }
-        searchView = initSearchView(searchItem?.actionView)
-        if (presenter.isSearchingMode) searchView?.setQuery(presenter.searchingValue, false)
+        initSearchView(checkNotNull(searchItem?.actionView as? SearchView))
     }
 
     override fun onBackPressed(): Boolean {
-        if (searchView?.isIconified == true) {
-            return false
-        } else {
-            searchView?.setQuery("", false)
-            searchView?.isIconified = true
-            presenter.isSearchingMode = false
+        return when {
+            presenter.isSearchingMode -> {
+                presenter.isSearchingMode = false
+                searchView?.collapse()
+                true
+            }
+            else -> false
         }
-        return true
     }
 
     override fun onRefresh() {}
@@ -145,6 +143,7 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
     }
 
     override fun onSearchResult(authors: List<Author>) {
+        searchItem?.isVisible = true
         authorAdapter?.itemsList?.let { oldList ->
             if (authors.isNotEmpty()) {
                 placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
@@ -170,16 +169,6 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
         message?.let(::showToast)
     }
 
-    override fun onQueryTextSubmit(query: String): Boolean {
-        return false
-    }
-
-    override fun onQueryTextChange(newText: String): Boolean {
-        setCloseButtonEnabled(newText.isNotEmpty())
-        presenter.search(newText)
-        return false
-    }
-
     private fun init() {
         swipeRefreshLayout?.isEnabled = false
         authorAdapter = AuthorAdapter(arguments?.getString(KEY_AUTHOR_ID), clickListener)
@@ -203,22 +192,14 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView, SearchView.OnQuer
         }
     }
 
-    private fun initSearchView(actionView: View?): SearchView {
-        return CommonSearchView(
-            searchView = actionView as? SearchView,
-            isIconified = !presenter.isSearchingMode,
-            queryTextListener = this@FilterAuthorFragment,
-            searchClickListener = { presenter.isSearchingMode = true },
-            closeClickListener = { searchView?.setQuery("", false) }
-        ).also {
-            searchCloseButton = it.closeButton
-            setCloseButtonEnabled(false)
-        }.build()
-    }
-
-    private fun setCloseButtonEnabled(isEnabled: Boolean) {
-        searchCloseButton?.alpha = if (isEnabled) 1f else 0.5f
-        searchCloseButton?.isEnabled = isEnabled
+    private fun initSearchView(actionView: SearchView) {
+        searchView = CommonSearchView(
+            coroutineScope = lifecycleScope,
+            searchView = actionView,
+            isExpanded = presenter.isSearchingMode,
+            onQuery = presenter::search,
+            onExpand = { presenter.isSearchingMode = true },
+        ).also { if (presenter.isSearchingMode) it.query = presenter.searchingValue }
     }
 
     private fun getAuthorList() {

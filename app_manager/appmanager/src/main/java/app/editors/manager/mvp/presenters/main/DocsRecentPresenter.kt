@@ -137,10 +137,11 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    fun searchRecent(newText: String?) {
+    override fun filter(value: String) {
+        filteringValue = value
         presenterScope.launch {
             val list = recentDao.getRecents()
-                .filter { it.name.contains(newText ?: "", true) }
+                .filter { it.name.contains(value, true) }
                 .sort()
 
             withContext(Dispatchers.Main) {
@@ -294,7 +295,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         val extension = StringUtils.getExtensionFromPath(recent.name)
         val explorerFile = CloudFile()
         explorerFile.pureContentLength = recent.size
-//        explorerFile.setId(recent.id)
+        //        explorerFile.setId(recent.id)
         explorerFile.fileExst = extension
         explorerFile.title = recent.name
         explorerFile.isClicked = true
