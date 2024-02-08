@@ -36,6 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.HttpException
@@ -423,6 +424,14 @@ class CloudFileProvider @Inject constructor(
                 }
             }
         }
+    }
+
+    fun updateDocument(id: String, body: MultipartBody.Part): Single<Boolean> {
+        return managerService.updateDocument(id, body)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).map { response ->
+                return@map response.isSuccessful
+            }
     }
 
 }
