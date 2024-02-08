@@ -97,6 +97,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 FilterActivity.REQUEST_ACTIVITY_FILTERS_CHANGED -> {
                     onRefresh()
                 }
+                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
+                    if (data?.data != null) {
+                        if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
+                            cloudPresenter.updateDocument(data.data!!)
+                        }
+                    }
+                }
             }
         }
     }
