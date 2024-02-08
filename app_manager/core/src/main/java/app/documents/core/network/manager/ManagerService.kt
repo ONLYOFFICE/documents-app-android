@@ -450,4 +450,8 @@ interface ManagerService {
         @Query(value = "start") start: Boolean
     ): ResponseConversionStatus
 
+    @Multipart
+    @PUT("api/" + ApiContract.API_VERSION + "/files/{fileId}/update")
+    fun updateDocument(@Path(value = "fileId") id: String, @Part part: MultipartBody.Part): Single<Response<ResponseBody>>
+
 }
