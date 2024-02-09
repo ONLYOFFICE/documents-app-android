@@ -15,7 +15,6 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.Toolbar
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -372,10 +371,6 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     /*
     * Action bar
     * */
-    protected fun setSupportActionBar(toolbar: Toolbar) {
-        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
-    }
-
     protected fun setActionBarTitle(title: String?) {
         if (title != null) {
             toolbarTitle = title
