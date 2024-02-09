@@ -99,9 +99,7 @@
             android:exported="true"
             android:filterTouchesWhenObscured="true"
             android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
-            android:clearTaskOnLaunch="true"
-            android:taskAffinity=""
+            android:launchMode="standard"
             android:supportsPictureInPicture="true"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|adjustPan|stateAlwaysHidden">
