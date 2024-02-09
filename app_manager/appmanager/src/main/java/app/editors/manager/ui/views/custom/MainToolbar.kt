@@ -8,9 +8,10 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import app.documents.core.storage.account.CloudAccount
+import androidx.core.view.isVisible
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.webdav.WebDavService
+import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils
 import com.bumptech.glide.Glide
@@ -43,8 +44,8 @@ class MainToolbar @JvmOverloads constructor(
         }
 
     fun showAccount(isShow: Boolean) {
-        accountContainer.visibility = if (isShow) View.VISIBLE else View.GONE
-        arrowIcon.visibility = if (isShow) View.VISIBLE else View.GONE
+        accountContainer.isVisible = isShow
+        arrowIcon.isVisible = isShow
     }
 
     fun bind(cloudAccount: CloudAccount?) {

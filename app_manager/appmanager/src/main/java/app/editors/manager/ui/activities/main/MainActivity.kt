@@ -43,8 +43,6 @@ import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
-import lib.toolkit.base.ui.views.animation.collapse
-import lib.toolkit.base.ui.views.animation.expand
 import moxy.presenter.InjectPresenter
 import java.util.*
 
@@ -695,19 +693,13 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         setAppBarMode(isVisible)
         showAccount(isVisible)
         showNavigationButton(!isVisible)
-        if (isVisible) {
-            if (!viewBinding.appBarTabs.isVisible) {
-                viewBinding.appBarLayout.postDelayed({
-                    viewBinding.appBarTabs.expand(200)
-                }, 10)
-            }
-        } else {
-            if (viewBinding.appBarTabs.isVisible) {
-                viewBinding.appBarLayout.postDelayed({
-                    viewBinding.appBarTabs.collapse()
-                }, 10)
-            }
+        viewBinding.appBarLayout.post {
+            viewBinding.appBarTabs.isVisible = isVisible
+
         }
+//        viewBinding.appBarLayout.postDelayed({
+//            viewBinding.appBarTabs.isVisible = isVisible
+//        }, 150)
     }
 
     private fun isNotification(): Boolean =

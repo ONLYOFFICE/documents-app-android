@@ -12,12 +12,14 @@
         android:id="@+id/app_bar_layout"
         style="@style/Widget.Common.AppBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
 
         <app.editors.manager.ui.views.custom.MainToolbar
             android:id="@+id/app_bar_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:animateLayoutChanges="true"
             android:minHeight="?attr/actionBarSize" />
 
         <com.google.android.material.tabs.TabLayout
