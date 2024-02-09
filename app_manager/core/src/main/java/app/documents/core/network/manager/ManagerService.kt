@@ -393,10 +393,10 @@ interface ManagerService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/@root")
-    fun getRootFolder(
+    suspend fun getRootFolder(
         @QueryMap filterMap: Map<String, Int>,
         @QueryMap flagMap: Map<String, Boolean>
-    ): Observable<ResponseCloudTree>
+    ): ResponseCloudTree
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

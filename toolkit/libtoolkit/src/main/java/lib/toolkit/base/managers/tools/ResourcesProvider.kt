@@ -3,7 +3,11 @@ package lib.toolkit.base.managers.tools
 import android.content.Context
 import android.net.Uri
 import android.text.Spanned
-import androidx.annotation.*
+import androidx.annotation.ArrayRes
+import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import lib.toolkit.base.managers.utils.ContentResolverUtils
@@ -34,11 +38,7 @@ class ResourcesProvider @Inject constructor(val context: Context) {
     }
 
     fun getLocale(): String? {
-        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            context.resources.configuration.locales[0].country
-        } else {
-            context.resources.configuration.locale.country
-        }
+        return context.resources.configuration.locales[0].country
     }
 
     fun getFileNameByUri(uri: Uri): String = ContentResolverUtils.getName(context, uri)
