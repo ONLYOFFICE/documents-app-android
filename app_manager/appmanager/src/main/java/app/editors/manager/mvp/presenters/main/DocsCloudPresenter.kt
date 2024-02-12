@@ -21,6 +21,7 @@ import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.api
 import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.app.roomProvider
@@ -49,6 +50,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.tools.LocalContentTools
+import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -634,14 +636,21 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean) {
-        disposable.add(
-            (fileProvider as CloudFileProvider).opeEdit(cloudFile).subscribe({ info ->
-                viewState.onDialogClose()
-                viewState.onOpenDocumentServer(cloudFile, info, isEdit)
-            }) { error ->
-                fetchError(error)
-            }
-        )
+        with(fileProvider as CloudFileProvider) {
+            val token = AccountUtils.getToken(context, context.accountOnline?.getAccountName().orEmpty())
+            disposable.add(
+                openDocument(cloudFile, token).subscribe({ result ->
+                    viewState.onDialogClose()
+                    if (result.isPdf) {
+                        downloadTempFile(cloudFile, false)
+                    } else if (result.info != null) {
+                        viewState.onOpenDocumentServer(cloudFile, result.info, isEdit)
+                    }
+                }) { error ->
+                    fetchError(error)
+                }
+            )
+        }
         addRecent(itemClicked as CloudFile)
     }
 

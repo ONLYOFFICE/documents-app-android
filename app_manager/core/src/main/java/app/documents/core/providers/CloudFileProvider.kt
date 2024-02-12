@@ -36,12 +36,20 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.HttpException
 import retrofit2.Response
+import java.io.InputStream
 import javax.inject.Inject
+
+
+data class OpenDocumentResult(
+    val info: String? = null,
+    val isPdf: Boolean = false
+)
 
 class CloudFileProvider @Inject constructor(
     private val managerService: ManagerService,
@@ -434,4 +442,30 @@ class CloudFileProvider @Inject constructor(
             }
     }
 
+    @SuppressLint("CheckResult")
+    fun openDocument(cloudFile: CloudFile, token: String?): Single<OpenDocumentResult> {
+        return Single.fromCallable { StringUtils.getExtension(cloudFile.fileExst) == StringUtils.Extension.PDF }
+            .flatMap { isPdf ->
+                if (isPdf) {
+                    getDownloadResponse(cloudFile, token)
+                        .subscribeOn(Schedulers.io())
+                        .flatMap { response ->
+                            if (checkOformPdf(response.body()?.byteStream())) {
+                                opeEdit(cloudFile).map { info -> OpenDocumentResult(info = info) }
+                            } else {
+                                Single.just(OpenDocumentResult(isPdf = true))
+                            }
+                        }
+                } else {
+                    opeEdit(cloudFile).map { info -> OpenDocumentResult(info = info) }
+                }
+            }
+    }
+
+    private fun checkOformPdf(inputStream: InputStream?): Boolean {
+        return ByteArray(110)
+            .apply { inputStream?.use { stream -> stream.read(this, 0, size) } }
+            .decodeToString()
+            .contains("/ONLYOFFICEFORM")
+    }
 }
