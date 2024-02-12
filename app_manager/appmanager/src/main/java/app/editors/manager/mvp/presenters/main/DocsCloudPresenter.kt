@@ -984,6 +984,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     @SuppressLint("MissingPermission")
     fun updateDocument(data: Uri) {
+        if (data.path?.isEmpty() == true) return
         context.contentResolver.openInputStream(data).use {
             val file = File(data.path)
             val body = MultipartBody.Part.createFormData(
