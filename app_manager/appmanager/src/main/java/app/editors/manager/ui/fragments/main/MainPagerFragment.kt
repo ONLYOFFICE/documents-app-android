@@ -45,7 +45,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         private const val TAG_SELECTED_PAGE = "TAG_SELECTED_PAGE"
         private const val TAG_VISIBLE = "TAG_VISIBLE"
         private const val TAG_SCROLL = "TAG_SCROLL"
-        private const val OFFSCREEN_COUNT = 2
+        private const val OFFSCREEN_COUNT = 5
 
         const val KEY_FILE_DATA = "KEY_FILE_DATA"
         const val KEY_ACCOUNT = "KEY_ACCOUNT"
