@@ -19,6 +19,7 @@
         <item name="android:supportsRtl">true</item>
         <item name="colorPrimaryContainer">@color/colorSecondary</item>
         <item name="colorOnPrimaryContainer">@color/colorSurface</item>
+        <item name="android:textColorHighlight">@color/colorSecondary30</item>
     </style>
 
     <style name="AppTheme" parent="AppBaseTheme">
