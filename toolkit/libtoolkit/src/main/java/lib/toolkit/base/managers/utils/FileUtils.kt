@@ -84,21 +84,13 @@ object FileUtils {
 
     @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
-    fun deletePath(path: File): Int {
-        var count = 0
-        if (path.isDirectory) {
-            path.listFiles()?.forEach {
-                count += deletePath(it)
-            }
-        }
-
-        count += if (path.delete()) 1 else 0
-        return count
+    fun deletePath(path: File): Boolean {
+        return path.deleteRecursively()
     }
 
     @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
-    fun deletePath(path: String): Int {
+    fun deletePath(path: String): Boolean {
         return deletePath(File(path))
     }
 
@@ -134,13 +126,6 @@ object FileUtils {
         }
 
         return null
-    }
-
-    @RequiresPermission(WRITE_EXTERNAL_STORAGE)
-    @JvmStatic
-    @JvmOverloads
-    fun clearCacheDir(context: Context, isExternal: Boolean = true): Int {
-        return deletePath(getCachePath(context, isExternal))
     }
 
     /*
