@@ -190,9 +190,9 @@ class AppSettingsFragment : BaseFragment() {
                 AppArrowItem(
                     title = R.string.settings_clear_cache,
                     option = StringUtils.getFormattedSize(context, settingsState.cache),
-                    dividerVisible = false
+                    dividerVisible = false,
+                    enabled = settingsState.cache > 0
                 ) {
-
                     val message = clearCacheMessage
                     UiUtils.showQuestionDialog(
                         context,
