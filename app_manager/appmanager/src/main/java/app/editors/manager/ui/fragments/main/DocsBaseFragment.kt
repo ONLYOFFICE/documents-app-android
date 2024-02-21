@@ -141,6 +141,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         init()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        actionBottomDialog = null
+        moveCopyDialog = null
+    }
+
     protected fun showOperationActivity(operation: OperationsState.OperationType, explorer: Explorer, callback: (result: ActivityResult) -> Unit) {
         LaunchActivityForResult(
             requireActivity().activityResultRegistry,

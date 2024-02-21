@@ -6,8 +6,7 @@
         <activity
             android:name="app.editors.manager.ui.activities.main.OnBoardingActivity"
             android:exported="true"
-            android:taskAffinity=""
-            android:launchMode="singleInstance"
+            android:launchMode="standard"
             android:theme="@style/AppTheme.Launcher"
             android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>

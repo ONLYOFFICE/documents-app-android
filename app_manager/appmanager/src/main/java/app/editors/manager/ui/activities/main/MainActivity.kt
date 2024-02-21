@@ -17,6 +17,7 @@ import app.documents.core.network.webdav.WebDavService
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.ActivityMainBinding
 import app.editors.manager.managers.receivers.AppLocaleReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver
@@ -43,8 +44,6 @@ import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
-import lib.toolkit.base.ui.views.animation.collapse
-import lib.toolkit.base.ui.views.animation.expand
 import moxy.presenter.InjectPresenter
 import java.util.*
 
@@ -204,6 +203,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onDestroy() {
         super.onDestroy()
+        appComponent.preference.modules = ""
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             unregisterReceiver(AppLocaleReceiver)
         }
@@ -695,19 +695,13 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         setAppBarMode(isVisible)
         showAccount(isVisible)
         showNavigationButton(!isVisible)
-        if (isVisible) {
-            if (!viewBinding.appBarTabs.isVisible) {
-                viewBinding.appBarLayout.postDelayed({
-                    viewBinding.appBarTabs.expand(200)
-                }, 10)
-            }
-        } else {
-            if (viewBinding.appBarTabs.isVisible) {
-                viewBinding.appBarLayout.postDelayed({
-                    viewBinding.appBarTabs.collapse()
-                }, 10)
-            }
+        viewBinding.appBarLayout.post {
+            viewBinding.appBarTabs.isVisible = isVisible
+
         }
+//        viewBinding.appBarLayout.postDelayed({
+//            viewBinding.appBarTabs.isVisible = isVisible
+//        }, 150)
     }
 
     private fun isNotification(): Boolean =

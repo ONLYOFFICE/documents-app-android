@@ -7,12 +7,12 @@ import android.os.Environment
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.models.request.ProgressRequestBody
 import app.documents.core.network.manager.models.explorer.*
-import app.documents.core.network.webdav.WebDavService
-import app.documents.core.network.webdav.models.WebDavModel
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
+import app.documents.core.network.webdav.WebDavService
+import app.documents.core.network.webdav.models.WebDavModel
 import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -474,7 +474,7 @@ class WebDavFileProvider @Inject constructor(
         val parentFolder = getFolder(responseBeans[0])
         for (i in 1 until responseBeans.size) {
             val bean = responseBeans[i]
-            if (bean.isDir && getExtensionFromPath(getTitle(bean.href)).isEmpty()) {
+            if (bean.isDir) {
                 val folder = CloudFolder()
                 folder.id = bean.href
                 folder.title = getTitle(bean.href)

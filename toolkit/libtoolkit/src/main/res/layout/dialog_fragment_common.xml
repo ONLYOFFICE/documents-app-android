@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--    TODO material 2 corner radius-->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:theme="@style/DialogCommonTheme"
-    app:cardCornerRadius="@dimen/default_corner_radius_small">
+    app:cardCornerRadius="@dimen/material3_container_radius">
 
     <LinearLayout
         android:id="@+id/dialogContainer"

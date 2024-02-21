@@ -17,6 +17,9 @@
         <item name="elevationOverlayEnabled">false</item>
         <item name="android:textDirection">locale</item>
         <item name="android:supportsRtl">true</item>
+        <item name="colorPrimaryContainer">@color/colorSecondary</item>
+        <item name="colorOnPrimaryContainer">@color/colorSurface</item>
+        <item name="android:textColorHighlight">@color/colorSecondary30</item>
     </style>
 
     <style name="AppTheme" parent="AppBaseTheme">
@@ -335,5 +338,14 @@
     </style>
 
     <style name="App.Dialog.Buttons" parent="Widget.Common.Button.TextButton" />
+
+    <style name="App.Fab.Style" parent="ThemeOverlay.Material3.FloatingActionButton.Primary">
+        <item name="shapeAppearance">@style/App.Fab.Shape</item>
+    </style>
+
+    <style name="App.Fab.Shape" parent="ShapeAppearance.Material3.Corner.Medium">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">100%</item>
+    </style>
 
 </resources>
