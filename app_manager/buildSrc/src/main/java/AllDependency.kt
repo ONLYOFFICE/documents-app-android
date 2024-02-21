@@ -29,7 +29,7 @@ object AndroidX {
 
     const val appCompat = "androidx.appcompat:appcompat:$androidxVersion"
     const val appCompatResources = "androidx.appcompat:appcompat-resources:$androidxVersion"
-    const val composeActivity = "androidx.activity:activity-compose:1.8.1"
+    const val composeActivity = "androidx.activity:activity-compose:1.8.2"
     const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     const val recyclerViewSelection = "androidx.recyclerview:recyclerview-selection:$recyclerViewSelectionVersion"
     const val cardView = "androidx.cardview:cardview:1.0.0"
@@ -64,9 +64,9 @@ object Kotlin {
 }
 
 object Google {
-    private const val playServicesAuthVersion = "20.7.0"
+    private const val playServicesAuthVersion = "21.0.0"
     private const val playCoreVersion = "1.10.3"
-    private const val materialVersion = "1.10.0"
+    private const val materialVersion = "1.11.0"
     private const val gsonVersion = "2.10.1"
     private const val safetynetVersion = "18.0.1"
 
@@ -81,9 +81,9 @@ object Google {
 
 object Firebase {
     private const val firebaseCoreVersion = "21.1.1"
-    private const val firebaseConfigVersion = "21.6.0"
-    private const val firebaseMessagingVersion = "23.4.0"
-    private const val firebaseCrashlyticsVersion = "18.6.0"
+    private const val firebaseConfigVersion = "21.6.1"
+    private const val firebaseMessagingVersion = "23.4.1"
+    private const val firebaseCrashlyticsVersion = "18.6.2"
 
     const val firebaseCore = "com.google.firebase:firebase-core:$firebaseCoreVersion"
     const val firebaseConfig = "com.google.firebase:firebase-config:$firebaseConfigVersion"
@@ -131,16 +131,16 @@ object Compose {
 }
 
 object Jackson {
-    private const val version = "2.14.3"
+    private const val version = "2.16.1"
     const val core = "com.fasterxml.jackson.core:jackson-core:$version"
     const val annotations = "com.fasterxml.jackson.core:jackson-annotations:$version"
     const val databind = "com.fasterxml.jackson.core:jackson-databind:$version"
 }
 
 object Libs {
-    const val phoneNumber = "io.michaelrocks:libphonenumber-android:8.12.24"
+    const val phoneNumber = "io.michaelrocks:libphonenumber-android:8.13.28"
     const val facebookLogin = "com.facebook.android:facebook-login:16.2.0"
-    const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:b1bad589b5"
+    const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:v.1.0.3"
     const val glide = "com.github.bumptech.glide:glide:4.16.0"
     const val glideCompose = "com.github.bumptech.glide:compose:1.0.0-beta01"
     const val photoView = "com.github.chrisbanes:PhotoView:2.3.0"
