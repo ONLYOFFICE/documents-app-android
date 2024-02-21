@@ -328,7 +328,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="@string/facebook_id_sheme" />
+                <data android:scheme="@string/facebook_id_sheme" android:host="@string/facebook_host"/>
             </intent-filter>
         </activity>
 
