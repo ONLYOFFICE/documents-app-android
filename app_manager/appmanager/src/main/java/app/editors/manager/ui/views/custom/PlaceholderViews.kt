@@ -5,10 +5,12 @@ import android.view.View
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.material.MaterialTheme
 import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludePlaceholdersTextBinding
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.views.ActivityIndicatorView
 import lib.compose.ui.views.PlaceholderView
 import lib.toolkit.base.managers.tools.ResourcesProvider
 
@@ -80,7 +82,18 @@ class PlaceholderViews(val view: View?) {
             Type.USERS -> setTitle(R.string.placeholder_no_users)
             Type.GROUPS -> setTitle(R.string.placeholder_no_groups)
             Type.COMMON -> setTitle(R.string.placeholder_no_users_groups)
-            Type.LOAD -> setTitle(R.string.placeholder_loading_files)
+            Type.LOAD -> {
+                with(binding.composeView) {
+                    isVisible = true
+                    setContent {
+                        MaterialTheme {
+                            ActivityIndicatorView(
+                                title = "Loading"
+                            )
+                        }
+                    }
+                }
+            }
             Type.LOAD_USERS -> setTitle(R.string.placeholder_loading_users)
             Type.LOAD_GROUPS -> setTitle(R.string.placeholder_loading_groups)
             Type.OTHER_ACCOUNTS -> {
