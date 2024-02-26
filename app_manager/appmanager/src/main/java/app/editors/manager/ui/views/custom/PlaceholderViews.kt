@@ -5,7 +5,6 @@ import android.view.View
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.material.MaterialTheme
 import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludePlaceholdersTextBinding
@@ -86,9 +85,9 @@ class PlaceholderViews(val view: View?) {
                 with(binding.composeView) {
                     isVisible = true
                     setContent {
-                        MaterialTheme {
+                        ManagerTheme {
                             ActivityIndicatorView(
-                                title = "Loading"
+                                title = context?.getString(R.string.placeholder_loading_files)
                             )
                         }
                     }
