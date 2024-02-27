@@ -7,15 +7,17 @@ import android.os.Build
 import androidx.documentfile.provider.DocumentFile
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.*
-import app.documents.core.providers.ProviderError.Companion.throwErrorCreate
-import app.documents.core.providers.ProviderError.Companion.throwExistException
-import app.documents.core.providers.ProviderError.Companion.throwUnsupportedException
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
+import app.documents.core.providers.ProviderError.Companion.throwErrorCreate
+import app.documents.core.providers.ProviderError.Companion.throwExistException
+import app.documents.core.providers.ProviderError.Companion.throwUnsupportedException
 import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
@@ -23,7 +25,6 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
-import java.lang.RuntimeException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
@@ -34,6 +35,8 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.just(localContentTools.createRootDir())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .map<List<File?>> { file: File ->
                 if (file.exists()) {
                     return@map localContentTools.getFiles(File(checkNotNull(id)))
