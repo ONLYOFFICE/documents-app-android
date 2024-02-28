@@ -317,7 +317,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             .flatMap { loginService.subscribe(token, preferenceTool.deviceMessageToken, true).toObservable() }
             .toList()
             .subscribe({
-                loginSuccess(account)
+                loginSuccess(account, true)
             }, {
                 checkError(it, account)
             })
@@ -368,7 +368,10 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             })
     }
 
-    private fun loginSuccess(account: CloudAccount) {
+    private fun loginSuccess(account: CloudAccount, withCapabilities: Boolean = false) {
+        if (!withCapabilities) {
+            networkSettings.isDocSpace = false
+        }
         context.accountOnline?.let { onlineAccount ->
             setSettings(onlineAccount)
             unsubscribePush(onlineAccount, AccountUtils.getToken(context, onlineAccount.getAccountName())) {
