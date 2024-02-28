@@ -13,6 +13,7 @@
         <item name="android:textColorPrimary">@color/colorTextPrimary</item>
         <item name="android:colorBackground">@color/colorBackground</item>
         <item name="android:statusBarColor">@color/colorAppBar</item>
+        <item name="android:navigationBarColor">@color/colorBackground</item>
         <item name="android:windowBackground">@color/colorBackground</item>
         <item name="elevationOverlayEnabled">false</item>
         <item name="android:textDirection">locale</item>
@@ -24,6 +25,7 @@
 
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 
     <!-- ======================================================================================= -->
@@ -33,6 +35,12 @@
     <style name="NoActionBarTheme" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="MainActivityTheme" parent="AppBaseTheme">
+        <item name="android:navigationBarColor">@color/colorBottomBar</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 
     <style name="WebViewerActivityStyle" parent="AppTheme">
@@ -55,6 +63,9 @@
     </style>
 
     <style name="Theme.Common.BottomSheetDialog" parent="Theme.MaterialComponents.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:navigationBarColor">@color/colorSurface</item>
+        <item name="android:windowLightNavigationBar">true</item>
         <item name="bottomSheetStyle">@style/Widget.Common.BottomSheetDialog</item>
     </style>
 

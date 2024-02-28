@@ -27,6 +27,11 @@ class ExplorerContextBottomDialog : BaseBottomDialog() {
         fun onContextButtonClick(contextItem: ExplorerContextItem)
     }
 
+
+    override fun getTheme(): Int {
+        return lib.toolkit.base.R.style.Theme_Common_BottomSheetDialog
+    }
+
     private val onClickListener: OnClickListener
         get() = try {
             parentFragmentManager.fragments
@@ -37,11 +42,6 @@ class ExplorerContextBottomDialog : BaseBottomDialog() {
 
     private var viewBinding: ListExplorerContextMenuBinding? = null
     private val viewModel: ExplorerContextViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.Theme_Common_BottomSheetDialog)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         viewBinding = ListExplorerContextMenuBinding.inflate(layoutInflater)
