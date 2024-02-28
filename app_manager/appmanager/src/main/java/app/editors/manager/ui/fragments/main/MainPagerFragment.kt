@@ -69,7 +69,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     private var adapter: AdapterForPages? = null
     private var activity: IMainActivity? = null
     private var isScroll = true
-    private var isVisibleRoot = true
+    private var isVisibleRoot = false
     private var selectedPage = 0
 
     private var viewBinding: FragmentMainPagerBinding? = null
@@ -159,8 +159,11 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     fun setToolbarState(isRoot: Boolean) {
+        if (isVisibleRoot == isRoot) return
         isVisibleRoot = isRoot
-        activity?.setAppBarStates(isVisibleRoot)
+//        viewBinding?.mainViewPager?.post {
+            activity?.setAppBarStates(isVisibleRoot)
+//        }
     }
 
     fun setExpandToolbar() {
@@ -236,11 +239,13 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             viewBinding?.mainViewPager?.addOnPageChangeListener(it)
         }
         activity?.getTabLayout()?.setupWithViewPager(viewBinding?.mainViewPager, true)
+        setToolbarState(true)
+
         if (requireContext().appComponent.networkSettings.isDocSpace) {
-            viewBinding?.mainViewPager?.currentItem =
-                fragments.indexOf(fragments.find { it.mFragment is DocsRoomFragment })
-        } else {
-            adapter?.selectedPage = selectedPage
+            viewBinding?.mainViewPager?.post {
+                viewBinding?.mainViewPager?.currentItem =
+                    fragments.indexOf(fragments.find { it.mFragment is DocsRoomFragment })
+            }
         }
     }
 

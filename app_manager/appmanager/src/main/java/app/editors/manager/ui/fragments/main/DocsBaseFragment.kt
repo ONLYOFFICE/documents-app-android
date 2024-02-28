@@ -715,7 +715,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onSwipeEnable(isSwipeEnable: Boolean) {
-        swipeRefreshLayout?.isRefreshing = isSwipeEnable
+        swipeRefreshLayout?.isRefreshing = false
     }
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {

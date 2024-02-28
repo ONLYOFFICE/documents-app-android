@@ -335,7 +335,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onStateEmptyBackStack() {
-        swipeRefreshLayout?.isRefreshing = true
+        swipeRefreshLayout?.isRefreshing = false
         cloudPresenter.getItemsById(arguments?.getString(KEY_PATH))
     }
 
