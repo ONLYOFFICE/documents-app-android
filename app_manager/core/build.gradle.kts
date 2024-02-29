@@ -1,5 +1,5 @@
-import java.util.*
-import java.io.*
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     id("com.android.library")
@@ -104,6 +104,7 @@ android {
 
 dependencies {
     implementation(project(":libtoolkit"))
+    implementation(project(":core:network"))
 
     // Kotlin
     implementation(Kotlin.kotlinCore)

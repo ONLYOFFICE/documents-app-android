@@ -3,6 +3,7 @@ rootProject.name = "app_manager"
 include(
     ":appmanager",
     ":core",
+    ":core:network",
     ":libcompose",
     ":libtoolkit",
     ":libx2t",
