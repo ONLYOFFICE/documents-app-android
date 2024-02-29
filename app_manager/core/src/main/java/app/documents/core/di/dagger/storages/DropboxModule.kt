@@ -14,7 +14,7 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.http.NetworkClient
+import app.documents.core.network.common.NetworkClient
 import lib.toolkit.base.managers.utils.AccountUtils
 import okhttp3.MediaType
 import okhttp3.OkHttpClient

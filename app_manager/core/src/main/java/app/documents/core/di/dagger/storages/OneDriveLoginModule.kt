@@ -8,7 +8,7 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.ExperimentalSerializationApi
-import lib.toolkit.base.managers.http.NetworkClient
+import app.documents.core.network.common.NetworkClient
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol

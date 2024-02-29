@@ -1,7 +1,9 @@
 package app.documents.core.di.dagger
 
 import android.content.Context
+import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.interceptors.BaseInterceptor
+import app.documents.core.network.di.NetworkModule
 import app.documents.core.network.manager.models.explorer.PathPart
 import app.documents.core.network.manager.models.explorer.PathPartTypeAdapter
 import app.documents.core.storage.account.CloudAccount
@@ -11,7 +13,6 @@ import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.http.NetworkClient
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import okhttp3.OkHttpClient
@@ -28,7 +29,7 @@ annotation class CoreScope
 @Qualifier
 annotation class Token
 
-@Module(includes = [LoginModule::class, ManagerModule::class, ShareModule::class, WebDavModule::class])
+@Module(includes = [NetworkModule::class, ManagerModule::class, ShareModule::class, WebDavModule::class])
 object CoreModule {
 
     val json = Json {
@@ -36,6 +37,9 @@ object CoreModule {
         ignoreUnknownKeys = true
         encodeDefaults = true
     }
+
+    @Provides
+    fun provideJson(): Json = json
 
     @Provides
     fun provideOkHttpClient(@Token token: String, settings: NetworkSettings, context: Context): OkHttpClient {

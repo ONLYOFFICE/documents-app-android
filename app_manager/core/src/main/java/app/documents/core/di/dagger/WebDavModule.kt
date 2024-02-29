@@ -9,7 +9,7 @@ import app.documents.core.network.webdav.WebDavService
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.http.NetworkClient
+import app.documents.core.network.common.NetworkClient
 import lib.toolkit.base.managers.utils.AccountUtils
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

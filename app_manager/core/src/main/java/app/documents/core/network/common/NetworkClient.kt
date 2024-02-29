@@ -1,4 +1,4 @@
-package lib.toolkit.base.managers.http
+package app.documents.core.network.common
 
 import android.annotation.SuppressLint
 import okhttp3.CipherSuite

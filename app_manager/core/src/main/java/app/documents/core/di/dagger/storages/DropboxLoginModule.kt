@@ -8,7 +8,7 @@ import app.documents.core.network.storages.dropbox.login.DropboxLoginService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
-import lib.toolkit.base.managers.http.NetworkClient
+import app.documents.core.network.common.NetworkClient
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol

@@ -5,7 +5,7 @@ import app.documents.core.network.common.interceptors.BaseInterceptor
 import app.documents.core.network.share.ShareService
 import app.documents.core.storage.preference.NetworkSettings
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import lib.toolkit.base.managers.http.NetworkClient
+import app.documents.core.network.common.NetworkClient
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
