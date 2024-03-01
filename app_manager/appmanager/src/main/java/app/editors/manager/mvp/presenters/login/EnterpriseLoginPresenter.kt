@@ -57,7 +57,7 @@ open class EnterpriseLoginPresenter : BaseLoginPresenter<CommonSignInView>() {
             return
         }
         viewState.onWaitingDialog(context.getString(R.string.dialogs_sign_in_portal_header_text), TAG_DIALOG_WAITING)
-        signIn(RequestSignIn(userName = login, password = password))
+        signInWithEmail(login, password)
     }
 
 }

@@ -3,13 +3,9 @@ package app.editors.manager.mvp.presenters.main
 import android.accounts.Account
 import android.net.Uri
 import android.os.Bundle
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.login.models.Capabilities
-import app.documents.core.network.login.models.response.ResponseAllSettings
-import app.documents.core.network.login.models.response.ResponseCapabilities
-import app.documents.core.network.login.models.response.ResponseSettings
-import app.documents.core.network.login.models.response.ResponseUser
 import app.documents.core.network.webdav.WebDavService
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.account.copyWithToken
@@ -17,8 +13,6 @@ import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.accountOnline
-import app.editors.manager.app.loginService
 import app.editors.manager.app.webDavApi
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.login.BaseLoginPresenter
@@ -96,11 +90,14 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         val data = Json.decodeFromString<OpenDataModel>(preferenceTool.fileData)
         accountDao.getAccounts()
             .find { account ->
-                data.getPortalWithoutScheme()?.equals(account.portal,true) == true && data.email?.equals(account.login,true) == true
+                data.getPortalWithoutScheme()?.equals(account.portal, true) == true && data.email?.equals(
+                    account.login,
+                    true
+                ) == true
             }?.let { cloudAccount ->
                 checkLogin(cloudAccount)
             } ?: run {
-                getTokens(accountDao.getAccounts(), saveState)
+            getTokens(accountDao.getAccounts(), saveState)
         }
     }
 
@@ -151,9 +148,9 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 deleteAccount(account)
             } else {
                 if (account.isOnline) {
-                    unsubscribePush(account, AccountUtils.getToken(context, account.getAccountName())) {
-                        deleteAccount(account)
-                    }
+                    //                    unsubscribePush(account, AccountUtils.getToken(context, account.getAccountName())) {
+                    //                        deleteAccount(account)
+                    //                    }
                 } else {
                     deleteAccount(account)
                 }
@@ -187,7 +184,11 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             accountDao.deleteAccount(account)
             accountDao.getAccounts().let {
                 withContext(Dispatchers.Main) {
-                    if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents" && ActivitiesUtils.isPackageExist(App.getApp(), "com.onlyoffice.projects")) {
+                    if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents" && ActivitiesUtils.isPackageExist(
+                            App.getApp(),
+                            "com.onlyoffice.projects"
+                        )
+                    ) {
                         context.contentResolver.delete(
                             Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"),
                             null,
@@ -201,96 +202,56 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     }
 
     fun checkLogin(account: CloudAccount) {
-        if (!account.isOnline) {
-            viewState.onWaiting()
-            when {
-                account.isWebDav -> {
-                    AccountUtils.getPassword(context, account.getAccountName())?.let { password ->
-                        if (password.isNotEmpty()) {
-                            webDavLogin(account, password)
-                        } else {
-                            viewState.onWebDavLogin(
-                                Json.encodeToString(account),
-                                WebDavService.Providers.valueOf(account.webDavProvider ?: "")
-                            )
-                        }
-                    } ?: run {
-                        viewState.onWebDavLogin(
-                            Json.encodeToString(account),
-                            WebDavService.Providers.valueOf(account.webDavProvider ?: "")
-                        )
-                    }
-                }
+        if (account.isOnline) {
+            viewState.onError(context.getString(R.string.errors_sign_in_account_already_use))
+            return
+        }
 
-                account.isOneDrive -> {
-                    AccountUtils.getToken(context, account.getAccountName())?.let { token ->
-                        if (token.isNotEmpty()) {
-                            loginSuccess(account)
-                        } else {
-                            viewState.onOneDriveLogin()
-                        }
-                    }
-                }
+        when {
+            account.isWebDav -> checkWebDavLogin(account)
+            account.isOneDrive || account.isDropbox || account.isGoogleDrive -> checkStorageLogin(account)
+            else -> checkCloudLogin(account)
+        }
+    }
 
-                account.isDropbox -> {
-                    AccountUtils.getToken(context, account.getAccountName())?.let { token ->
-                        if (token.isNotEmpty()) {
-                            loginSuccess(account)
-                        } else {
-                            viewState.onDropboxLogin()
-                        }
-                    }
-                }
+    private fun checkCloudLogin(account: CloudAccount) {
+        val token = AccountUtils.getToken(context, account.getAccountName())
+        if (token.isNullOrEmpty()) {
+            viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
+        } else {
+            cloudSignIn(account, token)
+        }
+    }
 
-                account.isGoogleDrive -> {
-                    AccountUtils.getToken(context, account.getAccountName())?.let { token ->
-                        if (token.isNotEmpty()) {
-                            loginSuccess(account)
-                        } else {
-                            viewState.onGoogleDriveLogin()
-                        }
-                    }
-                }
-
-                else -> {
-                    AccountUtils.getToken(context, account.getAccountName())?.let { token ->
-                        if (token.isNotEmpty()) {
-                            login(account, token)
-                        } else {
-                            viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
-                        }
-                    } ?: run {
-                        setSettings(account)
-                        disposable = context.loginService.capabilities().subscribe({ response ->
-                            if (response is LoginResponse.Success) {
-                                when (response.response) {
-                                    is ResponseCapabilities -> {
-                                        val capability = (response.response as ResponseCapabilities).response
-                                        setSettings(capability)
-                                        viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
-                                    }
-
-                                    is ResponseSettings -> {
-                                        networkSettings.documentServerVersion =
-                                            (response.response as ResponseSettings).response.documentServer ?: ""
-                                        networkSettings.serverVersion =
-                                            (response.response as ResponseSettings).response.communityServer ?: ""
-                                    }
-
-                                    is ResponseAllSettings -> {
-                                        networkSettings.isDocSpace =
-                                            (response.response as ResponseAllSettings).response.docSpace
-                                    }
-                                }
-                            } else {
-                                fetchError((response as LoginResponse.Error).error)
-                            }
-                        }) { throwable: Throwable -> checkError(throwable, account) }
-                    }
+    private fun checkStorageLogin(account: CloudAccount) {
+        AccountUtils.getToken(context, account.getAccountName())?.let { token ->
+            if (token.isNotEmpty()) {
+                loginSuccess(account)
+            } else {
+                when {
+                    account.isDropbox -> viewState.onDropboxLogin()
+                    account.isGoogleDrive -> viewState.onGoogleDriveLogin()
+                    account.isOneDrive -> viewState.onOneDriveLogin()
                 }
             }
-        } else {
-            viewState.onError(context.getString(R.string.errors_sign_in_account_already_use))
+        }
+    }
+
+    private fun checkWebDavLogin(account: CloudAccount) {
+        AccountUtils.getPassword(context, account.getAccountName())?.let { password ->
+            if (password.isNotEmpty()) {
+                webDavLogin(account, password)
+            } else {
+                viewState.onWebDavLogin(
+                    Json.encodeToString(account),
+                    WebDavService.Providers.valueOf(account.webDavProvider.orEmpty())
+                )
+            }
+        } ?: run {
+            viewState.onWebDavLogin(
+                Json.encodeToString(account),
+                WebDavService.Providers.valueOf(account.webDavProvider.orEmpty())
+            )
         }
     }
 
@@ -302,50 +263,42 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         }
     }
 
-    private fun login(account: CloudAccount, token: String) {
+    private fun cloudSignIn(account: CloudAccount, token: String) {
         setSettings(account)
-        val loginService = context.loginService
-        disposable = loginService.capabilities().flatMap { capabilityResponse ->
-            checkSettings(capabilityResponse)
-            loginService.getUserInfo(token).toObservable()
-        }.map {
-            when (it) {
-                is LoginResponse.Success -> return@map it.response as ResponseUser
-                is LoginResponse.Error -> throw throw it.error
-            }
-        }
-            .flatMap { loginService.subscribe(token, preferenceTool.deviceMessageToken, true).toObservable() }
-            .toList()
-            .subscribe({
-                loginSuccess(account, true)
-            }, {
-                checkError(it, account)
-            })
-    }
-
-    private fun checkSettings(capabilityResponse: LoginResponse) {
-        when (capabilityResponse) {
-            is LoginResponse.Success -> {
-                when (capabilityResponse.response) {
-                    is ResponseSettings -> {
-                        networkSettings.documentServerVersion =
-                            (capabilityResponse.response as ResponseSettings).response.documentServer ?: ""
-                        networkSettings.serverVersion =
-                            (capabilityResponse.response as ResponseSettings).response.communityServer ?: ""
-                    }
-
-                    is ResponseAllSettings -> {
-                        networkSettings.isDocSpace =
-                            (capabilityResponse.response as ResponseAllSettings).response.docSpace
+        signInJob = presenterScope.launch {
+            loginRepository.signInWithToken(token)
+                .collect { result ->
+                    when (result) {
+                        is Result.Success -> loginSuccess(account, true)
+                        is Result.Error -> checkError(result.exception, account)
                     }
                 }
-            }
-
-            is LoginResponse.Error -> {
-                networkSettings.isDocSpace = false
-            }
         }
     }
+
+    //    private fun checkSettings(capabilityResponse: LoginResponse) {
+    //        when (capabilityResponse) {
+    //            is LoginResponse.Success -> {
+    //                when (capabilityResponse.response) {
+    //                    is ResponseSettings -> {
+    //                        networkSettings.documentServerVersion =
+    //                            (capabilityResponse.response as ResponseSettings).response.documentServer ?: ""
+    //                        networkSettings.serverVersion =
+    //                            (capabilityResponse.response as ResponseSettings).response.communityServer ?: ""
+    //                    }
+    //
+    //                    is ResponseAllSettings -> {
+    //                        networkSettings.isDocSpace =
+    //                            (capabilityResponse.response as ResponseAllSettings).response.docSpace
+    //                    }
+    //                }
+    //            }
+    //
+    //            is LoginResponse.Error -> {
+    //                networkSettings.isDocSpace = false
+    //            }
+    //        }
+    //    }
 
     private fun webDavLogin(account: CloudAccount, password: String) {
         setSettings(account)
@@ -372,26 +325,14 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         if (!withCapabilities) {
             networkSettings.isDocSpace = false
         }
-        context.accountOnline?.let { onlineAccount ->
-            setSettings(onlineAccount)
-            unsubscribePush(onlineAccount, AccountUtils.getToken(context, onlineAccount.getAccountName())) {
-                presenterScope.launch {
-                    setSettings(account)
-                    accountDao.updateAccount(onlineAccount.copyWithToken(isOnline = false))
-                    accountDao.updateAccount(account.copyWithToken(isOnline = true))
-                    withContext(Dispatchers.Main) {
-                        viewState.onSuccessLogin()
+        signInJob = presenterScope.launch {
+            loginRepository.switchAccount(account)
+                .collect { result ->
+                    when (result) {
+                        is Result.Error -> fetchError(result.exception)
+                        else -> Unit
                     }
                 }
-            }
-        } ?: run {
-            presenterScope.launch {
-                setSettings(account)
-                accountDao.updateAccount(account.copyWithToken(isOnline = true))
-                withContext(Dispatchers.Main) {
-                    viewState.onSuccessLogin()
-                }
-            }
         }
     }
 

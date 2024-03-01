@@ -15,6 +15,6 @@ object LoginModule {
         okHttpClient: OkHttpClient,
         @Named("baseUrl") baseUrl: String
     ): LoginDataSource {
-        return LoginDataSourceImpl(json, okHttpClient, "base url")
+        return LoginDataSourceImpl(json, okHttpClient, baseUrl)
     }
 }

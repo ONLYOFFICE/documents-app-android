@@ -6,7 +6,12 @@ import app.documents.core.di.dagger.AccountType
 import app.documents.core.model.login.RequestDeviceToken
 import app.documents.core.model.login.Token
 import app.documents.core.model.login.User
+import app.documents.core.model.login.request.RequestRegister
 import app.documents.core.model.login.request.RequestSignIn
+import app.documents.core.model.login.response.ResponseRegisterPortal
+import app.documents.core.network.common.Result
+import app.documents.core.network.common.asResult
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.LoginDataSource
 import app.documents.core.storage.account.AccountDao
 import app.documents.core.storage.account.CloudAccount
@@ -18,7 +23,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import lib.toolkit.base.managers.utils.AccountData
 
@@ -30,12 +37,61 @@ internal class LoginRepositoryImpl(
     private val accountDao: AccountDao
 ) : LoginRepository {
 
-    override fun signInByEmail(email: String, password: String): Flow<LoginResult> {
-        return signIn(request = RequestSignIn(userName = email, password = password))
+    private var savedAccessToken: String? = null
+
+    override suspend fun signInByEmail(email: String, password: String, code: String?): Flow<LoginResult> {
+        return signIn(request = RequestSignIn(userName = email, password = password, code = code.orEmpty()))
     }
 
-    override fun signInWithProvider(accessToken: String, provider: String): Flow<LoginResult> {
-        return signIn(request = RequestSignIn(accessToken = accessToken, provider = provider))
+    override suspend fun signInWithProvider(accessToken: String?, provider: String): Flow<LoginResult> {
+        if (provider == ApiContract.Social.GOOGLE) savedAccessToken = accessToken
+        return signIn(
+            request = RequestSignIn(
+                accessToken = checkNotNull(accessToken ?: savedAccessToken),
+                provider = provider
+            )
+        )
+    }
+
+    override suspend fun signInWithSSO(accessToken: String): Flow<Result<CloudAccount>> {
+        return flowOf(onSuccessResponse(RequestSignIn(accessToken = accessToken), Token(token = accessToken)))
+            .asResult()
+    }
+
+    override suspend fun signInWithToken(accessToken: String): Flow<Result<*>> {
+        return flowOf(loginDataSource.getUserInfo(accessToken))
+            .flowOn(Dispatchers.IO)
+            .map { Result.Success(null) }
+            .catch { cause -> Result.Error(cause) }
+    }
+
+    override suspend fun registerPortal(
+        portalName: String,
+        email: String,
+        firstName: String,
+        lastName: String,
+        password: String,
+        recaptchaResponse: String
+    ): Flow<ResponseRegisterPortal> {
+        return flowOf(loginDataSource.registerPortal(RequestRegister()))
+            .flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun switchAccount(account: CloudAccount): Flow<Result<*>> {
+        return flow {
+            accountDao.getAccountOnline()?.let { oldAccount ->
+                val token = accountManager.getToken(oldAccount.getAccountName())
+                setSettings(oldAccount)
+                unsubscribePush(token.orEmpty())
+                setSettings(account)
+                accountDao.updateAccount(oldAccount.copyWithToken(isOnline = false))
+                accountDao.updateAccount(account.copyWithToken(isOnline = true))
+            } ?: run {
+                setSettings(account)
+                accountDao.updateAccount(account.copyWithToken(isOnline = true))
+            }
+            emit(Result.Success(null))
+        }.flowOn(Dispatchers.IO)
     }
 
     private fun signIn(request: RequestSignIn): Flow<LoginResult> {
@@ -120,7 +176,7 @@ internal class LoginRepositoryImpl(
 
     private suspend fun disableOldAccount(accessToken: String?) {
         accountDao.getAccountOnline()?.let {
-            loginDataSource.subscribe(accessToken.orEmpty(), getDeviceToken(), false)
+            unsubscribePush(accessToken.orEmpty())
             accountDao.updateAccount(it.copyWithToken(isOnline = false))
         }
     }
@@ -132,6 +188,10 @@ internal class LoginRepositoryImpl(
         //        preferenceTool.deviceMessageToken = deviceToken
     }
 
+    private suspend fun unsubscribePush(accessToken: String) {
+        loginDataSource.subscribe(accessToken.orEmpty(), getDeviceToken(), false)
+    }
+
     private suspend fun getDeviceToken(): String {
         return FirebaseMessaging.getInstance()
             .token
@@ -139,44 +199,13 @@ internal class LoginRepositoryImpl(
             .await()
     }
 
-    //    fun retrySignInWithGoogle() {
-    //        signInWithGoogle(account)
-    //    }
+    private fun setSettings(account: CloudAccount) {
+        networkSettings.setBaseUrl(account.portal ?: "")
+        networkSettings.setScheme(account.scheme ?: "")
+        networkSettings.setSslState(account.isSslState)
+        networkSettings.setCipher(account.isSslCiphers)
+    }
 
-    //    @Suppress("BlockingMethodInNonBlockingContext")
-    //    fun signInWithGoogle(account: Account?) {
-    //        if (goggleJob != null && goggleJob?.isActive == true) {
-    //            return
-    //        }
-    //        this.account = account
-    //        goggleJob = presenterScope.launch((Dispatchers.IO)) {
-    //            val scope = context.getString(R.string.google_scope)
-    //            try {
-    //                if (account != null) {
-    //                    val accessToken = GoogleAuthUtil.getToken(context, account, scope)
-    //                    withContext(Dispatchers.Main) {
-    //                        signIn(
-    //                            app.documents.core.network.login.models.request.RequestSignIn(
-    //                                userName = account.name ?: "",
-    //                                accessToken = accessToken,
-    //                                provider = ApiContract.Social.GOOGLE
-    //                            )
-    //                        )
-    //                    }
-    //                }
-    //            } catch (e: UserRecoverableAuthException) {
-    //                withContext(Dispatchers.Main) {
-    //                    onGooglePermission(e.intent)
-    //                }
-    //            } catch (e: Exception) {
-    //                withContext(Dispatchers.Main) {
-    //                    viewState.onError(e.message)
-    //                }
-    //            }
-    //
-    //        }
-    //
-    //    }
 
     //    private fun checkRedirect(requestSignIn: RequestSignIn, error: HttpException) {
     //        try {
@@ -192,5 +221,4 @@ internal class LoginRepositoryImpl(
     //            fetchError(error)
     //        }
     //    }
-
 }

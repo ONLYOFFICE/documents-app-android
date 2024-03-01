@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
@@ -24,6 +25,7 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.SocialViews
 import app.editors.manager.ui.views.custom.SocialViews.OnSocialNetworkCallbacks
 import app.editors.manager.ui.views.edits.BaseWatcher
+import com.google.android.gms.auth.GoogleAuthUtil
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
@@ -157,7 +159,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SocialViews.GOOGLE_PERMISSION) {
-            presenter.retrySignInWithGoogle()
+            presenter.signInWithProvider(null, ApiContract.Social.GOOGLE)
         } else {
             socialViews?.onActivityResult(requestCode, resultCode, data)
         }
@@ -225,7 +227,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     override fun onTwoFactorAuth(phoneNoise: String?, request: String) {
         hideDialog()
-        if (phoneNoise != null && phoneNoise.isNotEmpty()) {
+        if (!phoneNoise.isNullOrEmpty()) {
             showFragment(
                 EnterpriseSmsFragment.newInstance(false, request),
                 EnterpriseSmsFragment.TAG,
@@ -238,7 +240,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     override fun onTwoFactorAuthTfa(secretKey: String?, request: String) {
         hideDialog()
-        if (secretKey != null && secretKey.isNotEmpty()) {
+        if (!secretKey.isNullOrEmpty()) {
             AuthAppActivity.show(requireActivity(), request, secretKey)
         } else {
             showFragment(
@@ -273,7 +275,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
             getString(R.string.dialogs_common_cancel_button),
             EnterpriseLoginPresenter.TAG_DIALOG_WAITING
         )
-        presenter.signInWithTwitter(token)
+        presenter.signInWithProvider(token, ApiContract.Social.TWITTER)
     }
 
     override fun onTwitterFailed() {
@@ -287,7 +289,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
             getString(R.string.dialogs_common_cancel_button),
             EnterpriseLoginPresenter.TAG_DIALOG_WAITING
         )
-        presenter.signInWithFacebook(token)
+        presenter.signInWithProvider(token, ApiContract.Social.FACEBOOK)
     }
 
     override fun onFacebookLogin(message: String) {
@@ -316,7 +318,9 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
             getString(R.string.dialogs_common_cancel_button),
             EnterpriseLoginPresenter.TAG_DIALOG_WAITING
         )
-        presenter.signInWithGoogle(account)
+        val scope = requireContext().getString(R.string.google_scope)
+        val accessToken = GoogleAuthUtil.getToken(requireContext(), account, scope)
+        presenter.signInWithProvider(accessToken, ApiContract.Social.GOOGLE)
     }
 
     override fun onGoogleFailed() {

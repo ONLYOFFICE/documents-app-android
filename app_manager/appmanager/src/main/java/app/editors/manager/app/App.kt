@@ -99,7 +99,7 @@ class App : Application() {
 
     val coreComponent: CoreComponent by lazy  {
         DaggerCoreComponent.builder()
-            .context(applicationContext)
+            .context(this)
             .build()
     }
 
@@ -207,6 +207,7 @@ class App : Application() {
             .context(context = this)
             .coreComponent(coreComponent)
             .build()
+
         refreshDropboxInstance()
         refreshGoogleDriveInstance()
         refreshOneDriveInstance()

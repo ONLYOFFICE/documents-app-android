@@ -36,19 +36,7 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
 
     fun signInPortal(smsCode: String?, request: String) {
         val requestSignIn = Json.decodeFromString<RequestSignIn>(request)
-        disposable = context.loginService.signIn(requestSignIn, smsCode)
-            .subscribe({ response ->
-                when (response) {
-                    is LoginResponse.Success -> {
-                        signInSuccess(requestSignIn, (response.response as app.documents.core.network.login.models.response.ResponseSignIn).response)
-                    }
-                    is LoginResponse.Error -> {
-                        fetchError(response.error)
-                    }
-                }
-            }, {
-                fetchError(it)
-            })
+        signInWithEmail(requestSignIn.userName, requestSignIn.password, smsCode)
     }
 
     fun resendSms(request: String) {

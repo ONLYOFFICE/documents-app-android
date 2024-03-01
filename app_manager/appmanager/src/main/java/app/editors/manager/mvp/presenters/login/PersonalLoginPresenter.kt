@@ -1,6 +1,5 @@
 package app.editors.manager.mvp.presenters.login
 
-import android.accounts.Account
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.app.loginService
@@ -31,7 +30,7 @@ class PersonalLoginPresenter : EnterpriseLoginPresenter() {
         disposable = context.loginService
             .serverVersion()
             .subscribe { loginResponse ->
-                    networkSettings.serverVersion = loginResponse.response as String
+                networkSettings.serverVersion = loginResponse.response as String
             }
         return true
     }
@@ -44,19 +43,19 @@ class PersonalLoginPresenter : EnterpriseLoginPresenter() {
 
     fun signInPersonalWithTwitter(token: String) {
         if (initPersonal()) {
-            signInWithTwitter(token)
+            signInWithProvider(token, ApiContract.Social.TWITTER)
         }
     }
 
-    fun signInPersonalWithGoogle(token: Account) {
+    fun signInPersonalWithGoogle(token: String) {
         if (initPersonal()) {
-            signInWithGoogle(token)
+            signInWithProvider(token, ApiContract.Social.GOOGLE)
         }
     }
 
     fun signInPersonalWithFacebook(token: String) {
         if (initPersonal()) {
-            signInWithFacebook(token)
+            signInWithProvider(token, ApiContract.Social.FACEBOOK)
         }
     }
 

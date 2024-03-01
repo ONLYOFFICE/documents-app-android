@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -33,6 +34,7 @@ import app.editors.manager.ui.views.custom.SocialViews
 import app.editors.manager.ui.views.custom.SocialViews.OnSocialNetworkCallbacks
 import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.viewModels.login.RemoteUrlViewModel
+import com.google.android.gms.auth.GoogleAuthUtil
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
 
@@ -110,7 +112,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SocialViews.GOOGLE_PERMISSION) {
-            personalSignInPresenter.retrySignInWithGoogle()
+            personalSignInPresenter.signInWithProvider(null, ApiContract.Social.GOOGLE)
         } else {
             socialViews?.onActivityResult(requestCode, resultCode, data)
         }
@@ -242,7 +244,9 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
             getString(R.string.dialogs_common_cancel_button),
             TAG_DIALOG_WAITING
         )
-        personalSignInPresenter.signInPersonalWithGoogle(account)
+        val scope = requireContext().getString(R.string.google_scope)
+        val accessToken = GoogleAuthUtil.getToken(requireContext(), account, scope)
+        personalSignInPresenter.signInWithProvider(accessToken, ApiContract.Social.GOOGLE)
     }
 
     override fun onGoogleFailed() {

@@ -26,4 +26,8 @@ class AccountManager(private val context: Context) {
     fun getToken(account: Account): String? {
         return AccountUtils.getToken(context, account)
     }
+
+    fun getToken(accountName: String): String? {
+        return AccountUtils.getToken(context, accountName)
+    }
 }
