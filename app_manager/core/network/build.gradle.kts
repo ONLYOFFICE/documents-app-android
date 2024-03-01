@@ -7,10 +7,10 @@ plugins {
 
 android {
     namespace = "app.documents.core.network"
-    compileSdk = 34
+    compileSdk = AppDependency.COMPILE_SDK_VERSION
 
     defaultConfig {
-        minSdk = 26
+        minSdk = AppDependency.MIN_SDK_VERSION
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -23,16 +23,16 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 }
 
 dependencies {
-    implementation(project(":core"))
+    implementation(project(":core:model"))
 
     implementation(Kotlin.kotlinSerialization)
     implementation(Kotlin.coroutineCore)

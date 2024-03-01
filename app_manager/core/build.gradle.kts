@@ -104,6 +104,7 @@ android {
 
 dependencies {
     implementation(project(":libtoolkit"))
+    implementation(project(":core:model"))
     implementation(project(":core:network"))
 
     // Kotlin
@@ -146,7 +147,8 @@ dependencies {
     implementation(Room.roomKtx)
     ksp(Room.roomCompiler)
 
-    ksp(Libs.glideKsp)
+    //noinspection KaptUsageInsteadOfKsp
+    kapt("com.github.bumptech.glide:compiler:4.12.0")
     implementation(Libs.glide)
     implementation(Libs.glideOkHttpIntegration) { exclude("glide-parent") }
 
