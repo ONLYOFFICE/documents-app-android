@@ -35,7 +35,5 @@ data class User(
     val avatarSmall: String = "",
     val profileUrl: String = "",
     val mobilePhone: String = ""
-) {
-//    fun getName() = StringUtils.getHtmlString(displayName)
-}
+)
 

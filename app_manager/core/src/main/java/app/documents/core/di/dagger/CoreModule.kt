@@ -18,11 +18,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Qualifier
-import javax.inject.Scope
-
-@Scope
-@Retention(AnnotationRetention.RUNTIME)
-annotation class CoreScope
 
 @Qualifier
 annotation class Token

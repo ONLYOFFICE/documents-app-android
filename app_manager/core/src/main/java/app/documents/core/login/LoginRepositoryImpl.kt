@@ -1,108 +1,196 @@
 package app.documents.core.login
 
-import app.documents.core.model.login.AllSettings
-import app.documents.core.model.login.Capabilities
+import android.accounts.Account
+import app.documents.core.account.AccountManager
+import app.documents.core.di.dagger.AccountType
 import app.documents.core.model.login.RequestDeviceToken
-import app.documents.core.model.login.Settings
 import app.documents.core.model.login.Token
 import app.documents.core.model.login.User
 import app.documents.core.model.login.request.RequestSignIn
-import app.documents.core.model.login.request.RequestValidatePortal
-import app.documents.core.model.login.response.ResponseValidatePortal
-import app.documents.core.network.common.Result
-import app.documents.core.network.common.asResult
 import app.documents.core.network.login.LoginDataSource
+import app.documents.core.storage.account.AccountDao
+import app.documents.core.storage.account.CloudAccount
+import app.documents.core.storage.account.copyWithToken
+import app.documents.core.storage.preference.NetworkSettings
+import app.documents.core.utils.displayNameFromHtml
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.tasks.await
+import lib.toolkit.base.managers.utils.AccountData
 
-internal class LoginRepositoryImpl(private val loginDataSource: LoginDataSource) : LoginRepository {
+internal class LoginRepositoryImpl(
+    private val loginDataSource: LoginDataSource,
+    private val networkSettings: NetworkSettings,
+    @AccountType private val accountType: String,
+    private val accountManager: AccountManager,
+    private val accountDao: AccountDao
+) : LoginRepository {
 
-    override suspend fun getServerVersion(): Flow<String> {
-        return flowOf(checkNotNull(loginDataSource.getSettings().communityServer))
-            .flowOn(Dispatchers.IO)
+    override fun signInByEmail(email: String, password: String): Flow<LoginResult> {
+        return signIn(request = RequestSignIn(userName = email, password = password))
     }
 
-    override suspend fun getCapabilities(): Flow<Capabilities> {
-        return flowOf(loginDataSource.getCapabilities())
-            .flowOn(Dispatchers.IO)
+    override fun signInWithProvider(accessToken: String, provider: String): Flow<LoginResult> {
+        return signIn(request = RequestSignIn(accessToken = accessToken, provider = provider))
     }
 
-    override suspend fun getSettings(): Flow<Settings> {
-        return flowOf(loginDataSource.getSettings())
-            .flowOn(Dispatchers.IO)
-    }
-
-    override suspend fun getAllSettings(): Flow<AllSettings> {
-        return flowOf(loginDataSource.getAllSettings())
-            .flowOn(Dispatchers.IO)
-    }
-
-    override suspend fun validatePortal(portalName: String): Flow<ResponseValidatePortal> {
-        return flowOf(loginDataSource.validatePortal(RequestValidatePortal(portalName)))
-            .flowOn(Dispatchers.IO)
-    }
-
-    override suspend fun signIn(request: RequestSignIn, smsCode: String?): Flow<Token> {
+    private fun signIn(request: RequestSignIn): Flow<LoginResult> {
         return flow {
-            val response = smsCode?.let { sms ->
-                loginDataSource.smsSignIn(request.copy(code = smsCode), sms)
-            } ?: loginDataSource.signIn(request)
-            emit(response)
+            val response = loginDataSource.signIn(request)
+            when {
+                response.token.isNotEmpty() -> {
+                    val account = onSuccessResponse(request, response)
+                    emit(LoginResult.Success(account))
+                }
+                response.tfa -> emit(LoginResult.Tfa(response.tfaKey))
+                response.sms -> emit(LoginResult.Sms(response.phoneNoise))
+            }
         }
+            .catch { cause -> emit(LoginResult.Error(cause)) }
             .flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getUserInfo(token: String): Flow<User> {
-        return flowOf(loginDataSource.getUserInfo(token))
-            .flowOn(Dispatchers.IO)
+    private suspend fun onSuccessResponse(request: RequestSignIn, response: Token): CloudAccount {
+        val userInfo = loginDataSource.getUserInfo(response.token)
+        val account = createCloudAccount(userInfo, response, request.userName, request.provider)
+        val accountData = account.toAccountData(response.token)
+        val oldToken = addAccountToAccountManager(accountData, request.password)
+        disableOldAccount(oldToken)
+        accountDao.addAccount(account)
+        subscribePush(response.token)
+        return account
     }
 
-    override suspend fun setFirebaseToken(token: String, deviceToken: String): Flow<Result<Unit>> {
-        return flowOf(loginDataSource.registerDevice(token, RequestDeviceToken(deviceToken))).asResult()
-            .flowOn(Dispatchers.IO)
+    private fun createCloudAccount(
+        userInfo: User,
+        token: Token,
+        login: String,
+        provider: String
+    ): CloudAccount {
+        return CloudAccount(
+            id = userInfo.id,
+            login = login,
+            portal = networkSettings.getPortal(),
+            scheme = networkSettings.getScheme(),
+            name = userInfo.displayNameFromHtml,
+            provider = provider,
+            avatarUrl = userInfo.avatarMedium,
+            serverVersion = networkSettings.serverVersion,
+            isSslCiphers = networkSettings.getCipher(),
+            isSslState = networkSettings.getSslState(),
+            isOnline = true,
+            isAdmin = userInfo.isAdmin,
+            isVisitor = userInfo.isVisitor
+        ).apply {
+            expires = token.expires
+            setCryptToken(token.token)
+            setCryptPassword(password)
+        }
     }
 
-    override suspend fun subscribe(
-        token: String,
-        deviceToken: String,
-        isSubscribe: Boolean
-    ): Flow<Result<Unit>> {
-        return flowOf(loginDataSource.subscribe(token, deviceToken, isSubscribe)).asResult()
-            .flowOn(Dispatchers.IO)
+    private fun CloudAccount.toAccountData(accessToken: String): AccountData {
+        return AccountData(
+            portal = portal.orEmpty(),
+            scheme = scheme.orEmpty(),
+            displayName = name.orEmpty(),
+            userId = id,
+            provider = provider.orEmpty(),
+            accessToken = accessToken,
+            email = login.orEmpty(),
+            avatar = avatarUrl,
+            expires = expires
+        )
     }
 
-    //    override fun registerPortal(request: RequestRegister): Single<LoginResponse> {
-    //        return loginService.registerPortal(
-    //            request
-    //        ).map { fetchResponse(it) }
-    //            .subscribeOn(Schedulers.io())
-    //            .observeOn(AndroidSchedulers.mainThread())
+    private fun addAccountToAccountManager(accountData: AccountData, password: String): String? {
+        with(accountData) {
+            val account = Account("$email@$portal", accountType)
+            if (!accountManager.addAccount(account, password, accountData)) {
+                accountManager.setAccountData(account, accountData)
+                accountManager.setPassword(account, if (provider.isNotEmpty()) accessToken else password)
+            }
+            accountManager.setToken(account, accessToken)
+            return accountManager.getToken(account)
+        }
+    }
+
+    private suspend fun disableOldAccount(accessToken: String?) {
+        accountDao.getAccountOnline()?.let {
+            loginDataSource.subscribe(accessToken.orEmpty(), getDeviceToken(), false)
+            accountDao.updateAccount(it.copyWithToken(isOnline = false))
+        }
+    }
+
+    private suspend fun subscribePush(accessToken: String) {
+        val deviceToken = getDeviceToken()
+        loginDataSource.registerDevice(accessToken, RequestDeviceToken(deviceToken))
+        loginDataSource.subscribe(accessToken, deviceToken, true)
+        //        preferenceTool.deviceMessageToken = deviceToken
+    }
+
+    private suspend fun getDeviceToken(): String {
+        return FirebaseMessaging.getInstance()
+            .token
+            .addOnFailureListener(::error)
+            .await()
+    }
+
+    //    fun retrySignInWithGoogle() {
+    //        signInWithGoogle(account)
     //    }
+
+    //    @Suppress("BlockingMethodInNonBlockingContext")
+    //    fun signInWithGoogle(account: Account?) {
+    //        if (goggleJob != null && goggleJob?.isActive == true) {
+    //            return
+    //        }
+    //        this.account = account
+    //        goggleJob = presenterScope.launch((Dispatchers.IO)) {
+    //            val scope = context.getString(R.string.google_scope)
+    //            try {
+    //                if (account != null) {
+    //                    val accessToken = GoogleAuthUtil.getToken(context, account, scope)
+    //                    withContext(Dispatchers.Main) {
+    //                        signIn(
+    //                            app.documents.core.network.login.models.request.RequestSignIn(
+    //                                userName = account.name ?: "",
+    //                                accessToken = accessToken,
+    //                                provider = ApiContract.Social.GOOGLE
+    //                            )
+    //                        )
+    //                    }
+    //                }
+    //            } catch (e: UserRecoverableAuthException) {
+    //                withContext(Dispatchers.Main) {
+    //                    onGooglePermission(e.intent)
+    //                }
+    //            } catch (e: Exception) {
+    //                withContext(Dispatchers.Main) {
+    //                    viewState.onError(e.message)
+    //                }
+    //            }
     //
-    //    override fun registerPersonal(request: RequestRegister): Single<LoginResponse> {
-    //        return loginService.registerPersonalPortal(request).map { fetchResponse(it) }
-    //            .subscribeOn(Schedulers.io())
-    //            .observeOn(AndroidSchedulers.mainThread())
-    //    }
+    //        }
     //
-    //    override fun sendSms(request: RequestSignIn): Single<LoginResponse> {
-    //        return loginService.sendSms(request).map { fetchResponse(it) }
-    //            .subscribeOn(Schedulers.io())
-    //            .observeOn(AndroidSchedulers.mainThread())
     //    }
-    //
-    //    override fun changeNumber(request: RequestNumber): Single<LoginResponse> {
-    //        return loginService.changeNumber(request).map { fetchResponse(it) }
-    //            .subscribeOn(Schedulers.io())
-    //            .observeOn(AndroidSchedulers.mainThread())
+
+    //    private fun checkRedirect(requestSignIn: RequestSignIn, error: HttpException) {
+    //        try {
+    //            if (error.response()?.headers()?.get("Location") != null) {
+    //                val url = error.response()?.headers()?.get("Location")
+    //                networkSettings.setScheme((HttpUrl.parse(url ?: "")?.scheme() + "://"))
+    //                networkSettings.setBaseUrl(HttpUrl.parse(url ?: "")?.host() ?: "")
+    //                signIn(requestSignIn)
+    //            } else {
+    //                fetchError(error)
+    //            }
+    //        } catch (error: Throwable) {
+    //            fetchError(error)
+    //        }
     //    }
-    //
-    //    override fun passwordRecovery(request: RequestPassword): Single<LoginResponse> {
-    //        return loginService.forgotPassword(request).map { fetchResponse(it) }
-    //            .subscribeOn(Schedulers.io())
-    //            .observeOn(AndroidSchedulers.mainThread())
-    //    }
+
 }

@@ -205,6 +205,7 @@ class App : Application() {
     private fun initDagger() {
         _appComponent = DaggerAppComponent.builder()
             .context(context = this)
+            .coreComponent(coreComponent)
             .build()
         refreshDropboxInstance()
         refreshGoogleDriveInstance()

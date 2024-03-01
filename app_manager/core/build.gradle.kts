@@ -120,6 +120,7 @@ dependencies {
 
     // Google
     implementation(Google.material)
+    implementation(Firebase.firebaseMessaging)
 
     // Dagger
     implementation(Dagger.dagger)

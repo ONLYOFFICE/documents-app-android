@@ -2,6 +2,7 @@ package app.documents.core.di.dagger
 
 import android.content.Context
 import androidx.room.Room
+import app.documents.core.account.AccountManager
 import app.documents.core.storage.account.AccountDao
 import app.documents.core.storage.account.AccountsDataBase
 import app.documents.core.storage.account.CloudAccount
@@ -9,7 +10,10 @@ import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.AccountUtils
-import javax.inject.Singleton
+import javax.inject.Qualifier
+
+@Qualifier
+internal annotation class AccountType
 
 @Module
 object AccountModule {
@@ -43,4 +47,14 @@ object AccountModule {
         } ?: ""
     }
 
+    @Provides
+    @AccountType
+    fun provideAccountType(context: Context): String {
+        return context.getString(lib.toolkit.base.R.string.account_type)
+    }
+
+    @Provides
+    fun provideAccountManager(context: Context): AccountManager {
+        return AccountManager(context)
+    }
 }

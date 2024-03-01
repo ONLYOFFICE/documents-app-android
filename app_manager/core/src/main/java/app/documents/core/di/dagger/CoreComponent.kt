@@ -1,6 +1,7 @@
 package app.documents.core.di.dagger
 
 import android.content.Context
+import app.documents.core.login.LoginRepository
 import app.documents.core.network.login.ILoginServiceProvider
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
@@ -13,7 +14,6 @@ import app.documents.core.providers.WebDavFileProvider
 import dagger.BindsInstance
 import dagger.Component
 
-@CoreScope
 @Component(modules = [CoreModule::class])
 interface CoreComponent {
 
@@ -26,6 +26,8 @@ interface CoreComponent {
         fun build(): CoreComponent
     }
 
+    val loginRepository: LoginRepository
+    
     val shareService: ShareService
     val managerService: ManagerService
     val webDavService: WebDavService
@@ -36,5 +38,4 @@ interface CoreComponent {
     val roomProvider: RoomProvider
     val webDavFileProvider: WebDavFileProvider
     val loginService: ILoginServiceProvider
-
 }

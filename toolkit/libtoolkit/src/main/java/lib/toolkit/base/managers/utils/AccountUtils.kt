@@ -3,10 +3,8 @@ package lib.toolkit.base.managers.utils
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.R
@@ -40,6 +38,7 @@ data class AccountData(
     val expires: String? = null
 )
 
+// TODO: Replace with class AccountManager(context: Context) for correct injection
 object AccountUtils {
 
     const val KEY_ACCOUNT_TYPE = "KEY_ACCOUNT_TYPE"
@@ -49,15 +48,9 @@ object AccountUtils {
 
     @JvmStatic
     fun addAccount(context: Context, account: Account, password: String, userData: AccountData): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            getAccountManager(context).addAccountExplicitly(account, password, Bundle().apply {
-                putString(ACCOUNT_DATA, Json.encodeToString(userData))
-            }, mapOf(Pair("com.onlyoffice.projects", AccountManager.VISIBILITY_VISIBLE)))
-        } else {
-            return getAccountManager(context).addAccountExplicitly(account, password, Bundle().apply {
-                putString(ACCOUNT_DATA, Json.encodeToString(userData))
-            })
-        }
+        return getAccountManager(context).addAccountExplicitly(account, password, Bundle().apply {
+            putString(ACCOUNT_DATA, Json.encodeToString(userData))
+        }, mapOf(Pair("com.onlyoffice.projects", AccountManager.VISIBILITY_VISIBLE)))
     }
 
     /**

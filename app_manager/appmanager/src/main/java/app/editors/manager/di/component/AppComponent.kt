@@ -1,6 +1,7 @@
 package app.editors.manager.di.component
 
 import android.content.Context
+import app.documents.core.di.dagger.CoreComponent
 import app.documents.core.network.common.interceptors.WebDavInterceptor
 import app.documents.core.providers.OneDriveFileProvider
 import app.documents.core.storage.account.AccountDao
@@ -82,19 +83,22 @@ import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import javax.inject.Singleton
 
-@Component(modules = [AppModule::class])
+@Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
 @Singleton
 interface AppComponent {
 
     @Component.Builder
-    interface Builder{
+    interface Builder {
 
         @BindsInstance
         fun context(context: Context): Builder
 
+        fun coreComponent(coreComponent: CoreComponent): Builder
+
         fun build(): AppComponent
 
     }
+
     /*
     * TODO scopes!
     * */
