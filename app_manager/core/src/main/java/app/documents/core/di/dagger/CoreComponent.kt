@@ -1,7 +1,6 @@
-package app.editors.manager.di.component
+package app.documents.core.di.dagger
 
-import app.documents.core.di.dagger.CoreModule
-import app.documents.core.di.dagger.CoreScope
+import android.content.Context
 import app.documents.core.network.login.ILoginServiceProvider
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
@@ -11,19 +10,20 @@ import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.RoomProvider
 import app.documents.core.providers.WebDavFileProvider
+import dagger.BindsInstance
 import dagger.Component
 
 @CoreScope
-@Component(modules = [CoreModule::class], dependencies = [AppComponent::class])
+@Component(modules = [CoreModule::class])
 interface CoreComponent {
 
     @Component.Builder
     interface Builder {
 
-        fun appComponent(appComponent: AppComponent): Builder
+        @BindsInstance
+        fun context(context: Context): Builder
 
         fun build(): CoreComponent
-
     }
 
     val shareService: ShareService

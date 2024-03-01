@@ -9,6 +9,8 @@ import android.os.Process
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.InvalidationTracker
+import app.documents.core.di.dagger.CoreComponent
+import app.documents.core.di.dagger.DaggerCoreComponent
 import app.documents.core.network.login.ILoginServiceProvider
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
@@ -27,9 +29,7 @@ import app.documents.core.providers.WebDavFileProvider
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.AppComponent
-import app.editors.manager.di.component.CoreComponent
 import app.editors.manager.di.component.DaggerAppComponent
-import app.editors.manager.di.component.DaggerCoreComponent
 import app.editors.manager.di.component.DaggerDropboxComponent
 import app.editors.manager.di.component.DaggerGoogleDriveComponent
 import app.editors.manager.di.component.DaggerOneDriveComponent
@@ -99,7 +99,7 @@ class App : Application() {
 
     val coreComponent: CoreComponent by lazy  {
         DaggerCoreComponent.builder()
-            .appComponent(appComponent)
+            .context(applicationContext)
             .build()
     }
 

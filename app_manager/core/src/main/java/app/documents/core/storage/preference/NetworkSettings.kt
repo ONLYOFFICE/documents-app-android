@@ -3,8 +3,9 @@ package app.documents.core.storage.preference
 import android.content.Context
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.storage.account.CloudAccount
+import javax.inject.Inject
 
-class NetworkSettings(context: Context) {
+class NetworkSettings @Inject constructor(context: Context) {
 
     companion object {
         private val TAG: String = NetworkSettings::class.java.simpleName

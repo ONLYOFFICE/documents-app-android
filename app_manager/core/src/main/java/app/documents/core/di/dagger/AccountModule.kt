@@ -15,11 +15,9 @@ import javax.inject.Singleton
 object AccountModule {
 
     @Provides
-    @Singleton
     fun providesAccountDao(db: AccountsDataBase) = db.accountDao()
 
     @Provides
-    @Singleton
     fun providesAccountDataBase(context: Context): AccountsDataBase {
         val builder = Room.databaseBuilder(context, AccountsDataBase::class.java, AccountsDataBase.TAG)
             .addMigrations(AccountsDataBase.MIGRATION_1_2)

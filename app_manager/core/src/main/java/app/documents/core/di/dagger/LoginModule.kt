@@ -2,8 +2,12 @@ package app.documents.core.di.dagger
 
 import android.content.Context
 import app.documents.core.di.dagger.CoreModule.json
+import app.documents.core.login.LoginRepository
+import app.documents.core.login.LoginRepositoryImpl
+import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.ILoginServiceProvider
+import app.documents.core.network.login.LoginDataSource
 import app.documents.core.network.login.LoginInterceptor
 import app.documents.core.network.login.LoginService
 import app.documents.core.network.login.LoginServiceProvider
@@ -11,7 +15,6 @@ import app.documents.core.storage.preference.NetworkSettings
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
-import lib.toolkit.base.managers.http.NetworkClient
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
@@ -19,6 +22,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 class LoginModule {
@@ -49,4 +53,9 @@ class LoginModule {
     @Provides
     fun provideLogin(loginService: LoginService): ILoginServiceProvider = LoginServiceProvider(loginService)
 
+    @Provides
+    @Singleton
+    fun provideLoginRepository(loginDataSource: LoginDataSource): LoginRepository {
+        return LoginRepositoryImpl(loginDataSource)
+    }
 }
