@@ -54,7 +54,6 @@ import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.capitalize
-import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import javax.inject.Inject
 import lib.toolkit.base.ui.fragments.base.BaseFragment
 
@@ -141,8 +140,7 @@ class AppSettingsFragment : BaseFragment() {
                                 onAnalytics = viewModel::setAnalytic,
                                 onPasscodeClick = { navController.navigate(Screen.Passcode.route) },
                                 onLocaleClick = { navController.navigate(Screen.LocalePicker.route) },
-                                onAboutClick = { navController.navigate(Screen.About.route) }
-                                onAnalytics = viewModel::setAnalytic,
+                                onAboutClick = { navController.navigate(Screen.About.route) },
                                 onCacheClear = { viewModel.clearCache() }
                             )
                         }
@@ -351,7 +349,7 @@ class AppSettingsFragment : BaseFragment() {
                 onPasscodeClick = {},
                 onLocaleClick = {},
                 onAboutClick = {},
-                {}
+                onCacheClear = {}
             )
         }
     }
