@@ -12,12 +12,14 @@
         android:id="@+id/app_bar_layout"
         style="@style/Widget.Common.AppBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
 
         <app.editors.manager.ui.views.custom.MainToolbar
             android:id="@+id/app_bar_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:animateLayoutChanges="true"
             android:minHeight="?attr/actionBarSize" />
 
         <com.google.android.material.tabs.TabLayout
@@ -48,6 +50,7 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/app_floating_action_button"
+        style="@style/App.Fab.Style"
         android:layout_width="@dimen/default_action_bottom_size"
         android:layout_height="@dimen/default_action_bottom_size"
         android:layout_gravity="bottom|end"
@@ -56,7 +59,6 @@
         android:focusable="true"
         android:scaleType="center"
         android:src="@drawable/ic_action_button_docs_add"
-        android:tint="@color/colorSurface"
         app:fabSize="normal"
         app:layout_anchorGravity="bottom|right|end"
         tools:ignore="ContentDescription" />

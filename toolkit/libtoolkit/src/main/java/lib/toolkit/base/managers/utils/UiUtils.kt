@@ -756,6 +756,14 @@ object UiUtils {
         doAfterTextChanged { disableButton.isEnabled = text.trim().isNotEmpty() }
     }
 
+    fun getPrimaryColor(context: Context): Int {
+        val typedValue = TypedValue()
+        val array = context.obtainStyledAttributes(typedValue.data, intArrayOf(android.R.attr.colorPrimary))
+        val color = array.getColor(0, 0)
+        array.recycle()
+        return color
+    }
+
 }
 
 

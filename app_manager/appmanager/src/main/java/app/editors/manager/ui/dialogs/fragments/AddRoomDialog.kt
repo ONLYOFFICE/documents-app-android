@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.ui.fragments.main.AddRoomFragment
 import lib.toolkit.base.managers.utils.UiUtils
@@ -18,7 +18,7 @@ class AddRoomDialog : BaseDialogFragment() {
 
         val TAG: String = AddRoomDialog::class.java.simpleName
 
-        fun newInstance(roomType: Int, room: CloudFolder? = null, isCopy: Boolean = false): AddRoomDialog {
+        fun newInstance(roomType: Int, room: Item? = null, isCopy: Boolean = false): AddRoomDialog {
             return AddRoomDialog().putArgs(
                 AddRoomFragment.TAG_ROOM_TYPE to roomType,
                 AddRoomFragment.TAG_ROOM_INFO to room,

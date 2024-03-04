@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="AppBaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppBaseTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorOnPrimary">@color/colorOnPrimary</item>
         <item name="colorSecondary">@color/colorSecondary</item>
@@ -13,14 +13,19 @@
         <item name="android:textColorPrimary">@color/colorTextPrimary</item>
         <item name="android:colorBackground">@color/colorBackground</item>
         <item name="android:statusBarColor">@color/colorAppBar</item>
+        <item name="android:navigationBarColor">@color/colorBackground</item>
         <item name="android:windowBackground">@color/colorBackground</item>
         <item name="elevationOverlayEnabled">false</item>
         <item name="android:textDirection">locale</item>
         <item name="android:supportsRtl">true</item>
+        <item name="colorPrimaryContainer">@color/colorSecondary</item>
+        <item name="colorOnPrimaryContainer">@color/colorSurface</item>
+        <item name="android:textColorHighlight">@color/colorSecondary30</item>
     </style>
 
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 
     <!-- ======================================================================================= -->
@@ -30,6 +35,12 @@
     <style name="NoActionBarTheme" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="MainActivityTheme" parent="AppBaseTheme">
+        <item name="android:navigationBarColor">@color/colorBottomBar</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">false</item>
     </style>
 
     <style name="WebViewerActivityStyle" parent="AppTheme">
@@ -52,6 +63,9 @@
     </style>
 
     <style name="Theme.Common.BottomSheetDialog" parent="Theme.MaterialComponents.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:navigationBarColor">@color/colorSurface</item>
+        <item name="android:windowLightNavigationBar">true</item>
         <item name="bottomSheetStyle">@style/Widget.Common.BottomSheetDialog</item>
     </style>
 
@@ -335,5 +349,14 @@
     </style>
 
     <style name="App.Dialog.Buttons" parent="Widget.Common.Button.TextButton" />
+
+    <style name="App.Fab.Style" parent="ThemeOverlay.Material3.FloatingActionButton.Primary">
+        <item name="shapeAppearance">@style/App.Fab.Shape</item>
+    </style>
+
+    <style name="App.Fab.Shape" parent="ShapeAppearance.Material3.Corner.Medium">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">100%</item>
+    </style>
 
 </resources>

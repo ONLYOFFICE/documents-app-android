@@ -103,7 +103,7 @@
             android:launchMode="singleInstance"
             android:clearTaskOnLaunch="true"
             android:supportsPictureInPicture="true"
-            android:theme="@style/NoActionBarTheme"
+            android:theme="@style/MainActivityTheme"
             android:windowSoftInputMode="adjustResize|adjustPan|stateAlwaysHidden">
             <!--            <intent-filter android:label="@string/upload_to_portal">-->
             <!--                <action android:name="android.intent.action.SEND" />-->
@@ -320,7 +320,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="@string/facebook_id_sheme" />
+                <data android:scheme="@string/facebook_id_sheme" android:host="@string/facebook_host"/>
             </intent-filter>
         </activity>
 

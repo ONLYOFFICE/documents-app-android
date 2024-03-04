@@ -348,7 +348,7 @@
     <!-- Dialog info -->
 
     <!-- Pager -->
-    <string name="main_pager_docs_my">My document</string>
+    <string name="main_pager_docs_my">My documents</string>
     <string name="main_pager_docs_common">Common</string>
     <string name="main_pager_docs_share">Shared with me</string>
     <string name="main_pager_docs_projects">Projects</string>
@@ -369,7 +369,6 @@
     <string name="placeholder_no_users_groups">No users and groups</string>
     <string name="placeholder_media_error">Unable to load media</string>
     <string name="placeholder_try_again">Try again</string>
-    <string name="placeholder_loading">Loading…</string>
     <string name="placeholder_loading_files">Loading files…</string>
     <string name="placeholder_loading_users">Loading users…</string>
     <string name="placeholder_loading_groups">Loading groups…</string>
@@ -740,6 +739,8 @@
     <string name="room_set_owner_title">Change the Room Owner</string>
     <string name="room_search_not_found">No users found</string>
     <string name="room_search_not_found_desc">The list of users previously invited to DocSpace or separate rooms will appear here.</string>
+    <string name="room_placeholder_created_room_title">Room created!</string>
+    <string name="room_placeholder_created_room_subtitle">Create new folders to organize your files.</string>
 
     <plurals name="rooms_restore_title">
         <item quantity="one">Restore room?</item>
@@ -819,7 +820,7 @@
     <string name="app_settings_main_help">Help</string>
     <string name="settings_language">Language</string>
     <string name="clear_recents">"Clear recents?"</string>
-
+    <string name="context_protection_title">Protection</string>
     <!--  TODO example  -->
     <string name="settings_language_confirmation_message">
         Now application is using english language because of the system language has changed

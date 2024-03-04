@@ -11,13 +11,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -50,12 +47,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -81,10 +76,11 @@ import com.google.android.material.appbar.AppBarLayout
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTextField
 import lib.compose.ui.views.AppTopBar
-import lib.editors.gbase.ui.views.compose.link.clickable
+import lib.compose.ui.views.PlaceholderView
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 
@@ -151,7 +147,7 @@ class UsersFragment : BaseAppFragment() {
                                     Icon(
                                         imageVector = Icons.Outlined.Search,
                                         contentDescription = stringResource(id = android.R.string.search_go),
-                                        modifier = Modifier.clickable(noRipple = false) {
+                                        modifier = Modifier.clickable {
                                             isSearchVisible.value = true
                                         })
                                 })
@@ -224,7 +220,10 @@ private fun MainScreen(
 //                    Spacer(modifier = Modifier.height((-64).dp))
 //                }
                 itemsIndexed(groupUser[key] ?: emptyList(), key = { _, user -> user.id }) { index, user ->
-                    Row(Modifier.animateItemPlacement()) {
+                    Row(modifier = Modifier
+                        .animateItemPlacement()
+                        .clickable { click.invoke(user) }
+                    ) {
                         if (index == 0) {
                             Text(
                                 text = key.toString(),
@@ -239,10 +238,7 @@ private fun MainScreen(
                         } else {
                             Spacer(modifier = Modifier.width(48.dp))
                         }
-                        UserItem(
-                            user = user,
-                            click
-                        )
+                        UserItem(user = user)
                     }
 
                 }
@@ -255,44 +251,22 @@ private fun MainScreen(
 //            }
         }
     } else {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    horizontal = 40.dp,
-                ), contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(
-                    imageVector = ImageVector.vectorResource(id = lib.editors.gbase.R.drawable.image_not_found),
-                    contentDescription = null
-                )
-                Text(
-                    text = stringResource(id = R.string.room_search_not_found),
-                    style = MaterialTheme.typography.h6,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 32.dp)
-                )
-                Text(
-                    text = stringResource(id = R.string.room_search_not_found_desc),
-                    style = MaterialTheme.typography.subtitle1,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-            }
-        }
+        PlaceholderView(
+            image = lib.toolkit.base.R.drawable.placeholder_not_found,
+            title = stringResource(id = R.string.room_search_not_found),
+            subtitle = stringResource(id = R.string.room_search_not_found_desc)
+        )
     }
-
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun UserItem(user: User, click: (user: User) -> Unit) {
+private fun UserItem(user: User) {
     Row(modifier = Modifier
-        .clickable { click(user) }
         .fillMaxWidth()
-        .height(64.dp)
-        .padding(start = 16.dp)) {
+        .padding(horizontal = 16.dp)
+        .padding(vertical = 8.dp)
+    ) {
         GlideImage(
             model = user.avatarMedium, contentDescription = null,
             loading = placeholder(R.drawable.ic_empty_image),
@@ -300,7 +274,7 @@ private fun UserItem(user: User, click: (user: User) -> Unit) {
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .clip(CircleShape)
-                .size(40.dp)
+                .size(48.dp)
         )
         Column(
             modifier = Modifier
@@ -313,7 +287,8 @@ private fun UserItem(user: User, click: (user: User) -> Unit) {
             )
             Text(
                 text = user.email ?: "",
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.body2,
+                color = MaterialTheme.colors.colorTextSecondary
             )
         }
     }

@@ -5,9 +5,9 @@
 
     <item
         android:id="@+id/deleteSelected"
-        android:icon="@drawable/drawable_ic_trash"
-        android:iconTint="@color/colorPrimary"
+        android:icon="@drawable/ic_trash"
         android:visible="false"
+        app:iconTint="@color/colorPrimary"
         app:showAsAction="always"
         tools:ignore="MenuTitle,UnusedAttribute" />
 

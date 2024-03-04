@@ -6,7 +6,6 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ListExplorerFilesBinding
-import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.managers.utils.StringUtils as ManagerStringUtils
 
@@ -41,7 +40,7 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
                 isSectionMy = adapter.isSectionMy
             )
 
-            listExplorerFileContext.isVisible = true
+            listExplorerFileContext.isVisible = !adapter.isSelectMode
             listExplorerFileFavorite.isVisible = file.favorite
 
             viewIconSelectableLayout.setItem(file)

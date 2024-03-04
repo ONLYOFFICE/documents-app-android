@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/menu_share_settings"
         android:enabled="true"
-        android:icon="@drawable/drawable_menu_internal_link"
-        android:iconTint="@color/colorTextSecondary"
+        android:icon="@drawable/ic_list_context_external_link"
         android:visible="true"
+        app:iconTint="@color/colorTextSecondary"
         app:showAsAction="always"
         tools:ignore="MenuTitle" />
 </menu>

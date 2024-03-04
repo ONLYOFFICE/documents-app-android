@@ -201,7 +201,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT)
             else -> super.onContextButtonClick(contextItem)
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun onActionDialog() {

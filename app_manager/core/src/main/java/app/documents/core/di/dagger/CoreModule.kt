@@ -2,6 +2,8 @@ package app.documents.core.di.dagger
 
 import android.content.Context
 import app.documents.core.network.common.interceptors.BaseInterceptor
+import app.documents.core.network.manager.models.explorer.PathPart
+import app.documents.core.network.manager.models.explorer.PathPartTypeAdapter
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.preference.NetworkSettings
 import com.google.gson.GsonBuilder
@@ -54,6 +56,7 @@ object CoreModule {
                 .setPrettyPrinting()
                 .setDateFormat(TimeUtils.OUTPUT_PATTERN_DEFAULT)
                 .serializeNulls()
+                .registerTypeAdapter(PathPart::class.java, PathPartTypeAdapter())
                 .create()
         )
     }

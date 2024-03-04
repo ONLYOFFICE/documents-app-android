@@ -27,15 +27,21 @@ class ExplorerContextBottomDialog : BaseBottomDialog() {
         fun onContextButtonClick(contextItem: ExplorerContextItem)
     }
 
-    var onClickListener: OnClickListener? = null
+
+    override fun getTheme(): Int {
+        return lib.toolkit.base.R.style.Theme_Common_BottomSheetDialog
+    }
+
+    private val onClickListener: OnClickListener
+        get() = try {
+            parentFragmentManager.fragments
+                .first { it.isResumed && it is OnClickListener } as OnClickListener
+        } catch (_: NoSuchElementException) {
+            throw RuntimeException("Parent fragment must be inherited from ${OnClickListener::class.java}")
+        }
 
     private var viewBinding: ListExplorerContextMenuBinding? = null
     private val viewModel: ExplorerContextViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.Theme_Common_BottomSheetDialog)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         viewBinding = ListExplorerContextMenuBinding.inflate(layoutInflater)
@@ -44,9 +50,14 @@ class ExplorerContextBottomDialog : BaseBottomDialog() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewBinding?.contextList?.layoutManager = LinearLayoutManager(requireContext())
-        viewBinding?.contextList?.adapter = ExplorerContextAdapter(onClickListener).also { adapter ->
+        viewBinding?.contextList?.adapter = ExplorerContextAdapter(::onClick).also { adapter ->
             adapter.setItems(viewModel.getContextItems(arguments?.getSerializableExt(KEY_EXPLORER_CONTEXT_STATE)))
         }
+    }
+
+    private fun onClick(explorerContextItem: ExplorerContextItem) {
+        onClickListener.onContextButtonClick(explorerContextItem)
+        dismiss()
     }
 
 }

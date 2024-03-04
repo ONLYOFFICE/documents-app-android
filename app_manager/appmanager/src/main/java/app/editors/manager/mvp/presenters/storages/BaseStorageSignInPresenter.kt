@@ -5,7 +5,6 @@ import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.base.BaseStorageSignInView
 import io.reactivex.disposables.Disposable
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,6 +23,7 @@ open class BaseStorageSignInPresenter<view: BaseStorageSignInView>: BasePresente
     }
 
     fun saveAccount(cloudAccount: CloudAccount, accountData: AccountData, accessToken: String) {
+        networkSettings.isDocSpace = false
         val account = Account(cloudAccount.getAccountName(), context.getString(R.string.account_type))
 
         if (AccountUtils.addAccount(context, account, "", accountData)) {

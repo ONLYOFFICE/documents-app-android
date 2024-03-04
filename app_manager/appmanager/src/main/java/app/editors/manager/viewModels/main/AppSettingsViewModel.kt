@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.FileUtils
+import lib.toolkit.base.managers.utils.mutableStateIn
 
 data class AppSettingsState(
     val cache: Long = 0,
@@ -41,15 +42,18 @@ class AppSettingsViewModel(
 ) : ViewModel() {
 
 
-    private val _settingsState: MutableStateFlow<AppSettingsState> = MutableStateFlow(
-        AppSettingsState(
-            cache = cache,
-            analytics = preferenceTool.isAnalyticEnable,
-            wifi = preferenceTool.uploadWifiState,
-            passcodeEnabled = preferenceTool.passcodeLock.enabled,
-            themeMode = themePrefs.mode
+    private val _settingsState: MutableStateFlow<AppSettingsState> = flow {
+        emit(
+            AppSettingsState(
+                cache = cache,
+                analytics = preferenceTool.isAnalyticEnable,
+                wifi = preferenceTool.uploadWifiState,
+                passcodeEnabled = preferenceTool.passcodeLock.enabled,
+                themeMode = themePrefs.mode
+            )
         )
-    )
+
+    }.mutableStateIn(viewModelScope, AppSettingsState())
 
     val settingsState: StateFlow<AppSettingsState> = _settingsState.asStateFlow()
 

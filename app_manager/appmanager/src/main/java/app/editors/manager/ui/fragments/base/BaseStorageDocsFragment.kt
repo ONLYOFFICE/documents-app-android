@@ -109,7 +109,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
             is ExplorerContextItem.ExternalLink -> presenter.externalLink
             else -> super.onContextButtonClick(contextItem)
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun onOpenLocalFile(file: CloudFile) {
@@ -156,13 +155,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
                 isVisible = true
             }
             setAccountEnable(false)
-        }
-    }
-
-    override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
-        super.onStateMenuDefault(sortBy, isAsc)
-        searchCloseButton?.setOnClickListener {
-            onBackPressed()
         }
     }
 

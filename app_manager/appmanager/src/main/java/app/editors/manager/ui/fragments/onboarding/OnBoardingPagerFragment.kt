@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
@@ -31,8 +30,6 @@ class OnBoardingPagerFragment : BaseAppFragment() {
         super.onAttach(context)
         App.getApp().appComponent.inject(this)
     }
-
-    override fun dispatchTouchEvent(ev: MotionEvent) { }
 
     override fun onCreateView(
         inflater: LayoutInflater,

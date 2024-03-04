@@ -29,6 +29,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import lib.compose.ui.addIf
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.colorTextTertiary
 import lib.compose.ui.views.AppDivider
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 
@@ -175,12 +176,10 @@ fun AddRoomItem(
             } else {
                 if (isClickable) {
                     Icon(
-                        imageVector =
-                        ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_arrow_right),
+                        imageVector = ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_arrow_right),
                         contentDescription = null,
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .weight(0.1f)
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        tint = MaterialTheme.colors.colorTextTertiary
                     )
                 }
             }

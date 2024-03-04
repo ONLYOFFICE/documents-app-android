@@ -12,9 +12,9 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Environment
 import android.os.StatFs
-import android.util.Base64
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
+import androidx.documentfile.provider.DocumentFile
 import lib.toolkit.base.BuildConfig
 import okhttp3.ResponseBody
 import java.io.*
@@ -84,21 +84,13 @@ object FileUtils {
 
     @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
-    fun deletePath(path: File): Int {
-        var count = 0
-        if (path.isDirectory) {
-            path.listFiles()?.forEach {
-                count += deletePath(it)
-            }
-        }
-
-        count += if (path.delete()) 1 else 0
-        return count
+    fun deletePath(path: File): Boolean {
+        return path.deleteRecursively()
     }
 
     @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
-    fun deletePath(path: String): Int {
+    fun deletePath(path: String): Boolean {
         return deletePath(File(path))
     }
 
@@ -134,13 +126,6 @@ object FileUtils {
         }
 
         return null
-    }
-
-    @RequiresPermission(WRITE_EXTERNAL_STORAGE)
-    @JvmStatic
-    @JvmOverloads
-    fun clearCacheDir(context: Context, isExternal: Boolean = true): Int {
-        return deletePath(getCachePath(context, isExternal))
     }
 
     /*
@@ -190,10 +175,12 @@ object FileUtils {
     }
 
     @JvmStatic
-    fun readSdkVersion(context: Context, path: String = "sdk.version") = context.assets.open(path).use { input ->
+    fun readSdkVersion(context: Context, path: String = "sdk.version"): String {
         try {
-            input.reader(Charsets.UTF_8).use { reader ->
-                reader.readText()
+            context.assets.open(path).use { input ->
+                return input.reader(Charsets.UTF_8).use { reader ->
+                    reader.readText()
+                }
             }
         } catch (e: FileNotFoundException) {
             return ""
@@ -220,8 +207,8 @@ object FileUtils {
 
     @JvmStatic
     fun copyAsset(context: Context, asset: String, to: String) {
-        BufferedInputStream(context.assets.open(asset))?.use { input ->
-            BufferedOutputStream(FileOutputStream("$to/$asset"))?.use { output ->
+        BufferedInputStream(context.assets.open(asset)).use { input ->
+            BufferedOutputStream(FileOutputStream("$to/$asset")).use { output ->
                 output.write(input.readBytes())
             }
         }
@@ -290,21 +277,6 @@ object FileUtils {
                 return true
             }
         }
-
-        return false
-    }
-
-    @RequiresPermission(allOf = [WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE])
-    @JvmStatic
-    fun copyFile(from: String, to: String): Boolean {
-        BufferedInputStream(FileInputStream(from)).use { input ->
-            BufferedOutputStream(FileOutputStream(to)).use { output ->
-                output.write(input.readBytes())
-                output.flush()
-                return true
-            }
-        }
-
         return false
     }
 
@@ -333,7 +305,11 @@ object FileUtils {
         isExternal: Boolean = true
     ): Cache? {
         return getCache(context, dstFileName, dstFolderName, isExternal)?.apply {
-            to = addExtension(getExtension(StringUtils.getExtensionFromPath(uri.path ?: "")), to!!)
+            to = if (uri.scheme == "content") {
+                addExtension(getExtension(StringUtils.getExtensionFromPath(DocumentFile.fromSingleUri(context, uri)?.name ?: "")), to!!)
+            } else{
+                addExtension(getExtension(StringUtils.getExtensionFromPath(uri.path ?: "")), to!!)
+            }
             copyFile(context, uri, to!!)
         }
     }

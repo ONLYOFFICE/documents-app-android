@@ -64,7 +64,6 @@ class DocsTrashFragment : DocsCloudFragment() {
 
             else -> super.onContextButtonClick(contextItem)
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun onDeleteBatch(list: List<Entity>) {

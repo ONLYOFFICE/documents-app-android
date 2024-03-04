@@ -7,6 +7,12 @@
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/composeView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/placeholder_text"
         style="@style/Widget.Common.TextView.Large"
@@ -16,7 +22,7 @@
         android:layout_marginTop="80dp"
         tools:text="Placeholder text" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:visibility="gone"
         android:id="@+id/inviteByEmailButton"
         style="@style/Widget.Common.TextView.Clickable"

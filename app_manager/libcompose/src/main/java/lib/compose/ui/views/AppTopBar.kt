@@ -24,6 +24,7 @@ import lib.toolkit.base.R
 
 @Composable
 fun AppTopBar(
+    modifier: Modifier = Modifier,
     title: @Composable () -> Unit,
     isClose: Boolean = false,
     tint: Color? = null,
@@ -32,6 +33,7 @@ fun AppTopBar(
 ) {
     CompositionLocalProvider(LocalElevationOverlay provides null) { // For correct background color
         TopAppBar(
+            modifier = modifier,
             title = { title.invoke() },
             backgroundColor = MaterialTheme.colors.colorTopAppBar,
             navigationIcon = backListener?.let {
@@ -53,6 +55,7 @@ fun AppTopBar(
 
 @Composable
 fun AppTopBar(
+    modifier: Modifier = Modifier,
     title: String,
     isClose: Boolean = false,
     tint: Color? = null,
@@ -60,6 +63,7 @@ fun AppTopBar(
     backListener: (() -> Unit)? = null
 ) {
     AppTopBar(
+        modifier = modifier,
         title = {
             Text(
                 text = title,
@@ -78,6 +82,7 @@ fun AppTopBar(
 
 @Composable
 fun AppTopBar(
+    modifier: Modifier = Modifier,
     @StringRes title: Int,
     isClose: Boolean = false,
     tint: Color? = null,
@@ -85,6 +90,7 @@ fun AppTopBar(
     backListener: (() -> Unit)? = null
 ) {
     AppTopBar(
+        modifier = modifier,
         title = stringResource(id = title),
         isClose = isClose,
         tint = tint,

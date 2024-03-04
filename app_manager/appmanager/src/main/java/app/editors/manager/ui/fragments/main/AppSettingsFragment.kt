@@ -1,6 +1,5 @@
 package app.editors.manager.ui.fragments.main
 
-import android.Manifest
 import android.app.LocaleManager
 import android.content.Context
 import android.os.Build
@@ -8,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -29,7 +27,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
@@ -37,7 +34,6 @@ import app.editors.manager.ui.activities.main.AboutScreen
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.compose.locale.AppLocalePickerScreen
 import app.editors.manager.ui.compose.passcode.PasscodeMainScreen
-import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.viewModels.main.AppSettingsState
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import app.editors.manager.viewModels.main.AppSettingsViewModelFactory
@@ -56,9 +52,11 @@ import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.capitalize
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import javax.inject.Inject
+import lib.toolkit.base.ui.fragments.base.BaseFragment
 
 private data class ClearCacheMessage(
     val title: String?,
@@ -73,16 +71,11 @@ private sealed class Screen(val route: String) {
     data object About : Screen("about")
 }
 
-@Suppress("KotlinConstantConditions")
-class AppSettingsFragment : BaseAppFragment() {
+class AppSettingsFragment : BaseFragment() {
 
     companion object {
         val TAG: String = AppSettingsFragment::class.java.simpleName
-
         fun newInstance(): AppSettingsFragment = AppSettingsFragment()
-
-        private const val TAG_DIALOG_CLEAR_CACHE = "TAG_DIALOG_CLEAR_CACHE"
-        private const val TAG_DIALOG_RATE_FEEDBACK = "TAG_DIALOG_RATE_FEEDBACK"
     }
 
     @Inject
@@ -98,12 +91,6 @@ class AppSettingsFragment : BaseAppFragment() {
 
     private val passcodeViewModel by viewModels<PasscodeViewModel> {
         PasscodeViewModelFactory(preferenceTool = preferenceTool)
-    }
-
-    private val getWritePermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { result ->
-        if (result) {
-            viewModel.clearCache()
-        }
     }
 
     private val clearCacheMessage: ClearCacheMessage
@@ -155,6 +142,8 @@ class AppSettingsFragment : BaseAppFragment() {
                                 onPasscodeClick = { navController.navigate(Screen.Passcode.route) },
                                 onLocaleClick = { navController.navigate(Screen.LocalePicker.route) },
                                 onAboutClick = { navController.navigate(Screen.About.route) }
+                                onAnalytics = viewModel::setAnalytic,
+                                onCacheClear = { viewModel.clearCache() }
                             )
                         }
                         composable(Screen.Theme.route) {
@@ -189,26 +178,6 @@ class AppSettingsFragment : BaseAppFragment() {
         }
     }
 
-    override fun onAcceptClick(dialogs: Dialogs?, value: String?, tag: String?) {
-        super.onAcceptClick(dialogs, value, tag)
-        if (tag != null) {
-            when (tag) {
-                TAG_DIALOG_CLEAR_CACHE -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        viewModel.clearCache()
-                    } else {
-                        getWritePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    }
-                }
-
-                TAG_DIALOG_RATE_FEEDBACK -> {
-                    ActivitiesUtils.sendFeedbackEmail(requireContext(), value.orEmpty())
-                }
-            }
-        }
-        hideDialog()
-    }
-
     private fun initToolbar(screen: String?) {
         (activity as? IMainActivity)?.apply {
             val title = when (screen) {
@@ -236,6 +205,7 @@ class AppSettingsFragment : BaseAppFragment() {
         onAboutClick: () -> Unit,
         onWifiState: (Boolean) -> Unit,
         onAnalytics: (Boolean) -> Unit,
+        onCacheClear: () -> Unit
     ) {
         Surface(color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -267,18 +237,18 @@ class AppSettingsFragment : BaseAppFragment() {
                 AppArrowItem(
                     title = R.string.settings_clear_cache,
                     option = StringUtils.getFormattedSize(context, settingsState.cache),
-                    dividerVisible = false
+                    dividerVisible = false,
+                    enabled = settingsState.cache > 0
                 ) {
                     val message = clearCacheMessage
-                    showQuestionDialog(
-                        message.title.orEmpty(),
-                        message.message,
-                        getString(R.string.dialogs_common_ok_button),
-                        getString(R.string.dialogs_common_cancel_button),
-                        TAG_DIALOG_CLEAR_CACHE
+                    UiUtils.showQuestionDialog(
+                        context,
+                        title = message.title.orEmpty(),
+                        description = message.message,
+                        acceptListener = onCacheClear
                     )
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && BuildConfig.APPLICATION_ID == "com.onlyoffice.documents") {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     with(requireContext().getSystemService(LocaleManager::class.java)) {
                         val currentAppLocale = applicationLocales.get(0) ?: systemLocales.get(0)
                         AppArrowItem(
@@ -380,7 +350,8 @@ class AppSettingsFragment : BaseAppFragment() {
                 onAnalytics = {},
                 onPasscodeClick = {},
                 onLocaleClick = {},
-                onAboutClick = {}
+                onAboutClick = {},
+                {}
             )
         }
     }

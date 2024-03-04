@@ -10,12 +10,14 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.work.WorkManager
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.webdav.WebDavService
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
+import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.ActivityMainBinding
 import app.editors.manager.managers.receivers.AppLocaleReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver
@@ -42,8 +44,6 @@ import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.*
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
-import lib.toolkit.base.ui.views.animation.collapse
-import lib.toolkit.base.ui.views.animation.expand
 import moxy.presenter.InjectPresenter
 import java.util.*
 
@@ -161,10 +161,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             fragment.getArgs(intent)
         }
 
-        intent?.apply {
-            data = null
-            clipData = null
-        }
+        intent?.clearIntent()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -219,6 +216,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onDestroy() {
         super.onDestroy()
+        appComponent.preference.modules = ""
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             unregisterReceiver(AppLocaleReceiver)
         }
@@ -240,6 +238,12 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             viewBinding.bottomNavigation.menu.getItem(0).isEnabled = recents.isNotEmpty()
         }
 
+        if (intent?.action == Intent.ACTION_VIEW) {
+            intent.data?.let {
+                presenter.checkFileData(it)
+                intent.clearIntent()
+            }
+        }
     }
 
     private fun initViews() {
@@ -699,15 +703,13 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         setAppBarMode(isVisible)
         showAccount(isVisible)
         showNavigationButton(!isVisible)
-        if (isVisible) {
-            if (viewBinding.appBarTabs.visibility != View.VISIBLE) {
-                viewBinding.appBarLayout.postDelayed({
-                    viewBinding.appBarTabs.expand(100)
-                }, 10)
-            }
-        } else {
-            viewBinding.appBarTabs.collapse()
+        viewBinding.appBarLayout.post {
+            viewBinding.appBarTabs.isVisible = isVisible
+
         }
+//        viewBinding.appBarLayout.postDelayed({
+//            viewBinding.appBarTabs.isVisible = isVisible
+//        }, 150)
     }
 
     private fun isNotification(): Boolean =

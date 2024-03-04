@@ -396,7 +396,7 @@ object StringUtils {
     }
 
     fun getDeviceName(): String {
-        return "${Build.MODEL} ${Build.TYPE}"
+        return Build.MODEL + " " + Build.DEVICE
     }
 
     fun getAvatarName(name: String): String {

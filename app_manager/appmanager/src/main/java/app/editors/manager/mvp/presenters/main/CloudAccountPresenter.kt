@@ -29,7 +29,6 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -95,10 +94,13 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     private suspend fun switchAccount(saveState: Bundle? = null) {
         val data = Json.decodeFromString<OpenDataModel>(preferenceTool.fileData)
-        accountDao.getAccountByLogin(data.email?.lowercase() ?: "")?.let { cloudAccount ->
-            checkLogin(cloudAccount)
-        } ?: run {
-            getTokens(accountDao.getAccounts(), saveState)
+        accountDao.getAccounts()
+            .find { account ->
+                data.getPortalWithoutScheme()?.equals(account.portal,true) == true && data.email?.equals(account.login,true) == true
+            }?.let { cloudAccount ->
+                checkLogin(cloudAccount)
+            } ?: run {
+                getTokens(accountDao.getAccounts(), saveState)
         }
     }
 
@@ -315,7 +317,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             .flatMap { loginService.subscribe(token, preferenceTool.deviceMessageToken, true).toObservable() }
             .toList()
             .subscribe({
-                loginSuccess(account)
+                loginSuccess(account, true)
             }, {
                 checkError(it, account)
             })
@@ -366,7 +368,10 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             })
     }
 
-    private fun loginSuccess(account: CloudAccount) {
+    private fun loginSuccess(account: CloudAccount, withCapabilities: Boolean = false) {
+        if (!withCapabilities) {
+            networkSettings.isDocSpace = false
+        }
         context.accountOnline?.let { onlineAccount ->
             setSettings(onlineAccount)
             unsubscribePush(onlineAccount, AccountUtils.getToken(context, onlineAccount.getAccountName())) {

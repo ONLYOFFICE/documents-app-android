@@ -267,7 +267,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                 }
 
                 preferenceTool.fileData = ""
-                if (data.portal?.equals(
+                if (data.getPortalWithoutScheme()?.equals(
                         account.portal,
                         ignoreCase = true
                     ) == true &&

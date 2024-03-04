@@ -12,7 +12,6 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.webdav.WebDavService
 import app.documents.core.storage.account.CloudAccount
-import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import com.bumptech.glide.Glide
@@ -30,24 +29,28 @@ object ManagerUiUtils {
                     R.drawable.ic_storage_nextcloud
                 )
             )
+
             WebDavService.Providers.OwnCloud -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_owncloud
                 )
             )
+
             WebDavService.Providers.Yandex -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_yandex
                 )
             )
+
             WebDavService.Providers.KDrive -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_kdrive
                 )
             )
+
             WebDavService.Providers.WebDav -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
@@ -97,8 +100,8 @@ object ManagerUiUtils {
         }
     }
 
-    fun getFileIcon(ext: String): Int {
-       return when (StringUtils.getExtension(ext)) {
+    private fun getFileIcon(ext: String): Int {
+        return when (StringUtils.getExtension(ext)) {
             StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
             StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet
             StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
@@ -111,20 +114,17 @@ object ManagerUiUtils {
             StringUtils.Extension.VIDEO -> R.drawable.ic_type_video
             StringUtils.Extension.ARCH -> R.drawable.ic_type_archive
             StringUtils.Extension.FORM -> {
-                if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents") {
-                    if (ext == ".${LocalContentTools.OFORM_EXTENSION}") R.drawable.ic_format_oform
-                    else R.drawable.ic_format_docxf
-                } else {
-                    R.drawable.ic_type_file
-                }
+                if (ext == ".${LocalContentTools.OFORM_EXTENSION}") R.drawable.ic_format_oform
+                else R.drawable.ic_format_docxf
             }
+
             else -> R.drawable.ic_type_file
         }
     }
 
     fun ImageView.setFileIcon(ext: String) {
         setImageResource(getFileIcon(ext))
-        alpha = 1.0f
+        imageAlpha = 255
     }
 
     fun ImageView.setFolderIcon(folder: CloudFolder, isRoot: Boolean) {
@@ -142,7 +142,7 @@ object ManagerUiUtils {
             folder.isRoom -> getRoomIcon(folder)
             folder.shared && folder.providerKey.isEmpty() -> R.drawable.ic_type_folder_shared
             isRoot && folder.providerItem -> StorageUtils.getStorageIcon(folder.providerKey)
-            ApiContract.SectionType.isArchive(folder.rootFolderType)-> R.drawable.ic_type_archive
+            ApiContract.SectionType.isArchive(folder.rootFolderType) -> R.drawable.ic_type_archive
             else -> R.drawable.ic_type_folder
         }
     }
