@@ -19,7 +19,6 @@ plugins {
 
 // Onlyoffice
 val appId = "com.onlyoffice.documents"
-val appIdBeta = "$appId.beta"
 val appName = "onlyoffice-manager"
 
 /*
@@ -79,7 +78,6 @@ android {
 
         val keystoreProperties = getKeystore("Onlyoffice-keystore.properties")
 
-        manifestPlaceholders["permissionId"] = appIdBeta
         manifestPlaceholders["facebookId"] = keystoreProperties["FACEBOOK_APP_ID"] as String? ?: ""
         manifestPlaceholders["dropboxKey"] = keystoreProperties["DROP_BOX_COM_CLIENT_ID"] as? String ?: ""
 
@@ -97,7 +95,6 @@ android {
 
         buildConfigField("boolean", "IS_BETA", "false")
         buildConfigField("String", "RELEASE_ID", "\"" + appId + "\"")
-        buildConfigField("String", "BETA_ID", "\"" + appIdBeta + "\"")
         buildConfigField("String", "APP_NAME", "\"" + appName + "\"")
         buildConfigField("String", "COMMUNITY_ID", "\"" + keystoreProperties["COMMUNITY_ID"] + "\"")
 
