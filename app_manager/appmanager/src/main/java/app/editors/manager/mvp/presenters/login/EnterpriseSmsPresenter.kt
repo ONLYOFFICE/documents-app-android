@@ -1,6 +1,6 @@
 package app.editors.manager.mvp.presenters.login
 
-import app.documents.core.storage.account.CloudAccount
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.login.models.request.RequestSignIn
 import app.editors.manager.R
@@ -8,7 +8,6 @@ import app.editors.manager.app.App
 import app.editors.manager.app.loginService
 import app.editors.manager.mvp.views.login.EnterpriseSmsView
 import io.reactivex.disposables.Disposable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import moxy.InjectViewState
 

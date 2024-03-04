@@ -1,7 +1,7 @@
 package app.editors.manager.mvp.views.main
 
 import androidx.annotation.StringRes
-import app.documents.core.storage.account.CloudAccount
+import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.base.BaseViewExt

@@ -13,6 +13,8 @@ import android.util.Log
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import app.documents.core.database.dao.RecentDao
+import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -28,9 +30,7 @@ import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.ProviderError.Companion.throwInterruptException
 import app.documents.core.providers.WebDavFileProvider
-import app.documents.core.storage.account.AccountDao
 import app.documents.core.storage.preference.NetworkSettings
-import app.documents.core.storage.recent.RecentDao
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -90,7 +90,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     lateinit var operationsState: OperationsState
 
     @Inject
-    lateinit var accountDao: AccountDao
+    lateinit var cloudDataSource: CloudDataSource
 
     @Inject
     lateinit var networkSettings: NetworkSettings
@@ -273,9 +273,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * */
 
     fun createFolder(title: String?) {
-        preferenceTool.portal?.let {
-            addAnalyticsCreateEntity(it, false, null)
-        }
+//        preferenceTool.portal?.let {
+//            addAnalyticsCreateEntity(it, false, null)
+//        }
 
         modelExplorerStack.currentId?.let { id ->
             val requestCreate = RequestCreate().apply {
@@ -1577,7 +1577,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         (itemClicked as? CloudFile)?.let { cloudFile ->
             fileProvider?.let { fileProvider ->
                 context.accountOnline?.let { account ->
-                    sendDisposable = fileProvider.getCachedFile(context, cloudFile, account.getAccountName())
+                    sendDisposable = fileProvider.getCachedFile(context, cloudFile, account.accountName)
                         .doOnSubscribe { viewState.onDialogDownloadWaiting() }
                         .doOnError { viewState.onError(context.getString(R.string.errors_create_local_file)) }
                         .doOnSuccess { file ->

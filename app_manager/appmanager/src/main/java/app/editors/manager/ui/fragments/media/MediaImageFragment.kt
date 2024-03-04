@@ -13,8 +13,8 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresPermission
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.storage.account.AccountDao
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentMediaImageBinding
@@ -49,7 +49,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
     lateinit var glideTool: GlideTool
 
     @Inject
-    lateinit var accountsDao: AccountDao
+    lateinit var cloudDataSource: CloudDataSource
 
     private var bitmap: Bitmap? = null
     private var gifDrawable: GifDrawable? = null
@@ -213,10 +213,10 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
 
     private fun loadCloudImage() {
         lifecycleScope.launch {
-            accountsDao.getAccountOnline()?.let { account ->
+            cloudDataSource.getAccountOnline()?.let { account ->
                 AccountUtils.getToken(
                     requireContext(),
-                    Account(account.getAccountName(), getString(lib.toolkit.base.R.string.account_type))
+                    Account(account.accountName, getString(lib.toolkit.base.R.string.account_type))
                 )?.let { token ->
                     val url = GlideUtils.getCorrectLoad(image?.viewUrl!!, token)
                     withContext(Dispatchers.Main) {
@@ -236,10 +236,10 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
 
     private fun loadWebDavImage() {
         lifecycleScope.launch {
-            accountsDao.getAccountOnline()?.let { account ->
+            cloudDataSource.getAccountOnline()?.let { account ->
                 AccountUtils.getPassword(
                     requireContext(),
-                    Account(account.getAccountName(), getString(lib.toolkit.base.R.string.account_type))
+                    Account(account.accountName, getString(lib.toolkit.base.R.string.account_type))
                 )?.let { password ->
                     val url = GlideUtils.getWebDavUrl(image?.id!!, account, password)
                     withContext(Dispatchers.Main) {

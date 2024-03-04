@@ -3,6 +3,7 @@ package app.editors.manager.mvp.presenters.main
 import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
 import app.documents.core.network.manager.ManagerService
@@ -17,8 +18,6 @@ import app.documents.core.network.share.models.request.Invitation
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.RoomProvider
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -61,7 +60,6 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
-import java.util.Date
 
 @InjectViewState
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
@@ -231,19 +229,20 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun addRecent(file: CloudFile) {
         CoroutineScope(Dispatchers.Default).launch {
-            recentDao.addRecent(
-                Recent(
-                    idFile = file.id,
-                    path = null,
-                    name = file.title,
-                    size = file.pureContentLength,
-                    isLocal = false,
-                    isWebDav = account.isWebDav,
-                    date = Date().time,
-                    ownerId = account.id,
-                    source = account.portal
-                )
-            )
+            // TODO: add recent datasource
+//            recentDao.add(
+//                Recent(
+//                    idFile = file.id,
+//                    path = null,
+//                    name = file.title,
+//                    size = file.pureContentLength,
+//                    isLocal = false,
+//                    isWebDav = account.isWebDav,
+//                    date = Date().time,
+//                    ownerId = account.id,
+//                    source = account.portal
+//                )
+//            )
         }
     }
 
@@ -617,7 +616,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     private fun downloadTempFile(cloudFile: CloudFile, edit: Boolean) {
-        disposable.add((fileProvider as CloudFileProvider).getCachedFile(context, cloudFile, account.getAccountName())
+        disposable.add((fileProvider as CloudFileProvider).getCachedFile(context, cloudFile, account.accountName)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ file ->
@@ -637,7 +636,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean) {
         with(fileProvider as CloudFileProvider) {
-            val token = AccountUtils.getToken(context, context.accountOnline?.getAccountName().orEmpty())
+            val token = AccountUtils.getToken(context, context.accountOnline?.accountName.orEmpty())
             disposable.add(
                 openDocument(cloudFile, token).subscribe({ result ->
                     viewState.onDialogClose()
@@ -659,7 +658,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onStateUpdateFilterMenu()
     }
 
-    @Suppress("KotlinConstantConditions")
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
         if (model.file?.id == null && model.folder?.id != null) {

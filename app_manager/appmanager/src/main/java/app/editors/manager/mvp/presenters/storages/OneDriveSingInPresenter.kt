@@ -1,14 +1,18 @@
 package app.editors.manager.mvp.presenters.storages
 
-import app.documents.core.storage.account.CloudAccount
-import app.editors.manager.app.App
-import app.editors.manager.app.oneDriveLoginProvider
-import app.editors.manager.mvp.views.base.BaseStorageSignInView
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.PortalSettings
+import app.documents.core.model.cloud.Provider
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.storages.onedrive.api.OneDriveResponse
 import app.documents.core.network.storages.onedrive.models.response.AuthResponse
 import app.documents.core.network.storages.onedrive.models.user.User
+import app.editors.manager.app.App
+import app.editors.manager.app.oneDriveLoginProvider
 import app.editors.manager.app.oneDriveProvider
+import app.editors.manager.mvp.views.base.BaseStorageSignInView
 import lib.toolkit.base.managers.utils.AccountData
 import moxy.InjectViewState
 
@@ -37,7 +41,7 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
                     }
                 }
             }.flatMap { response -> context.oneDriveProvider.getUserInfo(response.access_token) }
-            .subscribe ({ oneDriveResponse ->
+            .subscribe({ oneDriveResponse ->
                 when (oneDriveResponse) {
                     is OneDriveResponse.Success -> {
                         createUser((oneDriveResponse.response as User), accessToken, refreshToken)
@@ -53,28 +57,26 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
 
     private fun createUser(user: User, accessToken: String, refreshToken: String) {
         val cloudAccount = CloudAccount(
-            id = user.userPrincipalName,
-            isWebDav = false,
-            isOneDrive = true,
-            portal = OneDriveUtils.ONEDRIVE_PORTAL,
-            webDavPath = "",
-            webDavProvider = "",
+            id = user.id,
             login = user.userPrincipalName,
-            scheme = "https://",
-            isSslState = networkSettings.getSslState(),
-            isSslCiphers = networkSettings.getCipher(),
-            name = user.displayName
+            name = user.displayName,
+            portal = CloudPortal(
+                provider = PortalProvider(Provider.ONE_DRIVE), portal = OneDriveUtils.ONEDRIVE_PORTAL,
+                settings = PortalSettings(
+                    isSslState = networkSettings.getSslState(),
+                    isSslCiphers = networkSettings.getCipher()
+                )
+            )
         )
 
         val accountData = AccountData(
-            portal = cloudAccount.portal ?: "",
-            scheme = cloudAccount.scheme ?: "",
+            portal = cloudAccount.portal.portal,
+            scheme = cloudAccount.portal.scheme.value,
             displayName = user.displayName,
             userId = cloudAccount.id,
-            provider = cloudAccount.webDavProvider ?: "",
-            accessToken = accessToken,
+            provider = cloudAccount.portal.provider.webDavProvider,
             refreshToken = refreshToken,
-            webDav = cloudAccount.webDavPath,
+            webDav = cloudAccount.portal.provider.webDavPath,
             email = user.userPrincipalName,
         )
 

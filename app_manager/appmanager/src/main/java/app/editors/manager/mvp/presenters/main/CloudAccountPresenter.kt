@@ -1,14 +1,12 @@
 package app.editors.manager.mvp.presenters.main
 
-import android.accounts.Account
 import android.net.Uri
 import android.os.Bundle
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.models.Capabilities
 import app.documents.core.network.webdav.WebDavService
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.account.copyWithToken
 import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
@@ -81,40 +79,27 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             if (isSwitch) {
                 switchAccount(saveState)
             } else {
-                getTokens(accountDao.getAccounts(), saveState)
+                withContext(Dispatchers.Main) {
+                    viewState.onRender(CloudAccountState.AccountLoadedState(cloudDataSource.getAccounts(), saveState))
+                }
             }
         }
     }
 
     private suspend fun switchAccount(saveState: Bundle? = null) {
         val data = Json.decodeFromString<OpenDataModel>(preferenceTool.fileData)
-        accountDao.getAccounts()
+        cloudDataSource.getAccounts()
             .find { account ->
-                data.getPortalWithoutScheme()?.equals(account.portal, true) == true && data.email?.equals(
+                data.getPortalWithoutScheme()?.equals(account.portal.portal, true) == true && data.email?.equals(
                     account.login,
                     true
                 ) == true
             }?.let { cloudAccount ->
                 checkLogin(cloudAccount)
             } ?: run {
-            getTokens(accountDao.getAccounts(), saveState)
-        }
-    }
-
-    private suspend fun getTokens(accounts: List<CloudAccount>, saveState: Bundle?) {
-        val accountsWithToken = accounts.map { account ->
-            AccountUtils.getToken(
-                context,
-                Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
-            )?.let { token ->
-                account.token = token
-                return@map account
-            } ?: run {
-                return@map account
+            withContext(Dispatchers.Main) {
+                viewState.onRender(CloudAccountState.AccountLoadedState(cloudDataSource.getAccounts(), saveState))
             }
-        }
-        withContext(Dispatchers.Main) {
-            viewState.onRender(CloudAccountState.AccountLoadedState(accountsWithToken, saveState))
         }
     }
 
@@ -122,19 +107,16 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         presenterScope.launch {
             contextAccount?.let { account ->
                 if (account.isWebDav) {
-                    AccountUtils.setPassword(context, account.getAccountName(), null)
+                    AccountUtils.setPassword(context, account.accountName, null)
                 } else if (account.isOneDrive || account.isDropbox || account.isGoogleDrive) {
-                    AccountUtils.setToken(context, account.getAccountName(), "")
+                    AccountUtils.setToken(context, account.accountName, "")
                 } else {
-                    AccountUtils.setPassword(context, account.getAccountName(), null)
+                    AccountUtils.setPassword(context, account.accountName, null)
+                    AccountUtils.setToken(context, account.name, "")
                 }
-                accountDao.updateAccount(account.copyWithToken(isOnline = false).apply {
-                    token = ""
-                    password = ""
-                    expires = ""
-                })
+                cloudDataSource.updateAccount(account.copy(isOnline = false))
             }
-            accountDao.getAccounts().let {
+            cloudDataSource.getAccounts().let {
                 withContext(Dispatchers.Main) {
                     viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
                 }
@@ -148,7 +130,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 deleteAccount(account)
             } else {
                 if (account.isOnline) {
-                    //                    unsubscribePush(account, AccountUtils.getToken(context, account.getAccountName())) {
+                    //                    unsubscribePush(account, AccountUtils.getToken(context, account.accountName)) {
                     //                        deleteAccount(account)
                     //                    }
                 } else {
@@ -161,18 +143,17 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     fun deleteSelected(selection: List<String>?) {
         presenterScope.launch {
             selection?.forEach { id ->
-                accountDao.getAccount(id)?.let { account ->
+                cloudDataSource.getAccount(id)?.let { account ->
                     if (account.isOnline) {
-                        unsubscribePush(account, AccountUtils.getToken(context, account.getAccountName())) {
-                            deleteAccount(account)
-                        }
+                        loginRepository.unsubscribePush(account)
+                        deleteAccount(account)
                     } else {
                         deleteAccount(account)
                     }
                 }
             }
             withContext(Dispatchers.Main) {
-                viewState.onRender(CloudAccountState.AccountLoadedState(accountDao.getAccounts(), null))
+                viewState.onRender(CloudAccountState.AccountLoadedState(cloudDataSource.getAccounts(), null))
             }
         }
     }
@@ -180,9 +161,9 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     @Suppress("KotlinConstantConditions")
     private fun deleteAccount(account: CloudAccount) {
         presenterScope.launch {
-            AccountUtils.removeAccount(context, account.getAccountName())
-            accountDao.deleteAccount(account)
-            accountDao.getAccounts().let {
+            AccountUtils.removeAccount(context, account.accountName)
+            cloudDataSource.deleteAccount(account)
+            cloudDataSource.getAccounts().let {
                 withContext(Dispatchers.Main) {
                     if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents" && ActivitiesUtils.isPackageExist(
                             App.getApp(),
@@ -215,16 +196,16 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     }
 
     private fun checkCloudLogin(account: CloudAccount) {
-        val token = AccountUtils.getToken(context, account.getAccountName())
+        val token = AccountUtils.getToken(context, account.accountName)
         if (token.isNullOrEmpty()) {
-            viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
+            viewState.onAccountLogin(account.portal.portal, account.login)
         } else {
             cloudSignIn(account, token)
         }
     }
 
     private fun checkStorageLogin(account: CloudAccount) {
-        AccountUtils.getToken(context, account.getAccountName())?.let { token ->
+        AccountUtils.getToken(context, account.accountName)?.let { token ->
             if (token.isNotEmpty()) {
                 loginSuccess(account)
             } else {
@@ -238,19 +219,19 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     }
 
     private fun checkWebDavLogin(account: CloudAccount) {
-        AccountUtils.getPassword(context, account.getAccountName())?.let { password ->
+        AccountUtils.getPassword(context, account.accountName)?.let { password ->
             if (password.isNotEmpty()) {
                 webDavLogin(account, password)
             } else {
                 viewState.onWebDavLogin(
                     Json.encodeToString(account),
-                    WebDavService.Providers.valueOf(account.webDavProvider.orEmpty())
+                    WebDavService.Providers.valueOf(account.portal.provider.webDavProvider)
                 )
             }
         } ?: run {
             viewState.onWebDavLogin(
                 Json.encodeToString(account),
-                WebDavService.Providers.valueOf(account.webDavProvider.orEmpty())
+                WebDavService.Providers.valueOf(account.portal.provider.webDavProvider)
             )
         }
     }
@@ -303,7 +284,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     private fun webDavLogin(account: CloudAccount, password: String) {
         setSettings(account)
         disposable = context.webDavApi
-            .capabilities(Credentials.basic(account.login ?: "", password), account.webDavPath)
+            .capabilities(Credentials.basic(account.login, password), account.portal.provider.webDavPath)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -313,7 +294,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     restoreSettings()
                     viewState.onWebDavLogin(
                         Json.encodeToString(account),
-                        WebDavService.Providers.valueOf(account.webDavProvider ?: "")
+                        WebDavService.Providers.valueOf(account.portal.provider.webDavProvider)
                     )
                 }
             }, {
@@ -338,10 +319,10 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     private fun setSettings(account: CloudAccount) {
         restoreState = RestoreSettingsModel.getInstance(networkSettings)
-        networkSettings.setBaseUrl(account.portal ?: "")
-        networkSettings.setScheme(account.scheme ?: "")
-        networkSettings.setSslState(account.isSslState)
-        networkSettings.setCipher(account.isSslCiphers)
+        networkSettings.setBaseUrl(account.portal.portal)
+        networkSettings.setScheme(account.portal.scheme.value)
+        networkSettings.setSslState(account.portal.settings.isSslState)
+        networkSettings.setCipher(account.portal.settings.isSslCiphers)
     }
 
     private fun setSettings(capabilities: Capabilities) {
@@ -363,7 +344,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     private fun checkError(throwable: Throwable, account: CloudAccount) {
         restoreSettings()
         if (throwable is HttpException && throwable.code() == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED) {
-            viewState.onAccountLogin(account.portal ?: "", account.login ?: "")
+            viewState.onAccountLogin(account.portal.portal, account.login)
         } else {
             fetchError(throwable)
         }

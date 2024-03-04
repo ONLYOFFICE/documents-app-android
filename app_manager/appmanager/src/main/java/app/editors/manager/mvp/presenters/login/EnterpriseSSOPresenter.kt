@@ -1,7 +1,7 @@
 package app.editors.manager.mvp.presenters.login
 
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.Result
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.login.EnterpriseSSOView
 import kotlinx.coroutines.launch

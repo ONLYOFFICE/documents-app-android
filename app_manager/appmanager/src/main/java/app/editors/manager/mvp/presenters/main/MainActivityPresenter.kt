@@ -2,9 +2,7 @@ package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
 import android.os.Build
-import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.account.copyWithToken
+import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -75,9 +73,9 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     fun init(isPortal: Boolean = false, isShortcut: Boolean = false) {
         presenterScope.launch {
-            accountDao.getAccountOnline()?.let {
+            cloudDataSource.getAccountOnline()?.let {
                 cloudAccount = it
-                setNetworkSetting(it)
+                networkSettings.setSettingsByAccount(it)
                 if (isShortcut) {
                     viewState.onRender(MainActivityState.OnDeviceState)
                     return@launch
@@ -112,7 +110,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         } else {
             AccountUtils.getToken(
                 context = context,
-                accountName = cloudAccount.getAccountName()
+                accountName = cloudAccount.accountName
             )?.let {
                 viewState.onRender(MainActivityState.CloudState(cloudAccount))
             } ?: run {
@@ -122,11 +120,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     }
 
     private fun setNetworkSetting(cloudAccount: CloudAccount) {
-        networkSettings.setBaseUrl(cloudAccount.portal ?: ApiContract.DEFAULT_HOST)
-        networkSettings.setScheme(cloudAccount.scheme ?: ApiContract.SCHEME_HTTPS)
-        networkSettings.setSslState(cloudAccount.isSslState)
-        networkSettings.setCipher(cloudAccount.isSslCiphers)
-        networkSettings.serverVersion = cloudAccount.serverVersion
     }
 
     fun getRemoteConfigRate() {
@@ -149,7 +142,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     fun setAccount() {
         presenterScope.launch {
-            accountDao.getAccountOnline()?.let {
+            cloudDataSource.getAccountOnline()?.let {
                 cloudAccount = it
             }
         }
@@ -226,7 +219,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
             R.id.menu_item_settings -> viewState.onRender(MainActivityState.SettingsState)
             R.id.menu_item_cloud -> {
                 presenterScope.launch {
-                    cloudAccount = accountDao.getAccountOnline()
+                    cloudAccount = cloudDataSource.getAccountOnline()
                     withContext(Dispatchers.Main) {
                         viewState.onRender(MainActivityState.CloudState(cloudAccount))
                     }
@@ -237,12 +230,8 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     fun clear() {
         presenterScope.launch {
-            accountDao.getAccountOnline()?.let {
-                accountDao.updateAccount(
-                    it.copyWithToken(
-                        isOnline = false
-                    )
-                )
+            cloudDataSource.getAccountOnline()?.let {
+                cloudDataSource.updateAccount(it.copy(isOnline = false))
             }
             networkSettings.setDefault()
             withContext(Dispatchers.Main) {
@@ -259,7 +248,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                 Json.decodeFromString(CryptUtils.decodeUri(fileData.query))
             }
 
-            accountDao.getAccountOnline()?.let { account ->
+            cloudDataSource.getAccountOnline()?.let { account ->
                 if (fileData.queryParameterNames.contains("push")) {
                     viewState.openFile(account, fileData.getQueryParameter("data") ?: "")
                     return@launch
@@ -267,7 +256,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
                 preferenceTool.fileData = ""
                 if (data.getPortalWithoutScheme()?.equals(
-                        account.portal,
+                        account.portal.portal,
                         ignoreCase = true
                     ) == true &&
                     data.email?.equals(account.login, ignoreCase = true) == true
@@ -293,8 +282,9 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     }
 
     private suspend fun checkAccountLogin(data: OpenDataModel): Boolean {
-        val account = accountDao.getAccountByLogin(data.email?.lowercase() ?: "")
-        return account?.token != null && account.token.isNotEmpty()
+        val account = cloudDataSource.getAccountByLogin(data.email?.lowercase() ?: "")
+        val token = AccountUtils.getToken(context, account?.accountName.orEmpty())
+        return !token.isNullOrEmpty()
     }
 
     fun onRemoveFileData() {

@@ -1,10 +1,15 @@
 package app.editors.manager.mvp.presenters.storages
 
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.PortalSettings
+import app.documents.core.model.cloud.Provider
+import app.documents.core.model.cloud.Scheme
 import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.storages.dropbox.login.DropboxLoginProvider
 import app.documents.core.network.storages.dropbox.models.response.TokenResponse
 import app.documents.core.network.storages.dropbox.models.response.UserResponse
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.base.BaseStorageSignInView
 import kotlinx.coroutines.launch
@@ -33,29 +38,27 @@ class DropboxSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView>
     private fun createUser(tokenResponse: TokenResponse, userResponse: UserResponse) {
         val cloudAccount = CloudAccount(
             id = tokenResponse.accountId,
-            isWebDav = false,
-            isOneDrive = false,
-            isDropbox = true,
-            portal = DropboxUtils.DROPBOX_PORTAL,
-            webDavPath = "",
-            webDavProvider = "",
-            login = userResponse.email,
-            scheme = "https://",
-            isSslState = networkSettings.getSslState(),
-            isSslCiphers = networkSettings.getCipher(),
-            name = userResponse.name?.displayName,
-            avatarUrl = userResponse.profilePhotoUrl,
-            refreshToken = tokenResponse.refreshToken
+            portal = CloudPortal(
+                portal = DropboxUtils.DROPBOX_PORTAL,
+                provider = PortalProvider(provider = Provider.DROPBOX),
+                scheme = Scheme.Https,
+                settings = PortalSettings(
+                    isSslState = networkSettings.getSslState(),
+                    isSslCiphers = networkSettings.getCipher()
+                )
+            ),
+            login = userResponse.email.orEmpty(),
+            name = userResponse.name?.displayName.orEmpty(),
+            avatarUrl = userResponse.profilePhotoUrl.orEmpty(),
         )
 
         val accountData = AccountData(
-            portal = cloudAccount.portal.orEmpty(),
-            scheme = cloudAccount.scheme.orEmpty(),
+            portal = cloudAccount.portal.portal,
+            scheme = cloudAccount.portal.scheme.value,
             displayName = userResponse.name?.displayName.orEmpty(),
             userId = cloudAccount.id,
-            provider = cloudAccount.webDavProvider.orEmpty(),
-            accessToken = tokenResponse.accessToken,
-            webDav = cloudAccount.webDavPath,
+            provider = cloudAccount.portal.provider.webDavProvider,
+            webDav = cloudAccount.portal.provider.webDavPath,
             email = userResponse.email.orEmpty(),
             refreshToken = tokenResponse.refreshToken
         )

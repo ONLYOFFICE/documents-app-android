@@ -1,6 +1,7 @@
 package app.documents.core.di.dagger
 
 import android.content.Context
+import app.documents.core.database.di.DatabaseModule
 import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.interceptors.BaseInterceptor
 import app.documents.core.network.di.NetworkModule
@@ -26,7 +27,8 @@ annotation class Token
     includes = [
         LoginModule::class, ManagerModule::class,
         ShareModule::class, WebDavModule::class,
-        AccountModule::class, NetworkModule::class
+        AccountModule::class, NetworkModule::class,
+        DatabaseModule::class
     ]
 )
 object CoreModule {

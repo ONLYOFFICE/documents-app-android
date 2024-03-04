@@ -177,7 +177,7 @@ class DocsDropboxPresenter : BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     override fun refreshToken() {
         presenterScope.launch {
-            context.accountOnline?.getAccountName()?.let { accountName ->
+            context.accountOnline?.accountName?.let { accountName ->
                 AccountUtils.getAccount(context, accountName)?.let { account ->
                     try {
                         val refreshToken = AccountUtils.getAccountData(context, account).refreshToken.orEmpty()

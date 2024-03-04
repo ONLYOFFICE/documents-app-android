@@ -11,7 +11,7 @@ import app.documents.core.database.entity.RecentEntity
 import app.documents.core.model.cloud.Provider
 
 @Dao
-abstract class RecentDao {
+abstract class RecentDao { // todo make it internal
 
     @Query("SELECT * FROM recent")
     abstract suspend fun getRecentEntity(): List<RecentEntity>

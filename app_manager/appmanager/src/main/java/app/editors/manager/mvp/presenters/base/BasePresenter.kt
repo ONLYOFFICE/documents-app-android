@@ -2,8 +2,8 @@ package app.editors.manager.mvp.presenters.base
 
 import android.content.Context
 import android.util.Log
+import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.storage.account.AccountDao
 import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.managers.tools.PreferenceTool
@@ -45,7 +45,7 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
     lateinit var networkSettings: NetworkSettings
 
     @Inject
-    lateinit var accountDao: AccountDao
+    lateinit var cloudDataSource: CloudDataSource
 
     init {
         RxJavaPlugins.setErrorHandler { throwable: Throwable ->

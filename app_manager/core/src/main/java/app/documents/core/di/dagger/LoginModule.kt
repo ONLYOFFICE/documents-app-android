@@ -2,6 +2,7 @@ package app.documents.core.di.dagger
 
 import android.content.Context
 import app.documents.core.account.AccountManager
+import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.di.dagger.CoreModule.json
 import app.documents.core.login.LoginRepository
 import app.documents.core.login.LoginRepositoryImpl
@@ -12,7 +13,6 @@ import app.documents.core.network.login.LoginDataSource
 import app.documents.core.network.login.LoginInterceptor
 import app.documents.core.network.login.LoginService
 import app.documents.core.network.login.LoginServiceProvider
-import app.documents.core.storage.account.AccountDao
 import app.documents.core.storage.preference.NetworkSettings
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -60,8 +60,8 @@ class LoginModule {
         networkSettings: NetworkSettings,
         @AccountType accountType: String,
         accountManager: AccountManager,
-        accountDao: AccountDao
+        cloudDataSource: CloudDataSource
     ): LoginRepository {
-        return LoginRepositoryImpl(loginDataSource, networkSettings, accountType, accountManager, accountDao)
+        return LoginRepositoryImpl(loginDataSource, networkSettings, accountType, accountManager, cloudDataSource)
     }
 }

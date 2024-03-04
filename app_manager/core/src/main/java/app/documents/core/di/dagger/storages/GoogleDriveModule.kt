@@ -3,18 +3,18 @@ package app.documents.core.di.dagger.storages
 import android.content.Context
 import app.documents.core.di.dagger.CoreModule.json
 import app.documents.core.di.dagger.Token
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.interceptors.BaseInterceptor
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.storages.googledrive.api.GoogleDriveProvider
 import app.documents.core.network.storages.googledrive.api.GoogleDriveService
-import app.documents.core.storage.account.CloudAccount
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import app.documents.core.network.common.NetworkClient
 import lib.toolkit.base.managers.utils.AccountUtils
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -65,7 +65,7 @@ class GoogleDriveModule {
     @Token
     fun provideToken(context: Context, account: CloudAccount?): String = runBlocking {
         account?.let { cloudAccount ->
-            return@runBlocking AccountUtils.getToken(context = context, cloudAccount.getAccountName())
+            return@runBlocking AccountUtils.getToken(context = context, cloudAccount.accountName)
                 ?: ""
         } ?: ""
     }

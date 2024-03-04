@@ -3,7 +3,7 @@ package app.editors.manager.ui.popup
 import android.content.Context
 import android.view.View
 import androidx.core.content.ContextCompat
-import app.documents.core.storage.account.CloudAccount
+import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudAccountPopupLayoutBinding
 import app.editors.manager.ui.dialogs.AccountContextDialog.OnAccountContextClickListener

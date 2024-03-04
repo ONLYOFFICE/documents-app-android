@@ -1,15 +1,15 @@
 package app.documents.core.di.dagger
 
 import android.content.Context
-import app.documents.core.storage.account.AccountDao
-import app.documents.core.storage.preference.NetworkSettings
+import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.interceptors.WebDavInterceptor
 import app.documents.core.network.webdav.ConverterFactory
 import app.documents.core.network.webdav.WebDavService
+import app.documents.core.storage.preference.NetworkSettings
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
-import app.documents.core.network.common.NetworkClient
 import lib.toolkit.base.managers.utils.AccountUtils
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -49,16 +49,16 @@ class WebDavModule {
 
     @Provides
     @Named("password")
-    fun providePassword(context: Context, accountDao: AccountDao): String? = runBlocking {
-        accountDao.getAccountOnline()?.let { cloudAccount ->
-            return@runBlocking AccountUtils.getPassword(context, cloudAccount.getAccountName())
+    fun providePassword(context: Context, cloudDataSource: CloudDataSource): String? = runBlocking {
+        cloudDataSource.getAccountOnline()?.let { cloudAccount ->
+            return@runBlocking AccountUtils.getPassword(context, cloudAccount.accountName)
         } ?: return@runBlocking null
     }
 
     @Provides
     @Named("login")
-    fun provideLogin(accountDao: AccountDao): String? = runBlocking {
-        accountDao.getAccountOnline()?.let { cloudAccount ->
+    fun provideLogin(cloudDataSource: CloudDataSource): String? = runBlocking {
+        cloudDataSource.getAccountOnline()?.let { cloudAccount ->
             return@runBlocking cloudAccount.login
         } ?: return@runBlocking null
     }

@@ -1,11 +1,11 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.response.ResponseCloudTree
-import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.CryptUtils
 import lib.toolkit.base.managers.utils.JsonUtils
 import moxy.InjectViewState
@@ -145,7 +146,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             }
             preferenceTool.fileData = ""
             if (dataModel.getPortalWithoutScheme()?.equals(
-                    account.portal,
+                    account.portal.portal,
                     ignoreCase = true
                 ) == true && dataModel.email?.equals(
                     account.login,
@@ -165,8 +166,9 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     private suspend fun checkAccountLogin(data: OpenDataModel): Boolean {
-        val account = accountDao.getAccountByLogin(data.email?.lowercase() ?: "")
-        return account?.token != null && account.token.isNotEmpty()
+        val account = cloudDataSource.getAccountByLogin(data.email?.lowercase() ?: "")
+        val token = AccountUtils.getToken(context, account?.accountName.orEmpty())
+        return !token.isNullOrEmpty()
     }
 
     fun onRemoveFileData() {

@@ -12,7 +12,7 @@ import app.documents.core.database.entity.CloudAccountAndPortal
 import app.documents.core.database.entity.CloudAccountEntity
 
 @Dao
-interface AccountDao {
+internal interface AccountDao {
 
     @Transaction
     @Query("SELECT * FROM account")

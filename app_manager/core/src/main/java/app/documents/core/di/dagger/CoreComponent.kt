@@ -1,6 +1,8 @@
 package app.documents.core.di.dagger
 
 import android.content.Context
+import app.documents.core.database.dao.RecentDao
+import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.login.LoginRepository
 import app.documents.core.network.login.ILoginServiceProvider
 import app.documents.core.network.manager.ManagerService
@@ -27,7 +29,11 @@ interface CoreComponent {
     }
 
     val loginRepository: LoginRepository
-    
+    val cloudDataSource: CloudDataSource
+
+    // TODO: add datasource
+    val recentDao: RecentDao
+
     val shareService: ShareService
     val managerService: ManagerService
     val webDavService: WebDavService

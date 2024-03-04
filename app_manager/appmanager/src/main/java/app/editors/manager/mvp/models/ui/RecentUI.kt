@@ -1,20 +1,19 @@
 package app.editors.manager.mvp.models.ui
 
-import app.documents.core.storage.recent.Recent
+import app.documents.core.model.cloud.Provider
+import app.documents.core.model.cloud.Recent
 import app.editors.manager.R
 import lib.toolkit.base.ui.adapters.holder.ViewType
 
 data class RecentUI(
     val id: Int,
-    val idFile: String?,
-    val path: String?,
-    val name: String,
-    val date: Long,
-    val isLocal: Boolean,
-    val isWebDav: Boolean,
-    val size: Long,
+    val idFile: String = "",
+    val path: String = "",
+    val name: String = "",
+    val date: Long = 0,
+    val size: Long = 0,
     val ownerId: String? = null,
-    val source: String? = null
+    val source: Provider? = null
 ) : ViewType {
 
     override val viewType: Int
@@ -28,8 +27,6 @@ fun RecentUI.toRecent(): Recent {
         path = path,
         name = name,
         date = date,
-        isLocal = isLocal,
-        isWebDav = isWebDav,
         size = size,
         ownerId = ownerId,
         source = source
@@ -43,8 +40,6 @@ fun Recent.toRecentUI(): RecentUI {
         path = path,
         name = name,
         date = date,
-        isLocal = isLocal,
-        isWebDav = isWebDav,
         size = size,
         ownerId = ownerId,
         source = source

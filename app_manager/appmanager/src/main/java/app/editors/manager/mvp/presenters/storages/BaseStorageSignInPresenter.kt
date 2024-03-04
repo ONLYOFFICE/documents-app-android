@@ -1,7 +1,7 @@
 package app.editors.manager.mvp.presenters.storages
 
 import android.accounts.Account
-import app.documents.core.storage.account.CloudAccount
+import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.base.BaseStorageSignInView
 import io.reactivex.disposables.Disposable
@@ -24,7 +24,7 @@ open class BaseStorageSignInPresenter<view: BaseStorageSignInView>: BasePresente
 
     fun saveAccount(cloudAccount: CloudAccount, accountData: AccountData, accessToken: String) {
         networkSettings.isDocSpace = false
-        val account = Account(cloudAccount.getAccountName(), context.getString(R.string.account_type))
+        val account = Account(cloudAccount.accountName, context.getString(R.string.account_type))
 
         if (AccountUtils.addAccount(context, account, "", accountData)) {
             addAccountToDb(cloudAccount)
@@ -38,10 +38,10 @@ open class BaseStorageSignInPresenter<view: BaseStorageSignInView>: BasePresente
 
     private fun addAccountToDb(cloudAccount: CloudAccount) {
         presenterScope.launch {
-            accountDao.getAccountOnline()?.let {
-                accountDao.addAccount(it.copy(isOnline = false))
+            cloudDataSource.getAccountOnline()?.let {
+                cloudDataSource.addAccount(it.copy(isOnline = false))
             }
-            accountDao.addAccount(cloudAccount.copy(isOnline = true))
+            cloudDataSource.addAccount(cloudAccount.copy(isOnline = true))
             withContext(Dispatchers.Main) {
                 viewState.onLogin()
             }

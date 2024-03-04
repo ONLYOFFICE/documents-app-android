@@ -1,14 +1,12 @@
 package app.editors.manager.di.component
 
 import android.content.Context
+import app.documents.core.database.dao.RecentDao
 import app.documents.core.di.dagger.CoreComponent
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.interceptors.WebDavInterceptor
 import app.documents.core.providers.OneDriveFileProvider
-import app.documents.core.storage.account.AccountDao
-import app.documents.core.storage.account.AccountsDataBase
-import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.preference.NetworkSettings
-import app.documents.core.storage.recent.RecentDao
 import app.editors.manager.di.module.AppModule
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
@@ -110,8 +108,6 @@ interface AppComponent {
     val contentTools: LocalContentTools
     val glideTools: GlideTool
     val networkSettings: NetworkSettings
-    val accountsDataBase: AccountsDataBase
-    val accountsDao: AccountDao
     val accountOnline: CloudAccount?
     val recentDao: RecentDao?
     val appLocaleHelper: AppLocaleHelper

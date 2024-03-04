@@ -149,7 +149,7 @@ class RoomInfoFragment : BaseDialogFragment() {
                                 canEditRoom = canEditRoom,
                                 roomType = room?.roomType,
                                 roomTitle = room?.title,
-                                portal = portal,
+                                portal = portal?.portal.orEmpty(),
                                 onBackClick = this@RoomInfoFragment::onBackPressed,
                                 onAddUsers = {
                                     ShareActivity.launchForResult(

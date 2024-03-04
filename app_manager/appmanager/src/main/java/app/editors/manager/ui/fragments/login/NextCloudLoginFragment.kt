@@ -10,18 +10,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
-import androidx.lifecycle.lifecycleScope
-import app.documents.core.storage.account.CloudAccount
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.Provider
+import app.documents.core.model.cloud.Scheme
 import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.NextCloudLoginLayoutBinding
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.NetworkUtils.clearCookies
@@ -201,12 +200,12 @@ class NextCloudLoginFragment : BaseAppFragment() {
                 val account = Account(cloudAccount.id, getString(lib.toolkit.base.R.string.account_type))
 
                 val accountData = AccountData(
-                    portal = cloudAccount.portal ?: "",
-                    scheme = cloudAccount.scheme ?: "",
+                    portal = cloudAccount.portal.portal,
+                    scheme = cloudAccount.portal.scheme.value,
                     displayName = login,
                     userId = cloudAccount.id,
-                    provider = cloudAccount.webDavProvider ?: "",
-                    webDav = cloudAccount.webDavPath,
+                    provider = cloudAccount.portal.provider.webDavProvider,
+                    webDav = cloudAccount.portal.provider.webDavPath,
                     email = login,
                 )
 
@@ -224,34 +223,39 @@ class NextCloudLoginFragment : BaseAppFragment() {
 
     private fun createCloudAccount(url: URL, login: String) = CloudAccount(
         id = "$login@${url.host}",
-        isWebDav = true,
-        webDavProvider = WebDavService.Providers.NextCloud.name,
-        scheme = url.protocol + "://",
         login = login,
         name = login,
-        portal = url.host,
-        webDavPath = if (url.path != null && url.path.isNotEmpty()) {
-            url.path + WebDavService.Providers.NextCloud.path + login + "/"
-        } else {
-            WebDavService.Providers.NextCloud.path + login + "/"
-        }
+        portal = CloudPortal(
+            portal = url.host,
+            scheme = Scheme.Custom(url.protocol + "://"),
+            provider = PortalProvider(
+                provider = Provider.WEBDAV,
+                WebDavService.Providers.NextCloud.name,
+                if (url.path != null && url.path.isNotEmpty()) {
+                    url.path + WebDavService.Providers.NextCloud.path + login + "/"
+                } else {
+                    WebDavService.Providers.NextCloud.path + login + "/"
+                }
+            ),
+        ),
     )
 
     private fun addAccount(cloudAccount: CloudAccount) {
-        val accountDao = requireContext().appComponent.accountsDao
-       lifecycleScope.launch {
-            accountDao.getAccountOnline()?.let {
-                accountDao.addAccount(it.copy(isOnline = false))
-            }
-            accountDao.addAccount(cloudAccount.copy(isOnline = true))
-            withContext(Dispatchers.Main) {
-                login()
-            }
-        }
+        // TODO: move to presenter
+//        val accountDao = requireContext().appComponent.accountsDao
+//        lifecycleScope.launch {
+//            accountDao.getAccountOnline()?.let {
+//                accountDao.addAccount(it.copy(isOnline = false))
+//            }
+//            accountDao.addAccount(cloudAccount.copy(isOnline = true))
+//            withContext(Dispatchers.Main) {
+//                login()
+//            }
+//        }
     }
 
     private fun login() {
-        val activity =  requireActivity()
+        val activity = requireActivity()
         activity.supportFragmentManager.fragments.forEach {
             activity.supportFragmentManager.beginTransaction().remove(it).commit()
         }

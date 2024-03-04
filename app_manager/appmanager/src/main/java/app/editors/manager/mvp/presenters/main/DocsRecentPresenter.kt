@@ -4,6 +4,9 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.Provider
+import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
@@ -11,8 +14,6 @@ import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.providers.DropboxFileProvider
 import app.documents.core.providers.GoogleDriveFileProvider
 import app.documents.core.providers.OneDriveFileProvider
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.recent.Recent
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.*
@@ -67,21 +68,20 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     private var contextPosition = 0
     private var item: Recent? = null
     private var temp: CloudFile? = null
-    private val account: CloudAccount? = getAccount()
 
     private fun getAccount(): CloudAccount? = runBlocking(Dispatchers.Default) {
-        accountDao.getAccountOnline()?.let { account ->
+        cloudDataSource.getAccountOnline()?.let { account ->
             if (account.isWebDav) {
                 AccountUtils.getPassword(
                     context,
-                    Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
+                    Account(account.accountName, context.getString(lib.toolkit.base.R.string.account_type))
                 )?.let {
                     return@runBlocking account
                 }
             } else {
                 AccountUtils.getToken(
                     context,
-                    Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
+                    Account(account.accountName, context.getString(lib.toolkit.base.R.string.account_type))
                 )?.let {
                     return@runBlocking account
                 }
@@ -100,35 +100,38 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     fun getRecentFiles(checkFiles: Boolean = true) {
         presenterScope.launch {
             val list = if (checkFiles) {
-                recentDao.getRecents().filter { recent -> checkFiles(recent) }
+                // TODO: add recent datasource
+//                recentDao.getRecents().filter { recent -> checkFiles(recent) }
             } else {
-                recentDao.getRecents()
+//                recentDao.getRecents()
             }
             withContext(Dispatchers.Main) {
-                viewState.onRender(RecentState.RenderList(list.sort()))
+//                viewState.onRender(RecentState.RenderList(list.sort()))
             }
         }
     }
 
     private fun checkFiles(recent: Recent): Boolean {
-        return if (recent.isLocal) {
+        return if (recent.source == Provider.LOCAL) {
             val uri = Uri.parse(recent.path)
             if (uri.scheme != null) {
                 return if (DocumentFile.fromSingleUri(context, uri)?.exists() == true) {
                     true
                 } else {
                     presenterScope.launch {
-                        recentDao.deleteRecent(recent)
+                        // TODO: add recent datasource
+//                        recentDao.deleteRecent(recent)
                     }
                     false
                 }
             }
-            val file = File(recent.path ?: "")
+            val file = File(recent.path)
             if (file.exists()) {
                 true
             } else {
                 presenterScope.launch {
-                    recentDao.deleteRecent(recent)
+                    // TODO: add recent datasource
+//                    recentDao.deleteRecent(recent)
                 }
                 false
             }
@@ -140,21 +143,22 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     override fun filter(value: String) {
         filteringValue = value
         presenterScope.launch {
-            val list = recentDao.getRecents()
-                .filter { it.name.contains(value, true) }
-                .sort()
-
-            withContext(Dispatchers.Main) {
-                updateFiles(list)
-            }
+            // TODO: add recent datasource
+//            val list = recentDao.getRecents()
+//                .filter { it.name.contains(value, true) }
+//                .sort()
+//
+//            withContext(Dispatchers.Main) {
+//                updateFiles(list)
+//            }
         }
     }
 
     private suspend fun openFile(recent: Recent) {
-        accountDao.getAccount(recent.ownerId ?: "")?.let { account ->
+        cloudDataSource.getAccount(recent.ownerId ?: "")?.let { account ->
             AccountUtils.getToken(
                 context,
-                Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
+                Account(account.accountName, context.getString(lib.toolkit.base.R.string.account_type))
             )?.let {
                 val fileProvider = context.cloudFileProvider
                 disposable.add(
@@ -216,21 +220,22 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     private fun addRecent(recent: Recent) {
         presenterScope.launch {
-            recentDao.updateRecent(recent.copy(date = Date().time))
+            // TODO: add recent datasource
+//            recentDao.updateRecent(recent.copy(date = Date().time))
             getRecentFiles()
         }
     }
 
     override fun upload(uri: Uri?, uris: List<Uri>?, tag: String?) {
         item?.let { item ->
-            if (item.isWebDav) {
+            if (item.source == Provider.WEBDAV) {
                 val provider = context.webDavFileProvider
 
                 val file = CloudFile().apply {
-                    id = item.idFile.orEmpty()
-                    title = item.path.orEmpty()
-                    webUrl = item.path.orEmpty()
-                    folderId = item.idFile?.substring(0, item.idFile?.lastIndexOf('/')?.plus(1) ?: -1).orEmpty()
+                    id = item.idFile
+                    title = item.path
+                    webUrl = item.path
+                    folderId = item.idFile.substring(0, item.idFile.lastIndexOf('/').plus(1))
                     fileExst = StringUtils.getExtensionFromPath(item.name)
                 }
 
@@ -252,7 +257,8 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     fun deleteRecent() {
         presenterScope.launch {
             item?.let { recent ->
-                recentDao.deleteRecent(recent)
+                // TODO: add recent datasource
+//                recentDao.deleteRecent(recent)
                 withContext(Dispatchers.Main) {
                     viewState.onDeleteItem(contextPosition)
                 }
@@ -315,8 +321,8 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     fun fileClick(recent: Recent? = item) {
         recent?.let { item = recent }
         item?.let { recentItem ->
-            if (recentItem.isLocal) {
-                recentItem.path?.let { path ->
+            if (recentItem.source == Provider.LOCAL) {
+                recentItem.path.let { path ->
                     Uri.parse(path)?.let { uri ->
                         if (uri.scheme != null) {
                             openLocalFile(uri)
@@ -338,7 +344,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     private suspend fun checkCloudFile(recent: Recent): Boolean {
         recent.ownerId?.let { id ->
-            accountDao.getAccount(id)?.let { recentAccount ->
+            cloudDataSource.getAccount(id)?.let { recentAccount ->
                 if (!recentAccount.isOnline) {
                     withContext(Dispatchers.Main) {
                         viewState.onError(context.getString(R.string.error_recent_enter_account))
@@ -410,7 +416,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     private suspend fun openWebDavFile(recent: Recent) {
-        accountDao.getAccount(recent.ownerId ?: "")?.let {
+        cloudDataSource.getAccount(recent.ownerId ?: "")?.let {
             val provider = context.webDavFileProvider
             val cloudFile = CloudFile().apply {
                 title = recent.name
@@ -446,7 +452,8 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     override fun addRecent(file: CloudFile) {
         presenterScope.launch {
             item?.let {
-                recentDao.updateRecent(it.copy(date = Date().time))
+                // TODO: add recent datasource
+//                recentDao.updateRecent(it.copy(date = Date().time))
             }
         }
     }
@@ -478,10 +485,11 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             reverseSortOrder()
         }
         presenterScope.launch(Dispatchers.IO) {
-            val list = recentDao.getRecents().sort(type.value)
-            withContext(Dispatchers.Main) {
-                updateFiles(list)
-            }
+            // TODO: add recent datasource
+//            val list = recentDao.getRecents().sort(type.value)
+//            withContext(Dispatchers.Main) {
+//                updateFiles(list)
+//            }
         }
         return false
     }
@@ -521,9 +529,10 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     fun clearRecents() {
         presenterScope.launch {
-            recentDao.getRecents().forEach { recent ->
-                recentDao.deleteRecent(recent)
-            }
+            // TODO: add recent datasource
+//            recentDao.getRecents().forEach { recent ->
+//                recentDao.deleteRecent(recent)
+//            }
             withContext(Dispatchers.Main) {
                 viewState.onRender(RecentState.RenderList(emptyList()))
             }

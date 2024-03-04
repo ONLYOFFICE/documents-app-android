@@ -5,19 +5,18 @@ import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
-import app.editors.manager.BuildConfig
 import app.documents.core.network.manager.models.explorer.*
-import app.documents.core.storage.recent.Recent
-import app.editors.manager.R
-import app.editors.manager.app.App
-import app.editors.manager.app.accountOnline
+import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.WebDavFileProvider
-import app.editors.manager.managers.works.UploadWork
-import app.documents.core.network.manager.models.request.RequestCreate
+import app.editors.manager.BuildConfig
+import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.localFileProvider
 import app.editors.manager.app.webDavFileProvider
+import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -48,7 +47,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     private fun checkWebDav() {
         CoroutineScope(Dispatchers.Default).launch {
-            accountDao.getAccountOnline()?.let {
+            cloudDataSource.getAccountOnline()?.let {
                 if (it.isWebDav) {
                     webDavFileProvider = context.webDavFileProvider
                 }
@@ -86,17 +85,18 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     override fun addRecent(file: CloudFile) {
         presenterScope.launch {
-            recentDao.addRecent(
-                Recent(
-                    idFile = null,
-                    path = file.webUrl,
-                    name = file.title,
-                    size = file.pureContentLength,
-                    isLocal = true,
-                    isWebDav = false,
-                    date = Date().time
-                )
-            )
+            // TODO: add recent datasource
+//            recentDao.addRecent(
+//                Recent(
+//                    idFile = null,
+//                    path = file.webUrl,
+//                    name = file.title,
+//                    size = file.pureContentLength,
+//                    isLocal = true,
+//                    isWebDav = false,
+//                    date = Date().time
+//                )
+//            )
         }
 
     }
@@ -104,17 +104,18 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     private fun addRecent(uri: Uri) {
         presenterScope.launch {
             DocumentFile.fromSingleUri(context, uri)?.let { file ->
-                recentDao.addRecent(
-                    Recent(
-                        idFile = null,
-                        path = uri.toString(),
-                        name = file.name ?: "",
-                        size = file.length(),
-                        isLocal = true,
-                        isWebDav = false,
-                        date = Date().time,
-                    )
-                )
+                // TODO: add recent datasource
+//                recentDao.addRecent(
+//                    Recent(
+//                        idFile = null,
+//                        path = uri.toString(),
+//                        name = file.name ?: "",
+//                        size = file.length(),
+//                        isLocal = true,
+//                        isWebDav = false,
+//                        date = Date().time,
+//                    )
+//                )
             }
         }
     }
@@ -193,7 +194,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                     }
                 }
             } else {
-                uploadWebDav(account.webDavPath ?: "", listOf(uri))
+                uploadWebDav(account.portal.provider.webDavPath, listOf(uri))
             }
         }
     }

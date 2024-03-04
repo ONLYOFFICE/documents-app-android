@@ -4,18 +4,17 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.recent.RecentDao
-import app.documents.core.storage.account.copyWithToken
+import app.documents.core.database.dao.RecentDao
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.login.ILoginServiceProvider
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.login.models.response.ResponseUser
+import app.documents.core.network.manager.models.user.Thirdparty
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.app.loginService
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.GoogleUtils
-import app.documents.core.network.manager.models.user.Thirdparty
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.ProfileView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -25,7 +24,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
@@ -75,7 +73,7 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
     }
 
     private fun updateBaseUrl(account: CloudAccount) {
-        networkSettings.setBaseUrl(account.portal ?: "")
+        networkSettings.setBaseUrl(account.portal.portal ?: "")
         loginService = context.loginService
     }
 
@@ -97,17 +95,21 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
 
     private fun updateAccountInfo(account: CloudAccount) {
         CoroutineScope(Dispatchers.Default).launch {
-            val token = AccountUtils.getToken(context, Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type)))
+            val token = AccountUtils.getToken(
+                context,
+                Account(account.accountName, context.getString(lib.toolkit.base.R.string.account_type))
+            )
 
             when (val response = token?.let { loginService?.getUserInfo(it)?.blockingGet() }) {
                 is LoginResponse.Success -> {
                     val user = (response.response as ResponseUser).response
                     withContext(Dispatchers.Main) {
-                        AccountUtils.getAccount(context, account.getAccountName())?.let { systemAccount ->
+                        AccountUtils.getAccount(context, account.accountName)?.let { systemAccount ->
                             if (systemAccount.name != "${user.email}@${account.portal}") {
                                 try {
-                                    AccountUtils.getAccountManager(context).renameAccount(systemAccount, "${user.email}@${account.portal}", {
-                                    }, Handler(Looper.getMainLooper()))
+                                    AccountUtils.getAccountManager(context)
+                                        .renameAccount(systemAccount, "${user.email}@${account.portal}", {
+                                        }, Handler(Looper.getMainLooper()))
                                 } catch (exception: NullPointerException) {
                                     exception.message?.let { FirebaseUtils.addCrash(it) }
                                 }
@@ -115,7 +117,7 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
                             }
                         }
                     }
-                    accountDao.updateAccount(
+                    cloudDataSource.updateAccount(
                         account.copy(
                             avatarUrl = user.avatarMedium,
                             name = user.getName(),
@@ -136,7 +138,7 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
 
     @SuppressLint("CheckResult")
     fun logout() {
-        AccountUtils.getAccount(context, account.getAccountName())?.let { systemAccount ->
+        AccountUtils.getAccount(context, account.accountName)?.let { systemAccount ->
             if (account.isWebDav) {
                 AccountUtils.setPassword(context, systemAccount, null)
                 update(systemAccount)
@@ -145,7 +147,11 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
                 update(systemAccount)
             } else {
                 GoogleUtils.getDeviceToken({ deviceToken ->
-                    context.loginService.subscribe(AccountUtils.getToken(context, account.getAccountName()) ?: "", deviceToken, false).subscribe({
+                    context.loginService.subscribe(
+                        AccountUtils.getToken(context, account.accountName) ?: "",
+                        deviceToken,
+                        false
+                    ).subscribe({
                         update(systemAccount)
                     }) {
                         update(systemAccount)
@@ -160,13 +166,9 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
     private fun update(systemAccount: Account) {
         CoroutineScope(Dispatchers.Default).launch {
             AccountUtils.setToken(context, systemAccount, null)
-            accountDao.updateAccount(account.copyWithToken(isOnline = false).apply {
-                token = ""
-                password = ""
-                expires = ""
-            })
+            cloudDataSource.updateAccount(account.copy(isOnline = false))
             withContext(Dispatchers.Main) {
-                viewState.onClose(true, account.copyWithToken(isOnline = false))
+                viewState.onClose(true, account.copy(isOnline = false))
             }
         }
     }

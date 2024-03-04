@@ -1,8 +1,8 @@
 package app.documents.core.storage.preference
 
 import android.content.Context
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.storage.account.CloudAccount
 import javax.inject.Inject
 
 class NetworkSettings @Inject constructor(context: Context) {
@@ -121,10 +121,10 @@ class NetworkSettings @Inject constructor(context: Context) {
 
     fun setSettingsByAccount(account: CloudAccount) {
         setDefault()
-        setBaseUrl(account.scheme + account.portal)
-        setCipher(account.isSslCiphers)
-        setSslState(account.isSslState)
-        setScheme(account.scheme ?: ApiContract.SCHEME_HTTPS)
-        serverVersion = account.serverVersion
+        setBaseUrl(account.portal.scheme.value + account.portal.portal)
+        setCipher(account.portal.settings.isSslCiphers)
+        setSslState(account.portal.settings.isSslState)
+        setScheme(account.portal.scheme.value)
+        serverVersion = account.portal.version.serverVersion
     }
 }

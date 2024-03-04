@@ -1,11 +1,11 @@
 package app.editors.manager.mvp.presenters.login
 
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.models.User
 import app.documents.core.network.login.models.request.RequestSignIn
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils

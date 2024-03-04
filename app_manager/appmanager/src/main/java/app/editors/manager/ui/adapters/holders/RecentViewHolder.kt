@@ -2,7 +2,8 @@ package app.editors.manager.ui.adapters.holders
 
 import android.view.View
 import androidx.core.view.isVisible
-import app.documents.core.storage.recent.Recent
+import app.documents.core.model.cloud.Provider
+import app.documents.core.model.cloud.Recent
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFilesBinding
 import app.editors.manager.mvp.models.ui.RecentUI
@@ -23,8 +24,8 @@ class RecentViewHolder(
     override fun bind(item: ViewType) {
         if (item is RecentUI) {
             with(viewBinding) {
-                val info = if (item.isLocal) view.context
-                    .getString(R.string.this_device) else item.source
+                val info = if (item.source == Provider.LOCAL) view.context
+                    .getString(R.string.this_device) else item.source?.name // todo add Provider.name
 
                 listExplorerFileName.text = item.name
                 listExplorerFileInfo.text = info

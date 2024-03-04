@@ -7,17 +7,17 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.LinearLayoutManager
-import app.documents.core.storage.account.CloudAccount
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.network.manager.models.user.Thirdparty
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentProfileLayoutBinding
-import app.documents.core.network.manager.models.user.Thirdparty
 import app.editors.manager.mvp.presenters.main.ProfilePresenter
 import app.editors.manager.mvp.presenters.main.ProfileState
 import app.editors.manager.mvp.views.main.ProfileView
 import app.editors.manager.ui.adapters.ThirdpartyAdapter
 import app.editors.manager.ui.binders.ProfileItemBinder
-import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
+import app.editors.manager.ui.fragments.base.BaseAppFragment
 import lib.toolkit.base.managers.utils.StringUtils.getEncodedString
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
@@ -127,7 +127,7 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
         emailBinder?.setTitle(getString(R.string.login_enterprise_email_hint))?.setImage(R.drawable.ic_email)?.text =
             account.login
         portalBinder?.setTitle(getString(R.string.profile_portal_address))?.setImage(R.drawable.ic_cloud)?.text =
-            account.scheme + getEncodedString(account.portal)
+            account.portal.scheme.value + getEncodedString(account.portal.portal)
     }
 
     private fun onCloudState(account: CloudAccount) {
@@ -138,7 +138,7 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
         emailBinder?.setTitle(getString(R.string.login_enterprise_email_hint))?.setImage(R.drawable.ic_email)?.text =
             account.login
         portalBinder?.setTitle(getString(R.string.profile_portal_address))?.setImage(R.drawable.ic_cloud)?.text =
-            account.scheme + getEncodedString(account.portal)
+            account.portal.scheme.value + getEncodedString(account.portal.portal)
         usernameBinder?.setTitle(getString(R.string.profile_username_title))
             ?.setText(account.name)
             ?.setImage(R.drawable.ic_list_item_share_user_icon)

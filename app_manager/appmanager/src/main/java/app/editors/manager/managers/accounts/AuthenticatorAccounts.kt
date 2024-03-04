@@ -6,7 +6,7 @@ import android.accounts.AccountAuthenticatorResponse
 import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
-import app.documents.core.storage.account.CloudAccount
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.login.LoginResponse
 import app.documents.core.network.login.models.request.RequestSignIn
 import app.documents.core.network.login.models.response.ResponseSignIn
@@ -15,7 +15,6 @@ import app.editors.manager.ui.activities.login.PortalsActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.R as Toolkit
@@ -66,7 +65,7 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
                     )
                 ) {
                     val cloudAccount = Json.decodeFromString<CloudAccount>(data.getString(ACCOUNT_KEY) ?: "")
-                    getToken(cloudAccount, response, AccountUtils.getPassword(context, cloudAccount.getAccountName()))
+                    getToken(cloudAccount, response, AccountUtils.getPassword(context, cloudAccount.accountName))
                 } else {
                     Bundle.EMPTY
                 }
@@ -79,29 +78,24 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
     private fun getToken(cloudAccount: CloudAccount, response: AccountAuthenticatorResponse?, password: String?) =
         runBlocking(Dispatchers.Main) {
             val result = async(Dispatchers.IO) {
-                if (cloudAccount.provider?.isNotEmpty() == true) {
+                val signInResponse = context.loginService.signIn(
+                    RequestSignIn(
+                        userName = cloudAccount.login ?: "",
+                        password = password ?: "",
+                    )
+                ).blockingGet()
+                if (signInResponse is LoginResponse.Success) {
+                    val token = (signInResponse.response as ResponseSignIn).response.token
+                    AccountUtils.setToken(context, cloudAccount.accountName, token)
+                    return@async Bundle().apply {
+                        putString(
+                            AccountManager.KEY_AUTHTOKEN,
+                            token
+                        )
+                    }
+                } else {
                     response?.onError(1, "need provider token")
                     return@async Bundle.EMPTY
-                } else {
-                    val signInResponse = context.loginService.signIn(
-                        RequestSignIn(
-                            userName = cloudAccount.login ?: "",
-                            password = password ?: "",
-                        )
-                    ).blockingGet()
-                    if (signInResponse is LoginResponse.Success) {
-                        val token = (signInResponse.response as ResponseSignIn).response.token
-                        AccountUtils.setToken(context, cloudAccount.getAccountName(), token)
-                        return@async Bundle().apply {
-                            putString(
-                                AccountManager.KEY_AUTHTOKEN,
-                                token
-                            )
-                        }
-                    } else {
-                        response?.onError(1, "need provider token")
-                        return@async Bundle.EMPTY
-                    }
                 }
             }.await()
             response?.onResult(result)

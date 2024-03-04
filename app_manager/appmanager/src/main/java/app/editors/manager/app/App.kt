@@ -8,9 +8,9 @@ import android.os.Build
 import android.os.Process
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.room.InvalidationTracker
 import app.documents.core.di.dagger.CoreComponent
 import app.documents.core.di.dagger.DaggerCoreComponent
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.login.ILoginServiceProvider
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
@@ -26,7 +26,6 @@ import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.RoomProvider
 import app.documents.core.providers.WebDavFileProvider
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.AppComponent
 import app.editors.manager.di.component.DaggerAppComponent
@@ -121,6 +120,7 @@ class App : Application() {
         _dropboxComponent = DaggerDropboxComponent
             .builder()
             .appComponent(appComponent)
+            .coreComponent(coreComponent)
             .build()
     }
 
@@ -180,16 +180,6 @@ class App : Application() {
         isAnalyticEnable = appComponent.preference.isAnalyticEnable
         initCrashlytics()
         KeyStoreUtils.init()
-        addDataBaseObserver()
-    }
-
-    private fun addDataBaseObserver() {
-        appComponent.accountsDataBase.invalidationTracker.addObserver(object :
-            InvalidationTracker.Observer(arrayOf(CloudAccount::class.java.simpleName)) {
-            override fun onInvalidated(tables: Set<String>) {
-                appComponent.preference.dbTimestamp = System.currentTimeMillis()
-            }
-        })
     }
 
     private fun getProcess(): String {

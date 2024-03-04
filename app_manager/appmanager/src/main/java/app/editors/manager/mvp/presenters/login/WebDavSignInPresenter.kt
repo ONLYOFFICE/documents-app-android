@@ -2,7 +2,12 @@ package app.editors.manager.mvp.presenters.login
 
 import android.accounts.Account
 import android.net.Uri
-import app.documents.core.storage.account.CloudAccount
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.PortalSettings
+import app.documents.core.model.cloud.Provider
+import app.documents.core.model.cloud.Scheme
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
@@ -13,7 +18,6 @@ import app.editors.manager.mvp.views.login.WebDavSignInView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -82,7 +86,8 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
                     checkResponse(response, provider, webUrl, login, password)
                 }, { error ->
                     if (error is ConnectException && builder.toString().startsWith(ApiContract.SCHEME_HTTPS)) {
-                        val httpUrl = builder.toString().replace(ApiContract.SCHEME_HTTPS.toRegex(), ApiContract.SCHEME_HTTP)
+                        val httpUrl =
+                            builder.toString().replace(ApiContract.SCHEME_HTTPS.toRegex(), ApiContract.SCHEME_HTTP)
                         checkPortal(provider, httpUrl, login, password)
                     } else {
                         viewState.onDialogClose()
@@ -127,7 +132,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             val path = correctUrl.path.removeSuffix("/").removePrefix("/")
 
             networkSettings.setDefault()
-            networkSettings.setBaseUrl(correctUrl.protocol + "://" + correctUrl.host + if (correctUrl.port != -1 ) ":${correctUrl.port}" else "" + "/")
+            networkSettings.setBaseUrl(correctUrl.protocol + "://" + correctUrl.host + if (correctUrl.port != -1) ":${correctUrl.port}" else "" + "/")
             networkSettings.setScheme(correctUrl.protocol + "://")
 
             viewState.onDialogWaiting(context.getString(R.string.dialogs_check_portal_header_text))
@@ -169,28 +174,30 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
     private fun createUser(provider: WebDavService.Providers, webUrl: URL, login: String, password: String) {
         val cloudAccount = CloudAccount(
             id = "$login@${webUrl.host}",
-            isWebDav = true,
-            portal = webUrl.host + if (webUrl.port != -1 ) ":${webUrl.port}" else "",
-            webDavPath = webUrl.path,
-            webDavProvider = provider.name,
             login = login,
-            scheme = webUrl.protocol + "://",
-            isSslState = networkSettings.getSslState(),
-            isSslCiphers = networkSettings.getCipher(),
-            name = login
+            name = login,
+            portal = CloudPortal(
+                scheme = Scheme.Custom("${webUrl.protocol}://"),
+                portal = webUrl.host + if (webUrl.port != -1) ":${webUrl.port}" else "",
+                provider = PortalProvider(Provider.WEBDAV, webUrl.path, provider.name),
+                settings = PortalSettings(
+                    isSslState = networkSettings.getSslState(),
+                    isSslCiphers = networkSettings.getCipher()
+                )
+            ),
         )
 
         val accountData = AccountData(
-            portal = cloudAccount.portal + if (webUrl.port != -1 ) ":${webUrl.port}" else "",
-            scheme = cloudAccount.scheme ?: "",
+            portal = cloudAccount.portal.portal + if (webUrl.port != -1) ":${webUrl.port}" else "",
+            scheme = cloudAccount.portal.scheme.value,
             displayName = login,
             userId = cloudAccount.id,
-            provider = cloudAccount.webDavProvider ?: "",
-            webDav = cloudAccount.webDavPath,
+            provider = cloudAccount.portal.provider.webDavProvider,
+            webDav = cloudAccount.portal.provider.webDavPath,
             email = login,
         )
 
-        val account = Account(cloudAccount.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
+        val account = Account(cloudAccount.accountName, context.getString(lib.toolkit.base.R.string.account_type))
 
         if (AccountUtils.addAccount(context, account, password, accountData)) {
             addAccountToDb(cloudAccount)
@@ -203,10 +210,10 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
 
     private fun addAccountToDb(cloudAccount: CloudAccount) {
         presenterScope.launch {
-            accountDao.getAccountOnline()?.let {
-                accountDao.addAccount(it.copy(isOnline = false))
+            cloudDataSource.getAccountOnline()?.let {
+                cloudDataSource.addAccount(it.copy(isOnline = false))
             }
-            accountDao.addAccount(cloudAccount.copy(isOnline = true))
+            cloudDataSource.addAccount(cloudAccount.copy(isOnline = true))
             withContext(Dispatchers.Main) {
                 viewState.onLogin()
             }

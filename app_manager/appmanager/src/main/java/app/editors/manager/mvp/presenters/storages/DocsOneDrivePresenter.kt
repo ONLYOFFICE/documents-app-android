@@ -79,14 +79,17 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     @Suppress("UNCHECKED_CAST")
     override fun refreshToken() {
-        val account = Account(App.getApp().appComponent.accountOnline?.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
+        val account = Account(
+            App.getApp().appComponent.accountOnline?.accountName,
+            context.getString(lib.toolkit.base.R.string.account_type)
+        )
         val accData = AccountUtils.getAccountData(context, account)
         disposable.add(context.oneDriveLoginProvider.refreshToken(accData.refreshToken.orEmpty())
             .subscribe { oneDriveResponse ->
                 when (oneDriveResponse) {
                     is OneDriveResponse.Success -> {
                         val response = oneDriveResponse.response as AuthResponse
-                        AccountUtils.setAccountData(context, account, accData.copy(accessToken = response.access_token))
+                        AccountUtils.setAccountData(context, account, accData)
                         AccountUtils.setToken(context, account, response.access_token)
                         App.getApp().refreshOneDriveInstance()
                         getItemsById("")

@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.webdav.WebDavService
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import com.bumptech.glide.Glide
@@ -70,9 +70,9 @@ object ManagerUiUtils {
     }
 
     fun ImageView.setDropboxImage(account: CloudAccount) {
-        if (account.avatarUrl?.isNotEmpty() == true) {
+        if (account.avatarUrl.isNotEmpty()) {
             Glide.with(this)
-                .load(GlideUtils.getCorrectLoad(account.avatarUrl ?: "", account.token))
+                .load(GlideUtils.getCorrectLoad(account.avatarUrl, "token")) // todo get token
                 .apply(GlideUtils.avatarOptions)
                 .into(this)
         } else {

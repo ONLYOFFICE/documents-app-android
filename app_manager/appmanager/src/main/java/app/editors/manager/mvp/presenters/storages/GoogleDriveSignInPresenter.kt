@@ -1,6 +1,12 @@
 package app.editors.manager.mvp.presenters.storages
 
 import app.documents.core.di.dagger.CoreModule
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.PortalSettings
+import app.documents.core.model.cloud.Provider
+import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.storages.dropbox.models.response.TokenResponse
@@ -11,11 +17,9 @@ import app.documents.core.network.storages.googledrive.login.GoogleDriveLoginPro
 import app.documents.core.network.storages.googledrive.login.GoogleDriveLoginService
 import app.documents.core.network.storages.googledrive.models.User
 import app.documents.core.network.storages.googledrive.models.resonse.UserResponse
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.base.BaseStorageSignInView
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import app.documents.core.network.common.NetworkClient
 import lib.toolkit.base.managers.utils.AccountData
 import okhttp3.MediaType
 import okhttp3.Protocol
@@ -57,7 +61,8 @@ class GoogleDriveSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInV
                         .addConverterFactory(CoreModule.json.asConverterFactory(MediaType.get(ApiContract.VALUE_CONTENT_TYPE)))
                         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                         .build()
-                        .create(GoogleDriveService::class.java))
+                        .create(GoogleDriveService::class.java)
+                )
                     .getUserInfo("Bearer ${token.accessToken}")
             }.subscribe { loginResponse ->
                 when (loginResponse) {
@@ -79,28 +84,27 @@ class GoogleDriveSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInV
     private fun createUser(user: User, accessToken: String, refreshToken: String) {
         val cloudAccount = CloudAccount(
             id = user.permissionId,
-            isWebDav = false,
-            isGoogleDrive = true,
-            portal = "drive.google.com",
-            webDavPath = "",
+            portal = CloudPortal(
+                portal = "drive.google.com",
+                provider = PortalProvider(Provider.GOOGLE_DRIVE),
+                settings = PortalSettings(
+                    isSslState = networkSettings.getSslState(),
+                    isSslCiphers = networkSettings.getCipher()
+                )
+            ),
             avatarUrl = user.photoLink,
-            webDavProvider = "",
             login = user.emailAddress,
-            scheme = "https://",
-            isSslState = networkSettings.getSslState(),
-            isSslCiphers = networkSettings.getCipher(),
             name = user.displayName
         )
 
         val accountData = AccountData(
-            portal = cloudAccount.portal ?: "",
-            scheme = cloudAccount.scheme ?: "",
+            portal = cloudAccount.portal.portal,
+            scheme = cloudAccount.portal.scheme.value,
             displayName = user.displayName,
             userId = cloudAccount.id,
-            provider = cloudAccount.webDavProvider ?: "",
-            accessToken = accessToken,
+            provider = cloudAccount.portal.provider.webDavProvider,
             refreshToken = refreshToken,
-            webDav = cloudAccount.webDavPath,
+            webDav = cloudAccount.portal.provider.webDavPath,
             email = user.emailAddress,
         )
 

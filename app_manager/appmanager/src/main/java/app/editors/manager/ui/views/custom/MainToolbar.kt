@@ -9,9 +9,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.webdav.WebDavService
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils
 import com.bumptech.glide.Glide
@@ -52,13 +52,13 @@ class MainToolbar @JvmOverloads constructor(
         account = cloudAccount
         cloudAccount?.let {
             title.text = cloudAccount.name
-            subtitle.text = cloudAccount.portal
+            subtitle.text = cloudAccount.portal.portal
             if (cloudAccount.isWebDav) {
-                setWebDavAvatar(cloudAccount.webDavProvider ?: "")
+                setWebDavAvatar(cloudAccount.portal.provider.webDavProvider)
             } else if (cloudAccount.isOneDrive) {
                 setOneDriveAvatar()
             } else if(cloudAccount.isDropbox) {
-                if(it.avatarUrl == null || it.avatarUrl?.isEmpty() == true) {
+                if(it.avatarUrl.isEmpty()) {
                     setDropboxAvatar()
                 } else {
                     loadAvatar(it)
@@ -74,19 +74,19 @@ class MainToolbar @JvmOverloads constructor(
     private fun loadAvatar(cloudAccount: CloudAccount) {
         AccountUtils.getToken(
             context,
-            account?.getAccountName() ?: ""
+            account?.accountName.orEmpty()
         )?.let {
             val url = if (
-                cloudAccount.avatarUrl?.contains(ApiContract.SCHEME_HTTP) == true ||
-                cloudAccount.avatarUrl?.contains(ApiContract.SCHEME_HTTPS) == true ||
-                cloudAccount.isDropbox ||
-                cloudAccount.isGoogleDrive) {
+                cloudAccount.avatarUrl.contains(ApiContract.SCHEME_HTTP) ||
+                cloudAccount.avatarUrl.contains(ApiContract.SCHEME_HTTPS) ||
+                cloudAccount.isDropbox || cloudAccount.isGoogleDrive
+            ) {
                 cloudAccount.avatarUrl
             } else {
-                cloudAccount.scheme + cloudAccount.portal + cloudAccount.avatarUrl
+                cloudAccount.portal.scheme.value + cloudAccount.portal + cloudAccount.avatarUrl
             }
             Glide.with(context)
-                .load(GlideUtils.getCorrectLoad(url ?: "", it))
+                .load(GlideUtils.getCorrectLoad(url, it))
                 .apply(GlideUtils.avatarOptions)
                 .into(toolbarIcon)
         } ?: run {

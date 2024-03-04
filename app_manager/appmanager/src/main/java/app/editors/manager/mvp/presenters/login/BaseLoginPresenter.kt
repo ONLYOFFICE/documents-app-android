@@ -3,9 +3,9 @@ package app.editors.manager.mvp.presenters.login
 import android.content.Intent
 import app.documents.core.login.LoginRepository
 import app.documents.core.login.LoginResult
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.login.models.User
 import app.documents.core.network.login.models.request.RequestSignIn
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.base.BaseView
@@ -64,7 +64,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
     }
 
     protected open fun onAccountCreateSuccess(account: CloudAccount) {
-        FirebaseUtils.addAnalyticsLogin(account.portal ?: "", account.provider)
+        FirebaseUtils.addAnalyticsLogin(account.portal.portal, account.portal.provider.provider?.name)
     }
 
     protected open fun onTwoFactorAuthApp(secretKey: String?, request: RequestSignIn) {}

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import app.editors.manager.BuildConfig
 import app.editors.manager.app.appComponent
+import app.editors.manager.app.coreComponent
 import app.editors.manager.app.loginService
 import app.editors.manager.managers.utils.NotificationUtils
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -83,8 +84,8 @@ class MessageService : FirebaseMessagingService() {
         super.onNewToken(p0)
         applicationContext.appComponent.preference.deviceMessageToken = p0
         CoroutineScope(Dispatchers.Default).launch {
-            applicationContext.appComponent.accountsDao.getAccounts().forEach { account ->
-                val token: String? = AccountUtils.getToken(applicationContext, account.getAccountName())
+            applicationContext.coreComponent.cloudDataSource.getAccounts().forEach { account ->
+                val token: String? = AccountUtils.getToken(applicationContext, account.accountName)
                 if (token != null && token.isNotEmpty()) {
                     appComponent.networkSettings.setSettingsByAccount(account)
                     applicationContext.loginService.setFirebaseToken(token, p0)

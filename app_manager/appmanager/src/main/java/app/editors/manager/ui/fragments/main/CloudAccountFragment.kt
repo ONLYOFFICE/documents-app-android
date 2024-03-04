@@ -13,10 +13,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.webdav.WebDavService
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudsAccountsLayoutBinding
 import app.editors.manager.mvp.presenters.main.CloudAccountPresenter
@@ -40,6 +40,7 @@ import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.popup.CloudAccountPopup
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -327,8 +328,10 @@ class CloudAccountFragment : BaseAppFragment(),
                 setAccount(account)
             }.show(view)
         } else {
-            AccountContextDialog.newInstance(Json.encodeToString(account), account.token)
-                .show(parentFragmentManager, AccountContextDialog.TAG)
+            AccountContextDialog.newInstance(
+                Json.encodeToString(account),
+                AccountUtils.getToken(requireContext(), account.accountName)
+            ).show(parentFragmentManager, AccountContextDialog.TAG)
         }
     }
 

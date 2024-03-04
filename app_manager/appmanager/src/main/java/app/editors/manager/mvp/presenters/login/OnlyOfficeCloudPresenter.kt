@@ -18,7 +18,7 @@ class OnlyOfficeCloudPresenter : BasePresenter<OnlyOfficeCloudView>() {
 
     fun getAccounts() {
         CoroutineScope(Dispatchers.Default).launch {
-            val accounts = accountDao.getAccounts()
+            val accounts = cloudDataSource.getAccounts()
             withContext(Dispatchers.Main) {
                 viewState.checkAccounts(accounts.isEmpty())
             }

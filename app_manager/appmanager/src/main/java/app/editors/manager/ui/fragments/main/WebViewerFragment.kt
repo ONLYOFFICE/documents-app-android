@@ -2,7 +2,6 @@ package app.editors.manager.ui.fragments.main
 
 import android.accounts.Account
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
@@ -27,9 +26,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
+import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.storage.account.AccountDao
 import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -125,7 +124,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     }
 
     @Inject
-    lateinit var accountDao: AccountDao
+    lateinit var cloudDataSource: CloudDataSource
 
     @Inject
     lateinit var networkSettings: NetworkSettings
@@ -172,10 +171,10 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
     }
 
     private val token = runBlocking(Dispatchers.Default) {
-        accountDao.getAccountOnline()?.let { account ->
+        cloudDataSource.getAccountOnline()?.let { account ->
             return@runBlocking AccountUtils.getToken(
                 App.getApp().applicationContext,
-                Account(account.getAccountName(), App.getApp().getString(lib.toolkit.base.R.string.account_type))
+                Account(account.accountName, App.getApp().getString(lib.toolkit.base.R.string.account_type))
             )
         } ?: run {
             throw Exception("No account")

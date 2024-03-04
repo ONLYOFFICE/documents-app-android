@@ -24,7 +24,9 @@ import app.editors.manager.mvp.views.base.DocsGoogleDriveView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.ContentResolverUtils
+import lib.toolkit.base.managers.utils.KeyboardUtils
 
 class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>(), GoogleDriveUploadReceiver.OnGoogleDriveUploadListener {
 
@@ -210,7 +212,7 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
     }
 
     override fun refreshToken() {
-        context.accountOnline?.getAccountName()?.let { accountName ->
+        context.accountOnline?.accountName?.let { accountName ->
             AccountUtils.getAccount(context, accountName)?.let { account ->
                 val refreshToken = AccountUtils.getAccountData(context, account).refreshToken.orEmpty()
                 context.googleDriveLoginProvider

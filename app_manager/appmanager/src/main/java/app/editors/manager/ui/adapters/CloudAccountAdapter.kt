@@ -10,7 +10,7 @@ import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
-import app.documents.core.storage.account.CloudAccount
+import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.databinding.AccountListItemLayoutBinding
 import app.editors.manager.managers.utils.GlideUtils
@@ -19,6 +19,7 @@ import app.editors.manager.managers.utils.ManagerUiUtils.setDropboxImage
 import app.editors.manager.managers.utils.ManagerUiUtils.setOneDriveImage
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.extensions.inflate
+import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.ui.adapters.BaseListAdapter
 
 class CloudAccountAdapter(
@@ -109,7 +110,7 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         itemDetailsLookup = AccountDetailsItemLookup(absoluteAdapterPosition, account)
         with(binding) {
             accountItemName.text = account.name
-            accountItemPortal.text = account.portal
+            accountItemPortal.text = account.portal.portal
             accountItemContext.isVisible = true
             imageCheck.isVisible = !isSelection && account.isOnline
 
@@ -118,16 +119,17 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
                 account.isDropbox -> accountAvatar.setDropboxImage(account)
                 account.isWebDav -> {
                     accountItemName.text = account.login
-                    ManagerUiUtils.setWebDavImage(account.webDavProvider, accountAvatar)
+                    ManagerUiUtils.setWebDavImage(account.portal.provider.webDavProvider, accountAvatar)
                 }
                 else -> {
-                    val url: String = if (account.avatarUrl?.contains("static") == true || account.isGoogleDrive) {
+                    val token = AccountUtils.getToken(view.context, account.accountName)
+                    val url: String = if (account.avatarUrl.contains("static") || account.isGoogleDrive) {
                         account.avatarUrl ?: ""
                     } else {
-                        account.scheme + account.portal + account.avatarUrl
+                        account.portal.scheme.value + account.portal + account.avatarUrl
                     }
                     Glide.with(accountAvatar)
-                        .load(GlideUtils.getCorrectLoad(url, account.getDecryptToken() ?: ""))
+                        .load(GlideUtils.getCorrectLoad(url, token.orEmpty()))
                         .apply(GlideUtils.avatarOptions)
                         .into(accountAvatar)
 
