@@ -11,5 +11,4 @@ java {
 
 dependencies {
     implementation(Kotlin.kotlinSerialization)
-    implementation(Kotlin.coroutineCore)
 }

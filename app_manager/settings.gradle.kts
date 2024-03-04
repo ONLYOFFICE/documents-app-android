@@ -28,3 +28,4 @@ project(":libgcells").projectDir = File(settingsDir, "../../document-android-edi
 project(":libgdocs").projectDir = File(settingsDir, "../../document-android-editors/editors_docs/libgdocs")
 project(":libgslides").projectDir = File(settingsDir, "../../document-android-editors/editors_slides/libgslides")
 include(":core:model")
+include(":core:database")

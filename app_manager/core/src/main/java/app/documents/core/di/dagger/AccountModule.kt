@@ -40,11 +40,12 @@ object AccountModule {
 
     @Provides
     @Token
-    fun provideToken(context: Context, account: CloudAccount?): String = runBlocking {
-        account?.let { cloudAccount ->
-            return@runBlocking AccountUtils.getToken(context = context, cloudAccount.getAccountName())
-                ?: ""
-        } ?: ""
+    fun provideToken(accountManager: AccountManager, cloudDataSource: CloudDataSource): String = runBlocking {
+        val accountName = cloudDataSource.getAccountOnline()?.accountName
+        if (accountName.isNullOrEmpty()) {
+            return@runBlocking ""
+        }
+        return@runBlocking accountManager.getToken(accountName).orEmpty()
     }
 
     @Provides
