@@ -4,10 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityWebDavLoginBinding
 import app.editors.manager.ui.activities.base.BaseAppActivity
@@ -30,7 +30,7 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
         const val GOOGLEDRIVE_FRAGMENT_VALUE = 3
 
         @JvmStatic
-        fun show(activity: Activity, provider: WebDavService.Providers? = null, account: String?, fragment: Int = 0) {
+        fun show(activity: Activity, provider: WebdavProvider? = null, account: String?, fragment: Int = 0) {
             activity.startActivityForResult(Intent(activity, WebDavLoginActivity::class.java).apply {
                 putExtra(KEY_PROVIDER, provider)
                 putExtra(KEY_ACCOUNT, account)
@@ -70,7 +70,7 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
         setSupportActionBar(viewBinding?.appBarToolbar)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
-            it.title = intent.getSerializable(KEY_PROVIDER, WebDavService.Providers::class.java).name
+            it.title = intent.getSerializable(KEY_PROVIDER, WebdavProvider::class.java).name
         }
         if (savedInstanceState == null) showFragment()
     }
@@ -86,7 +86,7 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
 
     private fun showSignInFragment() {
         showFragment(
-            WebDavSignInFragment.newInstance(intent.getSerializableExtra(KEY_PROVIDER) as WebDavService.Providers),
+            WebDavSignInFragment.newInstance(intent.getSerializableExtra(KEY_PROVIDER) as WebdavProvider),
             null
         )
     }

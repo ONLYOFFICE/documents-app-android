@@ -3,10 +3,11 @@ package app.editors.manager.mvp.presenters.main
 import android.net.Uri
 import android.os.Bundle
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.models.Capabilities
-import app.documents.core.network.webdav.WebDavService
 import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
@@ -225,13 +226,13 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             } else {
                 viewState.onWebDavLogin(
                     Json.encodeToString(account),
-                    WebDavService.Providers.valueOf(account.portal.provider.webDavProvider)
+                    WebdavProvider.valueOf(account.portal.provider)
                 )
             }
         } ?: run {
             viewState.onWebDavLogin(
                 Json.encodeToString(account),
-                WebDavService.Providers.valueOf(account.portal.provider.webDavProvider)
+                WebdavProvider.valueOf(account.portal.provider)
             )
         }
     }
@@ -283,8 +284,9 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     private fun webDavLogin(account: CloudAccount, password: String) {
         setSettings(account)
+        val webdavProvider = (account.portal.provider as? PortalProvider.Webdav)
         disposable = context.webDavApi
-            .capabilities(Credentials.basic(account.login, password), account.portal.provider.webDavPath)
+            .capabilities(Credentials.basic(account.login, password), webdavProvider?.provider?.path)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -294,7 +296,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     restoreSettings()
                     viewState.onWebDavLogin(
                         Json.encodeToString(account),
-                        WebDavService.Providers.valueOf(account.portal.provider.webDavProvider)
+                        WebdavProvider.valueOf(account.portal.provider)
                     )
                 }
             }, {

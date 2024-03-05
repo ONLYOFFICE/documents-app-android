@@ -58,10 +58,9 @@ class LoginModule {
     fun provideLoginRepository(
         loginDataSource: LoginDataSource,
         networkSettings: NetworkSettings,
-        @AccountType accountType: String,
         accountManager: AccountManager,
         cloudDataSource: CloudDataSource
     ): LoginRepository {
-        return LoginRepositoryImpl(loginDataSource, networkSettings, accountType, accountManager, cloudDataSource)
+        return LoginRepositoryImpl(loginDataSource, networkSettings, accountManager, cloudDataSource)
     }
 }

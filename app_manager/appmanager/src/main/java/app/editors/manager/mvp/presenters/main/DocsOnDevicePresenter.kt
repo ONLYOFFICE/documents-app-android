@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.providers.LocalFileProvider
@@ -194,7 +195,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                     }
                 }
             } else {
-                uploadWebDav(account.portal.provider.webDavPath, listOf(uri))
+                uploadWebDav((account.portal.provider as? PortalProvider.Webdav)?.provider?.path.orEmpty(), listOf(uri))
             }
         }
     }

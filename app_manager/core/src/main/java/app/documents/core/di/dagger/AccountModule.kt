@@ -31,12 +31,6 @@ object AccountModule {
     }
 
     @Provides
-    @AccountType
-    fun provideAccountType(context: Context): String {
-        return context.getString(lib.toolkit.base.R.string.account_type)
-    }
-
-    @Provides
     fun provideAccountManager(context: Context): AccountManager {
         return AccountManager(context)
     }

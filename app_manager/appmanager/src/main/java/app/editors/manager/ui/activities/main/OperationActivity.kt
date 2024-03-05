@@ -6,9 +6,9 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.lifecycle.lifecycleScope
 import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityOperationBinding
@@ -96,9 +96,7 @@ class OperationActivity : BaseAppActivity(){
                     if (account.isWebDav) {
                         showFragment(
                             DocsWebDavOperationFragment.newInstance(
-                                WebDavService.Providers.valueOf(
-                                    account.portal.provider.webDavProvider
-                                )
+                                WebdavProvider.valueOf(account.portal.provider)
                             ), null
                         )
                     } else if(account.isOneDrive) {

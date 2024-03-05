@@ -10,8 +10,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils
 import com.bumptech.glide.Glide
@@ -54,7 +55,7 @@ class MainToolbar @JvmOverloads constructor(
             title.text = cloudAccount.name
             subtitle.text = cloudAccount.portal.portal
             if (cloudAccount.isWebDav) {
-                setWebDavAvatar(cloudAccount.portal.provider.webDavProvider)
+                setWebDavAvatar(cloudAccount.portal.provider)
             } else if (cloudAccount.isOneDrive) {
                 setOneDriveAvatar()
             } else if(cloudAccount.isDropbox) {
@@ -113,27 +114,27 @@ class MainToolbar @JvmOverloads constructor(
         )
     }
 
-    private fun setWebDavAvatar(provider: String) {
-        when (WebDavService.Providers.valueOf(provider)) {
-            WebDavService.Providers.Yandex -> toolbarIcon.setImageDrawable(
-                ContextCompat.getDrawable(
-                    context,
-                    R.drawable.ic_storage_yandex
-                )
-            )
-            WebDavService.Providers.NextCloud -> toolbarIcon.setImageDrawable(
+    private fun setWebDavAvatar(provider: PortalProvider) {
+        when (WebdavProvider.valueOf(provider)) {
+            is WebdavProvider.NextCloud -> toolbarIcon.setImageDrawable(
                 ContextCompat.getDrawable(
                     context,
                     R.drawable.ic_storage_nextcloud
                 )
             )
-            WebDavService.Providers.OwnCloud -> toolbarIcon.setImageDrawable(
+            WebdavProvider.Yandex -> toolbarIcon.setImageDrawable(
+                ContextCompat.getDrawable(
+                    context,
+                    R.drawable.ic_storage_yandex
+                )
+            )
+            WebdavProvider.OwnCloud -> toolbarIcon.setImageDrawable(
                 ContextCompat.getDrawable(
                     context,
                     R.drawable.ic_storage_owncloud
                 )
             )
-            WebDavService.Providers.KDrive -> toolbarIcon.setImageDrawable(
+            WebdavProvider.KDrive -> toolbarIcon.setImageDrawable(
                 ContextCompat.getDrawable(
                     context,
                     R.drawable.ic_storage_kdrive

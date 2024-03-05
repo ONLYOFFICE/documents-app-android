@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -51,13 +52,12 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     }
 
     fun getProvider() {
+        val path = (context.accountOnline?.portal?.provider as? PortalProvider.Webdav)?.provider?.path
         fileProvider?.let {
-            context.accountOnline?.let {
-                getItemsById(it.portal.provider.webDavPath)
-            }
+            getItemsById(path)
         } ?: run {
             fileProvider = context.webDavFileProvider
-            getItemsById(context.accountOnline?.portal?.provider?.webDavPath)
+            getItemsById(path)
         }
     }
 
@@ -138,20 +138,20 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             // TODO: add recent datasource
 
             //            accountDao.getAccountOnline()?.let {
-//                recentDao.addRecent(
-//                    Recent(
-//                        idFile = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
-//                        path = file.webUrl,
-//                        name = file.title,
-//                        size = file.pureContentLength,
-//                        isLocal = false,
-//                        isWebDav = true,
-//                        date = Date().time,
-//                        ownerId = it.id,
-//                        source = it.portal
-//                    )
-//                )
-//            }
+            //                recentDao.addRecent(
+            //                    Recent(
+            //                        idFile = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
+            //                        path = file.webUrl,
+            //                        name = file.title,
+            //                        size = file.pureContentLength,
+            //                        isLocal = false,
+            //                        isWebDav = true,
+            //                        date = Date().time,
+            //                        ownerId = it.id,
+            //                        source = it.portal
+            //                    )
+            //                )
+            //            }
         }
     }
 
@@ -237,9 +237,10 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         }
         CoroutineScope(Dispatchers.Default).launch {
             cloudDataSource.getAccountOnline()?.let {
-                if (it.isWebDav) {
+                val webDavProvider = it.portal.provider
+                if (webDavProvider is PortalProvider.Webdav) {
                     withContext(Dispatchers.Main) {
-                        uploadWebDav(it.portal.provider.webDavPath, listOf(uri))
+                        uploadWebDav(webDavProvider.provider.path, listOf(uri))
                     }
                 }
             }

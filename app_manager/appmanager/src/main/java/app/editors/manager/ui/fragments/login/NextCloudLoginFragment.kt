@@ -13,9 +13,9 @@ import android.webkit.*
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalProvider
-import app.documents.core.model.cloud.Provider
 import app.documents.core.model.cloud.Scheme
-import app.documents.core.network.webdav.WebDavService
+import app.documents.core.model.cloud.WebdavProvider
+import app.documents.core.model.cloud.WebdavProvider.Companion.DEFAULT_NEXT_CLOUD_PATH
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.NextCloudLoginLayoutBinding
@@ -204,8 +204,6 @@ class NextCloudLoginFragment : BaseAppFragment() {
                     scheme = cloudAccount.portal.scheme.value,
                     displayName = login,
                     userId = cloudAccount.id,
-                    provider = cloudAccount.portal.provider.webDavProvider,
-                    webDav = cloudAccount.portal.provider.webDavPath,
                     email = login,
                 )
 
@@ -228,30 +226,24 @@ class NextCloudLoginFragment : BaseAppFragment() {
         portal = CloudPortal(
             portal = url.host,
             scheme = Scheme.Custom(url.protocol + "://"),
-            provider = PortalProvider(
-                provider = Provider.WEBDAV,
-                WebDavService.Providers.NextCloud.name,
-                if (url.path != null && url.path.isNotEmpty()) {
-                    url.path + WebDavService.Providers.NextCloud.path + login + "/"
-                } else {
-                    WebDavService.Providers.NextCloud.path + login + "/"
-                }
-            ),
-        ),
+            provider = PortalProvider.Webdav(
+                provider = WebdavProvider.NextCloud("${url.path.orEmpty()}$DEFAULT_NEXT_CLOUD_PATH$login/")
+            )
+        )
     )
 
     private fun addAccount(cloudAccount: CloudAccount) {
         // TODO: move to presenter
-//        val accountDao = requireContext().appComponent.accountsDao
-//        lifecycleScope.launch {
-//            accountDao.getAccountOnline()?.let {
-//                accountDao.addAccount(it.copy(isOnline = false))
-//            }
-//            accountDao.addAccount(cloudAccount.copy(isOnline = true))
-//            withContext(Dispatchers.Main) {
-//                login()
-//            }
-//        }
+        //        val accountDao = requireContext().appComponent.accountsDao
+        //        lifecycleScope.launch {
+        //            accountDao.getAccountOnline()?.let {
+        //                accountDao.addAccount(it.copy(isOnline = false))
+        //            }
+        //            accountDao.addAccount(cloudAccount.copy(isOnline = true))
+        //            withContext(Dispatchers.Main) {
+        //                login()
+        //            }
+        //        }
     }
 
     private fun login() {

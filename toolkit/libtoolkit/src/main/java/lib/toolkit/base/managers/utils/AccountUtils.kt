@@ -17,10 +17,7 @@ import lib.toolkit.base.R
  * @param userId User id (webDav login@portal)
  * @param email Email (login)
  * @param displayName Display name. Webdav login
- * @param provider Provider (google, facebook, etc) WebDav (nextCloud, owncloud, etc)
- * @param accessToken Token for provider (Webdav null)
  * @param avatar Url from avatar
- * @param webDav Path from connect webdav
  * @param expires Token lifecycle
  */
 @Serializable
@@ -31,10 +28,8 @@ data class AccountData(
     val password: String = "",
     val email: String,
     val displayName: String,
-    val provider: String,
     val refreshToken: String? = null,
     val avatar: String? = null,
-    val webDav: String? = null,
     val expires: String? = null
 )
 
@@ -83,7 +78,12 @@ object AccountUtils {
 
     @JvmStatic
     fun removeAccount(context: Context, name: String): Boolean {
-        return getAccountManager(context).removeAccountExplicitly(Account(name, context.getString(R.string.account_type)))
+        return getAccountManager(context).removeAccountExplicitly(
+            Account(
+                name,
+                context.getString(R.string.account_type)
+            )
+        )
     }
 
     @JvmStatic

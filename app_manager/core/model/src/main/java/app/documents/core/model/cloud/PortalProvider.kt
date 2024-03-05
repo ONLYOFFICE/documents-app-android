@@ -3,9 +3,12 @@ package app.documents.core.model.cloud
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PortalProvider(
-    val provider: Provider? = null,
-    // TODO: extract
-    val webDavProvider: String = "",
-    val webDavPath: String = "",
-)
+sealed class PortalProvider {
+
+    data object Cloud : PortalProvider()
+    data object DocSpace : PortalProvider()
+    data object OneDrive : PortalProvider()
+    data object DropBox : PortalProvider()
+    data object GoogleDrive : PortalProvider()
+    data class Webdav(val provider: WebdavProvider) : PortalProvider()
+}

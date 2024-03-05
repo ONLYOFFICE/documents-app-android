@@ -34,7 +34,7 @@ internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSou
     override suspend fun getAccountOnline(): CloudAccount? {
         val account = db.accountDao.getAccountOnline()?.toCloudAccount()
         val portal = db.portalDao.getByAccountId(account?.id.orEmpty())
-        return account?.copy(portal = portal?.toCloudPortal() ?: return null)
+        return account?.copy(portal = portal?.toCloudPortal() ?: CloudPortal())
     }
 
     override suspend fun getAccountByLogin(login: String): CloudAccount? {

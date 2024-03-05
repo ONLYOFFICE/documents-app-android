@@ -8,19 +8,24 @@ data class CloudAccount(
     val login: String = "",
     val name: String = "",
     val avatarUrl: String = "",
+    val socialProvider: String = "",
     val isOnline: Boolean = false,
     val isAdmin: Boolean = false,
     val isVisitor: Boolean = false,
     val portal: CloudPortal = CloudPortal()
 ) {
 
-    val isWebDav: Boolean get() = portal.provider.provider == Provider.WEBDAV
+    val isWebDav: Boolean
+        get() = portal.provider is PortalProvider.Webdav
 
-    val isGoogleDrive: Boolean get() = portal.provider.provider == Provider.GOOGLE_DRIVE
+    val isGoogleDrive: Boolean
+        get() = portal.provider == PortalProvider.GoogleDrive
 
-    val isOneDrive: Boolean get() = portal.provider.provider == Provider.ONE_DRIVE
+    val isOneDrive: Boolean
+        get() = portal.provider == PortalProvider.OneDrive
 
-    val isDropbox: Boolean get() = portal.provider.provider == Provider.DROPBOX
+    val isDropbox: Boolean
+        get() = portal.provider == PortalProvider.DropBox
 
     val accountName: String
         get() = "$login@${portal.portal}"

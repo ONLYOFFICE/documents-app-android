@@ -11,6 +11,7 @@ import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.PortalProvider
 import app.editors.manager.R
 import app.editors.manager.databinding.AccountListItemLayoutBinding
 import app.editors.manager.managers.utils.GlideUtils
@@ -119,7 +120,7 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
                 account.isDropbox -> accountAvatar.setDropboxImage(account)
                 account.isWebDav -> {
                     accountItemName.text = account.login
-                    ManagerUiUtils.setWebDavImage(account.portal.provider.webDavProvider, accountAvatar)
+                    ManagerUiUtils.setWebDavImage(account.portal.provider as? PortalProvider.Webdav, accountAvatar)
                 }
                 else -> {
                     val token = AccountUtils.getToken(view.context, account.accountName)

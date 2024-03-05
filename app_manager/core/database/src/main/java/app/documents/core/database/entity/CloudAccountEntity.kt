@@ -13,15 +13,16 @@ internal data class CloudAccountEntity(
     val login: String = "",
     val displayName: String = "",
     val avatarUrl: String = "",
+    val socialProvider: String = "",
     val isOnline: Boolean = false,
     val isAdmin: Boolean = false,
     val isVisitor: Boolean = false
 )
 
 internal fun CloudAccountEntity.toCloudAccount(): CloudAccount {
-    return CloudAccount(accountId, login, displayName, avatarUrl, isOnline, isAdmin, isVisitor)
+    return CloudAccount(accountId, login, displayName, avatarUrl, socialProvider, isOnline, isAdmin, isVisitor)
 }
 
 internal fun CloudAccount.toEntity(): CloudAccountEntity {
-    return CloudAccountEntity(id, login, name, avatarUrl, isOnline, isAdmin, isVisitor)
+    return CloudAccountEntity(id, login, name, avatarUrl, socialProvider, isOnline, isAdmin, isVisitor)
 }

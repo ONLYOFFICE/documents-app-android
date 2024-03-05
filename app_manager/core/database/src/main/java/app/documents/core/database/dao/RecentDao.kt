@@ -8,7 +8,6 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import app.documents.core.database.entity.RecentEntity
-import app.documents.core.model.cloud.Provider
 
 @Dao
 abstract class RecentDao { // todo make it internal
@@ -16,7 +15,7 @@ abstract class RecentDao { // todo make it internal
     @Query("SELECT * FROM recent")
     abstract suspend fun getRecentEntity(): List<RecentEntity>
 
-    @Query("SELECT * FROM recent WHERE idFile =:id and ownerId = :ownerId")
+    @Query("SELECT * FROM recent WHERE fileId =:id and ownerId = :ownerId")
     abstract suspend fun getRecentEntityByFileId(id: String?, ownerId: String?): RecentEntity?
 
     @Query("SELECT * FROM recent WHERE path =:path")
@@ -33,13 +32,13 @@ abstract class RecentDao { // todo make it internal
 
     @Transaction
     open suspend fun addRecentEntity(recent: RecentEntity) {
-        if (recent.source == Provider.LOCAL) {
+        if (recent.source == null) {
             getRecentEntityByFilePath(recent.path)?.let {
                 add(recent.copy(id = it.id))
                 return
             }
         } else {
-            getRecentEntityByFileId(recent.idFile, recent.ownerId)?.let {
+            getRecentEntityByFileId(recent.fileId, recent.ownerId)?.let {
                 add(recent.copy(id = it.id))
                 return
             }

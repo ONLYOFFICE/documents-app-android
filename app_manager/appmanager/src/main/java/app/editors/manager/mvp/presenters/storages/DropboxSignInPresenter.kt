@@ -4,7 +4,6 @@ import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.PortalSettings
-import app.documents.core.model.cloud.Provider
 import app.documents.core.model.cloud.Scheme
 import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.storages.dropbox.login.DropboxLoginProvider
@@ -40,7 +39,7 @@ class DropboxSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView>
             id = tokenResponse.accountId,
             portal = CloudPortal(
                 portal = DropboxUtils.DROPBOX_PORTAL,
-                provider = PortalProvider(provider = Provider.DROPBOX),
+                provider = PortalProvider.DropBox,
                 scheme = Scheme.Https,
                 settings = PortalSettings(
                     isSslState = networkSettings.getSslState(),
@@ -57,8 +56,6 @@ class DropboxSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView>
             scheme = cloudAccount.portal.scheme.value,
             displayName = userResponse.name?.displayName.orEmpty(),
             userId = cloudAccount.id,
-            provider = cloudAccount.portal.provider.webDavProvider,
-            webDav = cloudAccount.portal.provider.webDavPath,
             email = userResponse.email.orEmpty(),
             refreshToken = tokenResponse.refreshToken
         )

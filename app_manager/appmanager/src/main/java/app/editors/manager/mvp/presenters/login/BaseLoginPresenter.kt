@@ -64,7 +64,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
     }
 
     protected open fun onAccountCreateSuccess(account: CloudAccount) {
-        FirebaseUtils.addAnalyticsLogin(account.portal.portal, account.portal.provider.provider?.name)
+        FirebaseUtils.addAnalyticsLogin(account.portal.portal, account.portal.provider.toString())
     }
 
     protected open fun onTwoFactorAuthApp(secretKey: String?, request: RequestSignIn) {}

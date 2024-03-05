@@ -11,10 +11,8 @@ import androidx.core.os.bundleOf
 import app.documents.core.database.datasource.CloudCursorDataSource
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
-import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.PortalSettings
 import app.documents.core.model.cloud.PortalVersion
-import app.documents.core.model.cloud.Provider
 import app.documents.core.model.cloud.Scheme
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -183,7 +181,6 @@ class AccountContentProvider : ContentProvider() {
             scheme = cloudAccount.portal.scheme.value,
             displayName = cloudAccount.name,
             userId = cloudAccount.id,
-            provider = cloudAccount.portal.provider.provider?.name.orEmpty(),
             email = cloudAccount.login,
             avatar = cloudAccount.avatarUrl,
             expires = expires
@@ -204,7 +201,6 @@ class AccountContentProvider : ContentProvider() {
             serverVersion = values?.getAsString("serverVersion").orEmpty(),
             scheme = values?.getAsString("scheme").orEmpty(),
             name = values?.getAsString("name").orEmpty(),
-            provider = values?.getAsString("provider").orEmpty(),
             avatarUrl = values?.getAsString("avatarUrl").orEmpty(),
             isSslCiphers = values?.getAsBoolean("isSslCiphers") ?: false,
             isSslState = values?.getAsBoolean("isSslState") ?: true,
@@ -221,7 +217,6 @@ class AccountContentProvider : ContentProvider() {
             portal = extras.getString("portal").orEmpty(),
             serverVersion = extras.getString("serverVersion").orEmpty(),
             scheme = extras.getString("scheme").orEmpty(),
-            provider = extras.getString("provider").orEmpty(),
             avatarUrl = extras.getString("avatarUrl").orEmpty(),
             isSslCiphers = extras.getBoolean("isSslCiphers", false),
             isSslState = extras.getBoolean("isSslState", true),
@@ -237,7 +232,6 @@ class AccountContentProvider : ContentProvider() {
         portal: String,
         serverVersion: String,
         scheme: String,
-        provider: String, // todo fix
         avatarUrl: String,
         isSslCiphers: Boolean,
         isSslState: Boolean,
@@ -256,7 +250,6 @@ class AccountContentProvider : ContentProvider() {
                 scheme = Scheme.valueOf(scheme),
                 portal = portal,
                 version = PortalVersion(serverVersion = serverVersion),
-                provider = PortalProvider(Provider.WORKSPACE),
                 settings = PortalSettings(isSslState, isSslCiphers)
             )
         )

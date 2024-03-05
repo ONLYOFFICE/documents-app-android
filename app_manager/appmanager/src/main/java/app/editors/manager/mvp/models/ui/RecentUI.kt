@@ -1,6 +1,5 @@
 package app.editors.manager.mvp.models.ui
 
-import app.documents.core.model.cloud.Provider
 import app.documents.core.model.cloud.Recent
 import app.editors.manager.R
 import lib.toolkit.base.ui.adapters.holder.ViewType
@@ -13,7 +12,7 @@ data class RecentUI(
     val date: Long = 0,
     val size: Long = 0,
     val ownerId: String? = null,
-    val source: Provider? = null
+    val source: String? = null
 ) : ViewType {
 
     override val viewType: Int

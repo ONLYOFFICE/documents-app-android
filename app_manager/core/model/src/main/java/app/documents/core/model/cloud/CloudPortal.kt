@@ -8,8 +8,8 @@ data class CloudPortal(
     val accountId: String = "",
     val scheme: Scheme = Scheme.Https,
     val portal: String = "",
+    val provider: PortalProvider = PortalProvider.Cloud,
     val version: PortalVersion = PortalVersion(),
-    val provider: PortalProvider = PortalProvider(),
     val settings: PortalSettings = PortalSettings()
 ) {
 

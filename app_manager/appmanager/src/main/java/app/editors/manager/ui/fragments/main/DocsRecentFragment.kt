@@ -16,7 +16,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import app.documents.core.model.cloud.Provider
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -68,7 +67,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                 fileExst = recent.name.split(".").let { if (it.size > 1) it[it.size - 1] else "" }
             },
             sectionType = ApiContract.Section.Recent.type,
-            headerInfo = "${if (recent.source == Provider.LOCAL) getString(R.string.this_device) else recent.source?.name}" +
+            headerInfo = (recent.source ?: getString(R.string.this_device)) +
                     getString(R.string.placeholder_point) +
                     TimeUtils.formatDate(Date(recent.date))
         )

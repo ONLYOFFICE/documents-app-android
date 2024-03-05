@@ -12,14 +12,6 @@ import retrofit2.http.*
 
 interface WebDavService {
 
-    enum class Providers(val path: String) {
-        NextCloud(path = "/remote.php/dav/files/"),
-        OwnCloud(path = "/remote.php/dav/files/"),
-        KDrive(path = "/"),
-        Yandex(path = "/"),
-        WebDav(path = "/");
-    }
-
     companion object {
         const val HEADER_AUTHORIZATION = "Authorization"
         const val HEADER_DESTINATION = "Destination"

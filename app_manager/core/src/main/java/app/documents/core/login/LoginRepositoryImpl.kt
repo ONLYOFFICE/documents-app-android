@@ -1,15 +1,12 @@
 package app.documents.core.login
 
-import android.accounts.Account
 import app.documents.core.account.AccountManager
 import app.documents.core.database.datasource.CloudDataSource
-import app.documents.core.di.dagger.AccountType
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.PortalSettings
 import app.documents.core.model.cloud.PortalVersion
-import app.documents.core.model.cloud.Provider
 import app.documents.core.model.cloud.Scheme
 import app.documents.core.model.login.RequestDeviceToken
 import app.documents.core.model.login.Token
@@ -36,7 +33,6 @@ import lib.toolkit.base.managers.utils.AccountData
 internal class LoginRepositoryImpl(
     private val loginDataSource: LoginDataSource,
     private val networkSettings: NetworkSettings,
-    @AccountType private val accountType: String,
     private val accountManager: AccountManager,
     private val cloudDataSource: CloudDataSource
 ) : LoginRepository {
@@ -131,7 +127,7 @@ internal class LoginRepositoryImpl(
         val userInfo = loginDataSource.getUserInfo(response.token)
         val account = createCloudAccount(userInfo, request.userName, request.provider)
         val accountData = account.toAccountData(response)
-        val oldToken = addAccountToAccountManager(accountData, request.password, response.token)
+        addAccountToAccountManager(accountData, request.password, response.token)
         disableOldAccount()
         cloudDataSource.addAccount(account)
         subscribePush(response.token)
@@ -141,13 +137,13 @@ internal class LoginRepositoryImpl(
     private fun createCloudAccount(
         userInfo: User,
         login: String,
-        provider: String
+        socialProvider: String
     ): CloudAccount {
         val portal = CloudPortal(
             accountId = userInfo.id,
             scheme = Scheme.valueOf(networkSettings.getScheme()),
+            provider = PortalProvider.Cloud,
             version = PortalVersion(networkSettings.serverVersion),
-            provider = PortalProvider(Provider.valueOf(provider)),
             settings = PortalSettings(
                 isSslState = networkSettings.getSslState(),
                 isSslCiphers = networkSettings.getCipher()
@@ -158,6 +154,7 @@ internal class LoginRepositoryImpl(
             login = login,
             portal = portal,
             avatarUrl = userInfo.avatarMedium,
+            socialProvider = socialProvider,
             isOnline = true,
             isAdmin = userInfo.isAdmin,
             isVisitor = userInfo.isVisitor
@@ -170,7 +167,6 @@ internal class LoginRepositoryImpl(
             scheme = portal.scheme.value,
             displayName = name,
             userId = id,
-            provider = portal.provider.provider?.name.orEmpty(),
             email = login,
             avatar = avatarUrl,
             expires = token.expires
@@ -179,13 +175,13 @@ internal class LoginRepositoryImpl(
 
     private fun addAccountToAccountManager(accountData: AccountData, password: String, accessToken: String): String? {
         with(accountData) {
-            val account = Account("$email@$portal", accountType)
-            if (!accountManager.addAccount(account, password, accountData)) {
-                accountManager.setAccountData(account, accountData)
-                accountManager.setPassword(account, password)
+            val accountName = "$email@$portal"
+            if (!accountManager.addAccount(accountName, password, accountData)) {
+                accountManager.setAccountData(accountName, accountData)
+                accountManager.setPassword(accountName, password)
             }
-            accountManager.setToken(account, accessToken)
-            return accountManager.getToken(account)
+            accountManager.setToken(accountName, accessToken)
+            return accountManager.getToken(accountName)
         }
     }
 

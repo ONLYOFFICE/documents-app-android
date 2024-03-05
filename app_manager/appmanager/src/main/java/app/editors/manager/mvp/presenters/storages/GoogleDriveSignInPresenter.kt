@@ -5,7 +5,6 @@ import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.PortalSettings
-import app.documents.core.model.cloud.Provider
 import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.GoogleDriveUtils
@@ -86,7 +85,7 @@ class GoogleDriveSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInV
             id = user.permissionId,
             portal = CloudPortal(
                 portal = "drive.google.com",
-                provider = PortalProvider(Provider.GOOGLE_DRIVE),
+                provider = PortalProvider.GoogleDrive,
                 settings = PortalSettings(
                     isSslState = networkSettings.getSslState(),
                     isSslCiphers = networkSettings.getCipher()
@@ -102,9 +101,7 @@ class GoogleDriveSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInV
             scheme = cloudAccount.portal.scheme.value,
             displayName = user.displayName,
             userId = cloudAccount.id,
-            provider = cloudAccount.portal.provider.webDavProvider,
             refreshToken = refreshToken,
-            webDav = cloudAccount.portal.provider.webDavPath,
             email = user.emailAddress,
         )
 

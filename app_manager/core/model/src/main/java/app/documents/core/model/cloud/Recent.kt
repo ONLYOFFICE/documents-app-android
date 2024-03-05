@@ -8,5 +8,6 @@ data class Recent(
     val date: Long = 0,
     val size: Long = 0,
     val ownerId: String? = null,
-    val source: Provider? = null
+    val source: String? = null, // null if local
+    val isWebdav: Boolean = false
 )
