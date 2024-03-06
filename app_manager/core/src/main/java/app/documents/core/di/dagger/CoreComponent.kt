@@ -3,7 +3,7 @@ package app.documents.core.di.dagger
 import android.content.Context
 import app.documents.core.database.dao.RecentDao
 import app.documents.core.database.datasource.CloudDataSource
-import app.documents.core.login.LoginRepository
+import app.documents.core.login.LoginComponent
 import app.documents.core.network.login.ILoginServiceProvider
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
@@ -28,7 +28,8 @@ interface CoreComponent {
         fun build(): CoreComponent
     }
 
-    val loginRepository: LoginRepository
+    fun loginComponent(): LoginComponent.Factory
+
     val cloudDataSource: CloudDataSource
 
     // TODO: add datasource

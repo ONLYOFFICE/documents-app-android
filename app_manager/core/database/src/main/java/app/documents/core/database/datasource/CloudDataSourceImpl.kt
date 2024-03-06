@@ -49,8 +49,12 @@ internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSou
         db.portalDao.insert(cloudPortal.toEntity())
     }
 
-    override suspend fun removePortal(portal: CloudPortal) {
-        db.portalDao.delete(portal.toEntity())
+    override suspend fun updatePortal(cloudPortal: CloudPortal) {
+        db.portalDao.update(cloudPortal.toEntity())
+    }
+
+    override suspend fun removePortal(portalId: String) {
+        db.portalDao.delete(portalId)
     }
 
     override suspend fun updateAccount(cloudAccount: CloudAccount) {

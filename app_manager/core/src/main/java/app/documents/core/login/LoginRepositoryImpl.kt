@@ -1,5 +1,6 @@
 package app.documents.core.login
 
+import android.util.Log
 import app.documents.core.account.AccountManager
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.model.cloud.CloudAccount
@@ -29,6 +30,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import lib.toolkit.base.managers.utils.AccountData
+import java.net.UnknownHostException
+import java.util.UUID
 
 internal class LoginRepositoryImpl(
     private val loginDataSource: LoginDataSource,
@@ -38,6 +41,37 @@ internal class LoginRepositoryImpl(
 ) : LoginRepository {
 
     private var savedAccessToken: String? = null
+    private var cloudPortal: CloudPortal = CloudPortal()
+
+    override suspend fun checkPortal(portal: String, scheme: Scheme): Flow<PortalResult> {
+        val portalId = UUID.randomUUID().toString()
+        return flow {
+            try {
+                val capabilities = loginDataSource.getCapabilities()
+                cloudPortal = cloudPortal.copy(
+                    portalId = portalId,
+                    scheme = scheme,
+                    portal = portal,
+                    settings = PortalSettings(
+                        ssoLabel = capabilities.ssoLabel,
+                        ldap = capabilities.ldapEnabled,
+                        ssoUrl = capabilities.ssoUrl
+                    )
+                )
+                emit(PortalResult.Success(capabilities.providers, scheme == Scheme.Http))
+            } catch (e: UnknownHostException) {
+                if (scheme == Scheme.Https) {
+                    emit(PortalResult.ShouldUseHttp)
+                } else {
+                    throw e
+                }
+            }
+        }.catch {
+            Log.e("sdsd", "checkPortal: ${it.message}")
+            cloudDataSource.removePortal(portalId)
+            emit(PortalResult.Error(it))
+        }
+    }
 
     override fun getAccountData(accountName: String): AccountData {
         return accountManager.getAccountData(accountName)
@@ -130,6 +164,7 @@ internal class LoginRepositoryImpl(
         addAccountToAccountManager(accountData, request.password, response.token)
         disableOldAccount()
         cloudDataSource.addAccount(account)
+        cloudDataSource.insertPortal(cloudPortal.copy(accountId = userInfo.id))
         subscribePush(response.token)
         return account
     }

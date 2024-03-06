@@ -35,6 +35,7 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
             listExplorerFileInfo.text = ManagerStringUtils.getCloudItemInfo(
                 context = adapter.context,
                 item = file,
+                // todo provide user id not account
                 userId = adapter.context.accountOnline?.id,
                 sortBy = adapter.preferenceTool.sortBy,
                 isSectionMy = adapter.isSectionMy

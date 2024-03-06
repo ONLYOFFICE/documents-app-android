@@ -1,5 +1,6 @@
 package app.documents.core.network.login
 
+import app.documents.core.model.cloud.Scheme
 import app.documents.core.model.login.AllSettings
 import app.documents.core.model.login.Capabilities
 import app.documents.core.model.login.RequestDeviceToken
@@ -14,11 +15,20 @@ import app.documents.core.model.login.request.RequestSignIn
 import app.documents.core.model.login.request.RequestValidatePortal
 import app.documents.core.model.login.response.ResponseRegisterPortal
 import app.documents.core.model.login.response.ResponseValidatePortal
-import app.documents.core.network.*
+import app.documents.core.network.API_VERSION
+import app.documents.core.network.BaseResponse
+import app.documents.core.network.HEADER_ACCEPT
+import app.documents.core.network.HEADER_AUTHORIZATION
+import app.documents.core.network.HEADER_CACHE
+import app.documents.core.network.HEADER_CONTENT_OPERATION_TYPE
+import app.documents.core.network.VALUE_ACCEPT
+import app.documents.core.network.VALUE_CACHE
+import app.documents.core.network.VALUE_CONTENT_TYPE
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import retrofit2.Retrofit
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -27,7 +37,6 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
-import javax.inject.Named
 
 private interface LoginApi {
 
@@ -132,16 +141,16 @@ private interface LoginApi {
     )
 }
 
-internal class LoginDataSourceImpl(
-    json: Json,
-    okHttpClient: OkHttpClient,
-    @Named("baseUrl") baseUrl: String
-) : LoginDataSource {
+internal class LoginDataSourceImpl(json: Json, portalUrl: String, portalScheme: Scheme) : LoginDataSource {
+
+    private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
+        .protocols(listOf(Protocol.HTTP_1_1))
+        .build()
 
     private val api: LoginApi = Retrofit.Builder()
         .client(okHttpClient)
-        .baseUrl(baseUrl)
         .addConverterFactory(json.asConverterFactory(MediaType.get(VALUE_CONTENT_TYPE)))
+        .baseUrl("${portalScheme.value}$portalUrl")
         .build()
         .create(LoginApi::class.java)
 

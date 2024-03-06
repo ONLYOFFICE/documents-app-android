@@ -1,15 +1,10 @@
 package app.documents.core.di.dagger
 
 import android.content.Context
-import app.documents.core.account.AccountManager
-import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.di.dagger.CoreModule.json
-import app.documents.core.login.LoginRepository
-import app.documents.core.login.LoginRepositoryImpl
 import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.ILoginServiceProvider
-import app.documents.core.network.login.LoginDataSource
 import app.documents.core.network.login.LoginInterceptor
 import app.documents.core.network.login.LoginService
 import app.documents.core.network.login.LoginServiceProvider
@@ -53,14 +48,4 @@ class LoginModule {
 
     @Provides
     fun provideLogin(loginService: LoginService): ILoginServiceProvider = LoginServiceProvider(loginService)
-
-    @Provides
-    fun provideLoginRepository(
-        loginDataSource: LoginDataSource,
-        networkSettings: NetworkSettings,
-        accountManager: AccountManager,
-        cloudDataSource: CloudDataSource
-    ): LoginRepository {
-        return LoginRepositoryImpl(loginDataSource, networkSettings, accountManager, cloudDataSource)
-    }
 }

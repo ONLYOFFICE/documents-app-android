@@ -1,5 +1,6 @@
 package app.documents.core.di.dagger
 
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
 import app.documents.core.storage.preference.NetworkSettings
@@ -14,9 +15,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 class ManagerModule {
 
     @Provides
-    fun provideApi(factory: GsonConverterFactory, client: OkHttpClient, settings: NetworkSettings): ManagerService {
+    fun provideApi(factory: GsonConverterFactory, client: OkHttpClient, cloudAccount: CloudAccount?): ManagerService {
         return Retrofit.Builder()
-            .baseUrl(settings.getBaseUrl().ifBlank { "https://" })
+            .baseUrl(cloudAccount?.portal?.url ?: "https://")
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(factory)
             .client(client)

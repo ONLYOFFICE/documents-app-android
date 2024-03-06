@@ -11,11 +11,13 @@ interface CloudDataSource {
 
     suspend fun getAccountByLogin(login: String): CloudAccount?
 
-    suspend fun getPortal(accountId: String): CloudPortal?
+    suspend fun getPortal(portalId: String): CloudPortal?
 
     suspend fun insertPortal(cloudPortal: CloudPortal)
 
-    suspend fun removePortal(cloudPortal: CloudPortal)
+    suspend fun updatePortal(cloudPortal: CloudPortal)
+
+    suspend fun removePortal(portalId: String)
 
     suspend fun updateAccount(cloudAccount: CloudAccount)
 

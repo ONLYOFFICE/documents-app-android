@@ -6,6 +6,7 @@ import app.documents.core.login.LoginResult
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.login.models.User
 import app.documents.core.network.login.models.request.RequestSignIn
+import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.base.BaseView
@@ -13,12 +14,11 @@ import com.google.android.gms.auth.UserRecoverableAuthException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import moxy.presenterScope
-import javax.inject.Inject
 
 abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
 
-    @Inject
-    lateinit var loginRepository: LoginRepository
+    protected val loginRepository: LoginRepository
+        get() = App.getApp().loginComponent.loginRepository
 
     protected var signInJob: Job? = null
 

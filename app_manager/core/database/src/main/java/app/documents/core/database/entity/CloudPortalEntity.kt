@@ -15,9 +15,9 @@ import app.documents.core.model.cloud.Scheme
 @Entity(tableName = "portal")
 @TypeConverters(PortalVersionConverter::class, PortalProviderConverter::class, PortalSettingConverter::class)
 data class CloudPortalEntity(
-    @PrimaryKey(autoGenerate = true)
-    val portalId: Int = 0,
-    val accountId: String,
+    @PrimaryKey
+    val portalId: String = "",
+    val accountId: String = "",
     val scheme: String = "",
     val portal: String = "",
     val version: PortalVersion,

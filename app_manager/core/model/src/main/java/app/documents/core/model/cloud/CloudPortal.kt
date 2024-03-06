@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CloudPortal(
-    val portalId: Int = 0,
+    val portalId: String = "",
     val accountId: String = "",
     val scheme: Scheme = Scheme.Https,
     val portal: String = "",

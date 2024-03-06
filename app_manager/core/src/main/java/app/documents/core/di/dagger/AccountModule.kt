@@ -7,13 +7,21 @@ import app.documents.core.model.cloud.CloudAccount
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
-import javax.inject.Qualifier
-
-@Qualifier
-internal annotation class AccountType
 
 @Module
 object AccountModule {
+
+//    @Provides
+//    fun provideAccountPreferences(context: Context): AccountPreferences {
+//        return AccountPreferences(context)
+//    }
+
+//    @Provides
+//    @PortalUrl
+//    fun providerPortalUrl(accountPreferences: AccountPreferences, cloudDataSource: CloudDataSource): String? {
+//        val portalId = accountPreferences.credential?.portalId
+//        return runBlocking { cloudDataSource.getPortal(portalId ?: return@runBlocking null) }?.url
+//    }
 
     @Provides
     fun provideAccount(cloudDataSource: CloudDataSource): CloudAccount? = runBlocking {

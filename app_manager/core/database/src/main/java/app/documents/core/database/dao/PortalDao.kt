@@ -1,7 +1,6 @@
 package app.documents.core.database.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -17,8 +16,8 @@ internal interface PortalDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(portal: CloudPortalEntity)
 
-    @Delete
-    suspend fun delete(portal: CloudPortalEntity)
+    @Query("DELETE FROM portal WHERE :portalId = portalId")
+    suspend fun delete(portalId: String)
 
     @Update
     suspend fun update(portal: CloudPortalEntity)

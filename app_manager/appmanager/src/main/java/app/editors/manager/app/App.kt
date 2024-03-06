@@ -10,7 +10,9 @@ import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
 import app.documents.core.di.dagger.CoreComponent
 import app.documents.core.di.dagger.DaggerCoreComponent
+import app.documents.core.login.LoginComponent
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.Scheme
 import app.documents.core.network.login.ILoginServiceProvider
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
@@ -96,6 +98,12 @@ class App : Application() {
             "OneDrive component can't be null"
         }
 
+    private var _loginComponent: LoginComponent? = null
+    val loginComponent: LoginComponent
+        get() = checkNotNull(_loginComponent) {
+            "LoginComponent component can't be null"
+        }
+
     val coreComponent: CoreComponent by lazy  {
         DaggerCoreComponent.builder()
             .context(this)
@@ -136,6 +144,10 @@ class App : Application() {
             .builder()
             .appComponent(appComponent)
             .build()
+    }
+
+    fun refreshLoginComponent(portal: String, scheme: Scheme) {
+        _loginComponent = coreComponent.loginComponent().create(portal, scheme)
     }
 
     private fun checkDeXEnabled(): Boolean {

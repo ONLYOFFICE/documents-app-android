@@ -148,10 +148,10 @@ class EnterprisePortalFragment : BaseAppFragment(),
                     }
                 }
                 is EnterprisePortalState.Error -> {
-                    if (state.message == getString(R.string.login_enterprise_edit_error_hint)) {
-                        onPortalSyntax(state.message)
-                    } else {
-                        onError(state.message)
+                    if (state.message == R.string.login_enterprise_edit_error_hint) {
+                        onPortalSyntax(getString(state.message))
+                    } else if (state.message != null) {
+                        onError(getString(state.message))
                     }
                 }
             }
