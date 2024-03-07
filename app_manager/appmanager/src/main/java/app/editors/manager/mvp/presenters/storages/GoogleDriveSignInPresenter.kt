@@ -84,7 +84,7 @@ class GoogleDriveSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInV
         val cloudAccount = CloudAccount(
             id = user.permissionId,
             portal = CloudPortal(
-                portal = "drive.google.com",
+                url = "drive.google.com",
                 provider = PortalProvider.GoogleDrive,
                 settings = PortalSettings(
                     isSslState = networkSettings.getSslState(),
@@ -97,7 +97,7 @@ class GoogleDriveSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInV
         )
 
         val accountData = AccountData(
-            portal = cloudAccount.portal.portal,
+            portal = cloudAccount.portal.url,
             scheme = cloudAccount.portal.scheme.value,
             displayName = user.displayName,
             userId = cloudAccount.id,

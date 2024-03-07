@@ -38,7 +38,7 @@ class DropboxSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView>
         val cloudAccount = CloudAccount(
             id = tokenResponse.accountId,
             portal = CloudPortal(
-                portal = DropboxUtils.DROPBOX_PORTAL,
+                url = DropboxUtils.DROPBOX_PORTAL,
                 provider = PortalProvider.DropBox,
                 scheme = Scheme.Https,
                 settings = PortalSettings(
@@ -52,7 +52,7 @@ class DropboxSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView>
         )
 
         val accountData = AccountData(
-            portal = cloudAccount.portal.portal,
+            portal = cloudAccount.portal.url,
             scheme = cloudAccount.portal.scheme.value,
             displayName = userResponse.name?.displayName.orEmpty(),
             userId = cloudAccount.id,

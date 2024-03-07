@@ -12,6 +12,7 @@ import app.documents.core.di.dagger.CoreComponent
 import app.documents.core.di.dagger.DaggerCoreComponent
 import app.documents.core.login.LoginComponent
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.Scheme
 import app.documents.core.network.login.ILoginServiceProvider
 import app.documents.core.network.manager.ManagerService
@@ -104,11 +105,11 @@ class App : Application() {
             "LoginComponent component can't be null"
         }
 
-    val coreComponent: CoreComponent by lazy  {
-        DaggerCoreComponent.builder()
-            .context(this)
-            .build()
-    }
+    private var _coreComponent: CoreComponent? = null
+    val coreComponent: CoreComponent
+        get() = checkNotNull(_coreComponent) {
+            "CoreComponent component can't be null"
+        }
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
@@ -147,7 +148,21 @@ class App : Application() {
     }
 
     fun refreshLoginComponent(portal: String, scheme: Scheme) {
-        _loginComponent = coreComponent.loginComponent().create(portal, scheme)
+        _loginComponent = coreComponent
+            .loginComponent()
+            .create(portal, scheme)
+    }
+
+    fun refreshLoginComponent(portal: CloudPortal) {
+        _loginComponent = coreComponent
+            .loginComponent()
+            .create(portal.url, portal.scheme)
+    }
+
+    fun refreshCoreComponent() {
+        _coreComponent = DaggerCoreComponent.builder()
+            .context(this)
+            .build()
     }
 
     private fun checkDeXEnabled(): Boolean {
@@ -205,6 +220,7 @@ class App : Application() {
     }
 
     private fun initDagger() {
+        refreshCoreComponent()
         _appComponent = DaggerAppComponent.builder()
             .context(context = this)
             .coreComponent(coreComponent)

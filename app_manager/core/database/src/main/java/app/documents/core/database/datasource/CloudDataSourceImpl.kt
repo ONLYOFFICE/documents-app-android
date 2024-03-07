@@ -1,5 +1,6 @@
 package app.documents.core.database.datasource
 
+import androidx.room.withTransaction
 import app.documents.core.database.database.CloudDatabase
 import app.documents.core.database.entity.CloudAccountEntity
 import app.documents.core.database.entity.toCloudAccount
@@ -20,7 +21,11 @@ internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSou
     }
 
     override suspend fun getAccount(id: String): CloudAccount? {
-        return db.accountDao.getAccount(id)?.toCloudAccount()
+        return db.withTransaction {
+            val account = db.accountDao.getAccount(id)?.toCloudAccount()
+            val portal = db.portalDao.get(account?.portalUrl.orEmpty())
+            account?.copy(portal = portal?.toCloudPortal() ?: CloudPortal())
+        }
     }
 
     override suspend fun deleteAccount(account: CloudAccount) {
@@ -28,33 +33,19 @@ internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSou
     }
 
     override suspend fun getAccounts(): List<CloudAccount> {
-        return db.accountDao.getAccounts().map(CloudAccountEntity::toCloudAccount)
-    }
-
-    override suspend fun getAccountOnline(): CloudAccount? {
-        val account = db.accountDao.getAccountOnline()?.toCloudAccount()
-        val portal = db.portalDao.getByAccountId(account?.id.orEmpty())
-        return account?.copy(portal = portal?.toCloudPortal() ?: CloudPortal())
+        return db.withTransaction {
+            db.accountDao.getAccounts()
+                .map(CloudAccountEntity::toCloudAccount)
+                .map { it.copy(portal = db.portalDao.get(it.portalUrl)?.toCloudPortal() ?: return@map it) }
+        }
     }
 
     override suspend fun getAccountByLogin(login: String): CloudAccount? {
-        return db.accountDao.getAccountByLogin(login)?.toCloudAccount()
-    }
-
-    override suspend fun getPortal(accountId: String): CloudPortal? {
-        return db.portalDao.getByAccountId(accountId)?.toCloudPortal()
-    }
-
-    override suspend fun insertPortal(cloudPortal: CloudPortal) {
-        db.portalDao.insert(cloudPortal.toEntity())
-    }
-
-    override suspend fun updatePortal(cloudPortal: CloudPortal) {
-        db.portalDao.update(cloudPortal.toEntity())
-    }
-
-    override suspend fun removePortal(portalId: String) {
-        db.portalDao.delete(portalId)
+        return db.withTransaction {
+            val account = db.accountDao.getAccountByLogin(login)?.toCloudAccount()
+            val portal = db.portalDao.get(account?.portalUrl.orEmpty())
+            account?.copy(portal = portal?.toCloudPortal() ?: CloudPortal())
+        }
     }
 
     override suspend fun updateAccount(cloudAccount: CloudAccount) {
@@ -63,5 +54,41 @@ internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSou
 
     override suspend fun addAccount(account: CloudAccount) {
         db.accountDao.addAccount(account.toEntity())
+    }
+
+    override suspend fun insertOrUpdateAccount(cloudAccount: CloudAccount) {
+        db.withTransaction {
+            val exist = db.accountDao.getAccount(cloudAccount.id) != null
+            val entity = cloudAccount.toEntity()
+            if (exist) {
+                db.accountDao.updateAccount(entity)
+            } else {
+                db.accountDao.addAccount(entity)
+            }
+        }
+    }
+
+    override suspend fun getPortal(url: String): CloudPortal? {
+        return db.portalDao.get(url)?.toCloudPortal()
+    }
+
+    override suspend fun insertPortal(cloudPortal: CloudPortal) {
+        db.portalDao.insertOrReplace(cloudPortal.toEntity())
+    }
+
+    override suspend fun insertOrUpdatePortal(cloudPortal: CloudPortal) {
+        db.withTransaction {
+            val exist = db.portalDao.get(cloudPortal.url) != null
+            val entity = cloudPortal.toEntity()
+            if (exist) {
+                db.portalDao.update(entity)
+            } else {
+                db.portalDao.insert(entity)
+            }
+        }
+    }
+
+    override suspend fun removePortal(portalId: String) {
+        db.portalDao.delete(portalId)
     }
 }

@@ -200,7 +200,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
                 val account = Account(cloudAccount.id, getString(lib.toolkit.base.R.string.account_type))
 
                 val accountData = AccountData(
-                    portal = cloudAccount.portal.portal,
+                    portal = cloudAccount.portal.url,
                     scheme = cloudAccount.portal.scheme.value,
                     displayName = login,
                     userId = cloudAccount.id,
@@ -224,7 +224,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
         login = login,
         name = login,
         portal = CloudPortal(
-            portal = url.host,
+            url = url.host,
             scheme = Scheme.Custom(url.protocol + "://"),
             provider = PortalProvider.Webdav(
                 provider = WebdavProvider.NextCloud("${url.path.orEmpty()}$DEFAULT_NEXT_CLOUD_PATH$login/")

@@ -7,21 +7,13 @@ interface CloudDataSource {
 
     fun addObserver(onInvalidated: () -> Unit)
 
-    suspend fun getAccountOnline(): CloudAccount?
-
     suspend fun getAccountByLogin(login: String): CloudAccount?
-
-    suspend fun getPortal(portalId: String): CloudPortal?
-
-    suspend fun insertPortal(cloudPortal: CloudPortal)
-
-    suspend fun updatePortal(cloudPortal: CloudPortal)
-
-    suspend fun removePortal(portalId: String)
 
     suspend fun updateAccount(cloudAccount: CloudAccount)
 
     suspend fun addAccount(account: CloudAccount)
+
+    suspend fun insertOrUpdateAccount(cloudAccount: CloudAccount)
 
     suspend fun getAccounts(): List<CloudAccount>
 
@@ -29,4 +21,11 @@ interface CloudDataSource {
 
     suspend fun deleteAccount(account: CloudAccount)
 
+    suspend fun getPortal(url: String): CloudPortal?
+
+    suspend fun insertPortal(cloudPortal: CloudPortal)
+
+    suspend fun insertOrUpdatePortal(cloudPortal: CloudPortal)
+
+    suspend fun removePortal(portalId: String)
 }

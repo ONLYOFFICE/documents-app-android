@@ -1,13 +1,14 @@
 package app.documents.core.di.dagger
 
 import android.content.Context
+import app.documents.core.account.AccountManager
 import app.documents.core.database.di.DatabaseModule
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.exception.CloudAccountNotFoundException
 import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.interceptors.BaseInterceptor
-import app.documents.core.network.di.NetworkModule
 import app.documents.core.network.manager.models.explorer.PathPart
 import app.documents.core.network.manager.models.explorer.PathPartTypeAdapter
-import app.documents.core.storage.preference.NetworkSettings
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
@@ -17,7 +18,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
 import javax.inject.Qualifier
 
 @Qualifier
@@ -27,8 +27,7 @@ annotation class Token
     includes = [
         LoginModule::class, ManagerModule::class,
         ShareModule::class, WebDavModule::class,
-        AccountModule::class, NetworkModule::class,
-        DatabaseModule::class
+        AccountModule::class, DatabaseModule::class
     ]
 )
 object CoreModule {
@@ -40,17 +39,21 @@ object CoreModule {
     }
 
     @Provides
-    @Named("baseUrl")
-    fun provideBaseUrl(networkSettings: NetworkSettings): String {
-        return networkSettings.getBaseUrl()
-    }
-
-    @Provides
     fun provideJson(): Json = json
 
     @Provides
-    fun provideOkHttpClient(@Token token: String, settings: NetworkSettings, context: Context): OkHttpClient {
-        val builder = NetworkClient.getOkHttpBuilder(settings.getSslState(), settings.getCipher())
+    fun provideOkHttpClient(
+        context: Context,
+        cloudAccount: CloudAccount?,
+        accountManager: AccountManager
+    ): OkHttpClient {
+        if (cloudAccount == null) throw CloudAccountNotFoundException
+        val token = accountManager.getToken(cloudAccount.accountName)
+        val builder = NetworkClient.getOkHttpBuilder(
+            cloudAccount.portal.settings.isSslState,
+            cloudAccount.portal.settings.isSslCiphers,
+        )
+
         builder.protocols(listOf(Protocol.HTTP_1_1))
             .readTimeout(NetworkClient.ClientSettings.READ_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(NetworkClient.ClientSettings.WRITE_TIMEOUT, TimeUnit.SECONDS)

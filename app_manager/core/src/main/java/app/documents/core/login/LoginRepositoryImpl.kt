@@ -1,13 +1,12 @@
 package app.documents.core.login
 
-import android.util.Log
 import app.documents.core.account.AccountManager
+import app.documents.core.account.AccountPreferences
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.PortalSettings
-import app.documents.core.model.cloud.PortalVersion
 import app.documents.core.model.cloud.Scheme
 import app.documents.core.model.login.RequestDeviceToken
 import app.documents.core.model.login.Token
@@ -19,7 +18,7 @@ import app.documents.core.network.common.Result
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.LoginDataSource
-import app.documents.core.storage.preference.NetworkSettings
+import app.documents.core.utils.displayNameFromHtml
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -31,27 +30,24 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import lib.toolkit.base.managers.utils.AccountData
 import java.net.UnknownHostException
-import java.util.UUID
 
 internal class LoginRepositoryImpl(
     private val loginDataSource: LoginDataSource,
-    private val networkSettings: NetworkSettings,
+    private val cloudDataSource: CloudDataSource,
     private val accountManager: AccountManager,
-    private val cloudDataSource: CloudDataSource
+    private val accountPreferences: AccountPreferences
 ) : LoginRepository {
 
     private var savedAccessToken: String? = null
-    private var cloudPortal: CloudPortal = CloudPortal()
+    private var cloudPortal: CloudPortal? = null
 
     override suspend fun checkPortal(portal: String, scheme: Scheme): Flow<PortalResult> {
-        val portalId = UUID.randomUUID().toString()
         return flow {
             try {
                 val capabilities = loginDataSource.getCapabilities()
-                cloudPortal = cloudPortal.copy(
-                    portalId = portalId,
+                cloudPortal = CloudPortal(
                     scheme = scheme,
-                    portal = portal,
+                    url = portal,
                     settings = PortalSettings(
                         ssoLabel = capabilities.ssoLabel,
                         ldap = capabilities.ldapEnabled,
@@ -66,11 +62,42 @@ internal class LoginRepositoryImpl(
                     throw e
                 }
             }
-        }.catch {
-            Log.e("sdsd", "checkPortal: ${it.message}")
-            cloudDataSource.removePortal(portalId)
-            emit(PortalResult.Error(it))
+        }.catch { exception ->
+            cloudPortal?.url?.let { url -> cloudDataSource.removePortal(url) }
+            emit(PortalResult.Error(exception))
         }
+    }
+
+    override suspend fun logOut(cloudAccount: CloudAccount?): Flow<Result<*>> {
+        return flow {
+            val account = checkNotNull(cloudAccount ?: getOnlineAccount())
+            with(accountManager) {
+                when (account.portal.provider) {
+                    is PortalProvider.Webdav -> setPassword(account.accountName, null)
+                    PortalProvider.DropBox,
+                    PortalProvider.GoogleDrive,
+                    PortalProvider.OneDrive -> setToken(account.accountName, "")
+                    else -> {
+                        setPassword(account.accountName, null)
+                        setToken(account.accountName, "")
+                    }
+                }
+            }
+            accountPreferences.onlineAccountId = null
+            emit(Result.Success(null))
+        }.flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
+    override suspend fun deleteAccounts(vararg cloudAccount: CloudAccount): Flow<Result<List<CloudAccount>>> {
+        return flow {
+            cloudAccount.forEach { account ->
+                accountManager.removeAccount(account.accountName)
+                cloudDataSource.deleteAccount(account)
+            }
+            emit(cloudDataSource.getAccounts())
+        }.flowOn(Dispatchers.IO)
+            .asResult()
     }
 
     override fun getAccountData(accountName: String): AccountData {
@@ -122,23 +149,18 @@ internal class LoginRepositoryImpl(
 
     override suspend fun switchAccount(account: CloudAccount): Flow<Result<*>> {
         return flow {
-            cloudDataSource.getAccountOnline()?.let { oldAccount ->
+            getOnlineAccount()?.let { oldAccount ->
                 val token = accountManager.getToken(oldAccount.accountName)
-                setSettings(oldAccount)
-                unsubscribePush(token.orEmpty())
-                setSettings(account)
-                cloudDataSource.updateAccount(oldAccount.copy(isOnline = false))
-                cloudDataSource.updateAccount(account.copy(isOnline = true))
+                unsubscribePush(oldAccount.portal, token.orEmpty())
             } ?: run {
-                setSettings(account)
-                cloudDataSource.updateAccount(account.copy(isOnline = true))
+
             }
             emit(Result.Success(null))
         }.flowOn(Dispatchers.IO)
     }
 
     override suspend fun unsubscribePush(account: CloudAccount) {
-        unsubscribePush(accountManager.getToken(account.accountName))
+        unsubscribePush(account.portal, accountManager.getToken(account.accountName))
     }
 
     private fun signIn(request: RequestSignIn): Flow<LoginResult> {
@@ -159,46 +181,42 @@ internal class LoginRepositoryImpl(
 
     private suspend fun onSuccessResponse(request: RequestSignIn, response: Token): CloudAccount {
         val userInfo = loginDataSource.getUserInfo(response.token)
-        val account = createCloudAccount(userInfo, request.userName, request.provider)
-        val accountData = account.toAccountData(response)
-        addAccountToAccountManager(accountData, request.password, response.token)
+        var cloudAccount = cloudDataSource.getAccount(userInfo.id)
+        val cloudPortal = checkNotNull(cloudPortal ?: cloudDataSource.getPortal(cloudAccount?.portalUrl.orEmpty()))
+
         disableOldAccount()
-        cloudDataSource.addAccount(account)
-        cloudDataSource.insertPortal(cloudPortal.copy(accountId = userInfo.id))
-        subscribePush(response.token)
-        return account
+        cloudAccount = createCloudAccount(userInfo, request.userName, request.provider, cloudPortal)
+        addAccountToAccountManager(cloudAccount.toAccountData(response), request.password, response.token)
+        subscribePush(cloudAccount.portal, response.token)
+
+        accountPreferences.onlineAccountId = userInfo.id
+        cloudDataSource.insertOrUpdateAccount(cloudAccount)
+        cloudDataSource.insertOrUpdatePortal(cloudPortal)
+        return cloudAccount
     }
 
     private fun createCloudAccount(
         userInfo: User,
         login: String,
-        socialProvider: String
+        socialProvider: String,
+        portal: CloudPortal
     ): CloudAccount {
-        val portal = CloudPortal(
-            accountId = userInfo.id,
-            scheme = Scheme.valueOf(networkSettings.getScheme()),
-            provider = PortalProvider.Cloud,
-            version = PortalVersion(networkSettings.serverVersion),
-            settings = PortalSettings(
-                isSslState = networkSettings.getSslState(),
-                isSslCiphers = networkSettings.getCipher()
-            )
-        )
         return CloudAccount(
             id = userInfo.id,
+            portalUrl = portal.url,
             login = login,
-            portal = portal,
+            name = userInfo.displayNameFromHtml,
             avatarUrl = userInfo.avatarMedium,
             socialProvider = socialProvider,
-            isOnline = true,
             isAdmin = userInfo.isAdmin,
-            isVisitor = userInfo.isVisitor
+            isVisitor = userInfo.isVisitor,
+            portal = portal
         )
     }
 
     private fun CloudAccount.toAccountData(token: Token): AccountData {
         return AccountData(
-            portal = portal.portal,
+            portal = portal.url,
             scheme = portal.scheme.value,
             displayName = name,
             userId = id,
@@ -221,21 +239,22 @@ internal class LoginRepositoryImpl(
     }
 
     private suspend fun disableOldAccount() {
-        cloudDataSource.getAccountOnline()?.let { account ->
-            unsubscribePush(accountManager.getToken(account.accountName).orEmpty())
-            cloudDataSource.updateAccount(account.copy(isOnline = false))
+        getOnlineAccount()?.let { account ->
+            unsubscribePush(
+                account.portal,
+                accountManager.getToken(account.accountName).orEmpty()
+            )
         }
     }
 
-    private suspend fun subscribePush(accessToken: String) {
+    private suspend fun subscribePush(cloudPortal: CloudPortal, accessToken: String) {
         val deviceToken = getDeviceToken()
         loginDataSource.registerDevice(accessToken, RequestDeviceToken(deviceToken))
-        loginDataSource.subscribe(accessToken, deviceToken, true)
-        //        preferenceTool.deviceMessageToken = deviceToken
+        loginDataSource.subscribe(cloudPortal, accessToken, deviceToken, true)
     }
 
-    private suspend fun unsubscribePush(accessToken: String?) {
-        loginDataSource.subscribe(accessToken.orEmpty(), getDeviceToken(), false)
+    private suspend fun unsubscribePush(cloudPortal: CloudPortal, accessToken: String?) {
+        loginDataSource.subscribe(cloudPortal, accessToken.orEmpty(), getDeviceToken(), false)
     }
 
     private suspend fun getDeviceToken(): String {
@@ -245,13 +264,9 @@ internal class LoginRepositoryImpl(
             .await()
     }
 
-    private fun setSettings(account: CloudAccount) {
-        networkSettings.setBaseUrl(account.portal.portal)
-        networkSettings.setScheme(account.portal.scheme.value)
-        networkSettings.setSslState(account.portal.settings.isSslState)
-        networkSettings.setCipher(account.portal.settings.isSslCiphers)
+    private suspend fun getOnlineAccount(): CloudAccount? {
+        return cloudDataSource.getAccount(accountPreferences.onlineAccountId ?: return null)
     }
-
 
     //    private fun checkRedirect(requestSignIn: RequestSignIn, error: HttpException) {
     //        try {

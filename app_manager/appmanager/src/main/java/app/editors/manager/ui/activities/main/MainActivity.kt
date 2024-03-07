@@ -13,6 +13,7 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.work.WorkManager
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
@@ -29,7 +30,13 @@ import app.editors.manager.mvp.views.main.MainActivityView
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
-import app.editors.manager.ui.fragments.main.*
+import app.editors.manager.ui.fragments.main.AppSettingsFragment
+import app.editors.manager.ui.fragments.main.CloudAccountFragment
+import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment
+import app.editors.manager.ui.fragments.main.DocsRecentFragment
+import app.editors.manager.ui.fragments.main.DocsWebDavFragment
+import app.editors.manager.ui.fragments.main.MainPagerFragment
+import app.editors.manager.ui.fragments.main.OnlyOfficeCloudFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
@@ -41,11 +48,15 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.FragmentUtils
+import lib.toolkit.base.managers.utils.LaunchActivityForResult
+import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.clearIntent
+import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
-import java.util.*
+import java.util.UUID
 
 
 interface ActionButtonFragment {
@@ -68,7 +79,8 @@ interface IMainActivity {
 
 
 class MainActivity : BaseAppActivity(), MainActivityView,
-    BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose, IMainActivity, View.OnClickListener {
+    BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose, IMainActivity,
+    View.OnClickListener {
 
     companion object {
 
@@ -142,11 +154,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         var fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
         if (fragment is MainPagerFragment) {
             val fragments = fragment.getChildFragmentManager().fragments
-//            for (fr in fragments) {
-//                if (fr is DocsMyFragment) {
-//                    fr.getArgs(intent)
-//                }
-//            }
+            //            for (fr in fragments) {
+            //                if (fr is DocsMyFragment) {
+            //                    fr.getArgs(intent)
+            //                }
+            //            }
         }
 
         fragment = supportFragmentManager.findFragmentByTag(DocsWebDavFragment.TAG)
@@ -309,7 +321,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun showAccount(isShow: Boolean) {
-//        presenter.isDialogOpen = true
+        //        presenter.isDialogOpen = true
         viewBinding.appBarToolbar.showAccount(isShow)
     }
 
@@ -326,11 +338,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 showOnDeviceFragment()
             }
             is MainActivityState.CloudState -> {
-                state.account?.let {
-                    showOnCloudFragment(state.account)
-                } ?: run {
-                    showOnCloudFragment()
-                }
+                showOnCloudFragment(state.account)
                 viewBinding.appBarToolbar.bind(state.account)
             }
             is MainActivityState.SettingsState -> {
@@ -575,30 +583,20 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun showOnCloudFragment(account: CloudAccount?) {
-        account?.let {
-            when {
-                it.isWebDav -> {
-                    showWebDavFragment(it)
-                }
-                it.isOneDrive -> {
-                    showOneDriveFragment(account)
-                }
-                it.isDropbox -> {
-                    showDropboxFragment(account)
-                }
-                it.isGoogleDrive -> {
-                    showGoogleDriveFragment()
-                }
-                else -> {
-                    showCloudFragment(account)
-                }
-            }
-        } ?: run {
+        if (account == null) {
             FragmentUtils.showFragment(
                 supportFragmentManager,
                 OnlyOfficeCloudFragment.newInstance(false),
                 R.id.frame_container
             )
+            return
+        }
+        when (account.portal.provider) {
+            PortalProvider.DropBox -> showDropboxFragment(account)
+            PortalProvider.GoogleDrive -> showGoogleDriveFragment()
+            PortalProvider.OneDrive -> showOneDriveFragment(account)
+            is PortalProvider.Webdav -> showWebDavFragment(account)
+            else -> showCloudFragment(account)
         }
     }
 
@@ -699,9 +697,9 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             viewBinding.appBarTabs.isVisible = isVisible
 
         }
-//        viewBinding.appBarLayout.postDelayed({
-//            viewBinding.appBarTabs.isVisible = isVisible
-//        }, 150)
+        //        viewBinding.appBarLayout.postDelayed({
+        //            viewBinding.appBarTabs.isVisible = isVisible
+        //        }, 150)
     }
 
     private fun isNotification(): Boolean =

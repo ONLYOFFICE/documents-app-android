@@ -146,7 +146,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             }
             preferenceTool.fileData = ""
             if (dataModel.getPortalWithoutScheme()?.equals(
-                    account.portal.portal,
+                    account.portal.url,
                     ignoreCase = true
                 ) == true && dataModel.email?.equals(
                     account.login,

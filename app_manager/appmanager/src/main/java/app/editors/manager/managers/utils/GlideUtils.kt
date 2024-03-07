@@ -41,7 +41,7 @@ object GlideUtils {
     }
 
     fun getWebDavUrl(webUrl: String, account: CloudAccount, password: String): Any {
-        return getWebDavLoad(account.portal.scheme.value + account.portal + webUrl, account, password)
+        return getWebDavLoad(account.portal.scheme.value + account.portal.url + webUrl, account, password)
     }
 
     val avatarOptions: RequestOptions
@@ -60,8 +60,8 @@ object GlideUtils {
                     val token = checkNotNull(AccountUtils.getToken(context, account.accountName))
                     val url = when {
                         avatarUrl.contains("http") -> avatarUrl
-                        avatarUrl.contains("storage") -> "${account.portal.scheme}${account.portal}$avatarUrl"
-                        else -> "${account.portal.scheme}${account.portal}/static/$avatarUrl"
+                        avatarUrl.contains("storage") -> "${account.portal.scheme}${account.portal.url}$avatarUrl"
+                        else -> "${account.portal.scheme}${account.portal.url}/static/$avatarUrl"
                     }
                     Glide.with(context)
                         .asDrawable()
@@ -89,7 +89,7 @@ object GlideUtils {
     fun ImageView.setRoomLogo(logo: String, placeholder: Int) {
         context.accountOnline?.let { account ->
             val token = checkNotNull(AccountUtils.getToken(context, account.accountName))
-            val url = getCorrectLoad(account.portal.scheme.value + account.portal + logo, token)
+            val url = getCorrectLoad(account.portal.scheme.value + account.portal.url + logo, token)
             Glide.with(context)
                 .load(url)
                 .apply(
@@ -109,7 +109,7 @@ fun ImageView.setAvatarFromUrl(avatar: String) {
     val placeholderDrawable = R.drawable.drawable_list_share_image_item_user_placeholder
     context.accountOnline?.let { account ->
         val token = checkNotNull(AccountUtils.getToken(context, account.accountName))
-        val url = GlideUtils.getCorrectLoad(account.portal.scheme.value + account.portal + avatar, token)
+        val url = GlideUtils.getCorrectLoad(account.portal.scheme.value + account.portal.url + avatar, token)
         Glide.with(context)
             .load(url)
             .apply(

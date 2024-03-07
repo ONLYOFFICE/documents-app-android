@@ -50,4 +50,8 @@ interface LoginRepository {
     suspend fun unsubscribePush(account: CloudAccount)
 
     suspend fun checkPortal(portal: String, scheme: Scheme): Flow<PortalResult>
+
+    suspend fun logOut(cloudAccount: CloudAccount? = null): Flow<Result<*>>
+
+    suspend fun deleteAccounts(vararg cloudAccount: CloudAccount): Flow<Result<List<CloudAccount>>>
 }

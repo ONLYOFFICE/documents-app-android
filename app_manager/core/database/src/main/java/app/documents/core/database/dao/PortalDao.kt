@@ -10,15 +10,18 @@ import app.documents.core.database.entity.CloudPortalEntity
 @Dao
 internal interface PortalDao {
 
-    @Query("SELECT * FROM portal WHERE :accountId = accountId")
-    suspend fun getByAccountId(accountId: String): CloudPortalEntity?
+    @Query("SELECT * FROM portal WHERE :url = url")
+    suspend fun get(url: String): CloudPortalEntity?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(portal: CloudPortalEntity)
 
-    @Query("DELETE FROM portal WHERE :portalId = portalId")
-    suspend fun delete(portalId: String)
-
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(portal: CloudPortalEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrReplace(portal: CloudPortalEntity)
+
+    @Query("DELETE FROM portal WHERE :url = url")
+    suspend fun delete(url: String)
 }

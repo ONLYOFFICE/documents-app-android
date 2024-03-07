@@ -3,6 +3,7 @@ package app.editors.manager.mvp.presenters.base
 import android.content.Context
 import android.util.Log
 import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.model.exception.CloudAccountNotFoundException
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
@@ -59,7 +60,11 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
 
     open fun cancelRequest() {}
 
-    protected open fun fetchError(throwable: Throwable) {if (throwable is HttpException) {
+    protected open fun fetchError(throwable: Throwable) {
+        if (throwable == CloudAccountNotFoundException) {
+            onUnauthorized(401)
+        }
+        if (throwable is HttpException) {
             if (throwable.response()?.code() == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED) {
                 onUnauthorized(throwable.response()?.code() ?: -1)
             } else {

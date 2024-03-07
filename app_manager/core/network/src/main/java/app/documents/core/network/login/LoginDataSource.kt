@@ -1,5 +1,6 @@
 package app.documents.core.network.login
 
+import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.login.AllSettings
 import app.documents.core.model.login.Capabilities
 import app.documents.core.model.login.RequestDeviceToken
@@ -42,5 +43,5 @@ interface LoginDataSource {
 
     suspend fun registerDevice(token: String, request: RequestDeviceToken)
 
-    suspend fun subscribe(token: String, deviceToken: String, isSubscribe: Boolean)
+    suspend fun subscribe(portal: CloudPortal, token: String, deviceToken: String, isSubscribe: Boolean)
 }

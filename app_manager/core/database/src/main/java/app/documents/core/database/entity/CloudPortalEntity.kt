@@ -12,14 +12,14 @@ import app.documents.core.model.cloud.PortalSettings
 import app.documents.core.model.cloud.PortalVersion
 import app.documents.core.model.cloud.Scheme
 
-@Entity(tableName = "portal")
+const val portalTableName = "portal"
+
+@Entity(tableName = portalTableName)
 @TypeConverters(PortalVersionConverter::class, PortalProviderConverter::class, PortalSettingConverter::class)
 data class CloudPortalEntity(
     @PrimaryKey
-    val portalId: String = "",
-    val accountId: String = "",
+    val url: String = "",
     val scheme: String = "",
-    val portal: String = "",
     val version: PortalVersion,
     val provider: PortalProvider,
     val settings: PortalSettings
@@ -27,10 +27,8 @@ data class CloudPortalEntity(
 
 fun CloudPortalEntity.toCloudPortal(): CloudPortal {
     return CloudPortal(
-        portalId = portalId,
-        accountId = accountId,
         scheme = Scheme.valueOf(scheme),
-        portal = portal,
+        url = url,
         version = version,
         provider = provider,
         settings = settings
@@ -39,10 +37,8 @@ fun CloudPortalEntity.toCloudPortal(): CloudPortal {
 
 fun CloudPortal.toEntity(): CloudPortalEntity {
     return CloudPortalEntity(
-        portalId = portalId,
-        accountId = accountId,
         scheme = scheme.value,
-        portal = portal,
+        url = url,
         version = version,
         provider = provider,
         settings = settings

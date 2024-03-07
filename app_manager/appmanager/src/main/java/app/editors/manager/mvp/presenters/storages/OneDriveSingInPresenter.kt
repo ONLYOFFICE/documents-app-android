@@ -60,7 +60,7 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
             login = user.userPrincipalName,
             name = user.displayName,
             portal = CloudPortal(
-                portal = OneDriveUtils.ONEDRIVE_PORTAL,
+                url = OneDriveUtils.ONEDRIVE_PORTAL,
                 provider = PortalProvider.OneDrive,
                 settings = PortalSettings(
                     isSslState = networkSettings.getSslState(),
@@ -70,7 +70,7 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
         )
 
         val accountData = AccountData(
-            portal = cloudAccount.portal.portal,
+            portal = cloudAccount.portal.url,
             scheme = cloudAccount.portal.scheme.value,
             displayName = user.displayName,
             userId = cloudAccount.id,

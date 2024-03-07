@@ -7,11 +7,10 @@ import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.login.models.Capabilities
-import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.webDavApi
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.login.BaseLoginPresenter
@@ -32,25 +31,7 @@ import okhttp3.Credentials
 import retrofit2.HttpException
 
 sealed class CloudAccountState {
-    class AccountLoadedState(val account: List<CloudAccount>, val state: Bundle?) : CloudAccountState()
-}
-
-data class RestoreSettingsModel(
-    val portal: String,
-    val scheme: String,
-    val isSsl: Boolean,
-    val isCipher: Boolean
-) {
-    companion object {
-        fun getInstance(networkSettings: NetworkSettings): RestoreSettingsModel {
-            return RestoreSettingsModel(
-                networkSettings.getPortal(),
-                networkSettings.getScheme(),
-                networkSettings.getSslState(),
-                networkSettings.getCipher()
-            )
-        }
-    }
+    class AccountLoadedState(val account: List<CloudAccount>, val state: Bundle? = null) : CloudAccountState()
 }
 
 @InjectViewState
@@ -67,7 +48,6 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     }
 
     var contextAccount: CloudAccount? = null
-    private var restoreState: RestoreSettingsModel? = null
     private var disposable: Disposable? = null
 
     override fun onDestroy() {
@@ -80,8 +60,9 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             if (isSwitch) {
                 switchAccount(saveState)
             } else {
+                val accounts = cloudDataSource.getAccounts()
                 withContext(Dispatchers.Main) {
-                    viewState.onRender(CloudAccountState.AccountLoadedState(cloudDataSource.getAccounts(), saveState))
+                    viewState.onRender(CloudAccountState.AccountLoadedState(accounts, saveState))
                 }
             }
         }
@@ -91,7 +72,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         val data = Json.decodeFromString<OpenDataModel>(preferenceTool.fileData)
         cloudDataSource.getAccounts()
             .find { account ->
-                data.getPortalWithoutScheme()?.equals(account.portal.portal, true) == true && data.email?.equals(
+                data.getPortalWithoutScheme()?.equals(account.portal.url, true) == true && data.email?.equals(
                     account.login,
                     true
                 ) == true
@@ -106,46 +87,34 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     fun logOut() {
         presenterScope.launch {
-            contextAccount?.let { account ->
-                if (account.isWebDav) {
-                    AccountUtils.setPassword(context, account.accountName, null)
-                } else if (account.isOneDrive || account.isDropbox || account.isGoogleDrive) {
-                    AccountUtils.setToken(context, account.accountName, "")
-                } else {
-                    AccountUtils.setPassword(context, account.accountName, null)
-                    AccountUtils.setToken(context, account.name, "")
-                }
-                cloudDataSource.updateAccount(account.copy(isOnline = false))
-            }
-            cloudDataSource.getAccounts().let {
-                withContext(Dispatchers.Main) {
-                    viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
-                }
+            context.accountOnline?.portal?.let {
+                App.getApp().refreshLoginComponent(it)
+                loginRepository.logOut()
+                    .collect { result ->
+                        when (result) {
+                            is Result.Error -> fetchError(result.exception)
+                            is Result.Success -> {
+                                withContext(Dispatchers.Main) {
+                                    viewState.onRender(
+                                        CloudAccountState.AccountLoadedState(cloudDataSource.getAccounts())
+                                    )
+                                }
+                            }
+                        }
+                    }
             }
         }
     }
 
     fun deleteAccount() {
-        contextAccount?.let { account ->
-            if (account.isDropbox && account.isOneDrive && account.isGoogleDrive && account.isWebDav) {
-                deleteAccount(account)
-            } else {
-                if (account.isOnline) {
-                    //                    unsubscribePush(account, AccountUtils.getToken(context, account.accountName)) {
-                    //                        deleteAccount(account)
-                    //                    }
-                } else {
-                    deleteAccount(account)
-                }
-            }
-        }
+        contextAccount?.let { deleteAccount(it) }
     }
 
     fun deleteSelected(selection: List<String>?) {
         presenterScope.launch {
             selection?.forEach { id ->
                 cloudDataSource.getAccount(id)?.let { account ->
-                    if (account.isOnline) {
+                    if (account.id == accountPreferences.onlineAccountId) {
                         loginRepository.unsubscribePush(account)
                         deleteAccount(account)
                     } else {
@@ -154,44 +123,51 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 }
             }
             withContext(Dispatchers.Main) {
-                viewState.onRender(CloudAccountState.AccountLoadedState(cloudDataSource.getAccounts(), null))
+                viewState.onRender(CloudAccountState.AccountLoadedState(cloudDataSource.getAccounts()))
             }
         }
     }
 
     @Suppress("KotlinConstantConditions")
     private fun deleteAccount(account: CloudAccount) {
+        App.getApp().refreshLoginComponent(account.portal)
         presenterScope.launch {
-            AccountUtils.removeAccount(context, account.accountName)
-            cloudDataSource.deleteAccount(account)
-            cloudDataSource.getAccounts().let {
-                withContext(Dispatchers.Main) {
-                    if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents" && ActivitiesUtils.isPackageExist(
-                            App.getApp(),
-                            "com.onlyoffice.projects"
-                        )
-                    ) {
-                        context.contentResolver.delete(
-                            Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"),
-                            null,
-                            null
-                        )
+            loginRepository.deleteAccounts(account)
+                .collect { result ->
+                    when (result) {
+                        is Result.Error -> fetchError(result.exception)
+                        is Result.Success -> {
+                            withContext(Dispatchers.Main) {
+                                if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents" && ActivitiesUtils.isPackageExist(
+                                        App.getApp(),
+                                        "com.onlyoffice.projects"
+                                    )
+                                ) {
+                                    context.contentResolver.delete(
+                                        Uri.parse("content://com.onlyoffice.projects.accounts/accounts/${account.id}"),
+                                        null,
+                                        null
+                                    )
+                                }
+                                viewState.onRender(CloudAccountState.AccountLoadedState(result.result))
+                            }
+                        }
                     }
-                    viewState.onRender(CloudAccountState.AccountLoadedState(it, null))
                 }
-            }
         }
     }
 
     fun checkLogin(account: CloudAccount) {
-        if (account.isOnline) {
+        if (account.id == accountPreferences.onlineAccountId) {
             viewState.onError(context.getString(R.string.errors_sign_in_account_already_use))
             return
         }
 
-        when {
-            account.isWebDav -> checkWebDavLogin(account)
-            account.isOneDrive || account.isDropbox || account.isGoogleDrive -> checkStorageLogin(account)
+        when (account.portal.provider) {
+            is PortalProvider.Webdav -> checkWebDavLogin(account)
+            PortalProvider.OneDrive,
+            PortalProvider.DropBox,
+            PortalProvider.GoogleDrive -> checkStorageLogin(account)
             else -> checkCloudLogin(account)
         }
     }
@@ -199,7 +175,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     private fun checkCloudLogin(account: CloudAccount) {
         val token = AccountUtils.getToken(context, account.accountName)
         if (token.isNullOrEmpty()) {
-            viewState.onAccountLogin(account.portal.portal, account.login)
+            App.getApp().refreshLoginComponent(account.portal)
+            viewState.onAccountLogin(account.portal.url, account.login)
         } else {
             cloudSignIn(account, token)
         }
@@ -246,44 +223,18 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     }
 
     private fun cloudSignIn(account: CloudAccount, token: String) {
-        setSettings(account)
         signInJob = presenterScope.launch {
             loginRepository.signInWithToken(token)
                 .collect { result ->
                     when (result) {
-                        is Result.Success -> loginSuccess(account, true)
+                        is Result.Success -> loginSuccess(account)
                         is Result.Error -> checkError(result.exception, account)
                     }
                 }
         }
     }
 
-    //    private fun checkSettings(capabilityResponse: LoginResponse) {
-    //        when (capabilityResponse) {
-    //            is LoginResponse.Success -> {
-    //                when (capabilityResponse.response) {
-    //                    is ResponseSettings -> {
-    //                        networkSettings.documentServerVersion =
-    //                            (capabilityResponse.response as ResponseSettings).response.documentServer ?: ""
-    //                        networkSettings.serverVersion =
-    //                            (capabilityResponse.response as ResponseSettings).response.communityServer ?: ""
-    //                    }
-    //
-    //                    is ResponseAllSettings -> {
-    //                        networkSettings.isDocSpace =
-    //                            (capabilityResponse.response as ResponseAllSettings).response.docSpace
-    //                    }
-    //                }
-    //            }
-    //
-    //            is LoginResponse.Error -> {
-    //                networkSettings.isDocSpace = false
-    //            }
-    //        }
-    //    }
-
     private fun webDavLogin(account: CloudAccount, password: String) {
-        setSettings(account)
         val webdavProvider = (account.portal.provider as? PortalProvider.Webdav)
         disposable = context.webDavApi
             .capabilities(Credentials.basic(account.login, password), webdavProvider?.provider?.path)
@@ -293,7 +244,6 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 if (it.code() == 207 && it.body() != null) {
                     loginSuccess(account)
                 } else {
-                    restoreSettings()
                     viewState.onWebDavLogin(
                         Json.encodeToString(account),
                         WebdavProvider.valueOf(account.portal.provider)
@@ -304,10 +254,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             })
     }
 
-    private fun loginSuccess(account: CloudAccount, withCapabilities: Boolean = false) {
-        if (!withCapabilities) {
-            networkSettings.isDocSpace = false
-        }
+    private fun loginSuccess(account: CloudAccount) {
+        App.getApp().refreshLoginComponent(account.portal)
         signInJob = presenterScope.launch {
             loginRepository.switchAccount(account)
                 .collect { result ->
@@ -319,37 +267,17 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         }
     }
 
-    private fun setSettings(account: CloudAccount) {
-        restoreState = RestoreSettingsModel.getInstance(networkSettings)
-        networkSettings.setBaseUrl(account.portal.portal)
-        networkSettings.setScheme(account.portal.scheme.value)
-        networkSettings.setSslState(account.portal.settings.isSslState)
-        networkSettings.setCipher(account.portal.settings.isSslCiphers)
-    }
-
-    private fun setSettings(capabilities: Capabilities) {
-        networkSettings.ldap = capabilities.ldapEnabled
-        networkSettings.ssoUrl = capabilities.ssoUrl
-        networkSettings.ssoLabel = capabilities.ssoLabel
-    }
-
-    private fun restoreSettings() {
-        restoreState?.let { state ->
-            networkSettings.setBaseUrl(state.portal)
-            networkSettings.setScheme(state.scheme)
-            networkSettings.setSslState(state.isSsl)
-            networkSettings.setCipher(state.isCipher)
-        }
-        restoreState = null
-    }
-
     private fun checkError(throwable: Throwable, account: CloudAccount) {
-        restoreSettings()
         if (throwable is HttpException && throwable.code() == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED) {
-            viewState.onAccountLogin(account.portal.portal, account.login)
+            App.getApp().refreshLoginComponent(account.portal)
+            viewState.onAccountLogin(account.portal.url, account.login)
         } else {
             fetchError(throwable)
         }
+    }
+
+    fun getOnlineAccountId(): String {
+        return accountPreferences.onlineAccountId.orEmpty()
     }
 
 }

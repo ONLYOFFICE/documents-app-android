@@ -4,10 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CloudPortal(
-    val portalId: String = "",
-    val accountId: String = "",
+    val url: String = "",
     val scheme: Scheme = Scheme.Https,
-    val portal: String = "",
     val provider: PortalProvider = PortalProvider.Cloud,
     val version: PortalVersion = PortalVersion(),
     val settings: PortalSettings = PortalSettings()
@@ -22,12 +20,12 @@ data class CloudPortal(
     }
 
     val isPortalInfo: Boolean
-        get() = portal.endsWith(DOMAIN_INFO)
+        get() = url.endsWith(DOMAIN_INFO)
 
     val isPersonal: Boolean
-        get() = portal.contains("$PERSONAL_SUBDOMAIN$DEFAULT_HOST") ||
-                portal.contains("$PERSONAL_SUBDOMAIN$DEFAULT_HOST_INFO")
+        get() = url.contains("$PERSONAL_SUBDOMAIN$DEFAULT_HOST") ||
+                url.contains("$PERSONAL_SUBDOMAIN$DEFAULT_HOST_INFO")
 
-    val url: String
-        get() = "$scheme$portal"
+    val urlWithScheme: String
+        get() = "${scheme.value}$url"
 }

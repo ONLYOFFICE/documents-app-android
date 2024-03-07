@@ -9,9 +9,9 @@ data class CloudAccount(
     val name: String = "",
     val avatarUrl: String = "",
     val socialProvider: String = "",
-    val isOnline: Boolean = false,
     val isAdmin: Boolean = false,
     val isVisitor: Boolean = false,
+    val portalUrl: String = "",
     val portal: CloudPortal = CloudPortal()
 ) {
 
@@ -28,7 +28,7 @@ data class CloudAccount(
         get() = portal.provider == PortalProvider.DropBox
 
     val accountName: String
-        get() = "$login@${portal.portal}"
+        get() = "$login@${portal.url}"
 
     fun isPersonal(): Boolean = portal.isPersonal
 }

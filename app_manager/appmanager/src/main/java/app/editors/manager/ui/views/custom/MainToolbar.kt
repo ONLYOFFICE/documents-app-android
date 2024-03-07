@@ -53,7 +53,7 @@ class MainToolbar @JvmOverloads constructor(
         account = cloudAccount
         cloudAccount?.let {
             title.text = cloudAccount.name
-            subtitle.text = cloudAccount.portal.portal
+            subtitle.text = cloudAccount.portal.url
             if (cloudAccount.isWebDav) {
                 setWebDavAvatar(cloudAccount.portal.provider)
             } else if (cloudAccount.isOneDrive) {

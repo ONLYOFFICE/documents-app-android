@@ -1,5 +1,6 @@
 package app.documents.core.network.login
 
+import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.Scheme
 import app.documents.core.model.login.AllSettings
 import app.documents.core.model.login.Capabilities
@@ -37,6 +38,7 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Url
 
 private interface LoginApi {
 
@@ -134,8 +136,9 @@ private interface LoginApi {
         "$HEADER_ACCEPT: $VALUE_CONTENT_TYPE",
         "$HEADER_ACCEPT: $VALUE_ACCEPT"
     )
-    @PUT("api/$API_VERSION/settings/push/docsubscribe")
+    @PUT
     suspend fun subscribe(
+        @Url portalUrl: String,
         @Header(HEADER_AUTHORIZATION) token: String,
         @Body body: RequestPushSubscribe
     )
@@ -208,11 +211,18 @@ internal class LoginDataSourceImpl(json: Json, portalUrl: String, portalScheme: 
     }
 
     override suspend fun subscribe(
+        portal: CloudPortal,
         token: String,
         deviceToken: String,
         isSubscribe: Boolean
     ) {
-        api.subscribe(token, RequestPushSubscribe(deviceToken, isSubscribe))
+        val url = StringBuilder()
+            .append(portal.scheme.value)
+            .append(portal.url)
+            .append("/api/$API_VERSION/settings/push/docsubscribe")
+            .toString()
+
+        api.subscribe(url, token, RequestPushSubscribe(deviceToken, isSubscribe))
     }
 
 }

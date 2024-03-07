@@ -121,7 +121,7 @@ class NetworkSettings @Inject constructor(context: Context) {
 
     fun setSettingsByAccount(account: CloudAccount) {
         setDefault()
-        setBaseUrl(account.portal.scheme.value + account.portal.portal)
+        setBaseUrl(account.portal.scheme.value + account.portal.url)
         setCipher(account.portal.settings.isSslCiphers)
         setSslState(account.portal.settings.isSslState)
         setScheme(account.portal.scheme.value)

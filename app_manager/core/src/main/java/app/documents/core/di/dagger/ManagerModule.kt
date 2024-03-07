@@ -17,7 +17,7 @@ class ManagerModule {
     @Provides
     fun provideApi(factory: GsonConverterFactory, client: OkHttpClient, cloudAccount: CloudAccount?): ManagerService {
         return Retrofit.Builder()
-            .baseUrl(cloudAccount?.portal?.url ?: "https://")
+            .baseUrl(cloudAccount?.portal?.urlWithScheme.orEmpty())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(factory)
             .client(client)
@@ -25,7 +25,11 @@ class ManagerModule {
     }
 
     @Provides
-    fun provideRoomService(factory: GsonConverterFactory, okHttpClient: OkHttpClient, settings: NetworkSettings): RoomService {
+    fun provideRoomService(
+        factory: GsonConverterFactory,
+        okHttpClient: OkHttpClient,
+        settings: NetworkSettings
+    ): RoomService {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(settings.getBaseUrl())
