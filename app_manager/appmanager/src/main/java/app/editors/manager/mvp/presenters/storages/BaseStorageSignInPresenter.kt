@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.presenters.storages
 
 import android.accounts.Account
+import app.documents.core.account.AccountPreferences
 import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.base.BaseStorageSignInView
@@ -12,10 +13,14 @@ import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.presenterScope
+import javax.inject.Inject
 
-open class BaseStorageSignInPresenter<view: BaseStorageSignInView>: BasePresenter<view>() {
+open class BaseStorageSignInPresenter<view : BaseStorageSignInView> : BasePresenter<view>() {
 
     var disposable: Disposable? = null
+
+    @Inject
+    lateinit var accountPreferences: AccountPreferences
 
     override fun onDestroy() {
         super.onDestroy()
@@ -38,10 +43,8 @@ open class BaseStorageSignInPresenter<view: BaseStorageSignInView>: BasePresente
 
     private fun addAccountToDb(cloudAccount: CloudAccount) {
         presenterScope.launch {
-            cloudDataSource.getAccountOnline()?.let {
-                cloudDataSource.addAccount(it.copy(isOnline = false))
-            }
-            cloudDataSource.addAccount(cloudAccount.copy(isOnline = true))
+            cloudDataSource.insertOrUpdateAccount(cloudAccount)
+            accountPreferences.onlineAccountId = cloudAccount.id
             withContext(Dispatchers.Main) {
                 viewState.onLogin()
             }

@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import app.documents.core.database.datasource.CloudCursorDataSource
+import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalSettings
@@ -47,7 +48,13 @@ class AccountContentProvider : ContentProvider() {
     lateinit var cloudCursorDataSource: CloudCursorDataSource
 
     @Inject
+    lateinit var cloudDataSource: CloudDataSource
+
+    @Inject
     lateinit var accountManager: AccountManager
+
+    @Inject
+    lateinit var accountPreferences: AccountPreferences
 
     override fun onCreate(): Boolean {
         return true
@@ -88,71 +95,55 @@ class AccountContentProvider : ContentProvider() {
         val token: String
         val password: String
         val expires: String
+        val isOnline: Boolean
         val account: CloudAccount = if (values?.containsKey(CLOUD_ACCOUNT_KEY) == true) {
-            val list = parseTokenAndPasswordAndExpires(values.getAsString(CLOUD_ACCOUNT_KEY))
+            val json = values.getAsString(CLOUD_ACCOUNT_KEY)
+            val list = parseTokenAndPasswordAndExpires(json)
             token = list[0]
             password = list[1]
             expires = list[2]
-            Json.decodeFromString(values.getAsString(CLOUD_ACCOUNT_KEY))
+            isOnline = parseIsOnline(json)
+            Json.decodeFromString(json)
         } else {
             token = values?.getAsString("token").orEmpty()
             password = values?.getAsString("password").orEmpty()
             expires = values?.getAsString("expires").orEmpty()
+            isOnline = values?.getAsBoolean("isOnline") == true
             getAccount(values)
         }
 
-        runBlocking {
-            val online = cloudCursorDataSource.getAccountOnline()
-            if (account.id == online?.id) {
-                return@runBlocking cloudCursorDataSource.addAccount(account.copy(isOnline = true))
-            } else {
-                return@runBlocking cloudCursorDataSource.addAccount(account)
-            }
-        }
-
-        addSystemAccount(account, token, password, expires)
+        insertAccount(account)
+        addSystemAccount(account, token, password, expires, isOnline)
         return Uri.parse("content://$AUTHORITY/$PATH/${account.id}")
     }
 
     override fun insert(uri: Uri, values: ContentValues?, extras: Bundle?): Uri? {
-        var account: CloudAccount? = null
-        var id = ""
         var token = ""
         var password = ""
         var expires = ""
+        var isOnline = false
 
-        extras?.let { bundle ->
+        val account = extras?.let { bundle ->
             if (extras.containsKey(CLOUD_ACCOUNT_KEY)) {
-                account = Json.decodeFromString<CloudAccount?>(extras.getString(CLOUD_ACCOUNT_KEY) ?: "")?.apply {
-                    id = this.id
-                    runBlocking { cloudCursorDataSource.addAccount(account = this@apply) }
-                }
-
+                val json = extras.getString(CLOUD_ACCOUNT_KEY).orEmpty()
                 val list = parseTokenAndPasswordAndExpires(extras.getString(CLOUD_ACCOUNT_KEY))
                 token = list[0]
                 password = list[1]
                 expires = list[2]
+                isOnline = parseIsOnline(extras.getString(CLOUD_ACCOUNT_KEY))
+                Json.decodeFromString<CloudAccount?>(json)
             } else {
-                account = getAccount(bundle).apply {
-                    id = this.id
-
-                    runBlocking {
-                        val online = cloudCursorDataSource.getAccountOnline()
-                        if (online?.id == id) {
-                            cloudCursorDataSource.addAccount(account = copy(isOnline = true))
-                        } else {
-                            cloudCursorDataSource.addAccount(account = this@apply)
-                        }
-                    }
-                }
-
                 token = extras.getString("token").orEmpty()
                 password = extras.getString("password").orEmpty()
                 expires = extras.getString("expires").orEmpty()
+                isOnline = extras.getBoolean("isOnline")
+                getAccount(bundle)
             }
-        }
-        account?.let { addSystemAccount(it, token, password, expires) }
-        return Uri.parse("content://$AUTHORITY/$PATH/$id")
+        } ?: return null
+
+        insertAccount(account)
+        addSystemAccount(account, token, password, expires, isOnline)
+        return Uri.parse("content://$AUTHORITY/$PATH/${account.id}")
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
@@ -174,10 +165,23 @@ class AccountContentProvider : ContentProvider() {
         }
     }
 
-    private fun addSystemAccount(cloudAccount: CloudAccount, token: String, password: String, expires: String) {
+    private fun insertAccount(account: CloudAccount) {
+        runBlocking {
+            cloudDataSource.insertOrUpdateAccount(account)
+            cloudDataSource.insertOrUpdatePortal(account.portal)
+        }
+    }
+
+    private fun addSystemAccount(
+        cloudAccount: CloudAccount,
+        token: String,
+        password: String,
+        expires: String,
+        isOnline: Boolean
+    ) {
         val account = Account(cloudAccount.accountName, context?.getString(R.string.account_type))
         val accountData = AccountData(
-            portal = cloudAccount.portal.portal,
+            portal = cloudAccount.portal.url,
             scheme = cloudAccount.portal.scheme.value,
             displayName = cloudAccount.name,
             userId = cloudAccount.id,
@@ -191,6 +195,9 @@ class AccountContentProvider : ContentProvider() {
             accountManager.setPassword(account, password)
         }
         accountManager.setToken(account, token)
+        if (isOnline) {
+            accountPreferences.onlineAccountId = cloudAccount.id
+        }
     }
 
     private fun getAccount(values: ContentValues?): CloudAccount {
@@ -240,15 +247,15 @@ class AccountContentProvider : ContentProvider() {
     ): CloudAccount {
         return CloudAccount(
             id = id,
+            portalUrl = portal,
             login = login,
             avatarUrl = avatarUrl,
             name = name,
             isAdmin = isAdmin,
             isVisitor = isVisitor,
             portal = CloudPortal(
-                accountId = id,
                 scheme = Scheme.valueOf(scheme),
-                portal = portal,
+                url = portal,
                 version = PortalVersion(serverVersion = serverVersion),
                 settings = PortalSettings(isSslState, isSslCiphers)
             )
@@ -263,5 +270,11 @@ class AccountContentProvider : ContentProvider() {
                 JSONObject(json).getString("expires")
             )
         } else emptyList()
+    }
+
+    private fun parseIsOnline(json: String?): Boolean {
+        return if (!json.isNullOrEmpty()) {
+            JSONObject(json).getBoolean("isOnline")
+        } else false
     }
 }

@@ -127,7 +127,7 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
         emailBinder?.setTitle(getString(R.string.login_enterprise_email_hint))?.setImage(R.drawable.ic_email)?.text =
             account.login
         portalBinder?.setTitle(getString(R.string.profile_portal_address))?.setImage(R.drawable.ic_cloud)?.text =
-            account.portal.scheme.value + getEncodedString(account.portal.portal)
+            account.portal.scheme.value + getEncodedString(account.portal.url)
     }
 
     private fun onCloudState(account: CloudAccount) {
@@ -138,7 +138,7 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
         emailBinder?.setTitle(getString(R.string.login_enterprise_email_hint))?.setImage(R.drawable.ic_email)?.text =
             account.login
         portalBinder?.setTitle(getString(R.string.profile_portal_address))?.setImage(R.drawable.ic_cloud)?.text =
-            account.portal.scheme.value + getEncodedString(account.portal.portal)
+            account.portal.scheme.value + getEncodedString(account.portal.url)
         usernameBinder?.setTitle(getString(R.string.profile_username_title))
             ?.setText(account.name)
             ?.setImage(R.drawable.ic_list_item_share_user_icon)
@@ -146,7 +146,7 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
     }
 
     private fun onOnlineState(account: CloudAccount) {
-        if (account.isOnline) {
+        if (account.id == presenter.getOnlineAccountId()) {
             viewBinding?.logoutItem?.let { item ->
                 UiUtils.setImageTint(item.itemImage, lib.toolkit.base.R.color.colorError)
                 item.root.visibility = View.VISIBLE

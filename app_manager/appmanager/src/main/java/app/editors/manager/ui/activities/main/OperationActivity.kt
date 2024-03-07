@@ -11,6 +11,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityOperationBinding
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.ui.activities.base.BaseAppActivity
@@ -91,7 +92,7 @@ class OperationActivity : BaseAppActivity(){
 
     private fun initState() {
        lifecycleScope.launch {
-            cloudDataSource.getAccountOnline()?.let { account ->
+            accountOnline?.let { account ->
                 withContext(Dispatchers.Main) {
                     if (account.isWebDav) {
                         showFragment(

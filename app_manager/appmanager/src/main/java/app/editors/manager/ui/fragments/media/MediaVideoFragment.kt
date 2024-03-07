@@ -17,6 +17,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.FragmentMediaVideoBinding
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.media.MediaPagerFragment.OnMediaListener
@@ -69,7 +70,7 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
     private val headers: Map<String, String?> by lazy {
         mapOf(
             ApiContract.HEADER_AUTHORIZATION to runBlocking(Dispatchers.Default) {
-                cloudDataSource.getAccountOnline()?.let { account ->
+                context?.accountOnline?.let { account ->
                     AccountUtils.getToken(
                         App.getApp().applicationContext,
                         Account(

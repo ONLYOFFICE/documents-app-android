@@ -24,6 +24,7 @@ import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.ui.adapters.BaseListAdapter
 
 class CloudAccountAdapter(
+    private val accountOnlineId: String,
     private val accountClickListener: ((position: Int) -> Unit),
     private val accountContextClickListener: ((position: Int, view: View) -> Unit),
     private val addClickListener: (() -> Unit)
@@ -62,6 +63,7 @@ class CloudAccountAdapter(
                 holder.bind(
                     mList[position],
                     tracker.hasSelection(),
+                    mList[position].id == accountOnlineId,
                     accountClickListener,
                     accountContextClickListener
                 )
@@ -99,21 +101,22 @@ class CloudAccountAdapter(
 class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     private val binding: AccountListItemLayoutBinding = AccountListItemLayoutBinding.bind(view)
-    
+
     var itemDetailsLookup: ItemDetailsLookup.ItemDetails<String>? = null
 
     fun bind(
         account: CloudAccount,
         isSelection: Boolean,
+        isOnline: Boolean,
         accountClick: ((position: Int) -> Unit)? = null,
         accountContextClick: ((position: Int, view: View) -> Unit)? = null
     ) {
         itemDetailsLookup = AccountDetailsItemLookup(absoluteAdapterPosition, account)
         with(binding) {
             accountItemName.text = account.name
-            accountItemPortal.text = account.portal.portal
+            accountItemPortal.text = account.portal.url
             accountItemContext.isVisible = true
-            imageCheck.isVisible = !isSelection && account.isOnline
+            imageCheck.isVisible = !isSelection && isOnline
 
             when {
                 account.isOneDrive -> accountAvatar.setOneDriveImage()
@@ -125,9 +128,9 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
                 else -> {
                     val token = AccountUtils.getToken(view.context, account.accountName)
                     val url: String = if (account.avatarUrl.contains("static") || account.isGoogleDrive) {
-                        account.avatarUrl ?: ""
+                        account.avatarUrl
                     } else {
-                        account.portal.scheme.value + account.portal + account.avatarUrl
+                        account.portal.scheme.value + account.portal.url + account.avatarUrl
                     }
                     Glide.with(accountAvatar)
                         .load(GlideUtils.getCorrectLoad(url, token.orEmpty()))

@@ -17,6 +17,7 @@ import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.FragmentMediaImageBinding
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -213,7 +214,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
 
     private fun loadCloudImage() {
         lifecycleScope.launch {
-            cloudDataSource.getAccountOnline()?.let { account ->
+            context?.accountOnline?.let { account ->
                 AccountUtils.getToken(
                     requireContext(),
                     Account(account.accountName, getString(lib.toolkit.base.R.string.account_type))
@@ -236,7 +237,7 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
 
     private fun loadWebDavImage() {
         lifecycleScope.launch {
-            cloudDataSource.getAccountOnline()?.let { account ->
+            context?.accountOnline?.let { account ->
                 AccountUtils.getPassword(
                     requireContext(),
                     Account(account.accountName, getString(lib.toolkit.base.R.string.account_type))

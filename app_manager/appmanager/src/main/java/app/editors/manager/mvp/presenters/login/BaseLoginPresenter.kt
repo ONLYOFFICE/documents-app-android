@@ -1,21 +1,25 @@
 package app.editors.manager.mvp.presenters.login
 
 import android.content.Intent
+import app.documents.core.account.AccountPreferences
 import app.documents.core.login.LoginRepository
 import app.documents.core.login.LoginResult
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.login.models.User
 import app.documents.core.network.login.models.request.RequestSignIn
 import app.editors.manager.app.App
-import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.base.BaseView
 import com.google.android.gms.auth.UserRecoverableAuthException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import moxy.presenterScope
+import javax.inject.Inject
 
 abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
+
+    @Inject
+    lateinit var accountPreferences: AccountPreferences
 
     protected val loginRepository: LoginRepository
         get() = App.getApp().loginComponent.loginRepository
@@ -39,8 +43,8 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                             }
                         }
                         else -> Unit
-                        //                        is LoginResult.Sms -> onTwoFactorAuth(result.phoneNoise)
-                        //                        is LoginResult.Tfa -> onTwoFactorAuthApp(result.key)
+//                                                is LoginResult.Sms -> onTwoFactorAuth(result.phoneNoise)
+//                                                is LoginResult.Tfa -> onTwoFactorAuthApp(result.key)
                     }
                 }
         }
@@ -64,7 +68,8 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
     }
 
     protected open fun onAccountCreateSuccess(account: CloudAccount) {
-        FirebaseUtils.addAnalyticsLogin(account.portal.portal, account.portal.provider.toString())
+        App.getApp().refreshCoreComponent()
+//        FirebaseUtils.addAnalyticsLogin(account.portal.portal, account.portal.provider.toString())
     }
 
     protected open fun onTwoFactorAuthApp(secretKey: String?, request: RequestSignIn) {}

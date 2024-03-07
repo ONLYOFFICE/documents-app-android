@@ -2,10 +2,12 @@ package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
 import android.os.Build
+import app.documents.core.account.AccountPreferences
 import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.models.OpenDataModel
@@ -24,6 +26,7 @@ import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.CryptUtils
 import moxy.InjectViewState
 import moxy.presenterScope
+import javax.inject.Inject
 
 sealed class MainActivityState {
     object RecentState : MainActivityState()
@@ -49,6 +52,9 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         App.getApp().appComponent.inject(this)
     }
 
+    @Inject
+    lateinit var accountPreferences: AccountPreferences
+
     private val disposable = CompositeDisposable()
 
     private var cloudAccount: CloudAccount? = null
@@ -73,7 +79,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     fun init(isPortal: Boolean = false, isShortcut: Boolean = false) {
         presenterScope.launch {
-            cloudDataSource.getAccountOnline()?.let {
+            context.accountOnline?.let {
                 cloudAccount = it
                 networkSettings.setSettingsByAccount(it)
                 if (isShortcut) {
@@ -142,7 +148,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     fun setAccount() {
         presenterScope.launch {
-            cloudDataSource.getAccountOnline()?.let {
+            context.accountOnline?.let {
                 cloudAccount = it
             }
         }
@@ -219,7 +225,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
             R.id.menu_item_settings -> viewState.onRender(MainActivityState.SettingsState)
             R.id.menu_item_cloud -> {
                 presenterScope.launch {
-                    cloudAccount = cloudDataSource.getAccountOnline()
+                    cloudAccount = context.accountOnline
                     withContext(Dispatchers.Main) {
                         viewState.onRender(MainActivityState.CloudState(cloudAccount))
                     }
@@ -230,9 +236,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     fun clear() {
         presenterScope.launch {
-            cloudDataSource.getAccountOnline()?.let {
-                cloudDataSource.updateAccount(it.copy(isOnline = false))
-            }
+            accountPreferences.onlineAccountId = null
             networkSettings.setDefault()
             withContext(Dispatchers.Main) {
                 viewState.onRender(MainActivityState.CloudState())
@@ -248,7 +252,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                 Json.decodeFromString(CryptUtils.decodeUri(fileData.query))
             }
 
-            cloudDataSource.getAccountOnline()?.let { account ->
+            context.accountOnline?.let { account ->
                 if (fileData.queryParameterNames.contains("push")) {
                     viewState.openFile(account, fileData.getQueryParameter("data") ?: "")
                     return@launch
@@ -256,7 +260,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
                 preferenceTool.fileData = ""
                 if (data.getPortalWithoutScheme()?.equals(
-                        account.portal.portal,
+                        account.portal.url,
                         ignoreCase = true
                     ) == true &&
                     data.email?.equals(account.login, ignoreCase = true) == true

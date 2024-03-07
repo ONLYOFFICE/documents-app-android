@@ -6,7 +6,10 @@ import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
 import app.documents.core.model.cloud.PortalProvider
-import app.documents.core.network.manager.models.explorer.*
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.Current
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
@@ -22,14 +25,15 @@ import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.ContentResolverUtils
+import lib.toolkit.base.managers.utils.FileUtils
+import lib.toolkit.base.managers.utils.NetworkUtils
+import lib.toolkit.base.managers.utils.PathUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
 import moxy.presenterScope
 import java.io.File
-import java.util.*
 
 @InjectViewState
 class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
@@ -47,12 +51,8 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     private var webDavFileProvider: WebDavFileProvider? = null
 
     private fun checkWebDav() {
-        CoroutineScope(Dispatchers.Default).launch {
-            cloudDataSource.getAccountOnline()?.let {
-                if (it.isWebDav) {
-                    webDavFileProvider = context.webDavFileProvider
-                }
-            }
+        if (context.accountOnline?.isWebDav == true) {
+            webDavFileProvider = context.webDavFileProvider
         }
     }
 

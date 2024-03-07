@@ -17,9 +17,7 @@ import app.editors.manager.mvp.views.login.WebDavSignInView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountData
 import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.InjectViewState
@@ -177,7 +175,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             name = login,
             portal = CloudPortal(
                 scheme = Scheme.Custom("${webUrl.protocol}://"),
-                portal = webUrl.host + if (webUrl.port != -1) ":${webUrl.port}" else "",
+                url = webUrl.host + if (webUrl.port != -1) ":${webUrl.port}" else "",
                 provider = PortalProvider.Webdav(provider),
                 settings = PortalSettings(
                     isSslState = networkSettings.getSslState(),
@@ -187,7 +185,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         )
 
         val accountData = AccountData(
-            portal = cloudAccount.portal.portal + if (webUrl.port != -1) ":${webUrl.port}" else "",
+            portal = cloudAccount.portal.url + if (webUrl.port != -1) ":${webUrl.port}" else "",
             scheme = cloudAccount.portal.scheme.value,
             displayName = login,
             userId = cloudAccount.id,
@@ -207,13 +205,14 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
 
     private fun addAccountToDb(cloudAccount: CloudAccount) {
         presenterScope.launch {
-            cloudDataSource.getAccountOnline()?.let {
-                cloudDataSource.addAccount(it.copy(isOnline = false))
-            }
-            cloudDataSource.addAccount(cloudAccount.copy(isOnline = true))
-            withContext(Dispatchers.Main) {
-                viewState.onLogin()
-            }
+            // TODO: extract to repository
+//            cloudDataSource.getAccountOnline()?.let {
+//                cloudDataSource.addAccount(it.copy(isOnline = false))
+//            }
+//            cloudDataSource.addAccount(cloudAccount.copy(isOnline = true))
+//            withContext(Dispatchers.Main) {
+//                viewState.onLogin()
+//            }
         }
     }
 

@@ -218,7 +218,7 @@ class CloudAccountFragment : BaseAppFragment(),
                         selectedTracker?.onRestoreInstanceState(it)
                     }
                 }
-                if (state.account.none { it.isOnline }) {
+                if (presenter.getOnlineAccountId().isEmpty()) {
                     if (isTablet) {
                         mainActivity?.onLogOut()
                     } else {
@@ -235,6 +235,7 @@ class CloudAccountFragment : BaseAppFragment(),
 
     private fun initRecyclerView(savedInstanceState: Bundle?) {
         adapter = CloudAccountAdapter(
+            presenter.getOnlineAccountId(),
             accountClickListener,
             accountContextClickListener,
             addClickListener
@@ -359,7 +360,7 @@ class CloudAccountFragment : BaseAppFragment(),
         account?.let {
             showQuestionDialog(
                 getString(R.string.dialog_remove_account_title) + "?",
-                getString(R.string.dialog_remove_account_description, account.login, account.portal),
+                getString(R.string.dialog_remove_account_description, account.login, account.portal.url),
                 getString(R.string.dialogs_question_accept_remove),
                 getString(R.string.dialogs_common_cancel_button),
                 TAG_REMOVE

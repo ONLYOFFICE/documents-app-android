@@ -4,8 +4,8 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import app.documents.core.account.AccountPreferences
 import app.documents.core.model.cloud.CloudAccount
-import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -16,7 +16,9 @@ import app.documents.core.providers.GoogleDriveFileProvider
 import app.documents.core.providers.OneDriveFileProvider
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
-import app.editors.manager.app.*
+import app.editors.manager.app.App
+import app.editors.manager.app.cloudFileProvider
+import app.editors.manager.app.webDavFileProvider
 import app.editors.manager.managers.providers.DropboxStorageHelper
 import app.editors.manager.managers.providers.GoogleDriveStorageHelper
 import app.editors.manager.managers.providers.OneDriveStorageHelper
@@ -39,7 +41,8 @@ import moxy.InjectViewState
 import moxy.presenterScope
 import retrofit2.HttpException
 import java.io.File
-import java.util.*
+import java.util.Locale
+import javax.inject.Inject
 
 sealed class RecentState {
     class RenderList(val recents: List<Recent>) : RecentState()
@@ -59,6 +62,9 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     companion object {
         val TAG: String = DocsRecentPresenter::class.java.simpleName
     }
+
+    @Inject
+    lateinit var accountPreferences: AccountPreferences
 
     init {
         App.getApp().appComponent.inject(this)
@@ -322,7 +328,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     private suspend fun checkCloudFile(recent: Recent): Boolean {
         recent.ownerId?.let { id ->
             cloudDataSource.getAccount(id)?.let { recentAccount ->
-                if (!recentAccount.isOnline) {
+                if (recentAccount.id != accountPreferences.onlineAccountId) {
                     withContext(Dispatchers.Main) {
                         viewState.onError(context.getString(R.string.error_recent_enter_account))
                     }

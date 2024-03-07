@@ -236,7 +236,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             return
         }
         CoroutineScope(Dispatchers.Default).launch {
-            cloudDataSource.getAccountOnline()?.let {
+            context.accountOnline?.let {
                 val webDavProvider = it.portal.provider
                 if (webDavProvider is PortalProvider.Webdav) {
                     withContext(Dispatchers.Main) {

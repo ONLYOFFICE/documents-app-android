@@ -19,6 +19,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.ui.adapters.base.BaseAdapter
@@ -70,7 +71,7 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
     }
 
     private val token = runBlocking(Dispatchers.Default) {
-        cloudDataSource.getAccountOnline()?.let { account ->
+        context.accountOnline?.let { account ->
             AccountUtils.getToken(context, Account(account.accountName, context.getString(lib.toolkit.base.R.string.account_type)))
                 ?.let { token ->
                     return@runBlocking token
@@ -185,7 +186,7 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
 
         fun bind(file: CloudFile?) {
             scope.launch {
-                cloudDataSource.getAccountOnline()?.let { account ->
+                context.accountOnline?.let { account ->
                     when {
                         account.isWebDav && file?.id != "" -> {
                             loadWebDav(file, account)

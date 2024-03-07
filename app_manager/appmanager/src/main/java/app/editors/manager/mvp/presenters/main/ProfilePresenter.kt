@@ -4,6 +4,7 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
+import app.documents.core.account.AccountPreferences
 import app.documents.core.database.dao.RecentDao
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.login.ILoginServiceProvider
@@ -41,6 +42,9 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
     @Inject
     lateinit var recentDao: RecentDao
 
+    @Inject
+    lateinit var accountPreferences: AccountPreferences
+
     init {
         App.getApp().appComponent.inject(this)
     }
@@ -73,7 +77,7 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
     }
 
     private fun updateBaseUrl(account: CloudAccount) {
-        networkSettings.setBaseUrl(account.portal.portal ?: "")
+        networkSettings.setBaseUrl(account.portal.url ?: "")
         loginService = context.loginService
     }
 
@@ -105,10 +109,10 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
                     val user = (response.response as ResponseUser).response
                     withContext(Dispatchers.Main) {
                         AccountUtils.getAccount(context, account.accountName)?.let { systemAccount ->
-                            if (systemAccount.name != "${user.email}@${account.portal}") {
+                            if (systemAccount.name != "${user.email}@${account.portal.url}") {
                                 try {
                                     AccountUtils.getAccountManager(context)
-                                        .renameAccount(systemAccount, "${user.email}@${account.portal}", {
+                                        .renameAccount(systemAccount, "${user.email}@${account.portal.url}", {
                                         }, Handler(Looper.getMainLooper()))
                                 } catch (exception: NullPointerException) {
                                     exception.message?.let { FirebaseUtils.addCrash(it) }
@@ -166,10 +170,15 @@ class ProfilePresenter : BasePresenter<ProfileView>() {
     private fun update(systemAccount: Account) {
         CoroutineScope(Dispatchers.Default).launch {
             AccountUtils.setToken(context, systemAccount, null)
-            cloudDataSource.updateAccount(account.copy(isOnline = false))
+            accountPreferences.onlineAccountId = null
+            cloudDataSource.updateAccount(account)
             withContext(Dispatchers.Main) {
-                viewState.onClose(true, account.copy(isOnline = false))
+                viewState.onClose(true, account)
             }
         }
+    }
+
+    fun getOnlineAccountId(): String {
+        return accountPreferences.onlineAccountId.orEmpty()
     }
 }

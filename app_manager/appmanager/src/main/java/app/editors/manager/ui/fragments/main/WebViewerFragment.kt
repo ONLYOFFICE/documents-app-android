@@ -13,13 +13,30 @@ import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
 import android.net.Uri
 import android.net.http.SslError
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.webkit.*
+import android.webkit.ConsoleMessage
+import android.webkit.CookieManager
+import android.webkit.DownloadListener
+import android.webkit.JavascriptInterface
+import android.webkit.JsResult
+import android.webkit.SslErrorHandler
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -32,6 +49,7 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.activities.main.WebViewerActivity
@@ -39,11 +57,15 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.tools.ThemePreferencesTools
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.FileUtils
+import lib.toolkit.base.managers.utils.NetworkUtils
+import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.getSerializableExt
 import org.json.JSONObject
 import java.net.URL
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
@@ -170,8 +192,9 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     }
 
+    // TODO: remove from fragment
     private val token = runBlocking(Dispatchers.Default) {
-        cloudDataSource.getAccountOnline()?.let { account ->
+        context?.accountOnline?.let { account ->
             return@runBlocking AccountUtils.getToken(
                 App.getApp().applicationContext,
                 Account(account.accountName, App.getApp().getString(lib.toolkit.base.R.string.account_type))
@@ -181,6 +204,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         }
     }
 
+    // TODO: remove from fragment
     private val headers: Map<String, String> by lazy {
         mapOf(
             ApiContract.HEADER_AUTHORIZATION to "Bearer $token",
@@ -188,6 +212,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         )
     }
 
+    // TODO: remove from fragment
     private val connectivityHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {

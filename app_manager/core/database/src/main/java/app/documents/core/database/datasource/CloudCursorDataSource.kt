@@ -5,7 +5,6 @@ import app.documents.core.database.database.CloudDatabase
 import app.documents.core.database.entity.toCloudAccount
 import app.documents.core.database.entity.toEntity
 import app.documents.core.model.cloud.CloudAccount
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class CloudCursorDataSource @Inject constructor(private val db: CloudDatabase) {
@@ -13,7 +12,6 @@ class CloudCursorDataSource @Inject constructor(private val db: CloudDatabase) {
     var dbTimestamp: Long = 0L
 
     init {
-
         db.addObserver { dbTimestamp = System.currentTimeMillis() }
     }
 
@@ -43,9 +41,5 @@ class CloudCursorDataSource @Inject constructor(private val db: CloudDatabase) {
 
     fun updateCursorAccount(account: CloudAccount): Int {
         return db.accountDao.updateCursorAccount(account.toEntity())
-    }
-
-    fun getAccountOnline(): CloudAccount? {
-        return runBlocking { db.accountDao.getAccountOnline()?.toCloudAccount() }
     }
 }

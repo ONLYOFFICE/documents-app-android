@@ -1,7 +1,7 @@
 package app.documents.core.di.dagger
 
 import android.content.Context
-import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.interceptors.WebDavInterceptor
 import app.documents.core.network.webdav.ConverterFactory
@@ -49,18 +49,17 @@ class WebDavModule {
 
     @Provides
     @Named("password")
-    fun providePassword(context: Context, cloudDataSource: CloudDataSource): String? = runBlocking {
-        cloudDataSource.getAccountOnline()?.let { cloudAccount ->
-            return@runBlocking AccountUtils.getPassword(context, cloudAccount.accountName)
-        } ?: return@runBlocking null
+    fun providePassword(context: Context, cloudAccount: CloudAccount?): String? = runBlocking {
+        return@runBlocking AccountUtils.getPassword(
+            context = context,
+            name = cloudAccount?.accountName ?: return@runBlocking null
+        )
     }
 
     @Provides
     @Named("login")
-    fun provideLogin(cloudDataSource: CloudDataSource): String? = runBlocking {
-        cloudDataSource.getAccountOnline()?.let { cloudAccount ->
-            return@runBlocking cloudAccount.login
-        } ?: return@runBlocking null
+    fun provideLogin(cloudAccount: CloudAccount?): String? = runBlocking {
+        return@runBlocking cloudAccount?.login
     }
 
 }

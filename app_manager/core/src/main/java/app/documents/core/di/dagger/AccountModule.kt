@@ -2,6 +2,7 @@ package app.documents.core.di.dagger
 
 import android.content.Context
 import app.documents.core.account.AccountManager
+import app.documents.core.account.AccountPreferences
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.model.cloud.CloudAccount
 import dagger.Module
@@ -11,30 +12,31 @@ import kotlinx.coroutines.runBlocking
 @Module
 object AccountModule {
 
-//    @Provides
-//    fun provideAccountPreferences(context: Context): AccountPreferences {
-//        return AccountPreferences(context)
-//    }
-
-//    @Provides
-//    @PortalUrl
-//    fun providerPortalUrl(accountPreferences: AccountPreferences, cloudDataSource: CloudDataSource): String? {
-//        val portalId = accountPreferences.credential?.portalId
-//        return runBlocking { cloudDataSource.getPortal(portalId ?: return@runBlocking null) }?.url
-//    }
+    @Provides
+    fun provideAccountPreferences(context: Context): AccountPreferences {
+        return AccountPreferences(context)
+    }
 
     @Provides
-    fun provideAccount(cloudDataSource: CloudDataSource): CloudAccount? = runBlocking {
-        return@runBlocking cloudDataSource.getAccountOnline()
+    fun provideAccountOnline(
+        cloudDataSource: CloudDataSource,
+        accountPreferences: AccountPreferences
+    ): CloudAccount? = runBlocking {
+        val accountId = accountPreferences.onlineAccountId
+        if (accountId.isNullOrEmpty()) return@runBlocking null
+
+        return@runBlocking cloudDataSource.getAccount(accountId)
     }
 
     @Provides
     @Token
-    fun provideToken(accountManager: AccountManager, cloudDataSource: CloudDataSource): String = runBlocking {
-        val accountName = cloudDataSource.getAccountOnline()?.accountName
-        if (accountName.isNullOrEmpty()) {
-            return@runBlocking ""
-        }
+    fun provideToken(
+        accountManager: AccountManager,
+        cloudAccount: CloudAccount?
+    ): String = runBlocking {
+        val accountName = cloudAccount?.accountName
+        if (accountName.isNullOrEmpty()) return@runBlocking ""
+
         return@runBlocking accountManager.getToken(accountName).orEmpty()
     }
 
