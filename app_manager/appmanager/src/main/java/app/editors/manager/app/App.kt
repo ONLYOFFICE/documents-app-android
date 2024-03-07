@@ -13,7 +13,6 @@ import app.documents.core.di.dagger.DaggerCoreComponent
 import app.documents.core.login.LoginComponent
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
-import app.documents.core.model.cloud.Scheme
 import app.documents.core.network.login.ILoginServiceProvider
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
@@ -147,16 +146,10 @@ class App : Application() {
             .build()
     }
 
-    fun refreshLoginComponent(portal: String, scheme: Scheme) {
+    fun refreshLoginComponent(portal: CloudPortal?) {
         _loginComponent = coreComponent
             .loginComponent()
-            .create(portal, scheme)
-    }
-
-    fun refreshLoginComponent(portal: CloudPortal) {
-        _loginComponent = coreComponent
-            .loginComponent()
-            .create(portal.url, portal.scheme)
+            .create(portal)
     }
 
     fun refreshCoreComponent() {

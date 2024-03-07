@@ -1,9 +1,7 @@
 package app.documents.core.login
 
 import app.documents.core.di.dagger.LoginModule2
-import app.documents.core.model.cloud.Scheme
-import app.documents.core.network.login.PortalScheme
-import app.documents.core.network.login.PortalUrl
+import app.documents.core.model.cloud.CloudPortal
 import dagger.BindsInstance
 import dagger.Subcomponent
 import javax.inject.Scope
@@ -21,12 +19,7 @@ interface LoginComponent {
 
         fun create(
             @BindsInstance
-            @PortalUrl
-            portalUrl: String,
-
-            @BindsInstance
-            @PortalScheme
-            scheme: Scheme
+            cloudPortal: CloudPortal?
         ): LoginComponent
     }
 

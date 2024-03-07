@@ -3,7 +3,6 @@ package app.editors.manager.ui.fragments.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -40,31 +39,33 @@ import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.popup.CloudAccountPopup
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.FragmentUtils
+import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.contains
+import lib.toolkit.base.managers.utils.putArgs
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
 
 class CloudAccountFragment : BaseAppFragment(),
-    AccountContextDialog.OnAccountContextClickListener, BaseActivity.OnBackPressFragment, CloudAccountView {
+    AccountContextDialog.OnAccountContextClickListener,
+    BaseActivity.OnBackPressFragment, CloudAccountView {
 
     companion object {
         val TAG: String = CloudAccountFragment::class.java.simpleName
 
-        private const val TAG_REMOVE = "TAG_REMOVE"
         private const val TRACKER_ID = "accounts_id"
+        private const val CANCEL_DIALOG_TAG = "CANCEL_DIALOG_TAG"
 
         const val REQUEST_PROFILE = "request_profile"
         const val RESULT_SIGN_IN = "result_sign_in"
         const val RESULT_LOG_OUT = "result_log_out"
 
+
         fun newInstance(isSwitch: Boolean = false): CloudAccountFragment {
-            return CloudAccountFragment().apply {
-                arguments = Bundle(1).apply {
-                    putBoolean(CloudAccountPresenter.KEY_SWITCH, isSwitch)
-                }
-            }
+            return CloudAccountFragment().putArgs(
+                CloudAccountPresenter.KEY_SWITCH to isSwitch
+            )
         }
     }
 
@@ -163,9 +164,9 @@ class CloudAccountFragment : BaseAppFragment(),
             REQUEST_PROFILE,
             requireActivity()
         ) { _, bundle ->
-            when (bundle.keySet().first()) {
-                RESULT_LOG_OUT -> presenter.logOut()
-                RESULT_SIGN_IN -> presenter.checkContextLogin()
+            when {
+                bundle.contains(RESULT_LOG_OUT) -> bundle.getString(RESULT_LOG_OUT)?.let(presenter::logOut)
+                bundle.contains(RESULT_SIGN_IN) -> bundle.getString(RESULT_SIGN_IN)?.let(presenter::checkLogin)
             }
         }
     }
@@ -207,13 +208,14 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onRender(state: CloudAccountState) {
+        hideDialog()
         when (state) {
             is CloudAccountState.AccountLoadedState -> {
                 if (state.account.isEmpty()) {
                     setEmptyState()
                 } else {
                     adapter?.selectedTracker = selectedTracker
-                    adapter?.setItems(state.account.toMutableList())
+                    adapter?.setItems(state.account.toMutableList(), presenter.getOnlineAccountId())
                     state.state?.let {
                         selectedTracker?.onRestoreInstanceState(it)
                     }
@@ -229,13 +231,115 @@ class CloudAccountFragment : BaseAppFragment(),
         }
     }
 
+    override fun onSuccessLogin() {
+        hideDialog()
+        requireContext().startActivity(Intent(requireContext(), MainActivity::class.java).apply {
+            putExtra(MainActivity.KEY_CODE, true)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        })
+    }
+
+    override fun onWaiting() {
+        showWaitingDialog(
+            title = getString(R.string.dialogs_wait_title),
+            cancelButton = getString(R.string.dialogs_common_cancel_button),
+            tag = CANCEL_DIALOG_TAG
+        )
+    }
+
+    override fun onCancelClick(dialogs: CommonDialog.Dialogs?, tag: String?) {
+        presenter.cancelRequest()
+    }
+
+    override fun onProfileClick() {
+        presenter.contextAccount?.let { account ->
+            FragmentUtils.showFragment(
+                parentFragmentManager,
+                ProfileFragment.newInstance(
+                    account = Json.encodeToString(account),
+                    isOnline = presenter.getOnlineAccountId() == account.id
+                ),
+                R.id.frame_container,
+                ProfileFragment.TAG
+            )
+        }
+    }
+
+    override fun onRemoveClick() {
+        presenter.contextAccount?.let { account ->
+            UiUtils.showQuestionDialog(
+                context = requireContext(),
+                title = getString(R.string.dialog_remove_account_title) + "?",
+                description = getString(R.string.dialog_remove_account_description, account.login, account.portal.url),
+                acceptTitle = getString(R.string.dialogs_question_accept_remove),
+                acceptListener = { presenter.deleteAccount(account.id) }
+            )
+        }
+    }
+
+    override fun onWebDavLogin(account: String, provider: WebdavProvider) {
+        hideDialog()
+        WebDavLoginActivity.show(requireActivity(), provider, account)
+    }
+
+    override fun onAccountLogin(portal: String, login: String) {
+        hideDialog()
+        SignInActivity.showPortalSignIn(this, portal, login)
+    }
+
+    override fun onGoogleDriveLogin() {
+        hideDialog(forceHide = true)
+        showFragment(
+            GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage),
+            GoogleDriveSignInFragment.TAG,
+            false
+        )
+    }
+
+    override fun onDropboxLogin() {
+        hideDialog(forceHide = true)
+        showFragment(DropboxSignInFragment.newInstance(), DropboxSignInFragment.TAG, false)
+    }
+
+    override fun onOneDriveLogin() {
+        hideDialog(forceHide = true)
+        showFragment(OneDriveSignInFragment.newInstance(OneDriveUtils.storage), OneDriveSignInFragment.TAG, false)
+    }
+
+    override fun onError(message: String?) {
+        hideDialog()
+        message?.let(::showSnackBar)
+    }
+
+    private fun setMenuState(isSelect: Boolean) {
+        if (isSelect) {
+            selectAllItem?.isVisible = false
+            deselectAllItem?.isVisible = false
+            deleteItem?.isVisible = false
+        } else {
+            selectAllItem?.isVisible = true
+            deselectAllItem?.isVisible = true
+            deleteItem?.isVisible = true
+        }
+    }
+
+    private fun showAccountDialog(account: CloudAccount, view: View) {
+        if (isTablet) {
+            CloudAccountPopup(requireActivity()).apply {
+                setListener(this@CloudAccountFragment)
+                setAccount(account)
+            }.show(view)
+        } else {
+            AccountContextDialog.newInstance().show(parentFragmentManager, AccountContextDialog.TAG)
+        }
+    }
+
     private fun setEmptyState() {
-        adapter?.setItems(emptyList<CloudAccount>().toMutableList())
+        adapter?.setItems(emptyList<CloudAccount>().toMutableList(), "")
     }
 
     private fun initRecyclerView(savedInstanceState: Bundle?) {
         adapter = CloudAccountAdapter(
-            presenter.getOnlineAccountId(),
             accountClickListener,
             accountContextClickListener,
             addClickListener
@@ -294,129 +398,4 @@ class CloudAccountFragment : BaseAppFragment(),
             setActionBarTitle(getString(R.string.cloud_accounts_title))
         }
     }
-
-    override fun onSuccessLogin() {
-        hideDialog()
-        requireContext().startActivity(Intent(requireContext(), MainActivity::class.java).apply {
-//             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                 flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT
-//             }
-            putExtra(MainActivity.KEY_CODE, true)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        })
-    }
-
-    override fun onWaiting() {
-        showWaitingDialog(getString(R.string.dialogs_wait_title))
-    }
-
-    private fun setMenuState(isSelect: Boolean) {
-        if (isSelect) {
-            selectAllItem?.isVisible = false
-            deselectAllItem?.isVisible = false
-            deleteItem?.isVisible = false
-        } else {
-            selectAllItem?.isVisible = true
-            deselectAllItem?.isVisible = true
-            deleteItem?.isVisible = true
-        }
-    }
-
-    private fun showAccountDialog(account: CloudAccount, view: View) {
-        if (isTablet) {
-            CloudAccountPopup(requireActivity()).apply {
-                setListener(this@CloudAccountFragment)
-                setAccount(account)
-            }.show(view)
-        } else {
-            AccountContextDialog.newInstance(
-                Json.encodeToString(account),
-                AccountUtils.getToken(requireContext(), account.accountName)
-            ).show(parentFragmentManager, AccountContextDialog.TAG)
-        }
-    }
-
-    override fun onCloseCommonDialog() {
-        super.onCloseCommonDialog()
-        presenter.contextAccount = null
-    }
-
-    override fun onProfileClick(account: CloudAccount?) {
-        account?.let {
-            FragmentUtils.showFragment(
-                parentFragmentManager,
-                ProfileFragment.newInstance(Json.encodeToString(it)),
-                R.id.frame_container,
-                ProfileFragment.TAG
-            )
-        }
-    }
-
-    override fun onLogOutClick() {
-        presenter.logOut()
-    }
-
-    override fun onRemoveClick(account: CloudAccount?) {
-        account?.let {
-            showQuestionDialog(
-                getString(R.string.dialog_remove_account_title) + "?",
-                getString(R.string.dialog_remove_account_description, account.login, account.portal.url),
-                getString(R.string.dialogs_question_accept_remove),
-                getString(R.string.dialogs_common_cancel_button),
-                TAG_REMOVE
-            )
-        }
-    }
-
-    override fun onSignInClick() {
-        presenter.checkContextLogin()
-    }
-
-    override fun onWebDavLogin(account: String, provider: WebdavProvider) {
-        hideDialog()
-        WebDavLoginActivity.show(requireActivity(), provider, account)
-    }
-
-    override fun onAccountLogin(portal: String, login: String) {
-        hideDialog()
-        SignInActivity.showPortalSignIn(this, portal, login)
-    }
-
-    override fun onGoogleDriveLogin() {
-        hideDialog(forceHide = true)
-        showFragment(GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage), GoogleDriveSignInFragment.TAG, false)
-    }
-
-    override fun onDropboxLogin() {
-        hideDialog(forceHide = true)
-        showFragment(DropboxSignInFragment.newInstance(), DropboxSignInFragment.TAG, false)
-    }
-
-    override fun onOneDriveLogin() {
-        hideDialog(forceHide = true)
-        showFragment(OneDriveSignInFragment.newInstance(OneDriveUtils.storage), OneDriveSignInFragment.TAG, false)
-    }
-
-    override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
-        super.onAcceptClick(dialogs, value, tag)
-        if (tag == TAG_REMOVE) {
-            presenter.deleteAccount()
-        }
-        hideDialog()
-    }
-
-    override fun onError(message: String?) {
-        hideDialog()
-        message?.let {
-            showSnackBar(message)
-        }
-    }
-
-    override fun onUnauthorized(message: String?) {
-        message?.let {
-            showSnackBar(it)
-        }
-        Log.d(TAG, "onUnauthorized: ")
-    }
-
 }

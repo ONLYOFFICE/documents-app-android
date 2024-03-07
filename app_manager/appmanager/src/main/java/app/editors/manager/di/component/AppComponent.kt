@@ -32,7 +32,6 @@ import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
-import app.editors.manager.mvp.presenters.main.ProfilePresenter
 import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
@@ -188,7 +187,6 @@ interface AppComponent {
     /*
     * Content provider
     * */
-    fun inject(settingsPresenter: ProfilePresenter?)
     fun inject(oneDriveFileProvider: OneDriveFileProvider?)
     fun inject(docsRecentPresenter: DocsRecentPresenter?)
     fun inject(authPagerFragment: AuthPagerFragment?)

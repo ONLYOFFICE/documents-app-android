@@ -1,7 +1,6 @@
 package app.documents.core.network.login
 
 import app.documents.core.model.cloud.CloudPortal
-import app.documents.core.model.cloud.Scheme
 import app.documents.core.model.login.AllSettings
 import app.documents.core.model.login.Capabilities
 import app.documents.core.model.login.RequestDeviceToken
@@ -144,7 +143,7 @@ private interface LoginApi {
     )
 }
 
-internal class LoginDataSourceImpl(json: Json, portalUrl: String, portalScheme: Scheme) : LoginDataSource {
+internal class LoginDataSourceImpl(json: Json, cloudPortal: CloudPortal?) : LoginDataSource {
 
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
         .protocols(listOf(Protocol.HTTP_1_1))
@@ -153,7 +152,7 @@ internal class LoginDataSourceImpl(json: Json, portalUrl: String, portalScheme: 
     private val api: LoginApi = Retrofit.Builder()
         .client(okHttpClient)
         .addConverterFactory(json.asConverterFactory(MediaType.get(VALUE_CONTENT_TYPE)))
-        .baseUrl("${portalScheme.value}$portalUrl")
+        .baseUrl(cloudPortal?.urlWithScheme ?: "https://localhost")
         .build()
         .create(LoginApi::class.java)
 

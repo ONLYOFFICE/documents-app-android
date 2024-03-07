@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import lib.toolkit.base.managers.utils.AccountData
 import java.net.UnknownHostException
@@ -89,11 +88,20 @@ internal class LoginRepositoryImpl(
             .asResult()
     }
 
-    override suspend fun deleteAccounts(vararg cloudAccount: CloudAccount): Flow<Result<List<CloudAccount>>> {
+    override suspend fun logOut(accountId: String): Flow<Result<*>> {
+        return logOut(checkNotNull(cloudDataSource.getAccount(accountId)))
+    }
+
+    override suspend fun deleteAccounts(vararg accountIds: String): Flow<Result<List<CloudAccount>>> {
         return flow {
-            cloudAccount.forEach { account ->
-                accountManager.removeAccount(account.accountName)
-                cloudDataSource.deleteAccount(account)
+            accountIds.forEach { accountId ->
+                cloudDataSource.getAccount(accountId)?.let { account ->
+                    if (accountId == accountPreferences.onlineAccountId) {
+                        unsubscribePush(account)
+                    }
+                    accountManager.removeAccount(account.accountName)
+                    cloudDataSource.deleteAccount(account)
+                }
             }
             emit(cloudDataSource.getAccounts())
         }.flowOn(Dispatchers.IO)
@@ -128,13 +136,6 @@ internal class LoginRepositoryImpl(
             .asResult()
     }
 
-    override suspend fun signInWithToken(accessToken: String): Flow<Result<*>> {
-        return flowOf(loginDataSource.getUserInfo(accessToken))
-            .flowOn(Dispatchers.IO)
-            .map { Result.Success(null) }
-            .catch { cause -> Result.Error(cause) }
-    }
-
     override suspend fun registerPortal(
         portalName: String,
         email: String,
@@ -147,16 +148,41 @@ internal class LoginRepositoryImpl(
             .flowOn(Dispatchers.IO)
     }
 
-    override suspend fun switchAccount(account: CloudAccount): Flow<Result<*>> {
+    override suspend fun checkLogin(account: CloudAccount): Flow<CheckLoginResult> {
         return flow {
-            getOnlineAccount()?.let { oldAccount ->
+            if (account.id == accountPreferences.onlineAccountId) {
+                emit(CheckLoginResult.AlreadyUse)
+                return@flow
+            }
+
+            val accessToken = accountManager.getToken(account.accountName)
+            if (accessToken == null) {
+                emit(CheckLoginResult.NeedLogin)
+            } else {
+                val userInfo = loginDataSource.getUserInfo(accessToken)
+                val cloudAccount = createCloudAccount(userInfo, account.login, account.socialProvider, account.portal)
+                cloudDataSource.insertOrUpdateAccount(cloudAccount)
+                accountPreferences.onlineAccountId = userInfo.id
+                emit(CheckLoginResult.Success)
+            }
+        }.flowOn(Dispatchers.IO)
+            .catch { emit(CheckLoginResult.Error(it)) }
+    }
+
+    override suspend fun checkLogin(accountId: String): Flow<CheckLoginResult> {
+        return checkLogin(checkNotNull(cloudDataSource.getAccount(accountId)))
+    }
+
+    override suspend fun switchAccount(account: CloudAccount): Flow<Result<*>> {
+        return flow<Result<*>> {
+            val oldAccount = getOnlineAccount()
+            if (oldAccount != null) {
                 val token = accountManager.getToken(oldAccount.accountName)
                 unsubscribePush(oldAccount.portal, token.orEmpty())
-            } ?: run {
-
             }
-            emit(Result.Success(null))
+            accountPreferences.onlineAccountId = account.id
         }.flowOn(Dispatchers.IO)
+            .asResult()
     }
 
     override suspend fun unsubscribePush(account: CloudAccount) {

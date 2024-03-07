@@ -22,6 +22,14 @@ sealed class PortalResult {
     data object ShouldUseHttp : PortalResult()
 }
 
+sealed class CheckLoginResult {
+
+    data class Error(val exception: Throwable) : CheckLoginResult()
+    data object NeedLogin : CheckLoginResult()
+    data object AlreadyUse : CheckLoginResult()
+    data object Success : CheckLoginResult()
+}
+
 interface LoginRepository {
 
     fun getAccountData(accountName: String): AccountData
@@ -33,8 +41,6 @@ interface LoginRepository {
     suspend fun signInWithProvider(accessToken: String?, provider: String): Flow<LoginResult>
 
     suspend fun signInWithSSO(accessToken: String): Flow<Result<CloudAccount>>
-
-    suspend fun signInWithToken(accessToken: String): Flow<Result<*>>
 
     suspend fun registerPortal(
         portalName: String,
@@ -53,5 +59,11 @@ interface LoginRepository {
 
     suspend fun logOut(cloudAccount: CloudAccount? = null): Flow<Result<*>>
 
-    suspend fun deleteAccounts(vararg cloudAccount: CloudAccount): Flow<Result<List<CloudAccount>>>
+    suspend fun logOut(accountId: String): Flow<Result<*>>
+
+    suspend fun deleteAccounts(vararg accountIds: String): Flow<Result<List<CloudAccount>>>
+
+    suspend fun checkLogin(account: CloudAccount): Flow<CheckLoginResult>
+
+    suspend fun checkLogin(accountId: String): Flow<CheckLoginResult>
 }

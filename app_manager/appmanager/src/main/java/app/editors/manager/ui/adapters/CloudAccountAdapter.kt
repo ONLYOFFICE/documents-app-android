@@ -24,11 +24,12 @@ import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.ui.adapters.BaseListAdapter
 
 class CloudAccountAdapter(
-    private val accountOnlineId: String,
     private val accountClickListener: ((position: Int) -> Unit),
     private val accountContextClickListener: ((position: Int, view: View) -> Unit),
     private val addClickListener: (() -> Unit)
 ) : BaseListAdapter<CloudAccount>() {
+
+    private var accountOnlineId: String = ""
 
     var selected: Boolean = false
         set(value) {
@@ -94,6 +95,11 @@ class CloudAccountAdapter(
 
     fun getIds(): List<String> {
         return mList.filter { it.id.isNotEmpty() }.map { it.id }
+    }
+
+    fun setItems(list: MutableList<CloudAccount>, accountOnlineId: String) {
+        this.accountOnlineId = accountOnlineId
+        setItems(list)
     }
 
 }

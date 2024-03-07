@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import app.documents.core.login.PortalResult
+import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.Scheme
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
@@ -74,7 +75,7 @@ class EnterprisePortalViewModel : BaseLoginViewModel() {
     }
 
     private suspend fun tryCheckPortal(portal: String, scheme: Scheme) {
-        App.getApp().refreshLoginComponent(portal, scheme)
+        App.getApp().refreshLoginComponent(CloudPortal(url = portal, scheme = scheme))
         loginRepository.checkPortal(portal, scheme)
             .collect { result ->
                 when (result) {
