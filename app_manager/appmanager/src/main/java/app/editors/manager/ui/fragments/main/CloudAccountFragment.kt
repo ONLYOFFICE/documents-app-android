@@ -55,7 +55,7 @@ class CloudAccountFragment : BaseAppFragment(),
         val TAG: String = CloudAccountFragment::class.java.simpleName
 
         private const val TRACKER_ID = "accounts_id"
-        private const val CANCEL_DIALOG_TAG = "CANCEL_DIALOG_TAG"
+        private const val WAITING_DIALOG_TAG = "WAITING_DIALOG_TAG"
 
         const val REQUEST_PROFILE = "request_profile"
         const val RESULT_SIGN_IN = "result_sign_in"
@@ -208,7 +208,6 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onRender(state: CloudAccountState) {
-        hideDialog()
         when (state) {
             is CloudAccountState.AccountLoadedState -> {
                 if (state.account.isEmpty()) {
@@ -232,7 +231,6 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onSuccessLogin() {
-        hideDialog()
         requireContext().startActivity(Intent(requireContext(), MainActivity::class.java).apply {
             putExtra(MainActivity.KEY_CODE, true)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -243,12 +241,19 @@ class CloudAccountFragment : BaseAppFragment(),
         showWaitingDialog(
             title = getString(R.string.dialogs_wait_title),
             cancelButton = getString(R.string.dialogs_common_cancel_button),
-            tag = CANCEL_DIALOG_TAG
+            tag = WAITING_DIALOG_TAG
         )
     }
 
+    override fun onHideDialog() {
+        hideDialog(forceHide = true)
+    }
+
     override fun onCancelClick(dialogs: CommonDialog.Dialogs?, tag: String?) {
-        presenter.cancelRequest()
+        super.onCancelClick(dialogs, tag)
+        if (tag == WAITING_DIALOG_TAG) {
+            presenter.cancelRequest()
+        }
     }
 
     override fun onProfileClick() {
@@ -278,17 +283,14 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onWebDavLogin(account: String, provider: WebdavProvider) {
-        hideDialog()
         WebDavLoginActivity.show(requireActivity(), provider, account)
     }
 
     override fun onAccountLogin(portal: String, login: String) {
-        hideDialog()
         SignInActivity.showPortalSignIn(this, portal, login)
     }
 
     override fun onGoogleDriveLogin() {
-        hideDialog(forceHide = true)
         showFragment(
             GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage),
             GoogleDriveSignInFragment.TAG,
@@ -297,17 +299,14 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onDropboxLogin() {
-        hideDialog(forceHide = true)
         showFragment(DropboxSignInFragment.newInstance(), DropboxSignInFragment.TAG, false)
     }
 
     override fun onOneDriveLogin() {
-        hideDialog(forceHide = true)
         showFragment(OneDriveSignInFragment.newInstance(OneDriveUtils.storage), OneDriveSignInFragment.TAG, false)
     }
 
     override fun onError(message: String?) {
-        hideDialog()
         message?.let(::showSnackBar)
     }
 

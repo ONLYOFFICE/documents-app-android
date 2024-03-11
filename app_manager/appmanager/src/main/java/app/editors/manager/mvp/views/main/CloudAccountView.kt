@@ -16,4 +16,5 @@ interface CloudAccountView : BaseView {
     fun onGoogleDriveLogin()
     fun onSuccessLogin()
     fun onWaiting()
+    fun onHideDialog()
 }

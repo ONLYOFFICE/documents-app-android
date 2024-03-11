@@ -78,6 +78,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         signInJob = presenterScope.launch {
             loginRepository.logOut(accountId)
                 .collect { result ->
+                    viewState.onHideDialog()
                     when (result) {
                         is Result.Error -> fetchError(result.exception)
                         is Result.Success -> {
@@ -97,6 +98,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         signInJob = presenterScope.launch {
             loginRepository.deleteAccounts(*selection.orEmpty().toTypedArray())
                 .collect { result ->
+                    viewState.onHideDialog()
                     when (result) {
                         is Result.Error -> fetchError(result.exception)
                         is Result.Success -> {
@@ -115,6 +117,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         signInJob = presenterScope.launch {
             loginRepository.deleteAccounts(accountId)
                 .collect { result ->
+                    viewState.onHideDialog()
                     when (result) {
                         is Result.Error -> fetchError(result.exception)
                         is Result.Success -> {
@@ -146,6 +149,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     }
 
     private fun onCheckLoginCollect(result: CheckLoginResult, account: CloudAccount) {
+        viewState.onHideDialog()
         when (result) {
             is CheckLoginResult.Error -> checkError(result.exception, account)
             is CheckLoginResult.NeedLogin -> showLoginFragment(account)
