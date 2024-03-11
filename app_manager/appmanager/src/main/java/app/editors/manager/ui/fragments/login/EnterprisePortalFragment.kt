@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
@@ -19,6 +20,8 @@ import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.viewModels.login.EnterprisePortalState
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import app.editors.manager.viewModels.login.RemoteUrlViewModel
+import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 
@@ -165,6 +168,15 @@ class EnterprisePortalFragment : BaseAppFragment(),
         viewBinding?.terms?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
             viewBinding?.loginEnterpriseNextButton?.isEnabled = isChecked && viewBinding?.loginEnterprisePortalEdit?.text?.isNotEmpty() == true
         }
+
+        lifecycleScope.launch {
+            viewModel.portals.collect { portals ->
+                if (portals.isNotEmpty()) {
+                    viewBinding?.loginEnterprisePortalLayout?.endIconMode = TextInputLayout.END_ICON_DROPDOWN_MENU
+                    viewBinding?.loginEnterprisePortalEdit?.setSimpleItems(portals)
+                }
+            }
+        }
     }
 
     private fun restoreValue(savedInstanceState: Bundle?) {
@@ -190,7 +202,7 @@ class EnterprisePortalFragment : BaseAppFragment(),
     }
 
     private fun nextClick() {
-        hideKeyboard(viewBinding?.loginEnterprisePortalEdit)
+        hideKeyboard(requireContext(), view?.windowToken)
         viewModel.checkPortal(viewBinding?.loginEnterprisePortalEdit?.text?.trim().toString())
     }
 

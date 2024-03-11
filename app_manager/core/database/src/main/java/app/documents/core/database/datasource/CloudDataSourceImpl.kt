@@ -72,6 +72,10 @@ internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSou
         return db.portalDao.get(url)?.toCloudPortal()
     }
 
+    override suspend fun getPortals(): List<String> {
+        return db.portalDao.getAllUrls()
+    }
+
     override suspend fun insertPortal(cloudPortal: CloudPortal) {
         db.portalDao.insertOrReplace(cloudPortal.toEntity())
     }

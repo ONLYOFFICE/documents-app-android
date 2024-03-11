@@ -23,6 +23,8 @@ interface CloudDataSource {
 
     suspend fun getPortal(url: String): CloudPortal?
 
+    suspend fun getPortals(): List<String>
+
     suspend fun insertPortal(cloudPortal: CloudPortal)
 
     suspend fun insertOrUpdatePortal(cloudPortal: CloudPortal)

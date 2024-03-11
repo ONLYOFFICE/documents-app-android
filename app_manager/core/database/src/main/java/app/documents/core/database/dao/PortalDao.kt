@@ -13,6 +13,9 @@ internal interface PortalDao {
     @Query("SELECT * FROM portal WHERE :url = url")
     suspend fun get(url: String): CloudPortalEntity?
 
+    @Query("SELECT url FROM portal")
+    suspend fun getAllUrls(): List<String>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(portal: CloudPortalEntity)
 

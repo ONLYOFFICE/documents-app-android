@@ -12,6 +12,10 @@ import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.viewModels.base.BaseLoginViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.TreeSet
 
@@ -39,6 +43,10 @@ class EnterprisePortalViewModel : BaseLoginViewModel() {
 
     private val _portalStateLiveData = MutableLiveData<EnterprisePortalState>()
     val portalStateLiveData: LiveData<EnterprisePortalState> = _portalStateLiveData
+
+    val portals: StateFlow<Array<String>> = loginRepository.getSavedPortals()
+        .map { it.toTypedArray() }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyArray())
 
     private var job: Job? = null
 

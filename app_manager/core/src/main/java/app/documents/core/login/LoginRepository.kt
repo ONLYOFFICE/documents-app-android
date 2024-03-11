@@ -66,4 +66,6 @@ interface LoginRepository {
     suspend fun checkLogin(account: CloudAccount): Flow<CheckLoginResult>
 
     suspend fun checkLogin(accountId: String): Flow<CheckLoginResult>
+
+    fun getSavedPortals(): Flow<List<String>>
 }

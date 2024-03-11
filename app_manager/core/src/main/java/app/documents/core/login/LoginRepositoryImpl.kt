@@ -189,6 +189,11 @@ internal class LoginRepositoryImpl(
         unsubscribePush(account.portal, accountManager.getToken(account.accountName))
     }
 
+    override fun getSavedPortals(): Flow<List<String>> {
+        return flow { emit(cloudDataSource.getPortals()) }
+            .flowOn(Dispatchers.IO)
+    }
+
     private fun signIn(request: RequestSignIn): Flow<LoginResult> {
         return flow {
             val response = loginDataSource.signIn(request)
@@ -252,7 +257,11 @@ internal class LoginRepositoryImpl(
         )
     }
 
-    private fun addAccountToAccountManager(accountData: AccountData, password: String, accessToken: String): String? {
+    private fun addAccountToAccountManager(
+        accountData: AccountData,
+        password: String,
+        accessToken: String
+    ): String? {
         with(accountData) {
             val accountName = "$email@$portal"
             if (!accountManager.addAccount(accountName, password, accountData)) {
