@@ -7,6 +7,8 @@ import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.exception.CloudAccountNotFoundException
 import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.interceptors.BaseInterceptor
+import app.documents.core.network.login.LoginInterceptor
+import app.documents.core.network.login.LoginOkHttpClient
 import app.documents.core.network.manager.models.explorer.PathPart
 import app.documents.core.network.manager.models.explorer.PathPartTypeAdapter
 import com.google.gson.GsonBuilder
@@ -59,6 +61,24 @@ object CoreModule {
             .writeTimeout(NetworkClient.ClientSettings.WRITE_TIMEOUT, TimeUnit.SECONDS)
             .connectTimeout(NetworkClient.ClientSettings.CONNECT_TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(BaseInterceptor(token, context))
+        return builder.build()
+    }
+
+    @Provides
+    @LoginOkHttpClient
+    fun provideLoginOkHttpClient(context: Context, account: CloudAccount?): OkHttpClient {
+        val builder = account?.let {
+            NetworkClient.getOkHttpBuilder(
+                isSslOn = account.portal.settings.isSslState,
+                isCiphers = account.portal.settings.isSslCiphers
+            )
+        } ?: OkHttpClient.Builder()
+
+        builder.protocols(listOf(Protocol.HTTP_1_1))
+            .addInterceptor(LoginInterceptor(context))
+            .readTimeout(NetworkClient.ClientSettings.READ_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(NetworkClient.ClientSettings.WRITE_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(NetworkClient.ClientSettings.CONNECT_TIMEOUT, TimeUnit.SECONDS)
         return builder.build()
     }
 

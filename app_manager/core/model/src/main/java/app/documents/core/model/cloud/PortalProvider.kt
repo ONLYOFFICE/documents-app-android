@@ -12,6 +12,9 @@ sealed class PortalProvider {
     data object DocSpace : PortalProvider()
 
     @Serializable
+    data object Personal : PortalProvider()
+
+    @Serializable
     data object OneDrive : PortalProvider()
 
     @Serializable

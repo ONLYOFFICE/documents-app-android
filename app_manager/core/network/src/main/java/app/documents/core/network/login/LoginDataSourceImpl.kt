@@ -28,7 +28,6 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
-import okhttp3.Protocol
 import retrofit2.Retrofit
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -61,14 +60,14 @@ private interface LoginApi {
         "$HEADER_ACCEPT: $VALUE_ACCEPT"
     )
     @GET("api/$API_VERSION/settings/version/build")
-    suspend fun getSettings(): BaseResponse<Settings>
+    suspend fun getSettings(@Header(HEADER_AUTHORIZATION) accessToken: String): BaseResponse<Settings>
 
     @Headers(
         "$HEADER_CONTENT_OPERATION_TYPE: $VALUE_CONTENT_TYPE",
         "$HEADER_ACCEPT: $VALUE_ACCEPT"
     )
     @GET("api/$API_VERSION/settings")
-    suspend fun getAllSettings(): BaseResponse<AllSettings>
+    suspend fun getAllSettings(@Header(HEADER_AUTHORIZATION) accessToken: String): BaseResponse<AllSettings>
 
     @Headers(
         "$HEADER_CONTENT_OPERATION_TYPE: $VALUE_CONTENT_TYPE",
@@ -143,11 +142,11 @@ private interface LoginApi {
     )
 }
 
-internal class LoginDataSourceImpl(json: Json, cloudPortal: CloudPortal?) : LoginDataSource {
-
-    private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
-        .protocols(listOf(Protocol.HTTP_1_1))
-        .build()
+internal class LoginDataSourceImpl(
+    json: Json,
+    okHttpClient: OkHttpClient,
+    cloudPortal: CloudPortal?
+) : LoginDataSource {
 
     private val api: LoginApi = Retrofit.Builder()
         .client(okHttpClient)
@@ -164,12 +163,12 @@ internal class LoginDataSourceImpl(json: Json, cloudPortal: CloudPortal?) : Logi
         return api.getCapabilities().response
     }
 
-    override suspend fun getSettings(): Settings {
-        return api.getSettings().response
+    override suspend fun getSettings(accessToken: String): Settings {
+        return api.getSettings(accessToken).response
     }
 
-    override suspend fun getAllSettings(): AllSettings {
-        return api.getAllSettings().response
+    override suspend fun getAllSettings(accessToken: String): AllSettings {
+        return api.getAllSettings(accessToken).response
     }
 
     override suspend fun smsSignIn(request: RequestSignIn, smsCode: String): Token {

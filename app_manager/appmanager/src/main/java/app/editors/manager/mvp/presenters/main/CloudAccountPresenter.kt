@@ -164,8 +164,6 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     private fun showLoginFragment(account: CloudAccount) {
         when (val provider = account.portal.provider) {
-            PortalProvider.Cloud,
-            PortalProvider.DocSpace -> viewState.onAccountLogin(account.portal.url, account.login)
             PortalProvider.DropBox -> viewState.onDropboxLogin()
             PortalProvider.GoogleDrive -> viewState.onGoogleDriveLogin()
             PortalProvider.OneDrive -> viewState.onOneDriveLogin()
@@ -173,6 +171,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 Json.encodeToString(account),
                 provider.provider
             )
+            else -> viewState.onAccountLogin(account.portal.url, account.login)
         }
     }
 

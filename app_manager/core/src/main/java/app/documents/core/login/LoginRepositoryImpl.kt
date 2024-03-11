@@ -7,6 +7,7 @@ import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.PortalSettings
+import app.documents.core.model.cloud.PortalVersion
 import app.documents.core.model.cloud.Scheme
 import app.documents.core.model.login.RequestDeviceToken
 import app.documents.core.model.login.Token
@@ -222,8 +223,24 @@ internal class LoginRepositoryImpl(
 
         accountPreferences.onlineAccountId = userInfo.id
         cloudDataSource.insertOrUpdateAccount(cloudAccount)
-        cloudDataSource.insertOrUpdatePortal(cloudPortal)
+        cloudDataSource.insertOrUpdatePortal(getPortalSettings(cloudPortal, response.token))
         return cloudAccount
+    }
+
+    private suspend fun getPortalSettings(cloudPortal: CloudPortal, accessToken: String): CloudPortal {
+        val settings = loginDataSource.getSettings(accessToken)
+        val allSettings = loginDataSource.getAllSettings(accessToken)
+        return cloudPortal.copy(
+            version = PortalVersion(
+                serverVersion = settings.communityServer.orEmpty(),
+                documentServerVersion = settings.documentServer.orEmpty()
+            ),
+            provider = when {
+                allSettings.docSpace -> PortalProvider.DocSpace
+                allSettings.personal -> PortalProvider.Personal
+                else -> PortalProvider.Cloud
+            }
+        )
     }
 
     private fun createCloudAccount(

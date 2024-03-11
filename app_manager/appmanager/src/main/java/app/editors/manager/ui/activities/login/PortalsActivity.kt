@@ -80,6 +80,7 @@ class PortalsActivity : BaseAppActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         App.getApp().appComponent.inject(this)
+        App.getApp().refreshLoginComponent(null)
         viewBinding = ActivityPortalsBinding.inflate(layoutInflater)
         tabLayout = viewBinding?.tabLayout
         setContentView(viewBinding?.root)

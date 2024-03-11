@@ -21,9 +21,9 @@ interface LoginDataSource {
 
     suspend fun getCapabilities(): Capabilities
 
-    suspend fun getSettings(): Settings
+    suspend fun getSettings(accessToken: String): Settings
 
-    suspend fun getAllSettings(): AllSettings
+    suspend fun getAllSettings(accessToken: String): AllSettings
 
     suspend fun smsSignIn(request: RequestSignIn, smsCode: String): Token
 
