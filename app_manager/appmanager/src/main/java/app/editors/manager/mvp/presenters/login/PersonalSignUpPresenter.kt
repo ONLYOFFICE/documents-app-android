@@ -1,18 +1,17 @@
 package app.editors.manager.mvp.presenters.login
 
-import app.documents.core.network.login.LoginResponse
+import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.login.models.request.RequestRegister
-import app.documents.core.network.login.models.response.ResponseRegisterPersonalPortal
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.loginService
 import app.editors.manager.mvp.views.login.PersonalRegisterView
-import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.launch
 import lib.toolkit.base.BuildConfig
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
-import java.util.*
+import moxy.presenterScope
+import java.util.Locale
 
 @InjectViewState
 class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
@@ -28,58 +27,6 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
         App.getApp().appComponent.inject(this)
     }
 
-    private var disposable: Disposable? = null
-
-    override fun cancelRequest() {
-        disposable?.dispose()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposable?.dispose()
-    }
-
-    private fun registerPortal(email: String?, isInfo: Boolean = false) {
-        if (isInfo) {
-            networkSettings.setBaseUrl("${BuildConfig.SUBDOMAIN}.${BuildConfig.DEFAULT_INFO_HOST}")
-        } else {
-            networkSettings.setBaseUrl(ApiContract.PERSONAL_HOST)
-        }
-
-
-        email?.let {
-            disposable = context.loginService
-                .registerPersonal(
-                    RequestRegister(
-                        email = email,
-                        language = Locale.getDefault().language
-                    )
-                )
-                .subscribe({ loginResponse ->
-                    when (loginResponse) {
-                        is LoginResponse.Success -> {
-                            checkResponse(loginResponse.response as ResponseRegisterPersonalPortal)
-                        }
-                        is LoginResponse.Error -> {
-                            fetchError(loginResponse.error)
-                        }
-                    }
-                }, { error ->
-                    fetchError(error)
-                })
-        }
-    }
-
-    private fun checkResponse(response: ResponseRegisterPersonalPortal) {
-        if (!response.response.isNullOrEmpty() && response.status != EMAIL_CODE) {
-            viewState.onError(context.getString(R.string.errors_email_already_registered))
-        } else if (!response.response.isNullOrEmpty()) {
-            viewState.onError(response.response)
-        } else {
-            viewState.onRegisterPortal()
-        }
-    }
-
     fun checkMail(email: String) {
         var isInfo = false
         var mail = email
@@ -89,10 +36,30 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
             mail = email.replace(TAG_INFO, "")
         }
         if (StringUtils.isEmailValid(mail.trim())) {
-            viewState.onWaitingDialog()
             registerPortal(mail, isInfo = isInfo)
         } else {
             viewState.onMessage(R.string.errors_email_syntax_error)
+        }
+    }
+
+    private fun registerPortal(email: String?, isInfo: Boolean = false) {
+        if (email == null || email.isEmpty() && !StringUtils.isEmailValid(email)) {
+            viewState.onError(context.getString(R.string.errors_email_syntax_error))
+            return
+        }
+
+        val url = if (isInfo) "${BuildConfig.SUBDOMAIN}.${BuildConfig.DEFAULT_INFO_HOST}" else ApiContract.PERSONAL_HOST
+        App.getApp().refreshLoginComponent(CloudPortal(url = url))
+        signInJob = presenterScope.launch {
+            loginRepository.registerPersonal(email, Locale.getDefault().language)
+                .collect { result ->
+                    // TODO:
+                    // viewState.onError(context.getString(R.string.errors_email_already_registered))
+                    when (result) {
+                        is Result.Success -> viewState.onRegisterPortal()
+                        is Result.Error -> fetchError(result.exception)
+                    }
+                }
         }
     }
 

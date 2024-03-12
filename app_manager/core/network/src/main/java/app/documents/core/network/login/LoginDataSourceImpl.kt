@@ -134,6 +134,17 @@ private interface LoginApi {
         "$HEADER_ACCEPT: $VALUE_CONTENT_TYPE",
         "$HEADER_ACCEPT: $VALUE_ACCEPT"
     )
+    @POST("api/$API_VERSION/settings/push/docregisterdevice")
+    suspend fun registerDevice(
+        @Url url: String,
+        @Header(HEADER_AUTHORIZATION) token: String,
+        @Body body: RequestDeviceToken,
+    )
+
+    @Headers(
+        "$HEADER_ACCEPT: $VALUE_CONTENT_TYPE",
+        "$HEADER_ACCEPT: $VALUE_ACCEPT"
+    )
     @PUT
     suspend fun subscribe(
         @Url portalUrl: String,
@@ -204,8 +215,12 @@ internal class LoginDataSourceImpl(
         return api.forgotPassword(request).response
     }
 
-    override suspend fun registerDevice(token: String, request: RequestDeviceToken) {
-        api.registerDevice(token, request)
+    override suspend fun registerDevice(token: String, deviceToken: String) {
+        api.registerDevice(token, RequestDeviceToken(deviceToken))
+    }
+
+    override suspend fun registerDevice(portalUrl: String, token: String, deviceToken: String) {
+        api.registerDevice(portalUrl, token, RequestDeviceToken(deviceToken))
     }
 
     override suspend fun subscribe(

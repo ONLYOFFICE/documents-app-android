@@ -5,8 +5,8 @@ import app.documents.core.account.AccountPreferences
 import app.documents.core.login.LoginRepository
 import app.documents.core.login.LoginResult
 import app.documents.core.model.cloud.CloudAccount
-import app.documents.core.network.login.models.User
-import app.documents.core.network.login.models.request.RequestSignIn
+import app.documents.core.model.login.User
+import app.documents.core.model.login.request.RequestSignIn
 import app.editors.manager.app.App
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.base.BaseView

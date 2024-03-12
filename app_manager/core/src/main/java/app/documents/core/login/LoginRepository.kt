@@ -2,6 +2,7 @@ package app.documents.core.login
 
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.Scheme
+import app.documents.core.model.login.request.RequestNumber
 import app.documents.core.model.login.response.ResponseRegisterPortal
 import app.documents.core.network.common.Result
 import kotlinx.coroutines.flow.Flow
@@ -51,6 +52,8 @@ interface LoginRepository {
         recaptchaResponse: String
     ): Flow<ResponseRegisterPortal>
 
+    suspend fun registerPersonal(email: String, language: String): Flow<Result<*>>
+
     suspend fun switchAccount(account: CloudAccount): Flow<Result<*>>
 
     suspend fun unsubscribePush(account: CloudAccount)
@@ -67,5 +70,15 @@ interface LoginRepository {
 
     suspend fun checkLogin(accountId: String): Flow<CheckLoginResult>
 
+    suspend fun sendSms(userName: String, password: String, accessToken: String, provider: String): Flow<Result<*>>
+
+    suspend fun passwordRecovery(portal: String, email: String): Flow<Result<*>>
+
     fun getSavedPortals(): Flow<List<String>>
+
+    suspend fun changeNumber(requestNumber: RequestNumber): Flow<Result<*>>
+
+    suspend fun validatePortal(portalName: String): Flow<Result<*>>
+
+    suspend fun registerDevice(portalUrl: String, token: String, deviceToken: String)
 }

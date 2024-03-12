@@ -6,14 +6,14 @@ import android.accounts.AccountAuthenticatorResponse
 import android.accounts.AccountManager
 import android.content.Context
 import android.os.Bundle
+import androidx.core.os.bundleOf
+import app.documents.core.login.LoginResult
 import app.documents.core.model.cloud.CloudAccount
-import app.documents.core.network.login.LoginResponse
-import app.documents.core.network.login.models.request.RequestSignIn
-import app.documents.core.network.login.models.response.ResponseSignIn
-import app.editors.manager.app.loginService
+import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.ui.activities.login.PortalsActivity
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -75,32 +75,34 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
         }
     }
 
-    private fun getToken(cloudAccount: CloudAccount, response: AccountAuthenticatorResponse?, password: String?) =
-        runBlocking(Dispatchers.Main) {
-            val result = async(Dispatchers.IO) {
-                val signInResponse = context.loginService.signIn(
-                    RequestSignIn(
-                        userName = cloudAccount.login ?: "",
-                        password = password ?: "",
-                    )
-                ).blockingGet()
-                if (signInResponse is LoginResponse.Success) {
-                    val token = (signInResponse.response as ResponseSignIn).response.token
-                    AccountUtils.setToken(context, cloudAccount.accountName, token)
-                    return@async Bundle().apply {
-                        putString(
-                            AccountManager.KEY_AUTHTOKEN,
-                            token
-                        )
-                    }
-                } else {
-                    response?.onError(1, "need provider token")
-                    return@async Bundle.EMPTY
-                }
-            }.await()
-            response?.onResult(result)
-            return@runBlocking result
+    private fun getToken(
+        cloudAccount: CloudAccount,
+        response: AccountAuthenticatorResponse?,
+        password: String?
+    ): Bundle = runBlocking(Dispatchers.Main) {
+        App.getApp().refreshLoginComponent(context.accountOnline?.portal)
+        val signInResponse = App.getApp().loginComponent.loginRepository.signInByEmail(
+            email = cloudAccount.login,
+            password = password ?: "",
+            code = null
+        ).firstOrNull()
+
+        when (signInResponse) {
+            is LoginResult.Success -> {
+                val result = bundleOf(
+                    AccountManager.KEY_AUTHTOKEN to
+                            AccountUtils.getToken(context, signInResponse.cloudAccount.accountName)
+                )
+                response?.onResult(result)
+                return@runBlocking result
+            }
+            is LoginResult.Error, null -> {
+                response?.onError(1, "need provider token")
+                return@runBlocking Bundle.EMPTY
+            }
+            else -> return@runBlocking Bundle.EMPTY
         }
+    }
 
     override fun getAuthTokenLabel(authTokenType: String?): String {
         return context.getString(Toolkit.string.account_auth_type)

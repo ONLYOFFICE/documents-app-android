@@ -64,7 +64,6 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     private var fieldsWatcher: FieldsWatcher? = null
     private var socialViews: SocialViews? = null
 
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         App.getApp().appComponent.inject(this)
@@ -164,7 +163,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
 
     override fun onTwoFactorAuth(phoneNoise: String?, request: String) {
         hideDialog()
-        if (phoneNoise != null && phoneNoise.isNotEmpty()) {
+        if (!phoneNoise.isNullOrEmpty()) {
             context?.let { showSms(it, request) }
         } else {
             context?.let { showPhone(it, request) }
@@ -204,7 +203,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
             getString(R.string.dialogs_common_cancel_button),
             TAG_DIALOG_WAITING
         )
-        personalSignInPresenter.signInPersonalWithTwitter(token)
+        personalSignInPresenter.signInWithProvider(token, ApiContract.Social.TWITTER)
     }
 
     override fun onTwitterFailed() {
@@ -218,7 +217,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
             getString(R.string.dialogs_common_cancel_button),
             TAG_DIALOG_WAITING
         )
-        personalSignInPresenter.signInPersonalWithFacebook(token)
+        personalSignInPresenter.signInWithProvider(token, ApiContract.Social.FACEBOOK)
     }
 
     override fun onFacebookLogin(message: String) {

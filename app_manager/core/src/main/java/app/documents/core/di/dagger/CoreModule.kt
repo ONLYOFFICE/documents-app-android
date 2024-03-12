@@ -27,8 +27,7 @@ annotation class Token
 
 @Module(
     includes = [
-        LoginModule::class, ManagerModule::class,
-        ShareModule::class, WebDavModule::class,
+        ManagerModule::class, ShareModule::class, WebDavModule::class,
         AccountModule::class, DatabaseModule::class
     ]
 )

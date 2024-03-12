@@ -13,7 +13,6 @@ import app.documents.core.di.dagger.DaggerCoreComponent
 import app.documents.core.login.LoginComponent
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
-import app.documents.core.network.login.ILoginServiceProvider
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.share.ShareService
@@ -249,12 +248,6 @@ val Context.coreComponent: CoreComponent
     get() = when (this) {
         is App -> this.coreComponent
         else -> this.applicationContext.coreComponent
-    }
-
-val Context.loginService: ILoginServiceProvider
-    get() = when (this) {
-        is App -> this.coreComponent.loginService
-        else -> this.applicationContext.loginService
     }
 
 val Context.oneDriveLoginProvider: OneDriveLoginProvider

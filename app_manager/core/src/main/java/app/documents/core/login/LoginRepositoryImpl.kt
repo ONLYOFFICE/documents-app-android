@@ -9,9 +9,10 @@ import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.PortalSettings
 import app.documents.core.model.cloud.PortalVersion
 import app.documents.core.model.cloud.Scheme
-import app.documents.core.model.login.RequestDeviceToken
 import app.documents.core.model.login.Token
 import app.documents.core.model.login.User
+import app.documents.core.model.login.request.RequestNumber
+import app.documents.core.model.login.request.RequestPassword
 import app.documents.core.model.login.request.RequestRegister
 import app.documents.core.model.login.request.RequestSignIn
 import app.documents.core.model.login.response.ResponseRegisterPortal
@@ -149,6 +150,12 @@ internal class LoginRepositoryImpl(
             .flowOn(Dispatchers.IO)
     }
 
+    override suspend fun registerPersonal(email: String, language: String): Flow<Result<*>> {
+        return flowOf(loginDataSource.registerPersonalPortal(RequestRegister(email, language)))
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
     override suspend fun checkLogin(account: CloudAccount): Flow<CheckLoginResult> {
         return flow {
             if (account.id == accountPreferences.onlineAccountId) {
@@ -174,6 +181,23 @@ internal class LoginRepositoryImpl(
         return checkLogin(checkNotNull(cloudDataSource.getAccount(accountId)))
     }
 
+    override suspend fun sendSms(
+        userName: String,
+        password: String,
+        accessToken: String,
+        provider: String
+    ): Flow<Result<*>> {
+        return flowOf(loginDataSource.sendSms(RequestSignIn(userName, password, provider, accessToken)))
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
+    override suspend fun passwordRecovery(portal: String, email: String): Flow<Result<*>> {
+        return flowOf(loginDataSource.forgotPassword(RequestPassword(portal, email)))
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
     override suspend fun switchAccount(account: CloudAccount): Flow<Result<*>> {
         return flow<Result<*>> {
             val oldAccount = getOnlineAccount()
@@ -193,6 +217,18 @@ internal class LoginRepositoryImpl(
     override fun getSavedPortals(): Flow<List<String>> {
         return flow { emit(cloudDataSource.getPortals()) }
             .flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun changeNumber(requestNumber: RequestNumber): Flow<Result<*>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun validatePortal(portalName: String): Flow<Result<*>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun registerDevice(portalUrl: String, token: String, deviceToken: String) {
+        loginDataSource.registerDevice(portalUrl, token, deviceToken)
     }
 
     private fun signIn(request: RequestSignIn): Flow<LoginResult> {
@@ -301,7 +337,7 @@ internal class LoginRepositoryImpl(
 
     private suspend fun subscribePush(cloudPortal: CloudPortal, accessToken: String) {
         val deviceToken = getDeviceToken()
-        loginDataSource.registerDevice(accessToken, RequestDeviceToken(deviceToken))
+        loginDataSource.registerDevice(accessToken, deviceToken)
         loginDataSource.subscribe(cloudPortal, accessToken, deviceToken, true)
     }
 

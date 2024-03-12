@@ -4,7 +4,6 @@ import android.content.Context
 import app.documents.core.database.dao.RecentDao
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.login.LoginComponent
-import app.documents.core.network.login.ILoginServiceProvider
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.share.ShareService
@@ -44,5 +43,4 @@ interface CoreComponent {
     val localFileProvider: LocalFileProvider
     val roomProvider: RoomProvider
     val webDavFileProvider: WebDavFileProvider
-    val loginService: ILoginServiceProvider
 }

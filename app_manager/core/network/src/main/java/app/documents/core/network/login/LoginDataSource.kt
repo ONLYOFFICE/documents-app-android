@@ -3,7 +3,6 @@ package app.documents.core.network.login
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.login.AllSettings
 import app.documents.core.model.login.Capabilities
-import app.documents.core.model.login.RequestDeviceToken
 import app.documents.core.model.login.Settings
 import app.documents.core.model.login.Token
 import app.documents.core.model.login.User
@@ -41,7 +40,9 @@ interface LoginDataSource {
 
     suspend fun forgotPassword(request: RequestPassword): String
 
-    suspend fun registerDevice(token: String, request: RequestDeviceToken)
+    suspend fun registerDevice(token: String, deviceToken: String)
+
+    suspend fun registerDevice(portalUrl: String, token: String, deviceToken: String)
 
     suspend fun subscribe(portal: CloudPortal, token: String, deviceToken: String, isSubscribe: Boolean)
 }

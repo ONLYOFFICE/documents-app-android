@@ -3,8 +3,8 @@ package app.editors.manager.viewModels.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.login.models.User
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.share.ShareService
 import app.documents.core.providers.RoomProvider

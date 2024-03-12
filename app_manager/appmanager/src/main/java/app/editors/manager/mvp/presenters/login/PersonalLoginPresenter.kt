@@ -2,8 +2,6 @@ package app.editors.manager.mvp.presenters.login
 
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
-import app.editors.manager.app.loginService
-import io.reactivex.disposables.Disposable
 import moxy.InjectViewState
 
 @InjectViewState
@@ -17,46 +15,8 @@ class PersonalLoginPresenter : EnterpriseLoginPresenter() {
         App.getApp().appComponent.inject(this)
     }
 
-    private var disposable: Disposable? = null
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposable?.dispose()
-    }
-
-    private fun initPersonal(): Boolean {
-        networkSettings.setDefault()
-        networkSettings.setBaseUrl(ApiContract.PERSONAL_HOST)
-        disposable = context.loginService
-            .serverVersion()
-            .subscribe { loginResponse ->
-                networkSettings.serverVersion = loginResponse.response as String
-            }
-        return true
-    }
-
     fun signInPersonal(login: String, password: String) {
-        if (initPersonal()) {
-            signInPortal(login.trim { it <= ' ' }, password, networkSettings.getPortal())
-        }
-    }
-
-    fun signInPersonalWithTwitter(token: String) {
-        if (initPersonal()) {
-            signInWithProvider(token, ApiContract.Social.TWITTER)
-        }
-    }
-
-    fun signInPersonalWithGoogle(token: String) {
-        if (initPersonal()) {
-            signInWithProvider(token, ApiContract.Social.GOOGLE)
-        }
-    }
-
-    fun signInPersonalWithFacebook(token: String) {
-        if (initPersonal()) {
-            signInWithProvider(token, ApiContract.Social.FACEBOOK)
-        }
+        signInPortal(login.trim { it <= ' ' }, password, ApiContract.PERSONAL_HOST)
     }
 
 }

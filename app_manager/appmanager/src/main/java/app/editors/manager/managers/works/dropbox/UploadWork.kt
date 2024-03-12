@@ -6,7 +6,7 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.work.WorkerParameters
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.DropboxUtils
-import app.documents.core.network.login.models.request.ProgressRequestBody
+import app.documents.core.manager.ProgressRequestBody
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.storages.dropbox.login.DropboxResponse
 import app.documents.core.network.storages.dropbox.models.explorer.DropboxItem

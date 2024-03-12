@@ -5,7 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.login.models.request.ProgressRequestBody
+import app.documents.core.manager.ProgressRequestBody
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestExternal
