@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.GoogleDriveFolder
@@ -13,8 +14,6 @@ import app.documents.core.network.storages.googledrive.models.request.ShareReque
 import app.documents.core.providers.GoogleDriveFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.accountOnline
-import app.editors.manager.app.googleDriveLoginProvider
 import app.editors.manager.managers.providers.GoogleDriveStorageHelper
 import app.editors.manager.managers.receivers.GoogleDriveUploadReceiver
 import app.editors.manager.managers.works.BaseDownloadWork
@@ -24,11 +23,13 @@ import app.editors.manager.mvp.views.base.DocsGoogleDriveView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import lib.toolkit.base.managers.utils.AccountUtils
+import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
+import moxy.presenterScope
 
-class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>(), GoogleDriveUploadReceiver.OnGoogleDriveUploadListener {
+class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>(),
+    GoogleDriveUploadReceiver.OnGoogleDriveUploadListener {
 
     private var uploadGoogleDriveReceiver: GoogleDriveUploadReceiver = GoogleDriveUploadReceiver()
 
@@ -103,7 +104,8 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
 
     override fun getNextList() {
         fileProvider?.let { provider ->
-            val nextPage = GoogleDriveUtils.GOOGLE_DRIVE_NEXT_PAGE_TOKEN to modelExplorerStack.last()?.current?.parentId.orEmpty()
+            val nextPage =
+                GoogleDriveUtils.GOOGLE_DRIVE_NEXT_PAGE_TOKEN to modelExplorerStack.last()?.current?.parentId.orEmpty()
             disposable.add(
                 provider.getFiles(modelExplorerStack.currentId, getArgs(filteringValue).plus(nextPage))
                     .doOnNext(modelExplorerStack::addOnNext)
@@ -172,20 +174,21 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
             else -> itemClicked?.let { itemList.add(it) }
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
-        disposable.add(googleDriveFileProvider.copy(itemList)
-            .subscribe({}, {
-                fetchError(it)
-                if (isSelectionMode) {
-                    setSelection(false)
-                    updateViewsState()
-                }
-            }, {
-                viewState.onDocsBatchOperation()
-                if (isSelectionMode) {
-                    setSelection(false)
-                    updateViewsState()
-                }
-            })
+        disposable.add(
+            googleDriveFileProvider.copy(itemList)
+                .subscribe({}, {
+                    fetchError(it)
+                    if (isSelectionMode) {
+                        setSelection(false)
+                        updateViewsState()
+                    }
+                }, {
+                    viewState.onDocsBatchOperation()
+                    if (isSelectionMode) {
+                        setSelection(false)
+                        updateViewsState()
+                    }
+                })
         )
         return false
     }
@@ -212,17 +215,19 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
     }
 
     override fun refreshToken() {
-        context.accountOnline?.accountName?.let { accountName ->
-            AccountUtils.getAccount(context, accountName)?.let { account ->
-                val refreshToken = AccountUtils.getAccountData(context, account).refreshToken.orEmpty()
-                context.googleDriveLoginProvider
-                    .refreshToken(refreshToken)
-                    .subscribe({ tokenResponse ->
-                        AccountUtils.setToken(context, account, tokenResponse.accessToken)
-                        App.getApp().refreshGoogleDriveInstance()
-                        getItemsById("root")
-                    }) { viewState.onSignIn() }
-            }
+        App.getApp().refreshLoginComponent(null)
+        presenterScope.launch {
+            App.getApp().loginComponent.googleLoginRepository
+                .refreshToken()
+                .collect { result ->
+                    when (result) {
+                        is Result.Error -> viewState.onSignIn()
+                        is Result.Success -> {
+                            App.getApp().refreshGoogleDriveInstance()
+                            getItemsById("root")
+                        }
+                    }
+                }
         }
     }
 }

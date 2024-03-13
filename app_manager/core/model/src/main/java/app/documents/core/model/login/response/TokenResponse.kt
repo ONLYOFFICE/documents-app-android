@@ -1,4 +1,4 @@
-package app.documents.core.network.storages.dropbox.models.response
+package app.documents.core.model.login.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -6,13 +6,17 @@ import kotlinx.serialization.Serializable
 sealed class PortalProvider {
 
     @Serializable
-    data object Cloud : PortalProvider()
+    sealed class Cloud : PortalProvider() {
 
-    @Serializable
-    data object DocSpace : PortalProvider()
+        @Serializable
+        data object Workspace : Cloud()
 
-    @Serializable
-    data object Personal : PortalProvider()
+        @Serializable
+        data object DocSpace : Cloud()
+
+        @Serializable
+        data object Personal : Cloud()
+    }
 
     @Serializable
     data object OneDrive : PortalProvider()

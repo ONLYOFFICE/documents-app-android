@@ -8,6 +8,7 @@ import app.documents.core.database.entity.toCloudPortal
 import app.documents.core.database.entity.toEntity
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.PortalProvider
 
 internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSource {
 
@@ -73,7 +74,7 @@ internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSou
     }
 
     override suspend fun getPortals(): List<String> {
-        return db.portalDao.getAllUrls()
+        return db.portalDao.getAll().filter { it.provider is PortalProvider.Cloud }.map { it.url }
     }
 
     override suspend fun insertPortal(cloudPortal: CloudPortal) {

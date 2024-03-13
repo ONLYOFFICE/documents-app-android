@@ -19,7 +19,6 @@ import app.documents.core.network.share.ShareService
 import app.documents.core.network.storages.dropbox.api.DropboxProvider
 import app.documents.core.network.storages.dropbox.login.DropboxLoginProvider
 import app.documents.core.network.storages.googledrive.api.GoogleDriveProvider
-import app.documents.core.network.storages.googledrive.login.GoogleDriveLoginProvider
 import app.documents.core.network.storages.onedrive.api.OneDriveProvider
 import app.documents.core.network.storages.onedrive.login.OneDriveLoginProvider
 import app.documents.core.network.webdav.WebDavService
@@ -272,12 +271,6 @@ val Context.dropboxProvider: DropboxProvider
     get() = when (this) {
         is App -> dropboxComponent.dropboxProvider
         else -> applicationContext.dropboxProvider
-    }
-
-val Context.googleDriveLoginProvider: GoogleDriveLoginProvider
-    get() = when (this) {
-        is App -> googleDriveComponent.googleDriveLoginProvider
-        else -> applicationContext.googleDriveLoginProvider
     }
 
 val Context.googleDriveProvider: GoogleDriveProvider

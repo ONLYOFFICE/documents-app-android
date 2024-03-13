@@ -34,7 +34,7 @@ class GoogleDriveSignInFragment: BaseStorageSignInFragment(){
             super.onPageStarted(view, url, favicon)
             if (url.startsWith(redirectUrl.toString())) {
                 val parametersMap = StringUtils.getParametersFromUrl(url.split("?")[1])
-                parametersMap[TAG_CODE]?.let { presenter.getUserInfo(it) }
+                parametersMap[TAG_CODE]?.let { presenter.signIn(it) }
             }
         }
 

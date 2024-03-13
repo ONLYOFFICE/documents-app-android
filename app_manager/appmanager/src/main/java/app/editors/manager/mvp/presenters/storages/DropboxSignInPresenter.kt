@@ -7,7 +7,7 @@ import app.documents.core.model.cloud.PortalSettings
 import app.documents.core.model.cloud.Scheme
 import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.storages.dropbox.login.DropboxLoginProvider
-import app.documents.core.network.storages.dropbox.models.response.TokenResponse
+import app.documents.core.model.login.response.TokenResponse
 import app.documents.core.network.storages.dropbox.models.response.UserResponse
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.base.BaseStorageSignInView

@@ -21,4 +21,12 @@ object LoginModule {
     ): LoginDataSource {
         return LoginDataSourceImpl(json, okHttpClient, cloudPortal)
     }
+
+    @Provides
+    fun provideGoogleLoginDataSource(
+        json: Json,
+        @LoginOkHttpClient okHttpClient: OkHttpClient
+    ): GoogleLoginDataSource {
+        return GoogleLoginDataSourceImpl(json, okHttpClient)
+    }
 }

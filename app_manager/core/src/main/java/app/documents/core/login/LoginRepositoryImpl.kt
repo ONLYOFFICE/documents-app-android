@@ -33,6 +33,7 @@ import lib.toolkit.base.managers.utils.AccountData
 import java.net.UnknownHostException
 
 internal class LoginRepositoryImpl(
+    private val cloudPortal: CloudPortal?,
     private val loginDataSource: LoginDataSource,
     private val cloudDataSource: CloudDataSource,
     private val accountManager: AccountManager,
@@ -40,13 +41,12 @@ internal class LoginRepositoryImpl(
 ) : LoginRepository {
 
     private var savedAccessToken: String? = null
-    private var cloudPortal: CloudPortal? = null
 
     override suspend fun checkPortal(portal: String, scheme: Scheme): Flow<PortalResult> {
         return flow {
             try {
                 val capabilities = loginDataSource.getCapabilities()
-                cloudPortal = CloudPortal(
+                CloudPortal(
                     scheme = scheme,
                     url = portal,
                     settings = PortalSettings(
@@ -54,7 +54,9 @@ internal class LoginRepositoryImpl(
                         ldap = capabilities.ldapEnabled,
                         ssoUrl = capabilities.ssoUrl
                     )
-                )
+                ).let { portal ->
+                    cloudDataSource.insertOrUpdatePortal(portal)
+                }
                 emit(PortalResult.Success(capabilities.providers, scheme == Scheme.Http))
             } catch (e: UnknownHostException) {
                 if (scheme == Scheme.Https) {
@@ -64,7 +66,6 @@ internal class LoginRepositoryImpl(
                 }
             }
         }.catch { exception ->
-            cloudPortal?.url?.let { url -> cloudDataSource.removePortal(url) }
             emit(PortalResult.Error(exception))
         }
     }
@@ -98,7 +99,9 @@ internal class LoginRepositoryImpl(
         return flow {
             accountIds.forEach { accountId ->
                 cloudDataSource.getAccount(accountId)?.let { account ->
-                    if (accountId == accountPreferences.onlineAccountId) {
+                    if (account.portal.provider is PortalProvider.Cloud &&
+                        accountId == accountPreferences.onlineAccountId
+                    ) {
                         unsubscribePush(account)
                     }
                     accountManager.removeAccount(account.accountName)
@@ -167,10 +170,25 @@ internal class LoginRepositoryImpl(
             if (accessToken == null) {
                 emit(CheckLoginResult.NeedLogin)
             } else {
-                val userInfo = loginDataSource.getUserInfo(accessToken)
-                val cloudAccount = createCloudAccount(userInfo, account.login, account.socialProvider, account.portal)
-                cloudDataSource.insertOrUpdateAccount(cloudAccount)
-                accountPreferences.onlineAccountId = userInfo.id
+                if (account.portal.provider is PortalProvider.Cloud) {
+                    val userInfo = loginDataSource.getUserInfo(accessToken)
+                    val cloudAccount = createCloudAccount(
+                        userInfo = userInfo,
+                        login = account.login,
+                        socialProvider = account.socialProvider,
+                        portal = account.portal
+                    )
+
+                    cloudDataSource.insertOrUpdateAccount(
+                        cloudAccount.copy(
+                            name = userInfo.displayNameFromHtml,
+                            avatarUrl = userInfo.avatarMedium,
+                            isAdmin = userInfo.isAdmin,
+                            isVisitor = userInfo.isVisitor
+                        )
+                    )
+                }
+                accountPreferences.onlineAccountId = account.id
                 emit(CheckLoginResult.Success)
             }
         }.flowOn(Dispatchers.IO)
@@ -195,18 +213,6 @@ internal class LoginRepositoryImpl(
     override suspend fun passwordRecovery(portal: String, email: String): Flow<Result<*>> {
         return flowOf(loginDataSource.forgotPassword(RequestPassword(portal, email)))
             .flowOn(Dispatchers.IO)
-            .asResult()
-    }
-
-    override suspend fun switchAccount(account: CloudAccount): Flow<Result<*>> {
-        return flow<Result<*>> {
-            val oldAccount = getOnlineAccount()
-            if (oldAccount != null) {
-                val token = accountManager.getToken(oldAccount.accountName)
-                unsubscribePush(oldAccount.portal, token.orEmpty())
-            }
-            accountPreferences.onlineAccountId = account.id
-        }.flowOn(Dispatchers.IO)
             .asResult()
     }
 
@@ -250,7 +256,7 @@ internal class LoginRepositoryImpl(
     private suspend fun onSuccessResponse(request: RequestSignIn, response: Token): CloudAccount {
         val userInfo = loginDataSource.getUserInfo(response.token)
         var cloudAccount = cloudDataSource.getAccount(userInfo.id)
-        val cloudPortal = checkNotNull(cloudPortal ?: cloudDataSource.getPortal(cloudAccount?.portalUrl.orEmpty()))
+        val cloudPortal = checkNotNull(cloudDataSource.getPortal(cloudAccount?.portalUrl.orEmpty()) ?: cloudPortal)
 
         disableOldAccount()
         cloudAccount = createCloudAccount(userInfo, request.userName, request.provider, cloudPortal)
@@ -272,9 +278,9 @@ internal class LoginRepositoryImpl(
                 documentServerVersion = settings.documentServer.orEmpty()
             ),
             provider = when {
-                allSettings.docSpace -> PortalProvider.DocSpace
-                allSettings.personal -> PortalProvider.Personal
-                else -> PortalProvider.Cloud
+                allSettings.docSpace -> PortalProvider.Cloud.DocSpace
+                allSettings.personal -> PortalProvider.Cloud.Personal
+                else -> PortalProvider.Cloud.Workspace
             }
         )
     }
@@ -336,13 +342,17 @@ internal class LoginRepositoryImpl(
     }
 
     private suspend fun subscribePush(cloudPortal: CloudPortal, accessToken: String) {
-        val deviceToken = getDeviceToken()
-        loginDataSource.registerDevice(accessToken, deviceToken)
-        loginDataSource.subscribe(cloudPortal, accessToken, deviceToken, true)
+        if (cloudPortal.provider is PortalProvider.Cloud) {
+            val deviceToken = getDeviceToken()
+            loginDataSource.registerDevice(accessToken, deviceToken)
+            loginDataSource.subscribe(cloudPortal, accessToken, deviceToken, true)
+        }
     }
 
     private suspend fun unsubscribePush(cloudPortal: CloudPortal, accessToken: String?) {
-        loginDataSource.subscribe(cloudPortal, accessToken.orEmpty(), getDeviceToken(), false)
+        if (cloudPortal.provider is PortalProvider.Cloud) {
+            loginDataSource.subscribe(cloudPortal, accessToken.orEmpty(), getDeviceToken(), false)
+        }
     }
 
     private suspend fun getDeviceToken(): String {

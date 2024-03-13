@@ -54,8 +54,6 @@ interface LoginRepository {
 
     suspend fun registerPersonal(email: String, language: String): Flow<Result<*>>
 
-    suspend fun switchAccount(account: CloudAccount): Flow<Result<*>>
-
     suspend fun unsubscribePush(account: CloudAccount)
 
     suspend fun checkPortal(portal: String, scheme: Scheme): Flow<PortalResult>

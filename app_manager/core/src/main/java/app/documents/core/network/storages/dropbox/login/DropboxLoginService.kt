@@ -1,8 +1,8 @@
 package app.documents.core.network.storages.dropbox.login
 
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.storages.dropbox.models.response.RefreshTokenResponse
-import app.documents.core.network.storages.dropbox.models.response.TokenResponse
+import app.documents.core.model.login.response.RefreshTokenResponse
+import app.documents.core.model.login.response.TokenResponse
 import app.documents.core.network.storages.dropbox.models.response.UserResponse
 import retrofit2.Response
 import retrofit2.http.Header

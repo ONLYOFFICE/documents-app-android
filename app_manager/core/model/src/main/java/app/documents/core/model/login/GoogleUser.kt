@@ -1,9 +1,9 @@
-package app.documents.core.network.storages.googledrive.models
+package app.documents.core.model.login
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class User(
+data class GoogleUser(
     val kind: String = "",
     val displayName: String = "",
     val photoLink: String = "",

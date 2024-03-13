@@ -24,4 +24,5 @@ interface LoginComponent {
     }
 
     val loginRepository: LoginRepository
+    val googleLoginRepository: GoogleLoginRepository
 }

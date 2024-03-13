@@ -66,19 +66,6 @@ android {
         buildConfigField("String", "ONE_DRIVE_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["ONE_DRIVE_AUTH_URL"] + "\"" )
         buildConfigField("String", "ONE_DRIVE_VALUE_SCOPE","\"" + keystoreProperties["ONE_DRIVE_AUTH_URL"] + "\"" )
 
-        //Google
-        buildConfigField("String", "GOOGLE_INFO_CLIENT_ID","\"" + keystoreProperties["GOOGLE_INFO_CLIENT_ID"] + "\"" )
-        buildConfigField("String", "GOOGLE_INFO_REDIRECT_URL","\"" + keystoreProperties["GOOGLE_INFO_REDIRECT_URL"] + "\"" )
-        buildConfigField("String", "GOOGLE_COM_CLIENT_ID","\"" + keystoreProperties["GOOGLE_COM_CLIENT_ID"] + "\"" )
-        buildConfigField("String", "GOOGLE_COM_CLIENT_SECRET","\"" + keystoreProperties["GOOGLE_COM_CLIENT_SECRET"] + "\"" )
-        buildConfigField("String", "GOOGLE_COM_REDIRECT_URL","\"" + keystoreProperties["GOOGLE_COM_REDIRECT_URL"] + "\"" )
-        buildConfigField("String", "GOOGLE_AUTH_URL","\"" + keystoreProperties["GOOGLE_AUTH_URL"] + "\"" )
-        buildConfigField("String", "GOOGLE_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["GOOGLE_VALUE_RESPONSE_TYPE"] + "\"" )
-        buildConfigField("String", "GOOGLE_VALUE_ACCESS_TYPE","\"" + keystoreProperties["GOOGLE_VALUE_ACCESS_TYPE"] + "\"" )
-        buildConfigField("String", "GOOGLE_VALUE_APPROVAL_PROMPT","\"" + keystoreProperties["GOOGLE_VALUE_APPROVAL_PROMPT"] + "\"" )
-        buildConfigField("String", "GOOGLE_VALUE_SCOPE","\"" + keystoreProperties["GOOGLE_VALUE_SCOPE"] + "\"" )
-        buildConfigField("String", "GOOGLE_WEB_ID","\"" + keystoreProperties["GOOGLE_WEB_ID"] + "\"" )
-
     }
 
     buildTypes {
