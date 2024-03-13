@@ -4,16 +4,22 @@ import android.content.Context
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.network.common.contracts.ApiContract
-import app.editors.manager.app.App.Companion.getApp
-import app.editors.manager.managers.tools.PreferenceTool
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.UploadFile
+import app.editors.manager.app.App.Companion.getApp
+import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.list.Footer
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.ui.adapters.base.BaseAdapter
-import app.editors.manager.ui.adapters.holders.*
+import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
+import app.editors.manager.ui.adapters.holders.FileViewHolder
+import app.editors.manager.ui.adapters.holders.FolderViewHolder
+import app.editors.manager.ui.adapters.holders.FooterViewHolder
+import app.editors.manager.ui.adapters.holders.HeaderViewHolder
+import app.editors.manager.ui.adapters.holders.UploadFileViewHolder
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import lib.toolkit.base.ui.adapters.factory.inflate
 import javax.inject.Inject
@@ -25,6 +31,8 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
 
     @Inject
     lateinit var preferenceTool: PreferenceTool
+
+    val accountId: String? by lazy { context.accountOnline?.id }
 
     var isRoot: Boolean = false
     var isFooter: Boolean = false

@@ -4,7 +4,6 @@ import android.view.View
 import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
-import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ListExplorerFilesBinding
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.managers.utils.StringUtils as ManagerStringUtils
@@ -35,8 +34,7 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
             listExplorerFileInfo.text = ManagerStringUtils.getCloudItemInfo(
                 context = adapter.context,
                 item = file,
-                // todo provide user id not account
-                userId = adapter.context.accountOnline?.id,
+                userId = adapter.accountId,
                 sortBy = adapter.preferenceTool.sortBy,
                 isSectionMy = adapter.isSectionMy
             )

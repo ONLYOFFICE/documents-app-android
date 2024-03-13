@@ -4,7 +4,6 @@ import android.view.View
 import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
-import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ListExplorerFolderBinding
 import app.editors.manager.managers.utils.StringUtils
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -35,7 +34,7 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
             listExplorerFolderInfo.text = StringUtils.getCloudItemInfo(
                 context = adapter.context,
                 item = folder,
-                userId = adapter.context.accountOnline?.id,
+                userId = adapter.accountId,
                 sortBy = adapter.preferenceTool.sortBy,
                 isSectionMy = adapter.isSectionMy
             )
