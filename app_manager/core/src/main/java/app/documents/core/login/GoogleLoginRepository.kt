@@ -49,7 +49,12 @@ internal class GoogleLoginRepositoryImpl(
         return flow<Result<*>> {
             val onlineAccount = cloudDataSource.getAccount(accountPreferences.onlineAccountId.orEmpty())
             val refreshToken = accountManager.getAccountData(onlineAccount?.accountName.orEmpty()).refreshToken
-            googleLoginDataSource.refreshToken(refreshToken.orEmpty())
+            val response = googleLoginDataSource.refreshToken(refreshToken.orEmpty())
+            val accountName = onlineAccount?.accountName.orEmpty()
+
+            accountManager.setToken(accountName, response.accessToken)
+            accountManager.updateAccountData(accountName) { it.copy(refreshToken = response.refreshToken) }
+            emit(Result.Success(null))
         }.flowOn(Dispatchers.IO)
             .asResult()
     }
