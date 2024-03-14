@@ -47,6 +47,9 @@ internal class LoginRepositoryImpl(
 
     private var savedAccessToken: String? = null
 
+    private val PortalProvider.registerDeviceRequired: Boolean
+        get() = this is PortalProvider.Cloud.Workspace || this == PortalProvider.Cloud.DocSpace
+
     override suspend fun checkPortal(portal: String, scheme: Scheme): Flow<PortalResult> {
         return flow {
             try {
@@ -324,7 +327,7 @@ internal class LoginRepositoryImpl(
         return CloudAccount(
             id = userInfo.id,
             portalUrl = portal.url,
-            login = login,
+            login = login.ifEmpty { userInfo.email.orEmpty() },
             name = userInfo.displayNameFromHtml,
             avatarUrl = userInfo.avatarMedium,
             socialProvider = socialProvider,
@@ -372,7 +375,7 @@ internal class LoginRepositoryImpl(
     }
 
     private suspend fun subscribePush(cloudPortal: CloudPortal, accessToken: String) {
-        if (cloudPortal.provider is PortalProvider.Cloud) {
+        if (cloudPortal.provider.registerDeviceRequired) {
             val deviceToken = getDeviceToken()
             loginDataSource.registerDevice(accessToken, deviceToken)
             loginDataSource.subscribe(cloudPortal, accessToken, deviceToken, true)
@@ -380,7 +383,7 @@ internal class LoginRepositoryImpl(
     }
 
     private suspend fun unsubscribePush(cloudPortal: CloudPortal, accessToken: String?) {
-        if (cloudPortal.provider is PortalProvider.Cloud) {
+        if (cloudPortal.provider.registerDeviceRequired) {
             loginDataSource.subscribe(cloudPortal, accessToken.orEmpty(), getDeviceToken(), false)
         }
     }

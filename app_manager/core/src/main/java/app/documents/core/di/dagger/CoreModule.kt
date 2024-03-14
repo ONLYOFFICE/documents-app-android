@@ -54,7 +54,6 @@ object CoreModule {
     @Provides
     @LoginOkHttpClient
     fun provideLoginOkHttpClient(context: Context, cloudAccount: CloudAccount?): OkHttpClient {
-        if (cloudAccount == null) throw CloudAccountNotFoundException
         return NetworkClient.getOkHttpBuilder(cloudAccount, LoginInterceptor(context)).build()
     }
 

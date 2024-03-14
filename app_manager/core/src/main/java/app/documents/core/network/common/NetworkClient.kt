@@ -2,7 +2,6 @@ package app.documents.core.network.common
 
 import android.annotation.SuppressLint
 import app.documents.core.model.cloud.CloudAccount
-import app.documents.core.network.common.interceptors.WebDavInterceptor
 import okhttp3.CipherSuite
 import okhttp3.ConnectionSpec
 import okhttp3.Interceptor
@@ -59,17 +58,22 @@ object NetworkClient {
         return builder
     }
 
-    fun getOkHttpBuilder(cloudAccount: CloudAccount, vararg interceptors: Interceptor): OkHttpClient.Builder {
-        return getOkHttpBuilder(
-            cloudAccount.portal.settings.isSslState,
-            cloudAccount.portal.settings.isSslCiphers
-        ).readTimeout(NetworkClient.ClientSettings.READ_TIMEOUT, TimeUnit.SECONDS)
-            .writeTimeout(NetworkClient.ClientSettings.WRITE_TIMEOUT, TimeUnit.SECONDS)
-            .connectTimeout(NetworkClient.ClientSettings.CONNECT_TIMEOUT, TimeUnit.SECONDS)
+    fun getOkHttpBuilder(cloudAccount: CloudAccount?, vararg interceptors: Interceptor): OkHttpClient.Builder {
+        val builder = cloudAccount?.let {
+            getOkHttpBuilder(
+                cloudAccount.portal.settings.isSslState,
+                cloudAccount.portal.settings.isSslCiphers
+            )
+        }
+
+        return (builder ?: OkHttpClient.Builder())
+            .readTimeout(ClientSettings.READ_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(ClientSettings.WRITE_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(ClientSettings.CONNECT_TIMEOUT, TimeUnit.SECONDS)
             .apply { interceptors.forEach(::addInterceptor) }
     }
 
-    private fun getOkHttpSpecs(okHttpClient: OkHttpClient.Builder): OkHttpClient.Builder? {
+    private fun getOkHttpSpecs(okHttpClient: OkHttpClient.Builder): OkHttpClient.Builder {
         return okHttpClient.connectionSpecs(getConnectionSpec())
     }
 

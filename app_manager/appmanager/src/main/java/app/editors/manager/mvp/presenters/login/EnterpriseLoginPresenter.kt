@@ -2,7 +2,6 @@ package app.editors.manager.mvp.presenters.login
 
 import android.content.Intent
 import app.documents.core.model.cloud.CloudAccount
-import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.login.request.RequestSignIn
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -49,7 +48,6 @@ open class EnterpriseLoginPresenter : BaseLoginPresenter<CommonSignInView>() {
             return
         }
         viewState.onWaitingDialog(context.getString(R.string.dialogs_sign_in_portal_header_text), TAG_DIALOG_WAITING)
-        App.getApp().refreshLoginComponent(CloudPortal(url = portal))
         signInWithEmail(login, password)
     }
 }

@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
@@ -181,9 +182,10 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
     private fun signInButtonClick() {
+        App.getApp().refreshLoginComponent(CloudPortal(url = portal.orEmpty()))
         val email = viewBinding?.loginEnterprisePortalEmailEdit?.text.toString()
         val password = viewBinding?.loginEnterprisePortalPasswordEdit?.text.toString()
-        presenter.signInPortal(email.trim { it <= ' ' }, password, portal ?: "")
+        presenter.signInPortal(email.trim { it <= ' ' }, password, portal.orEmpty())
     }
 
 

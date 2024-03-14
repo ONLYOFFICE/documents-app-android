@@ -84,7 +84,7 @@ class MainToolbar @JvmOverloads constructor(
             ) {
                 cloudAccount.avatarUrl
             } else {
-                cloudAccount.portal.scheme.value + cloudAccount.portal + cloudAccount.avatarUrl
+                cloudAccount.portal.urlWithScheme + cloudAccount.avatarUrl
             }
             Glide.with(context)
                 .load(GlideUtils.getCorrectLoad(url, it))

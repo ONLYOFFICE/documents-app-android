@@ -59,7 +59,9 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
     protected open fun fetchError(throwable: Throwable) {
         if (throwable == CloudAccountNotFoundException) {
             onUnauthorized(401)
+            return
         }
+
         if (throwable is HttpException) {
             if (throwable.response()?.code() == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED) {
                 onUnauthorized(throwable.response()?.code() ?: -1)
