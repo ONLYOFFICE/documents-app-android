@@ -3,7 +3,6 @@ package app.editors.manager.mvp.presenters.storages
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalProvider
-import app.documents.core.model.cloud.PortalSettings
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.storages.onedrive.api.OneDriveResponse
 import app.documents.core.network.storages.onedrive.models.response.AuthResponse
@@ -62,10 +61,10 @@ class OneDriveSingInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView
             portal = CloudPortal(
                 url = OneDriveUtils.ONEDRIVE_PORTAL,
                 provider = PortalProvider.OneDrive,
-                settings = PortalSettings(
-                    isSslState = networkSettings.getSslState(),
-                    isSslCiphers = networkSettings.getCipher()
-                )
+//                settings = PortalSettings(
+//                    isSslState = networkSettings.getSslState(),
+//                    isSslCiphers = networkSettings.getCipher()
+//                )
             )
         )
 

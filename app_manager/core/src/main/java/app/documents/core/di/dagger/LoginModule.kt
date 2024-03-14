@@ -11,12 +11,12 @@ import app.documents.core.login.LoginScope
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.network.login.GoogleLoginDataSource
 import app.documents.core.network.login.LoginDataSource
-import app.documents.core.network.login.LoginModule
+import app.documents.core.network.login.LoginNetworkModule
 import dagger.Module
 import dagger.Provides
 
-@Module(includes = [LoginModule::class])
-class LoginModule2 {
+@Module(includes = [LoginNetworkModule::class])
+class LoginModule {
 
     @Provides
     @LoginScope

@@ -10,10 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.FragmentLoginEnterpriseSigninBinding
 import app.editors.manager.managers.utils.GoogleUtils
 import app.editors.manager.mvp.presenters.login.EnterpriseLoginPresenter
@@ -29,7 +29,6 @@ import com.google.android.gms.auth.GoogleAuthUtil
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
-import javax.inject.Inject
 
 class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDialog.OnClickListener,
     OnSocialNetworkCallbacks {
@@ -50,9 +49,6 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
             }
         }
     }
-
-    @Inject
-    lateinit var networkSettings: NetworkSettings
 
     @InjectPresenter
     lateinit var presenter: EnterpriseLoginPresenter
@@ -193,14 +189,19 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     private fun onSignOnButtonClick() {
         showFragment(
-            SSOLoginFragment.newInstance(networkSettings.ssoUrl),
+            SSOLoginFragment.newInstance(context?.accountOnline?.portal?.settings?.ssoUrl),
             SSOLoginFragment.TAG,
             true
         )
     }
 
     private fun onForgotPwdClick() {
-        showFragment(PasswordRecoveryFragment.newInstance(viewBinding?.loginEnterprisePortalEmailEdit?.text.toString(), false), PasswordRecoveryFragment.TAG, false)
+        showFragment(
+            PasswordRecoveryFragment.newInstance(
+                viewBinding?.loginEnterprisePortalEmailEdit?.text.toString(),
+                false
+            ), PasswordRecoveryFragment.TAG, false
+        )
     }
 
 
@@ -354,7 +355,10 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         }
 
     private fun initViews() {
-        val facebookId = if (networkSettings.isPortalInfo) BuildConfig.FACEBOOK_APP_ID_INFO else BuildConfig.FACEBOOK_APP_ID
+        val facebookId = if (context?.accountOnline?.portalUrl?.endsWith(".info") == true)
+            BuildConfig.FACEBOOK_APP_ID_INFO else
+            BuildConfig.FACEBOOK_APP_ID
+
         socialViews = SocialViews(requireActivity(), viewBinding?.socialNetworkLayout?.socialNetworkLayout, facebookId)
         socialViews?.setOnSocialNetworkCallbacks(this)
         fieldsWatcher = FieldsWatcher()
@@ -373,15 +377,15 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         get() {
             val intent = activity?.intent
             if (intent != null) {
-//                if (intent.hasExtra(SignInActivity.TAG_PORTAL_SIGN_IN_EMAIL) && mPreferenceTool!!.login != null) {
-//                    viewBinding?.loginEnterprisePortalEmailEdit!!.setText(mPreferenceTool!!.login)
-//                }
+                //                if (intent.hasExtra(SignInActivity.TAG_PORTAL_SIGN_IN_EMAIL) && mPreferenceTool!!.login != null) {
+                //                    viewBinding?.loginEnterprisePortalEmailEdit!!.setText(mPreferenceTool!!.login)
+                //                }
             }
         }
 
     private fun restoreViews(savedInstanceState: Bundle?) {
-        val ssoUrl = networkSettings.ssoUrl
-        if (ssoUrl.isNotEmpty()) {
+        val ssoUrl = context?.accountOnline?.portal?.settings?.ssoUrl
+        if (!ssoUrl.isNullOrEmpty()) {
             viewBinding?.loginEnterpriseSignonButton?.apply {
                 visibility = View.VISIBLE
                 setSSOButtonText()
@@ -401,8 +405,8 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
     private fun setSSOButtonText() {
-        val ssoLabel = networkSettings.ssoLabel
-        viewBinding?.loginEnterpriseSignonButton?.text = if (ssoLabel.isNotEmpty()) getString(
+        val ssoLabel = context?.accountOnline?.portal?.settings?.ssoLabel
+        viewBinding?.loginEnterpriseSignonButton?.text = if (!ssoLabel.isNullOrEmpty()) getString(
             R.string.login_enterprise_single_sign_button_login,
             ssoLabel
         )

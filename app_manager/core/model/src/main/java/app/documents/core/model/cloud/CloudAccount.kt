@@ -32,3 +32,6 @@ data class CloudAccount(
 
     fun isPersonal(): Boolean = portal.isPersonal
 }
+
+val CloudAccount?.isDocSpace: Boolean
+    get() = this?.portal?.provider is PortalProvider.Cloud.DocSpace

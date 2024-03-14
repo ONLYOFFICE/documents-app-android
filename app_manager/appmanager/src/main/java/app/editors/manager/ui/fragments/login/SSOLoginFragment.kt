@@ -9,9 +9,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.*
+import android.webkit.JsResult
+import android.webkit.SslErrorHandler
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import app.editors.manager.R
-import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.SsoLoginLayoutBinding
 import app.editors.manager.mvp.presenters.login.EnterpriseSSOPresenter
 import app.editors.manager.mvp.views.login.EnterpriseSSOView
@@ -42,8 +46,6 @@ class SSOLoginFragment : BaseAppFragment(), EnterpriseSSOView {
     lateinit var enterpriseSSOPresenter: EnterpriseSSOPresenter
 
     private var viewBinding: SsoLoginLayoutBinding? = null
-
-    private val networkSettings = App.getApp().appComponent.networkSettings
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -121,7 +123,7 @@ class SSOLoginFragment : BaseAppFragment(), EnterpriseSSOView {
         }
 
         override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
-            if (!networkSettings.getSslState()) {
+            if (context?.accountOnline?.portal?.settings?.isSslState != true) {
                 handler.proceed()
             } else {
                 super.onReceivedSslError(view, handler, error)

@@ -5,9 +5,9 @@ import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.PortalSettings
 import app.documents.core.model.cloud.Scheme
+import app.documents.core.model.login.response.TokenResponse
 import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.storages.dropbox.login.DropboxLoginProvider
-import app.documents.core.model.login.response.TokenResponse
 import app.documents.core.network.storages.dropbox.models.response.UserResponse
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.base.BaseStorageSignInView
@@ -17,6 +17,7 @@ import moxy.presenterScope
 import javax.inject.Inject
 
 
+// TODO: add repository
 class DropboxSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView>() {
 
     @Inject
@@ -42,8 +43,8 @@ class DropboxSignInPresenter : BaseStorageSignInPresenter<BaseStorageSignInView>
                 provider = PortalProvider.DropBox,
                 scheme = Scheme.Https,
                 settings = PortalSettings(
-                    isSslState = networkSettings.getSslState(),
-                    isSslCiphers = networkSettings.getCipher()
+//                    isSslState = networkSettings.getSslState(),
+//                    isSslCiphers = networkSettings.getCipher()
                 )
             ),
             login = userResponse.email.orEmpty(),

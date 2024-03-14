@@ -29,4 +29,9 @@ sealed class PortalProvider {
 
     @Serializable
     data class Webdav(val provider: WebdavProvider) : PortalProvider()
+
+    companion object {
+
+        val default: PortalProvider = Cloud.Workspace
+    }
 }

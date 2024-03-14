@@ -15,6 +15,7 @@ import lib.toolkit.base.managers.utils.AccountUtils
 import moxy.presenterScope
 import javax.inject.Inject
 
+// TODO: add repository
 open class BaseStorageSignInPresenter<view : BaseStorageSignInView> : BasePresenter<view>() {
 
     var disposable: Disposable? = null
@@ -28,7 +29,6 @@ open class BaseStorageSignInPresenter<view : BaseStorageSignInView> : BasePresen
     }
 
     fun saveAccount(cloudAccount: CloudAccount, accountData: AccountData, accessToken: String) {
-        networkSettings.isDocSpace = false
         val account = Account(cloudAccount.accountName, context.getString(R.string.account_type))
 
         if (AccountUtils.addAccount(context, account, "", accountData)) {

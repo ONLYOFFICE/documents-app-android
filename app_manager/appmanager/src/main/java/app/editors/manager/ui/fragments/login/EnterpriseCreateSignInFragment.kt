@@ -8,7 +8,6 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.widget.addTextChangedListener
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
-import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentLoginEnterpriseCreateSigninBinding
 import app.editors.manager.mvp.presenters.login.EnterpriseCreateLoginPresenter
 import app.editors.manager.mvp.views.login.EnterpriseCreateSignInView
@@ -23,13 +22,20 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
 
     companion object {
         val TAG: String = EnterpriseCreateSignInFragment::class.java.simpleName
+        const val TAG_PORTAL = "TAG_PORTAL"
         const val TAG_EMAIL = "TAG_EMAIL"
         const val TAG_FIRST = "TAG_FIRST"
         const val TAG_LAST = "TAG_LAST"
 
-        fun newInstance(email: String?, first: String?, last: String?): EnterpriseCreateSignInFragment {
+        fun newInstance(
+            portalName: String?,
+            email: String?,
+            first: String?,
+            last: String?
+        ): EnterpriseCreateSignInFragment {
             return EnterpriseCreateSignInFragment().apply {
                 arguments = Bundle().apply {
+                    putString(TAG_PORTAL, portalName)
                     putString(TAG_EMAIL, email)
                     putString(TAG_FIRST, first)
                     putString(TAG_LAST, last)
@@ -67,6 +73,8 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
         hideKeyboard(viewBinding?.loginSigninPasswordEdit)
         val password = viewBinding?.loginSigninPasswordEdit?.text.toString()
         val repeat = viewBinding?.loginSigninRepeatEdit?.text.toString()
+        val portalName = checkNotNull(arguments?.getString(TAG_PORTAL))
+
         if (password.length < 8 || password.length > 30) {
             viewBinding?.loginSigninPasswordLayout?.error = getString(R.string.login_create_signin_passwords_length)
             return
@@ -76,10 +84,15 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
         }
 
         SafetyNet.getClient(requireContext())
-            .verifyWithRecaptcha(if (requireContext().appComponent.networkSettings.isPortalInfo) BuildConfig.CAPTCHA_PUBLIC_KEY_INFO else BuildConfig.CAPTCHA_PUBLIC_KEY_COM)
+            .verifyWithRecaptcha(
+                if (portalName.endsWith(".info"))
+                    BuildConfig.CAPTCHA_PUBLIC_KEY_INFO else
+                    BuildConfig.CAPTCHA_PUBLIC_KEY_COM
+            )
             .addOnSuccessListener { result ->
                 if (result.tokenResult?.isNotEmpty() == true) {
                     signInPortalPresenter.createPortal(
+                        portalName = portalName,
                         password = password,
                         email = checkNotNull(email),
                         first = checkNotNull(first),

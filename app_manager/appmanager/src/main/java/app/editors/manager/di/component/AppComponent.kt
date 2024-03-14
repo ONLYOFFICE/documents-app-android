@@ -6,7 +6,6 @@ import app.documents.core.di.dagger.CoreComponent
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.interceptors.WebDavInterceptor
 import app.documents.core.providers.OneDriveFileProvider
-import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.di.module.AppModule
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
@@ -106,7 +105,6 @@ interface AppComponent {
     val sectionsState: OperationsState
     val contentTools: LocalContentTools
     val glideTools: GlideTool
-    val networkSettings: NetworkSettings
     val accountOnline: CloudAccount?
     val recentDao: RecentDao?
     val appLocaleHelper: AppLocaleHelper

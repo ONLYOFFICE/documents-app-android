@@ -3,7 +3,6 @@ package app.documents.core.di.koin
 import app.documents.core.di.dagger.CoreModule
 import app.documents.core.network.common.interceptors.BaseInterceptor
 import app.documents.core.network.share.ShareService
-import app.documents.core.storage.preference.NetworkSettings
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import app.documents.core.network.common.NetworkClient
 import okhttp3.MediaType

@@ -46,7 +46,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -147,9 +146,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     @Inject
     lateinit var cloudDataSource: CloudDataSource
-
-    @Inject
-    lateinit var networkSettings: NetworkSettings
 
     private val themePrefs by lazy { ThemePreferencesTools(requireContext()) }
 
@@ -532,7 +528,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
         @SuppressLint("WebViewClientOnReceivedSslError")
         override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
-            if (!networkSettings.getSslState()) {
+            if (context?.accountOnline?.portal?.settings?.isSslState != true) {
                 handler.proceed()
             } else {
                 super.onReceivedSslError(view, handler, error)

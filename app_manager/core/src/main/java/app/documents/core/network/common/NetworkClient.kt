@@ -1,11 +1,15 @@
 package app.documents.core.network.common
 
 import android.annotation.SuppressLint
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.network.common.interceptors.WebDavInterceptor
 import okhttp3.CipherSuite
 import okhttp3.ConnectionSpec
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.TlsVersion
 import java.security.SecureRandom
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
@@ -53,6 +57,16 @@ object NetworkClient {
                 .hostnameVerifier(HostnameVerifier { _, _ -> return@HostnameVerifier true })
         }
         return builder
+    }
+
+    fun getOkHttpBuilder(cloudAccount: CloudAccount, vararg interceptors: Interceptor): OkHttpClient.Builder {
+        return getOkHttpBuilder(
+            cloudAccount.portal.settings.isSslState,
+            cloudAccount.portal.settings.isSslCiphers
+        ).readTimeout(NetworkClient.ClientSettings.READ_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(NetworkClient.ClientSettings.WRITE_TIMEOUT, TimeUnit.SECONDS)
+            .connectTimeout(NetworkClient.ClientSettings.CONNECT_TIMEOUT, TimeUnit.SECONDS)
+            .apply { interceptors.forEach(::addInterceptor) }
     }
 
     private fun getOkHttpSpecs(okHttpClient: OkHttpClient.Builder): OkHttpClient.Builder? {

@@ -3,6 +3,7 @@ package app.editors.manager.viewModels.login
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import app.documents.core.login.LoginRepository
 import app.documents.core.login.PortalResult
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.Scheme
@@ -10,7 +11,7 @@ import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.viewModels.base.BaseLoginViewModel
+import app.editors.manager.viewModels.base.BaseViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +26,7 @@ sealed class EnterprisePortalState {
     data class Error(val message: Int? = null) : EnterprisePortalState()
 }
 
-class EnterprisePortalViewModel : BaseLoginViewModel() {
+class EnterprisePortalViewModel : BaseViewModel() {
 
     companion object {
         val TAG: String = EnterprisePortalViewModel::class.java.simpleName
@@ -40,6 +41,9 @@ class EnterprisePortalViewModel : BaseLoginViewModel() {
         }
         private const val TAG_SSH = "/#ssloff"
     }
+
+    private val loginRepository: LoginRepository
+        get() = App.getApp().loginComponent.loginRepository
 
     private val _portalStateLiveData = MutableLiveData<EnterprisePortalState>()
     val portalStateLiveData: LiveData<EnterprisePortalState> = _portalStateLiveData
@@ -64,10 +68,10 @@ class EnterprisePortalViewModel : BaseLoginViewModel() {
         }
 
         if (portal.endsWith(TAG_SSH)) {
-            networkSettings.setSslState(false)
-            builder.append(getPortal(portal.replace(TAG_SSH, "")) ?: "")
+            // TODO: networkSettings.setSslState(false)
+            builder.append(portal.replace(TAG_SSH, ""))
         } else {
-            builder.append(getPortal(portal))
+            builder.append(portal)
         }
 
         if (builder.isEmpty()) {
@@ -87,7 +91,7 @@ class EnterprisePortalViewModel : BaseLoginViewModel() {
         loginRepository.checkPortal(portal, scheme)
             .collect { result ->
                 when (result) {
-                    is PortalResult.Error -> onError(result.exception)
+                    is PortalResult.Error -> onError(portal, result.exception)
                     is PortalResult.Success -> onSuccess(portal, result)
                     is PortalResult.ShouldUseHttp -> tryCheckPortal(portal, Scheme.Http)
                 }
@@ -99,9 +103,9 @@ class EnterprisePortalViewModel : BaseLoginViewModel() {
             EnterprisePortalState.Success(portal, result.providers.toTypedArray(), result.isHttp)
     }
 
-    private fun onError(exception: Throwable) {
+    private fun onError(portal: String, exception: Throwable) {
         FirebaseUtils.addAnalyticsCheckPortal(
-            networkSettings.getPortal(),
+            portal,
             FirebaseUtils.AnalyticsKeys.FAILED,
             "Error: " + exception.message
         )

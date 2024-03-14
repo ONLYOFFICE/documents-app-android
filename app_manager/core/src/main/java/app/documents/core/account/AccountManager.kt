@@ -64,4 +64,8 @@ class AccountManager @Inject constructor(private val context: Context) {
     fun removeAccount(accountName: String): Boolean {
         return AccountUtils.removeAccount(context, accountName)
     }
+
+    fun getPassword(accountName: String): String? {
+        return AccountUtils.getPassword(context, accountName)
+    }
 }

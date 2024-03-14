@@ -79,4 +79,6 @@ interface LoginRepository {
     suspend fun validatePortal(portalName: String): Flow<Result<*>>
 
     suspend fun registerDevice(portalUrl: String, token: String, deviceToken: String)
+
+    suspend fun configConnection(exception: Exception): Boolean
 }

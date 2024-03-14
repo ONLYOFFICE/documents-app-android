@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
 import app.documents.core.network.manager.ManagerService
@@ -179,7 +180,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun createDocs(title: String) {
         FirebaseUtils.addAnalyticsCreateEntity(
-            networkSettings.getPortal(),
+            account.portalUrl,
             true,
             StringUtils.getExtensionFromPath(title)
         )
@@ -612,7 +613,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
             else -> viewState.onFileDownloadPermission()
         }
-        FirebaseUtils.addAnalyticsOpenEntity(networkSettings.getPortal(), extension)
+        FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, extension)
     }
 
     private fun downloadTempFile(cloudFile: CloudFile, edit: Boolean) {
@@ -752,7 +753,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = itemClicked?.intAccess == ApiContract.ShareCode.READ_WRITE || isUserSection
 
     private val isItemEditable: Boolean
-        get() = if (networkSettings.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+        get() = if (account.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
             itemClicked?.isCanEdit == true
         } else {
             !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
@@ -762,7 +763,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
 
     private val isItemShareable: Boolean
-        get() = if (networkSettings.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+        get() = if (account.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
             itemClicked?.isCanShare == true
         } else {
             isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection

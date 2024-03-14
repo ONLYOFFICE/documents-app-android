@@ -29,3 +29,6 @@ data class CloudPortal(
     val urlWithScheme: String
         get() = "${scheme.value}$url"
 }
+
+val CloudPortal?.isDocSpace: Boolean
+    get() = this?.provider is PortalProvider.Cloud.DocSpace

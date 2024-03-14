@@ -81,7 +81,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         presenterScope.launch {
             context.accountOnline?.let {
                 cloudAccount = it
-                networkSettings.setSettingsByAccount(it)
                 if (isShortcut) {
                     viewState.onRender(MainActivityState.OnDeviceState)
                     return@launch
@@ -237,7 +236,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     fun clear() {
         presenterScope.launch {
             accountPreferences.onlineAccountId = null
-            networkSettings.setDefault()
             withContext(Dispatchers.Main) {
                 viewState.onRender(MainActivityState.CloudState())
             }

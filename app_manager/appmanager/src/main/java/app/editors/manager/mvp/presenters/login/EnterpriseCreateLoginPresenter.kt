@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.presenters.login
 
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.login.User
 import app.documents.core.model.login.request.RequestSignIn
 import app.documents.core.network.common.Result
@@ -60,11 +61,17 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         viewState.onSuccessLogin()
     }
 
-    fun createPortal(password: String, email: String, first: String, last: String, recaptcha: String) {
+    fun createPortal(
+        portalName: String,
+        password: String,
+        email: String,
+        first: String,
+        last: String,
+        recaptcha: String
+    ) {
 
         // Check user input portal
-        val portal = networkSettings.getPortal()
-        val partsPortal = networkSettings.getPortal().split(".")
+        val partsPortal = portalName.split(".")
         if (partsPortal.size != PORTAL_PARTS || partsPortal[PORTAL_PART_NAME].length < PORTAL_LENGTH) {
             viewState.onError(context.getString(R.string.login_api_portal_name))
             return
@@ -73,7 +80,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         // Create api
         viewState.onShowProgress()
         val domain = partsPortal[PORTAL_PART_HOST] + "." + partsPortal[PORTAL_PART_DOMAIN]
-        networkSettings.setBaseUrl(ApiContract.API_SUBDOMAIN + "." + domain)
+        App.getApp().refreshLoginComponent(CloudPortal(url = ApiContract.API_SUBDOMAIN + "." + domain))
 
         // Validate portal
         signInJob = presenterScope.launch {
@@ -88,15 +95,12 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
                 .collect { result ->
                     when (result) {
                         is Result.Success -> {
-                            networkSettings.setBaseUrl(portal)
-                            FirebaseUtils.addAnalyticsCreatePortal(networkSettings.getPortal(), email)
+                            FirebaseUtils.addAnalyticsCreatePortal(portalName, email)
                             signInWithEmail(email, password)
                         }
-                        is Result.Error -> {
-                            networkSettings.setBaseUrl(portal)
-                            fetchError(result.exception)
-                        }
+                        is Result.Error -> fetchError(result.exception)
                     }
+                    App.getApp().refreshLoginComponent(CloudPortal(url = portalName))
                 }
         }
     }

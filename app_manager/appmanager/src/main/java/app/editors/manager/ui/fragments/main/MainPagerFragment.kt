@@ -9,10 +9,12 @@ import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
@@ -241,7 +243,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         activity?.getTabLayout()?.setupWithViewPager(viewBinding?.mainViewPager, true)
         setToolbarState(true)
 
-        if (requireContext().appComponent.networkSettings.isDocSpace) {
+        if (context?.accountOnline.isDocSpace) {
             viewBinding?.mainViewPager?.post {
                 viewBinding?.mainViewPager?.currentItem =
                     fragments.indexOf(fragments.find { it.mFragment is DocsRoomFragment })

@@ -9,7 +9,7 @@ import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.viewModels.base.BaseLoginViewModel
+import app.editors.manager.viewModels.base.BaseViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.StringUtils
@@ -23,12 +23,13 @@ sealed class CreatePortalState {
 }
 
 data class PortalModel(
+    val portalName: String?,
     val email: String?,
     val firstName: String?,
     val lastName: String?,
 )
 
-class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
+class EnterpriseCreateValidateViewModel : BaseViewModel() {
 
     companion object {
         val TAG: String = EnterpriseCreateValidateViewModel::class.java.simpleName
@@ -59,7 +60,7 @@ class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
     }
 
     fun validatePortal(portalName: String?, email: String?, first: String?, last: String?) {
-        val model = PortalModel(email = email, firstName = first, lastName = last)
+        val model = PortalModel(portalName = portalName, email = email, firstName = first, lastName = last)
 
         if (portalName != null && (portalName.length < PORTAL_LENGTH_MIN || portalName.length >= PORTAL_LENGTH_MAX)) {
             _stateLiveData.value = CreatePortalState.Error(R.string.login_api_portal_name_length)
@@ -77,7 +78,6 @@ class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
             _stateLiveData.value = CreatePortalState.Error(R.string.errors_last_name)
             return
         }
-        networkSettings.setDefault()
         validatePortalName(portalName ?: "", model)
     }
 
@@ -86,7 +86,7 @@ class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
 
         _stateLiveData.value = CreatePortalState.Progress
         job = viewModelScope.launch {
-            loginRepository.validatePortal(portalName)
+            App.getApp().loginComponent.loginRepository.validatePortal(portalName)
                 .collect { result ->
                     when (result) {
                         is Result.Error -> checkError(result.exception)
@@ -97,7 +97,7 @@ class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
     }
 
     private fun onSuccessRequest(portalName: String, model: PortalModel) {
-        networkSettings.setBaseUrl(portalName + domain)
+        App.getApp().refreshLoginComponent(CloudPortal(url = portalName + domain))
         _stateLiveData.value = CreatePortalState.Success(model)
         _stateLiveData.value = CreatePortalState.None
     }

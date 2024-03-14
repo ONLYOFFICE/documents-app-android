@@ -53,7 +53,7 @@ class UsersViewModel(
         try {
             _viewState.emit(UsersViewState.Loading)
             emit(shareService.getUsers(getOptions()).response.filter { !it.isOwner }
-                .map { it.copy(avatarMedium = ApiContract.SCHEME_HTTPS + App.getApp().appComponent.networkSettings.getPortal() + it.avatarMedium) })
+                .map { it.copy(avatarMedium = App.getApp().accountOnline?.portal?.urlWithScheme + it.avatarMedium) })
             _viewState.emit(UsersViewState.None)
         } catch (error: Throwable) {
             emit(emptyList())

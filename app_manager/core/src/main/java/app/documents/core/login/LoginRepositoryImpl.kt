@@ -28,9 +28,14 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import lib.toolkit.base.managers.utils.AccountData
+import java.net.ConnectException
+import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import javax.net.ssl.SSLHandshakeException
+import javax.net.ssl.SSLPeerUnverifiedException
 
 internal class LoginRepositoryImpl(
     private val cloudPortal: CloudPortal?,
@@ -231,6 +236,31 @@ internal class LoginRepositoryImpl(
 
     override suspend fun validatePortal(portalName: String): Flow<Result<*>> {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun configConnection(exception: Exception): Boolean {
+        val account = runBlocking { cloudDataSource.getAccount(accountPreferences.onlineAccountId.orEmpty()) }
+        if (account != null) {
+            val portal = account.portal
+            if (exception is SSLHandshakeException && !portal.settings.isSslCiphers && portal.scheme == Scheme.Https) {
+                cloudDataSource.insertOrUpdatePortal(portal.copy(settings = portal.settings.copy(isSslCiphers = true)))
+                return true
+            } else if ((exception is ConnectException ||
+                        exception is SocketTimeoutException ||
+                        exception is SSLHandshakeException ||
+                        exception is SSLPeerUnverifiedException) &&
+                portal.scheme == Scheme.Https
+            ) {
+                cloudDataSource.insertOrUpdatePortal(
+                    portal.copy(
+                        scheme = Scheme.Http,
+                        settings = portal.settings.copy(isSslCiphers = true)
+                    )
+                )
+                return true
+            }
+        }
+        return false
     }
 
     override suspend fun registerDevice(portalUrl: String, token: String, deviceToken: String) {

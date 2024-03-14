@@ -17,9 +17,7 @@ import dagger.Provides
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.TimeUtils
 import okhttp3.OkHttpClient
-import okhttp3.Protocol
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 
 @Qualifier
@@ -27,7 +25,7 @@ annotation class Token
 
 @Module(
     includes = [
-        ManagerModule::class, ShareModule::class, WebDavModule::class,
+        ManagerModule::class, ShareModule::class,
         AccountModule::class, DatabaseModule::class
     ]
 )
@@ -50,35 +48,14 @@ object CoreModule {
     ): OkHttpClient {
         if (cloudAccount == null) throw CloudAccountNotFoundException
         val token = accountManager.getToken(cloudAccount.accountName)
-        val builder = NetworkClient.getOkHttpBuilder(
-            cloudAccount.portal.settings.isSslState,
-            cloudAccount.portal.settings.isSslCiphers,
-        )
-
-        builder.protocols(listOf(Protocol.HTTP_1_1))
-            .readTimeout(NetworkClient.ClientSettings.READ_TIMEOUT, TimeUnit.SECONDS)
-            .writeTimeout(NetworkClient.ClientSettings.WRITE_TIMEOUT, TimeUnit.SECONDS)
-            .connectTimeout(NetworkClient.ClientSettings.CONNECT_TIMEOUT, TimeUnit.SECONDS)
-            .addInterceptor(BaseInterceptor(token, context))
-        return builder.build()
+        return NetworkClient.getOkHttpBuilder(cloudAccount, BaseInterceptor(token, context)).build()
     }
 
     @Provides
     @LoginOkHttpClient
-    fun provideLoginOkHttpClient(context: Context, account: CloudAccount?): OkHttpClient {
-        val builder = account?.let {
-            NetworkClient.getOkHttpBuilder(
-                isSslOn = account.portal.settings.isSslState,
-                isCiphers = account.portal.settings.isSslCiphers
-            )
-        } ?: OkHttpClient.Builder()
-
-        builder.protocols(listOf(Protocol.HTTP_1_1))
-            .addInterceptor(LoginInterceptor(context))
-            .readTimeout(NetworkClient.ClientSettings.READ_TIMEOUT, TimeUnit.SECONDS)
-            .writeTimeout(NetworkClient.ClientSettings.WRITE_TIMEOUT, TimeUnit.SECONDS)
-            .connectTimeout(NetworkClient.ClientSettings.CONNECT_TIMEOUT, TimeUnit.SECONDS)
-        return builder.build()
+    fun provideLoginOkHttpClient(context: Context, cloudAccount: CloudAccount?): OkHttpClient {
+        if (cloudAccount == null) throw CloudAccountNotFoundException
+        return NetworkClient.getOkHttpBuilder(cloudAccount, LoginInterceptor(context)).build()
     }
 
     @Provides

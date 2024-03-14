@@ -5,7 +5,6 @@ import android.util.Log
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.model.exception.CloudAccountNotFoundException
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
@@ -41,9 +40,6 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
 
     @Inject
     lateinit var operationsState: OperationsState
-
-    @Inject
-    lateinit var networkSettings: NetworkSettings
 
     @Inject
     lateinit var cloudDataSource: CloudDataSource

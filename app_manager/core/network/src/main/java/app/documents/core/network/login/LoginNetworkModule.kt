@@ -11,7 +11,7 @@ import javax.inject.Qualifier
 annotation class LoginOkHttpClient
 
 @Module
-object LoginModule {
+object LoginNetworkModule {
 
     @Provides
     fun provideLoginDataSource(

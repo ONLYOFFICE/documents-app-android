@@ -5,7 +5,6 @@ import android.net.Uri
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalProvider
-import app.documents.core.model.cloud.PortalSettings
 import app.documents.core.model.cloud.Scheme
 import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.contracts.ApiContract
@@ -30,6 +29,7 @@ import java.net.ConnectException
 import java.net.MalformedURLException
 import java.net.URL
 
+// TODO: add repository
 @InjectViewState
 class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
 
@@ -70,9 +70,10 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
             }
             webUrl = URL(builder.toString())
 
-            networkSettings.setDefault()
-            networkSettings.setScheme(webUrl.protocol + "://")
-            networkSettings.setBaseUrl(webUrl.protocol + "://" + webUrl.host + if (webUrl.port == -1) "" else ":" + webUrl.port)
+
+//            networkSettings.setDefault()
+//            networkSettings.setScheme(webUrl.protocol + "://")
+//            networkSettings.setBaseUrl(webUrl.protocol + "://" + webUrl.host + if (webUrl.port == -1) "" else ":" + webUrl.port)
 
             viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title))
             disposable = context.webDavApi
@@ -128,9 +129,9 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
 
             val path = correctUrl.path.removeSuffix("/").removePrefix("/")
 
-            networkSettings.setDefault()
-            networkSettings.setBaseUrl(correctUrl.protocol + "://" + correctUrl.host + if (correctUrl.port != -1) ":${correctUrl.port}" else "" + "/")
-            networkSettings.setScheme(correctUrl.protocol + "://")
+//            networkSettings.setDefault()
+//            networkSettings.setBaseUrl(correctUrl.protocol + "://" + correctUrl.host + if (correctUrl.port != -1) ":${correctUrl.port}" else "" + "/")
+//            networkSettings.setScheme(correctUrl.protocol + "://")
 
             viewState.onDialogWaiting(context.getString(R.string.dialogs_check_portal_header_text))
             disposable = context.webDavApi
@@ -177,10 +178,10 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
                 scheme = Scheme.Custom("${webUrl.protocol}://"),
                 url = webUrl.host + if (webUrl.port != -1) ":${webUrl.port}" else "",
                 provider = PortalProvider.Webdav(provider),
-                settings = PortalSettings(
-                    isSslState = networkSettings.getSslState(),
-                    isSslCiphers = networkSettings.getCipher()
-                )
+//                settings = PortalSettings(
+//                    isSslState = networkSettings.getSslState(),
+//                    isSslCiphers = networkSettings.getCipher()
+//                )
             ),
         )
 
