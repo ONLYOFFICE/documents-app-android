@@ -167,7 +167,9 @@ internal class LoginDataSourceImpl(
         .create(LoginApi::class.java)
 
     override suspend fun signIn(request: RequestSignIn): Token {
-        return api.signIn(request).response
+        return if (request.code.isNotEmpty())
+            api.smsSignIn(request, request.code).response else
+            api.signIn(request).response
     }
 
     override suspend fun getCapabilities(): Capabilities {

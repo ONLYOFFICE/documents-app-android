@@ -74,7 +74,9 @@ internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSou
     }
 
     override suspend fun getPortals(): List<String> {
-        return db.portalDao.getAll().filter { it.provider is PortalProvider.Cloud }.map { it.url }
+        return db.portalDao.getAll()
+            .filter { it.provider == PortalProvider.Cloud.Workspace || it.provider == PortalProvider.Cloud.DocSpace }
+            .map { it.url }
     }
 
     override suspend fun insertPortal(cloudPortal: CloudPortal) {

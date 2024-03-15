@@ -30,21 +30,21 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         signInJob?.cancel()
     }
 
+    fun checkSocialProvider(portal: String, onProviders: (List<String>) -> Unit) {
+        presenterScope.launch {
+            onProviders(cloudDataSource.getPortal(portal)?.socialProviders.orEmpty())
+        }
+    }
+
     fun signInWithEmail(email: String, password: String, smsCode: String? = null) {
         signInJob = presenterScope.launch {
             loginRepository.signInByEmail(email, password, smsCode)
                 .collect { result ->
                     when (result) {
                         is LoginResult.Success -> onAccountCreateSuccess(result.cloudAccount)
-                        is LoginResult.Error -> {
-                            when (val exception = result.exception) {
-                                is UserRecoverableAuthException -> onGooglePermission(exception.intent)
-                                else -> fetchError(exception)
-                            }
-                        }
-                        else -> Unit
-//                                                is LoginResult.Sms -> onTwoFactorAuth(result.phoneNoise)
-//                                                is LoginResult.Tfa -> onTwoFactorAuthApp(result.key)
+                        is LoginResult.Error -> fetchError(result.exception)
+                        is LoginResult.Sms -> onTwoFactorAuth(result.phoneNoise, RequestSignIn(email, password))
+                        is LoginResult.Tfa -> onTwoFactorAuthApp(result.key, RequestSignIn(email, password))
                     }
                 }
         }
@@ -56,8 +56,18 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                 .collect { result ->
                     when (result) {
                         is LoginResult.Success -> onAccountCreateSuccess(result.cloudAccount)
-                        is LoginResult.Error -> fetchError(result.exception)
-                        else -> Unit
+                        is LoginResult.Error -> when (val exception = result.exception) {
+                            is UserRecoverableAuthException -> onGooglePermission(exception.intent)
+                            else -> fetchError(exception)
+                        }
+                        is LoginResult.Sms -> onTwoFactorAuth(
+                            result.phoneNoise,
+                            RequestSignIn(accessToken = accessToken.orEmpty(), provider = provider)
+                        )
+                        is LoginResult.Tfa -> onTwoFactorAuthApp(
+                            result.key,
+                            RequestSignIn(accessToken = accessToken.orEmpty(), provider = provider)
+                        )
                     }
                 }
         }
@@ -69,7 +79,7 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
 
     protected open fun onAccountCreateSuccess(account: CloudAccount) {
         App.getApp().refreshCoreComponent()
-//        FirebaseUtils.addAnalyticsLogin(account.portal.portal, account.portal.provider.toString())
+        //        FirebaseUtils.addAnalyticsLogin(account.portal.portal, account.portal.provider.toString())
     }
 
     protected open fun onTwoFactorAuthApp(secretKey: String?, request: RequestSignIn) {}
@@ -78,30 +88,4 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
 
     protected open fun onGooglePermission(intent: Intent?) {}
 
-    //        protected open fun isConfigConnection(t: Throwable?): Boolean {
-    //            if (t is SSLHandshakeException && !networkSettings.getCipher() && networkSettings.getScheme() == ApiContract.SCHEME_HTTPS && Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
-    //                networkSettings.setCipher(true)
-    //                return true
-    //            } else if ((t is ConnectException || t is SocketTimeoutException || t is SSLHandshakeException ||
-    //                        t is SSLPeerUnverifiedException) && networkSettings.getScheme() == ApiContract.SCHEME_HTTPS
-    //            ) {
-    //                networkSettings.setCipher(false)
-    //                networkSettings.setScheme(ApiContract.SCHEME_HTTP)
-    //                return true
-    //            }
-    //            return false
-    //        }
-    //
-    //        protected fun getPortal(url: String): String? {
-    //            if (isValidUrl(url)) {
-    //                networkSettings.setScheme(if (URLUtil.isHttpsUrl(url)) ApiContract.SCHEME_HTTPS else ApiContract.SCHEME_HTTP)
-    //                return getUrlWithoutScheme(url)
-    //            } else {
-    //                val concatUrl = networkSettings.getScheme() + url
-    //                if (isValidUrl(concatUrl)) {
-    //                    return url
-    //                }
-    //            }
-    //            return null
-    //        }
 }

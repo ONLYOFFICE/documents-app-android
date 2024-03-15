@@ -57,6 +57,7 @@ internal class LoginRepositoryImpl(
                 CloudPortal(
                     scheme = scheme,
                     url = portal,
+                    socialProviders = capabilities.providers,
                     settings = PortalSettings(
                         ssoLabel = capabilities.ssoLabel,
                         ldap = capabilities.ldapEnabled,
@@ -274,7 +275,7 @@ internal class LoginRepositoryImpl(
         return flow {
             val response = loginDataSource.signIn(request)
             when {
-                response.token.isNotEmpty() -> {
+                !response.token.isNullOrEmpty() -> {
                     val account = onSuccessResponse(request, response)
                     emit(LoginResult.Success(account))
                 }
@@ -287,18 +288,18 @@ internal class LoginRepositoryImpl(
     }
 
     private suspend fun onSuccessResponse(request: RequestSignIn, response: Token): CloudAccount {
-        val userInfo = loginDataSource.getUserInfo(response.token)
+        val userInfo = loginDataSource.getUserInfo(response.token.orEmpty())
         var cloudAccount = cloudDataSource.getAccount(userInfo.id)
         val cloudPortal = checkNotNull(cloudDataSource.getPortal(cloudAccount?.portalUrl.orEmpty()) ?: cloudPortal)
 
         disableOldAccount()
         cloudAccount = createCloudAccount(userInfo, request.userName, request.provider, cloudPortal)
-        addAccountToAccountManager(cloudAccount.toAccountData(response), request.password, response.token)
-        subscribePush(cloudAccount.portal, response.token)
+        addAccountToAccountManager(cloudAccount.toAccountData(response), request.password, response.token.orEmpty())
+        subscribePush(cloudAccount.portal, response.token.orEmpty())
 
         accountPreferences.onlineAccountId = userInfo.id
         cloudDataSource.insertOrUpdateAccount(cloudAccount)
-        cloudDataSource.insertOrUpdatePortal(getPortalSettings(cloudPortal, response.token))
+        cloudDataSource.insertOrUpdatePortal(getPortalSettings(cloudPortal, response.token.orEmpty()))
         return cloudAccount
     }
 

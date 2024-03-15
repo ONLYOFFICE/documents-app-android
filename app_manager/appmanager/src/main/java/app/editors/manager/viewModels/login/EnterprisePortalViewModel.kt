@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.utils.StringUtils
 import java.util.TreeSet
 
 sealed class EnterprisePortalState {
@@ -82,7 +83,7 @@ class EnterprisePortalViewModel : BaseViewModel() {
         _portalStateLiveData.value = EnterprisePortalState.Progress
 
         job = viewModelScope.launch {
-            tryCheckPortal(portal, Scheme.Https)
+            tryCheckPortal(StringUtils.getUrlHost(portal), Scheme.Https)
         }
     }
 
