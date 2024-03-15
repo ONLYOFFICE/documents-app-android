@@ -23,6 +23,8 @@ interface LoginComponent {
         ): LoginComponent
     }
 
+    val currentPortal: CloudPortal?
+
     val loginRepository: LoginRepository
     val googleLoginRepository: GoogleLoginRepository
 }

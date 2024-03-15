@@ -18,13 +18,14 @@ class PersonalLoginPresenter : EnterpriseLoginPresenter() {
     }
 
     fun signInPersonal(login: String, password: String) {
-        App.getApp().refreshLoginComponent(
-            CloudPortal(
+        signInPortal(
+            login = login.trim { it <= ' ' },
+            password = password,
+            portal = CloudPortal(
                 url = ApiContract.PERSONAL_HOST,
                 provider = PortalProvider.Cloud.Personal
             )
         )
-        signInPortal(login.trim { it <= ' ' }, password, ApiContract.PERSONAL_HOST)
     }
 
 }

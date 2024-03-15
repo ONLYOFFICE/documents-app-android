@@ -16,7 +16,6 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.FragmentLoginEnterpriseSigninBinding
-import app.editors.manager.managers.utils.GoogleUtils
 import app.editors.manager.mvp.presenters.login.EnterpriseLoginPresenter
 import app.editors.manager.mvp.views.login.CommonSignInView
 import app.editors.manager.ui.activities.login.AuthAppActivity
@@ -62,10 +61,9 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     private val portal: String?
         get() = arguments?.getString(SignInActivity.KEY_PORTAL)
+
     private val login: String?
         get() = arguments?.getString(SignInActivity.KEY_LOGIN)
-    private val providers: Array<String>
-        get() = arguments?.getStringArray(SignInActivity.KEY_PROVIDERS) ?: emptyArray()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -182,12 +180,10 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
     private fun signInButtonClick() {
-        App.getApp().refreshLoginComponent(CloudPortal(url = portal.orEmpty()))
         val email = viewBinding?.loginEnterprisePortalEmailEdit?.text.toString()
         val password = viewBinding?.loginEnterprisePortalPasswordEdit?.text.toString()
-        presenter.signInPortal(email.trim { it <= ' ' }, password, portal.orEmpty())
+        presenter.signInPortal(email.trim { it <= ' ' }, password, CloudPortal(url = portal.orEmpty()))
     }
-
 
     private fun onSignOnButtonClick() {
         showFragment(
@@ -369,10 +365,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         viewBinding?.loginEnterpriseSigninButton?.isEnabled = false
         viewBinding?.loginEnterpriseSignonButton?.isEnabled = false
 
-        if (providers.isNotEmpty()) {
-            showGoogleLogin(providers.contains("google") && GoogleUtils.isGooglePlayServicesAvailable(requireContext()))
-            showFacebookLogin(providers.contains("facebook"))
-        }
+        presenter.checkSocialProvider(portal.orEmpty()) { socialViews?.setProviders(it) }
     }
 
     private val intent: Unit
@@ -418,14 +411,6 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
                 getString(R.string.login_enterprise_single_sign_button_login_default)
             )
         }
-    }
-
-    private fun showGoogleLogin(isShow: Boolean) {
-        socialViews?.showGoogleLogin(isShow)
-    }
-
-    private fun showFacebookLogin(isShow: Boolean) {
-        socialViews?.showFacebookLogin(isShow)
     }
 
     /*

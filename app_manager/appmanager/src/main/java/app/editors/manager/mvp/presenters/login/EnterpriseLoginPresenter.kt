@@ -2,13 +2,14 @@ package app.editors.manager.mvp.presenters.login
 
 import android.content.Intent
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.login.request.RequestSignIn
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.login.CommonSignInView
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.StringUtils.isEmailValid
+import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
 
 @InjectViewState
@@ -42,12 +43,16 @@ open class EnterpriseLoginPresenter : BaseLoginPresenter<CommonSignInView>() {
         intent?.let { viewState.onGooglePermission(it) }
     }
 
-    fun signInPortal(login: String, password: String, portal: String) {
-        if (!isEmailValid(login)) {
+    fun signInPortal(login: String, password: String, portal: CloudPortal) {
+        if (!StringUtils.isEmailValid(login)) {
             viewState.onEmailNameError(context.getString(R.string.errors_email_syntax_error))
             return
         }
+
         viewState.onWaitingDialog(context.getString(R.string.dialogs_sign_in_portal_header_text), TAG_DIALOG_WAITING)
+        if (App.getApp().loginComponent.currentPortal == null) {
+            App.getApp().refreshLoginComponent(portal)
+        }
         signInWithEmail(login, password)
     }
 }

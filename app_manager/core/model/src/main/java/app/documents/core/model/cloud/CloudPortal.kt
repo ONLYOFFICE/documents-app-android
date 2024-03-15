@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 data class CloudPortal(
     val url: String = "",
     val scheme: Scheme = Scheme.Https,
+    val socialProviders: List<String> = emptyList(),
     val provider: PortalProvider = PortalProvider.Cloud.Workspace,
     val version: PortalVersion = PortalVersion(),
     val settings: PortalSettings = PortalSettings()

@@ -9,7 +9,13 @@ import androidx.core.view.isVisible
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.editors.manager.BuildConfig
 import app.editors.manager.databinding.IncludeSocialNetworksLayoutBinding
-import com.facebook.*
+import app.editors.manager.managers.utils.GoogleUtils
+import com.facebook.AccessToken
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.FacebookSdk
+import com.facebook.FacebookSdkNotInitializedException
 import com.facebook.login.LoginBehavior
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
@@ -21,8 +27,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 
-class SocialViews(private val activity: Activity, view: View?,
-                  private val facebookId: String?) {
+class SocialViews(
+    private val activity: Activity, view: View?,
+    private val facebookId: String?
+) {
 
     interface OnSocialNetworkCallbacks {
         fun onTwitterSuccess(token: String)
@@ -46,6 +54,12 @@ class SocialViews(private val activity: Activity, view: View?,
         viewBinding = view?.let { IncludeSocialNetworksLayoutBinding.bind(it) }
         initListeners()
         initFacebook()
+    }
+
+    fun setProviders(providers: List<String>?) {
+        if (providers == null) return
+        showGoogleLogin(providers.contains("google") && GoogleUtils.isGooglePlayServicesAvailable(activity))
+        showFacebookLogin(providers.contains("facebook"))
     }
 
     fun showGoogleLogin(isShow: Boolean) {
