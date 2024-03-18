@@ -3,6 +3,8 @@ package app.documents.core.di.dagger
 import android.content.Context
 import app.documents.core.account.AccountManager
 import app.documents.core.account.AccountPreferences
+import app.documents.core.account.AccountRepository
+import app.documents.core.account.AccountRepositoryImpl
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.model.cloud.CloudAccount
 import dagger.Module
@@ -43,5 +45,14 @@ object AccountModule {
     @Provides
     fun provideAccountManager(context: Context): AccountManager {
         return AccountManager(context)
+    }
+
+    @Provides
+    fun provideAccountRepository(
+        cloudDataSource: CloudDataSource,
+        accountManager: AccountManager,
+        accountPreferences: AccountPreferences
+    ): AccountRepository {
+        return AccountRepositoryImpl(cloudDataSource, accountManager, accountPreferences)
     }
 }

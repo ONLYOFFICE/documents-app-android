@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import app.documents.core.login.LoginRepository
 import app.documents.core.login.PortalResult
 import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.PortalSettings
 import app.documents.core.model.cloud.Scheme
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
@@ -23,7 +24,7 @@ import java.util.TreeSet
 
 sealed class EnterprisePortalState {
     data object Progress : EnterprisePortalState()
-    data class Success(val portal: String, val providers: Array<String>, val isHttp: Boolean) : EnterprisePortalState()
+    data class Success(val isHttp: Boolean) : EnterprisePortalState()
     data class Error(val message: Int? = null) : EnterprisePortalState()
 }
 
@@ -62,6 +63,7 @@ class EnterprisePortalViewModel : BaseViewModel() {
 
     fun checkPortal(portal: String) {
         val builder = StringBuilder()
+        var sslState = true
 
         if (checkBannedAddress(portal)) {
             _portalStateLiveData.value = EnterprisePortalState.Error(R.string.errors_client_host_not_found)
@@ -69,7 +71,7 @@ class EnterprisePortalViewModel : BaseViewModel() {
         }
 
         if (portal.endsWith(TAG_SSH)) {
-            // TODO: networkSettings.setSslState(false)
+            sslState = false
             builder.append(portal.replace(TAG_SSH, ""))
         } else {
             builder.append(portal)
@@ -83,25 +85,32 @@ class EnterprisePortalViewModel : BaseViewModel() {
         _portalStateLiveData.value = EnterprisePortalState.Progress
 
         job = viewModelScope.launch {
-            tryCheckPortal(StringUtils.getUrlHost(portal), Scheme.Https)
+            tryCheckPortal(StringUtils.getUrlHost(portal), Scheme.Https, sslState)
         }
     }
 
-    private suspend fun tryCheckPortal(portal: String, scheme: Scheme) {
-        App.getApp().refreshLoginComponent(CloudPortal(url = portal, scheme = scheme))
-        loginRepository.checkPortal(portal, scheme)
+    private suspend fun tryCheckPortal(url: String, scheme: Scheme, sslState: Boolean) {
+        App.getApp().refreshLoginComponent(
+            CloudPortal(
+                url = url,
+                scheme = scheme,
+                settings = PortalSettings(isSslState = sslState)
+            )
+        )
+
+        loginRepository.checkPortal(url, scheme)
             .collect { result ->
                 when (result) {
-                    is PortalResult.Error -> onError(portal, result.exception)
-                    is PortalResult.Success -> onSuccess(portal, result)
-                    is PortalResult.ShouldUseHttp -> tryCheckPortal(portal, Scheme.Http)
+                    is PortalResult.Error -> onError(url, result.exception)
+                    is PortalResult.ShouldUseHttp -> tryCheckPortal(url, Scheme.Http, sslState)
+                    is PortalResult.Success -> onSuccess(result.cloudPortal)
                 }
             }
     }
 
-    private fun onSuccess(portal: String, result: PortalResult.Success) {
-        _portalStateLiveData.value =
-            EnterprisePortalState.Success(portal, result.providers.toTypedArray(), result.isHttp)
+    private fun onSuccess(portal: CloudPortal) {
+        App.getApp().refreshLoginComponent(portal)
+        _portalStateLiveData.value = EnterprisePortalState.Success(portal.scheme == Scheme.Http)
     }
 
     private fun onError(portal: String, exception: Throwable) {

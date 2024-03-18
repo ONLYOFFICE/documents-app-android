@@ -43,9 +43,6 @@ class EnterprisePortalFragment : BaseAppFragment(),
 
     private var viewBinding: FragmentLoginEnterprisePortalBinding? = null
 
-    private var httpUrl = ""
-    private var providers: Array<String>? = emptyArray()
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         requireContext().appComponent.inject(viewModel)
@@ -76,10 +73,8 @@ class EnterprisePortalFragment : BaseAppFragment(),
         super.onAcceptClick(dialogs, value, tag)
         if (tag != null) {
             if (TAG_DIALOG_HTTP == tag) {
-                if (httpUrl.isNotEmpty()) {
-                    viewModel.cancel()
-                    onSuccessPortal(httpUrl, providers ?: emptyArray())
-                }
+                viewModel.cancel()
+                onSuccessPortal()
             }
         }
     }
@@ -98,18 +93,18 @@ class EnterprisePortalFragment : BaseAppFragment(),
         message?.let { showSnackBar(it) }
     }
 
-    private fun onSuccessPortal(portal: String, providers: Array<String>) {
+    private fun onSuccessPortal() {
         hideDialog()
-        SignInActivity.showPortalSignIn(requireContext(), portal, "", providers)
+        SignInActivity.showPortalSignIn(requireContext(), "", "", emptyArray())
     }
 
-    private fun onHttpPortal(portal: String, providers: Array<String>) {
-        this.providers = providers
-        httpUrl = portal
+    private fun onHttpPortal() {
         showQuestionDialog(
             getString(R.string.dialogs_question_http_title),
-            getString(R.string.dialogs_question_http_question), getString(R.string.dialogs_question_accept_yes),
-            getString(R.string.dialogs_common_cancel_button), TAG_DIALOG_HTTP
+            getString(R.string.dialogs_question_http_question),
+            getString(R.string.dialogs_question_accept_yes),
+            getString(R.string.dialogs_common_cancel_button),
+            TAG_DIALOG_HTTP
         )
     }
 
@@ -123,10 +118,6 @@ class EnterprisePortalFragment : BaseAppFragment(),
             getString(R.string.dialogs_common_cancel_button),
             TAG_DIALOG_WAITING
         )
-    }
-
-    private fun onLoginPortal(portal: String) {
-        viewBinding?.loginEnterprisePortalEdit?.setText(portal)
     }
 
     private fun init(savedInstanceState: Bundle?) {
@@ -145,9 +136,9 @@ class EnterprisePortalFragment : BaseAppFragment(),
                 }
                 is EnterprisePortalState.Success -> {
                     if (state.isHttp) {
-                        onHttpPortal(state.portal, state.providers)
+                        onHttpPortal()
                     } else {
-                        onSuccessPortal(state.portal, state.providers)
+                        onSuccessPortal()
                     }
                 }
                 is EnterprisePortalState.Error -> {
@@ -166,7 +157,8 @@ class EnterprisePortalFragment : BaseAppFragment(),
             }
         }
         viewBinding?.terms?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
-            viewBinding?.loginEnterpriseNextButton?.isEnabled = isChecked && viewBinding?.loginEnterprisePortalEdit?.text?.isNotEmpty() == true
+            viewBinding?.loginEnterpriseNextButton?.isEnabled =
+                isChecked && viewBinding?.loginEnterprisePortalEdit?.text?.isNotEmpty() == true
         }
 
         lifecycleScope.launch {
@@ -211,7 +203,8 @@ class EnterprisePortalFragment : BaseAppFragment(),
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             viewBinding?.loginEnterprisePortalLayout?.isErrorEnabled = false
             if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents") {
-                viewBinding?.loginEnterpriseNextButton?.isEnabled = s.isNotEmpty() && viewBinding?.terms?.termsCheckbox?.isChecked == true
+                viewBinding?.loginEnterpriseNextButton?.isEnabled =
+                    s.isNotEmpty() && viewBinding?.terms?.termsCheckbox?.isChecked == true
             } else {
                 viewBinding?.loginEnterpriseNextButton?.isEnabled = s.isNotEmpty()
             }

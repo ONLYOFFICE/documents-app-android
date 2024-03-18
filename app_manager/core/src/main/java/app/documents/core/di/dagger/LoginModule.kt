@@ -1,8 +1,6 @@
 package app.documents.core.di.dagger
 
-import app.documents.core.account.AccountManager
-import app.documents.core.account.AccountPreferences
-import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.account.AccountRepository
 import app.documents.core.login.GoogleLoginRepository
 import app.documents.core.login.GoogleLoginRepositoryImpl
 import app.documents.core.login.LoginRepository
@@ -23,16 +21,12 @@ class LoginModule {
     fun provideLoginRepository(
         cloudPortal: CloudPortal?,
         loginDataSource: LoginDataSource,
-        cloudDataSource: CloudDataSource,
-        accountManager: AccountManager,
-        accountPreferences: AccountPreferences
+        accountRepository: AccountRepository
     ): LoginRepository {
         return LoginRepositoryImpl(
             cloudPortal,
             loginDataSource,
-            cloudDataSource,
-            accountManager,
-            accountPreferences
+            accountRepository
         )
     }
 
@@ -40,15 +34,11 @@ class LoginModule {
     @LoginScope
     fun provideGoogleLoginRepository(
         googleLoginDataSource: GoogleLoginDataSource,
-        cloudDataSource: CloudDataSource,
-        accountManager: AccountManager,
-        accountPreferences: AccountPreferences
+        accountRepository: AccountRepository
     ): GoogleLoginRepository {
         return GoogleLoginRepositoryImpl(
             googleLoginDataSource,
-            cloudDataSource,
-            accountManager,
-            accountPreferences
+            accountRepository
         )
     }
 }

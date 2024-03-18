@@ -1,8 +1,6 @@
 package app.documents.core.login
 
-import app.documents.core.account.AccountManager
-import app.documents.core.account.AccountPreferences
-import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.account.AccountRepository
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalProvider
@@ -16,45 +14,34 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import lib.toolkit.base.managers.utils.AccountData
 
 interface GoogleLoginRepository {
 
     suspend fun signIn(code: String): Flow<Result<*>>
+
     suspend fun refreshToken(): Flow<Result<*>>
 }
 
 internal class GoogleLoginRepositoryImpl(
     private val googleLoginDataSource: GoogleLoginDataSource,
-    private val cloudDataSource: CloudDataSource,
-    private val accountManager: AccountManager,
-    private val accountPreferences: AccountPreferences
+    private val accountRepository: AccountRepository
 ) : GoogleLoginRepository {
 
     override suspend fun signIn(code: String): Flow<Result<*>> {
         return flow {
             val response = googleLoginDataSource.signIn(code)
             val user = googleLoginDataSource.getUserInfo(response.accessToken)
-            val account = createCloudAccount(user)
-
-            addAccountToAccountManager(account, response.accessToken, response.refreshToken)
-            cloudDataSource.insertOrUpdateAccount(account)
-            cloudDataSource.insertOrUpdatePortal(account.portal)
-            accountPreferences.onlineAccountId = account.id
-            emit(Result.Success(null))
+            accountRepository.addAccount(createCloudAccount(user), response.accessToken)
+            emit(null)
         }.flowOn(Dispatchers.IO)
+            .asResult()
     }
 
     override suspend fun refreshToken(): Flow<Result<*>> {
-        return flow<Result<*>> {
-            val onlineAccount = cloudDataSource.getAccount(accountPreferences.onlineAccountId.orEmpty())
-            val refreshToken = accountManager.getAccountData(onlineAccount?.accountName.orEmpty()).refreshToken
-            val response = googleLoginDataSource.refreshToken(refreshToken.orEmpty())
-            val accountName = onlineAccount?.accountName.orEmpty()
-
-            accountManager.setToken(accountName, response.accessToken)
-            accountManager.updateAccountData(accountName) { it.copy(refreshToken = response.refreshToken) }
-            emit(Result.Success(null))
+        return flow {
+            val response = googleLoginDataSource.refreshToken(accountRepository.getRefreshToken().orEmpty())
+            accountRepository.updateAccount(response.accountId, response.accessToken, response.refreshToken)
+            emit(null)
         }.flowOn(Dispatchers.IO)
             .asResult()
     }
@@ -75,24 +62,5 @@ internal class GoogleLoginRepositoryImpl(
                 )
             )
         )
-    }
-
-    private fun addAccountToAccountManager(
-        cloudAccount: CloudAccount,
-        accessToken: String,
-        refreshToken: String
-    ) {
-        val accountName = cloudAccount.accountName
-        val accountData = AccountData(
-            portal = cloudAccount.portal.url,
-            scheme = cloudAccount.portal.scheme.value,
-            displayName = cloudAccount.name,
-            userId = cloudAccount.id,
-            refreshToken = refreshToken,
-            email = cloudAccount.login,
-        )
-        accountManager.addAccount(accountName, "", accountData)
-        accountManager.setAccountData(accountName, accountData)
-        accountManager.setToken(accountName, accessToken)
     }
 }

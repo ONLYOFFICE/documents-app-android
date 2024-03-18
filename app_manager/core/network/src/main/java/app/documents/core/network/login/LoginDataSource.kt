@@ -7,7 +7,6 @@ import app.documents.core.model.login.Settings
 import app.documents.core.model.login.Token
 import app.documents.core.model.login.User
 import app.documents.core.model.login.request.RequestNumber
-import app.documents.core.model.login.request.RequestPassword
 import app.documents.core.model.login.request.RequestRegister
 import app.documents.core.model.login.request.RequestSignIn
 import app.documents.core.model.login.request.RequestValidatePortal
@@ -26,7 +25,7 @@ interface LoginDataSource {
 
     suspend fun smsSignIn(request: RequestSignIn, smsCode: String): Token
 
-    suspend fun sendSms(request: RequestSignIn): Token
+    suspend fun sendSms(userName: String, password: String, provider: String, accessToken: String): Token
 
     suspend fun changeNumber(request: RequestNumber): Token
 
@@ -38,7 +37,7 @@ interface LoginDataSource {
 
     suspend fun getUserInfo(token: String): User
 
-    suspend fun forgotPassword(request: RequestPassword): String
+    suspend fun forgotPassword(url: String, email: String): String
 
     suspend fun registerDevice(token: String, deviceToken: String)
 

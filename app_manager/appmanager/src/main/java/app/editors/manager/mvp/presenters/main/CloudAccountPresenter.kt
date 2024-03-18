@@ -136,7 +136,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         signInJob = presenterScope.launch {
             val account = checkNotNull(cloudDataSource.getAccount(accountId))
             App.getApp().refreshLoginComponent(account.portal)
-            loginRepository.checkLogin(account).collect { onCheckLoginCollect(it, account) }
+            loginRepository.checkLogin(accountId).collect { onCheckLoginCollect(it, account) }
         }
     }
 
@@ -144,17 +144,17 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         viewState.onWaiting()
         signInJob = presenterScope.launch {
             App.getApp().refreshLoginComponent(account.portal)
-            loginRepository.checkLogin(account).collect { onCheckLoginCollect(it, account) }
+            loginRepository.checkLogin(account.id).collect { onCheckLoginCollect(it, account) }
         }
     }
 
     private fun onCheckLoginCollect(result: CheckLoginResult, account: CloudAccount) {
         viewState.onHideDialog()
         when (result) {
+            is CheckLoginResult.Success -> viewState.onSuccessLogin()
             is CheckLoginResult.Error -> checkError(result.exception, account)
             is CheckLoginResult.NeedLogin -> showLoginFragment(account)
             CheckLoginResult.AlreadyUse -> onAlreadyUse()
-            CheckLoginResult.Success -> viewState.onSuccessLogin()
         }
     }
 

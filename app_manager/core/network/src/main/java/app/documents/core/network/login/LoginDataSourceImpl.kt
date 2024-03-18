@@ -188,8 +188,8 @@ internal class LoginDataSourceImpl(
         return api.smsSignIn(request, smsCode).response
     }
 
-    override suspend fun sendSms(request: RequestSignIn): Token {
-        return api.sendSms(request).response
+    override suspend fun sendSms(userName: String, password: String, provider: String, accessToken: String): Token {
+        return api.sendSms(RequestSignIn(userName, password, provider, accessToken)).response
     }
 
     override suspend fun changeNumber(request: RequestNumber): Token {
@@ -213,8 +213,8 @@ internal class LoginDataSourceImpl(
         return api.getUserInfo(token).response
     }
 
-    override suspend fun forgotPassword(request: RequestPassword): String {
-        return api.forgotPassword(request).response
+    override suspend fun forgotPassword(url: String, email: String): String {
+        return api.forgotPassword(RequestPassword(url, email)).response
     }
 
     override suspend fun registerDevice(token: String, deviceToken: String) {
