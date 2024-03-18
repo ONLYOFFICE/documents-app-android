@@ -17,7 +17,6 @@ import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.share.ShareService
 import app.documents.core.network.storages.dropbox.api.DropboxProvider
-import app.documents.core.network.storages.dropbox.login.DropboxLoginProvider
 import app.documents.core.network.storages.googledrive.api.GoogleDriveProvider
 import app.documents.core.network.storages.onedrive.api.OneDriveProvider
 import app.documents.core.network.storages.onedrive.login.OneDriveLoginProvider
@@ -259,12 +258,6 @@ val Context.oneDriveProvider: OneDriveProvider
     get() = when (this) {
         is App -> oneDriveComponent.oneDriveProvider
         else -> applicationContext.oneDriveProvider
-    }
-
-val Context.dropboxLoginProvider: DropboxLoginProvider
-    get() = when (this) {
-        is App -> dropboxComponent.dropboxLoginProvider
-        else -> applicationContext.dropboxLoginProvider
     }
 
 val Context.dropboxProvider: DropboxProvider

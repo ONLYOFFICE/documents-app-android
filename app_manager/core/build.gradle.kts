@@ -47,15 +47,6 @@ android {
         buildConfigField("String", "BOX_AUTH_URL","\"" + keystoreProperties["BOX_AUTH_URL"] + "\"" )
         buildConfigField("String", "BOX_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["BOX_VALUE_RESPONSE_TYPE"] + "\"" )
 
-        //DropBox
-        buildConfigField("String", "DROP_BOX_COM_CLIENT_ID","\"" + keystoreProperties["DROP_BOX_COM_CLIENT_ID"] + "\"" )
-        buildConfigField("String", "DROP_BOX_INFO_CLIENT_ID","\"" + keystoreProperties["DROP_BOX_INFO_CLIENT_ID"] + "\"" )
-        buildConfigField("String", "DROP_BOX_INFO_REDIRECT_URL","\"" + keystoreProperties["DROP_BOX_INFO_REDIRECT_URL"] + "\"" )
-        buildConfigField("String", "DROP_BOX_COM_CLIENT_SECRET","\"" + keystoreProperties["DROP_BOX_COM_CLIENT_SECRET"] + "\"" )
-        buildConfigField("String", "DROP_BOX_COM_REDIRECT_URL","\"" + keystoreProperties["DROP_BOX_COM_REDIRECT_URL"] + "\"" )
-        buildConfigField("String", "DROP_BOX_AUTH_URL","\"" + keystoreProperties["DROP_BOX_AUTH_URL"] + "\"" )
-        buildConfigField("String", "DROP_BOX_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["DROP_BOX_VALUE_RESPONSE_TYPE"] + "\"" )
-
         //OneDrive
         buildConfigField("String", "ONE_DRIVE_INFO_CLIENT_ID","\"" + keystoreProperties["ONE_DRIVE_INFO_CLIENT_ID"] + "\"" )
         buildConfigField("String", "ONE_DRIVE_INFO_REDIRECT_URL","\"" + keystoreProperties["ONE_DRIVE_INFO_REDIRECT_URL"] + "\"" )

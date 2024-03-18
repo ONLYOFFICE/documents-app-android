@@ -5,16 +5,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import app.documents.core.model.cloud.WebdavProvider
+import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityWebDavLoginBinding
 import app.editors.manager.ui.activities.base.BaseAppActivity
+import app.editors.manager.ui.fragments.base.StorageLoginFragment
 import app.editors.manager.ui.fragments.login.WebDavSignInFragment
-import app.editors.manager.ui.fragments.storages.DropboxSignInFragment
-import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
-import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.interfaces.WebDavInterface
 import lib.toolkit.base.managers.utils.getSerializable
 
@@ -93,19 +92,22 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
 
     private fun showOneDriveSignInFragment() {
         showFragment(
-            OneDriveSignInFragment.newInstance(OneDriveUtils.storage),
-            OneDriveSignInFragment.TAG
+            StorageLoginFragment.newInstance(OneDriveUtils.storage),
+            StorageLoginFragment.TAG
         )
     }
 
     private fun showDropboxSignInFragment() {
-        showFragment(DropboxSignInFragment.newInstance(), DropboxSignInFragment.TAG)
+        showFragment(
+            StorageLoginFragment.newInstance(DropboxUtils.storage),
+            StorageLoginFragment.TAG
+        )
     }
 
     private fun showGoogleDriveSignInFragment() {
         showFragment(
-            GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage),
-            GoogleDriveSignInFragment.TAG
+            StorageLoginFragment.newInstance(GoogleDriveUtils.storage),
+            StorageLoginFragment.TAG
         )
     }
 }

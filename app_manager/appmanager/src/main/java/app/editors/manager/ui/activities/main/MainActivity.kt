@@ -592,7 +592,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             return
         }
         when (account.portal.provider) {
-            PortalProvider.DropBox -> showDropboxFragment(account)
+            PortalProvider.Dropbox -> showDropboxFragment(account)
             PortalProvider.GoogleDrive -> showGoogleDriveFragment()
             PortalProvider.OneDrive -> showOneDriveFragment(account)
             is PortalProvider.Webdav -> showWebDavFragment(account)

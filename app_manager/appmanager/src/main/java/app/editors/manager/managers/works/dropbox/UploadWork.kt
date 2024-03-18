@@ -4,11 +4,11 @@ import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.WorkerParameters
+import app.documents.core.manager.ProgressRequestBody
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.DropboxUtils
-import app.documents.core.manager.ProgressRequestBody
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.network.storages.dropbox.login.DropboxResponse
+import app.documents.core.network.storages.dropbox.api.DropboxResponse
 import app.documents.core.network.storages.dropbox.models.explorer.DropboxItem
 import app.editors.manager.app.App
 import app.editors.manager.app.dropboxProvider
@@ -20,7 +20,7 @@ import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.Headers
 import okhttp3.MultipartBody
 import java.io.IOException
-import java.util.*
+import java.util.Locale
 
 class UploadWork(context: Context, workerParams: WorkerParameters) : BaseStorageUploadWork(context, workerParams) {
 

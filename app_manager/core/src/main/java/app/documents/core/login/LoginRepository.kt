@@ -2,6 +2,7 @@ package app.documents.core.login
 
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Scheme
 import app.documents.core.model.login.request.RequestNumber
 import app.documents.core.model.login.response.ResponseRegisterPortal
@@ -26,7 +27,7 @@ sealed class PortalResult {
 
 sealed class CheckLoginResult {
 
-    data class Success(val accessToken: String) : CheckLoginResult()
+    data class Success(val provider: PortalProvider, val accessToken: String) : CheckLoginResult()
     data class Error(val exception: Throwable) : CheckLoginResult()
     data object NeedLogin : CheckLoginResult()
     data object AlreadyUse : CheckLoginResult()

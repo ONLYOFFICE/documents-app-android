@@ -33,3 +33,6 @@ const val VALUE_GRANT_TYPE_REFRESH = "refresh_token"
 const val GOOGLE_DRIVE_AUTH_URL = "https://oauth2.googleapis.com/"
 const val GOOGLE_DRIVE_BASE_URL = "https://www.googleapis.com/"
 const val GOOGLE_DRIVE_URL = "drive.google.com"
+
+const val DROPBOX_BASE_URL = "https://api.dropboxapi.com/"
+const val DROPBOX_PORTAL_URL = "dropbox.com"

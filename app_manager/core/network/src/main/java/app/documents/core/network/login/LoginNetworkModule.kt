@@ -29,4 +29,12 @@ object LoginNetworkModule {
     ): GoogleLoginDataSource {
         return GoogleLoginDataSourceImpl(json, okHttpClient)
     }
+
+    @Provides
+    fun provideDropboxLoginDataSource(
+        json: Json,
+        @LoginOkHttpClient okHttpClient: OkHttpClient
+    ): DropboxLoginDataSource {
+        return DropboxLoginDataSourceImpl(json, okHttpClient)
+    }
 }

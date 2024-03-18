@@ -39,7 +39,7 @@ interface AccountRepository {
     suspend fun getRefreshToken(accountName: String? = null): String?
 
     suspend fun updateAccount(
-        id: String,
+        id: String? = null,
         token: String? = null,
         refreshToken: String? = null,
         block: ((CloudAccount) -> CloudAccount)? = null
@@ -53,25 +53,28 @@ internal class AccountRepositoryImpl(
 ) : AccountRepository {
 
     override suspend fun updateAccount(
-        id: String,
+        id: String?,
         token: String?,
         refreshToken: String?,
         block: ((CloudAccount) -> CloudAccount)?
     ) {
-        cloudDataSource.getAccount(id)?.let { account ->
+        cloudDataSource.getAccount(checkNotNull(id ?: accountPreferences.onlineAccountId))?.let { account ->
             block?.invoke(account)?.let { updated -> cloudDataSource.updateAccount(updated) }
-            token?.let { accountManager.setToken(account.accountName, token) }
-            refreshToken?.let { accountManager.setToken(account.accountName, token) }
+            with(accountManager) {
+                token?.let { setToken(account.accountName, token) }
+                refreshToken?.let { updateAccountData(account.accountName) { it.copy(refreshToken = refreshToken) } }
+            }
         }
     }
 
     override suspend fun checkLogin(accountId: String): CheckLoginResult {
         if (accountId == accountPreferences.onlineAccountId) return CheckLoginResult.AlreadyUse
         val account = cloudDataSource.getAccount(accountId) ?: return CheckLoginResult.NeedLogin
-        val accessToken = accountManager.getToken(account.accountName) ?: return CheckLoginResult.NeedLogin
+        val accessToken = accountManager.getToken(account.accountName)?.takeIf(String::isNotEmpty)
+            ?: return CheckLoginResult.NeedLogin
 
         accountPreferences.onlineAccountId = account.id
-        return CheckLoginResult.Success(accessToken)
+        return CheckLoginResult.Success(account.portal.provider, accessToken)
     }
 
     override suspend fun getPortals(): List<String> {
@@ -81,6 +84,7 @@ internal class AccountRepositoryImpl(
     override suspend fun deleteAccounts(accountIds: Array<out String>): List<CloudAccount> {
         accountIds.forEach { accountId ->
             cloudDataSource.getAccount(accountId)?.let { account ->
+                if (accountPreferences.onlineAccountId == accountId) accountPreferences.onlineAccountId = null
                 accountManager.removeAccount(account.accountName)
                 cloudDataSource.deleteAccount(account)
             }
@@ -93,12 +97,12 @@ internal class AccountRepositoryImpl(
         with(accountManager) {
             when (account.portal.provider) {
                 is PortalProvider.Webdav -> setPassword(account.accountName, null)
-                PortalProvider.DropBox,
+                PortalProvider.Dropbox,
                 PortalProvider.GoogleDrive,
-                PortalProvider.OneDrive -> setToken(account.accountName, "")
+                PortalProvider.OneDrive -> setToken(account.accountName, null)
                 else -> {
                     setPassword(account.accountName, null)
-                    setToken(account.accountName, "")
+                    setToken(account.accountName, null)
                 }
             }
         }

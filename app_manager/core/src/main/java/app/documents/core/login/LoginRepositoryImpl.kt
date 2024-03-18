@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.fold
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.tasks.await
 import java.io.IOException
@@ -135,7 +136,7 @@ internal class LoginRepositoryImpl(
     override suspend fun checkLogin(accountId: String): Flow<CheckLoginResult> {
         return flowOf(accountRepository.checkLogin(accountId))
             .onEach { result ->
-                if (result is CheckLoginResult.Success) {
+                if (result is CheckLoginResult.Success && result.provider is PortalProvider.Cloud) {
                     val userInfo = loginDataSource.getUserInfo(result.accessToken)
                     accountRepository.updateAccount(accountId) { account ->
                         account.copy(

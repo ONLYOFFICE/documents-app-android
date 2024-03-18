@@ -14,6 +14,7 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.WebdavProvider
+import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.editors.manager.R
@@ -33,9 +34,7 @@ import app.editors.manager.ui.adapters.CloudAccountAdapter
 import app.editors.manager.ui.dialogs.AccountContextDialog
 import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.ui.fragments.storages.DropboxSignInFragment
-import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
-import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
+import app.editors.manager.ui.fragments.base.StorageLoginFragment
 import app.editors.manager.ui.popup.CloudAccountPopup
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -292,18 +291,26 @@ class CloudAccountFragment : BaseAppFragment(),
 
     override fun onGoogleDriveLogin() {
         showFragment(
-            GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage),
-            GoogleDriveSignInFragment.TAG,
+            StorageLoginFragment.newInstance(GoogleDriveUtils.storage),
+            StorageLoginFragment.TAG,
             false
         )
     }
 
     override fun onDropboxLogin() {
-        showFragment(DropboxSignInFragment.newInstance(), DropboxSignInFragment.TAG, false)
+        showFragment(
+            StorageLoginFragment.newInstance(DropboxUtils.storage),
+            StorageLoginFragment.TAG,
+            false
+        )
     }
 
     override fun onOneDriveLogin() {
-        showFragment(OneDriveSignInFragment.newInstance(OneDriveUtils.storage), OneDriveSignInFragment.TAG, false)
+        showFragment(
+            StorageLoginFragment.newInstance(OneDriveUtils.storage),
+            StorageLoginFragment.TAG,
+            false
+        )
     }
 
     override fun onError(message: String?) {

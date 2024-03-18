@@ -82,6 +82,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     when (result) {
                         is Result.Error -> fetchError(result.exception)
                         is Result.Success -> {
+                            App.getApp().refreshCoreComponent()
                             withContext(Dispatchers.Main) {
                                 viewState.onRender(
                                     CloudAccountState.AccountLoadedState(cloudDataSource.getAccounts())
@@ -164,7 +165,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
 
     private fun showLoginFragment(account: CloudAccount) {
         when (val provider = account.portal.provider) {
-            PortalProvider.DropBox -> viewState.onDropboxLogin()
+            PortalProvider.Dropbox -> viewState.onDropboxLogin()
             PortalProvider.GoogleDrive -> viewState.onGoogleDriveLogin()
             PortalProvider.OneDrive -> viewState.onOneDriveLogin()
             is PortalProvider.Webdav -> viewState.onWebDavLogin(

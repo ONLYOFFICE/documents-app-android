@@ -25,7 +25,7 @@ data class CloudAccount(
         get() = portal.provider == PortalProvider.OneDrive
 
     val isDropbox: Boolean
-        get() = portal.provider == PortalProvider.DropBox
+        get() = portal.provider == PortalProvider.Dropbox
 
     val accountName: String
         get() = "$login@${portal.url}"

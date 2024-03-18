@@ -1,5 +1,7 @@
 package app.documents.core.network.common
 
+import android.util.Log
+import app.documents.core.BuildConfig
 import app.documents.core.network.common.Result.Success
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -11,8 +13,7 @@ sealed class Result<out T> {
 }
 
 fun <T> Flow<T>.asResult(): Flow<Result<T>> = map<T, Result<T>>(::Success)
-    .catch { cause -> emit(Result.Error(cause)) }
-
-fun Flow<*>.catch(onError: (Throwable) -> Unit): Flow<*> {
-    return catch { onError.invoke(it) }
-}
+    .catch { cause ->
+        if (BuildConfig.DEBUG) Log.e("asResult", cause.message.toString())
+        emit(Result.Error(cause))
+    }
