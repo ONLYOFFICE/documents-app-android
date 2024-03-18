@@ -47,6 +47,7 @@
     <dimen name="default_corner_radius_small">4dp</dimen>
     <dimen name="default_corner_radius_micro">2dp</dimen>
     <dimen name="default_corner_radius_button">6dp</dimen>
+    <dimen name="material3_container_radius">28dp</dimen>
 
     <!-- Fragment animation time -->
     <integer name="fragment_replace_main_animation_duration">100</integer>
@@ -70,6 +71,7 @@
 
     <!--Toolbar-->
     <dimen name="toolbar_title_margin_left">72dp</dimen>
+    <dimen name="editors_toolbar_icon_size">48dp</dimen>
 
     <!-- Image dimens -->
     <dimen name="image_size">40dp</dimen>

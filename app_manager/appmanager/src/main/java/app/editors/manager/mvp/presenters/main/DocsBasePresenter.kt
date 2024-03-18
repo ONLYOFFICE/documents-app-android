@@ -212,16 +212,19 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     open fun refresh(): Boolean {
-        setPlaceholderType(PlaceholderViews.Type.LOAD)
+//        setPlaceholderType(PlaceholderViews.Type.LOAD)
         modelExplorerStack.currentId?.let { id ->
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.getFiles(id, getArgs(filteringValue).putFilters())
                         .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
-                        .subscribe({ explorer ->
+                        .flatMap { explorer ->
                             modelExplorerStack.refreshStack(explorer)
+                            Observable.just(getListWithHeaders(modelExplorerStack.last(), true))
+                        }
+                        .subscribe({ explorer ->
                             updateViewsState()
-                            viewState.onDocsRefresh(getListWithHeaders(modelExplorerStack.last(), true))
+                            viewState.onDocsRefresh(explorer)
                         }, this::fetchError)
                 )
                 viewState.onSwipeEnable(true)

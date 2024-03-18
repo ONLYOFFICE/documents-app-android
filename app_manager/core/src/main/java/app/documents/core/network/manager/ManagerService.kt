@@ -393,10 +393,10 @@ interface ManagerService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/@root")
-    fun getRootFolder(
+    suspend fun getRootFolder(
         @QueryMap filterMap: Map<String, Int>,
         @QueryMap flagMap: Map<String, Boolean>
-    ): Observable<ResponseCloudTree>
+    ): ResponseCloudTree
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -449,5 +449,9 @@ interface ManagerService {
         @Path(value = "fileId") id: String,
         @Query(value = "start") start: Boolean
     ): ResponseConversionStatus
+
+    @Multipart
+    @PUT("api/" + ApiContract.API_VERSION + "/files/{fileId}/update")
+    fun updateDocument(@Path(value = "fileId") id: String, @Part part: MultipartBody.Part): Single<Response<ResponseBody>>
 
 }

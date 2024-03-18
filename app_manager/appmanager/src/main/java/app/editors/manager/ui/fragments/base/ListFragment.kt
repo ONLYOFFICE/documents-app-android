@@ -4,11 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import app.editors.manager.R
 import app.editors.manager.databinding.FragmentListBinding
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.recyclers.LoadingScroll
@@ -47,7 +45,6 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
             placeholderViews?.setViewForHide(binding.listOfItems)
             recyclerView = binding.listOfItems.apply {
                 layoutManager = WrapLinearLayoutManager(requireContext()).also { linearLayoutManager = it }
-                layoutAnimation = AnimationUtils.loadLayoutAnimation(context, R.anim.recycler_view_animation_layout)
                 addOnScrollListener(object : LoadingScroll() {
                     override fun onListEnd() = this@ListFragment.onListEnd()
                 })

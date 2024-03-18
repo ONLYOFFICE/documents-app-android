@@ -723,4 +723,83 @@
     <string name="share_expected_member">ຄາດໝາຍສະມາຊິກ</string>
     <string name="app_settings_main_help">ຊ່ວຍເຫຼືອ</string>
     <string name="clear_recents">"ລຶບເມື່ອບໍ່ດົນມານີ້?"</string>
+    <string name="list_context_leave_room">ອອກຈາກຫ້ອງ</string>
+    <string name="list_context_copy_general_link">ສຳເນົາລິ້ງທົ່ວໄປ</string>
+    <string name="list_context_edit_room">ແກ້ໄຂຫ້ອງ</string>
+    <string name="list_action_image_from_library">ຮູບພາບຈາກຄັງ</string>
+    <string name="list_action_delete_link">ລຶບລິ້ງ</string>
+    <string name="placeholder_other_accounts">ບໍ່ມີບັນຊີອື່ນຢູ່ບ່ອນນີ້ເທື່ອ</string>
+    <string name="context_room_move_to_archive">ຍ້າຍໄປບ່ອນເກັບມ້ຽນ</string>
+    <plurals name="context_rooms_unarchive_message" tools:ignore="UnusedQuantity">
+        <item quantity="one">ຟື້ນຟູຫ້ອງສຳເລັດແລ້ວ</item>
+        <item quantity="other">ຟື້ນຟູຫ້ອງສຳເລັດແລ້ວ</item>
+    </plurals>
+    <string name="rooms_choose_room">ເລືອກປະເພດຫ້ອງ</string>
+    <string name="room_name_hint">ຊື່ຫ້ອງ</string>
+    <string name="room_add_tag_hint">ເພີ່ມແທັກ</string>
+    <string name="rooms_error_name">ຊື່ຫ້ອງບໍ່ສາມາດຫວ່າງເປົ່າໄດ້</string>
+    <string name="rooms_error_create">ເກີດຄວາມຜິດພາດໃນການສ້າງຫ້ອງ</string>
+    <string name="rooms_error_edit">ເກີດຄວາມຜິດພາດໃນການແກ້ໄຂຫ້ອງ</string>
+    <string name="leave_room_title">ອອກຈາກຫ້ອງ</string>
+    <string name="leave_room_owner_desc">ທ່ານເປັນເຈົ້າຂອງຫ້ອງນີ້. ກ່ອນທີ່ທ່ານຈະອອກຈາກຫ້ອງ, ທ່ານຕ້ອງໂອນສິດຄວາມເປັນເຈົ້າຂອງໄປຫາຜູ້ໃຊ້ອື່ນ.</string>
+    <string name="leave_room_desc">ທ່ານຕ້ອງການອອກຈາກຫ້ອງນີ້ແທ້ໆບໍ? ທ່ານຈະສາມາດເຂົ້າຮ່ວມມັນໄດ້ອີກຄັ້ງໂດຍການເຊີນໃໝ່ໂດຍຜູ້ເບິ່ງແຍງຫ້ອງ.</string>
+    <string name="leave_room_assign">ມອບໝາຍສິດຄວາມເປັນເຈົ້າຂອງ</string>
+    <string name="leave_room_message">ທ່ານໄດ້ອອກຈາກຫ້ອງ</string>
+    <string name="room_set_owner_title">ປ່ຽນເຈົ້າຂອງຫ້ອງ</string>
+    <string name="room_search_not_found">ບໍ່ພົບຜູ້ໃຊ້</string>
+    <string name="room_search_not_found_desc">ລາຍຊື່ຜູ້ໃຊ້ທີ່ຖືກເຊີນໄປ DocSpace ກ່ອນນີ້ແລ້ວ ຫຼືຫ້ອງແຍກຕ່າງຫາກຈະປາກົດຢູ່ບ່ອນນີ້.</string>
+    <plurals name="rooms_restore_title" tools:ignore="UnusedQuantity">
+        <item quantity="one">ຟື້ນຟູຫ້ອງບໍ?</item>
+        <item quantity="other">ຟື້ນຟູຫ້ອງບໍ?</item>
+    </plurals>
+    <plurals name="rooms_restore_desc" tools:ignore="UnusedQuantity">
+        <item quantity="one">ລິ້ງທີ່ແບ່ງປັນທັງໝົດຢູ່ໃນຫ້ອງຈະກາຍເປັນສະຖານະມີຜົນ, ແລະເນື້ອຫາຂອງມັນຈະໃຫ້ທຸກຄົນທີ່ມີລິ້ງສາມາດໃຊ້ໄດ້. ທ່ານຕ້ອງການຟື້ນຟູຫ້ອງບໍ?</item>
+        <item quantity="other">ລິ້ງທີ່ແບ່ງປັນທັງໝົດຢູ່ໃນຫ້ອງຈະກາຍເປັນສະຖານະມີຜົນ, ແລະເນື້ອຫາຂອງມັນຈະໃຫ້ທຸກຄົນທີ່ມີລິ້ງສາມາດໃຊ້ໄດ້. ທ່ານຕ້ອງການຟື້ນຟູຫ້ອງບໍ?</item>
+    </plurals>
+    <string name="rooms_add_public_room">ຫ້ອງສາທາລະນະ</string>
+    <string name="rooms_add_public_room_des">ເຊີນຜູ້ໃຊ້ຜ່ານລິ້ງທີ່ແບ່ງປັນເພື່ອເບິ່ງເອກະສານໂດຍບໍ່ຕ້ອງລົງທະບຽນ. ນອກນັ້ນທ່ານຍັງສາມາດຝັງຫ້ອງນີ້ເຂົ້າໄປໃນສ່ວນຕິດຕໍ່ເວັບໃດໆ.</string>
+    <string name="rooms_move_to_public_title">ຍ້າຍໄປຫ້ອງສາທາລະນະ</string>
+    <string name="rooms_move_to_public_title_desc">ຫ້ອງນີ້ ແລະເນື້ອຫາທັງໝົດຂອງມັນ ແມ່ນທຸກຄົນທີ່ມີລິ້ງ ສາມາດໃຊ້ໄດ້. ທ່ານຕ້ອງການສືບຕໍ່ບໍ?</string>
+    <string name="rooms_info_access_desc">ທຸກຄົນທີ່ມີລິ້ງສາມາດໃຊ້ຫ້ອງນີ້ໄດ້. ຜູ້ໃຊ້ພາຍນອກຈະມີສິດເບິ່ງໄຟລ໌ທັງຫມົດເທົ່ານັ້ນ.</string>
+    <string name="rooms_info_general_link">ການເຊື່ອມຕໍ່ທົ່ວໄປ</string>
+    <string name="rooms_info_additional_link">ການເຊື່ອມຕໍ່ເພີ່ມເຕີມ</string>
+    <string name="rooms_info_additional_links">"ລິ້ງເພີ່ມເຕີມ (%d/%d)"</string>
+    <string name="rooms_info_create_link">ສ້າງ ແລະສຳເນົາ</string>
+    <string name="rooms_info_create_link_complete">ສ້າງລິ້ງສຳເລັດ ແລະສຳເນົາໄປໃສ່ຄລິບບອດແລ້ວ</string>
+    <string name="rooms_info_delete_link">ລຶບລິ້ງ</string>
+    <string name="rooms_info_delete_link_complete">ລິ້ງຖືກລຶບແລ້ວ</string>
+    <string name="rooms_info_delete_link_desc">ລິ້ງຈະຖືກລຶບອອກຖາວອນ. ທ່ານຈະບໍ່ສາມາດຍົກເລີກຄຳສັ່ງນີ້ໄດ້.</string>
+    <string name="rooms_info_revoke_link">ຖອນການເຊື່ອມຕໍ່</string>
+    <string name="rooms_info_revoke_link_desc">ລິ້ງກ່ອນໜ້ານີ້ຈະບໍ່ສາມາດໃຊ້ໄດ້. ການເຊື່ອມໂຍງທົ່ວໄປໃຫມ່ຈະຖືກສ້າງຂື້ນ.</string>
+    <string name="rooms_info_revoke_link_complete">ລິ້ງຖືກຖອນຄືນ</string>
+    <string name="rooms_info_revoke">ຖອນຄືນ</string>
+    <string name="rooms_info_copy_link">ສຳເນົາລິ້ງ</string>
+    <string name="rooms_info_copy_link_and_password">ສຳເນົາລິ້ງ ແລະລະຫັດຜ່ານ</string>
+    <string name="rooms_info_copy_link_to_clipboard">ສຳເນົາລິ້ງໄປໃສ່ຄລິບບອດສຳເລັດແລ້ວ</string>
+    <string name="rooms_info_admin_title">ບໍລິຫານ (%d)</string>
+    <string name="rooms_info_users_title">ຜູ້ໃຊ້ (%1d)</string>
+    <string name="rooms_info_expected_title">ຜູ້ໃຊ້ທີ່ຄາດຫວັງ (%1d)</string>
+    <string name="rooms_info_link_expired">ລິ້ງໝົດອາຍຸແລ້ວ</string>
+    <string name="rooms_info_link_expired_full">ລິ້ງດັ່ງກ່າວໝົດອາຍຸແລ້ວ ແລະຖືກປິດການນຳໃຊ້</string>
+    <string name="rooms_info_link_name">ຊື່ລິ້ງ</string>
+    <string name="rooms_info_password_access">ການເຂົ້າເຖິງລະຫັດຜ່ານ</string>
+    <string name="rooms_info_file_rectrict">ຈໍາ​ກັດ​ການ​ສໍາ​ເນົາ​ເນື້ອ​ໃນ​ໄຟລ​໌​, ການ​ດາວ​ໂຫຼດ​ໄຟລ​໌​ແລະ​ການ​ພິມ​</string>
+    <string name="rooms_info_file_rectrict_desc">ເປີດໃຊ້ການຕັ້ງຄ່ານີ້ເພື່ອປິດການດາວໂຫຼດໄຟລ໌ ແລະໂຟນເດີ້ຕ່າງໆຈາກຫ້ອງນີ້ທີ່ແບ່ງປັນຜ່ານລິ້ງ</string>
+    <string name="rooms_info_time_limit_title">ກໍານົດເວລາ</string>
+    <string name="rooms_info_time_limit">ເປີດໃຊ້ເວລາຈຳກັດ</string>
+    <string name="rooms_info_valid_through">ຖືກຕ້ອງຜ່ານ</string>
+    <string name="rooms_info_save_link_title">ບັນທຶກການເຊື່ອມຕໍ່</string>
+    <string name="rooms_info_save_link_question">ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການບັນທຶກ ແລະອອກ?</string>
+    <string name="rooms_info_save_button">ບັນທຶກ</string>
+    <string name="rooms_info_dont_save_button">ຢ່າບັນທຶກ</string>
+    <string name="rooms_filter_type_public">ສາທາລະນະ</string>
+    <string name="share_access_room_owner">ເຈົ້າຂອງ</string>
+    <string name="settings_language_confirmation_message">ໃນປັດຈຸບັນແອັບພລິເຄຊັນກໍາລັງໃຊ້ພາສາອັງກິດເນື່ອງຈາກພາສາຂອງລະບົບມີການປ່ຽນແປງ</string>
+    <string name="settings_language_confirmation_accept">ດີ</string>
+    <string name="settings_language_continue_using_app_language">ສືບຕໍ່ນຳໃຊ້ %1$s</string>
+    <string name="conversion_dialog_title">ແປງແລະເປີດເອກະສານ</string>
+    <string name="conversion_dialog_message">ເອກະສານທີ່ທ່ານເປີດບໍ່ແມ່ນໄຟລ໌ OOXML (Office Open XML). ປ່ຽນເປັນ ຮູບແບບ OOXML ສໍາລັບການເບິ່ງ ແລະແກ້ໄຂໄວຂຶ້ນ.</string>
+    <string name="conversion_dialog_open_in_view_mode">ເປີດຢູ່ໃນໂໝດເບິ່ງໄດ້ເທົ່ານັ້ນ</string>
+    <string name="conversion_dialog_convert_to">ປ່ຽນເປັນ %1s</string>
+    <string name="conversion_dialog_converting_to">ກຳລັງປ່ຽນເປັນ %1s</string>
 </resources>

@@ -97,6 +97,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 FilterActivity.REQUEST_ACTIVITY_FILTERS_CHANGED -> {
                     onRefresh()
                 }
+                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
+                    if (data?.data != null) {
+                        if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
+                            cloudPresenter.updateDocument(data.data!!)
+                        }
+                    }
+                }
             }
         }
     }
@@ -329,7 +336,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onStateEmptyBackStack() {
-        swipeRefreshLayout?.isRefreshing = true
+        swipeRefreshLayout?.isRefreshing = false
         cloudPresenter.getItemsById(arguments?.getString(KEY_PATH))
     }
 

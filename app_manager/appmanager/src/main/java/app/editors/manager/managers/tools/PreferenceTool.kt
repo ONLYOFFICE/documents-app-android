@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.mvp.models.filter.Filter
-import java.util.*
+import java.util.TreeSet
 import javax.inject.Inject
 
 class PreferenceTool @Inject constructor(val context: Context) {
@@ -181,6 +181,12 @@ class PreferenceTool @Inject constructor(val context: Context) {
     fun setWifiState(wifiState: Boolean) {
         sharedPreferences.edit().putBoolean(KEY_WIFI_STATE, wifiState).apply()
     }
+
+   var modules: String
+        get() = sharedPreferences.getString("KEY_MODULES", "") ?: ""
+        set(value) {
+            sharedPreferences.edit().putString("KEY_MODULES", value).apply()
+        }
 
     var fileData: String
         get() = sharedPreferences.getString("KEY_FILE_DATA", "") ?: ""

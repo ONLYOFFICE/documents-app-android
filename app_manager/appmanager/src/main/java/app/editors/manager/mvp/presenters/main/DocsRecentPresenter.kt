@@ -8,7 +8,6 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.DropboxFileProvider
 import app.documents.core.providers.GoogleDriveFileProvider
 import app.documents.core.providers.OneDriveFileProvider
@@ -190,20 +189,15 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    @Suppress("KotlinConstantConditions")
     private fun checkExt(file: CloudFile, info: String) {
         if (file.rootFolderType.toInt() != ApiContract.SectionType.CLOUD_TRASH) {
-            when (val ext = StringUtils.getExtension(file.fileExst)) {
+            when (StringUtils.getExtension(file.fileExst)) {
                 StringUtils.Extension.DOC, StringUtils.Extension.FORM, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
-                    if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && ext == StringUtils.Extension.FORM) {
-                        viewState.onError(context.getString(R.string.error_unsupported_format))
-                    } else {
-                        checkSdkVersion { isCheck ->
-                            if (isCheck) {
-                                viewState.onOpenDocumentServer(file, info, false)
-                            } else {
-                                viewState.openFile(file)
-                            }
+                    checkSdkVersion { isCheck ->
+                        if (isCheck) {
+                            viewState.onOpenDocumentServer(file, info, false)
+                        } else {
+                            viewState.openFile(file)
                         }
                     }
                 }
@@ -402,12 +396,14 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                     viewState.onOpenFile(OpenState.Docs(uri))
                 }
             }
+
             StringUtils.Extension.SHEET -> viewState.onOpenFile(OpenState.Cells(uri))
             StringUtils.Extension.PRESENTATION -> viewState.onOpenFile(OpenState.Slide(uri))
             StringUtils.Extension.PDF -> viewState.onOpenFile(OpenState.Pdf(uri))
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
                 viewState.onOpenFile(OpenState.Media(getImages(uri), false))
             }
+
             else -> viewState.onError(context.getString(R.string.error_unsupported_format))
         }
     }
@@ -513,6 +509,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             ApiContract.Parameters.VAL_SORT_BY_TYPE -> sortedBy {
                 StringUtils.getExtensionFromPath(it.name)
             }
+
             else -> this
         }
         if (preferenceTool.sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_DESC) {

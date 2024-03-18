@@ -1,5 +1,6 @@
 package app.editors.manager.mvp.presenters.main
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.network.common.contracts.ApiContract
@@ -18,9 +19,9 @@ import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.RoomProvider
 import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.recent.Recent
-import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.api
 import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.app.roomProvider
@@ -49,11 +50,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.tools.LocalContentTools
+import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
 import moxy.presenterScope
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 import java.util.Date
 
 @InjectViewState
@@ -588,26 +595,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             StringUtils.Extension.DOC,
             StringUtils.Extension.SHEET,
             StringUtils.Extension.PRESENTATION,
-            StringUtils.Extension.FORM -> {
-                disposable.add(
-                    (fileProvider as CloudFileProvider).opeEdit(cloudFile).subscribe({ info ->
-                        checkSdkVersion { result ->
-                            viewState.onDialogClose()
-                            if (result) {
-                                viewState.onOpenDocumentServer(cloudFile, info, isEdit)
-                            } else {
-                                viewState.onFileWebView(cloudFile, true)
-                            }
-                        }
-                    }) { error ->
-                        fetchError(error)
-                    }
-                )
-                addRecent(itemClicked as CloudFile)
-            }
-
+            StringUtils.Extension.FORM,
             StringUtils.Extension.PDF -> {
-                viewState.onFileWebView(cloudFile, true)
+                checkSdkVersion { result ->
+                    if (result) {
+                        openDocumentServer(cloudFile, isEdit)
+                    } else {
+                        downloadTempFile(cloudFile, isEdit)
+                    }
+                }
             }
 
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
@@ -618,6 +614,44 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             else -> viewState.onFileDownloadPermission()
         }
         FirebaseUtils.addAnalyticsOpenEntity(networkSettings.getPortal(), extension)
+    }
+
+    private fun downloadTempFile(cloudFile: CloudFile, edit: Boolean) {
+        disposable.add((fileProvider as CloudFileProvider).getCachedFile(context, cloudFile, account.getAccountName())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ file ->
+                openFileFromPortal(file, edit)
+            }) { throwable: Throwable -> fetchError(throwable) })
+    }
+
+    private fun openFileFromPortal(file: File, edit: Boolean) {
+        viewState.onDialogClose()
+        viewState.onOpenLocalFile(CloudFile().apply {
+            webUrl = Uri.fromFile(file).toString()
+            fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
+            title = file.name
+            viewUrl = file.absolutePath
+        })
+    }
+
+    private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean) {
+        with(fileProvider as CloudFileProvider) {
+            val token = AccountUtils.getToken(context, context.accountOnline?.getAccountName().orEmpty())
+            disposable.add(
+                openDocument(cloudFile, token).subscribe({ result ->
+                    viewState.onDialogClose()
+                    if (result.isPdf) {
+                        downloadTempFile(cloudFile, false)
+                    } else if (result.info != null) {
+                        viewState.onOpenDocumentServer(cloudFile, result.info, isEdit)
+                    }
+                }) { error ->
+                    fetchError(error)
+                }
+            )
+        }
+        addRecent(itemClicked as CloudFile)
     }
 
     private fun resetFilters() {
@@ -635,39 +669,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         fileProvider?.let { provider ->
             disposable.add(provider.fileInfo(CloudFile().apply {
                 id = model.file?.id.toString()
-            })
-                .flatMap { cloudFile ->
-                    (provider as CloudFileProvider).opeEdit(cloudFile)
-                        .toObservable()
-                        .zipWith(Observable.fromCallable { cloudFile }) { info, file ->
-                            return@zipWith arrayOf(file, info)
-                        }
-                }
-                .subscribe({ info ->
-                    val file = info[0] as CloudFile
-                    when (val ext = StringUtils.getExtension(file.fileExst)) {
-                        StringUtils.Extension.DOC, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.FORM -> {
-                            if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && ext == StringUtils.Extension.FORM) {
-                                viewState.onError(context.getString(R.string.error_unsupported_format))
-                            } else {
-                                viewState.onOpenDocumentServer(file, info[1] as String, false)
-                            }
-                        }
-
-                        StringUtils.Extension.PDF -> {
-                            viewState.onFileWebView(file)
-                        }
-
-                        StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
-                            viewState.onFileMedia(getListMedia(file.id), false)
-                        }
-
-                        else -> viewState.onFileDownloadPermission()
-                    }
-                }
-                ) { throwable: Throwable ->
-                    fetchError(throwable)
-                })
+            }).subscribe({ cloudFile ->
+                itemClicked = cloudFile
+                onFileClickAction(cloudFile)
+            }, { error ->
+                fetchError(error)
+            }))
         }
 
     }
@@ -974,4 +981,29 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun getSelectedItemsCount(): Int {
         return modelExplorerStack.countSelectedItems
     }
+
+    @SuppressLint("MissingPermission")
+    fun updateDocument(data: Uri) {
+        if (data.path?.isEmpty() == true) return
+        context.contentResolver.openInputStream(data).use {
+            val file = File(data.path)
+            val body = MultipartBody.Part.createFormData(
+                file.name, file.name, RequestBody.create(
+                    MediaType.parse(ContentResolverUtils.getMimeType(context, data)), file
+                )
+            )
+            disposable.add(
+                (fileProvider as CloudFileProvider).updateDocument(itemClicked?.id.orEmpty(), body)
+                    .subscribe({ result ->
+                        FileUtils.deletePath(file)
+                        viewState.onDialogClose()
+                    }, {
+                        FileUtils.deletePath(file)
+                        fetchError(it)
+                    })
+            )
+        }
+
+    }
+
 }

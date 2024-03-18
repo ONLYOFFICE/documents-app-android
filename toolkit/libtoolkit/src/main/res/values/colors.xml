@@ -5,6 +5,7 @@
     <color name="colorPrimary">#3880BE</color>
     <color name="colorOnPrimary">@color/colorWhite</color>
     <color name="colorSecondary">#F77F00</color>
+    <color name="colorSecondary30">#4DF77F00</color>
     <color name="colorOnSecondary">@color/colorWhite</color>
     <color name="colorError">#ED0A34</color>
     <color name="colorOnError">@color/colorWhite</color>

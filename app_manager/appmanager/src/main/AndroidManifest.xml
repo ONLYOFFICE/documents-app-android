@@ -19,8 +19,6 @@
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="${permissionId}.permission.WRITE" />
-    <uses-permission android:name="${permissionId}.permission.READ" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
@@ -99,9 +97,7 @@
             android:exported="true"
             android:filterTouchesWhenObscured="true"
             android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
-            android:clearTaskOnLaunch="true"
-            android:taskAffinity=""
+            android:launchMode="standard"
             android:supportsPictureInPicture="true"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|adjustPan|stateAlwaysHidden">
@@ -330,7 +326,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="@string/facebook_id_sheme" />
+                <data android:scheme="@string/facebook_id_sheme" android:host="@string/facebook_host"/>
             </intent-filter>
         </activity>
 

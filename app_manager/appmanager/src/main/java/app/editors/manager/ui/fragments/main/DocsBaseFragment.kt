@@ -56,9 +56,8 @@ import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.CommonSearchView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.ActivitiesUtils
-import lib.toolkit.base.managers.utils.ActivitiesUtils.createFile
-import lib.toolkit.base.managers.utils.ActivitiesUtils.getExternalStoragePermission
 import lib.toolkit.base.managers.utils.CameraPicker
+import lib.toolkit.base.managers.utils.CreateDocument
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
@@ -129,6 +128,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         presenter.removeSendingFile()
     }
 
+    private val downloadActivityResult = registerForActivityResult(CreateDocument()) {uri ->
+        uri?.let { presenter.download(uri) }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(lifecycleEventObserver)
@@ -138,6 +141,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        actionBottomDialog = null
+        moveCopyDialog = null
     }
 
     protected fun showOperationActivity(operation: OperationsState.OperationType, explorer: Explorer, callback: (result: ActivityResult) -> Unit) {
@@ -155,15 +164,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 REQUEST_DOCS,
                 REQUEST_SHEETS,
                 REQUEST_PRESENTATION -> removeCommonDialog()
-                REQUEST_DOWNLOAD ->
-                    data?.let {
-                        activity?.let { activity ->
-                            it.data?.let { uri ->
-                                getExternalStoragePermission(activity, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                            }
-                        }
-                        presenter.download(it.data!!)
-                    }
             }
         }
     }
@@ -742,7 +742,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onCreateDownloadFile(name: String) {
-        createFile(this, name, REQUEST_DOWNLOAD)
+       downloadActivityResult.launch(name)
     }
 
     override fun onScrollToPosition(position: Int) {
@@ -750,7 +750,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onSwipeEnable(isSwipeEnable: Boolean) {
-        swipeRefreshLayout?.isRefreshing = isSwipeEnable
+        swipeRefreshLayout?.isRefreshing = false
     }
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {
@@ -1129,7 +1129,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
             when (type) {
-                EditorsType.DOCS -> {
+                EditorsType.DOCS, EditorsType.PDF -> {
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
                     startActivityForResult(intent, REQUEST_DOCS)
                 }
@@ -1141,10 +1141,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
                     startActivityForResult(intent, REQUEST_PRESENTATION)
                 }
-                EditorsType.PDF -> {
-                    intent.setClassName(requireContext(), EditorsContract.PDF)
-                    startActivity(intent)
-                }
+//                EditorsType.PDF -> {
+//                    intent.setClassName(requireContext(), EditorsContract.PDF)
+//                    startActivity(intent)
+//                }
             }
         } catch (e: ActivityNotFoundException) {
             e.printStackTrace()
