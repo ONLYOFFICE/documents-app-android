@@ -22,7 +22,7 @@ data class CloudAccount(
         get() = portal.provider == PortalProvider.GoogleDrive
 
     val isOneDrive: Boolean
-        get() = portal.provider == PortalProvider.OneDrive
+        get() = portal.provider == PortalProvider.Onedrive
 
     val isDropbox: Boolean
         get() = portal.provider == PortalProvider.Dropbox

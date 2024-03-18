@@ -1,7 +1,12 @@
 package app.documents.core.network.storages.onedrive.api
 
 import app.documents.core.network.storages.IStorageProvider
-import app.documents.core.network.storages.onedrive.models.request.*
+import app.documents.core.network.storages.onedrive.models.request.ChangeFileRequest
+import app.documents.core.network.storages.onedrive.models.request.CopyItemRequest
+import app.documents.core.network.storages.onedrive.models.request.CreateFolderRequest
+import app.documents.core.network.storages.onedrive.models.request.ExternalLinkRequest
+import app.documents.core.network.storages.onedrive.models.request.RenameRequest
+import app.documents.core.network.storages.onedrive.models.request.UploadRequest
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,20 +24,6 @@ class OneDriveProvider(
     private val oneDriveService: OneDriveService,
     private val oneDriveErrorHandler: BehaviorRelay<OneDriveResponse.Error>? = null
 ) : IStorageProvider {
-
-    fun getUserInfo(token: String): Single<OneDriveResponse> {
-        return oneDriveService.getUserInfo("Bearer $token")
-            .map { fetchResponse(it) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    fun authorization(parameters: Map<String, String>): Single<OneDriveResponse> {
-        return oneDriveService.authorization(parameters)
-            .map { fetchResponse(it) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
 
     fun getFiles(map: Map<String, String>): Single<OneDriveResponse> {
         return oneDriveService.getFiles(map)

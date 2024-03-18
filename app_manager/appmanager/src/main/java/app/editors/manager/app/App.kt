@@ -19,7 +19,6 @@ import app.documents.core.network.share.ShareService
 import app.documents.core.network.storages.dropbox.api.DropboxProvider
 import app.documents.core.network.storages.googledrive.api.GoogleDriveProvider
 import app.documents.core.network.storages.onedrive.api.OneDriveProvider
-import app.documents.core.network.storages.onedrive.login.OneDriveLoginProvider
 import app.documents.core.network.webdav.WebDavService
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
@@ -246,12 +245,6 @@ val Context.coreComponent: CoreComponent
     get() = when (this) {
         is App -> this.coreComponent
         else -> this.applicationContext.coreComponent
-    }
-
-val Context.oneDriveLoginProvider: OneDriveLoginProvider
-    get() = when (this) {
-        is App -> oneDriveComponent.oneDriveLoginProvider
-        else -> applicationContext.oneDriveLoginProvider
     }
 
 val Context.oneDriveProvider: OneDriveProvider

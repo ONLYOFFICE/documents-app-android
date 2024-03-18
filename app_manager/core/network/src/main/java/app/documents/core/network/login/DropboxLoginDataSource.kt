@@ -29,11 +29,11 @@ import retrofit2.http.QueryMap
 
 interface DropboxLoginDataSource {
 
-    suspend fun getAccessToken(code: String): TokenResponse
-
-    suspend fun getUserInfo(accessToken: String): DropboxUserResponse
+    suspend fun signIn(code: String): TokenResponse
 
     suspend fun refreshToken(refreshToken: String): RefreshTokenResponse
+
+    suspend fun getUserInfo(accessToken: String): DropboxUserResponse
 }
 
 private interface DropboxLoginApi {
@@ -45,15 +45,7 @@ private interface DropboxLoginApi {
 
     @Headers("$HEADER_CONTENT_OPERATION_TYPE: $VALUE_CONTENT_TYPE")
     @POST("oauth2/token")
-    suspend fun getAccessToken(@QueryMap params: Map<String, String>): TokenResponse
-
-    // TODO: remove if unused
-    @Headers("$HEADER_CONTENT_OPERATION_TYPE: $VALUE_CONTENT_TYPE")
-    @POST("oauth2/token")
-    suspend fun getRefreshToken(
-        @Header(HEADER_AUTHORIZATION) auth: String,
-        @QueryMap map: Map<String, String>
-    ): TokenResponse
+    suspend fun signIn(@QueryMap params: Map<String, String>): TokenResponse
 
     @POST("oauth2/token")
     suspend fun refreshToken(
@@ -76,7 +68,7 @@ internal class DropboxLoginDataSourceImpl(json: Json, okHttpClient: OkHttpClient
         .build()
         .create(DropboxLoginApi::class.java)
 
-    override suspend fun getAccessToken(code: String): TokenResponse {
+    override suspend fun signIn(code: String): TokenResponse {
         val params = mapOf(
             ARG_CODE to code,
             ARG_GRANT_TYPE to VALUE_GRANT_TYPE_AUTH,
@@ -84,7 +76,7 @@ internal class DropboxLoginDataSourceImpl(json: Json, okHttpClient: OkHttpClient
             ARG_CLIENT_ID to BuildConfig.DROP_BOX_COM_CLIENT_ID,
             ARG_CLIENT_SECRET to BuildConfig.DROP_BOX_COM_CLIENT_SECRET
         )
-        return api.getAccessToken(params)
+        return api.signIn(params)
     }
 
     override suspend fun getUserInfo(accessToken: String): DropboxUserResponse {

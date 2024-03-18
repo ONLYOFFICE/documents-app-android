@@ -28,4 +28,5 @@ interface LoginComponent {
     val loginRepository: LoginRepository
     val googleLoginRepository: GoogleLoginRepository
     val dropboxLoginRepository: DropboxLoginRepository
+    val onedriveLoginRepository: OnedriveLoginRepository
 }

@@ -1,11 +1,11 @@
-package app.documents.core.network.storages.onedrive.models.user
+package app.documents.core.model.login.response
 
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class User(
+data class OnedriveUser(
     @SerialName("@odata.context") val context: String = "",
     val displayName: String = "",
     val surname: String = "",

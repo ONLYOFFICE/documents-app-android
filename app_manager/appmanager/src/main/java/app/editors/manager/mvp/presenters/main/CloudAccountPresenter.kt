@@ -167,7 +167,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         when (val provider = account.portal.provider) {
             PortalProvider.Dropbox -> viewState.onDropboxLogin()
             PortalProvider.GoogleDrive -> viewState.onGoogleDriveLogin()
-            PortalProvider.OneDrive -> viewState.onOneDriveLogin()
+            PortalProvider.Onedrive -> viewState.onOneDriveLogin()
             is PortalProvider.Webdav -> viewState.onWebDavLogin(
                 Json.encodeToString(account),
                 provider.provider

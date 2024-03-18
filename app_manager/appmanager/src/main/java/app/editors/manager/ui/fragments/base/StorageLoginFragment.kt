@@ -55,6 +55,7 @@ class StorageLoginFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshList
             when (storage?.name) {
                 ApiContract.Storage.DROPBOX -> App.getApp().loginComponent.dropboxLoginRepository
                 ApiContract.Storage.GOOGLEDRIVE -> App.getApp().loginComponent.googleLoginRepository
+                ApiContract.Storage.ONEDRIVE -> App.getApp().loginComponent.onedriveLoginRepository
                 else -> error("invalid storage name")
             }
         )

@@ -19,7 +19,7 @@ sealed class PortalProvider {
     }
 
     @Serializable
-    data object OneDrive : PortalProvider()
+    data object Onedrive : PortalProvider()
 
     @Serializable
     data object Dropbox : PortalProvider()

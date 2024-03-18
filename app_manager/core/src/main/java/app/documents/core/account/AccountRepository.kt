@@ -99,7 +99,7 @@ internal class AccountRepositoryImpl(
                 is PortalProvider.Webdav -> setPassword(account.accountName, null)
                 PortalProvider.Dropbox,
                 PortalProvider.GoogleDrive,
-                PortalProvider.OneDrive -> setToken(account.accountName, null)
+                PortalProvider.Onedrive -> setToken(account.accountName, null)
                 else -> {
                     setPassword(account.accountName, null)
                     setToken(account.accountName, null)

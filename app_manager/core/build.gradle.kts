@@ -46,17 +46,6 @@ android {
         buildConfigField("String", "BOX_COM_REDIRECT_URL","\"" + keystoreProperties["BOX_COM_REDIRECT_URL"] + "\"" )
         buildConfigField("String", "BOX_AUTH_URL","\"" + keystoreProperties["BOX_AUTH_URL"] + "\"" )
         buildConfigField("String", "BOX_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["BOX_VALUE_RESPONSE_TYPE"] + "\"" )
-
-        //OneDrive
-        buildConfigField("String", "ONE_DRIVE_INFO_CLIENT_ID","\"" + keystoreProperties["ONE_DRIVE_INFO_CLIENT_ID"] + "\"" )
-        buildConfigField("String", "ONE_DRIVE_INFO_REDIRECT_URL","\"" + keystoreProperties["ONE_DRIVE_INFO_REDIRECT_URL"] + "\"" )
-        buildConfigField("String", "ONE_DRIVE_COM_CLIENT_ID","\"" + keystoreProperties["ONE_DRIVE_COM_CLIENT_ID"] + "\"" )
-        buildConfigField("String", "ONE_DRIVE_COM_CLIENT_SECRET","\"" + keystoreProperties["ONE_DRIVE_COM_CLIENT_SECRET"] + "\"" )
-        buildConfigField("String", "ONE_DRIVE_COM_REDIRECT_URL","\"" + keystoreProperties["ONE_DRIVE_COM_REDIRECT_URL"] + "\"" )
-        buildConfigField("String", "ONE_DRIVE_AUTH_URL","\"" + keystoreProperties["ONE_DRIVE_AUTH_URL"] + "\"" )
-        buildConfigField("String", "ONE_DRIVE_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["ONE_DRIVE_AUTH_URL"] + "\"" )
-        buildConfigField("String", "ONE_DRIVE_VALUE_SCOPE","\"" + keystoreProperties["ONE_DRIVE_AUTH_URL"] + "\"" )
-
     }
 
     buildTypes {

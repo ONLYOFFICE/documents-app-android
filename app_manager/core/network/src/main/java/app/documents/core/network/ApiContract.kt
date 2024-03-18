@@ -13,6 +13,8 @@ const val HEADER_CACHE = "Cache-Control"
 const val VALUE_CONTENT_TYPE = "application/json"
 const val VALUE_ACCEPT = "application/json"
 const val VALUE_CACHE = "no-cache"
+const val VALUE_GRANT_TYPE_AUTH = "authorization_code"
+const val VALUE_GRANT_TYPE_REFRESH = "refresh_token"
 
 const val ARG_AUTH_URL = "auth_url"
 const val ARG_CLIENT_ID = "client_id"
@@ -27,12 +29,14 @@ const val ARG_APPROVAL_PROMPT = "approval_prompt"
 const val ARG_SCOPE = "scope"
 const val ARG_CODE = "code"
 
-const val VALUE_GRANT_TYPE_AUTH = "authorization_code"
-const val VALUE_GRANT_TYPE_REFRESH = "refresh_token"
-
 const val GOOGLE_DRIVE_AUTH_URL = "https://oauth2.googleapis.com/"
 const val GOOGLE_DRIVE_BASE_URL = "https://www.googleapis.com/"
 const val GOOGLE_DRIVE_URL = "drive.google.com"
 
 const val DROPBOX_BASE_URL = "https://api.dropboxapi.com/"
 const val DROPBOX_PORTAL_URL = "dropbox.com"
+
+const val ONEDRIVE_AUTH_URL = "https://login.microsoftonline.com/"
+const val ONEDRIVE_PORTAL_URL = "graph.microsoft.com"
+const val ONEDRIVE_API_VERSION = "v1.0"
+const val ONEDRIVE_VALUE_SCOPE = "User.Read files.readwrite.all offline_access"

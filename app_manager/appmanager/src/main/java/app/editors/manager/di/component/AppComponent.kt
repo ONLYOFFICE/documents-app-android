@@ -38,7 +38,6 @@ import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.editors.manager.mvp.presenters.storages.DocsDropboxPresenter
 import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
-import app.editors.manager.mvp.presenters.storages.OneDriveSingInPresenter
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
 import app.editors.manager.ui.activities.main.AppLocaleHelper
@@ -127,7 +126,6 @@ interface AppComponent {
     fun inject(personalPortalFragment: PersonalPortalFragment?)
     fun inject(webDavInterceptor: WebDavInterceptor?)
     fun inject(passwordRecoveryPresenter: PasswordRecoveryPresenter)
-    fun inject(oneDriveSignInPresenter: OneDriveSingInPresenter?)
     fun inject(splashFragment: SplashFragment?)
     fun inject(onlyOfficeCloudPresenter: OnlyOfficeCloudPresenter)
     fun inject(cloudsFragment: CloudsFragment)

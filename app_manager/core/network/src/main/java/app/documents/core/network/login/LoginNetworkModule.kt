@@ -37,4 +37,12 @@ object LoginNetworkModule {
     ): DropboxLoginDataSource {
         return DropboxLoginDataSourceImpl(json, okHttpClient)
     }
+
+    @Provides
+    fun provideOnedriveLoginDataSource(
+        json: Json,
+        @LoginOkHttpClient okHttpClient: OkHttpClient
+    ): OnedriveLoginDataSource {
+        return OnedriveLoginDataSourceImpl(json, okHttpClient)
+    }
 }

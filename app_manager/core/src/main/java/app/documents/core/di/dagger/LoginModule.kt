@@ -8,11 +8,14 @@ import app.documents.core.login.GoogleLoginRepositoryImpl
 import app.documents.core.login.LoginRepository
 import app.documents.core.login.LoginRepositoryImpl
 import app.documents.core.login.LoginScope
+import app.documents.core.login.OnedriveLoginRepository
+import app.documents.core.login.OnedriveLoginRepositoryImpl
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.network.login.DropboxLoginDataSource
 import app.documents.core.network.login.GoogleLoginDataSource
 import app.documents.core.network.login.LoginDataSource
 import app.documents.core.network.login.LoginNetworkModule
+import app.documents.core.network.login.OnedriveLoginDataSource
 import dagger.Module
 import dagger.Provides
 
@@ -53,6 +56,18 @@ class LoginModule {
     ): DropboxLoginRepository {
         return DropboxLoginRepositoryImpl(
             dropboxLoginDataSource,
+            accountRepository
+        )
+    }
+
+    @Provides
+    @LoginScope
+    fun provideOnedriveLoginRepository(
+        onedriveLoginDataSource: OnedriveLoginDataSource,
+        accountRepository: AccountRepository
+    ): OnedriveLoginRepository {
+        return OnedriveLoginRepositoryImpl(
+            onedriveLoginDataSource,
             accountRepository
         )
     }
