@@ -70,11 +70,18 @@ internal class AccountRepositoryImpl(
     override suspend fun checkLogin(accountId: String): CheckLoginResult {
         if (accountId == accountPreferences.onlineAccountId) return CheckLoginResult.AlreadyUse
         val account = cloudDataSource.getAccount(accountId) ?: return CheckLoginResult.NeedLogin
-        val accessToken = accountManager.getToken(account.accountName)?.takeIf(String::isNotEmpty)
-            ?: return CheckLoginResult.NeedLogin
+        val accessToken = accountManager.getToken(account.accountName)
+
+        when (account.portal.provider) {
+            is PortalProvider.Webdav -> {
+                if (accountManager.getPassword(account.accountName).isNullOrEmpty())
+                    return CheckLoginResult.NeedLogin
+            }
+            else -> if (accessToken.isNullOrEmpty()) return CheckLoginResult.NeedLogin
+        }
 
         accountPreferences.onlineAccountId = account.id
-        return CheckLoginResult.Success(account.portal.provider, accessToken)
+        return CheckLoginResult.Success(account.portal.provider, accessToken.orEmpty())
     }
 
     override suspend fun getPortals(): List<String> {

@@ -72,22 +72,21 @@ class NextCloudLoginFragment : BaseAppFragment() {
         getArgs()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        viewBinding = null
-        clearCookies()
-        viewBinding?.webView?.clearCache(true)
-        viewBinding?.webView?.webChromeClient = null
-    }
-
-    override fun onBackPressed(): Boolean {
-        return if (viewBinding?.webView?.canGoBack() == true) {
-            viewBinding?.webView?.goBack()
-            true
-        } else {
-            requireActivity().setResult(Activity.RESULT_CANCELED)
-            requireActivity().finish()
-            super.onBackPressed()
+    private fun collectState() {
+        lifecycleScope.launch {
+            viewModel.state.collect { state ->
+                when (state) {
+                    NextCloudLogin.Error -> showSnackBar(R.string.errors_unknown_error)
+                    NextCloudLogin.Success -> {
+                        with(requireActivity()) {
+                            setResult(Activity.RESULT_OK)
+                            finish()
+                            MainActivity.show(this)
+                        }
+                    }
+                    else -> Unit
+                }
+            }
         }
     }
 
@@ -174,86 +173,4 @@ class NextCloudLoginFragment : BaseAppFragment() {
             return super.onJsAlert(view, url, message, result)
         }
     }
-
-    private fun saveUser(path: String) {
-        val args = path.split("&").toTypedArray()
-        if (args.size == 3) {
-            val portal = args[0].substring(args[0].indexOf(":") + 1)
-            val login = args[1].substring(args[1].indexOf(":") + 1)
-            val password = args[2].substring(args[2].indexOf(":") + 1)
-
-            try {
-                val url = URL(portal)
-                val builder = StringBuilder()
-                    .append(url.host)
-                if (url.path != null && url.path.isNotEmpty()) {
-                    builder.append(url.path)
-                    if (url.port == -1) {
-                        builder.append("/")
-                    }
-                }
-                if (url.port != -1) {
-                    builder.append(":").append(url.port)
-                }
-
-                val cloudAccount = createCloudAccount(url, login)
-                val account = Account(cloudAccount.id, getString(lib.toolkit.base.R.string.account_type))
-
-                val accountData = AccountData(
-                    portal = cloudAccount.portal.url,
-                    scheme = cloudAccount.portal.scheme.value,
-                    displayName = login,
-                    userId = cloudAccount.id,
-                    email = login,
-                )
-
-                if (!AccountUtils.addAccount(requireContext(), account, password, accountData)) {
-                    AccountUtils.setPassword(requireContext(), account, password)
-                    AccountUtils.setAccountData(requireContext(), account, accountData)
-
-                }
-                addAccount(cloudAccount)
-            } catch (e: MalformedURLException) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    private fun createCloudAccount(url: URL, login: String) = CloudAccount(
-        id = "$login@${url.host}",
-        login = login,
-        name = login,
-        portal = CloudPortal(
-            url = url.host,
-            scheme = Scheme.Custom(url.protocol + "://"),
-            provider = PortalProvider.Webdav(
-                provider = WebdavProvider.NextCloud("${url.path.orEmpty()}$DEFAULT_NEXT_CLOUD_PATH$login/")
-            )
-        )
-    )
-
-    private fun addAccount(cloudAccount: CloudAccount) {
-        // TODO: move to presenter
-        //        val accountDao = requireContext().appComponent.accountsDao
-        //        lifecycleScope.launch {
-        //            accountDao.getAccountOnline()?.let {
-        //                accountDao.addAccount(it.copy(isOnline = false))
-        //            }
-        //            accountDao.addAccount(cloudAccount.copy(isOnline = true))
-        //            withContext(Dispatchers.Main) {
-        //                login()
-        //            }
-        //        }
-    }
-
-    private fun login() {
-        val activity = requireActivity()
-        activity.supportFragmentManager.fragments.forEach {
-            activity.supportFragmentManager.beginTransaction().remove(it).commit()
-        }
-        activity.setResult(Activity.RESULT_OK)
-        activity.finish()
-        MainActivity.show(activity)
-    }
-
 }

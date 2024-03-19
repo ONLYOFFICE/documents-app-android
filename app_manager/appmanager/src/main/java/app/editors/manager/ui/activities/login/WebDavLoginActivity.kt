@@ -21,8 +21,8 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
 
     companion object {
         private const val KEY_PROVIDER = "KEY_PROVIDER"
-        private const val KEY_ACCOUNT = "KEY_ACCOUNT "
         private const val KEY_TAG_FRAGMENT = "KEY_TAG_FRAGMENT"
+        const val KEY_ACCOUNT = "KEY_ACCOUNT "
 
         const val ONEDRIVE_FRAGMENT_VALUE = 1
         const val DROPBOX_FRAGMENT_VALUE = 2
@@ -63,7 +63,7 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun finishWithResult(folder: CloudFolder?) { }
+    override fun finishWithResult(folder: CloudFolder?) {}
 
     private fun init(savedInstanceState: Bundle?) {
         setSupportActionBar(viewBinding?.appBarToolbar)
@@ -75,7 +75,7 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
     }
 
     private fun showFragment() {
-        when(intent.getIntExtra(KEY_TAG_FRAGMENT, 0)) {
+        when (intent.getIntExtra(KEY_TAG_FRAGMENT, 0)) {
             ONEDRIVE_FRAGMENT_VALUE -> showOneDriveSignInFragment()
             DROPBOX_FRAGMENT_VALUE -> showDropboxSignInFragment()
             GOOGLEDRIVE_FRAGMENT_VALUE -> showGoogleDriveSignInFragment()
@@ -85,7 +85,10 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
 
     private fun showSignInFragment() {
         showFragment(
-            WebDavSignInFragment.newInstance(intent.getSerializableExtra(KEY_PROVIDER) as WebdavProvider),
+            WebDavSignInFragment.newInstance(
+                intent.getSerializable(KEY_PROVIDER, WebdavProvider::class.java),
+                intent.getStringExtra(KEY_ACCOUNT),
+            ),
             null
         )
     }

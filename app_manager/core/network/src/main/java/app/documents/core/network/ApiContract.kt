@@ -9,6 +9,10 @@ const val HEADER_CONTENT_TYPE = "Content-Type"
 const val HEADER_ACCEPT = "Accept"
 const val HEADER_AGENT = "User-Agent"
 const val HEADER_CACHE = "Cache-Control"
+const val HEADER_DEPTH = "Depth"
+
+const val HTTP_METHOD_GET = "GET"
+const val HTTP_METHOD_PROPFIND = "PROPFIND"
 
 const val VALUE_CONTENT_TYPE = "application/json"
 const val VALUE_ACCEPT = "application/json"

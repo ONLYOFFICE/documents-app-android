@@ -21,7 +21,7 @@ sealed class Scheme(val value: String) {
                 else -> if (scheme.contains("://")) {
                     Custom(scheme)
                 } else {
-                    throw IllegalArgumentException("$scheme not a default scheme")
+                    throw IllegalArgumentException("$scheme is invalid scheme")
                 }
             }
         }

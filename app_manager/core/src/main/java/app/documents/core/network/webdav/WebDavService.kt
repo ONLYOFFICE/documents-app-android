@@ -2,13 +2,19 @@ package app.documents.core.network.webdav
 
 
 import app.documents.core.network.webdav.models.WebDavModel
-import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.HTTP
+import retrofit2.http.Header
+import retrofit2.http.Headers
+import retrofit2.http.PUT
+import retrofit2.http.Streaming
+import retrofit2.http.Url
 
 interface WebDavService {
 
@@ -16,20 +22,8 @@ interface WebDavService {
         const val HEADER_AUTHORIZATION = "Authorization"
         const val HEADER_DESTINATION = "Destination"
         const val HEADER_OVERWRITE = "Overwrite"
-        const val HEADER_DEPTH_0 = "Depth: 0"
         const val HEADER_DEPTH_1 = "Depth: 1"
     }
-
-    @HTTP(method = "GET")
-    fun capability(@Url url: String): Observable<Response<ResponseBody>>
-
-    @ConverterFactory.Xml
-    @Headers(HEADER_DEPTH_0)
-    @HTTP(method = "PROPFIND")
-    fun capabilities(
-        @Header(HEADER_AUTHORIZATION) auth: String,
-        @Url path: String?
-    ): Observable<Response<ResponseBody>>
 
     @ConverterFactory.Xml
     @Headers(HEADER_DEPTH_1)

@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.manager.ProgressRequestBody
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestExternal
@@ -480,7 +480,7 @@ class WebDavFileProvider @Inject constructor(
                 folder.title = getTitle(bean.href)
                 folder.parentId = parentFolder.id
                 folder.updated = bean.lastModifiedDate
-                folder.etag = bean.etag
+                folder.etag = bean.etag.orEmpty()
                 if (filteringValue != null) {
                     if (folder.title.contains(filteringValue, true)) {
                         folders.add(folder)
@@ -497,7 +497,7 @@ class WebDavFileProvider @Inject constructor(
                 file.fileExst = getExtensionFromPath(file.title.lowercase())
                 file.created = bean.lastModifiedDate
                 file.updated = bean.lastModifiedDate
-                file.etag = bean.etag
+                file.etag = bean.etag.orEmpty()
                 if (filteringValue != null) {
                     if (file.title.contains(filteringValue, true)) {
                         files.add(file)
@@ -524,7 +524,7 @@ class WebDavFileProvider @Inject constructor(
         folder.id = decodeUrl(responseBean.href)
         folder.title = decodeUrl(getFolderTitle(responseBean.href))
         folder.updated = responseBean.lastModifiedDate
-        folder.etag = responseBean.etag
+        folder.etag = responseBean.etag.orEmpty()
         return folder
     }
 

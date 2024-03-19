@@ -45,4 +45,11 @@ object LoginNetworkModule {
     ): OnedriveLoginDataSource {
         return OnedriveLoginDataSourceImpl(json, okHttpClient)
     }
+
+    @Provides
+    fun provideWebdavLoginDataSource(
+        @LoginOkHttpClient okHttpClient: OkHttpClient
+    ): WebdavLoginDataSource {
+        return WebdavLoginDataSourceImpl(okHttpClient)
+    }
 }

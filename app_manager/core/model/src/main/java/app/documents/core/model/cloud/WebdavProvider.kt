@@ -10,7 +10,11 @@ sealed class WebdavProvider(val path: String, val name: String) : java.io.Serial
 
     data object OwnCloud : WebdavProvider("/remote.php/dav/files/", NAME_OWNCLOUD)
     data object KDrive : WebdavProvider("/", NAME_K_DRIVE)
+
+    @Serializable
     data object Yandex : WebdavProvider("/", NAME_YANDEX)
+
+    @Serializable
     data object WebDav : WebdavProvider("/", NAME_WEBDAV)
 
     companion object {
