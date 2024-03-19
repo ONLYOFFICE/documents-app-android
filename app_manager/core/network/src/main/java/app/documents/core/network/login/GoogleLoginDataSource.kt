@@ -33,14 +33,7 @@ import retrofit2.http.POST
 import retrofit2.http.QueryMap
 import retrofit2.http.Url
 
-interface GoogleLoginDataSource {
-
-    suspend fun signIn(code: String): TokenResponse
-
-    suspend fun refreshToken(refreshToken: String): TokenResponse
-
-    suspend fun getUserInfo(accessToken: String): GoogleUser
-}
+interface GoogleLoginDataSource : StorageLoginDataSource<GoogleUser>
 
 private interface GoogleLoginApi {
 

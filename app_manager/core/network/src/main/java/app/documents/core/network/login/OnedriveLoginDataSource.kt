@@ -1,8 +1,8 @@
 package app.documents.core.network.login
 
 import app.documents.core.model.cloud.Scheme
-import app.documents.core.model.login.response.OnedriveSignInResponse
-import app.documents.core.model.login.response.OnedriveUser
+import app.documents.core.model.login.response.OnedriveUserResponse
+import app.documents.core.model.login.response.TokenResponse
 import app.documents.core.network.ARG_CLIENT_ID
 import app.documents.core.network.ARG_CLIENT_SECRET
 import app.documents.core.network.ARG_CODE
@@ -35,14 +35,7 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Url
 
-interface OnedriveLoginDataSource {
-
-    suspend fun signIn(code: String): OnedriveSignInResponse
-
-    suspend fun refreshToken(refreshToken: String): OnedriveSignInResponse
-
-    suspend fun getUserInfo(accessToken: String): OnedriveUser
-}
+interface OnedriveLoginDataSource : StorageLoginDataSource<OnedriveUserResponse>
 
 private interface OnedriveLoginApi {
 
@@ -52,14 +45,14 @@ private interface OnedriveLoginApi {
     )
     @FormUrlEncoded
     @POST("common/oauth2/v2.0/token")
-    suspend fun signIn(@FieldMap request: Map<String, String>): OnedriveSignInResponse
+    suspend fun signIn(@FieldMap request: Map<String, String>): TokenResponse
 
     @Headers(
         "$HEADER_CONTENT_OPERATION_TYPE: $VALUE_CONTENT_TYPE",
         "$HEADER_ACCEPT: $VALUE_ACCEPT"
     )
     @GET
-    suspend fun getUserInfo(@Url url: String, @Header(HEADER_AUTHORIZATION) token: String): OnedriveUser
+    suspend fun getUserInfo(@Url url: String, @Header(HEADER_AUTHORIZATION) token: String): OnedriveUserResponse
 }
 
 internal class OnedriveLoginDataSourceImpl(json: Json, okHttpClient: OkHttpClient) : OnedriveLoginDataSource {
@@ -78,7 +71,7 @@ internal class OnedriveLoginDataSourceImpl(json: Json, okHttpClient: OkHttpClien
         ARG_SCOPE to ONEDRIVE_VALUE_SCOPE,
     )
 
-    override suspend fun signIn(code: String): OnedriveSignInResponse {
+    override suspend fun signIn(code: String): TokenResponse {
         val params = mapOf(
             ARG_GRANT_TYPE to VALUE_GRANT_TYPE_AUTH,
             ARG_CODE to code
@@ -86,7 +79,7 @@ internal class OnedriveLoginDataSourceImpl(json: Json, okHttpClient: OkHttpClien
         return api.signIn(commonParams.plus(params))
     }
 
-    override suspend fun refreshToken(refreshToken: String): OnedriveSignInResponse {
+    override suspend fun refreshToken(refreshToken: String): TokenResponse {
         val params = mapOf(
             ARG_GRANT_TYPE to VALUE_GRANT_TYPE_REFRESH,
             ARG_REFRESH_TOKEN to refreshToken
@@ -94,7 +87,7 @@ internal class OnedriveLoginDataSourceImpl(json: Json, okHttpClient: OkHttpClien
         return api.signIn(commonParams.plus(params))
     }
 
-    override suspend fun getUserInfo(accessToken: String): OnedriveUser {
+    override suspend fun getUserInfo(accessToken: String): OnedriveUserResponse {
         val url = StringBuilder()
             .append(Scheme.Https.value)
             .append("$ONEDRIVE_PORTAL_URL/")

@@ -157,11 +157,6 @@ class StorageLoginFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshList
         url?.let { viewBinding?.webStorageWebview?.loadUrl(it) }
     }
 
-    private fun signIn(code: String) {
-        viewBinding?.webStorageSwipe?.isRefreshing = true
-        viewModel.signIn(code)
-    }
-
     private fun showProgressDialog() {
         showWaitingDialog(
             getString(R.string.dialogs_wait_title_storage),
@@ -203,7 +198,7 @@ class StorageLoginFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshList
             viewBinding?.webStorageSwipe?.isRefreshing = false
             if (url.startsWith(redirectUrl.toString())) {
                 val parametersMap = StringUtils.getParametersFromUrl(url.split("?")[1])
-                signIn(parametersMap[TAG_CODE].orEmpty())
+                viewModel.signIn(parametersMap[TAG_CODE].orEmpty())
             }
         }
 

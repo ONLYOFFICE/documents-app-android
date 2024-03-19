@@ -1,7 +1,6 @@
 package app.documents.core.network.login
 
 import app.documents.core.model.login.response.DropboxUserResponse
-import app.documents.core.model.login.response.RefreshTokenResponse
 import app.documents.core.model.login.response.TokenResponse
 import app.documents.core.network.ARG_CLIENT_ID
 import app.documents.core.network.ARG_CLIENT_SECRET
@@ -27,14 +26,7 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.QueryMap
 
-interface DropboxLoginDataSource {
-
-    suspend fun signIn(code: String): TokenResponse
-
-    suspend fun refreshToken(refreshToken: String): RefreshTokenResponse
-
-    suspend fun getUserInfo(accessToken: String): DropboxUserResponse
-}
+interface DropboxLoginDataSource : StorageLoginDataSource<DropboxUserResponse>
 
 private interface DropboxLoginApi {
 
@@ -51,7 +43,7 @@ private interface DropboxLoginApi {
     suspend fun refreshToken(
         @Header(HEADER_AUTHORIZATION) credentials: String,
         @QueryMap map: Map<String, String>
-    ): RefreshTokenResponse
+    ): TokenResponse
 
     @Headers("$HEADER_CONTENT_OPERATION_TYPE: $VALUE_CONTENT_TYPE")
     @POST("${API_VERSION}users/get_current_account")
@@ -83,7 +75,7 @@ internal class DropboxLoginDataSourceImpl(json: Json, okHttpClient: OkHttpClient
         return api.getUserInfo("Bearer $accessToken")
     }
 
-    override suspend fun refreshToken(refreshToken: String): RefreshTokenResponse {
+    override suspend fun refreshToken(refreshToken: String): TokenResponse {
         val credentials = Credentials.basic(BuildConfig.DROP_BOX_COM_CLIENT_ID, BuildConfig.DROP_BOX_COM_CLIENT_SECRET)
         val params = mapOf(
             ARG_GRANT_TYPE to VALUE_GRANT_TYPE_REFRESH,

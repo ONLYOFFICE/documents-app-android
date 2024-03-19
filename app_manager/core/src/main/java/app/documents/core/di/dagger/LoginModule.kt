@@ -43,8 +43,8 @@ class LoginModule {
         accountRepository: AccountRepository
     ): GoogleLoginRepository {
         return GoogleLoginRepositoryImpl(
-            googleLoginDataSource,
-            accountRepository
+            accountRepository,
+            googleLoginDataSource
         )
     }
 
@@ -55,8 +55,8 @@ class LoginModule {
         accountRepository: AccountRepository
     ): DropboxLoginRepository {
         return DropboxLoginRepositoryImpl(
+            accountRepository,
             dropboxLoginDataSource,
-            accountRepository
         )
     }
 
@@ -67,8 +67,8 @@ class LoginModule {
         accountRepository: AccountRepository
     ): OnedriveLoginRepository {
         return OnedriveLoginRepositoryImpl(
-            onedriveLoginDataSource,
-            accountRepository
+            accountRepository,
+            onedriveLoginDataSource
         )
     }
 }

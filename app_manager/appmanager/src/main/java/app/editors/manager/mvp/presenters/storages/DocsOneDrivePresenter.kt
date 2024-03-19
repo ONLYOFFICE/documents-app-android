@@ -82,7 +82,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             App.getApp().loginComponent.onedriveLoginRepository.refreshToken()
                 .collect { result ->
                     when (result) {
-                        is Result.Error -> fetchError(result.exception)
+                        is Result.Error -> viewState.onAuthorization()
                         is Result.Success -> {
                             App.getApp().refreshOneDriveInstance()
                             getItemsById("")

@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class OnedriveUser(
+data class OnedriveUserResponse(
     @SerialName("@odata.context") val context: String = "",
     val displayName: String = "",
     val surname: String = "",
