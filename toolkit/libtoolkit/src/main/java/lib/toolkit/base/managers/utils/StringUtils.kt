@@ -268,6 +268,10 @@ object StringUtils {
         return url
     }
 
+    fun hasScheme(url: String): Boolean {
+        return url.contains(""".*://""".toRegex())
+    }
+
     @JvmStatic
     fun equals(str1: String?, str2: String?): Boolean {
         return str1 != null && (str1 === str2 || str1.equals(str2, ignoreCase = true))

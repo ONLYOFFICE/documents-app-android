@@ -21,6 +21,7 @@ import app.editors.manager.managers.utils.ManagerUiUtils.setOneDriveImage
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.extensions.inflate
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.adapters.BaseListAdapter
 
 class CloudAccountAdapter(
@@ -133,16 +134,17 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
                 }
                 else -> {
                     val token = AccountUtils.getToken(view.context, account.accountName)
-                    val url: String = if (account.avatarUrl.contains("static") || account.isGoogleDrive) {
-                        account.avatarUrl
-                    } else {
-                        account.portal.scheme.value + account.portal.url + account.avatarUrl
+                    val url = with(account) {
+                        StringBuilder()
+                            .append(portal.urlWithScheme.takeUnless { StringUtils.hasScheme(avatarUrl) }.orEmpty())
+                            .append(avatarUrl)
+                            .toString()
                     }
+
                     Glide.with(accountAvatar)
                         .load(GlideUtils.getCorrectLoad(url, token.orEmpty()))
                         .apply(GlideUtils.avatarOptions)
                         .into(accountAvatar)
-
                 }
             }
             accountAvatar.foreground = null
