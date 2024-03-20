@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -34,6 +35,8 @@ import lib.toolkit.base.managers.utils.NetworkUtils.isWifiEnable
 import lib.toolkit.base.managers.utils.PermissionUtils.checkReadWritePermission
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
+import moxy.presenterScope
+import java.util.Date
 
 
 @InjectViewState
@@ -134,24 +137,20 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     }
 
     override fun addRecent(file: CloudFile) {
-        CoroutineScope(Dispatchers.Default).launch {
-            // TODO: add recent datasource
-
-            //            accountDao.getAccountOnline()?.let {
-            //                recentDao.addRecent(
-            //                    Recent(
-            //                        idFile = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
-            //                        path = file.webUrl,
-            //                        name = file.title,
-            //                        size = file.pureContentLength,
-            //                        isLocal = false,
-            //                        isWebDav = true,
-            //                        date = Date().time,
-            //                        ownerId = it.id,
-            //                        source = it.portal
-            //                    )
-            //                )
-            //            }
+        presenterScope.launch {
+            context.accountOnline?.let {
+                recentDataSource.addRecent(
+                    Recent(
+                        fileId = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
+                        path = file.webUrl,
+                        name = file.title,
+                        size = file.pureContentLength,
+                        isWebdav = true,
+                        ownerId = it.id,
+                        source = it.portalUrl
+                    )
+                )
+            }
         }
     }
 

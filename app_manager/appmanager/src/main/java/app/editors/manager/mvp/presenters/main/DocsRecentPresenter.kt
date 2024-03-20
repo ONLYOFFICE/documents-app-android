@@ -41,6 +41,7 @@ import moxy.InjectViewState
 import moxy.presenterScope
 import retrofit2.HttpException
 import java.io.File
+import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
@@ -83,13 +84,13 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     fun getRecentFiles(checkFiles: Boolean = true) {
         presenterScope.launch {
             val list = if (checkFiles) {
-                // TODO: add recent datasource
-                //                recentDao.getRecents().filter { recent -> checkFiles(recent) }
+                recentDataSource.getRecentList().filter { recent -> checkFiles(recent) }
             } else {
-                //                recentDao.getRecents()
+                recentDataSource.getRecentList()
             }
+
             withContext(Dispatchers.Main) {
-                //                viewState.onRender(RecentState.RenderList(list.sort()))
+                viewState.onRender(RecentState.RenderList(list.sort()))
             }
         }
     }
@@ -102,8 +103,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                     true
                 } else {
                     presenterScope.launch {
-                        // TODO: add recent datasource
-                        //                        recentDao.deleteRecent(recent)
+                        recentDataSource.deleteRecent(recent)
                     }
                     false
                 }
@@ -113,8 +113,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 true
             } else {
                 presenterScope.launch {
-                    // TODO: add recent datasource
-                    //                    recentDao.deleteRecent(recent)
+                    recentDataSource.deleteRecent(recent)
                 }
                 false
             }
@@ -126,14 +125,13 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     override fun filter(value: String) {
         filteringValue = value
         presenterScope.launch {
-            // TODO: add recent datasource
-            //            val list = recentDao.getRecents()
-            //                .filter { it.name.contains(value, true) }
-            //                .sort()
-            //
-            //            withContext(Dispatchers.Main) {
-            //                updateFiles(list)
-            //            }
+            val list = recentDataSource.getRecentList()
+                .filter { recent -> recent.name.contains(value, true) }
+                .sort()
+
+            withContext(Dispatchers.Main) {
+                updateFiles(list)
+            }
         }
     }
 
@@ -146,7 +144,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 val fileProvider = context.cloudFileProvider
                 disposable.add(
                     fileProvider.fileInfo(CloudFile().apply {
-                        id = recent.idFile ?: ""
+                        id = recent.fileId
                     }).flatMap { cloudFile ->
                         fileProvider.opeEdit(cloudFile).toObservable()
                             .zipWith(Observable.fromCallable { cloudFile }) { info, file ->
@@ -203,8 +201,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     private fun addRecent(recent: Recent) {
         presenterScope.launch {
-            // TODO: add recent datasource
-            //            recentDao.updateRecent(recent.copy(date = Date().time))
+            recentDataSource.updateRecent(recent.copy(date = Date().time))
             getRecentFiles()
         }
     }
@@ -215,10 +212,10 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 val provider = context.webDavFileProvider
 
                 val file = CloudFile().apply {
-                    id = item.idFile
+                    id = item.fileId
                     title = item.path
                     webUrl = item.path
-                    folderId = item.idFile.substring(0, item.idFile.lastIndexOf('/').plus(1))
+                    folderId = item.fileId.substring(0, item.fileId.lastIndexOf('/').plus(1))
                     fileExst = StringUtils.getExtensionFromPath(item.name)
                 }
 
@@ -240,8 +237,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     fun deleteRecent() {
         presenterScope.launch {
             item?.let { recent ->
-                // TODO: add recent datasource
-                //                recentDao.deleteRecent(recent)
+                recentDataSource.deleteRecent(recent)
                 withContext(Dispatchers.Main) {
                     viewState.onDeleteItem(contextPosition)
                 }
@@ -356,7 +352,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             showDialogWaiting(TAG_DIALOG_CANCEL_DOWNLOAD)
             val cloudFile = CloudFile().apply {
                 title = recent.name
-                id = recent.idFile.orEmpty()
+                id = recent.fileId
                 fileExst = StringUtils.getExtensionFromPath(recent.name)
                 pureContentLength = recent.size
             }
@@ -403,7 +399,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             val provider = context.webDavFileProvider
             val cloudFile = CloudFile().apply {
                 title = recent.name
-                id = recent.idFile.orEmpty()
+                id = recent.fileId
                 fileExst = StringUtils.getExtensionFromPath(recent.name)
                 pureContentLength = recent.size
             }
@@ -434,10 +430,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     override fun addRecent(file: CloudFile) {
         presenterScope.launch {
-            item?.let {
-                // TODO: add recent datasource
-                //                recentDao.updateRecent(it.copy(date = Date().time))
-            }
+            item?.let { recentDataSource.updateRecent(it.copy(date = Date().time)) }
         }
     }
 
@@ -468,11 +461,11 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             reverseSortOrder()
         }
         presenterScope.launch(Dispatchers.IO) {
-            // TODO: add recent datasource
-            //            val list = recentDao.getRecents().sort(type.value)
-            //            withContext(Dispatchers.Main) {
-            //                updateFiles(list)
-            //            }
+            val list = recentDataSource.getRecentList().sort(type.value)
+
+            withContext(Dispatchers.Main) {
+                updateFiles(list)
+            }
         }
         return false
     }
@@ -512,10 +505,9 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     fun clearRecents() {
         presenterScope.launch {
-            // TODO: add recent datasource
-            //            recentDao.getRecents().forEach { recent ->
-            //                recentDao.deleteRecent(recent)
-            //            }
+            recentDataSource.getRecentList().forEach { recent ->
+                recentDataSource.deleteRecent(recent)
+            }
             withContext(Dispatchers.Main) {
                 viewState.onRender(RecentState.RenderList(emptyList()))
             }

@@ -6,7 +6,9 @@ import androidx.room.TypeConverters
 import app.documents.core.database.converter.PortalProviderConverter
 import app.documents.core.model.cloud.Recent
 
-@Entity(tableName = "recent")
+internal const val recentTableName =  "recent"
+
+@Entity(tableName = recentTableName)
 @TypeConverters(PortalProviderConverter::class)
 data class RecentEntity(
     @PrimaryKey(autoGenerate = true)
@@ -16,11 +18,35 @@ data class RecentEntity(
     val name: String = "",
     val date: Long = 0,
     val size: Long = 0,
-    val ownerId: String? = null,
-    val source: String? = null,
+    val ownerId: String? = null, // null if local
+    val source: String? = null, // null if local
     val isWebdav: Boolean = false
 )
 
 fun RecentEntity.toRecent(): Recent {
-    return Recent(id, fileId, path, name, date, size, ownerId, source, isWebdav)
+    return Recent(
+        id = id,
+        fileId = fileId,
+        path = path,
+        name = name,
+        date = date,
+        size = size,
+        ownerId = ownerId,
+        source = source,
+        isWebdav = isWebdav
+    )
+}
+
+fun Recent.toEntity(): RecentEntity {
+    return RecentEntity(
+        id = id,
+        fileId = fileId,
+        path = path,
+        name = name,
+        date = date,
+        size = size,
+        ownerId = ownerId,
+        source = source,
+        isWebdav = isWebdav
+    )
 }

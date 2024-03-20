@@ -12,5 +12,5 @@ abstract class RecentDatabase : RoomDatabase() {
         val TAG: String = RecentDatabase::class.java.simpleName
     }
 
-    abstract val recentDao: RecentDao // todo make it internal
+    internal abstract val recentDao: RecentDao
 }

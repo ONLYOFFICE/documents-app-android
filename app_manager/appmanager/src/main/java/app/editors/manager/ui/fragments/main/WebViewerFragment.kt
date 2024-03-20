@@ -13,7 +13,6 @@ import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
 import android.net.Uri
 import android.net.http.SslError
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -188,7 +187,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
 
     }
 
-    // TODO: remove from fragment
     private val token = runBlocking(Dispatchers.Default) {
         context?.accountOnline?.let { account ->
             return@runBlocking AccountUtils.getToken(
@@ -200,7 +198,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         }
     }
 
-    // TODO: remove from fragment
     private val headers: Map<String, String> by lazy {
         mapOf(
             ApiContract.HEADER_AUTHORIZATION to "Bearer $token",
@@ -208,7 +205,6 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         )
     }
 
-    // TODO: remove from fragment
     private val connectivityHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
@@ -320,9 +316,7 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
         webView.removeJavascriptInterface(INTERFACE)
         webView.setDownloadListener(null)
         webView.webChromeClient = null
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && connectivityManager != null) {
-            connectivityManager?.unregisterNetworkCallback(networkCallback)
-        }
+        connectivityManager?.unregisterNetworkCallback(networkCallback)
     }
 
     override fun onRefresh() {
@@ -409,9 +403,8 @@ class WebViewerFragment : BaseAppFragment(), OnRefreshListener {
             isHardBackOn = false
             loadWebView(uri.toString())
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && connectivityManager != null) {
-            connectivityManager?.registerDefaultNetworkCallback(networkCallback)
-        }
+
+        connectivityManager?.registerDefaultNetworkCallback(networkCallback)
     }
 
     private fun loadWebView(url: String) {

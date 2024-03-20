@@ -13,7 +13,7 @@ import app.documents.core.model.cloud.PortalSettings
 import app.documents.core.model.cloud.PortalVersion
 import app.documents.core.model.cloud.Scheme
 
-const val portalTableName = "portal"
+internal const val portalTableName = "portal"
 
 @Entity(tableName = portalTableName)
 @TypeConverters(

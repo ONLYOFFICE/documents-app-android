@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
 import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.Recent
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -86,37 +87,28 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     override fun addRecent(file: CloudFile) {
         presenterScope.launch {
-            // TODO: add recent datasource
-//            recentDao.addRecent(
-//                Recent(
-//                    idFile = null,
-//                    path = file.webUrl,
-//                    name = file.title,
-//                    size = file.pureContentLength,
-//                    isLocal = true,
-//                    isWebDav = false,
-//                    date = Date().time
-//                )
-//            )
+            recentDataSource.add(
+                Recent(
+                    path = file.webUrl,
+                    name = file.title,
+                    size = file.pureContentLength
+                )
+            )
         }
-
     }
 
     private fun addRecent(uri: Uri) {
         presenterScope.launch {
             DocumentFile.fromSingleUri(context, uri)?.let { file ->
-                // TODO: add recent datasource
-//                recentDao.addRecent(
-//                    Recent(
-//                        idFile = null,
-//                        path = uri.toString(),
-//                        name = file.name ?: "",
-//                        size = file.length(),
-//                        isLocal = true,
-//                        isWebDav = false,
-//                        date = Date().time,
-//                    )
-//                )
+                presenterScope.launch {
+                    recentDataSource.add(
+                        Recent(
+                            path = uri.toString(),
+                            name = file.name.toString(),
+                            size = file.length()
+                        )
+                    )
+                }
             }
         }
     }
@@ -326,7 +318,9 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
             StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
             StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
-            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(uri)
+            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(
+                uri
+            )
             else -> viewState.onError(context.getString(R.string.error_unsupported_format))
         }
     }

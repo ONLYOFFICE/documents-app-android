@@ -6,15 +6,19 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import app.documents.core.database.entity.CloudPortalEntity
+import app.documents.core.database.entity.portalTableName
 
 @Dao
 internal interface PortalDao {
 
-    @Query("SELECT * FROM portal WHERE :url = url")
+    @Query("SELECT * FROM $portalTableName WHERE :url = url")
     suspend fun get(url: String): CloudPortalEntity?
 
-    @Query("SELECT * FROM portal")
+    @Query("SELECT * FROM $portalTableName")
     suspend fun getAll(): List<CloudPortalEntity>
+
+    @Query("DELETE FROM $portalTableName WHERE :url = url")
+    suspend fun delete(url: String)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(portal: CloudPortalEntity)
@@ -24,7 +28,4 @@ internal interface PortalDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(portal: CloudPortalEntity)
-
-    @Query("DELETE FROM portal WHERE :url = url")
-    suspend fun delete(url: String)
 }

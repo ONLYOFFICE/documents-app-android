@@ -13,8 +13,8 @@ import android.util.Log
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import app.documents.core.database.dao.RecentDao
 import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -91,7 +91,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     lateinit var cloudDataSource: CloudDataSource
 
     @Inject
-    lateinit var recentDao: RecentDao
+    lateinit var recentDataSource: RecentDataSource
 
     /**
      * Handler for some common job

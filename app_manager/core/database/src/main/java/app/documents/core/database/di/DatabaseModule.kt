@@ -2,11 +2,12 @@ package app.documents.core.database.di
 
 import android.content.Context
 import androidx.room.Room
-import app.documents.core.database.dao.RecentDao
 import app.documents.core.database.database.CloudDatabase
 import app.documents.core.database.database.RecentDatabase
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.CloudDataSourceImpl
+import app.documents.core.database.datasource.RecentDataSource
+import app.documents.core.database.datasource.RecentDataSourceImpl
 import dagger.Module
 import dagger.Provides
 
@@ -19,11 +20,13 @@ object DatabaseModule {
             .databaseBuilder(context, CloudDatabase::class.java, CloudDatabase.TAG)
             .build()
     }
-//
-//    @Provides
-//    fun providesAccountDao(cloudDatabase: CloudDatabase): AccountDao {
-//        return cloudDatabase.accountDao
-//    }
+
+    @Provides
+    fun providesRecentDatabase(context: Context): RecentDatabase {
+        return Room
+            .databaseBuilder(context, RecentDatabase::class.java, RecentDatabase.TAG)
+            .build()
+    }
 
     @Provides
     fun provideCloudDataSource(cloudDatabase: CloudDatabase): CloudDataSource {
@@ -31,9 +34,7 @@ object DatabaseModule {
     }
 
     @Provides
-    fun providesRecentDao(context: Context): RecentDao = Room // todo change to datasource
-        .databaseBuilder(context, RecentDatabase::class.java, RecentDatabase.TAG)
-        .build()
-        .recentDao
-
+    fun provideRecentDataSource(recentDatabase: RecentDatabase): RecentDataSource {
+        return RecentDataSourceImpl(recentDatabase)
+    }
 }

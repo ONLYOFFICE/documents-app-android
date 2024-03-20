@@ -22,7 +22,7 @@ data class RecentUI(
 fun RecentUI.toRecent(): Recent {
     return Recent(
         id = id,
-        idFile = idFile,
+        fileId = idFile,
         path = path,
         name = name,
         date = date,
@@ -35,7 +35,7 @@ fun RecentUI.toRecent(): Recent {
 fun Recent.toRecentUI(): RecentUI {
     return RecentUI(
         id = id,
-        idFile = idFile,
+        idFile = fileId,
         path = path,
         name = name,
         date = date,

@@ -8,26 +8,27 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import app.documents.core.database.entity.CloudAccountEntity
+import app.documents.core.database.entity.accountTableName
 
 @Dao
 internal interface AccountDao {
 
-    @Query("SELECT * FROM account")
+    @Query("SELECT * FROM $accountTableName")
     suspend fun getAccounts(): List<CloudAccountEntity>
 
-    @Query("SELECT * FROM account")
+    @Query("SELECT * FROM $accountTableName")
     fun getCursorAccounts(): Cursor?
 
-    @Query("SELECT * FROM account WHERE login = :login")
+    @Query("SELECT * FROM $accountTableName WHERE login = :login")
     fun getCursorAccountsByLogin(login: String): Cursor?
 
-    @Query("SELECT * FROM account WHERE accountId = :id")
+    @Query("SELECT * FROM $accountTableName WHERE accountId = :id")
     suspend fun getAccount(id: String): CloudAccountEntity?
 
-    @Query("SELECT * FROM account WHERE login = :login")
+    @Query("SELECT * FROM $accountTableName WHERE login = :login")
     suspend fun getAccountByLogin(login: String): CloudAccountEntity?
 
-    @Query("SELECT * FROM account WHERE accountId = :id")
+    @Query("SELECT * FROM $accountTableName WHERE accountId = :id")
     fun getCursorAccount(id: String): Cursor?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

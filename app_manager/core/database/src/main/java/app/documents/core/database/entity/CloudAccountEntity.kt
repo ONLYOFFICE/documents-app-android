@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import app.documents.core.model.cloud.CloudAccount
 
-const val accountTableName = "account"
+internal const val accountTableName = "account"
 
 @Entity(tableName = accountTableName)
 internal data class CloudAccountEntity(

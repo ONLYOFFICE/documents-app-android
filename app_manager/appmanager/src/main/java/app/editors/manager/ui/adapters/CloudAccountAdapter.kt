@@ -118,6 +118,7 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         accountClick: ((position: Int) -> Unit)? = null,
         accountContextClick: ((position: Int, view: View) -> Unit)? = null
     ) {
+        val token = AccountUtils.getToken(view.context, account.accountName)
         itemDetailsLookup = AccountDetailsItemLookup(absoluteAdapterPosition, account)
         with(binding) {
             accountItemName.text = account.name
@@ -127,13 +128,12 @@ class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
             when {
                 account.isOneDrive -> accountAvatar.setOneDriveImage()
-                account.isDropbox -> accountAvatar.setDropboxImage(account)
+                account.isDropbox -> accountAvatar.setDropboxImage(account, token.orEmpty())
                 account.isWebDav -> {
                     accountItemName.text = account.login
                     ManagerUiUtils.setWebDavImage(account.portal.provider as? PortalProvider.Webdav, accountAvatar)
                 }
                 else -> {
-                    val token = AccountUtils.getToken(view.context, account.accountName)
                     val url = with(account) {
                         StringBuilder()
                             .append(portal.urlWithScheme.takeUnless { StringUtils.hasScheme(avatarUrl) }.orEmpty())

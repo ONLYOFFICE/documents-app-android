@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.Recent
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
@@ -21,7 +22,6 @@ import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.accountOnline
 import app.editors.manager.app.api
 import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.app.roomProvider
@@ -41,7 +41,6 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -61,6 +60,7 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.util.Date
 
 @InjectViewState
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
@@ -229,21 +229,17 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun addRecent(file: CloudFile) {
-        CoroutineScope(Dispatchers.Default).launch {
-            // TODO: add recent datasource
-//            recentDao.add(
-//                Recent(
-//                    idFile = file.id,
-//                    path = null,
-//                    name = file.title,
-//                    size = file.pureContentLength,
-//                    isLocal = false,
-//                    isWebDav = account.isWebDav,
-//                    date = Date().time,
-//                    ownerId = account.id,
-//                    source = account.portal
-//                )
-//            )
+        presenterScope.launch {
+            recentDataSource.add(
+                Recent(
+                    fileId = file.id,
+                    path = "",
+                    name = file.title,
+                    size = file.pureContentLength,
+                    ownerId = account.id,
+                    source = account.portalUrl
+                )
+            )
         }
     }
 
@@ -637,7 +633,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean) {
         with(fileProvider as CloudFileProvider) {
-            val token = AccountUtils.getToken(context, context.accountOnline?.accountName.orEmpty())
+            val token = AccountUtils.getToken(context, account.accountName)
             disposable.add(
                 openDocument(cloudFile, token).subscribe({ result ->
                     viewState.onDialogClose()

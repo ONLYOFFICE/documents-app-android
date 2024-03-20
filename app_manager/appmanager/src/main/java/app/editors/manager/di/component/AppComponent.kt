@@ -1,7 +1,6 @@
 package app.editors.manager.di.component
 
 import android.content.Context
-import app.documents.core.database.dao.RecentDao
 import app.documents.core.di.dagger.CoreComponent
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.interceptors.WebDavInterceptor
@@ -104,7 +103,6 @@ interface AppComponent {
     val contentTools: LocalContentTools
     val glideTools: GlideTool
     val accountOnline: CloudAccount?
-    val recentDao: RecentDao?
     val appLocaleHelper: AppLocaleHelper
     val resourcesProvider: ResourcesProvider
     val errorHandler: ErrorHandler

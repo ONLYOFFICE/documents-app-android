@@ -71,10 +71,10 @@ object ManagerUiUtils {
         )
     }
 
-    fun ImageView.setDropboxImage(account: CloudAccount) {
+    fun ImageView.setDropboxImage(account: CloudAccount, token: String) {
         if (account.avatarUrl.isNotEmpty()) {
             Glide.with(this)
-                .load(GlideUtils.getCorrectLoad(account.avatarUrl, "token")) // todo get token
+                .load(GlideUtils.getCorrectLoad(account.avatarUrl, token))
                 .apply(GlideUtils.avatarOptions)
                 .into(this)
         } else {

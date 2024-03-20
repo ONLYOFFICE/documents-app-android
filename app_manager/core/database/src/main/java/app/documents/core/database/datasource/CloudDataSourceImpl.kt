@@ -12,11 +12,6 @@ import app.documents.core.model.cloud.PortalProvider
 
 internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSource {
 
-    //
-    //    private val db = Room
-    //        .databaseBuilder(context, CloudDatabase::class.java, CloudDatabase.TAG)
-    //        .build()
-
     override fun addObserver(onInvalidated: () -> Unit) {
         db.addObserver(onInvalidated)
     }
