@@ -20,7 +20,13 @@ interface AccountRepository {
         password: String = "",
         refreshToken: String = "",
         onOldAccount: suspend (CloudAccount) -> Unit = {}
-    ): CloudAccount
+    )
+
+    suspend fun addAccount(
+        cloudAccount: CloudAccount,
+        password: String,
+        onOldAccount: suspend (CloudAccount) -> Unit = {}
+    )
 
     suspend fun getOnlineAccount(): CloudAccount?
 
@@ -123,15 +129,22 @@ internal class AccountRepositoryImpl(
         password: String,
         refreshToken: String,
         onOldAccount: suspend (CloudAccount) -> Unit
-    ): CloudAccount {
+    ) {
         addAccountToAccountManager(cloudAccount.toAccountData(refreshToken), password, accessToken)
         accountPreferences.onlineAccountId = cloudAccount.id
         cloudDataSource.insertOrUpdateAccount(cloudAccount)
         cloudDataSource.insertOrUpdatePortal(cloudAccount.portal)
-        return cloudAccount
     }
 
-    private fun CloudAccount.toAccountData(refreshToken: String): AccountData {
+    override suspend fun addAccount(
+        cloudAccount: CloudAccount,
+        password: String,
+        onOldAccount: suspend (CloudAccount) -> Unit
+    ) {
+        addAccount(cloudAccount, "", password, "", onOldAccount)
+    }
+
+    private fun CloudAccount.toAccountData(refreshToken: String = ""): AccountData {
         return AccountData(
             portal = portal.url,
             scheme = portal.scheme.value,
@@ -147,15 +160,14 @@ internal class AccountRepositoryImpl(
         accountData: AccountData,
         password: String,
         accessToken: String
-    ): String? {
-        with(accountData) {
-            val accountName = "$email@$portal"
-            if (!accountManager.addAccount(accountName, password, accountData)) {
-                accountManager.setAccountData(accountName, accountData)
-                accountManager.setPassword(accountName, password)
+    ) {
+        with(accountManager) {
+            val accountName = "${accountData.email}@${accountData.portal}"
+            if (!addAccount(accountName, password, accountData)) {
+                setAccountData(accountName, accountData)
+                setPassword(accountName, password)
             }
-            accountManager.setToken(accountName, accessToken)
-            return accountManager.getToken(accountName)
+            setToken(accountName, accessToken)
         }
     }
 

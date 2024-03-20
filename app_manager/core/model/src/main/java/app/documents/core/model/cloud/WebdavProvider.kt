@@ -5,10 +5,14 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class WebdavProvider(val path: String, val name: String) : java.io.Serializable {
 
+    @Serializable
     data class NextCloud(val defaultPath: String = DEFAULT_NEXT_CLOUD_PATH) :
         WebdavProvider(defaultPath, NAME_NEXTCLOUD)
 
+    @Serializable
     data object OwnCloud : WebdavProvider("/remote.php/dav/files/", NAME_OWNCLOUD)
+
+    @Serializable
     data object KDrive : WebdavProvider("/", NAME_K_DRIVE)
 
     @Serializable

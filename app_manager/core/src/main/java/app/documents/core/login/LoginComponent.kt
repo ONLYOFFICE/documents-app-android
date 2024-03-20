@@ -1,5 +1,6 @@
 package app.documents.core.login
 
+import app.documents.core.account.AccountRepository
 import app.documents.core.di.dagger.LoginModule
 import app.documents.core.model.cloud.CloudPortal
 import dagger.BindsInstance
@@ -25,6 +26,7 @@ interface LoginComponent {
 
     val currentPortal: CloudPortal?
 
+    val accountRepository: AccountRepository
     val loginRepository: LoginRepository
     val googleLoginRepository: GoogleLoginRepository
     val dropboxLoginRepository: DropboxLoginRepository

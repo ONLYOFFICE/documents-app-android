@@ -4,6 +4,10 @@ import android.app.Application
 import android.database.Cursor
 import android.net.Uri
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.PortalSettings
+import app.documents.core.model.cloud.PortalVersion
+import app.documents.core.model.cloud.Scheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,7 +15,14 @@ import org.json.JSONObject
 
 class AddAccountHelper(private val context: Application) {
 
+    private data class CloudAccountWithToken(
+        val cloudAccount: CloudAccount,
+        val token: String,
+        val password: String
+    )
+
     fun copyData() {
+        App.getApp().refreshLoginComponent(null)
         CoroutineScope(Dispatchers.Default).launch {
             val cursor = context.contentResolver.query(
                 Uri.parse("content://com.onlyoffice.projects.accounts/accounts"),
@@ -22,44 +33,25 @@ class AddAccountHelper(private val context: Application) {
             )
             val accounts = parseAccounts(cursor)
             val existAccounts = context.coreComponent.cloudDataSource.getAccounts()
-            accounts.forEach { account ->
-                existAccounts.find { account.id == it.id } ?: run {
-                    context.coreComponent.cloudDataSource.addAccount(account)
-                    addSystemAccount(account)
+
+            with(App.getApp().loginComponent.accountRepository) {
+                accounts.forEach { accountWithToken ->
+                    existAccounts.find { accountWithToken.cloudAccount.id == it.id } ?: run {
+                        addAccount(
+                            cloudAccount = accountWithToken.cloudAccount,
+                            accessToken = accountWithToken.token,
+                            password = accountWithToken.password
+                        )
+                    }
                 }
             }
             cursor?.close()
         }
     }
 
-    private fun addSystemAccount(cloudAccount: CloudAccount) {
-        // TODO: refactor
-        //        val account = Account(cloudAccount.getAccountName(), context.getString(R.string.account_type))
-        //        val accountData = AccountData(
-        //            portal = cloudAccount.portal ?: "",
-        //            scheme = cloudAccount.scheme ?: "",
-        //            displayName = cloudAccount.name ?: "",
-        //            userId = cloudAccount.id,
-        //            provider = cloudAccount.provider ?: "",
-        //            accessToken = "",
-        //            email = cloudAccount.login ?: "",
-        //            avatar = cloudAccount.avatarUrl,
-        //            expires = ""
-        //        )
-        //
-        //        val token = cloudAccount.getDecryptToken()
-        //        val password = cloudAccount.getDecryptPassword() ?: ""
-        //
-        //        if (!AccountUtils.addAccount(context, account, password, accountData)) {
-        //            AccountUtils.setAccountData(context, account, accountData)
-        //            AccountUtils.setPassword(context, account, password)
-        //        }
-        //        AccountUtils.setToken(context, account, token)
-    }
-
-    private fun parseAccounts(cursor: Cursor?): List<CloudAccount> {
+    private fun parseAccounts(cursor: Cursor?): List<CloudAccountWithToken> {
         cursor?.let {
-            val arrayList: ArrayList<CloudAccount> = ArrayList(cursor.count)
+            val arrayList: ArrayList<CloudAccountWithToken> = ArrayList(cursor.count)
             while (cursor.moveToNext()) {
                 val jsonObject = JSONObject()
                 val names = cursor.columnNames
@@ -74,29 +66,29 @@ class AddAccountHelper(private val context: Application) {
         }
     }
 
-    private fun parse(json: JSONObject): CloudAccount {
-        return CloudAccount(
-            ""
+    private fun parse(json: JSONObject): CloudAccountWithToken {
+        return CloudAccountWithToken(
+            cloudAccount = CloudAccount(
+                id = json.optString(CloudAccount::id.name),
+                login = json.optString(CloudAccount::login.name),
+                name = json.optString(CloudAccount::name.name),
+                avatarUrl = json.optString(CloudAccount::avatarUrl.name),
+                portalUrl = json.optString("portal"),
+                isAdmin = json.optString(CloudAccount::isAdmin.name) == "1",
+                isVisitor = json.optString(CloudAccount::isVisitor.name) == "1",
+                portal = CloudPortal(
+                    url = json.optString("portal"),
+                    scheme = Scheme.valueOf(json.optString("scheme")),
+                    settings = PortalSettings(
+                        isSslCiphers = json.optString("isSslCiphers") == "1",
+                        isSslState = json.optString("isSslState") == "1",
+                    ),
+                    version = PortalVersion(serverVersion = json.optString("serverVersion"))
+                ),
+            ),
+            token = json.optString("token"),
+            password = json.optString("password")
         )
-
-        //            id = json.optString(CloudAccount::id.name),
-        //            login = json.optString(CloudAccount::login.name),
-        //            portal = json.optString(CloudAccount::portal.name),
-        //            serverVersion = json.optString(CloudAccount::serverVersion.name),
-        //            scheme = json.optString(CloudAccount::scheme.name),
-        //            name = json.optString(CloudAccount::name.name),
-        //            avatarUrl = json.optString(CloudAccount::avatarUrl.name),
-        //            isSslCiphers = json.optString(CloudAccount::isSslCiphers.name) == "1",
-        //            isSslState = json.optString(CloudAccount::isSslState.name) == "1",
-        //            isOnline = json.optString(CloudAccount::isOnline.name) == "1",
-        //            isWebDav = json.optString(CloudAccount::isWebDav.name) == "1",
-        //            isOneDrive = json.optString(CloudAccount::isOneDrive.name) == "1",
-        //            isDropbox = json.optString(CloudAccount::isDropbox.name) == "1",
-        //            isAdmin = json.optString(CloudAccount::isAdmin.name) == "1",
-        //            isVisitor = json.optString(CloudAccount::isVisitor.name) == "1",
-        //        ).apply {
-        //            token = json.optString(CloudAccount::token.name)
-        //            password = json.optString(CloudAccount::password.name)
-        //            expires = json.optString(CloudAccount::expires.name)
     }
 }
+
