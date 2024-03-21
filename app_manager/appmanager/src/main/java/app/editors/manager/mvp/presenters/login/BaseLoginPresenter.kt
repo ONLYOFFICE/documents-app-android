@@ -30,9 +30,10 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         signInJob?.cancel()
     }
 
-    fun checkSocialProvider(portal: String, onProviders: (List<String>) -> Unit) {
+    fun checkSocialProvider(url: String, onProviders: (List<String>) -> Unit) {
         presenterScope.launch {
-            onProviders(cloudDataSource.getPortal(portal)?.socialProviders.orEmpty())
+            val cloudPortal = App.getApp().loginComponent.currentPortal ?: cloudDataSource.getPortal(url)
+            onProviders(cloudPortal?.socialProviders.orEmpty())
         }
     }
 

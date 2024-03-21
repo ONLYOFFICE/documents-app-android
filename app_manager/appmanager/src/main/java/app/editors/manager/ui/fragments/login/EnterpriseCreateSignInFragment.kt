@@ -92,7 +92,6 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
             .addOnSuccessListener { result ->
                 if (result.tokenResult?.isNotEmpty() == true) {
                     signInPortalPresenter.createPortal(
-                        portalName = portalName,
                         password = password,
                         email = checkNotNull(email),
                         first = checkNotNull(first),

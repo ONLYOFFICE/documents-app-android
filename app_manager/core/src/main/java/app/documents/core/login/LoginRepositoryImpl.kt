@@ -11,6 +11,7 @@ import app.documents.core.model.login.Token
 import app.documents.core.model.login.request.RequestNumber
 import app.documents.core.model.login.request.RequestRegister
 import app.documents.core.model.login.request.RequestSignIn
+import app.documents.core.model.login.request.RequestValidatePortal
 import app.documents.core.model.login.response.ResponseRegisterPortal
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.asResult
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.fold
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.tasks.await
 import java.io.IOException
@@ -175,11 +175,18 @@ internal class LoginRepositoryImpl(
     }
 
     override suspend fun changeNumber(requestNumber: RequestNumber): Flow<Result<*>> {
-        TODO("Not yet implemented")
+        return flowOf(loginDataSource.changeNumber(requestNumber))
+            .flowOn(Dispatchers.IO)
+            .asResult()
     }
 
     override suspend fun validatePortal(portalName: String): Flow<Result<*>> {
-        TODO("Not yet implemented")
+        return flow {
+            loginDataSource.validatePortal(RequestValidatePortal(portalName))
+            emit(null)
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
     }
 
     override suspend fun handleIOException(exception: IOException): Flow<Boolean> {

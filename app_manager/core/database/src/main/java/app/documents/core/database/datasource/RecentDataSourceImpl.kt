@@ -1,6 +1,5 @@
 package app.documents.core.database.datasource
 
-import android.util.Log
 import androidx.room.withTransaction
 import app.documents.core.database.database.RecentDatabase
 import app.documents.core.database.entity.RecentEntity
@@ -9,7 +8,6 @@ import app.documents.core.database.entity.toRecent
 import app.documents.core.model.cloud.Recent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 
 internal class RecentDataSourceImpl(private val db: RecentDatabase) : RecentDataSource {
 
@@ -19,7 +17,6 @@ internal class RecentDataSourceImpl(private val db: RecentDatabase) : RecentData
 
     override fun getRecentListFlow(): Flow<List<Recent>> {
         return db.recentDao.getRecentListFlow()
-            .onEach { Log.e("sdsd", "datasource $it" ) }
             .map { it.map(RecentEntity::toRecent) }
     }
 

@@ -35,6 +35,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
     }
 
     private var disposable: Disposable? = null
+    private val cloudPortal by lazy { App.getApp().loginComponent.currentPortal }
 
     override fun cancelRequest() {
         super.cancelRequest()
@@ -62,7 +63,6 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
     }
 
     fun createPortal(
-        portalName: String,
         password: String,
         email: String,
         first: String,
@@ -71,7 +71,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
     ) {
 
         // Check user input portal
-        val partsPortal = portalName.split(".")
+        val partsPortal = cloudPortal?.url?.split(".").orEmpty()
         if (partsPortal.size != PORTAL_PARTS || partsPortal[PORTAL_PART_NAME].length < PORTAL_LENGTH) {
             viewState.onError(context.getString(R.string.login_api_portal_name))
             return
@@ -95,12 +95,12 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
                 .collect { result ->
                     when (result) {
                         is Result.Success -> {
-                            FirebaseUtils.addAnalyticsCreatePortal(portalName, email)
+                            FirebaseUtils.addAnalyticsCreatePortal(cloudPortal?.url.orEmpty(), email)
+                            App.getApp().refreshLoginComponent(cloudPortal)
                             signInWithEmail(email, password)
                         }
                         is Result.Error -> fetchError(result.exception)
                     }
-                    App.getApp().refreshLoginComponent(CloudPortal(url = portalName))
                 }
         }
     }
