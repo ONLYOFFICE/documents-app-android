@@ -71,6 +71,7 @@
 
     <!--Toolbar-->
     <dimen name="toolbar_title_margin_left">72dp</dimen>
+    <dimen name="editors_toolbar_icon_size">48dp</dimen>
 
     <!-- Image dimens -->
     <dimen name="image_size">40dp</dimen>

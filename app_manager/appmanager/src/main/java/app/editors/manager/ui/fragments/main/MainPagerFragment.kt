@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import app.documents.core.model.cloud.isDocSpace
@@ -113,7 +114,6 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     override fun onDestroyView() {
         super.onDestroyView()
-        activity?.getTabLayout()?.setupWithViewPager(null)
         activity = null
         viewBinding = null
     }
@@ -163,9 +163,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     fun setToolbarState(isRoot: Boolean) {
         if (isVisibleRoot == isRoot) return
         isVisibleRoot = isRoot
-//        viewBinding?.mainViewPager?.post {
-            activity?.setAppBarStates(isVisibleRoot)
-//        }
+        activity?.setAppBarStates(isVisibleRoot)
+        viewBinding?.mainViewPager?.post {
+            viewBinding?.appBarTabs?.isVisible = isVisibleRoot
+        }
     }
 
     fun setExpandToolbar() {
@@ -240,7 +241,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         adapter?.let {
             viewBinding?.mainViewPager?.addOnPageChangeListener(it)
         }
-        activity?.getTabLayout()?.setupWithViewPager(viewBinding?.mainViewPager, true)
+        viewBinding?.appBarTabs?.setupWithViewPager(viewBinding?.mainViewPager, true)
         setToolbarState(true)
 
         if (context?.accountOnline.isDocSpace) {

@@ -43,7 +43,6 @@ import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
@@ -70,7 +69,6 @@ interface IMainActivity {
     fun showNavigationButton(isShow: Boolean)
     fun showActionButton(isShow: Boolean)
     fun showAccount(isShow: Boolean)
-    fun getTabLayout(): TabLayout
     fun setAppBarStates(isVisible: Boolean)
     fun getNavigationBottom(): BottomNavigationView
     fun onSwitchAccount()
@@ -328,10 +326,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     override fun showAccount(isShow: Boolean) {
         //        presenter.isDialogOpen = true
         viewBinding.appBarToolbar.showAccount(isShow)
-    }
-
-    override fun getTabLayout(): TabLayout {
-        return viewBinding.appBarTabs
     }
 
     override fun onRender(state: MainActivityState) {
@@ -698,13 +692,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         setAppBarMode(isVisible)
         showAccount(isVisible)
         showNavigationButton(!isVisible)
-        viewBinding.appBarLayout.post {
-            viewBinding.appBarTabs.isVisible = isVisible
-
-        }
-        //        viewBinding.appBarLayout.postDelayed({
-        //            viewBinding.appBarTabs.isVisible = isVisible
-        //        }, 150)
     }
 
     private fun isNotification(): Boolean =
