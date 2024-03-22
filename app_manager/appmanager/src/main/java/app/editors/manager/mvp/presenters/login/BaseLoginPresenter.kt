@@ -2,7 +2,7 @@ package app.editors.manager.mvp.presenters.login
 
 import android.content.Intent
 import app.documents.core.account.AccountPreferences
-import app.documents.core.login.LoginRepository
+import app.documents.core.login.CloudLoginRepository
 import app.documents.core.login.LoginResult
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.login.User
@@ -21,8 +21,8 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
     @Inject
     lateinit var accountPreferences: AccountPreferences
 
-    protected val loginRepository: LoginRepository
-        get() = App.getApp().loginComponent.loginRepository
+    protected val loginRepository: CloudLoginRepository
+        get() = App.getApp().loginComponent.cloudLoginRepository
 
     protected var signInJob: Job? = null
 

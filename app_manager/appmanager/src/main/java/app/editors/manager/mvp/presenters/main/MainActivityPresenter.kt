@@ -67,9 +67,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         super.onFirstViewAttach()
         preferenceTool.setUserSession()
         preferenceTool.filter = Filter()
-        if (isAppColdStart) {
-            isAppColdStart = false
-        }
     }
 
     override fun onDestroy() {
@@ -79,14 +76,22 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     fun init(isPortal: Boolean = false, isShortcut: Boolean = false) {
         presenterScope.launch {
-            context.accountOnline?.let {
-                cloudAccount = it
+            context.accountOnline?.let { account ->
                 if (isShortcut) {
                     viewState.onRender(MainActivityState.OnDeviceState)
                     return@launch
                 }
+
+                // update portal settings
+                if (isAppColdStart) {
+                    App.getApp().refreshLoginComponent(account.portal)
+                    App.getApp().loginComponent.cloudLoginRepository.updatePortalSettings()
+                    isAppColdStart = false
+                }
+
+                cloudAccount = context.accountOnline
                 withContext(Dispatchers.Main) {
-                    checkToken(it)
+                    checkToken(account)
                 }
             } ?: run {
                 withContext(Dispatchers.Main) {

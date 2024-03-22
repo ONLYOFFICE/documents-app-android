@@ -81,7 +81,7 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
         password: String?
     ): Bundle = runBlocking(Dispatchers.Main) {
         App.getApp().refreshLoginComponent(context.accountOnline?.portal)
-        val signInResponse = App.getApp().loginComponent.loginRepository.signInByEmail(
+        val signInResponse = App.getApp().loginComponent.cloudLoginRepository.signInByEmail(
             email = cloudAccount.login,
             password = password ?: "",
             code = null

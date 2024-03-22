@@ -48,7 +48,7 @@ class EnterprisePhoneViewModel : BaseViewModel() {
         }
 
         viewModelScope.launch {
-            App.getApp().loginComponent.loginRepository.changeNumber(requestNumber)
+            App.getApp().loginComponent.cloudLoginRepository.changeNumber(requestNumber)
                 .collect { result ->
                     when (result) {
                         is Result.Success -> {

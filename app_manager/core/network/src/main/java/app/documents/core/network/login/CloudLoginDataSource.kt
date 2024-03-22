@@ -13,7 +13,7 @@ import app.documents.core.model.login.request.RequestValidatePortal
 import app.documents.core.model.login.response.ResponseRegisterPortal
 import app.documents.core.model.login.response.ResponseValidatePortal
 
-interface LoginDataSource {
+interface CloudLoginDataSource {
 
     suspend fun signIn(request: RequestSignIn): Token
 
@@ -44,4 +44,6 @@ interface LoginDataSource {
     suspend fun registerDevice(portalUrl: String, token: String, deviceToken: String)
 
     suspend fun subscribe(portal: CloudPortal, token: String, deviceToken: String, isSubscribe: Boolean)
+
+    suspend fun getPortalSettings(cloudPortal: CloudPortal, accessToken: String): CloudPortal
 }

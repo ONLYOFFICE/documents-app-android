@@ -3,7 +3,7 @@ package app.editors.manager.viewModels.login
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import app.documents.core.login.LoginRepository
+import app.documents.core.login.CloudLoginRepository
 import app.documents.core.login.PortalResult
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalSettings
@@ -44,8 +44,8 @@ class EnterprisePortalViewModel : BaseViewModel() {
         private const val TAG_SSH = "/#ssloff"
     }
 
-    private val loginRepository: LoginRepository
-        get() = App.getApp().loginComponent.loginRepository
+    private val loginRepository: CloudLoginRepository
+        get() = App.getApp().loginComponent.cloudLoginRepository
 
     private val _portalStateLiveData = MutableLiveData<EnterprisePortalState>()
     val portalStateLiveData: LiveData<EnterprisePortalState> = _portalStateLiveData

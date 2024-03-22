@@ -91,7 +91,7 @@ class MessageService : FirebaseMessagingService() {
             applicationContext.coreComponent.cloudDataSource.getAccounts().forEach { account ->
                 val token: String? = AccountUtils.getToken(applicationContext, account.accountName)
                 if (!token.isNullOrEmpty()) {
-                    App.getApp().loginComponent.loginRepository.registerDevice(account.portal.urlWithScheme, token, p0)
+                    App.getApp().loginComponent.cloudLoginRepository.registerDevice(account.portal.urlWithScheme, token, p0)
                 } else {
                     this.cancel()
                 }

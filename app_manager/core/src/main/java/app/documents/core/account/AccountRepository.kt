@@ -65,7 +65,10 @@ internal class AccountRepositoryImpl(
         block: ((CloudAccount) -> CloudAccount)?
     ) {
         cloudDataSource.getAccount(checkNotNull(id ?: accountPreferences.onlineAccountId))?.let { account ->
-            block?.invoke(account)?.let { updated -> cloudDataSource.updateAccount(updated) }
+            block?.invoke(account)?.let { updated ->
+                cloudDataSource.updateAccount(updated)
+                cloudDataSource.insertOrUpdatePortal(updated.portal)
+            }
             with(accountManager) {
                 token?.let { setToken(account.accountName, token) }
                 refreshToken?.let { updateAccountData(account.accountName) { it.copy(refreshToken = refreshToken) } }

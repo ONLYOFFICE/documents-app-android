@@ -1,6 +1,8 @@
 package app.documents.core.network.login
 
 import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.PortalVersion
 import app.documents.core.model.login.AllSettings
 import app.documents.core.model.login.Capabilities
 import app.documents.core.model.login.RequestDeviceToken
@@ -153,11 +155,11 @@ private interface LoginApi {
     )
 }
 
-internal class LoginDataSourceImpl(
+internal class CloudLoginDataSourceImpl(
     json: Json,
     okHttpClient: OkHttpClient,
     cloudPortal: CloudPortal?
-) : LoginDataSource {
+) : CloudLoginDataSource {
 
     private val api: LoginApi = Retrofit.Builder()
         .client(okHttpClient)
@@ -240,4 +242,19 @@ internal class LoginDataSourceImpl(
         api.subscribe(url, token, RequestPushSubscribe(deviceToken, isSubscribe))
     }
 
+    override suspend fun getPortalSettings(cloudPortal: CloudPortal, accessToken: String): CloudPortal {
+        val settings = getSettings(accessToken)
+        val allSettings = getAllSettings(accessToken)
+        return cloudPortal.copy(
+            version = PortalVersion(
+                serverVersion = settings.communityServer.orEmpty(),
+                documentServerVersion = settings.documentServer.orEmpty()
+            ),
+            provider = when {
+                allSettings.docSpace -> PortalProvider.Cloud.DocSpace
+                allSettings.personal -> PortalProvider.Cloud.Personal
+                else -> PortalProvider.Cloud.Workspace
+            }
+        )
+    }
 }

@@ -18,8 +18,8 @@ object LoginNetworkModule {
         json: Json,
         @LoginOkHttpClient okHttpClient: OkHttpClient,
         cloudPortal: CloudPortal?
-    ): LoginDataSource {
-        return LoginDataSourceImpl(json, okHttpClient, cloudPortal)
+    ): CloudLoginDataSource {
+        return CloudLoginDataSourceImpl(json, okHttpClient, cloudPortal)
     }
 
     @Provides

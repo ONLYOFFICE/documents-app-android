@@ -86,7 +86,7 @@ class EnterpriseCreateValidateViewModel : BaseViewModel() {
 
         _stateLiveData.value = CreatePortalState.Progress
         job = viewModelScope.launch {
-            App.getApp().loginComponent.loginRepository.validatePortal(portalName)
+            App.getApp().loginComponent.cloudLoginRepository.validatePortal(portalName)
                 .collect { result ->
                     when (result) {
                         is Result.Error -> checkError(result.exception)
