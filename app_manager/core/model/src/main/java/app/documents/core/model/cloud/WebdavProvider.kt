@@ -35,5 +35,16 @@ sealed class WebdavProvider(val path: String, val name: String) : java.io.Serial
             return (portalProvider as? PortalProvider.Webdav)?.provider
                 ?: throw IllegalArgumentException("$portalProvider is not a webdav provider")
         }
+
+        fun valueOf(provider: String): WebdavProvider {
+            return when (provider) {
+                NAME_NEXTCLOUD -> NextCloud()
+                NAME_OWNCLOUD -> OwnCloud
+                NAME_YANDEX -> Yandex
+                NAME_K_DRIVE -> KDrive
+                NAME_WEBDAV -> WebDav
+                else -> throw IllegalArgumentException("$provider is not a webdav provider")
+            }
+        }
     }
 }

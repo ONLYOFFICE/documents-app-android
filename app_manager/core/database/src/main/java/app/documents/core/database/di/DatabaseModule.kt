@@ -17,14 +17,14 @@ object DatabaseModule {
     @Provides
     fun providesCloudDatabase(context: Context): CloudDatabase {
         return Room
-            .databaseBuilder(context, CloudDatabase::class.java, CloudDatabase.TAG)
+            .databaseBuilder(context, CloudDatabase::class.java, CloudDatabase.NAME)
             .build()
     }
 
     @Provides
     fun providesRecentDatabase(context: Context): RecentDatabase {
         return Room
-            .databaseBuilder(context, RecentDatabase::class.java, RecentDatabase.TAG)
+            .databaseBuilder(context, RecentDatabase::class.java, RecentDatabase.NAME)
             .build()
     }
 

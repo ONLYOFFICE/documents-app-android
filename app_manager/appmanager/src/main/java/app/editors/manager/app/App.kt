@@ -110,6 +110,13 @@ class App : Application() {
         super.attachBaseContext(base)
         sApp = this
         initDagger()
+        accountsMigrate()
+    }
+
+    private fun accountsMigrate() {
+        refreshLoginComponent(null)
+        coreComponent.migrationHelper.migrate()
+        _loginComponent = null
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

@@ -9,7 +9,8 @@ import app.documents.core.database.entity.RecentEntity
 abstract class RecentDatabase : RoomDatabase() {
 
     companion object {
-        val TAG: String = RecentDatabase::class.java.simpleName
+
+        internal const val NAME: String = "recent_database"
     }
 
     internal abstract val recentDao: RecentDao

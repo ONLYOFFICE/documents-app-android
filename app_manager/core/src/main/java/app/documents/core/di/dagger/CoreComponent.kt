@@ -3,6 +3,7 @@ package app.documents.core.di.dagger
 import android.content.Context
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
+import app.documents.core.database.migration.MigrationHelper
 import app.documents.core.login.LoginComponent
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
@@ -31,6 +32,7 @@ interface CoreComponent {
 
     val cloudDataSource: CloudDataSource
     val recentDataSource: RecentDataSource
+    val migrationHelper: MigrationHelper
 
     val shareService: ShareService
     val managerService: ManagerService

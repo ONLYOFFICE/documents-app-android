@@ -7,19 +7,24 @@ import app.documents.core.database.dao.AccountDao
 import app.documents.core.database.dao.PortalDao
 import app.documents.core.database.entity.CloudAccountEntity
 import app.documents.core.database.entity.CloudPortalEntity
-import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.database.entity.accountTableName
+import app.documents.core.database.entity.portalTableName
 
-@Database(entities = [CloudAccountEntity::class, CloudPortalEntity::class], version = 1)
+@Database(
+    entities = [CloudAccountEntity::class, CloudPortalEntity::class],
+    version = 1,
+    exportSchema = true
+)
 abstract class CloudDatabase : RoomDatabase() {
 
     companion object {
 
-        val TAG: String = CloudDatabase::class.java.simpleName
+        internal const val NAME: String = "cloud_database"
     }
 
     fun addObserver(onInvalidated: () -> Unit) {
         invalidationTracker.addObserver(
-            object : InvalidationTracker.Observer(arrayOf(CloudAccount::class.java.simpleName)) {
+            object : InvalidationTracker.Observer(arrayOf(accountTableName, portalTableName)) {
 
                 override fun onInvalidated(tables: Set<String>) {
                     onInvalidated.invoke()

@@ -6,6 +6,8 @@ import app.documents.core.account.AccountPreferences
 import app.documents.core.account.AccountRepository
 import app.documents.core.account.AccountRepositoryImpl
 import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.database.migration.MigrationHelper
+import app.documents.core.migration.MigrationHelperImpl
 import app.documents.core.model.cloud.CloudAccount
 import dagger.Module
 import dagger.Provides
@@ -13,6 +15,11 @@ import kotlinx.coroutines.runBlocking
 
 @Module
 object AccountModule {
+
+    @Provides
+    fun provideMigrationHelper(context: Context, accountRepository: AccountRepository): MigrationHelper {
+        return MigrationHelperImpl(context, accountRepository)
+    }
 
     @Provides
     fun provideAccountPreferences(context: Context): AccountPreferences {
