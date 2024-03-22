@@ -33,7 +33,6 @@ data class AccountData(
     val expires: String? = null
 )
 
-// TODO: Replace with class AccountManager(context: Context) for correct injection
 object AccountUtils {
 
     const val KEY_ACCOUNT_TYPE = "KEY_ACCOUNT_TYPE"

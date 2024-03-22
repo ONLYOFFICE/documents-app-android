@@ -17,8 +17,13 @@ import kotlinx.coroutines.runBlocking
 object AccountModule {
 
     @Provides
-    fun provideMigrationHelper(context: Context, accountRepository: AccountRepository): MigrationHelper {
-        return MigrationHelperImpl(context, accountRepository)
+    fun provideMigrationHelper(
+        context: Context,
+        cloudDataSource: CloudDataSource,
+        accountManager: AccountManager,
+        accountPreferences: AccountPreferences
+    ): MigrationHelper {
+        return MigrationHelperImpl(context, cloudDataSource, accountManager, accountPreferences)
     }
 
     @Provides

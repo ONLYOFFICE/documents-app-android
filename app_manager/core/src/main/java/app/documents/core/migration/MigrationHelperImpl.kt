@@ -1,14 +1,18 @@
 package app.documents.core.migration
 
 import android.content.Context
-import app.documents.core.account.AccountRepository
+import app.documents.core.account.AccountManager
+import app.documents.core.account.AccountPreferences
+import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.migration.MigrationHelper
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 internal class MigrationHelperImpl @Inject constructor(
     private val context: Context,
-    private val accountRepository: AccountRepository
+    private val cloudDataSource: CloudDataSource,
+    private val accountManager: AccountManager,
+    private val accountPreferences: AccountPreferences
 ) : MigrationHelper {
 
     override fun migrate() {
@@ -22,11 +26,20 @@ internal class MigrationHelperImpl @Inject constructor(
                 .map { it.toCloudAccountWithTokenAndPassword(networkSettings) }
 
             accountWithTokenAndPassword.forEach { data ->
-                accountRepository.addAccount(
-                    data.cloudAccount,
-                    data.token,
-                    data.password
-                )
+                if (!data.token.isNullOrEmpty()) {
+                    accountManager.setToken(data.cloudAccount.accountName, data.token)
+                }
+
+                if (!data.password.isNullOrEmpty()) {
+                    accountManager.setPassword(data.cloudAccount.accountName, data.password)
+                }
+
+                cloudDataSource.insertOrUpdateAccount(data.cloudAccount)
+                cloudDataSource.insertOrUpdatePortal(data.cloudAccount.portal)
+
+                if (data.online) {
+                    accountPreferences.onlineAccountId = data.cloudAccount.id
+                }
             }
         }
     }

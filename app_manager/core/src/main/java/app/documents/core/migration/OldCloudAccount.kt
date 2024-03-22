@@ -14,9 +14,10 @@ import kotlinx.serialization.Serializable
 import lib.toolkit.base.managers.utils.CryptUtils
 
 internal data class CloudAccountWithTokenAndPassword(
-    val token: String,
-    val password: String,
-    val cloudAccount: CloudAccount
+    val token: String?,
+    val password: String?,
+    val cloudAccount: CloudAccount,
+    val online: Boolean
 )
 
 @Entity(tableName = "CloudAccount")
@@ -106,7 +107,8 @@ internal fun OldCloudAccount.toCloudAccountWithTokenAndPassword(networkSettings:
             portalUrl = portal.orEmpty(),
             portal = cloudPortal
         ),
-        token = getDecryptToken().orEmpty(),
-        password = getDecryptPassword().orEmpty(),
+        token = getDecryptToken(),
+        password = getDecryptPassword(),
+        online = isOnline
     )
 }
