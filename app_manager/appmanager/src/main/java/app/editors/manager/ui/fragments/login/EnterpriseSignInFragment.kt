@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.view.isVisible
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.BuildConfig
@@ -197,7 +198,8 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         showFragment(
             PasswordRecoveryFragment.newInstance(
                 viewBinding?.loginEnterprisePortalEmailEdit?.text.toString(),
-                false
+                false,
+                presenter.useLdap
             ), PasswordRecoveryFragment.TAG, false
         )
     }
@@ -363,7 +365,21 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         viewBinding?.loginEnterprisePortalEmailEdit?.addTextChangedListener(fieldsWatcher)
         viewBinding?.loginEnterprisePortalPasswordEdit?.addTextChangedListener(fieldsWatcher)
         viewBinding?.loginEnterpriseSigninButton?.isEnabled = false
-        viewBinding?.loginEnterpriseSignonButton?.isEnabled = false
+
+        val cloudPortal = presenter.currentPortal
+        if (cloudPortal != null && cloudPortal.settings.ldap) {
+            viewBinding?.ldapCheckbox?.isVisible = true
+            viewBinding?.ldapCheckbox?.text = getString(R.string.errors_sign_in_ldap_checkbox, cloudPortal.url)
+            viewBinding?.ldapCheckbox?.setOnCheckedChangeListener { _, isChecked ->
+                presenter.useLdap = isChecked
+                viewBinding?.loginEnterprisePortalEmailLayout?.error = null
+                if (isChecked) {
+                    viewBinding?.loginEnterprisePortalEmailLayout?.setHint(R.string.profile_username_title)
+                } else {
+                    viewBinding?.loginEnterprisePortalEmailLayout?.setHint(R.string.login_enterprise_email_hint)
+                }
+            }
+        }
 
         presenter.checkSocialProvider(portal.orEmpty()) { socialViews?.setProviders(it) }
     }

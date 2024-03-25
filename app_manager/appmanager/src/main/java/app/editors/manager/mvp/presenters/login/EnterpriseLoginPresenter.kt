@@ -21,6 +21,11 @@ open class EnterpriseLoginPresenter : BaseLoginPresenter<CommonSignInView>() {
         const val TAG_DIALOG_LOGIN_FACEBOOK = "TAG_DIALOG_LOGIN_FACEBOOK"
     }
 
+    val currentPortal: CloudPortal?
+        get() = App.getApp().loginComponent.currentPortal
+
+    var useLdap: Boolean = false
+
     init {
         App.getApp().appComponent.inject(this)
     }
@@ -44,7 +49,7 @@ open class EnterpriseLoginPresenter : BaseLoginPresenter<CommonSignInView>() {
     }
 
     fun signInPortal(login: String, password: String, portal: CloudPortal) {
-        if (!StringUtils.isEmailValid(login)) {
+        if (!useLdap && !StringUtils.isEmailValid(login)) {
             viewState.onEmailNameError(context.getString(R.string.errors_email_syntax_error))
             return
         }
@@ -53,6 +58,11 @@ open class EnterpriseLoginPresenter : BaseLoginPresenter<CommonSignInView>() {
         if (App.getApp().loginComponent.currentPortal == null) {
             App.getApp().refreshLoginComponent(portal)
         }
-        signInWithEmail(login, password)
+
+        if (useLdap) {
+            // sign in with ldap
+        } else {
+            signInWithEmail(login, password)
+        }
     }
 }
