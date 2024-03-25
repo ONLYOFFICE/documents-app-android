@@ -304,10 +304,10 @@
         </provider>
 
         <provider
-            android:name="app.documents.core.account.AccountContentProvider"
+            android:name=".managers.tools.AccountContentProvider"
             android:authorities="com.onlyoffice.accounts"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="true" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

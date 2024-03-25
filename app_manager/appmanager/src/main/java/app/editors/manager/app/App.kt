@@ -115,6 +115,9 @@ class App : Application() {
 
     private fun accountsMigrate() {
         refreshLoginComponent(null)
+        if (ActivitiesUtils.isPackageExist(this, "com.onlyoffice.projects")) {
+            coreComponent.accountHelper.copyData()
+        }
         coreComponent.migrationHelper.migrate()
         _loginComponent = null
     }
@@ -196,9 +199,6 @@ class App : Application() {
             if (getProcess() == "com.onlyoffice.documents:WebViewerActivity") {
                 WebView.setDataDirectorySuffix("cacheWebView")
             }
-        }
-        if (ActivitiesUtils.isPackageExist(this, "com.onlyoffice.projects")) {
-            AddAccountHelper(this).copyData()
         }
         isAnalyticEnable = appComponent.preference.isAnalyticEnable
         initCrashlytics()

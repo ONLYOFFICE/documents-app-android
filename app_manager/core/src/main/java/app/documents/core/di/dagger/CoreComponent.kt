@@ -1,6 +1,7 @@
 package app.documents.core.di.dagger
 
 import android.content.Context
+import app.documents.core.account.AddAccountHelper
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.database.migration.MigrationHelper
@@ -32,6 +33,8 @@ interface CoreComponent {
 
     val cloudDataSource: CloudDataSource
     val recentDataSource: RecentDataSource
+
+    val accountHelper: AddAccountHelper
     val migrationHelper: MigrationHelper
 
     val shareService: ShareService

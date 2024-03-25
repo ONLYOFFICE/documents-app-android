@@ -13,7 +13,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import kotlinx.serialization.Serializable
 import lib.toolkit.base.managers.utils.CryptUtils
 
-internal data class CloudAccountWithTokenAndPassword(
+data class CloudAccountWithTokenAndPassword(
     val token: String?,
     val password: String?,
     val cloudAccount: CloudAccount,
@@ -22,7 +22,7 @@ internal data class CloudAccountWithTokenAndPassword(
 
 @Entity(tableName = "CloudAccount")
 @Serializable
-internal data class OldCloudAccount(
+data class OldCloudAccount(
     @PrimaryKey
     val id: String,
     val login: String? = null,
@@ -58,42 +58,9 @@ internal data class OldCloudAccount(
     fun getDecryptPassword() = CryptUtils.decryptAES128(password, id)
 }
 
-internal fun OldCloudAccount.toCloudAccountWithTokenAndPassword(networkSettings: NetworkSettings):
+
+fun OldCloudAccount.toCloudAccountWithTokenAndPassword():
         CloudAccountWithTokenAndPassword {
-
-    var cloudPortal = CloudPortal(
-        url = portal.orEmpty(),
-        scheme = Scheme.valueOf(scheme.orEmpty()),
-        version = PortalVersion(serverVersion = serverVersion),
-        settings = PortalSettings(isSslState = isSslState, isSslCiphers = isSslCiphers),
-        provider = when {
-            isPersonal -> PortalProvider.Cloud.Personal
-            isWebDav -> PortalProvider.Webdav(WebdavProvider.valueOf(webDavProvider.orEmpty()))
-            isOneDrive -> PortalProvider.Onedrive
-            isGoogleDrive -> PortalProvider.GoogleDrive
-            isDropbox -> PortalProvider.Dropbox
-            else -> PortalProvider.default
-        }
-    )
-
-    if (isOnline) {
-        with(networkSettings) {
-            when {
-                isDocSpace -> cloudPortal = cloudPortal.copy(provider = PortalProvider.Cloud.DocSpace)
-            }
-            cloudPortal = cloudPortal.copy(
-                version = cloudPortal.version.copy(
-                    serverVersion = serverVersion,
-                    documentServerVersion = documentServerVersion
-                ),
-                settings = cloudPortal.settings.copy(
-                    ssoLabel = ssoLabel,
-                    ssoUrl = ssoUrl,
-                    ldap = ldap
-                )
-            )
-        }
-    }
 
     return CloudAccountWithTokenAndPassword(
         cloudAccount = CloudAccount(
@@ -105,10 +72,51 @@ internal fun OldCloudAccount.toCloudAccountWithTokenAndPassword(networkSettings:
             isAdmin = isAdmin,
             isVisitor = isVisitor,
             portalUrl = portal.orEmpty(),
-            portal = cloudPortal
+            portal = CloudPortal(
+                url = portal.orEmpty(),
+                scheme = Scheme.valueOf(scheme.orEmpty()),
+                version = PortalVersion(serverVersion = serverVersion),
+                settings = PortalSettings(isSslState = isSslState, isSslCiphers = isSslCiphers),
+                provider = when {
+                    isPersonal -> PortalProvider.Cloud.Personal
+                    isWebDav -> PortalProvider.Webdav(WebdavProvider.valueOf(webDavProvider.orEmpty()))
+                    isOneDrive -> PortalProvider.Onedrive
+                    isGoogleDrive -> PortalProvider.GoogleDrive
+                    isDropbox -> PortalProvider.Dropbox
+                    else -> PortalProvider.default
+                }
+            )
         ),
         token = getDecryptToken(),
         password = getDecryptPassword(),
         online = isOnline
+    )
+}
+
+internal fun OldCloudAccount.toCloudAccountWithTokenAndPassword(networkSettings: NetworkSettings? = null):
+        CloudAccountWithTokenAndPassword {
+
+    val accountWithTokenAndPassword = toCloudAccountWithTokenAndPassword()
+    val cloudPortal = accountWithTokenAndPassword.cloudAccount.portal
+
+    return accountWithTokenAndPassword.copy(
+        cloudAccount = accountWithTokenAndPassword.cloudAccount.copy(
+            portal = if (networkSettings != null && isOnline) {
+                with(networkSettings) {
+                    cloudPortal.copy(
+                        provider = if (isDocSpace) PortalProvider.Cloud.DocSpace else cloudPortal.provider,
+                        version = cloudPortal.version.copy(
+                            serverVersion = serverVersion,
+                            documentServerVersion = documentServerVersion
+                        ),
+                        settings = cloudPortal.settings.copy(
+                            ssoLabel = ssoLabel,
+                            ssoUrl = ssoUrl,
+                            ldap = ldap
+                        )
+                    )
+                }
+            } else cloudPortal
+        )
     )
 }

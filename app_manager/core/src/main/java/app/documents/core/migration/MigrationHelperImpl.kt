@@ -26,21 +26,26 @@ internal class MigrationHelperImpl @Inject constructor(
                 .map { it.toCloudAccountWithTokenAndPassword(networkSettings) }
 
             accountWithTokenAndPassword.forEach { data ->
+                var shouldBeOnline = false
+
                 if (!data.token.isNullOrEmpty()) {
                     accountManager.setToken(data.cloudAccount.accountName, data.token)
+                    shouldBeOnline = true
                 }
 
                 if (!data.password.isNullOrEmpty()) {
                     accountManager.setPassword(data.cloudAccount.accountName, data.password)
+                    shouldBeOnline = true
                 }
 
                 cloudDataSource.insertOrUpdateAccount(data.cloudAccount)
                 cloudDataSource.insertOrUpdatePortal(data.cloudAccount.portal)
 
-                if (data.online) {
+                if (data.online && shouldBeOnline) {
                     accountPreferences.onlineAccountId = data.cloudAccount.id
                 }
             }
+            accountDao.deleteAll()
         }
     }
 }

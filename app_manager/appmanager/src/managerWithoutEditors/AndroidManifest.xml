@@ -316,7 +316,7 @@
         </provider>
 
         <provider
-            android:name="app.documents.core.account.AccountContentProvider"
+            android:name="app.editors.manager.managers.tools.AccountContentProvider"
             android:authorities="com.onlyoffice.accounts"
             android:enabled="true"
             android:exported="true" />

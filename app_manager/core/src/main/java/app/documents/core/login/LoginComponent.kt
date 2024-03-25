@@ -3,7 +3,6 @@ package app.documents.core.login
 import app.documents.core.account.AccountRepository
 import app.documents.core.di.dagger.LoginModule
 import app.documents.core.model.cloud.CloudPortal
-import app.documents.core.model.cloud.PortalProvider
 import dagger.BindsInstance
 import dagger.Subcomponent
 import javax.inject.Scope

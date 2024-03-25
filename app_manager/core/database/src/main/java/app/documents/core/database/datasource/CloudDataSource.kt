@@ -5,11 +5,11 @@ import app.documents.core.model.cloud.CloudPortal
 
 interface CloudDataSource {
 
-    fun addObserver(onInvalidated: () -> Unit)
+    val initTimestamp: Long
 
     suspend fun getAccountByLogin(login: String): CloudAccount?
 
-    suspend fun updateAccount(cloudAccount: CloudAccount)
+    suspend fun updateAccount(cloudAccount: CloudAccount): Int
 
     suspend fun addAccount(account: CloudAccount)
 
@@ -20,6 +20,8 @@ interface CloudDataSource {
     suspend fun getAccount(id: String): CloudAccount?
 
     suspend fun deleteAccount(account: CloudAccount)
+
+    suspend fun deleteAccount(id: String): Int
 
     suspend fun getPortal(url: String): CloudPortal?
 

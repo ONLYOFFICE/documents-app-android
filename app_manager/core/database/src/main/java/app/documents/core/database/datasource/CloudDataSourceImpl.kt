@@ -12,8 +12,13 @@ import app.documents.core.model.cloud.PortalProvider
 
 internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSource {
 
-    override fun addObserver(onInvalidated: () -> Unit) {
-        db.addObserver(onInvalidated)
+    override val initTimestamp: Long
+        get() = _initTimestamp
+
+    private var _initTimestamp: Long = 0L
+
+    init {
+        db.addObserver { _initTimestamp = System.currentTimeMillis() }
     }
 
     override suspend fun getAccount(id: String): CloudAccount? {
@@ -26,6 +31,10 @@ internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSou
 
     override suspend fun deleteAccount(account: CloudAccount) {
         db.accountDao.deleteAccount(account.toEntity())
+    }
+
+    override suspend fun deleteAccount(id: String): Int {
+        return db.accountDao.deleteAccount(id)
     }
 
     override suspend fun getAccounts(): List<CloudAccount> {
@@ -44,8 +53,8 @@ internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSou
         }
     }
 
-    override suspend fun updateAccount(cloudAccount: CloudAccount) {
-        db.accountDao.updateAccount(cloudAccount.toEntity())
+    override suspend fun updateAccount(cloudAccount: CloudAccount): Int {
+        return db.accountDao.updateAccount(cloudAccount.toEntity())
     }
 
     override suspend fun addAccount(account: CloudAccount) {

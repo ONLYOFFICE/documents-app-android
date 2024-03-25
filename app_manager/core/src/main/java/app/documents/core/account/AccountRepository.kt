@@ -2,6 +2,7 @@ package app.documents.core.account
 
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.login.CheckLoginResult
+import app.documents.core.migration.CloudAccountWithTokenAndPassword
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Scheme
@@ -28,6 +29,8 @@ interface AccountRepository {
         onOldAccount: suspend (CloudAccount) -> Unit = {}
     )
 
+    suspend fun addAccounts(accounts: List<CloudAccountWithTokenAndPassword>)
+
     suspend fun getOnlineAccount(): CloudAccount?
 
     suspend fun logOut(accountId: String): CloudAccount
@@ -49,6 +52,14 @@ interface AccountRepository {
         token: String? = null,
         refreshToken: String? = null,
         block: ((CloudAccount) -> CloudAccount)? = null
+    )
+
+    suspend fun updateAccountData(
+        accountId: String,
+        accountName: String,
+        token: String?,
+        password: String?,
+        isOnline: Boolean
     )
 }
 
@@ -74,6 +85,18 @@ internal class AccountRepositoryImpl(
                 refreshToken?.let { updateAccountData(account.accountName) { it.copy(refreshToken = refreshToken) } }
             }
         }
+    }
+
+    override suspend fun updateAccountData(
+        accountId: String,
+        accountName: String,
+        token: String?,
+        password: String?,
+        isOnline: Boolean
+    ) {
+        accountManager.setToken(accountName, token)
+        accountManager.setPassword(accountName, password)
+        if (isOnline) accountPreferences.onlineAccountId = accountId
     }
 
     override suspend fun checkLogin(accountId: String): CheckLoginResult {
@@ -145,6 +168,14 @@ internal class AccountRepositoryImpl(
         onOldAccount: suspend (CloudAccount) -> Unit
     ) {
         addAccount(cloudAccount, "", password, "", onOldAccount)
+    }
+
+    override suspend fun addAccounts(accounts: List<CloudAccountWithTokenAndPassword>) {
+        accounts.forEach { data ->
+            addAccountToAccountManager(data.cloudAccount.toAccountData(), data.password.orEmpty(), data.token.orEmpty())
+            cloudDataSource.insertOrUpdateAccount(data.cloudAccount)
+            cloudDataSource.insertOrUpdatePortal(data.cloudAccount.portal)
+        }
     }
 
     private fun CloudAccount.toAccountData(refreshToken: String = ""): AccountData {

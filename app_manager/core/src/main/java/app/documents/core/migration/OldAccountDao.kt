@@ -8,4 +8,7 @@ internal interface OldAccountDao {
 
     @Query("SELECT * FROM CloudAccount")
     suspend fun getAccounts(): List<OldCloudAccount>
+
+    @Query("DELETE FROM CloudAccount")
+    suspend fun deleteAll()
 }
