@@ -126,7 +126,9 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
                 }
             }
         } catch (error: Throwable) {
-            fetchError(error)
+            withContext(Dispatchers.Main) {
+                fetchError(error)
+            }
             return emptyList()
         }
     }
