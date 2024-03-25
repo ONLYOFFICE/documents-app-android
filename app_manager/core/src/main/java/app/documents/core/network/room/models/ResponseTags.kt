@@ -1,9 +1,8 @@
 package app.documents.core.network.room.models
 
-import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 
-@Serializable
-data class ResponseTags(val tags: Array<String> = emptyArray()) {
+data class ResponseTags(@SerializedName("response") val tags: Array<String> = emptyArray()) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

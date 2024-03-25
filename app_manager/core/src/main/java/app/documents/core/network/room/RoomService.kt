@@ -4,8 +4,20 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.manager.models.response.ResponseExplorer
+import app.documents.core.network.room.models.RequestAddTags
+import app.documents.core.network.room.models.RequestArchive
+import app.documents.core.network.room.models.RequestCreateExternalLink
+import app.documents.core.network.room.models.RequestCreateRoom
+import app.documents.core.network.room.models.RequestCreateTag
+import app.documents.core.network.room.models.RequestDeleteRoom
+import app.documents.core.network.room.models.RequestRenameRoom
+import app.documents.core.network.room.models.RequestRoomOwner
+import app.documents.core.network.room.models.RequestSendLinks
+import app.documents.core.network.room.models.RequestSetLogo
+import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.room.models.ResponseRoomShare
-import app.documents.core.network.room.models.*
+import app.documents.core.network.room.models.ResponseTags
+import app.documents.core.network.room.models.ResponseUpdateExternalLink
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.response.ResponseExternalLink
 import app.documents.core.network.share.models.response.ResponseShare
@@ -13,7 +25,17 @@ import io.reactivex.Observable
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.HTTP
+import retrofit2.http.Headers
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Part
+import retrofit2.http.Path
+import retrofit2.http.QueryMap
 
 interface RoomService {
 
@@ -89,13 +111,7 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/tags")
-    suspend fun getTags(
-        @QueryMap options: Map<String, String>? = mapOf(
-            "filterValue" to "",
-            "startIndex" to "",
-            "count" to ""
-        )
-    ): ResponseTags
+    suspend fun getTags(): ResponseTags
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
