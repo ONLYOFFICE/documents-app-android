@@ -207,7 +207,7 @@ class SettingsPresenter(
 
     fun getInternalLink() {
         if (item is CloudFolder) {
-            val internalLink = context.accountOnline?.portalUrl + if (item.isRoom) {
+            val internalLink = "${context.accountOnline?.portal?.urlWithScheme}/" + if (item.isRoom) {
                 TAG_ROOM_PATH
             } else {
                 TAG_FOLDER_PATH
