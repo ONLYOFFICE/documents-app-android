@@ -197,7 +197,7 @@ private fun ExternalLinkItem(
             }
             IconButton(modifier = Modifier, onClick = onShareClick) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(app.editors.manager.R.drawable.ic_list_context_share),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_list_context_share),
                     tint = MaterialTheme.colors.primary,
                     contentDescription = null
                 )
