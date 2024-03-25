@@ -53,8 +53,6 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
         signInJob = presenterScope.launch {
             loginRepository.registerPersonal(email, Locale.getDefault().language)
                 .collect { result ->
-                    // TODO:
-                    // viewState.onError(context.getString(R.string.errors_email_already_registered))
                     when (result) {
                         is Result.Success -> viewState.onRegisterPortal()
                         is Result.Error -> fetchError(result.exception)
