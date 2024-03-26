@@ -58,9 +58,9 @@
             android:layout_height="wrap_content"
             android:drawablePadding="0dp"
             android:minHeight="0dp"
+            android:text="@string/errors_sign_in_ldap_checkbox"
             android:textAppearance="@style/Widget.Common.TextView"
-            android:visibility="gone"
-            tools:text="Sign in to: example.com" />
+            android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_enterprise_signin_button"

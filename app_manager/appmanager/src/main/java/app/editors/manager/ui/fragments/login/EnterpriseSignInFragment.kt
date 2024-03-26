@@ -369,7 +369,6 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         val cloudPortal = presenter.currentPortal
         if (cloudPortal != null && cloudPortal.settings.ldap) {
             viewBinding?.ldapCheckbox?.isVisible = true
-            viewBinding?.ldapCheckbox?.text = getString(R.string.errors_sign_in_ldap_checkbox, cloudPortal.url)
             viewBinding?.ldapCheckbox?.setOnCheckedChangeListener { _, isChecked ->
                 presenter.useLdap = isChecked
                 viewBinding?.loginEnterprisePortalEmailLayout?.error = null

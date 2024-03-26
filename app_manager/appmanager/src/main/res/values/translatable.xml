@@ -73,7 +73,7 @@
     <string name="errors_sign_in_splash_error">Failed to access the portal</string>
     <string name="errors_sign_in_account_error">Login failed</string>
     <string name="errors_sign_in_account_already_use">You are already using this account</string>
-    <string name="errors_sign_in_ldap_checkbox">Sign in to: %s</string>
+    <string name="errors_sign_in_ldap_checkbox">Sign in as LDAP User</string>
 
     <!-- ======================================================================================= -->
     <!-- Login -->
