@@ -98,6 +98,7 @@ import lib.compose.ui.views.AppTextField
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.ChipData
 import lib.compose.ui.views.RoomChip
+import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FragmentUtils
@@ -148,7 +149,6 @@ class AddRoomFragment : BaseFragment() {
         get() = arguments?.getSerializableExt<Item>(TAG_ROOM_INFO) != null && arguments?.getBoolean(TAG_COPY) == false
 
     override fun onBackPressed(): Boolean {
-        requireContext().appComponent.accountOnline?.token
         if (!navController.popBackStack()) {
             if (parentFragment is AddRoomDialog) {
                 (parentFragment as AddRoomDialog).dismiss()
@@ -347,10 +347,15 @@ private fun MainScreen(
                         .height(dimensionResource(id = lib.toolkit.base.R.dimen.item_two_line_height))
                         .padding(horizontal = 16.dp)
                 ) {
+                    val context = LocalContext.current
                     GlideImage(
                         model = if (roomState.imageUri is String && roomState.imageUri.isNotEmpty()) {
                             // TODO need interceptor
-                            GlideUtils.getCorrectLoad(roomState.imageUri, LocalContext.current.appComponent.accountOnline?.token ?: "")
+                            GlideUtils.getCorrectLoad(
+                                roomState.imageUri,
+                                AccountUtils.getToken(context, context.appComponent.accountOnline?.accountName.orEmpty())
+                                    .orEmpty()
+                            )
                         } else {
                             roomState.imageUri
                         },

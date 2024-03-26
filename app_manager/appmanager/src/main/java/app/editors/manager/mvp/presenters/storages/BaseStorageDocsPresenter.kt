@@ -4,24 +4,23 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.WorkManager
-import app.documents.core.storage.recent.Recent
+import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
-import app.editors.manager.R
-import app.editors.manager.app.App
-import app.editors.manager.managers.receivers.DownloadReceiver
-import app.editors.manager.managers.receivers.UploadReceiver
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestCreate
+import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.receivers.DownloadReceiver
+import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import app.editors.manager.ui.views.custom.PlaceholderViews
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.StringUtils
-import java.util.*
+import moxy.presenterScope
 
 abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePresenter<V>(),
     UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
@@ -113,19 +112,17 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
     }
 
     override fun addRecent(file: CloudFile) {
-        CoroutineScope(Dispatchers.Default).launch {
-            accountDao.getAccountOnline()?.let {
-                recentDao.addRecent(
+        presenterScope.launch {
+            context.accountOnline?.let {
+                recentDataSource.addRecent(
                     Recent(
-                        idFile = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
+                        fileId = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
                         path = file.webUrl,
                         name = file.title,
                         size = file.pureContentLength,
-                        isLocal = false,
-                        isWebDav = true,
-                        date = Date().time,
+                        isWebdav = true,
                         ownerId = it.id,
-                        source = it.portal
+                        source = it.portal.url
                     )
                 )
             }

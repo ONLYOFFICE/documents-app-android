@@ -6,9 +6,9 @@ import moxy.viewstate.strategy.StateStrategyType
 
 @StateStrategyType(OneExecutionStateStrategy::class)
 interface WebDavSignInView : BaseView {
-    fun onDialogWaiting(string: String)
-    fun onDialogClose()
     fun onLogin()
-    fun onUrlError(string: String)
+    fun onDialogWaiting()
+    fun onDialogClose()
+    fun onUrlError()
     fun onNextCloudLogin(url: String)
 }

@@ -19,8 +19,10 @@ import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.regex.Pattern
+
 
 object StringUtils {
     @JvmField
@@ -53,6 +55,8 @@ object StringUtils {
     private val PATTERN_EXT_EBOOK = "^(epub|mobi|djvu)$"
     private val PATTERN_EXT_PDF = "^(pdf)$"
     private val PATTERN_EXT_ARCH = "^(zip|zz|zipx|rar|7z|s7z|ace|ice|tar|gz|tgz|tbz2|txz|iso)$"
+
+    private val PATTERN_URL_HOST = "^(?:\\w+://)?((?:[^./?#]+\\.)?([^/?#]+))"
 
     enum class Extension {
         UNKNOWN,
@@ -264,6 +268,10 @@ object StringUtils {
         return url
     }
 
+    fun hasScheme(url: String): Boolean {
+        return url.contains(""".*://""".toRegex())
+    }
+
     @JvmStatic
     fun equals(str1: String?, str2: String?): Boolean {
         return str1 != null && (str1 === str2 || str1.equals(str2, ignoreCase = true))
@@ -313,6 +321,11 @@ object StringUtils {
     @JvmStatic
     fun isValidUrl(@NonNull url: String): Boolean {
         return URLUtil.isValidUrl(url) && Patterns.WEB_URL.matcher(url).matches()
+    }
+
+    fun getUrlHost(url: String?): String {
+        val groups = PATTERN_URL_HOST.toRegex().find(url.orEmpty())?.groups
+        return if (!groups.isNullOrEmpty()) groups[1]?.value.orEmpty() else ""
     }
 
     @JvmStatic

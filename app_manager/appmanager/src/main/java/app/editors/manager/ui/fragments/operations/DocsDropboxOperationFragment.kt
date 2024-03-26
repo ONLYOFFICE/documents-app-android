@@ -1,8 +1,9 @@
 package app.editors.manager.ui.fragments.operations
 
+import app.documents.core.network.common.utils.DropboxUtils
 import app.editors.manager.mvp.presenters.storages.DocsDropboxPresenter
 import app.editors.manager.ui.fragments.base.BaseStorageOperationsFragment
-import app.editors.manager.ui.fragments.storages.DropboxSignInFragment
+import app.editors.manager.ui.fragments.base.StorageLoginFragment
 import moxy.presenter.InjectPresenter
 
 class DocsDropboxOperationFragment : BaseStorageOperationsFragment() {
@@ -20,7 +21,11 @@ class DocsDropboxOperationFragment : BaseStorageOperationsFragment() {
     override fun getOperationsPresenter() = presenter
 
     override fun onAuthorization() {
-        showFragment(DropboxSignInFragment.newInstance(), DropboxSignInFragment.TAG, false)
+        showFragment(
+            StorageLoginFragment.newInstance(DropboxUtils.storage),
+            StorageLoginFragment.TAG,
+            false
+        )
     }
 
 }

@@ -8,9 +8,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityPortalsBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.activities.base.BaseAppActivity
@@ -69,9 +69,6 @@ class PortalsActivity : BaseAppActivity(), View.OnClickListener {
     @Inject
     lateinit var preferenceTool: PreferenceTool
 
-    @Inject
-    lateinit var networkSettings: NetworkSettings
-
     private var socialFragment: Fragment? = null
 
     private var viewBinding: ActivityPortalsBinding? = null
@@ -80,6 +77,7 @@ class PortalsActivity : BaseAppActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         App.getApp().appComponent.inject(this)
+        App.getApp().refreshLoginComponent(null)
         viewBinding = ActivityPortalsBinding.inflate(layoutInflater)
         tabLayout = viewBinding?.tabLayout
         setContentView(viewBinding?.root)
@@ -103,7 +101,7 @@ class PortalsActivity : BaseAppActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-        SignInActivity.showPortalSignIn(this, networkSettings.getPortal(), null, arrayOf())
+        SignInActivity.showPortalSignIn(this, accountOnline?.portalUrl, null, arrayOf())
     }
 
     private fun init(savedInstanceState: Bundle?) {

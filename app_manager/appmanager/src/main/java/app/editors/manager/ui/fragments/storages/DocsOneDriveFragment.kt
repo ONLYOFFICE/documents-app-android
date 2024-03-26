@@ -6,9 +6,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.utils.OneDriveUtils
 import app.editors.manager.app.App
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
 import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
+import app.editors.manager.ui.fragments.base.StorageLoginFragment
 import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.RequestPermissions
@@ -71,7 +73,11 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
     }
 
     override fun onAuthorization() {
-        //stub
+        showFragment(
+            StorageLoginFragment.newInstance(OneDriveUtils.storage),
+            StorageLoginFragment.TAG,
+            false
+        )
     }
 
     override fun onShowCamera(photoUri: Uri) {

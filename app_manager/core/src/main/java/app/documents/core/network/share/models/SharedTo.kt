@@ -1,5 +1,6 @@
 package app.documents.core.network.share.models
 
+import app.documents.core.model.login.Group
 import kotlinx.serialization.Serializable
 import lib.toolkit.base.managers.utils.StringUtils
 
@@ -18,7 +19,7 @@ data class SharedTo(
     val workFrom: String = "",
     val displayName: String = "",
     val mobilePhone: String = "",
-    val groups: List<app.documents.core.network.login.models.Group> = emptyList(),
+    val groups: List<Group> = emptyList(),
     val avatarMedium: String = "",
     val avatar: String = "",
     val isOnline: Boolean = false,

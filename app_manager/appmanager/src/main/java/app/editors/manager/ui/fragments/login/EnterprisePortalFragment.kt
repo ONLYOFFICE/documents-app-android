@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
@@ -19,6 +20,8 @@ import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.viewModels.login.EnterprisePortalState
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import app.editors.manager.viewModels.login.RemoteUrlViewModel
+import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 
@@ -39,9 +42,6 @@ class EnterprisePortalFragment : BaseAppFragment(),
     private val urlsViewModel: RemoteUrlViewModel by viewModels()
 
     private var viewBinding: FragmentLoginEnterprisePortalBinding? = null
-
-    private var httpUrl = ""
-    private var providers: Array<String>? = emptyArray()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -73,10 +73,8 @@ class EnterprisePortalFragment : BaseAppFragment(),
         super.onAcceptClick(dialogs, value, tag)
         if (tag != null) {
             if (TAG_DIALOG_HTTP == tag) {
-                if (httpUrl.isNotEmpty()) {
-                    viewModel.cancel()
-                    onSuccessPortal(httpUrl, providers ?: emptyArray())
-                }
+                viewModel.cancel()
+                onSuccessPortal()
             }
         }
     }
@@ -95,18 +93,18 @@ class EnterprisePortalFragment : BaseAppFragment(),
         message?.let { showSnackBar(it) }
     }
 
-    private fun onSuccessPortal(portal: String, providers: Array<String>) {
+    private fun onSuccessPortal() {
         hideDialog()
-        SignInActivity.showPortalSignIn(requireContext(), portal, "", providers)
+        SignInActivity.showPortalSignIn(requireContext(), "", "", emptyArray())
     }
 
-    private fun onHttpPortal(portal: String, providers: Array<String>) {
-        this.providers = providers
-        httpUrl = portal
+    private fun onHttpPortal() {
         showQuestionDialog(
             getString(R.string.dialogs_question_http_title),
-            getString(R.string.dialogs_question_http_question), getString(R.string.dialogs_question_accept_yes),
-            getString(R.string.dialogs_common_cancel_button), TAG_DIALOG_HTTP
+            getString(R.string.dialogs_question_http_question),
+            getString(R.string.dialogs_question_accept_yes),
+            getString(R.string.dialogs_common_cancel_button),
+            TAG_DIALOG_HTTP
         )
     }
 
@@ -120,10 +118,6 @@ class EnterprisePortalFragment : BaseAppFragment(),
             getString(R.string.dialogs_common_cancel_button),
             TAG_DIALOG_WAITING
         )
-    }
-
-    private fun onLoginPortal(portal: String) {
-        viewBinding?.loginEnterprisePortalEdit?.setText(portal)
     }
 
     private fun init(savedInstanceState: Bundle?) {
@@ -142,16 +136,16 @@ class EnterprisePortalFragment : BaseAppFragment(),
                 }
                 is EnterprisePortalState.Success -> {
                     if (state.isHttp) {
-                        onHttpPortal(state.portal, state.providers)
+                        onHttpPortal()
                     } else {
-                        onSuccessPortal(state.portal, state.providers)
+                        onSuccessPortal()
                     }
                 }
                 is EnterprisePortalState.Error -> {
-                    if (state.message == getString(R.string.login_enterprise_edit_error_hint)) {
-                        onPortalSyntax(state.message)
-                    } else {
-                        onError(state.message)
+                    if (state.message == R.string.login_enterprise_edit_error_hint) {
+                        onPortalSyntax(getString(state.message))
+                    } else if (state.message != null) {
+                        onError(getString(state.message))
                     }
                 }
             }
@@ -163,7 +157,17 @@ class EnterprisePortalFragment : BaseAppFragment(),
             }
         }
         viewBinding?.terms?.termsCheckbox?.setOnCheckedChangeListener { _, isChecked ->
-            viewBinding?.loginEnterpriseNextButton?.isEnabled = isChecked && viewBinding?.loginEnterprisePortalEdit?.text?.isNotEmpty() == true
+            viewBinding?.loginEnterpriseNextButton?.isEnabled =
+                isChecked && viewBinding?.loginEnterprisePortalEdit?.text?.isNotEmpty() == true
+        }
+
+        lifecycleScope.launch {
+            viewModel.portals.collect { portals ->
+                if (portals.isNotEmpty()) {
+                    viewBinding?.loginEnterprisePortalLayout?.endIconMode = TextInputLayout.END_ICON_DROPDOWN_MENU
+                    viewBinding?.loginEnterprisePortalEdit?.setSimpleItems(portals)
+                }
+            }
         }
     }
 
@@ -190,7 +194,7 @@ class EnterprisePortalFragment : BaseAppFragment(),
     }
 
     private fun nextClick() {
-        hideKeyboard(viewBinding?.loginEnterprisePortalEdit)
+        hideKeyboard(requireContext(), view?.windowToken)
         viewModel.checkPortal(viewBinding?.loginEnterprisePortalEdit?.text?.trim().toString())
     }
 
@@ -199,7 +203,8 @@ class EnterprisePortalFragment : BaseAppFragment(),
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
             viewBinding?.loginEnterprisePortalLayout?.isErrorEnabled = false
             if (BuildConfig.APPLICATION_ID == "com.onlyoffice.documents") {
-                viewBinding?.loginEnterpriseNextButton?.isEnabled = s.isNotEmpty() && viewBinding?.terms?.termsCheckbox?.isChecked == true
+                viewBinding?.loginEnterpriseNextButton?.isEnabled =
+                    s.isNotEmpty() && viewBinding?.terms?.termsCheckbox?.isChecked == true
             } else {
                 viewBinding?.loginEnterpriseNextButton?.isEnabled = s.isNotEmpty()
             }

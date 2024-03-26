@@ -10,7 +10,8 @@ import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
-import app.documents.core.storage.account.CloudAccount
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.PortalProvider
 import app.editors.manager.R
 import app.editors.manager.databinding.AccountListItemLayoutBinding
 import app.editors.manager.managers.utils.GlideUtils
@@ -19,6 +20,8 @@ import app.editors.manager.managers.utils.ManagerUiUtils.setDropboxImage
 import app.editors.manager.managers.utils.ManagerUiUtils.setOneDriveImage
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.extensions.inflate
+import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.ui.adapters.BaseListAdapter
 
 class CloudAccountAdapter(
@@ -26,6 +29,8 @@ class CloudAccountAdapter(
     private val accountContextClickListener: ((position: Int, view: View) -> Unit),
     private val addClickListener: (() -> Unit)
 ) : BaseListAdapter<CloudAccount>() {
+
+    private var accountOnlineId: String = ""
 
     var selected: Boolean = false
         set(value) {
@@ -60,6 +65,7 @@ class CloudAccountAdapter(
                 holder.bind(
                     mList[position],
                     tracker.hasSelection(),
+                    mList[position].id == accountOnlineId,
                     accountClickListener,
                     accountContextClickListener
                 )
@@ -92,45 +98,53 @@ class CloudAccountAdapter(
         return mList.filter { it.id.isNotEmpty() }.map { it.id }
     }
 
+    fun setItems(list: MutableList<CloudAccount>, accountOnlineId: String) {
+        this.accountOnlineId = accountOnlineId
+        setItems(list)
+    }
+
 }
 
 class CloudAccountViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     private val binding: AccountListItemLayoutBinding = AccountListItemLayoutBinding.bind(view)
-    
+
     var itemDetailsLookup: ItemDetailsLookup.ItemDetails<String>? = null
 
     fun bind(
         account: CloudAccount,
         isSelection: Boolean,
+        isOnline: Boolean,
         accountClick: ((position: Int) -> Unit)? = null,
         accountContextClick: ((position: Int, view: View) -> Unit)? = null
     ) {
+        val token = AccountUtils.getToken(view.context, account.accountName)
         itemDetailsLookup = AccountDetailsItemLookup(absoluteAdapterPosition, account)
         with(binding) {
             accountItemName.text = account.name
-            accountItemPortal.text = account.portal
+            accountItemPortal.text = account.portal.url
             accountItemContext.isVisible = true
-            imageCheck.isVisible = !isSelection && account.isOnline
+            imageCheck.isVisible = !isSelection && isOnline
 
             when {
                 account.isOneDrive -> accountAvatar.setOneDriveImage()
-                account.isDropbox -> accountAvatar.setDropboxImage(account)
+                account.isDropbox -> accountAvatar.setDropboxImage(account, token.orEmpty())
                 account.isWebDav -> {
                     accountItemName.text = account.login
-                    ManagerUiUtils.setWebDavImage(account.webDavProvider, accountAvatar)
+                    ManagerUiUtils.setWebDavImage(account.portal.provider as? PortalProvider.Webdav, accountAvatar)
                 }
                 else -> {
-                    val url: String = if (account.avatarUrl?.contains("static") == true || account.isGoogleDrive) {
-                        account.avatarUrl ?: ""
-                    } else {
-                        account.scheme + account.portal + account.avatarUrl
+                    val url = with(account) {
+                        StringBuilder()
+                            .append(portal.urlWithScheme.takeUnless { StringUtils.hasScheme(avatarUrl) }.orEmpty())
+                            .append(avatarUrl)
+                            .toString()
                     }
+
                     Glide.with(accountAvatar)
-                        .load(GlideUtils.getCorrectLoad(url, account.getDecryptToken() ?: ""))
+                        .load(GlideUtils.getCorrectLoad(url, token.orEmpty()))
                         .apply(GlideUtils.avatarOptions)
                         .into(accountAvatar)
-
                 }
             }
             accountAvatar.foreground = null

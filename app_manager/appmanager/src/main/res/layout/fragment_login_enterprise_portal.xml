@@ -10,16 +10,17 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/login_enterprise_portal_layout"
-            style="@style/Widget.Common.TextInputLayout"
+            style="@style/Widget.Common.TextInputLayout.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/login_enterprise_edit_hint"
+            app:endIconMode="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread_inside">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/login_enterprise_portal_edit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

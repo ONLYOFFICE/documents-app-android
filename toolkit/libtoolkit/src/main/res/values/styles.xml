@@ -202,6 +202,13 @@
         <item name="boxBackgroundColor">@color/colorBackground</item>
     </style>
 
+    <style name="Widget.Common.TextInputLayout.ExposedDropdownMenu" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
+        <item name="android:layout_width">@dimen/default_screen_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">1</item>
+        <item name="boxBackgroundColor">@color/colorBackground</item>
+    </style>
+
     <style name="Widget.Common.TextInputLayout.Surface">
         <item name="boxBackgroundColor">@color/colorSurface</item>
     </style>
@@ -345,7 +352,7 @@
     </style>
 
     <style name="App.Dialog.Body" parent="Widget.Common.TextView.Small.Secondary">
-            <item name="android:maxLines">20</item>
+        <item name="android:maxLines">20</item>
     </style>
 
     <style name="App.Dialog.Buttons" parent="Widget.Common.Button.TextButton" />

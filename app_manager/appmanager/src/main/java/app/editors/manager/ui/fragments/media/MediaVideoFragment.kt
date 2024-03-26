@@ -12,11 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.MediaController
+import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.storage.account.AccountDao
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.FragmentMediaVideoBinding
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.media.MediaPagerFragment.OnMediaListener
@@ -50,7 +51,7 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
     }
 
     @Inject
-    lateinit var accountDao: AccountDao
+    lateinit var cloudDataSource: CloudDataSource
 
     init {
         App.getApp().appComponent.inject(this)
@@ -69,11 +70,11 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
     private val headers: Map<String, String?> by lazy {
         mapOf(
             ApiContract.HEADER_AUTHORIZATION to runBlocking(Dispatchers.Default) {
-                accountDao.getAccountOnline()?.let { account ->
+                context?.accountOnline?.let { account ->
                     AccountUtils.getToken(
                         App.getApp().applicationContext,
                         Account(
-                            account.getAccountName(),
+                            account.accountName,
                             App.getApp().applicationContext.getString(lib.toolkit.base.R.string.account_type)
                         )
                     )?.let {

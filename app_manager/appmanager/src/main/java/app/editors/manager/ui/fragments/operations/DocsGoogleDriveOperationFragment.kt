@@ -6,7 +6,7 @@ import app.editors.manager.app.App
 import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
 import app.editors.manager.mvp.views.base.DocsGoogleDriveView
 import app.editors.manager.ui.fragments.base.BaseStorageOperationsFragment
-import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
+import app.editors.manager.ui.fragments.base.StorageLoginFragment
 import moxy.presenter.InjectPresenter
 
 class DocsGoogleDriveOperationFragment: BaseStorageOperationsFragment(), DocsGoogleDriveView {
@@ -32,7 +32,11 @@ class DocsGoogleDriveOperationFragment: BaseStorageOperationsFragment(), DocsGoo
     }
 
     override fun onAuthorization() {
-        showFragment(GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage), GoogleDriveSignInFragment.TAG, false)
+        showFragment(
+            StorageLoginFragment.newInstance(GoogleDriveUtils.storage),
+            StorageLoginFragment.TAG,
+            false
+        )
     }
 
     init {

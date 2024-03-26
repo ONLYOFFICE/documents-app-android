@@ -96,10 +96,4 @@ dependencies {
     implementation(Lifecycle.viewModel)
     implementation(Lifecycle.liveData)
     implementation(Lifecycle.runtime)
-
-    implementation("com.squareup.okhttp3:okhttp:3.14.9")
-    implementation("com.github.bumptech.glide:okhttp3-integration:4.0.0"){
-        exclude("glide-parent")
-    }
-    kapt ("com.github.bumptech.glide:compiler:4.12.0")
 }

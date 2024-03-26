@@ -1,5 +1,6 @@
 package app.editors.manager.mvp.presenters.share
 
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.contracts.ApiContract.Access
 import app.documents.core.network.common.extensions.checkStatusCode
@@ -10,7 +11,6 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.share.ShareService
 import app.documents.core.network.share.models.request.RequestShare
 import app.documents.core.network.share.models.request.RequestShareItem
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent

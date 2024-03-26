@@ -16,8 +16,8 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.api
-import app.editors.manager.app.appComponent
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -75,7 +75,7 @@ class AddRoomViewModel(
                 name = roomInfo.title,
                 tags = roomInfo.tags.map { ChipData(it) }.toMutableList(),
                 imageUri = if (roomInfo.logo?.medium?.isNotEmpty() == true) {
-                    ApiContract.SCHEME_HTTPS + context.appComponent.networkSettings.getPortal() + roomInfo.logo!!.medium
+                    ApiContract.SCHEME_HTTPS + context.accountOnline?.portalUrl + roomInfo.logo!!.medium
                 } else {
                     null
                 }

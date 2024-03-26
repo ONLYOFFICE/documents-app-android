@@ -4,17 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import app.documents.core.model.cloud.WebdavProvider
+import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.app.App
 import app.editors.manager.databinding.ActivityWebDavLoginBinding
 import app.editors.manager.ui.activities.base.BaseAppActivity
+import app.editors.manager.ui.fragments.base.StorageLoginFragment
 import app.editors.manager.ui.fragments.login.WebDavSignInFragment
-import app.editors.manager.ui.fragments.storages.DropboxSignInFragment
-import app.editors.manager.ui.fragments.storages.GoogleDriveSignInFragment
-import app.editors.manager.ui.fragments.storages.OneDriveSignInFragment
 import app.editors.manager.ui.interfaces.WebDavInterface
 import lib.toolkit.base.managers.utils.getSerializable
 
@@ -22,15 +21,15 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
 
     companion object {
         private const val KEY_PROVIDER = "KEY_PROVIDER"
-        private const val KEY_ACCOUNT = "KEY_ACCOUNT "
         private const val KEY_TAG_FRAGMENT = "KEY_TAG_FRAGMENT"
+        const val KEY_ACCOUNT = "KEY_ACCOUNT "
 
         const val ONEDRIVE_FRAGMENT_VALUE = 1
         const val DROPBOX_FRAGMENT_VALUE = 2
         const val GOOGLEDRIVE_FRAGMENT_VALUE = 3
 
         @JvmStatic
-        fun show(activity: Activity, provider: WebDavService.Providers? = null, account: String?, fragment: Int = 0) {
+        fun show(activity: Activity, provider: WebdavProvider? = null, account: String?, fragment: Int = 0) {
             activity.startActivityForResult(Intent(activity, WebDavLoginActivity::class.java).apply {
                 putExtra(KEY_PROVIDER, provider)
                 putExtra(KEY_ACCOUNT, account)
@@ -64,19 +63,19 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun finishWithResult(folder: CloudFolder?) { }
+    override fun finishWithResult(folder: CloudFolder?) {}
 
     private fun init(savedInstanceState: Bundle?) {
         setSupportActionBar(viewBinding?.appBarToolbar)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
-            it.title = intent.getSerializable(KEY_PROVIDER, WebDavService.Providers::class.java).name
+            it.title = intent.getSerializable(KEY_PROVIDER, WebdavProvider::class.java).name
         }
         if (savedInstanceState == null) showFragment()
     }
 
     private fun showFragment() {
-        when(intent.getIntExtra(KEY_TAG_FRAGMENT, 0)) {
+        when (intent.getIntExtra(KEY_TAG_FRAGMENT, 0)) {
             ONEDRIVE_FRAGMENT_VALUE -> showOneDriveSignInFragment()
             DROPBOX_FRAGMENT_VALUE -> showDropboxSignInFragment()
             GOOGLEDRIVE_FRAGMENT_VALUE -> showGoogleDriveSignInFragment()
@@ -86,26 +85,32 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
 
     private fun showSignInFragment() {
         showFragment(
-            WebDavSignInFragment.newInstance(intent.getSerializableExtra(KEY_PROVIDER) as WebDavService.Providers),
+            WebDavSignInFragment.newInstance(
+                intent.getSerializable(KEY_PROVIDER, WebdavProvider::class.java),
+                intent.getStringExtra(KEY_ACCOUNT),
+            ),
             null
         )
     }
 
     private fun showOneDriveSignInFragment() {
         showFragment(
-            OneDriveSignInFragment.newInstance(OneDriveUtils.storage),
-            OneDriveSignInFragment.TAG
+            StorageLoginFragment.newInstance(OneDriveUtils.storage),
+            StorageLoginFragment.TAG
         )
     }
 
     private fun showDropboxSignInFragment() {
-        showFragment(DropboxSignInFragment.newInstance(), DropboxSignInFragment.TAG)
+        showFragment(
+            StorageLoginFragment.newInstance(DropboxUtils.storage),
+            StorageLoginFragment.TAG
+        )
     }
 
     private fun showGoogleDriveSignInFragment() {
         showFragment(
-            GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage),
-            GoogleDriveSignInFragment.TAG
+            StorageLoginFragment.newInstance(GoogleDriveUtils.storage),
+            StorageLoginFragment.TAG
         )
     }
 }

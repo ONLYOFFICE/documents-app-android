@@ -1,15 +1,13 @@
 package app.editors.manager.mvp.presenters.storage
 
 import android.content.Context
-import app.documents.core.storage.account.AccountDao
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.contracts.StorageContract
-import app.editors.manager.R
+import app.documents.core.network.common.models.Storage
 import app.documents.core.network.manager.ManagerService
+import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.api
-import app.editors.manager.managers.utils.StorageUtils
-import app.documents.core.network.common.models.Storage
 import app.editors.manager.mvp.views.storage.SelectView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -30,9 +28,6 @@ class SelectPresenter : MvpPresenter<SelectView>() {
 
     @Inject
     lateinit var context: Context
-
-    @Inject
-    lateinit var accountDao: AccountDao
 
     init {
         App.getApp().appComponent.inject(this)

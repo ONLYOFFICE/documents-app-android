@@ -1,6 +1,5 @@
 package app.documents.core.network.common.utils
 
-import app.documents.core.BuildConfig
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.Storage
 import lib.toolkit.base.managers.utils.StringUtils
@@ -36,11 +35,11 @@ object GoogleDriveUtils {
 
     val storage: Storage get() = Storage(
         ApiContract.Storage.GOOGLEDRIVE,
-        BuildConfig.GOOGLE_COM_CLIENT_ID,
-        BuildConfig.GOOGLE_COM_REDIRECT_URL
+        app.documents.core.network.BuildConfig.GOOGLE_COM_CLIENT_ID,
+        app.documents.core.network.BuildConfig.GOOGLE_COM_REDIRECT_URL
     )
 
-    val webId: String get() = BuildConfig.GOOGLE_WEB_ID
+    val webId: String get() = app.documents.core.network.BuildConfig.GOOGLE_WEB_ID
 
     fun getSortBy(filter: Map<String, String>?): String {
         return "$GOOGLE_DRIVE_FOLDER, " + when(filter?.get(ApiContract.Parameters.ARG_SORT_BY)) {

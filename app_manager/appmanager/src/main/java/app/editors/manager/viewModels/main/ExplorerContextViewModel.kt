@@ -1,8 +1,8 @@
 package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
@@ -13,9 +13,6 @@ class ExplorerContextViewModel : ViewModel() {
 
     @Inject
     lateinit var preferenceTool: PreferenceTool
-
-    @Inject
-    lateinit var networkSettings: NetworkSettings
 
     init {
         App.getApp().appComponent.inject(this)
@@ -71,8 +68,8 @@ class ExplorerContextViewModel : ViewModel() {
             else -> listOf(
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.Edit(state),
-                ExplorerContextItem.Share.takeIf { !networkSettings.isDocSpace },
-                ExplorerContextItem.CreateRoom.takeIf { networkSettings.isDocSpace },
+                ExplorerContextItem.Share.takeIf { state.provider != PortalProvider.Cloud.DocSpace },
+                ExplorerContextItem.CreateRoom.takeIf { state.provider == PortalProvider.Cloud.DocSpace },
                 ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.favorite),
                 ExplorerContextItem.Send,

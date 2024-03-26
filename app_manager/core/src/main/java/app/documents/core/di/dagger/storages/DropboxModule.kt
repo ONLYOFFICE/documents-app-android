@@ -3,18 +3,18 @@ package app.documents.core.di.dagger.storages
 import android.content.Context
 import app.documents.core.di.dagger.CoreModule.json
 import app.documents.core.di.dagger.Token
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.interceptors.BaseInterceptor
 import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.storages.dropbox.api.DropboxContentService
 import app.documents.core.network.storages.dropbox.api.DropboxProvider
 import app.documents.core.network.storages.dropbox.api.DropboxService
-import app.documents.core.storage.account.CloudAccount
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
-import lib.toolkit.base.managers.http.NetworkClient
 import lib.toolkit.base.managers.utils.AccountUtils
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -75,7 +75,7 @@ class DropboxModule {
     @Token
     fun provideToken(context: Context, account: CloudAccount?): String = runBlocking {
         account?.let { cloudAccount ->
-            return@runBlocking AccountUtils.getToken(context = context, cloudAccount.getAccountName())
+            return@runBlocking AccountUtils.getToken(context = context, cloudAccount.accountName)
                 ?: ""
         } ?: ""
     }

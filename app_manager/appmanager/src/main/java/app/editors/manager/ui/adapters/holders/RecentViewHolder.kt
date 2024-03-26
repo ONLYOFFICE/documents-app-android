@@ -2,7 +2,7 @@ package app.editors.manager.ui.adapters.holders
 
 import android.view.View
 import androidx.core.view.isVisible
-import app.documents.core.storage.recent.Recent
+import app.documents.core.model.cloud.Recent
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFilesBinding
 import app.editors.manager.mvp.models.ui.RecentUI
@@ -23,12 +23,11 @@ class RecentViewHolder(
     override fun bind(item: ViewType) {
         if (item is RecentUI) {
             with(viewBinding) {
-                val info = if (item.isLocal) view.context
-                    .getString(R.string.this_device) else item.source
+                val info = item.source ?: view.context.getString(R.string.this_device)
 
                 listExplorerFileName.text = item.name
                 listExplorerFileInfo.text = info
-                listExplorerFileInfo.isVisible = !info.isNullOrEmpty()
+                listExplorerFileInfo.isVisible = info.isNotEmpty()
                 listExplorerFileFavorite.isVisible = false
                 listExplorerFileLayout.setOnClickListener {
                     itemListener?.invoke(item.toRecent())

@@ -2,7 +2,7 @@ package app.editors.manager.ui.adapters
 
 import android.content.Context
 import androidx.recyclerview.widget.DiffUtil
-import app.documents.core.storage.recent.Recent
+import app.documents.core.model.cloud.Recent
 import app.editors.manager.R
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.ui.RecentUI

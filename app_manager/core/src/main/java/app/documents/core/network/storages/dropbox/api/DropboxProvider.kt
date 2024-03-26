@@ -2,9 +2,14 @@ package app.documents.core.network.storages.dropbox.api
 
 import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.storages.IStorageProvider
-import app.documents.core.network.storages.dropbox.login.DropboxResponse
 import app.documents.core.network.storages.dropbox.models.operations.MoveCopyBatchCheck
-import app.documents.core.network.storages.dropbox.models.request.*
+import app.documents.core.network.storages.dropbox.models.request.CreateFolderRequest
+import app.documents.core.network.storages.dropbox.models.request.ExplorerContinueRequest
+import app.documents.core.network.storages.dropbox.models.request.ExplorerRequest
+import app.documents.core.network.storages.dropbox.models.request.MoveCopyBatchRequest
+import app.documents.core.network.storages.dropbox.models.request.MoveRequest
+import app.documents.core.network.storages.dropbox.models.request.PathRequest
+import app.documents.core.network.storages.dropbox.models.request.SearchRequest
 import com.jakewharton.rxrelay2.BehaviorRelay
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -12,6 +17,11 @@ import io.reactivex.schedulers.Schedulers
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
+
+sealed class DropboxResponse {
+    class Success(val response: Any) : DropboxResponse()
+    class Error(val error: Throwable) : DropboxResponse()
+}
 
 class DropboxProvider(
     private val dropBoxService: DropboxService,

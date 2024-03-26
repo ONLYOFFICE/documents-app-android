@@ -6,12 +6,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
-import app.documents.core.network.webdav.WebDavService
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import com.bumptech.glide.Glide
@@ -21,37 +22,38 @@ import lib.toolkit.base.managers.utils.StringUtils
 object ManagerUiUtils {
 
     @JvmStatic
-    fun setWebDavImage(providerName: String?, image: ImageView) {
-        when (WebDavService.Providers.valueOf(providerName ?: "")) {
-            WebDavService.Providers.NextCloud -> image.setImageDrawable(
+    fun setWebDavImage(webDavProvider: PortalProvider.Webdav?, image: ImageView) {
+        when (webDavProvider?.provider) {
+
+            is WebdavProvider.NextCloud -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_nextcloud
                 )
             )
 
-            WebDavService.Providers.OwnCloud -> image.setImageDrawable(
+            WebdavProvider.OwnCloud -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_owncloud
                 )
             )
 
-            WebDavService.Providers.Yandex -> image.setImageDrawable(
+            WebdavProvider.Yandex -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_yandex
                 )
             )
 
-            WebDavService.Providers.KDrive -> image.setImageDrawable(
+            WebdavProvider.KDrive -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_kdrive
                 )
             )
 
-            WebDavService.Providers.WebDav -> image.setImageDrawable(
+            else -> image.setImageDrawable(
                 ContextCompat.getDrawable(
                     image.context,
                     R.drawable.ic_storage_webdav
@@ -69,10 +71,10 @@ object ManagerUiUtils {
         )
     }
 
-    fun ImageView.setDropboxImage(account: CloudAccount) {
-        if (account.avatarUrl?.isNotEmpty() == true) {
+    fun ImageView.setDropboxImage(account: CloudAccount, token: String) {
+        if (account.avatarUrl.isNotEmpty()) {
             Glide.with(this)
-                .load(GlideUtils.getCorrectLoad(account.avatarUrl ?: "", account.token))
+                .load(GlideUtils.getCorrectLoad(account.avatarUrl, token))
                 .apply(GlideUtils.avatarOptions)
                 .into(this)
         } else {

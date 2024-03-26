@@ -1,7 +1,7 @@
 package app.editors.manager.ui.adapters.holders.factory
 
 import android.view.View
-import app.documents.core.storage.recent.Recent
+import app.documents.core.model.cloud.Recent
 import app.editors.manager.R
 import app.editors.manager.ui.adapters.holders.RecentHeaderViewHolder
 import app.editors.manager.ui.adapters.holders.RecentViewHolder

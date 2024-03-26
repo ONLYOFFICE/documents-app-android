@@ -1,14 +1,15 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.response.ResponseCloudTree
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.api
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
@@ -19,18 +20,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.CryptUtils
 import lib.toolkit.base.managers.utils.JsonUtils
 import moxy.InjectViewState
 import moxy.presenterScope
 import java.util.Collections
-import javax.inject.Inject
 
 @InjectViewState
 class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainPagerView>() {
-
-    @Inject
-    lateinit var networkSetting: NetworkSettings
 
     init {
         App.getApp().appComponent.inject(this)
@@ -48,7 +46,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     fun getState(fileData: Uri? = null) {
         presenterScope.launch(Dispatchers.IO) {
             val sections = getPortalModules()
-            val data = if (networkSetting.isDocSpace) {
+            val data = if (context.accountOnline.isDocSpace) {
                 sections.filter { it.current.rootFolderType != ApiContract.SectionType.CLOUD_FAVORITES }
             } else {
                 sections
@@ -101,11 +99,12 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
 
                 //Rooms sections
                 if (contains(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM })) {
-                    val position = if (contains(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_USER })) {
-                        1
-                    } else {
-                        0
-                    }
+                    val position =
+                        if (contains(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_USER })) {
+                            1
+                        } else {
+                            0
+                        }
                     Collections.swap(
                         this,
                         indexOf(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }),
@@ -147,7 +146,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             }
             preferenceTool.fileData = ""
             if (dataModel.getPortalWithoutScheme()?.equals(
-                    account.portal,
+                    account.portal.url,
                     ignoreCase = true
                 ) == true && dataModel.email?.equals(
                     account.login,
@@ -167,8 +166,9 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     private suspend fun checkAccountLogin(data: OpenDataModel): Boolean {
-        val account = accountDao.getAccountByLogin(data.email?.lowercase() ?: "")
-        return account?.token != null && account.token.isNotEmpty()
+        val account = cloudDataSource.getAccountByLogin(data.email?.lowercase() ?: "")
+        val token = AccountUtils.getToken(context, account?.accountName.orEmpty())
+        return !token.isNullOrEmpty()
     }
 
     fun onRemoveFileData() {
