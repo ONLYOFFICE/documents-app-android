@@ -176,5 +176,12 @@ abstract class BaseFilterFragment : BaseAppFragment(), FilterView {
             }
     }
 
+    protected fun addChipGroup(chipGroup: SingleChoiceChipGroupView?) {
+        chipGroups = chipGroups?.toMutableList()?.apply {
+            if (chipGroup != null) add(chipGroup) else return
+        }?.toTypedArray()
+        linearLayout?.addView(chipGroup, linearLayout?.childCount ?: 0)
+    }
+
     abstract fun initViews()
 }
