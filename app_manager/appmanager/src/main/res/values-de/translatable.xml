@@ -506,7 +506,6 @@
     <string name="errors_webdav_username_password">Falscher Benutzername oder Passwort</string>
     <string name="errors_webdav_server">Falscher Server</string>
     <string name="toolbar_menu_sort_tags">Tags</string>
-    <string name="main_pager_docs_my">Meine Dokumente</string>
     <string name="main_pager_docs_virtual_room">Meine Räume</string>
     <string name="main_pager_docs_archive_room">Mein Archiv</string>
     <string name="share_invite_user">Benutzer einladen</string>

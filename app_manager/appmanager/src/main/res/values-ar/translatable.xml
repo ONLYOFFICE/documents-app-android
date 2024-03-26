@@ -348,7 +348,6 @@
     <!-- Dialog info -->
 
     <!-- Pager -->
-    <string name="main_pager_docs_my">ملفاتي</string>
     <string name="main_pager_docs_common">شائع</string>
     <string name="main_pager_docs_share">شارك معي</string>
     <string name="main_pager_docs_projects">المشاريع</string>

@@ -497,7 +497,6 @@
     <string name="errors_webdav_username_password">Грешно потребителско име или парола</string>
     <string name="errors_webdav_server">Грешен сървър</string>
     <string name="toolbar_menu_sort_tags">Отбелязвания</string>
-    <string name="main_pager_docs_my">Моите документи</string>
     <string name="main_pager_docs_virtual_room">Моите стаи</string>
     <string name="main_pager_docs_archive_room">Моят архив</string>
     <string name="share_invite_user">Поканете потребители</string>

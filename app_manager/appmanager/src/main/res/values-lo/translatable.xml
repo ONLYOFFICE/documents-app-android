@@ -650,7 +650,6 @@
     <string name="errors_webdav_username_password">ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ</string>
     <string name="errors_webdav_server">ເຊີບເວີບໍ່ຖືກຕ້ອງ</string>
     <string name="toolbar_menu_sort_tags">ປ້າຍກຳກັບ</string>
-    <string name="main_pager_docs_my">ເອກະສານຂອງຂ້ອຍ</string>
     <string name="main_pager_docs_virtual_room">ຫ້ອງຂອງຂ້ອຍ</string>
     <string name="main_pager_docs_archive_room">ບ່ອນມ້ຽນເອກະສານສຳຄັນຂອງຂ້ອຍ</string>
     <string name="share_invite_user">ເຊີນຜູ້ໃຊ້</string>

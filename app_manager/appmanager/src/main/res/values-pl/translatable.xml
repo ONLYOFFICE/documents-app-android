@@ -497,7 +497,6 @@
     <string name="errors_webdav_username_password">Nieprawidłowa nazwa użytkownika lub hasło</string>
     <string name="errors_webdav_server">Nieprawidłowy serwer</string>
     <string name="toolbar_menu_sort_tags">Znaczniki</string>
-    <string name="main_pager_docs_my">Moje dokumenty</string>
     <string name="main_pager_docs_virtual_room">Moje pokoje</string>
     <string name="main_pager_docs_archive_room">Moje archiwa</string>
     <string name="share_invite_user">Zaproś użytkowników</string>
