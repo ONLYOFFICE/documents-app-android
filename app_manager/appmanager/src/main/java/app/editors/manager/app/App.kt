@@ -65,6 +65,8 @@ class App : Application() {
 
     }
 
+    var needPasscodeToUnlock: Boolean = false
+
     var isAnalyticEnable = true
         set(value) {
             field = value
@@ -105,6 +107,7 @@ class App : Application() {
         super.attachBaseContext(base)
         sApp = this
         initDagger()
+        needPasscodeToUnlock = appComponent.preference.passcodeLock.enabled
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

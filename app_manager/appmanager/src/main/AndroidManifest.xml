@@ -97,8 +97,6 @@
             android:name="app.editors.manager.ui.activities.main.MainActivity"
             android:exported="true"
             android:filterTouchesWhenObscured="true"
-            android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
             android:clearTaskOnLaunch="true"
             android:supportsPictureInPicture="true"
             android:theme="@style/MainActivityTheme"
@@ -217,7 +215,6 @@
 
         <activity
             android:theme="@style/PasscodeActivityTheme"
-            android:launchMode="singleInstance"
             android:name="app.editors.manager.ui.activities.main.PasscodeActivity"
             android:screenOrientation="fullSensor">
         </activity>

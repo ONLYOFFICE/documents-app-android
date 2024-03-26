@@ -57,7 +57,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     private var reviewInfo: ReviewInfo? = null
     private var isAppColdStart = true
 
-    var needPasscodeUnlock: Boolean = true
     var isDialogOpen: Boolean = false
 
     override fun onFirstViewAttach() {
@@ -211,12 +210,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                     viewState.onDialogClose()
                 }
             }
-        }
-    }
-
-    fun checkPassCode() {
-        if (preferenceTool.passcodeLock.enabled && needPasscodeUnlock) {
-            viewState.onCodeActivity()
         }
     }
 

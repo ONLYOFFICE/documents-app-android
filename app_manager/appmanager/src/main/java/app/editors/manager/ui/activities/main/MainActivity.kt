@@ -15,6 +15,7 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.webdav.WebDavService
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.ActivityMainBinding
@@ -28,7 +29,13 @@ import app.editors.manager.mvp.views.main.MainActivityView
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
-import app.editors.manager.ui.fragments.main.*
+import app.editors.manager.ui.fragments.main.AppSettingsFragment
+import app.editors.manager.ui.fragments.main.CloudAccountFragment
+import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment
+import app.editors.manager.ui.fragments.main.DocsRecentFragment
+import app.editors.manager.ui.fragments.main.DocsWebDavFragment
+import app.editors.manager.ui.fragments.main.MainPagerFragment
+import app.editors.manager.ui.fragments.main.OnlyOfficeCloudFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
@@ -39,11 +46,15 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.FragmentUtils
+import lib.toolkit.base.managers.utils.LaunchActivityForResult
+import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.clearIntent
+import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
-import java.util.*
+import java.util.UUID
 
 
 interface ActionButtonFragment {
@@ -163,11 +174,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_ACTIVITY_UNLOCK) {
-            presenter.needPasscodeUnlock = resultCode != RESULT_OK
-        } else {
-            presenter.needPasscodeUnlock = false
-        }
         if (resultCode == RESULT_CANCELED) {
             when (requestCode) {
                 REQUEST_ACTIVITY_PORTAL -> {
@@ -201,14 +207,9 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         init(savedInstanceState)
     }
 
-    override fun onPause() {
-        super.onPause()
-        presenter.needPasscodeUnlock = true
-    }
-
-    override fun onResume() {
-        presenter.checkPassCode()
-        super.onResume()
+    override fun onStart() {
+        if (App.getApp().needPasscodeToUnlock) PasscodeActivity.show(this)
+        super.onStart()
     }
 
     override fun onDestroy() {
@@ -260,7 +261,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     private fun checkState(savedInstanceState: Bundle?) {
-        presenter.needPasscodeUnlock = savedInstanceState == null
         savedInstanceState?.let {
             viewBinding.appBarToolbar.bind(Json.decodeFromString(it.getString(ACCOUNT_KEY) ?: ""))
         } ?: run {
@@ -352,10 +352,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
         showCloudFragment(account = account, fileData = fileData)
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
-    }
-
-    override fun onCodeActivity() {
-        PasscodeActivity.show(this)
     }
 
     override fun showActionButton(isShow: Boolean) {

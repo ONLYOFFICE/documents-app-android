@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.fragment.app.FragmentActivity
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
 import app.editors.manager.managers.utils.BiometricsUtils
 import app.editors.manager.ui.activities.base.BaseAppActivity
@@ -22,7 +23,7 @@ class PasscodeActivity : BaseAppActivity() {
         val TAG: String = PasscodeActivity::class.java.simpleName
 
         fun show(activity: FragmentActivity) {
-            activity.startActivityForResult(Intent(activity, PasscodeActivity::class.java), REQUEST_ACTIVITY_UNLOCK)
+            activity.startActivity(Intent(activity, PasscodeActivity::class.java))
         }
     }
 
@@ -39,6 +40,7 @@ class PasscodeActivity : BaseAppActivity() {
                     enterPasscodeKey = true,
                     onSuccess = ::onSuccessUnlock,
                     onFingerprintClick = ::onShowBiometric,
+                    onBackClick = ::killSelf
                 )
             }
         }
@@ -54,7 +56,7 @@ class PasscodeActivity : BaseAppActivity() {
     }
 
     private fun onSuccessUnlock() {
-        setResult(RESULT_OK)
+        App.getApp().needPasscodeToUnlock = false
         finish()
     }
 

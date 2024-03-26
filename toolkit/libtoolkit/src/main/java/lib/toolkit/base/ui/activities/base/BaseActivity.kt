@@ -61,7 +61,6 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         const val REQUEST_ACTIVITY_PORTAL = 114
         const val REQUEST_ACTIVITY_SAVE = 115
         const val REQUEST_ACTIVITY_EXPORT = 116
-        const val REQUEST_ACTIVITY_UNLOCK = 117
 
         const val PERMISSION_WRITE_STORAGE = 101
         const val PERMISSION_READ_STORAGE = 102
