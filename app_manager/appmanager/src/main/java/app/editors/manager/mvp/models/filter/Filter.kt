@@ -7,6 +7,7 @@ data class Filter(
     var author: FilterAuthor = FilterAuthor(),
     var excludeSubfolder: Boolean = false,
     var roomType: RoomFilterType = RoomFilterType.None,
+    var tag: RoomFilterTag? = null
 ) {
 
     companion object {

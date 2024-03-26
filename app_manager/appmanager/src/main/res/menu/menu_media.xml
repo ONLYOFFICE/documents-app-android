@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/toolbarShare"
-        android:icon="@drawable/ic_toolbar_share"
+        android:icon="@drawable/ic_list_context_share"
         android:title="@string/list_context_share"
         android:visible="false"
         app:iconTint="@color/colorWhite"

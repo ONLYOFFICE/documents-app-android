@@ -21,3 +21,12 @@ enum class RoomFilterType(val title: Int, val filterVal: Int) : ChipItem {
 
     }
 }
+
+class RoomFilterTag(val value: String) : ChipItem {
+
+    override val chipTitle: Int = -1
+    override val withOption: Boolean = false
+    override var option: Any? = null
+    override val chipTitleString: String
+        get() = value
+}

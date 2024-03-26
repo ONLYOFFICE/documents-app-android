@@ -272,16 +272,16 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             when {
                 isTrashMode -> {
                     viewState.onStateActionButton(false)
-//                    viewState.onActionBarTitle("")
+                    viewState.onActionBarTitle("")
                 }
 
                 isFoldersMode -> {
-//                    viewState.onActionBarTitle(context.getString(R.string.operation_title))
+                    viewState.onActionBarTitle(context.getString(R.string.operation_title))
                     viewState.onStateActionButton(false)
                 }
 
                 else -> {
-//                    viewState.onActionBarTitle("")
+                    viewState.onActionBarTitle("")
                     if (isRoom && modelExplorerStack.last()?.current?.security?.create == true) {
                         viewState.onStateActionButton(true)
                     } else {

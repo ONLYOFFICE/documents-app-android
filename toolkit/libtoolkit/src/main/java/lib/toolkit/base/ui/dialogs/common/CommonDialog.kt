@@ -10,7 +10,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import lib.toolkit.base.R
 import lib.toolkit.base.ui.dialogs.base.BaseDialog
-import lib.toolkit.base.ui.dialogs.common.holders.*
+import lib.toolkit.base.ui.dialogs.common.holders.CustomHolder
+import lib.toolkit.base.ui.dialogs.common.holders.EditLineHolder
+import lib.toolkit.base.ui.dialogs.common.holders.EditMultilineHolder
+import lib.toolkit.base.ui.dialogs.common.holders.InfoHolder
+import lib.toolkit.base.ui.dialogs.common.holders.ProgressHolder
+import lib.toolkit.base.ui.dialogs.common.holders.QuestionHolder
+import lib.toolkit.base.ui.dialogs.common.holders.WaitingHolder
 
 class CommonDialog : BaseDialog() {
 
@@ -76,6 +82,12 @@ class CommonDialog : BaseDialog() {
         } else {
             throw ClassCastException(activity.toString() + " must implement OnClickListener")
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        onClickListener = null
+        frManager = null
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

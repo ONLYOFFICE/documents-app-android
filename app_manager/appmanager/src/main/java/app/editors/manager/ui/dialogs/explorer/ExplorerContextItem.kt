@@ -34,7 +34,7 @@ sealed class ExplorerContextItem(
     }
 
     object Share : ExplorerContextItem(
-        icon = R.drawable.ic_list_context_share,
+        icon = lib.toolkit.base.R.drawable.ic_list_context_share,
         title = R.string.list_context_share
     ), ExplorerContextBlockOrder.Common
 

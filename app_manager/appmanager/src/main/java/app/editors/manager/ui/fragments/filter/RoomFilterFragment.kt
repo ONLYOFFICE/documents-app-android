@@ -7,6 +7,7 @@ import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.mvp.models.filter.FilterAuthor
 import app.editors.manager.mvp.models.filter.RoomFilterAuthor
+import app.editors.manager.mvp.models.filter.RoomFilterTag
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.presenters.filter.BaseFilterPresenter
 import app.editors.manager.mvp.presenters.filter.RoomFilterPresenter
@@ -41,7 +42,7 @@ class RoomFilterFragment : BaseFilterFragment() {
 
     private var authorChipGroup: SingleChoiceChipGroupView? = null
     private var typeChipGroup: SingleChoiceChipGroupView? = null
-//    private var thirdPartyChipGroup: SingleChoiceChipGroupView? = null
+    private var tagChipGroup: SingleChoiceChipGroupView? = null
 
     override fun initViews() {
         authorChipGroup = SingleChoiceChipGroupView(requireContext()).apply {
@@ -71,14 +72,22 @@ class RoomFilterFragment : BaseFilterFragment() {
             }
         }
 
-//        thirdPartyChipGroup = SingleChoiceChipGroupView(requireContext()).apply {
-//            setTitle(R.string.rooms_filter_third_party_title)
-//            setChips(RoomFilterThirdParty.allTypes, null) { _, checked ->
-//
-//            }
-//        }
+        tagChipGroup = SingleChoiceChipGroupView(requireContext()).apply {
+            setTitle(R.string.toolbar_menu_sort_tags)
+        }
 
         addChipGroups(authorChipGroup, typeChipGroup)
+    }
+
+    override fun onTagsLoaded(tags: Array<String>) {
+        tagChipGroup?.apply {
+            setChips(tags.map {
+                RoomFilterTag(it)
+            }, presenter.filterTag) { tag, checked ->
+                presenter.filterTag = if (checked) tag else null
+            }
+        }
+        addChipGroup(tagChipGroup)
     }
 
     override fun updateViewState(isChanged: Boolean) {
