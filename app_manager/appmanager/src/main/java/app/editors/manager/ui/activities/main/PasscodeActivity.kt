@@ -40,7 +40,7 @@ class PasscodeActivity : BaseAppActivity() {
                     enterPasscodeKey = true,
                     onSuccess = ::onSuccessUnlock,
                     onFingerprintClick = ::onShowBiometric,
-                    onBackClick = ::killSelf
+                    onBackClick = ::finishAffinity
                 )
             }
         }
