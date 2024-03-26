@@ -15,6 +15,7 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.webdav.WebDavService
 import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.ActivityMainBinding
@@ -28,7 +29,13 @@ import app.editors.manager.mvp.views.main.MainActivityView
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
-import app.editors.manager.ui.fragments.main.*
+import app.editors.manager.ui.fragments.main.AppSettingsFragment
+import app.editors.manager.ui.fragments.main.CloudAccountFragment
+import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment
+import app.editors.manager.ui.fragments.main.DocsRecentFragment
+import app.editors.manager.ui.fragments.main.DocsWebDavFragment
+import app.editors.manager.ui.fragments.main.MainPagerFragment
+import app.editors.manager.ui.fragments.main.OnlyOfficeCloudFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
@@ -39,11 +46,15 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.FragmentUtils
+import lib.toolkit.base.managers.utils.LaunchActivityForResult
+import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.clearIntent
+import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
-import java.util.*
+import java.util.UUID
 
 
 interface ActionButtonFragment {
@@ -73,13 +84,10 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
         private const val ACCOUNT_KEY = "ACCOUNT_KEY"
         private const val URL_KEY = "url"
-        const val KEY_CODE = "code"
 
-        fun show(context: Context, isCode: Boolean? = true, bundle: Bundle? = null) {
+        fun show(context: Context) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                isCode?.let { putExtra(KEY_CODE, isCode) }
-                bundle?.let { putExtras(bundle) }
             })
         }
     }
@@ -193,9 +201,15 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        presenter.checkOnBoardingShowed()
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
         init(savedInstanceState)
+    }
+
+    override fun onStart() {
+        if (App.getApp().needPasscodeToUnlock) PasscodeActivity.show(this)
+        super.onStart()
     }
 
     override fun onDestroy() {
@@ -263,11 +277,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             }
         }
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
-        if (intent.extras?.contains(KEY_CODE) == true) {
-            presenter.checkPassCode(true)
-        } else {
-            presenter.checkPassCode()
-        }
     }
 
     private fun setAppBarStates() {
@@ -343,11 +352,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
         showCloudFragment(account = account, fileData = fileData)
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
-    }
-
-    override fun onCodeActivity() {
-        PasscodeActivity.show(this, true, intent.extras)
-        finish()
     }
 
     override fun showActionButton(isShow: Boolean) {
