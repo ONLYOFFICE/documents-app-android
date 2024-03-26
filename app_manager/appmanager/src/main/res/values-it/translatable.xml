@@ -218,7 +218,6 @@
     <string name="navigation_drawer_menu_common">Documenti comuni</string>
     <string name="navigation_drawer_menu_help">Guida</string>
     <string name="navigation_drawer_menu_logout">Esci</string>
-    <string name="navigation_drawer_menu_my">I miei documenti</string>
     <string name="navigation_drawer_menu_projects">Progetti</string>
     <string name="navigation_drawer_menu_shared">Condivisi con me</string>
     <string name="navigation_drawer_menu_trash">cestino</string>

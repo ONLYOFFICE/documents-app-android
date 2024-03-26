@@ -236,7 +236,6 @@
     <string name="navigation_drawer_menu_common">Общие</string>
     <string name="navigation_drawer_menu_help">Справка</string>
     <string name="navigation_drawer_menu_logout">Выйти</string>
-    <string name="navigation_drawer_menu_my">Мои документы</string>
     <string name="navigation_drawer_menu_projects">Проекты</string>
     <string name="navigation_drawer_menu_shared">Доступные мне</string>
     <string name="navigation_drawer_menu_trash">Корзина</string>

@@ -218,7 +218,6 @@
     <string name="navigation_drawer_menu_common">Documents communs</string>
     <string name="navigation_drawer_menu_help">Aide</string>
     <string name="navigation_drawer_menu_logout">Se déconnecter</string>
-    <string name="navigation_drawer_menu_my">Mes documents</string>
     <string name="navigation_drawer_menu_projects">Projets</string>
     <string name="navigation_drawer_menu_shared">Partagés avec moi</string>
     <string name="navigation_drawer_menu_trash">Corbeille</string>

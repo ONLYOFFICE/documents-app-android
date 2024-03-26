@@ -267,7 +267,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!-- Main drawer menu-->
-    <string name="navigation_drawer_menu_my">My documents</string>
     <string name="navigation_drawer_menu_shared">Shared with me</string>
     <string name="navigation_drawer_menu_common">Common documents</string>
     <string name="navigation_drawer_menu_projects">Projects</string>

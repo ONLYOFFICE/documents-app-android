@@ -233,7 +233,6 @@
     <string name="navigation_drawer_close">ປິດແຜນທີ່ນຳທາງ </string>
 
     <!-- Main drawer menu-->
-    <string name="navigation_drawer_menu_my">ເອກະສານຂອງຂ້ອຍ</string>
     <string name="navigation_drawer_menu_shared">ແບ່ງປັນກັບຂ້ອຍ</string>
     <string name="navigation_drawer_menu_common">ເອກະສານທົ່ວໄປ</string>
     <string name="navigation_drawer_menu_projects">ໂຄງການ </string>

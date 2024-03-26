@@ -232,7 +232,6 @@
     <string name="navigation_drawer_close">Zavřít navigační panel</string>
 
     <!-- Main drawer menu-->
-    <string name="navigation_drawer_menu_my">Moje dokumenty</string>
     <string name="navigation_drawer_menu_shared">Sdílené se mnou</string>
     <string name="navigation_drawer_menu_common">Společné dokumenty</string>
     <string name="navigation_drawer_menu_projects">Projekty</string>

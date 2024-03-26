@@ -200,7 +200,6 @@
     <string name="navigation_drawer_menu_common">Общи документи</string>
     <string name="navigation_drawer_menu_help">Помощ</string>
     <string name="navigation_drawer_menu_logout">Излез от профила си</string>
-    <string name="navigation_drawer_menu_my">Моите документи</string>
     <string name="navigation_drawer_menu_projects">Проекти</string>
     <string name="navigation_drawer_menu_shared">Споделено с мен</string>
     <string name="navigation_drawer_menu_trash">Боклук</string>

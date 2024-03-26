@@ -162,7 +162,6 @@
     <string name="navigation_drawer_open">Navigationsdisplay öffnen</string>
     <string name="navigation_drawer_close">Navigationsdisplay schließen</string>
     <!-- Main drawer menu-->
-    <string name="navigation_drawer_menu_my">Meine Dokumente</string>
     <string name="navigation_drawer_menu_shared">Für mich freigegeben</string>
     <string name="navigation_drawer_menu_common">Gemeinsame Dokumente</string>
     <string name="navigation_drawer_menu_projects">Projekte</string>

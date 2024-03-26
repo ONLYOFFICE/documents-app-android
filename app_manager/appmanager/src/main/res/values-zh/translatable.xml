@@ -196,7 +196,6 @@
     <string name="navigation_drawer_open">打开导航抽屉</string>
     <string name="navigation_drawer_close">关闭导航抽屉</string>
     <!-- Main drawer menu-->
-    <string name="navigation_drawer_menu_my">我的文档</string>
     <string name="navigation_drawer_menu_shared">与我分享</string>
     <string name="navigation_drawer_menu_common">共同文档</string>
     <string name="navigation_drawer_menu_projects">项目</string>
