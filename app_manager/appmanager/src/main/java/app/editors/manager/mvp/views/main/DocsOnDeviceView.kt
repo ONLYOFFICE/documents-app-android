@@ -16,7 +16,7 @@ interface DocsOnDeviceView : DocsBaseView {
 
     //Open file
     fun onShowDocs(uri: Uri, openMode: OpenMode)
-    fun onShowCells(uri: Uri)
-    fun onShowSlides(uri: Uri)
+    fun onShowCells(uri: Uri, openMode: OpenMode)
+    fun onShowSlides(uri: Uri, openMode: OpenMode)
     fun onShowPdf(uri: Uri)
 }

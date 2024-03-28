@@ -329,8 +329,8 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                     viewState.onShowDocs(uri, openMode)
                 }
             }
-            StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
-            StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
+            StringUtils.Extension.SHEET -> viewState.onShowCells(uri, openMode)
+            StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri, openMode)
             StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(uri)
             else -> viewState.onError(context.getString(R.string.error_unsupported_format))

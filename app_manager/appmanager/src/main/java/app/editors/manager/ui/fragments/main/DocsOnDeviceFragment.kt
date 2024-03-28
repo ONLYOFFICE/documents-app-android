@@ -236,12 +236,12 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         showEditors(uri, EditorsType.DOCS, openMode = openMode)
     }
 
-    override fun onShowCells(uri: Uri) {
-        showEditors(uri, EditorsType.CELLS)
+    override fun onShowCells(uri: Uri, openMode: OpenMode) {
+        showEditors(uri, EditorsType.CELLS, openMode = openMode)
     }
 
-    override fun onShowSlides(uri: Uri) {
-        showEditors(uri, EditorsType.PRESENTATION)
+    override fun onShowSlides(uri: Uri, openMode: OpenMode) {
+        showEditors(uri, EditorsType.PRESENTATION, openMode = openMode)
     }
 
     override fun onShowPdf(uri: Uri) {
