@@ -32,11 +32,17 @@ import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.tools.LocalContentTools
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.ActivitiesUtils
+import lib.toolkit.base.managers.utils.EditorsType
+import lib.toolkit.base.managers.utils.FolderChooser
+import lib.toolkit.base.managers.utils.RequestPermissions
+import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.launchAfterResume
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
-import java.util.*
+import java.util.Locale
 
 class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonFragment {
 
@@ -194,10 +200,11 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
+            ExplorerContextItem.Preview -> presenter.getFileInfo(OpenMode.READ_ONLY)
             ExplorerContextItem.Upload -> presenter.upload()
             ExplorerContextItem.Copy -> showFolderChooser(OperationsState.OperationType.COPY)
             ExplorerContextItem.Move -> showFolderChooser(OperationsState.OperationType.MOVE)
-            is ExplorerContextItem.Edit -> presenter.getFileInfo(false)
+            is ExplorerContextItem.Edit -> presenter.getFileInfo(OpenMode.EDIT)
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT)
             else -> super.onContextButtonClick(contextItem)
         }
@@ -225,8 +232,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         super.showDeleteDialog(count, false, tag)
     }
 
-    override fun onShowDocs(uri: Uri, isNew: Boolean) {
-        showEditors(uri, EditorsType.DOCS, viewMode = isNew)
+    override fun onShowDocs(uri: Uri, openMode: OpenMode) {
+        showEditors(uri, EditorsType.DOCS, openMode = openMode)
     }
 
     override fun onShowCells(uri: Uri) {

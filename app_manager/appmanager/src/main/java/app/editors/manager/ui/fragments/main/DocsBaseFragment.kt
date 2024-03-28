@@ -54,6 +54,7 @@ import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopup
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.CreateDocument
@@ -1038,10 +1039,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onOpenDocumentServer(file: CloudFile?, info: String?, isEdit: Boolean) {
+    override fun onOpenDocumentServer(file: CloudFile?, info: String?, openMode: OpenMode) {
         when (getExtension(file?.fileExst ?: "")) {
             StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
-                showEditors(null, EditorsType.DOCS, info, viewMode = !isEdit)
+                showEditors(null, EditorsType.DOCS, info, openMode)
             }
 
             StringUtils.Extension.SHEET -> {
@@ -1071,13 +1072,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun showEditors(uri: Uri?, type: EditorsType, info: String? = null, viewMode: Boolean = true) {
+    protected fun showEditors(uri: Uri?, type: EditorsType, info: String? = null, openMode: OpenMode = OpenMode.READ) {
         try {
             val intent = Intent().apply {
                 data = uri
                 info?.let { putExtra(EditorsContract.KEY_DOC_SERVER, info) }
                 putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-                putExtra(EditorsContract.KEY_VIEW_MODE, viewMode)
+                putExtra(EditorsContract.KEY_OPEN_MODE, openMode)
                 action = Intent.ACTION_VIEW
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
@@ -1105,11 +1106,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, viewMode: Boolean = false): Intent {
+    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, openMode: OpenMode = OpenMode.READ): Intent {
         val intent = Intent().apply {
             data = uri
             putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-            putExtra(EditorsContract.KEY_VIEW_MODE, viewMode)
+            putExtra(EditorsContract.KEY_OPEN_MODE, openMode)
             action = Intent.ACTION_VIEW
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }

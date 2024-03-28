@@ -20,6 +20,7 @@ import app.editors.manager.mvp.views.base.BaseViewExt;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import lib.toolkit.base.OpenMode;
 import moxy.viewstate.strategy.OneExecutionStateStrategy;
 import moxy.viewstate.strategy.StateStrategyType;
 
@@ -156,7 +157,7 @@ public interface DocsBaseView extends BaseViewExt {
     void onSendCopy(@NonNull File file);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onOpenDocumentServer(@Nullable CloudFile file, @Nullable String info, @NonNull boolean isEdit);
+    void onOpenDocumentServer(@Nullable CloudFile file, @Nullable String info, @NonNull OpenMode openMode);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void checkNotificationPermission(@NotNull Function0<Unit> function);

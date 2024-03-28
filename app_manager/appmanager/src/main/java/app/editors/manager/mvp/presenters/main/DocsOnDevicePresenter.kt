@@ -5,19 +5,22 @@ import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
-import app.editors.manager.BuildConfig
-import app.documents.core.network.manager.models.explorer.*
-import app.documents.core.storage.recent.Recent
-import app.editors.manager.R
-import app.editors.manager.app.App
-import app.editors.manager.app.accountOnline
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.Current
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.WebDavFileProvider
-import app.editors.manager.managers.works.UploadWork
-import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.storage.recent.Recent
+import app.editors.manager.BuildConfig
+import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.localFileProvider
 import app.editors.manager.app.webDavFileProvider
+import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -25,11 +28,16 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.OpenMode
+import lib.toolkit.base.managers.utils.ContentResolverUtils
+import lib.toolkit.base.managers.utils.FileUtils
+import lib.toolkit.base.managers.utils.NetworkUtils
+import lib.toolkit.base.managers.utils.PathUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
 import moxy.presenterScope
 import java.io.File
-import java.util.*
+import java.util.Date
 
 @InjectViewState
 class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
@@ -70,7 +78,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                     .subscribe({ file: CloudFile ->
                         addFile(file)
                         addRecent(file)
-                        openFile(file, true)
+                        openFile(file, OpenMode.EDIT)
                     }) { viewState.onError(context.getString(R.string.errors_create_local_file)) })
             }
         }
@@ -304,21 +312,21 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     }
 
-    private fun openFile(file: CloudFile, viewMode: Boolean = true) {
+    private fun openFile(file: CloudFile, openMode: OpenMode = OpenMode.READ) {
         val path = file.id
         val uri = Uri.fromFile(File(path))
         val ext = StringUtils.getExtensionFromPath(file.id.lowercase())
-        openFile(uri, ext, viewMode)
+        openFile(uri, ext, openMode)
     }
 
     @Suppress("KotlinConstantConditions")
-    private fun openFile(uri: Uri, ext: String, viewMode: Boolean = true) {
+    private fun openFile(uri: Uri, ext: String, openMode: OpenMode = OpenMode.READ) {
         when (val enumExt = StringUtils.getExtension(ext)) {
             StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> {
                 if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && enumExt == StringUtils.Extension.FORM) {
                     viewState.onError(context.getString(R.string.error_unsupported_format))
                 } else {
-                    viewState.onShowDocs(uri, viewMode)
+                    viewState.onShowDocs(uri, openMode)
                 }
             }
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
@@ -454,11 +462,11 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         updateViewsState()
     }
 
-    fun getFileInfo(viewMode: Boolean) {
+    fun getFileInfo(openMode: OpenMode) {
         if (itemClicked != null && itemClicked is CloudFile) {
             val file = itemClicked as CloudFile
             addRecent(file)
-            openFile(file, viewMode)
+            openFile(file, openMode)
         }
     }
 }

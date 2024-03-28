@@ -9,7 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 object EditorsContract {
 
     const val KEY_HELP_URL = "KEY_HELP_URL"
-    const val KEY_VIEW_MODE = "KEY_VIEW_MODE"
+    const val KEY_OPEN_MODE = "KEY_OPEN_MODE"
     const val KEY_DOC_SERVER = "KEY_DOC_SERVER"
 
     const val EDITOR_DOCUMENTS = "lib.editors.gdocs.ui.activities.DocsActivity"

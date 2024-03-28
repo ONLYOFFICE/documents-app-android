@@ -15,7 +15,9 @@ import app.documents.core.storage.account.CloudAccount
 import app.documents.core.storage.recent.Recent
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
-import app.editors.manager.app.*
+import app.editors.manager.app.App
+import app.editors.manager.app.cloudFileProvider
+import app.editors.manager.app.webDavFileProvider
 import app.editors.manager.managers.providers.DropboxStorageHelper
 import app.editors.manager.managers.providers.GoogleDriveStorageHelper
 import app.editors.manager.managers.providers.OneDriveStorageHelper
@@ -29,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getName
 import lib.toolkit.base.managers.utils.EditorsType
@@ -39,7 +42,8 @@ import moxy.InjectViewState
 import moxy.presenterScope
 import retrofit2.HttpException
 import java.io.File
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 sealed class RecentState {
     class RenderList(val recents: List<Recent>) : RecentState()
@@ -196,7 +200,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 StringUtils.Extension.DOC, StringUtils.Extension.FORM, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
                     checkSdkVersion { isCheck ->
                         if (isCheck) {
-                            viewState.onOpenDocumentServer(file, info, false)
+                            viewState.onOpenDocumentServer(file, info, OpenMode.READ)
                         } else {
                             viewState.openFile(file)
                         }
