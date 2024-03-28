@@ -9,6 +9,7 @@ interface ExplorerContextItemVisible {
 
     fun ExplorerContextState.visible(contextItem: ExplorerContextItem): Boolean {
         return when (contextItem) {
+            ExplorerContextItem.Preview -> preview
             ExplorerContextItem.AddUsers -> addUsers
             ExplorerContextItem.Archive -> archive
             ExplorerContextItem.Copy -> copy
@@ -31,6 +32,9 @@ interface ExplorerContextItemVisible {
             is ExplorerContextItem.Favorites -> favorites(contextItem.enabled)
         }
     }
+
+    private val ExplorerContextState.preview: Boolean
+        get() = item is CloudFile && StringUtils.isDocument(item.fileExst)
 
     private val ExplorerContextState.addUsers: Boolean
         get() = section != ApiContract.Section.Room.Archive && item.security.editAccess

@@ -30,6 +30,7 @@ class ExplorerContextViewModel : ViewModel() {
 
             state.section == ApiContract.Section.Recent -> listOf(
                 ExplorerContextItem.Header(state),
+                ExplorerContextItem.Preview,
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Delete(state)
             )
@@ -49,6 +50,7 @@ class ExplorerContextViewModel : ViewModel() {
 
             state.section is ApiContract.Section.Storage -> listOf(
                 ExplorerContextItem.Header(state),
+                ExplorerContextItem.Preview,
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Move,
@@ -59,6 +61,7 @@ class ExplorerContextViewModel : ViewModel() {
 
             state.section is ApiContract.Section.Device -> listOf(
                 ExplorerContextItem.Header(state),
+                ExplorerContextItem.Preview,
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Move,
@@ -70,6 +73,7 @@ class ExplorerContextViewModel : ViewModel() {
 
             else -> listOf(
                 ExplorerContextItem.Header(state),
+                ExplorerContextItem.Preview,
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Share.takeIf { !networkSettings.isDocSpace },
                 ExplorerContextItem.CreateRoom.takeIf { networkSettings.isDocSpace },
