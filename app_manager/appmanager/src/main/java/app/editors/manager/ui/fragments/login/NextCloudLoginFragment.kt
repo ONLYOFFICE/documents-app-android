@@ -143,7 +143,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
         }
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-            if (url.contains("nc") && url.contains("login")) {
+            if (url.contains("nc") && url.contains("password")) {
                 viewModel.saveUser(url.substring(url.indexOf(":") + 1))
             } else {
                 viewBinding?.swipeRefresh?.isRefreshing = true
