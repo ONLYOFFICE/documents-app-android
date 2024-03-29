@@ -1,7 +1,7 @@
 package app.documents.core.network.common
 
 import android.annotation.SuppressLint
-import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.PortalSettings
 import okhttp3.CipherSuite
 import okhttp3.ConnectionSpec
 import okhttp3.Interceptor
@@ -58,11 +58,11 @@ object NetworkClient {
         return builder
     }
 
-    fun getOkHttpBuilder(cloudAccount: CloudAccount?, vararg interceptors: Interceptor): OkHttpClient.Builder {
-        val builder = cloudAccount?.let {
+    fun getOkHttpBuilder(portalSettings: PortalSettings?, vararg interceptors: Interceptor): OkHttpClient.Builder {
+        val builder = portalSettings?.let {
             getOkHttpBuilder(
-                cloudAccount.portal.settings.isSslState,
-                cloudAccount.portal.settings.isSslCiphers
+                portalSettings.isSslState,
+                portalSettings.isSslCiphers
             )
         }
 

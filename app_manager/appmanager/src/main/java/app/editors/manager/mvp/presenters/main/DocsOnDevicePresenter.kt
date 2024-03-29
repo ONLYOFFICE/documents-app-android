@@ -187,7 +187,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                     }
                 }
             } else {
-                uploadWebDav((account.portal.provider as? PortalProvider.Webdav)?.provider?.path.orEmpty(), listOf(uri))
+                uploadWebDav((account.portal.provider as? PortalProvider.Webdav)?.path.orEmpty(), listOf(uri))
             }
         }
     }

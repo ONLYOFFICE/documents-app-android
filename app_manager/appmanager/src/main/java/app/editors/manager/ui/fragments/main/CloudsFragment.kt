@@ -67,7 +67,7 @@ class CloudsFragment : BaseAppFragment() {
             R.drawable.ic_storage_nextcloud,
             R.string.storage_select_next_cloud
         ) {
-            WebDavLoginActivity.show(requireActivity(), WebdavProvider.NextCloud(), null)
+            WebDavLoginActivity.show(requireActivity(), WebdavProvider.NextCloud, null)
         }
 
         viewBinding?.cloudsItemOwnCloud?.bind(

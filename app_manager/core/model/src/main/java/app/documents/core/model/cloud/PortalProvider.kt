@@ -28,7 +28,7 @@ sealed class PortalProvider {
     data object GoogleDrive : PortalProvider()
 
     @Serializable
-    data class Webdav(val provider: WebdavProvider) : PortalProvider()
+    data class Webdav(val provider: WebdavProvider, val path: String = "") : PortalProvider()
 
     companion object {
 

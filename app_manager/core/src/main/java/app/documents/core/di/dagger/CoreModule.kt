@@ -48,13 +48,13 @@ object CoreModule {
     ): OkHttpClient {
         if (cloudAccount == null) throw CloudAccountNotFoundException
         val token = accountManager.getToken(cloudAccount.accountName)
-        return NetworkClient.getOkHttpBuilder(cloudAccount, BaseInterceptor(token, context)).build()
+        return NetworkClient.getOkHttpBuilder(cloudAccount.portal.settings, BaseInterceptor(token, context)).build()
     }
 
     @Provides
     @LoginOkHttpClient
     fun provideLoginOkHttpClient(context: Context, cloudAccount: CloudAccount?): OkHttpClient {
-        return NetworkClient.getOkHttpBuilder(cloudAccount, LoginInterceptor(context)).build()
+        return NetworkClient.getOkHttpBuilder(cloudAccount?.portal?.settings, LoginInterceptor(context)).build()
     }
 
     @Provides

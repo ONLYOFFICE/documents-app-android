@@ -36,7 +36,6 @@ import lib.toolkit.base.managers.utils.PermissionUtils.checkReadWritePermission
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
 import moxy.presenterScope
-import java.util.Date
 
 
 @InjectViewState
@@ -55,7 +54,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     }
 
     fun getProvider() {
-        val path = (context.accountOnline?.portal?.provider as? PortalProvider.Webdav)?.provider?.path
+        val path = (context.accountOnline?.portal?.provider as? PortalProvider.Webdav)?.path
         fileProvider?.let {
             getItemsById(path)
         } ?: run {
@@ -239,7 +238,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                 val webDavProvider = it.portal.provider
                 if (webDavProvider is PortalProvider.Webdav) {
                     withContext(Dispatchers.Main) {
-                        uploadWebDav(webDavProvider.provider.path, listOf(uri))
+                        uploadWebDav(webDavProvider.path, listOf(uri))
                     }
                 }
             }

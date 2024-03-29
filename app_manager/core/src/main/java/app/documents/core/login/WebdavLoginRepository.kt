@@ -1,6 +1,5 @@
 package app.documents.core.login
 
-import android.net.Uri
 import app.documents.core.account.AccountRepository
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
@@ -29,7 +28,7 @@ sealed class WebdavLoginResult {
 
 interface WebdavLoginRepository {
 
-    suspend fun checkPortal(
+    suspend fun signIn(
         provider: WebdavProvider,
         url: String,
         login: String,
@@ -42,108 +41,97 @@ internal class WebdavLoginRepositoryImpl(
     private val webdavLoginDataSource: WebdavLoginDataSource
 ) : WebdavLoginRepository {
 
-    override suspend fun checkPortal(
+    override suspend fun signIn(
         provider: WebdavProvider,
         url: String,
         login: String,
         password: String
     ): Flow<WebdavLoginResult> {
         return flow {
-            if (provider is WebdavProvider.NextCloud) {
-                try {
-                    webdavLoginDataSource.capability(url)
-                } catch (e: ConnectException) {
-                    webdavLoginDataSource.capability(url.replace(Scheme.Https.value, Scheme.Http.value))
-                }
+            if (checkNextCloud(provider, url)) {
                 return@flow emit(WebdavLoginResult.NextCloudLogin(url))
-            } else {
-                var webStringUrl = buildWebStringUrl(url, provider, password)
-
-                try {
-                    webdavLoginDataSource.capabilities(webStringUrl, Credentials.basic(login, password))
-                } catch (e: ConnectException) {
-                    webStringUrl = webStringUrl.replace(Scheme.Https.value, Scheme.Http.value)
-                    webdavLoginDataSource.capabilities(
-                        webStringUrl,
-                        Credentials.basic(login, password)
-                    )
-                }
-                accountRepository.addAccount(createCloudAccount(login, URL(webStringUrl), provider), password)
             }
+
+            val webUrl = URL(checkCapabilities(url, login, password, provider))
+            saveAccount(url, login, password, webUrl.protocol, provider, webUrl.path)
+
             return@flow emit(WebdavLoginResult.Success)
         }.flowOn(Dispatchers.IO)
             .catch { cause -> emit(WebdavLoginResult.Error(cause)) }
     }
 
-    private fun createCloudAccount(login: String, webUrl: URL, provider: WebdavProvider): CloudAccount {
-        val url = webUrl.host + if (webUrl.port != -1) ":${webUrl.port}" else ""
-        return CloudAccount(
-            id = UUID.nameUUIDFromBytes("$login@${webUrl.host}".toByteArray()).toString(),
-            portalUrl = url,
-            login = login,
-            name = login,
-            portal = CloudPortal(
-                url = url,
-                scheme = Scheme.Custom("${webUrl.protocol}://"),
-                provider = PortalProvider.Webdav(provider)
+    private suspend fun checkNextCloud(
+        provider: WebdavProvider,
+        url: String
+    ): Boolean {
+        if (provider is WebdavProvider.NextCloud) {
+            return try {
+                webdavLoginDataSource.capability(url)
+                true
+            } catch (e: ConnectException) {
+                webdavLoginDataSource.capability(url.replace(Scheme.Https.value, Scheme.Http.value))
+                true
+            }
+        }
+        return false
+    }
+
+    private suspend fun checkCapabilities(
+        url: String,
+        login: String,
+        password: String,
+        provider: WebdavProvider
+    ): String {
+        var webStringUrl = buildWebStringUrl(url, provider, login)
+        try {
+            webdavLoginDataSource.capabilities(webStringUrl, Credentials.basic(login, password))
+        } catch (e: ConnectException) {
+            webStringUrl = webStringUrl.replace(Scheme.Https.value, Scheme.Http.value)
+            webdavLoginDataSource.capabilities(
+                webStringUrl,
+                Credentials.basic(login, password)
             )
+        }
+        return webStringUrl
+    }
+
+    private suspend fun saveAccount(
+        url: String,
+        login: String,
+        password: String,
+        scheme: String,
+        provider: WebdavProvider,
+        path: String
+    ) {
+        val portal = url.replace(""".*://""".toRegex(), "")
+        accountRepository.addAccount(
+            cloudAccount = CloudAccount(
+                id = UUID.nameUUIDFromBytes("$login@$url".toByteArray()).toString(),
+                portalUrl = portal,
+                login = login,
+                name = login,
+                portal = CloudPortal(
+                    url = portal,
+                    scheme = Scheme.Custom("$scheme://"),
+                    provider = PortalProvider.Webdav(provider, path)
+                )
+            ),
+            password = password
         )
     }
 
     private fun buildWebStringUrl(url: String, provider: WebdavProvider, login: String): String {
-        val builder = StringBuilder().checkScheme(url)
-        val webUrl = URL(builder.toString())
-
-        if (webUrl.path.isEmpty()) {
-            if (provider == WebdavProvider.OwnCloud || provider == WebdavProvider.WebDav) {
-                builder.append(getPortalPath(webUrl.toString(), provider, login))
-            } else {
-                builder.append(provider.path)
-            }
-        } else if (provider == WebdavProvider.OwnCloud) {
-            builder.append(getPortalPath(webUrl.protocol + "://" + webUrl.host, provider, login))
-        }
-
-        return builder.toString()
-    }
-
-    private fun StringBuilder.checkScheme(url: String): StringBuilder {
-        return if (StringUtils.hasScheme(url)) {
-            append(url)
-        } else {
-            append(ApiContract.SCHEME_HTTPS)
-            append(url)
-        }
-    }
-
-    private fun getPortalPath(url: String, provider: WebdavProvider, login: String): String {
-        val uri = Uri.parse(url)
-        var path = uri.path
-        val base = uri.authority
-        if (base != null && path?.contains(base) == true) {
-            path = path.replace(base.toRegex(), "")
-        }
-        return if (path != null && path != "") {
-            val builder = StringBuilder()
-            if (path[path.length - 1] == '/') {
-                path = path.substring(0, path.lastIndexOf('/'))
-            }
-            if (provider != WebdavProvider.WebDav) {
-                builder.append(path)
-                    .append(provider.path)
-                    .append(login)
-                    .toString()
-            } else {
-                builder.append(path)
-                    .append(provider.path)
-                    .toString()
-            }
-        } else {
-            if (provider == WebdavProvider.WebDav) {
-                provider.path
-            } else {
-                provider.path + login
-            }
-        }
+        return StringBuilder()
+            .apply {
+                append(url)
+                if (!StringUtils.hasScheme(url)) append(ApiContract.SCHEME_HTTPS)
+                when (provider) {
+                    WebdavProvider.OwnCloud -> {
+                        append(WebdavProvider.DEFAULT_OWNCLOUD_PATH)
+                        append("$login/")
+                    }
+                    else -> Unit
+                }
+            }.toString()
     }
 }

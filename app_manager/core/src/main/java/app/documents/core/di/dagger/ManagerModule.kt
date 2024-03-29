@@ -70,7 +70,7 @@ class ManagerModule {
     ): WebDavService {
         if (cloudAccount == null) throw CloudAccountNotFoundException
         val okHttpClient = NetworkClient.getOkHttpBuilder(
-            cloudAccount = cloudAccount,
+            portalSettings = cloudAccount.portal.settings,
             WebDavInterceptor(
                 cloudAccount.login,
                 accountManager.getPassword(cloudAccount.accountName)

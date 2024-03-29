@@ -79,7 +79,7 @@ fun OldCloudAccount.toCloudAccountWithTokenAndPassword():
                 settings = PortalSettings(isSslState = isSslState, isSslCiphers = isSslCiphers),
                 provider = when {
                     isPersonal -> PortalProvider.Cloud.Personal
-                    isWebDav -> PortalProvider.Webdav(WebdavProvider.valueOf(webDavProvider.orEmpty()))
+                    isWebDav -> PortalProvider.Webdav(WebdavProvider.valueOf(webDavProvider.orEmpty()), webDavPath.orEmpty())
                     isOneDrive -> PortalProvider.Onedrive
                     isGoogleDrive -> PortalProvider.GoogleDrive
                     isDropbox -> PortalProvider.Dropbox

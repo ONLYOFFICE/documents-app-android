@@ -31,7 +31,7 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
         signInJob = presenterScope.launch {
             viewState.onDialogWaiting()
                 App.getApp().loginComponent.webdavLoginRepository
-                    .checkPortal(
+                    .signIn(
                         provider = provider,
                         url = url.takeIf(StringUtils::hasScheme) ?: (Scheme.Https.value + url),
                         login = login,

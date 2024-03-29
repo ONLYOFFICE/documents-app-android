@@ -49,19 +49,21 @@ class NextCloudLoginViewModel : ViewModel() {
         }
     }
 
-    private fun createCloudAccount(url: URL, login: String) = CloudAccount(
-        id = UUID.nameUUIDFromBytes("$login@${url.host}".toByteArray()).toString(),
-        portalUrl = url.host,
-        login = login,
-        name = login,
-        portal = CloudPortal(
-            url = url.host,
-            scheme = Scheme.Custom(url.protocol + "://"),
-            provider = PortalProvider.Webdav(
-                provider = WebdavProvider.NextCloud(
-                    url.path.orEmpty() + WebdavProvider.DEFAULT_NEXT_CLOUD_PATH + "$login/"
+    private fun createCloudAccount(url: URL, login: String): CloudAccount {
+        val portal = url.toString().replace(".*://".toRegex(), "")
+        return CloudAccount(
+            id = UUID.nameUUIDFromBytes("$login@$portal".toByteArray()).toString(),
+            portalUrl = portal,
+            login = login,
+            name = login,
+            portal = CloudPortal(
+                url = portal,
+                scheme = Scheme.Custom(url.protocol + "://"),
+                provider = PortalProvider.Webdav(
+                    provider = WebdavProvider.NextCloud,
+                    path = url.path.orEmpty() + WebdavProvider.DEFAULT_NEXT_CLOUD_PATH + "$login/"
                 )
             )
         )
-    )
+    }
 }
