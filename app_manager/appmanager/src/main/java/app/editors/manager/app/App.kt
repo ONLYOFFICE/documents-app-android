@@ -109,9 +109,9 @@ class App : Application() {
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
         sApp = this
-        needPasscodeToUnlock = appComponent.preference.passcodeLock.enabled
         initDagger()
         accountsMigrate()
+        needPasscodeToUnlock = appComponent.preference.passcodeLock.enabled
     }
 
     private fun accountsMigrate() {

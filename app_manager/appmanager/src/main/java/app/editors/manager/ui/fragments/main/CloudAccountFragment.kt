@@ -229,10 +229,8 @@ class CloudAccountFragment : BaseAppFragment(),
     }
 
     override fun onSuccessLogin() {
-        requireContext().startActivity(Intent(requireContext(), MainActivity::class.java).apply {
-            putExtra(MainActivity.KEY_CODE, true)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        })
+        hideDialog()
+        MainActivity.show(requireContext())
     }
 
     override fun onWaiting() {
