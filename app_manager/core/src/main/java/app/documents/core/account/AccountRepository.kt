@@ -35,7 +35,10 @@ interface AccountRepository {
 
     suspend fun logOut(accountId: String): CloudAccount
 
-    suspend fun deleteAccounts(accountIds: Array<out String>): List<CloudAccount>
+    suspend fun deleteAccounts(
+        accountIds: Array<out String>,
+        onDeleteAccounts: suspend (List<CloudAccount>) -> Unit
+    ): List<CloudAccount>
 
     suspend fun checkLogin(accountId: String): CheckLoginResult
 
@@ -120,14 +123,20 @@ internal class AccountRepositoryImpl(
         return cloudDataSource.getPortals()
     }
 
-    override suspend fun deleteAccounts(accountIds: Array<out String>): List<CloudAccount> {
+    override suspend fun deleteAccounts(
+        accountIds: Array<out String>,
+        onDeleteAccounts: suspend (List<CloudAccount>) -> Unit
+    ): List<CloudAccount> {
+        val deletedAccounts = mutableListOf<CloudAccount>()
         accountIds.forEach { accountId ->
             cloudDataSource.getAccount(accountId)?.let { account ->
                 if (accountPreferences.onlineAccountId == accountId) accountPreferences.onlineAccountId = null
                 accountManager.removeAccount(account.accountName)
                 cloudDataSource.deleteAccount(account)
+                deletedAccounts.add(account)
             }
         }
+        onDeleteAccounts.invoke(deletedAccounts)
         return cloudDataSource.getAccounts()
     }
 

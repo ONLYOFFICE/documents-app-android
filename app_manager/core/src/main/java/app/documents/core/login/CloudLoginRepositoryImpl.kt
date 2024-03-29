@@ -73,8 +73,7 @@ internal class CloudLoginRepositoryImpl(
     }
 
     override suspend fun deleteAccounts(vararg accountIds: String): Flow<Result<List<CloudAccount>>> {
-        return flowOf(accountRepository.deleteAccounts(accountIds))
-            .onEach { accounts -> accounts.forEach { account -> unsubscribePush(account) } }
+        return flowOf(accountRepository.deleteAccounts(accountIds, ::unsubscribePush))
             .flowOn(Dispatchers.IO)
             .asResult()
     }
@@ -257,6 +256,12 @@ internal class CloudLoginRepositoryImpl(
                 deviceToken = getDeviceToken(),
                 isSubscribe = false
             )
+        }
+    }
+
+    private suspend fun unsubscribePush(accounts: List<CloudAccount>) {
+        accounts.forEach { account ->
+            unsubscribePush(account)
         }
     }
 
