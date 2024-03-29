@@ -62,13 +62,13 @@ class App : Application() {
 
     }
 
+    var needPasscodeToUnlock: Boolean = false
+
     var isAnalyticEnable = true
         set(value) {
             field = value
             initCrashlytics()
         }
-
-    var isKeyStore: Boolean = true
 
     private var _appComponent: AppComponent? = null
     val appComponent: AppComponent
@@ -109,6 +109,7 @@ class App : Application() {
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
         sApp = this
+        needPasscodeToUnlock = appComponent.preference.passcodeLock.enabled
         initDagger()
         accountsMigrate()
     }

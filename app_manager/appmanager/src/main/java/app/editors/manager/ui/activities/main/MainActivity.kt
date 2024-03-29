@@ -89,13 +89,10 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
         private const val ACCOUNT_KEY = "ACCOUNT_KEY"
         private const val URL_KEY = "url"
-        const val KEY_CODE = "code"
 
-        fun show(context: Context, isCode: Boolean? = true, bundle: Bundle? = null) {
+        fun show(context: Context) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                isCode?.let { putExtra(KEY_CODE, isCode) }
-                bundle?.let { putExtras(bundle) }
             })
         }
     }
@@ -208,9 +205,15 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        presenter.checkOnBoardingShowed()
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
         init(savedInstanceState)
+    }
+
+    override fun onStart() {
+        if (App.getApp().needPasscodeToUnlock) PasscodeActivity.show(this)
+        super.onStart()
     }
 
     override fun onDestroy() {
@@ -281,11 +284,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             }
         }
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
-        if (intent.extras?.contains(KEY_CODE) == true) {
-            presenter.checkPassCode(true)
-        } else {
-            presenter.checkPassCode()
-        }
     }
 
     private fun setAppBarStates() {
@@ -357,11 +355,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
         showCloudFragment(account = account, fileData = fileData)
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
-    }
-
-    override fun onCodeActivity() {
-        PasscodeActivity.show(this, true, intent.extras)
-        finish()
     }
 
     override fun showActionButton(isShow: Boolean) {

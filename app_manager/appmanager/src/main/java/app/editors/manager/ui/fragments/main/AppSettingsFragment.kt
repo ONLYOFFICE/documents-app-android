@@ -28,14 +28,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.ui.activities.main.AboutActivity
-import app.editors.manager.ui.activities.main.AppLocalePickerActivity
+import app.editors.manager.ui.activities.main.AboutScreen
 import app.editors.manager.ui.activities.main.IMainActivity
-import app.editors.manager.ui.activities.main.PasscodeActivity
+import app.editors.manager.ui.compose.locale.AppLocalePickerScreen
+import app.editors.manager.ui.compose.passcode.PasscodeMainScreen
 import app.editors.manager.viewModels.main.AppSettingsState
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import app.editors.manager.viewModels.main.AppSettingsViewModelFactory
+import app.editors.manager.viewModels.main.PasscodeViewModel
+import app.editors.manager.viewModels.main.PasscodeViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.Previews
@@ -51,6 +54,7 @@ import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.capitalize
+import javax.inject.Inject
 import lib.toolkit.base.ui.fragments.base.BaseFragment
 
 private data class ClearCacheMessage(
@@ -58,8 +62,12 @@ private data class ClearCacheMessage(
     val message: String
 )
 
-private enum class SCREENS {
-    MAIN, THEME
+private sealed class Screen(val route: String) {
+    data object Main : Screen("main")
+    data object Theme : Screen("theme")
+    data object Passcode : Screen("passcode")
+    data object LocalePicker : Screen("locale")
+    data object About : Screen("about")
 }
 
 class AppSettingsFragment : BaseFragment() {
@@ -69,13 +77,19 @@ class AppSettingsFragment : BaseFragment() {
         fun newInstance(): AppSettingsFragment = AppSettingsFragment()
     }
 
+    @Inject
+    lateinit var preferenceTool: PreferenceTool
 
     private val viewModel by viewModels<AppSettingsViewModel> {
         AppSettingsViewModelFactory(
             themePrefs = ThemePreferencesTools(requireContext()),
             resourcesProvider = ResourcesProvider(requireContext()),
-            preferenceTool = PreferenceTool(requireContext())
+            preferenceTool = preferenceTool
         )
+    }
+
+    private val passcodeViewModel by viewModels<PasscodeViewModel> {
+        PasscodeViewModelFactory(preferenceTool = preferenceTool)
     }
 
     private val clearCacheMessage: ClearCacheMessage
@@ -89,72 +103,104 @@ class AppSettingsFragment : BaseFragment() {
             }
         }
 
+    init {
+        App.getApp().appComponent.inject(this)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (view as ComposeView).setContent {
+            val navController = rememberNavController()
             val settingsState by viewModel.settingsState.collectAsState()
+
             LaunchedEffect(Unit) {
                 viewModel.message.collectLatest { message ->
                     showSnackBar(message)
                 }
             }
 
-            val navController = rememberNavController()
+            LaunchedEffect(Unit) {
+                navController.addOnDestinationChangedListener { _, destination, _ ->
+                    initToolbar(destination.route)
+                }
+            }
 
             ManagerTheme {
                 AppScaffold {
-                    NavHost(navController = navController, startDestination = SCREENS.MAIN.name) {
-                        composable(SCREENS.MAIN.name) {
-                            initToolbar(SCREENS.MAIN)
+                    NavHost(navController = navController, startDestination = Screen.Main.route) {
+                        composable(Screen.Main.route) {
                             SettingsScreen(
                                 context = requireContext(),
                                 settingsState = settingsState,
-                                onThemeClick = { navController.navigate(SCREENS.THEME.name) },
+                                onThemeClick = { navController.navigate(Screen.Theme.route) },
                                 onWifiState = viewModel::setWifiState,
                                 onAnalytics = viewModel::setAnalytic,
+                                onPasscodeClick = { navController.navigate(Screen.Passcode.route) },
+                                onLocaleClick = { navController.navigate(Screen.LocalePicker.route) },
+                                onAboutClick = { navController.navigate(Screen.About.route) },
                                 onCacheClear = { viewModel.clearCache() }
                             )
                         }
-                        composable(SCREENS.THEME.name) {
-                            initToolbar(SCREENS.THEME)
+                        composable(Screen.Theme.route) {
                             ThemeScreen()
+                        }
+                        composable(Screen.Passcode.route) {
+                            PasscodeMainScreen(
+                                viewModel = passcodeViewModel,
+                                enterPasscodeKey = false,
+                                onBackClick = navController::popBackStack,
+                                onSuccess = navController::popBackStack
+                            )
+                        }
+                        composable(Screen.LocalePicker.route) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                with(App.getApp().appComponent.appLocaleHelper) {
+                                    AppLocalePickerScreen(
+                                        locales = locales,
+                                        current = currentLocale,
+                                        onBackListener = navController::popBackStack,
+                                        onChangeLocale = ::changeLocale
+                                    )
+                                }
+                            }
+                        }
+                        composable(Screen.About.route) {
+                            AboutScreen(onBackClick = navController::popBackStack)
                         }
                     }
                 }
             }
-
         }
     }
 
-    private fun initToolbar(theme: SCREENS) {
-        when (theme) {
-            SCREENS.MAIN -> {
-                setActionBarTitle(getString(R.string.settings_item_title))
-                (activity as? IMainActivity)?.apply {
-                    setAppBarStates(false)
-                    showNavigationButton(false)
-                    showActionButton(false)
-                }
+    private fun initToolbar(screen: String?) {
+        (activity as? IMainActivity)?.apply {
+            val title = when (screen) {
+                Screen.Theme.route -> R.string.app_settings_color_theme
+                Screen.Passcode.route -> R.string.app_settings_passcode
+                Screen.LocalePicker.route -> R.string.settings_language
+                Screen.About.route -> R.string.about_title
+                else -> R.string.settings_item_title
             }
 
-            SCREENS.THEME -> {
-                setActionBarTitle(getString(R.string.app_settings_color_theme))
-                (activity as? IMainActivity)?.apply {
-                    showNavigationButton(true)
-                }
-            }
+            setAppBarStates(false)
+            showNavigationButton(screen != Screen.Main.route)
+            showActionButton(false)
+            setActionBarTitle(getString(title))
         }
-
     }
 
     @Composable
-    private fun SettingsScreen(
+    fun SettingsScreen(
         context: Context,
         settingsState: AppSettingsState,
         onThemeClick: () -> Unit,
+        onPasscodeClick: () -> Unit,
+        onLocaleClick: () -> Unit,
+        onAboutClick: () -> Unit,
         onWifiState: (Boolean) -> Unit,
         onAnalytics: (Boolean) -> Unit,
         onCacheClear: () -> Unit
@@ -181,10 +227,9 @@ class AppSettingsFragment : BaseFragment() {
                 AppArrowItem(
                     title = R.string.app_settings_passcode,
                     arrowVisible = true,
-                    dividerVisible = false
-                ) {
-                    PasscodeActivity.show(context, bundle = null)
-                }
+                    dividerVisible = false,
+                    onClick = onPasscodeClick
+                )
                 AppDivider()
                 AppHeaderItem(title = R.string.settings_title_common)
                 AppArrowItem(
@@ -207,10 +252,9 @@ class AppSettingsFragment : BaseFragment() {
                         AppArrowItem(
                             title = R.string.settings_language,
                             option = currentAppLocale.displayLanguage.capitalize(currentAppLocale),
-                            dividerVisible = false
-                        ) {
-                            AppLocalePickerActivity.show(requireContext())
-                        }
+                            dividerVisible = false,
+                            onClick = onLocaleClick
+                        )
                     }
                 }
                 AppArrowItem(
@@ -222,10 +266,9 @@ class AppSettingsFragment : BaseFragment() {
                 AppArrowItem(
                     title = R.string.about_title,
                     arrowVisible = true,
-                    dividerVisible = false
-                ) {
-                    AboutActivity.show(context)
-                }
+                    dividerVisible = false,
+                    onClick = onAboutClick
+                )
                 AppArrowItem(
                     title = R.string.app_settings_main_help,
                     dividerVisible = false,
@@ -278,8 +321,6 @@ class AppSettingsFragment : BaseFragment() {
                 }
             )
         }
-
-
     }
 
     private fun getThemeString(mode: Int) = when (mode) {
@@ -300,12 +341,15 @@ class AppSettingsFragment : BaseFragment() {
                     themeMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
                     analytics = false,
                     wifi = true,
-                    passcode = true
+                    passcodeEnabled = true
                 ),
                 onThemeClick = {},
                 onWifiState = {},
                 onAnalytics = {},
-                {}
+                onPasscodeClick = {},
+                onLocaleClick = {},
+                onAboutClick = {},
+                onCacheClear = {}
             )
         }
     }

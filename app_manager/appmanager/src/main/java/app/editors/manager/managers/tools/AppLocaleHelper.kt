@@ -1,4 +1,4 @@
-package app.editors.manager.ui.activities.main
+package app.editors.manager.managers.tools
 
 import android.app.LocaleManager
 import android.content.Context
@@ -6,8 +6,7 @@ import android.os.Build
 import android.os.LocaleList
 import androidx.annotation.RequiresApi
 import app.editors.manager.R
-import app.editors.manager.managers.tools.PreferenceTool
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 

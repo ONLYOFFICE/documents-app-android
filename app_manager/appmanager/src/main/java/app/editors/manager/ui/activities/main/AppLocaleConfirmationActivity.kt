@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
+import app.editors.manager.managers.tools.AppLocaleHelper
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.fillMaxWidth
 import lib.compose.ui.theme.ManagerTheme

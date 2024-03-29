@@ -218,7 +218,6 @@
     <string name="navigation_drawer_menu_common">Documenti comuni</string>
     <string name="navigation_drawer_menu_help">Guida</string>
     <string name="navigation_drawer_menu_logout">Esci</string>
-    <string name="navigation_drawer_menu_my">I miei documenti</string>
     <string name="navigation_drawer_menu_projects">Progetti</string>
     <string name="navigation_drawer_menu_shared">Condivisi con me</string>
     <string name="navigation_drawer_menu_trash">cestino</string>
@@ -498,7 +497,6 @@
     <string name="errors_webdav_username_password">Nome utente o password errati</string>
     <string name="errors_webdav_server">Server errato</string>
     <string name="toolbar_menu_sort_tags">Tag</string>
-    <string name="main_pager_docs_my">I miei documenti</string>
     <string name="main_pager_docs_virtual_room">Le mie stanze</string>
     <string name="main_pager_docs_archive_room">Il mio archivio</string>
     <string name="share_invite_user">Invita gli utenti</string>

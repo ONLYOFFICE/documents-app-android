@@ -25,7 +25,6 @@ interface MainActivityView : BaseViewExt {
     fun onCloseActionDialog()
     fun onRender(state: MainActivityState)
     fun openFile(account: CloudAccount, fileData: String)
-    fun onCodeActivity()
     fun onSwitchAccount(data: OpenDataModel, isToken: Boolean = false)
     fun onLocaleConfirmation()
 }

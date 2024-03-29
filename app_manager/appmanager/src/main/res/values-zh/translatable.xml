@@ -196,7 +196,6 @@
     <string name="navigation_drawer_open">打开导航抽屉</string>
     <string name="navigation_drawer_close">关闭导航抽屉</string>
     <!-- Main drawer menu-->
-    <string name="navigation_drawer_menu_my">我的文档</string>
     <string name="navigation_drawer_menu_shared">与我分享</string>
     <string name="navigation_drawer_menu_common">共同文档</string>
     <string name="navigation_drawer_menu_projects">项目</string>
@@ -564,7 +563,6 @@
     <string name="errors_webdav_username_password">用户名或密码错误</string>
     <string name="errors_webdav_server">服务器错误</string>
     <string name="toolbar_menu_sort_tags">标签</string>
-    <string name="main_pager_docs_my">我的文档</string>
     <string name="main_pager_docs_virtual_room">我的房间</string>
     <string name="main_pager_docs_archive_room">我的存档</string>
     <string name="share_invite_user">邀请用户</string>

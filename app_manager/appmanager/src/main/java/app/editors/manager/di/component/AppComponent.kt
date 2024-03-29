@@ -39,7 +39,7 @@ import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
-import app.editors.manager.ui.activities.main.AppLocaleHelper
+import app.editors.manager.managers.tools.AppLocaleHelper
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -51,7 +51,7 @@ import app.editors.manager.ui.fragments.login.EnterprisePortalFragment
 import app.editors.manager.ui.fragments.login.EnterpriseSignInFragment
 import app.editors.manager.ui.fragments.login.EnterpriseSmsFragment
 import app.editors.manager.ui.fragments.login.PersonalPortalFragment
-import app.editors.manager.ui.fragments.login.SplashFragment
+import app.editors.manager.ui.fragments.main.AppSettingsFragment
 import app.editors.manager.ui.fragments.main.CloudsFragment
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.main.WebViewerFragment
@@ -124,7 +124,6 @@ interface AppComponent {
     fun inject(personalPortalFragment: PersonalPortalFragment?)
     fun inject(webDavInterceptor: WebDavInterceptor?)
     fun inject(passwordRecoveryPresenter: PasswordRecoveryPresenter)
-    fun inject(splashFragment: SplashFragment?)
     fun inject(onlyOfficeCloudPresenter: OnlyOfficeCloudPresenter)
     fun inject(cloudsFragment: CloudsFragment)
     fun inject(webDavLoginActivity: WebDavLoginActivity)
@@ -148,6 +147,7 @@ interface AppComponent {
     fun inject(docsOneDrivePresenter: DocsOneDrivePresenter?)
     fun inject(docsDropboxPresenter: DocsDropboxPresenter?)
     fun inject(docsGoogleDrivePresenter: DocsGoogleDrivePresenter?)
+    fun inject(appSettingsFragment: AppSettingsFragment)
 
     /*
     * Media

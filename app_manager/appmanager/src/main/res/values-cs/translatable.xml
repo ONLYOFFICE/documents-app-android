@@ -232,7 +232,6 @@
     <string name="navigation_drawer_close">Zavřít navigační panel</string>
 
     <!-- Main drawer menu-->
-    <string name="navigation_drawer_menu_my">Moje dokumenty</string>
     <string name="navigation_drawer_menu_shared">Sdílené se mnou</string>
     <string name="navigation_drawer_menu_common">Společné dokumenty</string>
     <string name="navigation_drawer_menu_projects">Projekty</string>
@@ -640,7 +639,6 @@
     <string name="errors_webdav_username_password">Chybné uživatelské jméno nebo heslo</string>
     <string name="errors_webdav_server">Chybný server</string>
     <string name="toolbar_menu_sort_tags">Štítky</string>
-    <string name="main_pager_docs_my">Moje dokumenty</string>
     <string name="main_pager_docs_virtual_room">Moje místnosti</string>
     <string name="main_pager_docs_archive_room">Můj archiv</string>
     <string name="share_invite_user">Pozvat uživatele</string>

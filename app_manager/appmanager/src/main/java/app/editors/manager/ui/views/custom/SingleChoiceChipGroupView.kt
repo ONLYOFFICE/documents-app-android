@@ -11,7 +11,9 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
 interface ChipItem {
-    val chipTitle: Int
+    val chipTitleString: String?
+            get() = null
+    val chipTitle: Int?
     val withOption: Boolean
     var option: Any?
 }
@@ -82,7 +84,12 @@ class SingleChoiceChipGroupView : LinearLayout {
             isChecked = true
             isCloseIconVisible = true
         } ?: run {
-            text = context.getString(chip.chipTitle)
+            text =
+                if (chip.chipTitleString != null) {
+                    chip.chipTitleString
+                } else {
+                    context.getString(chip.chipTitle ?: -1)
+                }
             isChecked = checked
             isCloseIconVisible = false
         }

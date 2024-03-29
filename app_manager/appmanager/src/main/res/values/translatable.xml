@@ -268,7 +268,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!-- Main drawer menu-->
-    <string name="navigation_drawer_menu_my">My documents</string>
     <string name="navigation_drawer_menu_shared">Shared with me</string>
     <string name="navigation_drawer_menu_common">Common documents</string>
     <string name="navigation_drawer_menu_projects">Projects</string>
@@ -349,7 +348,7 @@
     <!-- Dialog info -->
 
     <!-- Pager -->
-    <string name="main_pager_docs_my">My documents</string>
+    <string name="main_pager_docs_my">Documents</string>
     <string name="main_pager_docs_common">Common</string>
     <string name="main_pager_docs_share">Shared with me</string>
     <string name="main_pager_docs_projects">Projects</string>
@@ -643,7 +642,7 @@
     <string name="app_settings_analytic">Share app analytics</string>
     <string name="app_manage_files_title">Access manage files</string>
     <string name="app_manage_files_description">Need to grant access to the files. If access is denied all files after lost applications will be deleted.</string>
-    //passcode
+
     <string name="app_settings_security">Security</string>
     <string name="app_settings_passcode">Passcode lock</string>
     <string name="app_settings_disabled">Disabled</string>
@@ -661,6 +660,16 @@
     <string name="app_settings_passcode_change_disable_error">Incorrect passcode entered</string>
     <string name="app_settings_passcode_description"> - this is code which requested at application start.\n\nPay attention! If you forget passcode you have to remove or reinstall application. All documents on device will be lost. </string>
     <string name="app_settings_passcode_fingerprint_title">Access to Documents</string>
+
+    <plurals name="app_settings_passcode_many_attempt_seconds">
+        <item quantity="one">Too many attempts.\nTry again in %d second</item>
+        <item quantity="other">Too many attempts.\nTry again in %d seconds</item>
+    </plurals>
+
+    <plurals name="app_settings_passcode_many_attempt_minutes">
+        <item quantity="one">Too many attempts.\nTry again in %d minute</item>
+        <item quantity="other">Too many attempts.\nTry again in %d minutes</item>
+    </plurals>
 
     <string name="app_internal_error">Internal error</string>
     <string name="app_fragment_crash_error">Please close this app and try again</string>

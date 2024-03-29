@@ -1,58 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/default_margin_medium"
+        app:layout_constraintBottom_toTopOf="@id/showButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <Space
+        <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/showButton"
-            android:layout_width="@dimen/default_button_width"
-            android:layout_height="@dimen/default_button_height"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginVertical="@dimen/default_margin_xxlarge"
-            android:animateLayoutChanges="true"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless"
-            app:cardBackgroundColor="@color/colorPrimary"
-            app:cardCornerRadius="@dimen/default_corner_radius_button"
-            app:cardElevation="0dp">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/showButton"
+        android:layout_width="@dimen/default_button_width"
+        android:layout_height="@dimen/default_button_height"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginVertical="@dimen/default_margin_xxlarge"
+        android:animateLayoutChanges="true"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardCornerRadius="@dimen/default_corner_radius_button"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-            <ProgressBar
-                android:id="@+id/resultProgress"
-                style="@style/Widget.Material3.CircularProgressIndicator"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_gravity="center"
-                android:indeterminate="true"
-                android:indeterminateTint="@color/colorWhite"
-                android:visibility="visible" />
+        <ProgressBar
+            android:id="@+id/resultProgress"
+            style="@style/Widget.Material3.CircularProgressIndicator"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/colorWhite"
+            android:visibility="visible" />
 
-            <TextView
-                android:id="@+id/resultText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button"
-                android:textColor="@color/colorWhite"
-                android:textSize="14sp"
-                android:visibility="visible" />
+        <TextView
+            android:id="@+id/resultText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button"
+            android:textColor="@color/colorWhite"
+            android:textSize="14sp"
+            android:visibility="visible" />
 
-        </androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-    </LinearLayout>
-
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

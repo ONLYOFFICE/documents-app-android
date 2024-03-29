@@ -236,7 +236,6 @@
     <string name="navigation_drawer_menu_common">Общие</string>
     <string name="navigation_drawer_menu_help">Справка</string>
     <string name="navigation_drawer_menu_logout">Выйти</string>
-    <string name="navigation_drawer_menu_my">Мои документы</string>
     <string name="navigation_drawer_menu_projects">Проекты</string>
     <string name="navigation_drawer_menu_shared">Доступные мне</string>
     <string name="navigation_drawer_menu_trash">Корзина</string>
@@ -516,7 +515,6 @@
     <string name="errors_webdav_username_password">Неправильное имя пользователя или пароль</string>
     <string name="errors_webdav_server">Неправильный сервер</string>
     <string name="toolbar_menu_sort_tags">Теги</string>
-    <string name="main_pager_docs_my">Мои документы</string>
     <string name="main_pager_docs_virtual_room">Мои комнаты</string>
     <string name="main_pager_docs_archive_room">Мой архив</string>
     <string name="share_invite_user">Пригласить пользователей</string>

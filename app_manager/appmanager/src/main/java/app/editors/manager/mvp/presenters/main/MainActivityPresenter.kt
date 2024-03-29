@@ -216,12 +216,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         }
     }
 
-    fun checkPassCode(isCode: Boolean? = null) {
-        if (preferenceTool.isPasscodeLockEnable && isCode == null) {
-            viewState.onCodeActivity()
-        }
-    }
-
     fun navigationItemClick(itemId: Int) {
         when (itemId) {
             R.id.menu_item_recent -> viewState.onRender(MainActivityState.RecentState)
@@ -302,4 +296,9 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         preferenceTool.isRateOn = false
     }
 
+    fun checkOnBoardingShowed() {
+        if (!preferenceTool.onBoarding) {
+            viewState.onShowOnBoarding()
+        }
+    }
 }
