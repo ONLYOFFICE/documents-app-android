@@ -3,17 +3,17 @@ package app.documents.core.di.dagger.storages
 import android.content.Context
 import app.documents.core.di.dagger.CoreModule.json
 import app.documents.core.di.dagger.Token
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.interceptors.BaseInterceptor
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.storages.onedrive.api.OneDriveProvider
 import app.documents.core.network.storages.onedrive.api.OneDriveService
-import app.documents.core.storage.account.CloudAccount
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
-import lib.toolkit.base.managers.http.NetworkClient
 import lib.toolkit.base.managers.utils.AccountUtils
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -63,7 +63,7 @@ class OneDriveModule {
     fun provideToken(context: Context, account: CloudAccount?): String? = runBlocking {
         return@runBlocking AccountUtils.getToken(
             context = context,
-            accountName = account?.getAccountName() ?: return@runBlocking null
+            accountName = account?.accountName ?: return@runBlocking null
         )
     }
 }

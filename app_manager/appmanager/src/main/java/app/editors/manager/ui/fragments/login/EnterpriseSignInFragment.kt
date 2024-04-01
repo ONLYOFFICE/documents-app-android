@@ -9,12 +9,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import app.documents.core.storage.preference.NetworkSettings
+import androidx.core.view.isVisible
+import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.FragmentLoginEnterpriseSigninBinding
-import app.editors.manager.managers.utils.GoogleUtils
 import app.editors.manager.mvp.presenters.login.EnterpriseLoginPresenter
 import app.editors.manager.mvp.views.login.CommonSignInView
 import app.editors.manager.ui.activities.login.AuthAppActivity
@@ -24,10 +26,10 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.SocialViews
 import app.editors.manager.ui.views.custom.SocialViews.OnSocialNetworkCallbacks
 import app.editors.manager.ui.views.edits.BaseWatcher
+import com.google.android.gms.auth.GoogleAuthUtil
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
-import javax.inject.Inject
 
 class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDialog.OnClickListener,
     OnSocialNetworkCallbacks {
@@ -49,9 +51,6 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         }
     }
 
-    @Inject
-    lateinit var networkSettings: NetworkSettings
-
     @InjectPresenter
     lateinit var presenter: EnterpriseLoginPresenter
 
@@ -63,10 +62,9 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     private val portal: String?
         get() = arguments?.getString(SignInActivity.KEY_PORTAL)
+
     private val login: String?
         get() = arguments?.getString(SignInActivity.KEY_LOGIN)
-    private val providers: Array<String>
-        get() = arguments?.getStringArray(SignInActivity.KEY_PROVIDERS) ?: emptyArray()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -157,7 +155,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SocialViews.GOOGLE_PERMISSION) {
-            presenter.retrySignInWithGoogle()
+            presenter.signInWithProvider(null, ApiContract.Social.GOOGLE)
         } else {
             socialViews?.onActivityResult(requestCode, resultCode, data)
         }
@@ -185,20 +183,25 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     private fun signInButtonClick() {
         val email = viewBinding?.loginEnterprisePortalEmailEdit?.text.toString()
         val password = viewBinding?.loginEnterprisePortalPasswordEdit?.text.toString()
-        presenter.signInPortal(email.trim { it <= ' ' }, password, portal ?: "")
+        presenter.signInPortal(email.trim { it <= ' ' }, password, CloudPortal(url = portal.orEmpty()))
     }
-
 
     private fun onSignOnButtonClick() {
         showFragment(
-            SSOLoginFragment.newInstance(networkSettings.ssoUrl),
+            SSOLoginFragment.newInstance(context?.accountOnline?.portal?.settings?.ssoUrl),
             SSOLoginFragment.TAG,
             true
         )
     }
 
     private fun onForgotPwdClick() {
-        showFragment(PasswordRecoveryFragment.newInstance(viewBinding?.loginEnterprisePortalEmailEdit?.text.toString(), false), PasswordRecoveryFragment.TAG, false)
+        showFragment(
+            PasswordRecoveryFragment.newInstance(
+                viewBinding?.loginEnterprisePortalEmailEdit?.text.toString(),
+                false,
+                presenter.useLdap
+            ), PasswordRecoveryFragment.TAG, false
+        )
     }
 
 
@@ -225,7 +228,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     override fun onTwoFactorAuth(phoneNoise: String?, request: String) {
         hideDialog()
-        if (phoneNoise != null && phoneNoise.isNotEmpty()) {
+        if (!phoneNoise.isNullOrEmpty()) {
             showFragment(
                 EnterpriseSmsFragment.newInstance(false, request),
                 EnterpriseSmsFragment.TAG,
@@ -238,7 +241,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     override fun onTwoFactorAuthTfa(secretKey: String?, request: String) {
         hideDialog()
-        if (secretKey != null && secretKey.isNotEmpty()) {
+        if (!secretKey.isNullOrEmpty()) {
             AuthAppActivity.show(requireActivity(), request, secretKey)
         } else {
             showFragment(
@@ -273,7 +276,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
             getString(R.string.dialogs_common_cancel_button),
             EnterpriseLoginPresenter.TAG_DIALOG_WAITING
         )
-        presenter.signInWithTwitter(token)
+        presenter.signInWithProvider(token, ApiContract.Social.TWITTER)
     }
 
     override fun onTwitterFailed() {
@@ -287,7 +290,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
             getString(R.string.dialogs_common_cancel_button),
             EnterpriseLoginPresenter.TAG_DIALOG_WAITING
         )
-        presenter.signInWithFacebook(token)
+        presenter.signInWithProvider(token, ApiContract.Social.FACEBOOK)
     }
 
     override fun onFacebookLogin(message: String) {
@@ -316,7 +319,9 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
             getString(R.string.dialogs_common_cancel_button),
             EnterpriseLoginPresenter.TAG_DIALOG_WAITING
         )
-        presenter.signInWithGoogle(account)
+        val scope = requireContext().getString(R.string.google_scope)
+        val accessToken = GoogleAuthUtil.getToken(requireContext(), account, scope)
+        presenter.signInWithProvider(accessToken, ApiContract.Social.GOOGLE)
     }
 
     override fun onGoogleFailed() {
@@ -350,34 +355,47 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         }
 
     private fun initViews() {
-        val facebookId = if (networkSettings.isPortalInfo) BuildConfig.FACEBOOK_APP_ID_INFO else BuildConfig.FACEBOOK_APP_ID
+        val facebookId = if (context?.accountOnline?.portalUrl?.endsWith(".info") == true)
+            BuildConfig.FACEBOOK_APP_ID_INFO else
+            BuildConfig.FACEBOOK_APP_ID
+
         socialViews = SocialViews(requireActivity(), viewBinding?.socialNetworkLayout?.socialNetworkLayout, facebookId)
         socialViews?.setOnSocialNetworkCallbacks(this)
         fieldsWatcher = FieldsWatcher()
         viewBinding?.loginEnterprisePortalEmailEdit?.addTextChangedListener(fieldsWatcher)
         viewBinding?.loginEnterprisePortalPasswordEdit?.addTextChangedListener(fieldsWatcher)
         viewBinding?.loginEnterpriseSigninButton?.isEnabled = false
-        viewBinding?.loginEnterpriseSignonButton?.isEnabled = false
 
-        if (providers.isNotEmpty()) {
-            showGoogleLogin(providers.contains("google") && GoogleUtils.isGooglePlayServicesAvailable(requireContext()))
-            showFacebookLogin(providers.contains("facebook"))
+        val cloudPortal = presenter.currentPortal
+        if (cloudPortal != null && cloudPortal.settings.ldap) {
+            viewBinding?.ldapCheckbox?.isVisible = true
+            viewBinding?.ldapCheckbox?.setOnCheckedChangeListener { _, isChecked ->
+                presenter.useLdap = isChecked
+                viewBinding?.loginEnterprisePortalEmailLayout?.error = null
+                if (isChecked) {
+                    viewBinding?.loginEnterprisePortalEmailLayout?.setHint(R.string.profile_username_title)
+                } else {
+                    viewBinding?.loginEnterprisePortalEmailLayout?.setHint(R.string.login_enterprise_email_hint)
+                }
+            }
         }
+
+        presenter.checkSocialProvider(portal.orEmpty()) { socialViews?.setProviders(it) }
     }
 
     private val intent: Unit
         get() {
             val intent = activity?.intent
             if (intent != null) {
-//                if (intent.hasExtra(SignInActivity.TAG_PORTAL_SIGN_IN_EMAIL) && mPreferenceTool!!.login != null) {
-//                    viewBinding?.loginEnterprisePortalEmailEdit!!.setText(mPreferenceTool!!.login)
-//                }
+                //                if (intent.hasExtra(SignInActivity.TAG_PORTAL_SIGN_IN_EMAIL) && mPreferenceTool!!.login != null) {
+                //                    viewBinding?.loginEnterprisePortalEmailEdit!!.setText(mPreferenceTool!!.login)
+                //                }
             }
         }
 
     private fun restoreViews(savedInstanceState: Bundle?) {
-        val ssoUrl = networkSettings.ssoUrl
-        if (ssoUrl.isNotEmpty()) {
+        val ssoUrl = context?.accountOnline?.portal?.settings?.ssoUrl
+        if (!ssoUrl.isNullOrEmpty()) {
             viewBinding?.loginEnterpriseSignonButton?.apply {
                 visibility = View.VISIBLE
                 setSSOButtonText()
@@ -397,8 +415,8 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
     private fun setSSOButtonText() {
-        val ssoLabel = networkSettings.ssoLabel
-        viewBinding?.loginEnterpriseSignonButton?.text = if (ssoLabel.isNotEmpty()) getString(
+        val ssoLabel = context?.accountOnline?.portal?.settings?.ssoLabel
+        viewBinding?.loginEnterpriseSignonButton?.text = if (!ssoLabel.isNullOrEmpty()) getString(
             R.string.login_enterprise_single_sign_button_login,
             ssoLabel
         )
@@ -408,14 +426,6 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
                 getString(R.string.login_enterprise_single_sign_button_login_default)
             )
         }
-    }
-
-    private fun showGoogleLogin(isShow: Boolean) {
-        socialViews?.showGoogleLogin(isShow)
-    }
-
-    private fun showFacebookLogin(isShow: Boolean) {
-        socialViews?.showFacebookLogin(isShow)
     }
 
     /*

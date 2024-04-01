@@ -13,12 +13,13 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
+import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.storage.account.AccountDao
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.ui.adapters.base.BaseAdapter
@@ -60,7 +61,7 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
     lateinit var cacheTool: CacheTool
 
     @Inject
-    lateinit var accountDao: AccountDao
+    lateinit var cloudDataSource: CloudDataSource
 
     private var cellSize: Int
 
@@ -70,8 +71,8 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
     }
 
     private val token = runBlocking(Dispatchers.Default) {
-        accountDao.getAccountOnline()?.let { account ->
-            AccountUtils.getToken(context, Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type)))
+        context.accountOnline?.let { account ->
+            AccountUtils.getToken(context, Account(account.accountName, context.getString(lib.toolkit.base.R.string.account_type)))
                 ?.let { token ->
                     return@runBlocking token
                 }
@@ -185,7 +186,7 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
 
         fun bind(file: CloudFile?) {
             scope.launch {
-                accountDao.getAccountOnline()?.let { account ->
+                context.accountOnline?.let { account ->
                     when {
                         account.isWebDav && file?.id != "" -> {
                             loadWebDav(file, account)
@@ -196,7 +197,7 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
                         else -> {
                             AccountUtils.getToken(
                                 view.context,
-                                Account(account.getAccountName(), view.context.getString(lib.toolkit.base.R.string.account_type))
+                                Account(account.accountName, view.context.getString(lib.toolkit.base.R.string.account_type))
                             )?.let { token ->
                                 loadCloud(file, token)
                             }
@@ -227,7 +228,7 @@ class MediaAdapter(cellSize: Int, private val scope: CoroutineScope) : BaseAdapt
         private suspend fun loadWebDav(file: CloudFile?, account: CloudAccount) {
             AccountUtils.getPassword(
                 view.context,
-                Account(account.getAccountName(), view.context.getString(lib.toolkit.base.R.string.account_type))
+                Account(account.accountName, view.context.getString(lib.toolkit.base.R.string.account_type))
             )?.let { pass ->
                 val url = GlideUtils.getWebDavUrl(file?.id!!, account, pass)
                 withContext(Dispatchers.Main) {

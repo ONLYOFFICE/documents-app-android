@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -33,6 +34,7 @@ import app.editors.manager.ui.views.custom.SocialViews
 import app.editors.manager.ui.views.custom.SocialViews.OnSocialNetworkCallbacks
 import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.viewModels.login.RemoteUrlViewModel
+import com.google.android.gms.auth.GoogleAuthUtil
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
 
@@ -61,7 +63,6 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     private var portalsActivity: PortalsActivity? = null
     private var fieldsWatcher: FieldsWatcher? = null
     private var socialViews: SocialViews? = null
-
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -110,7 +111,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SocialViews.GOOGLE_PERMISSION) {
-            personalSignInPresenter.retrySignInWithGoogle()
+            personalSignInPresenter.signInWithProvider(null, ApiContract.Social.GOOGLE)
         } else {
             socialViews?.onActivityResult(requestCode, resultCode, data)
         }
@@ -162,7 +163,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
 
     override fun onTwoFactorAuth(phoneNoise: String?, request: String) {
         hideDialog()
-        if (phoneNoise != null && phoneNoise.isNotEmpty()) {
+        if (!phoneNoise.isNullOrEmpty()) {
             context?.let { showSms(it, request) }
         } else {
             context?.let { showPhone(it, request) }
@@ -202,7 +203,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
             getString(R.string.dialogs_common_cancel_button),
             TAG_DIALOG_WAITING
         )
-        personalSignInPresenter.signInPersonalWithTwitter(token)
+        personalSignInPresenter.signInWithProvider(token, ApiContract.Social.TWITTER)
     }
 
     override fun onTwitterFailed() {
@@ -216,7 +217,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
             getString(R.string.dialogs_common_cancel_button),
             TAG_DIALOG_WAITING
         )
-        personalSignInPresenter.signInPersonalWithFacebook(token)
+        personalSignInPresenter.signInWithProvider(token, ApiContract.Social.FACEBOOK)
     }
 
     override fun onFacebookLogin(message: String) {
@@ -242,7 +243,9 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
             getString(R.string.dialogs_common_cancel_button),
             TAG_DIALOG_WAITING
         )
-        personalSignInPresenter.signInPersonalWithGoogle(account)
+        val scope = requireContext().getString(R.string.google_scope)
+        val accessToken = GoogleAuthUtil.getToken(requireContext(), account, scope)
+        personalSignInPresenter.signInWithProvider(accessToken, ApiContract.Social.GOOGLE)
     }
 
     override fun onGoogleFailed() {

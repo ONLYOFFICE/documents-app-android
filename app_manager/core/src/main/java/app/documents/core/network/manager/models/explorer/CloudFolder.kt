@@ -24,6 +24,10 @@ open class CloudFolder : Item(), Serializable {
     @Expose
     var providerKey = ""
 
+    @SerializedName("providerId")
+    @Expose
+    var providerId: Int = -1
+
     @SerializedName("pinned")
     @Expose
     var pinned = false

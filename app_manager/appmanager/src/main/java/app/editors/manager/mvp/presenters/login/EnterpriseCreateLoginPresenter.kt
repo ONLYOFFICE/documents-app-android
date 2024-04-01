@@ -1,20 +1,22 @@
 package app.editors.manager.mvp.presenters.login
 
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.network.login.LoginResponse
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.login.User
+import app.documents.core.model.login.request.RequestSignIn
+import app.documents.core.network.common.Result
+import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.login.models.User
-import app.documents.core.network.login.models.request.RequestRegister
-import app.documents.core.network.login.models.request.RequestSignIn
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.app.loginService
 import app.editors.manager.mvp.views.login.EnterpriseCreateSignInView
 import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import moxy.InjectViewState
+import moxy.presenterScope
 
 @InjectViewState
 class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignInView>() {
@@ -33,6 +35,7 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
     }
 
     private var disposable: Disposable? = null
+    private val cloudPortal by lazy { App.getApp().loginComponent.currentPortal }
 
     override fun cancelRequest() {
         super.cancelRequest()
@@ -59,11 +62,16 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         viewState.onSuccessLogin()
     }
 
-    fun createPortal(password: String, email: String, first: String, last: String, recaptcha: String) {
+    fun createPortal(
+        password: String,
+        email: String,
+        first: String,
+        last: String,
+        recaptcha: String
+    ) {
 
         // Check user input portal
-        val portal = networkSettings.getPortal()
-        val partsPortal = networkSettings.getPortal().split(".")
+        val partsPortal = cloudPortal?.url?.split(".").orEmpty()
         if (partsPortal.size != PORTAL_PARTS || partsPortal[PORTAL_PART_NAME].length < PORTAL_LENGTH) {
             viewState.onError(context.getString(R.string.login_api_portal_name))
             return
@@ -72,40 +80,28 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
         // Create api
         viewState.onShowProgress()
         val domain = partsPortal[PORTAL_PART_HOST] + "." + partsPortal[PORTAL_PART_DOMAIN]
-        networkSettings.setBaseUrl(ApiContract.API_SUBDOMAIN + "." + domain)
+        App.getApp().refreshLoginComponent(CloudPortal(url = ApiContract.API_SUBDOMAIN + "." + domain))
 
         // Validate portal
-        val requestRegister = RequestRegister(
-            portalName = partsPortal[PORTAL_PART_NAME],
-            email = email,
-            firstName = first,
-            lastName = last,
-            password = password,
-            recaptchaResponse = recaptcha
-        )
-        disposable = context.loginService.registerPortal(requestRegister)
-            .subscribe({ loginResponse ->
-                when (loginResponse) {
-                    is LoginResponse.Success -> {
-                        networkSettings.setBaseUrl(portal)
-                        FirebaseUtils.addAnalyticsCreatePortal(networkSettings.getPortal(), email)
-                        signIn(
-                            RequestSignIn(
-                                userName = email,
-                                password = password
-                            )
-                        )
-                    }
-                    is LoginResponse.Error -> {
-                        networkSettings.setBaseUrl(portal)
-                        fetchError(loginResponse.error)
+        signInJob = presenterScope.launch {
+            loginRepository.registerPortal(
+                portalName = partsPortal[PORTAL_PART_NAME],
+                email = email,
+                firstName = first,
+                lastName = last,
+                password = password,
+                recaptchaResponse = recaptcha
+            ).asResult()
+                .collect { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            FirebaseUtils.addAnalyticsCreatePortal(cloudPortal?.url.orEmpty(), email)
+                            App.getApp().refreshLoginComponent(cloudPortal)
+                            signInWithEmail(email, password)
+                        }
+                        is Result.Error -> fetchError(result.exception)
                     }
                 }
-            }) { throwable: Throwable ->
-                fetchError(throwable)
-            }
+        }
     }
-
 }
-
-//{"type":"https://tools.ietf.org/html/rfc7231#section-6.5.1","title":"One or more validation errors occurred.","status":400,"traceId":"00-744e6bf582265a8fa9a56c7ad62fe286-efc458f6656ca616-00","errors":{"$":["'r' is an invalid start of a value. Path: $ | LineNumber: 0 | BytePositionInLine: 0."]}}

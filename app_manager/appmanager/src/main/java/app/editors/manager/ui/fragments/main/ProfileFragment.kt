@@ -4,78 +4,88 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
-import androidx.recyclerview.widget.LinearLayoutManager
-import app.documents.core.storage.account.CloudAccount
+import androidx.fragment.app.setFragmentResult
+import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.R
-import app.editors.manager.databinding.FragmentProfileLayoutBinding
-import app.documents.core.network.manager.models.user.Thirdparty
-import app.editors.manager.mvp.presenters.main.ProfilePresenter
-import app.editors.manager.mvp.presenters.main.ProfileState
-import app.editors.manager.mvp.views.main.ProfileView
-import app.editors.manager.ui.adapters.ThirdpartyAdapter
-import app.editors.manager.ui.binders.ProfileItemBinder
-import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
-import lib.toolkit.base.managers.utils.StringUtils.getEncodedString
-import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
-import moxy.presenter.InjectPresenter
+import app.editors.manager.ui.fragments.base.BaseAppFragment
+import kotlinx.serialization.json.Json
+import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.colorTextSecondary
+import lib.compose.ui.views.AppScaffold
+import lib.compose.ui.views.AppTextButton
+import lib.editors.gbase.ui.fragments.base.NestedColumn
+import lib.toolkit.base.managers.utils.putArgs
 
-class ProfileFragment : BaseAppFragment(), ProfileView {
+class ProfileFragment : BaseAppFragment() {
 
     companion object {
         val TAG: String = ProfileFragment::class.java.simpleName
 
-        const val KEY_ACCOUNT = "KEY_ACCOUNT"
-        private const val TAG_LOGOUT = "TAG_LOGOUT"
+        private const val KEY_ACCOUNT = "KEY_ACCOUNT"
+        private const val KEY_IS_ONLINE = "KEY_IS_ONLINE"
 
-        fun newInstance(account: String?): ProfileFragment {
-            return ProfileFragment().apply {
-                arguments = Bundle().apply {
-                    putString(KEY_ACCOUNT, account)
-                }
-            }
+        fun newInstance(account: String, isOnline: Boolean): ProfileFragment {
+            return ProfileFragment().putArgs(
+                KEY_ACCOUNT to account,
+                KEY_IS_ONLINE to isOnline
+            )
         }
     }
 
-    @InjectPresenter
-    lateinit var presenter: ProfilePresenter
-
-    private var usernameBinder: ProfileItemBinder? = null
-    private var emailBinder: ProfileItemBinder? = null
-    private var portalBinder: ProfileItemBinder? = null
-    private var typeBinder: ProfileItemBinder? = null
-
-    private var adapter: ThirdpartyAdapter? = null
-
-    private var viewBinding: FragmentProfileLayoutBinding? = null
+    private val account: CloudAccount by lazy {
+        Json.decodeFromString(checkNotNull(arguments?.getString(KEY_ACCOUNT)))
+    }
 
     private val accountDialogFragment: IBaseDialogFragment? get() = getDialogFragment()
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        viewBinding = null
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        viewBinding = FragmentProfileLayoutBinding.inflate(inflater, container, false).apply {
-            usernameBinder = ProfileItemBinder(this.usernameItem.root)
-            emailBinder = ProfileItemBinder(this.emailItem.root)
-            portalBinder = ProfileItemBinder(this.portalItem.root)
-            typeBinder = ProfileItemBinder(this.userTypeItem.root)
-        }
-        return viewBinding?.root
+        return ComposeView(requireContext())
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        arguments?.getString(KEY_ACCOUNT)?.let {
-            presenter.setAccount(it)
-        }
-        typeBinder?.setTitle(getString(R.string.filter_title_type))?.setImage(R.drawable.ic_contact_calendar)
         initToolbar()
+        (view as? ComposeView)?.setContent {
+            ManagerTheme {
+                ProfileScreen(
+                    account = account,
+                    isOnline = arguments?.getBoolean(KEY_IS_ONLINE) == true,
+                    onLogOut = {
+                        setFragmentResult(
+                            CloudAccountFragment.REQUEST_PROFILE,
+                            bundleOf(CloudAccountFragment.RESULT_LOG_OUT to account.id)
+                        )
+                        parentFragmentManager.popBackStack()
+                    },
+                    onSignIn = {
+                        setFragmentResult(
+                            CloudAccountFragment.REQUEST_PROFILE,
+                            bundleOf(CloudAccountFragment.RESULT_SIGN_IN to account.id)
+                        )
+                        parentFragmentManager.popBackStack()
+                    }
+                )
+            }
+        }
     }
 
     private fun initToolbar() {
@@ -87,148 +97,86 @@ class ProfileFragment : BaseAppFragment(), ProfileView {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
     }
+}
 
-    override fun onRender(state: ProfileState) {
-        when (state) {
-            is ProfileState.CloudState -> {
-                onCloudState(state.account)
-                onOnlineState(state.account)
-            }
-            is ProfileState.WebDavState -> {
-                onWebDavState(state.account)
-                onOnlineState(state.account)
-            }
-            is ProfileState.ProvidersState -> {
-                if (state.providers.isEmpty()) {
-                    onEmptyThirdparty()
-                } else {
-                    onSetServices(state.providers)
+@Composable
+private fun ProfileScreen(
+    account: CloudAccount,
+    isOnline: Boolean,
+    onLogOut: () -> Unit,
+    onSignIn: () -> Unit
+) {
+    AppScaffold {
+        NestedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+            RowItem(
+                icon = R.drawable.ic_list_item_share_user_icon,
+                title = R.string.profile_username_title,
+                subtitle = account.name
+            )
+            RowItem(
+                icon = R.drawable.ic_email,
+                title = R.string.login_enterprise_email_hint,
+                subtitle = account.login
+            )
+            RowItem(
+                icon = R.drawable.ic_cloud,
+                title = R.string.profile_portal_address,
+                subtitle = account.portal.urlWithScheme
+            )
+            RowItem(
+                icon = R.drawable.ic_contact_calendar,
+                title = R.string.filter_title_type,
+                subtitle = when {
+                    account.isVisitor -> stringResource(R.string.profile_type_visitor)
+                    account.isAdmin -> stringResource(R.string.profile_type_admin)
+                    else -> stringResource(R.string.profile_type_user)
                 }
-            }
-        }
-    }
-
-    override fun onAcceptClick(dialogs: Dialogs?, value: String?, tag: String?) {
-        super.onAcceptClick(dialogs, value, tag)
-        if (tag != null) {
-            when (tag) {
-                TAG_LOGOUT -> {
-                    presenter.logout()
-                }
-            }
-        }
-        hideDialog()
-    }
-
-
-    private fun onWebDavState(account: CloudAccount) {
-        viewBinding?.emailItem?.root?.visibility = View.VISIBLE
-        viewBinding?.portalItem?.root?.visibility = View.VISIBLE
-        emailBinder?.setTitle(getString(R.string.login_enterprise_email_hint))?.setImage(R.drawable.ic_email)?.text =
-            account.login
-        portalBinder?.setTitle(getString(R.string.profile_portal_address))?.setImage(R.drawable.ic_cloud)?.text =
-            account.scheme + getEncodedString(account.portal)
-    }
-
-    private fun onCloudState(account: CloudAccount) {
-        viewBinding?.usernameItem?.root?.visibility = View.VISIBLE
-        viewBinding?.userTypeItem?.root?.visibility = View.VISIBLE
-        viewBinding?.emailItem?.root?.visibility = View.VISIBLE
-        viewBinding?.portalItem?.root?.visibility = View.VISIBLE
-        emailBinder?.setTitle(getString(R.string.login_enterprise_email_hint))?.setImage(R.drawable.ic_email)?.text =
-            account.login
-        portalBinder?.setTitle(getString(R.string.profile_portal_address))?.setImage(R.drawable.ic_cloud)?.text =
-            account.scheme + getEncodedString(account.portal)
-        usernameBinder?.setTitle(getString(R.string.profile_username_title))
-            ?.setText(account.name)
-            ?.setImage(R.drawable.ic_list_item_share_user_icon)
-        setType(account)
-    }
-
-    private fun onOnlineState(account: CloudAccount) {
-        if (account.isOnline) {
-            viewBinding?.logoutItem?.let { item ->
-                UiUtils.setImageTint(item.itemImage, lib.toolkit.base.R.color.colorError)
-                item.root.visibility = View.VISIBLE
-                item.itemImage.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.ic_account_logout
-                    )
+            )
+            if (isOnline) {
+                AppTextButton(
+                    title = R.string.navigation_drawer_menu_logout,
+                    textColor = MaterialTheme.colors.error,
+                    onClick = onLogOut
                 )
-                item.itemText.text = getString(R.string.navigation_drawer_menu_logout)
-                item.itemText
-                    .setTextColor(item.root.context.getColor(lib.toolkit.base.R.color.colorError))
-                item.root.setOnClickListener {
-                    showQuestionDialog(
-                        getString(R.string.dialog_logout_account_title),
-                        getString(R.string.dialog_logout_account_description),
-                        getString(R.string.navigation_drawer_menu_logout),
-                        getString(R.string.dialogs_common_cancel_button), TAG_LOGOUT
-                    )
-                }
-            }
-        } else {
-            viewBinding?.logoutItem?.let { item ->
-                UiUtils.setImageTint(item.itemImage, lib.toolkit.base.R.color.colorPrimary)
-                item.root.visibility = View.VISIBLE
-                item.itemImage.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.ic_account_login
-                    )
+            } else {
+                AppTextButton(
+                    title = R.string.navigation_drawer_menu_sign_in,
+                    onClick = onSignIn
                 )
-                item.itemText.text = getString(R.string.navigation_drawer_menu_sign_in)
-                item.itemText
-                    .setTextColor(item.root.context.getColor(lib.toolkit.base.R.color.colorPrimary))
-                item.root.setOnClickListener {
-                    parentFragmentManager.setFragmentResult(
-                        CloudAccountFragment.REQUEST_PROFILE,
-                        bundleOf(CloudAccountFragment.RESULT_SIGN_IN to null)
-                    )
-                    parentFragmentManager.popBackStack()
-                }
             }
         }
     }
+}
 
-    private fun onEmptyThirdparty() {
-        viewBinding?.recyclerView?.visibility = View.GONE
+@Preview
+@Composable
+private fun ProfileScreenPreview() {
+    ManagerTheme {
+        ProfileScreen(CloudAccount(""), false, {}, {})
     }
+}
 
-    private fun onSetServices(list: List<Thirdparty>) {
-        viewBinding?.recyclerView?.visibility = View.VISIBLE
-        adapter = ThirdpartyAdapter()
-        viewBinding?.recyclerView?.layoutManager = LinearLayoutManager(requireContext())
-        viewBinding?.recyclerView?.adapter = adapter
-        adapter?.setItems(list)
-    }
-
-    private fun setType(account: CloudAccount) {
-        val type = when {
-            account.isVisitor -> {
-                getString(R.string.profile_type_visitor)
-            }
-            account.isAdmin -> {
-                getString(R.string.profile_type_admin)
-            }
-            else -> {
-                getString(R.string.profile_type_user)
-            }
-        }
-        typeBinder?.text = type
-    }
-
-    override fun onClose(isLogout: Boolean, account: CloudAccount?) {
-        parentFragmentManager.setFragmentResult(
-            CloudAccountFragment.REQUEST_PROFILE,
-            bundleOf(CloudAccountFragment.RESULT_LOG_OUT to null)
+@Composable
+fun RowItem(icon: Int, title: Int, subtitle: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(dimensionResource(id = lib.toolkit.base.R.dimen.item_onehalf_line_height)),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = null,
+            tint = MaterialTheme.colors.colorTextSecondary
         )
-        parentFragmentManager.popBackStack()
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(text = stringResource(id = title), style = MaterialTheme.typography.body1)
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.body2,
+                color = MaterialTheme.colors.colorTextSecondary
+            )
+        }
     }
-
-    override fun onError(message: String?) {
-        message?.let { showSnackBar(it) }
-    }
-
 }
