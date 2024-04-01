@@ -1,18 +1,16 @@
 package app.editors.manager.mvp.models.ui
 
-import app.documents.core.storage.recent.Recent
+import app.documents.core.model.cloud.Recent
 import app.editors.manager.R
 import lib.toolkit.base.ui.adapters.holder.ViewType
 
 data class RecentUI(
     val id: Int,
-    val idFile: String?,
-    val path: String?,
-    val name: String,
-    val date: Long,
-    val isLocal: Boolean,
-    val isWebDav: Boolean,
-    val size: Long,
+    val idFile: String = "",
+    val path: String = "",
+    val name: String = "",
+    val date: Long = 0,
+    val size: Long = 0,
     val ownerId: String? = null,
     val source: String? = null
 ) : ViewType {
@@ -24,12 +22,10 @@ data class RecentUI(
 fun RecentUI.toRecent(): Recent {
     return Recent(
         id = id,
-        idFile = idFile,
+        fileId = idFile,
         path = path,
         name = name,
         date = date,
-        isLocal = isLocal,
-        isWebDav = isWebDav,
         size = size,
         ownerId = ownerId,
         source = source
@@ -39,12 +35,10 @@ fun RecentUI.toRecent(): Recent {
 fun Recent.toRecentUI(): RecentUI {
     return RecentUI(
         id = id,
-        idFile = idFile,
+        idFile = fileId,
         path = path,
         name = name,
         date = date,
-        isLocal = isLocal,
-        isWebDav = isWebDav,
         size = size,
         ownerId = ownerId,
         source = source

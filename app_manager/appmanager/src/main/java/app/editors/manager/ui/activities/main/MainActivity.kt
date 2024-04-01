@@ -8,12 +8,15 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.viewModels
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.network.webdav.WebDavService
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -39,11 +42,12 @@ import app.editors.manager.ui.fragments.main.OnlyOfficeCloudFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
-import app.editors.manager.viewModels.main.RecentViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FragmentUtils
@@ -76,7 +80,8 @@ interface IMainActivity {
 
 
 class MainActivity : BaseAppActivity(), MainActivityView,
-    BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose, IMainActivity, View.OnClickListener {
+    BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose, IMainActivity,
+    View.OnClickListener {
 
     companion object {
 
@@ -95,7 +100,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     @InjectPresenter
     lateinit var presenter: MainActivityPresenter
 
-    private val recentViewModel: RecentViewModel by viewModels()
     private lateinit var viewBinding: ActivityMainBinding
 
     private val navigationListener: (item: MenuItem) -> Boolean = { item ->
@@ -147,11 +151,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         var fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
         if (fragment is MainPagerFragment) {
             val fragments = fragment.getChildFragmentManager().fragments
-//            for (fr in fragments) {
-//                if (fr is DocsMyFragment) {
-//                    fr.getArgs(intent)
-//                }
-//            }
+            //            for (fr in fragments) {
+            //                if (fr is DocsMyFragment) {
+            //                    fr.getArgs(intent)
+            //                }
+            //            }
         }
 
         fragment = supportFragmentManager.findFragmentByTag(DocsWebDavFragment.TAG)
@@ -232,9 +236,12 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 showBrowser(it)
             }
         }
-        recentViewModel.isRecent.observe(this) { recents ->
-            viewBinding.bottomNavigation.menu.getItem(0).isEnabled = recents.isNotEmpty()
-        }
+
+        App.getApp().coreComponent
+            .recentDataSource.getRecentListFlow()
+            .flowWithLifecycle(lifecycle)
+            .onEach { viewBinding.bottomNavigation.menu.getItem(0).isEnabled = it.isNotEmpty() }
+            .launchIn(lifecycleScope)
 
         if (intent?.action == Intent.ACTION_VIEW) {
             intent.data?.let {
@@ -315,7 +322,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun showAccount(isShow: Boolean) {
-//        presenter.isDialogOpen = true
+        //        presenter.isDialogOpen = true
         viewBinding.appBarToolbar.showAccount(isShow)
     }
 
@@ -328,11 +335,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 showOnDeviceFragment()
             }
             is MainActivityState.CloudState -> {
-                state.account?.let {
-                    showOnCloudFragment(state.account)
-                } ?: run {
-                    showOnCloudFragment()
-                }
+                showOnCloudFragment(state.account)
                 viewBinding.appBarToolbar.bind(state.account)
             }
             is MainActivityState.SettingsState -> {
@@ -572,30 +575,20 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun showOnCloudFragment(account: CloudAccount?) {
-        account?.let {
-            when {
-                it.isWebDav -> {
-                    showWebDavFragment(it)
-                }
-                it.isOneDrive -> {
-                    showOneDriveFragment(account)
-                }
-                it.isDropbox -> {
-                    showDropboxFragment(account)
-                }
-                it.isGoogleDrive -> {
-                    showGoogleDriveFragment()
-                }
-                else -> {
-                    showCloudFragment(account)
-                }
-            }
-        } ?: run {
+        if (account == null) {
             FragmentUtils.showFragment(
                 supportFragmentManager,
                 OnlyOfficeCloudFragment.newInstance(false),
                 R.id.frame_container
             )
+            return
+        }
+        when (account.portal.provider) {
+            PortalProvider.Dropbox -> showDropboxFragment(account)
+            PortalProvider.GoogleDrive -> showGoogleDriveFragment()
+            PortalProvider.Onedrive -> showOneDriveFragment(account)
+            is PortalProvider.Webdav -> showWebDavFragment(account)
+            else -> showCloudFragment(account)
         }
     }
 
@@ -667,7 +660,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         } ?: run {
             FragmentUtils.showFragment(
                 supportFragmentManager,
-                DocsWebDavFragment.newInstance(WebDavService.Providers.valueOf(account.webDavProvider ?: "")),
+                DocsWebDavFragment.newInstance(WebdavProvider.valueOf(account.portal.provider)),
                 R.id.frame_container
             )
         }

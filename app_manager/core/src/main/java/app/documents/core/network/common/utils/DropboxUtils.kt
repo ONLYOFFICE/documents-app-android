@@ -1,9 +1,8 @@
 package app.documents.core.network.common.utils
 
-import app.documents.core.BuildConfig
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.Storage
-import app.documents.core.network.storages.dropbox.login.DropboxResponse
+import app.documents.core.network.storages.dropbox.api.DropboxResponse
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.SerializableString
 import com.fasterxml.jackson.core.io.CharacterEscapes
@@ -33,8 +32,8 @@ object DropboxUtils {
 
     val storage = Storage(
         ApiContract.Storage.DROPBOX,
-        BuildConfig.DROP_BOX_COM_CLIENT_ID,
-        BuildConfig.DROP_BOX_COM_REDIRECT_URL
+        app.documents.core.network.BuildConfig.DROP_BOX_COM_CLIENT_ID,
+        app.documents.core.network.BuildConfig.DROP_BOX_COM_REDIRECT_URL
     )
 
     @JvmStatic

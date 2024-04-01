@@ -1,33 +1,34 @@
 package app.editors.manager.ui.fragments.login
 
-import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.mvp.views.login.PasswordRecoveryView
-import moxy.presenter.InjectPresenter
-import app.editors.manager.mvp.presenters.login.PasswordRecoveryPresenter
-import app.editors.manager.R
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import app.editors.manager.R
 import app.editors.manager.databinding.FragmentLoginPasswordRecoveryBinding
+import app.editors.manager.mvp.presenters.login.PasswordRecoveryPresenter
+import app.editors.manager.mvp.views.login.PasswordRecoveryView
+import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.edits.BaseWatcher
+import lib.toolkit.base.managers.utils.putArgs
+import moxy.presenter.InjectPresenter
 
 class PasswordRecoveryFragment : BaseAppFragment(), PasswordRecoveryView {
 
     companion object {
         var TAG: String = PasswordRecoveryFragment::class.java.simpleName
 
-        const val KEY_EMAIL = "KEY_EMAIL"
-        const val KEY_PERSONAL = "KEY_PERSONAL"
+        private const val KEY_EMAIL = "KEY_EMAIL"
+        private const val KEY_PERSONAL = "KEY_PERSONAL"
+        private const val KEY_LDAP = "KEY_LDAP"
 
-        fun newInstance(email: String?, isPersonal: Boolean?): PasswordRecoveryFragment {
-            return PasswordRecoveryFragment().apply {
-                arguments = Bundle(2).apply {
-                    putString(KEY_EMAIL, email)
-                    putBoolean(KEY_PERSONAL, isPersonal!!)
-                }
-            }
+        fun newInstance(email: String?, isPersonal: Boolean?, ldap: Boolean = false): PasswordRecoveryFragment {
+            return PasswordRecoveryFragment().putArgs(
+                KEY_EMAIL to email,
+                KEY_PERSONAL to isPersonal,
+                KEY_LDAP to ldap
+            )
         }
     }
 
@@ -55,6 +56,9 @@ class PasswordRecoveryFragment : BaseAppFragment(), PasswordRecoveryView {
 
     private fun init() {
         viewBinding?.apply {
+            if (arguments?.getBoolean(KEY_LDAP) == true) {
+                loginPasswordRecoveryEmailLayout.setHint(R.string.profile_username_title)
+            }
             loginPasswordRecoveryEmailEdit.apply {
                 setText(arguments?.getString(KEY_EMAIL))
                 addTextChangedListener(FieldsWatcher())

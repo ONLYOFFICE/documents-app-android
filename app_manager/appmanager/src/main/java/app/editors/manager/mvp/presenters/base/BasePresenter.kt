@@ -2,9 +2,9 @@ package app.editors.manager.mvp.presenters.base
 
 import android.content.Context
 import android.util.Log
+import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.model.exception.CloudAccountNotFoundException
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.storage.account.AccountDao
-import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.R
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
@@ -42,10 +42,7 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
     lateinit var operationsState: OperationsState
 
     @Inject
-    lateinit var networkSettings: NetworkSettings
-
-    @Inject
-    lateinit var accountDao: AccountDao
+    lateinit var cloudDataSource: CloudDataSource
 
     init {
         RxJavaPlugins.setErrorHandler { throwable: Throwable ->
@@ -59,7 +56,13 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
 
     open fun cancelRequest() {}
 
-    protected open fun fetchError(throwable: Throwable) {if (throwable is HttpException) {
+    protected open fun fetchError(throwable: Throwable) {
+        if (throwable == CloudAccountNotFoundException) {
+            onUnauthorized(401)
+            return
+        }
+
+        if (throwable is HttpException) {
             if (throwable.response()?.code() == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED) {
                 onUnauthorized(throwable.response()?.code() ?: -1)
             } else {

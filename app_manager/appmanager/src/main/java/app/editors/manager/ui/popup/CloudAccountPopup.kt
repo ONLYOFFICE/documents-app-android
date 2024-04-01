@@ -3,7 +3,7 @@ package app.editors.manager.ui.popup
 import android.content.Context
 import android.view.View
 import androidx.core.content.ContextCompat
-import app.documents.core.storage.account.CloudAccount
+import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.databinding.CloudAccountPopupLayoutBinding
 import app.editors.manager.ui.dialogs.AccountContextDialog.OnAccountContextClickListener
@@ -46,7 +46,7 @@ class CloudAccountPopup(context: Context) : BasePopup(context, R.layout.cloud_ac
         )
         viewBinding?.profileItem?.itemText?.text = context.getString(R.string.fragment_profile_title)
         viewBinding?.profileItem?.root?.setOnClickListener {
-            clickListener?.onProfileClick(account)
+            clickListener?.onProfileClick()
             hide()
         }
     }
@@ -61,7 +61,7 @@ class CloudAccountPopup(context: Context) : BasePopup(context, R.layout.cloud_ac
             it.setTextColor(ContextCompat.getColor(context, lib.toolkit.base.R.color.colorError))
         }
         viewBinding?.removeItem?.root?.setOnClickListener {
-            clickListener?.onRemoveClick(account)
+            clickListener?.onRemoveClick()
             hide()
         }
     }

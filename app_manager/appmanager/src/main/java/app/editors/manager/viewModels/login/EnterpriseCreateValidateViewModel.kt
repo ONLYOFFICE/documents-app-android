@@ -3,30 +3,33 @@ package app.editors.manager.viewModels.login
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.login.LoginResponse
-import app.documents.core.network.login.models.request.RequestValidatePortal
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.viewModels.base.BaseLoginViewModel
-import io.reactivex.disposables.Disposable
+import app.editors.manager.viewModels.base.BaseViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.StringUtils
 import retrofit2.HttpException
 
 sealed class CreatePortalState {
-    object None: CreatePortalState()
-    object Progress : CreatePortalState()
-    class Success(val portalModel: PortalModel): CreatePortalState()
+    data object None : CreatePortalState()
+    data object Progress : CreatePortalState()
+    class Success(val portalModel: PortalModel) : CreatePortalState()
     class Error(@StringRes val res: Int? = null) : CreatePortalState()
 }
 
 data class PortalModel(
+    val portalName: String?,
     val email: String?,
     val firstName: String?,
     val lastName: String?,
 )
 
-class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
+class EnterpriseCreateValidateViewModel : BaseViewModel() {
 
     companion object {
         val TAG: String = EnterpriseCreateValidateViewModel::class.java.simpleName
@@ -43,22 +46,21 @@ class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
     private val _regionLiveData = MutableLiveData<String?>()
     val regionLiveData: LiveData<String?> = _regionLiveData
 
-    private var disposable: Disposable? = null
-
     private var domain: String? = null
 
-    override fun onCleared() {
-        super.onCleared()
-        disposable?.dispose()
+    private var job: Job? = null
+
+    init {
+        App.getApp().appComponent.inject(this)
     }
 
     fun cancelRequest() {
-        disposable?.dispose()
+        job?.cancel()
         _stateLiveData.value = CreatePortalState.Error()
     }
 
     fun validatePortal(portalName: String?, email: String?, first: String?, last: String?) {
-        val model = PortalModel(email = email, firstName = first, lastName = last)
+        val model = PortalModel(portalName = portalName, email = email, firstName = first, lastName = last)
 
         if (portalName != null && (portalName.length < PORTAL_LENGTH_MIN || portalName.length >= PORTAL_LENGTH_MAX)) {
             _stateLiveData.value = CreatePortalState.Error(R.string.login_api_portal_name_length)
@@ -76,35 +78,26 @@ class EnterpriseCreateValidateViewModel : BaseLoginViewModel() {
             _stateLiveData.value = CreatePortalState.Error(R.string.errors_last_name)
             return
         }
-        networkSettings.setDefault()
         validatePortalName(portalName ?: "", model)
     }
 
     private fun validatePortalName(portalName: String, model: PortalModel) {
-        networkSettings.setBaseUrl(ApiContract.API_SUBDOMAIN + domain)
+        App.getApp().refreshLoginComponent(CloudPortal(url = ApiContract.API_SUBDOMAIN + domain))
 
         _stateLiveData.value = CreatePortalState.Progress
-        disposable = App.getApp().coreComponent.loginService.validatePortal(RequestValidatePortal(portalName))
-            .subscribe({ loginResponse ->
-                when (loginResponse) {
-                    is LoginResponse.Success -> {
-                        onSuccessRequest(portalName, model)
-                    }
-                    is LoginResponse.Error -> {
-                        checkError(loginResponse.error)
+        job = viewModelScope.launch {
+            App.getApp().loginComponent.cloudLoginRepository.validatePortal(portalName)
+                .collect { result ->
+                    when (result) {
+                        is Result.Error -> checkError(result.exception)
+                        is Result.Success -> onSuccessRequest(portalName, model)
                     }
                 }
-            }, { error ->
-                if (isConfigConnection(error)) {
-                    validatePortalName(portalName, model)
-                } else {
-                    fetchError(error)
-                }
-            })
+        }
     }
 
     private fun onSuccessRequest(portalName: String, model: PortalModel) {
-        networkSettings.setBaseUrl(portalName + domain)
+        App.getApp().refreshLoginComponent(CloudPortal(url = portalName + domain))
         _stateLiveData.value = CreatePortalState.Success(model)
         _stateLiveData.value = CreatePortalState.None
     }

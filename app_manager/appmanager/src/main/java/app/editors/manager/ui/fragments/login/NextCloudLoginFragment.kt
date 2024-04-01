@@ -1,32 +1,29 @@
 package app.editors.manager.ui.fragments.login
 
-import android.accounts.Account
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Bitmap
-import android.net.http.SslError
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.*
+import android.webkit.JsResult
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.NextCloudLoginLayoutBinding
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import kotlinx.coroutines.Dispatchers
+import app.editors.manager.viewModels.login.NextCloudLogin
+import app.editors.manager.viewModels.login.NextCloudLoginViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import lib.toolkit.base.managers.utils.AccountData
-import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.NetworkUtils.clearCookies
-import java.net.MalformedURLException
-import java.net.URL
+import lib.toolkit.base.managers.utils.putArgs
 
 class NextCloudLoginFragment : BaseAppFragment() {
 
@@ -42,11 +39,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
 
         @JvmStatic
         fun newInstance(portal: String?): NextCloudLoginFragment {
-            return NextCloudLoginFragment().apply {
-                arguments = Bundle().apply {
-                    putString(KEY_PORTAL, portal)
-                }
-            }
+            return NextCloudLoginFragment().putArgs(KEY_PORTAL to portal)
         }
     }
 
@@ -58,10 +51,12 @@ class NextCloudLoginFragment : BaseAppFragment() {
         )
     }
 
-    private var portal: String? = null
-    private var isClear = false
+    private val viewModel: NextCloudLoginViewModel by viewModels()
 
     private var viewBinding: NextCloudLoginLayoutBinding? = null
+
+    private val portal: String? by lazy { arguments?.getString(KEY_PORTAL) }
+    private var isClear = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         viewBinding = NextCloudLoginLayoutBinding.inflate(inflater, container, false)
@@ -70,7 +65,8 @@ class NextCloudLoginFragment : BaseAppFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getArgs()
+        initWebView()
+        collectState()
     }
 
     override fun onDestroyView() {
@@ -92,12 +88,26 @@ class NextCloudLoginFragment : BaseAppFragment() {
         }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
-    private fun getArgs() {
-        val args = arguments
-        if (args != null && args.containsKey(KEY_PORTAL)) {
-            portal = args.getString(KEY_PORTAL)
+    private fun collectState() {
+        lifecycleScope.launch {
+            viewModel.state.collect { state ->
+                when (state) {
+                    NextCloudLogin.Error -> showSnackBar(R.string.errors_unknown_error)
+                    NextCloudLogin.Success -> {
+                        with(requireActivity()) {
+                            setResult(Activity.RESULT_OK)
+                            finish()
+                            MainActivity.show(this)
+                        }
+                    }
+                    else -> Unit
+                }
+            }
         }
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun initWebView() {
         viewBinding?.webView?.apply {
             settings.javaScriptEnabled = true
             settings.userAgentString = getString(R.string.app_name_full)
@@ -116,7 +126,7 @@ class NextCloudLoginFragment : BaseAppFragment() {
                 if (uri.scheme != null && uri.scheme == "nc" && uri.host != null && uri.host == "login") {
                     val path = uri.path
                     if (path != null) {
-                        saveUser(path)
+                        viewModel.saveUser(path)
                         return true
                     }
                 }
@@ -133,8 +143,8 @@ class NextCloudLoginFragment : BaseAppFragment() {
         }
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-            if (url.contains("nc") && url.contains("login")) {
-                saveUser(url.substring(url.indexOf(":") + 1))
+            if (url.contains("nc") && url.contains("password")) {
+                viewModel.saveUser(url.substring(url.indexOf(":") + 1))
             } else {
                 viewBinding?.swipeRefresh?.isRefreshing = true
             }
@@ -146,22 +156,6 @@ class NextCloudLoginFragment : BaseAppFragment() {
                 isClear = false
             }
             viewBinding?.swipeRefresh?.isRefreshing = false
-        }
-
-        override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
-            super.onReceivedError(view, request, error)
-        }
-
-        override fun onReceivedHttpError(
-            view: WebView,
-            request: WebResourceRequest,
-            errorResponse: WebResourceResponse
-        ) {
-            super.onReceivedHttpError(view, request, errorResponse)
-        }
-
-        override fun onReceivedSslError(view: WebView, handler: SslErrorHandler, error: SslError) {
-            super.onReceivedSslError(view, handler, error)
         }
     }
 
@@ -175,89 +169,4 @@ class NextCloudLoginFragment : BaseAppFragment() {
             return super.onJsAlert(view, url, message, result)
         }
     }
-
-    private fun saveUser(path: String) {
-        val args = path.split("&").toTypedArray()
-        if (args.size == 3) {
-            val portal = args[0].substring(args[0].indexOf(":") + 1)
-            val login = args[1].substring(args[1].indexOf(":") + 1)
-            val password = args[2].substring(args[2].indexOf(":") + 1)
-
-            try {
-                val url = URL(portal)
-                val builder = StringBuilder()
-                    .append(url.host)
-                if (url.path != null && url.path.isNotEmpty()) {
-                    builder.append(url.path)
-                    if (url.port == -1) {
-                        builder.append("/")
-                    }
-                }
-                if (url.port != -1) {
-                    builder.append(":").append(url.port)
-                }
-
-                val cloudAccount = createCloudAccount(url, login)
-                val account = Account(cloudAccount.id, getString(lib.toolkit.base.R.string.account_type))
-
-                val accountData = AccountData(
-                    portal = cloudAccount.portal ?: "",
-                    scheme = cloudAccount.scheme ?: "",
-                    displayName = login,
-                    userId = cloudAccount.id,
-                    provider = cloudAccount.webDavProvider ?: "",
-                    webDav = cloudAccount.webDavPath,
-                    email = login,
-                )
-
-                if (!AccountUtils.addAccount(requireContext(), account, password, accountData)) {
-                    AccountUtils.setPassword(requireContext(), account, password)
-                    AccountUtils.setAccountData(requireContext(), account, accountData)
-
-                }
-                addAccount(cloudAccount)
-            } catch (e: MalformedURLException) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    private fun createCloudAccount(url: URL, login: String) = CloudAccount(
-        id = "$login@${url.host}",
-        isWebDav = true,
-        webDavProvider = WebDavService.Providers.NextCloud.name,
-        scheme = url.protocol + "://",
-        login = login,
-        name = login,
-        portal = url.host,
-        webDavPath = if (url.path != null && url.path.isNotEmpty()) {
-            url.path + WebDavService.Providers.NextCloud.path + login + "/"
-        } else {
-            WebDavService.Providers.NextCloud.path + login + "/"
-        }
-    )
-
-    private fun addAccount(cloudAccount: CloudAccount) {
-        val accountDao = requireContext().appComponent.accountsDao
-       lifecycleScope.launch {
-            accountDao.getAccountOnline()?.let {
-                accountDao.addAccount(it.copy(isOnline = false))
-            }
-            accountDao.addAccount(cloudAccount.copy(isOnline = true))
-            withContext(Dispatchers.Main) {
-                login()
-            }
-        }
-    }
-
-    private fun login() {
-        val activity =  requireActivity()
-        activity.supportFragmentManager.fragments.forEach {
-            activity.supportFragmentManager.beginTransaction().remove(it).commit()
-        }
-        activity.setResult(Activity.RESULT_OK)
-        activity.finish()
-        MainActivity.show(activity)
-    }
-
 }

@@ -1,13 +1,10 @@
 package app.editors.manager.di.component
 
 import android.content.Context
+import app.documents.core.di.dagger.CoreComponent
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.interceptors.WebDavInterceptor
 import app.documents.core.providers.OneDriveFileProvider
-import app.documents.core.storage.account.AccountDao
-import app.documents.core.storage.account.AccountsDataBase
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.preference.NetworkSettings
-import app.documents.core.storage.recent.RecentDao
 import app.editors.manager.di.module.AppModule
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
@@ -33,7 +30,6 @@ import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
-import app.editors.manager.mvp.presenters.main.ProfilePresenter
 import app.editors.manager.mvp.presenters.share.AddPresenter
 import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
@@ -41,8 +37,6 @@ import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.editors.manager.mvp.presenters.storages.DocsDropboxPresenter
 import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
-import app.editors.manager.mvp.presenters.storages.GoogleDriveSignInPresenter
-import app.editors.manager.mvp.presenters.storages.OneDriveSingInPresenter
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
 import app.editors.manager.managers.tools.AppLocaleHelper
@@ -82,19 +76,22 @@ import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import javax.inject.Singleton
 
-@Component(modules = [AppModule::class])
+@Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
 @Singleton
 interface AppComponent {
 
     @Component.Builder
-    interface Builder{
+    interface Builder {
 
         @BindsInstance
         fun context(context: Context): Builder
 
+        fun coreComponent(coreComponent: CoreComponent): Builder
+
         fun build(): AppComponent
 
     }
+
     /*
     * TODO scopes!
     * */
@@ -105,11 +102,7 @@ interface AppComponent {
     val sectionsState: OperationsState
     val contentTools: LocalContentTools
     val glideTools: GlideTool
-    val networkSettings: NetworkSettings
-    val accountsDataBase: AccountsDataBase
-    val accountsDao: AccountDao
     val accountOnline: CloudAccount?
-    val recentDao: RecentDao?
     val appLocaleHelper: AppLocaleHelper
     val resourcesProvider: ResourcesProvider
     val errorHandler: ErrorHandler
@@ -131,8 +124,6 @@ interface AppComponent {
     fun inject(personalPortalFragment: PersonalPortalFragment?)
     fun inject(webDavInterceptor: WebDavInterceptor?)
     fun inject(passwordRecoveryPresenter: PasswordRecoveryPresenter)
-    fun inject(oneDriveSignInPresenter: OneDriveSingInPresenter?)
-    fun inject(googleDriveSignInPresenter: GoogleDriveSignInPresenter?)
     fun inject(onlyOfficeCloudPresenter: OnlyOfficeCloudPresenter)
     fun inject(cloudsFragment: CloudsFragment)
     fun inject(webDavLoginActivity: WebDavLoginActivity)
@@ -188,7 +179,6 @@ interface AppComponent {
     /*
     * Content provider
     * */
-    fun inject(settingsPresenter: ProfilePresenter?)
     fun inject(oneDriveFileProvider: OneDriveFileProvider?)
     fun inject(docsRecentPresenter: DocsRecentPresenter?)
     fun inject(authPagerFragment: AuthPagerFragment?)

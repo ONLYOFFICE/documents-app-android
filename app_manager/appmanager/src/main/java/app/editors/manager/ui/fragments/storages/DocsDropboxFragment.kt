@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.utils.DropboxUtils
 import app.editors.manager.app.App
 import app.editors.manager.mvp.presenters.storages.DocsDropboxPresenter
 import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
+import app.editors.manager.ui.fragments.base.StorageLoginFragment
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
@@ -58,7 +60,11 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
     override fun getDocsPresenter() = presenter
 
     override fun onAuthorization() {
-        showFragment(DropboxSignInFragment.newInstance(), DropboxSignInFragment.TAG, false)
+        showFragment(
+            StorageLoginFragment.newInstance(DropboxUtils.storage),
+            StorageLoginFragment.TAG,
+            false
+        )
     }
 
 }
