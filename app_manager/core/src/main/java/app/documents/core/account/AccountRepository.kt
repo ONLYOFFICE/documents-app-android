@@ -61,8 +61,7 @@ interface AccountRepository {
         accountId: String,
         accountName: String,
         token: String?,
-        password: String?,
-        isOnline: Boolean
+        password: String?
     )
 }
 
@@ -94,12 +93,10 @@ internal class AccountRepositoryImpl(
         accountId: String,
         accountName: String,
         token: String?,
-        password: String?,
-        isOnline: Boolean
+        password: String?
     ) {
         accountManager.setToken(accountName, token)
         accountManager.setPassword(accountName, password)
-        if (isOnline) accountPreferences.onlineAccountId = accountId
     }
 
     override suspend fun checkLogin(accountId: String): CheckLoginResult {
