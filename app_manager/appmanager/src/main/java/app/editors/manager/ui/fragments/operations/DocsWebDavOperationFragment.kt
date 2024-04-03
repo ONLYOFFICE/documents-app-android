@@ -4,10 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import app.documents.core.network.webdav.WebDavService
-import app.editors.manager.R
+import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.OperationActivity.OnActionClickListener
@@ -22,7 +22,7 @@ class DocsWebDavOperationFragment : DocsWebDavFragment(), OnActionClickListener 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        provider = requireArguments().getSerializableExt(KEY_PROVIDER, WebDavService.Providers::class.java)
+        provider = requireArguments().getSerializableExt(KEY_PROVIDER, WebdavProvider::class.java)
         setHasOptionsMenu(false)
     }
 
@@ -126,7 +126,7 @@ class DocsWebDavOperationFragment : DocsWebDavFragment(), OnActionClickListener 
     companion object {
         val TAG: String = DocsWebDavOperationFragment::class.java.simpleName
 
-        fun newInstance(provider: WebDavService.Providers?): DocsWebDavOperationFragment {
+        fun newInstance(provider: WebdavProvider?): DocsWebDavOperationFragment {
             return DocsWebDavOperationFragment().apply {
                 arguments = Bundle(1).apply {
                     putSerializable(KEY_PROVIDER, provider)

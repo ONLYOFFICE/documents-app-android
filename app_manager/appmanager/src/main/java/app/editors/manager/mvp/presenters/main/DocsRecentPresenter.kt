@@ -4,6 +4,9 @@ import android.accounts.Account
 import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import app.documents.core.account.AccountPreferences
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
@@ -11,8 +14,6 @@ import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.providers.DropboxFileProvider
 import app.documents.core.providers.GoogleDriveFileProvider
 import app.documents.core.providers.OneDriveFileProvider
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.recent.Recent
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -29,7 +30,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -44,6 +44,7 @@ import retrofit2.HttpException
 import java.io.File
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
 sealed class RecentState {
     class RenderList(val recents: List<Recent>) : RecentState()
@@ -64,6 +65,9 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         val TAG: String = DocsRecentPresenter::class.java.simpleName
     }
 
+    @Inject
+    lateinit var accountPreferences: AccountPreferences
+
     init {
         App.getApp().appComponent.inject(this)
     }
@@ -71,29 +75,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     private var contextPosition = 0
     private var item: Recent? = null
     private var temp: CloudFile? = null
-    private val account: CloudAccount? = getAccount()
-
-    private fun getAccount(): CloudAccount? = runBlocking(Dispatchers.Default) {
-        accountDao.getAccountOnline()?.let { account ->
-            if (account.isWebDav) {
-                AccountUtils.getPassword(
-                    context,
-                    Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
-                )?.let {
-                    return@runBlocking account
-                }
-            } else {
-                AccountUtils.getToken(
-                    context,
-                    Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
-                )?.let {
-                    return@runBlocking account
-                }
-            }
-        } ?: run {
-            return@runBlocking null
-        }
-    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -104,10 +85,11 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     fun getRecentFiles(checkFiles: Boolean = true) {
         presenterScope.launch {
             val list = if (checkFiles) {
-                recentDao.getRecents().filter { recent -> checkFiles(recent) }
+                recentDataSource.getRecentList().filter { recent -> checkFiles(recent) }
             } else {
-                recentDao.getRecents()
+                recentDataSource.getRecentList()
             }
+
             withContext(Dispatchers.Main) {
                 viewState.onRender(RecentState.RenderList(list.sort()))
             }
@@ -115,24 +97,24 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     private fun checkFiles(recent: Recent): Boolean {
-        return if (recent.isLocal) {
+        return if (recent.source == null) {
             val uri = Uri.parse(recent.path)
             if (uri.scheme != null) {
                 return if (DocumentFile.fromSingleUri(context, uri)?.exists() == true) {
                     true
                 } else {
                     presenterScope.launch {
-                        recentDao.deleteRecent(recent)
+                        recentDataSource.deleteRecent(recent)
                     }
                     false
                 }
             }
-            val file = File(recent.path ?: "")
+            val file = File(recent.path)
             if (file.exists()) {
                 true
             } else {
                 presenterScope.launch {
-                    recentDao.deleteRecent(recent)
+                    recentDataSource.deleteRecent(recent)
                 }
                 false
             }
@@ -144,8 +126,8 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     override fun filter(value: String) {
         filteringValue = value
         presenterScope.launch {
-            val list = recentDao.getRecents()
-                .filter { it.name.contains(value, true) }
+            val list = recentDataSource.getRecentList()
+                .filter { recent -> recent.name.contains(value, true) }
                 .sort()
 
             withContext(Dispatchers.Main) {
@@ -158,12 +140,12 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         accountDao.getAccount(recent.ownerId ?: "")?.let { account ->
             AccountUtils.getToken(
                 context,
-                Account(account.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
+                Account(account.accountName, context.getString(lib.toolkit.base.R.string.account_type))
             )?.let {
                 val fileProvider = context.cloudFileProvider
                 disposable.add(
                     fileProvider.fileInfo(CloudFile().apply {
-                        id = recent.idFile ?: ""
+                        id = recent.fileId
                     }).flatMap { cloudFile ->
                         fileProvider.opeEdit(cloudFile).toObservable()
                             .zipWith(Observable.fromCallable { cloudFile }) { info, file ->
@@ -221,21 +203,21 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     private fun addRecent(recent: Recent) {
         presenterScope.launch {
-            recentDao.updateRecent(recent.copy(date = Date().time))
+            recentDataSource.updateRecent(recent.copy(date = Date().time))
             getRecentFiles()
         }
     }
 
     override fun upload(uri: Uri?, uris: List<Uri>?, tag: String?) {
         item?.let { item ->
-            if (item.isWebDav) {
+            if (item.isWebdav) {
                 val provider = context.webDavFileProvider
 
                 val file = CloudFile().apply {
-                    id = item.idFile.orEmpty()
-                    title = item.path.orEmpty()
-                    webUrl = item.path.orEmpty()
-                    folderId = item.idFile?.substring(0, item.idFile?.lastIndexOf('/')?.plus(1) ?: -1).orEmpty()
+                    id = item.fileId
+                    title = item.path
+                    webUrl = item.path
+                    folderId = item.fileId.substring(0, item.fileId.lastIndexOf('/').plus(1))
                     fileExst = StringUtils.getExtensionFromPath(item.name)
                 }
 
@@ -257,7 +239,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     fun deleteRecent() {
         presenterScope.launch {
             item?.let { recent ->
-                recentDao.deleteRecent(recent)
+                recentDataSource.deleteRecent(recent)
                 withContext(Dispatchers.Main) {
                     viewState.onDeleteItem(contextPosition)
                 }
@@ -321,8 +303,8 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE)
         recent?.let { item = recent }
         item?.let { recentItem ->
-            if (recentItem.isLocal) {
-                recentItem.path?.let { path ->
+            if (recentItem.source == null) {
+                recentItem.path.let { path ->
                     Uri.parse(path)?.let { uri ->
                         if (uri.scheme != null) {
                             openLocalFile(uri, openMode)
@@ -344,8 +326,8 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     private suspend fun checkCloudFile(recent: Recent, openMode: OpenMode): Boolean {
         recent.ownerId?.let { id ->
-            accountDao.getAccount(id)?.let { recentAccount ->
-                if (!recentAccount.isOnline) {
+            cloudDataSource.getAccount(id)?.let { recentAccount ->
+                if (recentAccount.id != accountPreferences.onlineAccountId) {
                     withContext(Dispatchers.Main) {
                         viewState.onError(context.getString(R.string.error_recent_enter_account))
                     }
@@ -373,7 +355,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             showDialogWaiting(TAG_DIALOG_CANCEL_DOWNLOAD)
             val cloudFile = CloudFile().apply {
                 title = recent.name
-                id = recent.idFile.orEmpty()
+                id = recent.fileId
                 fileExst = StringUtils.getExtensionFromPath(recent.name)
                 pureContentLength = recent.size
             }
@@ -416,11 +398,11 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     private suspend fun openWebDavFile(recent: Recent, openMode: OpenMode) {
-        accountDao.getAccount(recent.ownerId ?: "")?.let {
+        cloudDataSource.getAccount(recent.ownerId ?: "")?.let {
             val provider = context.webDavFileProvider
             val cloudFile = CloudFile().apply {
                 title = recent.name
-                id = recent.idFile.orEmpty()
+                id = recent.fileId
                 fileExst = StringUtils.getExtensionFromPath(recent.name)
                 pureContentLength = recent.size
             }
@@ -451,9 +433,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     override fun addRecent(file: CloudFile) {
         presenterScope.launch {
-            item?.let {
-                recentDao.updateRecent(it.copy(date = Date().time))
-            }
+            item?.let { recentDataSource.updateRecent(it.copy(date = Date().time)) }
         }
     }
 
@@ -484,7 +464,8 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
             reverseSortOrder()
         }
         presenterScope.launch(Dispatchers.IO) {
-            val list = recentDao.getRecents().sort(type.value)
+            val list = recentDataSource.getRecentList().sort(type.value)
+
             withContext(Dispatchers.Main) {
                 updateFiles(list)
             }
@@ -527,8 +508,8 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
 
     fun clearRecents() {
         presenterScope.launch {
-            recentDao.getRecents().forEach { recent ->
-                recentDao.deleteRecent(recent)
+            recentDataSource.getRecentList().forEach { recent ->
+                recentDataSource.deleteRecent(recent)
             }
             withContext(Dispatchers.Main) {
                 viewState.onRender(RecentState.RenderList(emptyList()))

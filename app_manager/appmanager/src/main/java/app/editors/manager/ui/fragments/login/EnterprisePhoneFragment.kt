@@ -11,14 +11,12 @@ import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.viewModels
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
-import app.editors.manager.app.loginService
 import app.editors.manager.databinding.FragmentLoginEnterprisePhoneBinding
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.viewModels.login.EnterprisePhoneState
 import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
-import app.editors.manager.viewModels.login.EnterprisePhoneViewModelFactory
 import javax.inject.Inject
 
 class EnterprisePhoneFragment : BaseAppFragment() {
@@ -51,9 +49,7 @@ class EnterprisePhoneFragment : BaseAppFragment() {
         }
     }
 
-    private val viewModel by viewModels<EnterprisePhoneViewModel> {
-        EnterprisePhoneViewModelFactory(requireContext().loginService)
-    }
+    private val viewModel by viewModels<EnterprisePhoneViewModel>()
 
     @Inject
     lateinit var countriesCodesTool: CountriesCodesTool

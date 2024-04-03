@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.presenters.share
 
 import android.content.Intent
+import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -206,11 +207,12 @@ class SettingsPresenter(
 
     fun getInternalLink() {
         if (item is CloudFolder) {
-            val internalLink = if (item.isRoom) {
-                networkSettings.getBaseUrl() + TAG_ROOM_PATH + item.id
+            val internalLink = "${context.accountOnline?.portal?.urlWithScheme}/" + if (item.isRoom) {
+                TAG_ROOM_PATH
             } else {
-                networkSettings.getBaseUrl() + TAG_FOLDER_PATH + item.id
-            }
+                TAG_FOLDER_PATH
+            }  + item.id
+
             viewState.onInternalLink(internalLink)
         } else if (item is CloudFile) {
             viewState.onInternalLink(item.webUrl)
@@ -305,7 +307,7 @@ class SettingsPresenter(
     fun updateActionButtonState() {
         viewState.onActionButtonState(
             !isAccessDenied &&
-                    (if (networkSettings.isDocSpace) item.security.editAccess else true) &&
+                    (if (context.accountOnline.isDocSpace) item.security.editAccess else true) &&
                     context.accountOnline?.isPersonal() == false
         )
     }
@@ -355,7 +357,7 @@ class SettingsPresenter(
                     ShareUi(
                         access = it.intAccess,
                         sharedTo = it.sharedTo,
-                        isLocked = if (networkSettings.isDocSpace) {
+                        isLocked = if (context.accountOnline.isDocSpace) {
                             !item.security.editAccess
                         } else {
                             it.isLocked

@@ -1,34 +1,34 @@
 package app.documents.core.di.dagger
 
 import android.content.Context
+import app.documents.core.account.AccountManager
+import app.documents.core.database.di.DatabaseModule
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.exception.CloudAccountNotFoundException
+import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.interceptors.BaseInterceptor
+import app.documents.core.network.login.LoginInterceptor
+import app.documents.core.network.login.LoginOkHttpClient
 import app.documents.core.network.manager.models.explorer.PathPart
 import app.documents.core.network.manager.models.explorer.PathPartTypeAdapter
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.preference.NetworkSettings
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.http.NetworkClient
-import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import okhttp3.OkHttpClient
-import okhttp3.Protocol
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
-import javax.inject.Scope
-
-@Scope
-@Retention(AnnotationRetention.RUNTIME)
-annotation class CoreScope
 
 @Qualifier
 annotation class Token
 
-@Module(includes = [LoginModule::class, ManagerModule::class, ShareModule::class, WebDavModule::class])
+@Module(
+    includes = [
+        ManagerModule::class, ShareModule::class,
+        AccountModule::class, DatabaseModule::class
+    ]
+)
 object CoreModule {
 
     val json = Json {
@@ -38,14 +38,23 @@ object CoreModule {
     }
 
     @Provides
-    fun provideOkHttpClient(@Token token: String, settings: NetworkSettings, context: Context): OkHttpClient {
-        val builder = NetworkClient.getOkHttpBuilder(settings.getSslState(), settings.getCipher())
-        builder.protocols(listOf(Protocol.HTTP_1_1))
-            .readTimeout(NetworkClient.ClientSettings.READ_TIMEOUT, TimeUnit.SECONDS)
-            .writeTimeout(NetworkClient.ClientSettings.WRITE_TIMEOUT, TimeUnit.SECONDS)
-            .connectTimeout(NetworkClient.ClientSettings.CONNECT_TIMEOUT, TimeUnit.SECONDS)
-            .addInterceptor(BaseInterceptor(token, context))
-        return builder.build()
+    fun provideJson(): Json = json
+
+    @Provides
+    fun provideOkHttpClient(
+        context: Context,
+        cloudAccount: CloudAccount?,
+        accountManager: AccountManager
+    ): OkHttpClient {
+        if (cloudAccount == null) throw CloudAccountNotFoundException
+        val token = accountManager.getToken(cloudAccount.accountName)
+        return NetworkClient.getOkHttpBuilder(cloudAccount.portal.settings, BaseInterceptor(token, context)).build()
+    }
+
+    @Provides
+    @LoginOkHttpClient
+    fun provideLoginOkHttpClient(context: Context, cloudAccount: CloudAccount?): OkHttpClient {
+        return NetworkClient.getOkHttpBuilder(cloudAccount?.portal?.settings, LoginInterceptor(context)).build()
     }
 
     @Provides
@@ -60,14 +69,4 @@ object CoreModule {
                 .create()
         )
     }
-
-    @Provides
-    @Token
-    fun provideToken(context: Context, account: CloudAccount?): String = runBlocking {
-        account?.let { cloudAccount ->
-            return@runBlocking AccountUtils.getToken(context = context, cloudAccount.getAccountName())
-                ?: ""
-        } ?: ""
-    }
-
 }

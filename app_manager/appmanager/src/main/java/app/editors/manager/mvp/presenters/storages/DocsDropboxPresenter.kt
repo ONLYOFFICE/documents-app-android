@@ -3,6 +3,7 @@ package app.editors.manager.mvp.presenters.storages
 import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -11,8 +12,6 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.providers.DropboxFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.accountOnline
-import app.editors.manager.app.dropboxLoginProvider
 import app.editors.manager.managers.providers.DropboxStorageHelper
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.works.BaseDownloadWork
@@ -27,7 +26,6 @@ import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import moxy.presenterScope
-import retrofit2.HttpException
 
 class DocsDropboxPresenter : BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
@@ -178,20 +176,20 @@ class DocsDropboxPresenter : BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     override fun refreshToken() {
         presenterScope.launch {
-            context.accountOnline?.getAccountName()?.let { accountName ->
-                AccountUtils.getAccount(context, accountName)?.let { account ->
-                    try {
-                        val refreshToken = AccountUtils.getAccountData(context, account).refreshToken.orEmpty()
-                        val refreshResponse = context.dropboxLoginProvider.updateRefreshToken(refreshToken)
-                        AccountUtils.setToken(context, accountName, refreshResponse.accessToken)
-                        App.getApp().refreshDropboxInstance()
-                        getItemsById(DropboxUtils.DROPBOX_ROOT)
-                    } catch (e: HttpException) {
-                        FirebaseUtils.addCrash(e)
-                        viewState.onAuthorization()
+            App.getApp().refreshLoginComponent(null)
+            App.getApp().loginComponent.dropboxLoginRepository.refreshToken()
+                .collect { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            App.getApp().refreshDropboxInstance()
+                            getItemsById(DropboxUtils.DROPBOX_ROOT)
+                        }
+                        is Result.Error -> {
+                            FirebaseUtils.addCrash(result.exception)
+                            viewState.onAuthorization()
+                        }
                     }
                 }
-            }
         }
     }
 

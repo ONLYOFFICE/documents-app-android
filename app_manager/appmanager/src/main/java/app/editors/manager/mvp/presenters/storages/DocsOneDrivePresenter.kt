@@ -1,21 +1,18 @@
 package app.editors.manager.mvp.presenters.storages
 
-import android.accounts.Account
 import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
-import app.documents.core.network.storages.onedrive.api.OneDriveResponse
 import app.documents.core.network.storages.onedrive.models.request.ExternalLinkRequest
-import app.documents.core.network.storages.onedrive.models.response.AuthResponse
 import app.documents.core.providers.OneDriveFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.oneDriveLoginProvider
 import app.editors.manager.managers.providers.OneDriveStorageHelper
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.BaseStorageUploadWork
@@ -25,9 +22,9 @@ import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import lib.toolkit.base.OpenMode
-import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import moxy.InjectViewState
+import moxy.presenterScope
 import retrofit2.HttpException
 
 @InjectViewState
@@ -80,21 +77,19 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
 
     @Suppress("UNCHECKED_CAST")
     override fun refreshToken() {
-        val account = Account(App.getApp().appComponent.accountOnline?.getAccountName(), context.getString(lib.toolkit.base.R.string.account_type))
-        val accData = AccountUtils.getAccountData(context, account)
-        disposable.add(context.oneDriveLoginProvider.refreshToken(accData.refreshToken.orEmpty())
-            .subscribe { oneDriveResponse ->
-                when (oneDriveResponse) {
-                    is OneDriveResponse.Success -> {
-                        val response = oneDriveResponse.response as AuthResponse
-                        AccountUtils.setAccountData(context, account, accData.copy(accessToken = response.access_token))
-                        AccountUtils.setToken(context, account, response.access_token)
-                        App.getApp().refreshOneDriveInstance()
-                        getItemsById("")
+        presenterScope.launch {
+            App.getApp().refreshLoginComponent(null)
+            App.getApp().loginComponent.onedriveLoginRepository.refreshToken()
+                .collect { result ->
+                    when (result) {
+                        is Result.Error -> viewState.onAuthorization()
+                        is Result.Success -> {
+                            App.getApp().refreshOneDriveInstance()
+                            getItemsById("")
+                        }
                     }
-                    is OneDriveResponse.Error -> viewState.onError(oneDriveResponse.error.message)
                 }
-            })
+        }
     }
 
     override fun startDownload(downloadTo: Uri, item: Item?) {

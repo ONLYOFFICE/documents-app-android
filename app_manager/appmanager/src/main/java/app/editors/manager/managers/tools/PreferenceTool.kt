@@ -4,7 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.mvp.models.filter.Filter
-import java.util.TreeSet
+import app.editors.manager.mvp.models.states.PasscodeLockState
+import app.editors.manager.mvp.models.states.toJson
 import javax.inject.Inject
 
 class PreferenceTool @Inject constructor(val context: Context) {
@@ -34,112 +35,52 @@ class PreferenceTool @Inject constructor(val context: Context) {
         private const val KEY_WIFI_STATE = "KEY_WIFI_STATE"
         private const val KEY_ANALYTIC = "KEY_ANALYTIC"
         private const val KEY_STORAGE_ACCESS = "KEY_STORAGE_ACCESS"
-        private const val KEY_PASSCODE_LOCK = "KEY_PASSCODE_LOCK"
-        private const val KEY_FINGERPRINT = "KEY_FINGERPRINT"
         private const val KEY_PASSCODE = "KEY_PASSCODE"
         private const val KEY_TIMESTAMP = "KEY_TIMESTAMP"
         private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
         private const val KEY_FILTER = "KEY_FILTER"
         private const val KEY_SYSTEM_LOCALE = "KEY_SYSTEM_LOCALE"
         private const val KEY_SKIP_LOCALE_CONFIRMATION = "KEY_SKIP_LOCALE_CONFIRMATION"
-
-        private val PERSONAL_ADDRESSES: Set<String> = object : TreeSet<String>() {
-            init {
-                add(ApiContract.PERSONAL_SUBDOMAIN + ".")
-            }
-        }
     }
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(TAG, Context.MODE_PRIVATE)
 
-    fun setDefault() {
-        setDefaultPortal()
-        setDefaultUser()
-    }
-
-    private fun setDefaultUser() {
-        login = null
-        phoneNoise = null
-        sortBy = ApiContract.Parameters.VAL_SORT_BY_UPDATED
-        sortOrder = ApiContract.Parameters.VAL_SORT_ORDER_DESC
-        socialProvider = null
-        selfId = ""
-        isProjectDisable = false
-        isNoPortal = true
-        isShowStorageAccess = true
-    }
-
-    fun setDefaultPortal() {
-        portal = null
-        scheme = ApiContract.SCHEME_HTTPS
-        isNoPortal = true
-    }
-
-    var portal: String?
-        get() = sharedPreferences.getString(KEY_1, null)
-        set(value) {
-            sharedPreferences.edit().putString(KEY_1, value).apply()
-        }
-    val isPortalInfo: Boolean
-        get() = portal?.endsWith(TAG_SUFFIX_INFO) == true
     var login: String?
         get() = sharedPreferences.getString(KEY_2, null)
         set(value) {
             sharedPreferences.edit().putString(KEY_2, value).apply()
         }
+
     var phoneNoise: String?
         get() = sharedPreferences.getString(KEY_8, null)
         set(value) {
             sharedPreferences.edit().putString(KEY_8, value).apply()
         }
+
     var sortBy: String?
         get() = sharedPreferences.getString(KEY_9, ApiContract.Parameters.VAL_SORT_BY_UPDATED)
         set(value) {
             sharedPreferences.edit().putString(KEY_9, value).apply()
         }
+
     var sortOrder: String?
         get() = sharedPreferences.getString(KEY_10, ApiContract.Parameters.VAL_SORT_ORDER_DESC)
         set(value) {
             sharedPreferences.edit().putString(KEY_10, value).apply()
         }
-    val isPersonalPortal: Boolean
-        get() {
-            val portal = portal
-            if (portal != null) {
-                for (address in PERSONAL_ADDRESSES) {
-                    if (portal.contains(address)) {
-                        return true
-                    }
-                }
-            }
-            return false
-        }
 
-    var scheme: String?
-        get() = sharedPreferences.getString(KEY_16, ApiContract.SCHEME_HTTPS)
-        set(value) {
-            sharedPreferences.edit().putString(KEY_16, value).apply()
-        }
-    var socialProvider: String?
-        get() = sharedPreferences.getString(KEY_17, null)
-        set(value) {
-            sharedPreferences.edit().putString(KEY_17, value).apply()
-        }
-    var selfId: String?
-        get() = sharedPreferences.getString(KEY_19, "")
-        set(value) {
-            sharedPreferences.edit().putString(KEY_19, value).apply()
-        }
     var onBoarding: Boolean
         get() = sharedPreferences.getBoolean(KEY_20, false)
         set(value) {
             sharedPreferences.edit().putBoolean(KEY_20, value).apply()
         }
+
     var isRateOn: Boolean
         get() = sharedPreferences.getBoolean(KEY_24, true)
         set(value) {
             sharedPreferences.edit().putBoolean(KEY_24, value).apply()
         }
+
     var userSession: Long
         get() = sharedPreferences.getLong(KEY_27, 0L)
         set(value) {
@@ -147,19 +88,9 @@ class PreferenceTool @Inject constructor(val context: Context) {
         }
 
     fun setUserSession() {
-        userSession = userSession + 1
+        userSession += 1
     }
 
-    var isNoPortal: Boolean
-        get() = sharedPreferences.getBoolean(KEY_31, true)
-        set(isNoPortal) {
-            sharedPreferences.edit().putBoolean(KEY_31, isNoPortal).apply()
-        }
-    var secretKey: String?
-        get() = sharedPreferences.getString(KEY_30, "")
-        set(secretKey) {
-            sharedPreferences.edit().putString(KEY_30, secretKey).apply()
-        }
     var isProjectDisable: Boolean
         get() = sharedPreferences.getBoolean(KEY_28, false)
         set(value) {
@@ -172,17 +103,12 @@ class PreferenceTool @Inject constructor(val context: Context) {
 
     val isFavoritesEnabled: Boolean
         get() = sharedPreferences.getBoolean(KEY_32, true)
-    var serverVersion: String?
-        get() = sharedPreferences.getString(KEY_29, "")
-        set(value) {
-            sharedPreferences.edit().putString(KEY_29, value).apply()
-        }
 
     fun setWifiState(wifiState: Boolean) {
         sharedPreferences.edit().putBoolean(KEY_WIFI_STATE, wifiState).apply()
     }
 
-   var modules: String
+    var modules: String
         get() = sharedPreferences.getString("KEY_MODULES", "") ?: ""
         set(value) {
             sharedPreferences.edit().putString("KEY_MODULES", value).apply()
@@ -196,39 +122,23 @@ class PreferenceTool @Inject constructor(val context: Context) {
 
     val uploadWifiState: Boolean
         get() = sharedPreferences.getBoolean(KEY_WIFI_STATE, false)
+
     var isAnalyticEnable: Boolean
         get() = sharedPreferences.getBoolean(KEY_ANALYTIC, true)
         set(isEnable) {
             sharedPreferences.edit().putBoolean(KEY_ANALYTIC, isEnable).apply()
         }
+
     var isShowStorageAccess: Boolean
         get() = sharedPreferences.getBoolean(KEY_STORAGE_ACCESS, true)
         set(isShow) {
             sharedPreferences.edit().putBoolean(KEY_STORAGE_ACCESS, isShow).apply()
         }
 
-    var isPasscodeLockEnable: Boolean
-        get() = sharedPreferences.getBoolean(KEY_PASSCODE_LOCK, false)
-        set(isEnable) {
-            sharedPreferences.edit().putBoolean(KEY_PASSCODE_LOCK, isEnable).apply()
-        }
-
-    var isFingerprintEnable: Boolean
-        get() = sharedPreferences.getBoolean(KEY_FINGERPRINT, false)
-        set(isEnable) {
-            sharedPreferences.edit().putBoolean(KEY_FINGERPRINT, isEnable).apply()
-        }
-
-    var passcode: String?
-        get() = sharedPreferences.getString(KEY_PASSCODE, "")
+    var passcodeLock: PasscodeLockState
+        get() = PasscodeLockState.fromJson(sharedPreferences.getString(KEY_PASSCODE, null))
         set(passcode) {
-            sharedPreferences.edit().putString(KEY_PASSCODE, passcode).apply()
-        }
-
-    var dbTimestamp: Long
-        get() = sharedPreferences.getLong(KEY_TIMESTAMP, 0L)
-        set(value) {
-            sharedPreferences.edit().putLong(KEY_TIMESTAMP, value).apply()
+            sharedPreferences.edit().putString(KEY_PASSCODE, passcode.toJson()).apply()
         }
 
     var deviceMessageToken: String

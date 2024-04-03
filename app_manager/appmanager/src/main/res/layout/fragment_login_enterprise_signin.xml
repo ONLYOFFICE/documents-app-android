@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -48,12 +49,23 @@
         <TextView
             android:id="@+id/login_enterprise_forgot_pwd_button"
             style="@style/Widget.Common.TextView.Clickable"
+            android:layout_marginBottom="@dimen/default_margin_medium"
             android:text="@string/login_enterprise_forgot_password" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/ldapCheckbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="0dp"
+            android:minHeight="0dp"
+            android:text="@string/errors_sign_in_ldap_checkbox"
+            android:textAppearance="@style/Widget.Common.TextView"
+            android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/login_enterprise_signin_button"
             style="@style/Widget.Common.Button"
-            android:layout_marginTop="@dimen/default_margin_xlarge"
+            android:layout_marginTop="@dimen/default_margin_medium"
             android:text="@string/login_enterprise_signin_button" />
 
         <com.google.android.material.button.MaterialButton

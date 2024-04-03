@@ -8,13 +8,17 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.viewModels
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.network.webdav.WebDavService
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.ActivityMainBinding
@@ -28,22 +32,33 @@ import app.editors.manager.mvp.views.main.MainActivityView
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
-import app.editors.manager.ui.fragments.main.*
+import app.editors.manager.ui.fragments.main.AppSettingsFragment
+import app.editors.manager.ui.fragments.main.CloudAccountFragment
+import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment
+import app.editors.manager.ui.fragments.main.DocsRecentFragment
+import app.editors.manager.ui.fragments.main.DocsWebDavFragment
+import app.editors.manager.ui.fragments.main.MainPagerFragment
+import app.editors.manager.ui.fragments.main.OnlyOfficeCloudFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
-import app.editors.manager.viewModels.main.RecentViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.FragmentUtils
+import lib.toolkit.base.managers.utils.LaunchActivityForResult
+import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.clearIntent
+import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
-import java.util.*
+import java.util.UUID
 
 
 interface ActionButtonFragment {
@@ -65,7 +80,8 @@ interface IMainActivity {
 
 
 class MainActivity : BaseAppActivity(), MainActivityView,
-    BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose, IMainActivity, View.OnClickListener {
+    BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose, IMainActivity,
+    View.OnClickListener {
 
     companion object {
 
@@ -73,13 +89,10 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
         private const val ACCOUNT_KEY = "ACCOUNT_KEY"
         private const val URL_KEY = "url"
-        const val KEY_CODE = "code"
 
-        fun show(context: Context, isCode: Boolean? = true, bundle: Bundle? = null) {
+        fun show(context: Context) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                isCode?.let { putExtra(KEY_CODE, isCode) }
-                bundle?.let { putExtras(bundle) }
             })
         }
     }
@@ -87,7 +100,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     @InjectPresenter
     lateinit var presenter: MainActivityPresenter
 
-    private val recentViewModel: RecentViewModel by viewModels()
     private lateinit var viewBinding: ActivityMainBinding
 
     private val navigationListener: (item: MenuItem) -> Boolean = { item ->
@@ -139,11 +151,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         var fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
         if (fragment is MainPagerFragment) {
             val fragments = fragment.getChildFragmentManager().fragments
-//            for (fr in fragments) {
-//                if (fr is DocsMyFragment) {
-//                    fr.getArgs(intent)
-//                }
-//            }
+            //            for (fr in fragments) {
+            //                if (fr is DocsMyFragment) {
+            //                    fr.getArgs(intent)
+            //                }
+            //            }
         }
 
         fragment = supportFragmentManager.findFragmentByTag(DocsWebDavFragment.TAG)
@@ -193,9 +205,15 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        presenter.checkOnBoardingShowed()
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
         init(savedInstanceState)
+    }
+
+    override fun onStart() {
+        if (App.getApp().needPasscodeToUnlock) PasscodeActivity.show(this)
+        super.onStart()
     }
 
     override fun onDestroy() {
@@ -218,9 +236,12 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 showBrowser(it)
             }
         }
-        recentViewModel.isRecent.observe(this) { recents ->
-            viewBinding.bottomNavigation.menu.getItem(0).isEnabled = recents.isNotEmpty()
-        }
+
+        App.getApp().coreComponent
+            .recentDataSource.getRecentListFlow()
+            .flowWithLifecycle(lifecycle)
+            .onEach { viewBinding.bottomNavigation.menu.getItem(0).isEnabled = it.isNotEmpty() }
+            .launchIn(lifecycleScope)
 
         if (intent?.action == Intent.ACTION_VIEW) {
             intent.data?.let {
@@ -263,11 +284,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             }
         }
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
-        if (intent.extras?.contains(KEY_CODE) == true) {
-            presenter.checkPassCode(true)
-        } else {
-            presenter.checkPassCode()
-        }
     }
 
     private fun setAppBarStates() {
@@ -306,7 +322,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun showAccount(isShow: Boolean) {
-//        presenter.isDialogOpen = true
+        //        presenter.isDialogOpen = true
         viewBinding.appBarToolbar.showAccount(isShow)
     }
 
@@ -319,11 +335,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 showOnDeviceFragment()
             }
             is MainActivityState.CloudState -> {
-                state.account?.let {
-                    showOnCloudFragment(state.account)
-                } ?: run {
-                    showOnCloudFragment()
-                }
+                showOnCloudFragment(state.account)
                 viewBinding.appBarToolbar.bind(state.account)
             }
             is MainActivityState.SettingsState -> {
@@ -343,11 +355,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
         showCloudFragment(account = account, fileData = fileData)
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
-    }
-
-    override fun onCodeActivity() {
-        PasscodeActivity.show(this, true, intent.extras)
-        finish()
     }
 
     override fun showActionButton(isShow: Boolean) {
@@ -568,30 +575,20 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun showOnCloudFragment(account: CloudAccount?) {
-        account?.let {
-            when {
-                it.isWebDav -> {
-                    showWebDavFragment(it)
-                }
-                it.isOneDrive -> {
-                    showOneDriveFragment(account)
-                }
-                it.isDropbox -> {
-                    showDropboxFragment(account)
-                }
-                it.isGoogleDrive -> {
-                    showGoogleDriveFragment()
-                }
-                else -> {
-                    showCloudFragment(account)
-                }
-            }
-        } ?: run {
+        if (account == null) {
             FragmentUtils.showFragment(
                 supportFragmentManager,
                 OnlyOfficeCloudFragment.newInstance(false),
                 R.id.frame_container
             )
+            return
+        }
+        when (account.portal.provider) {
+            PortalProvider.Dropbox -> showDropboxFragment(account)
+            PortalProvider.GoogleDrive -> showGoogleDriveFragment()
+            PortalProvider.Onedrive -> showOneDriveFragment(account)
+            is PortalProvider.Webdav -> showWebDavFragment(account)
+            else -> showCloudFragment(account)
         }
     }
 
@@ -663,7 +660,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         } ?: run {
             FragmentUtils.showFragment(
                 supportFragmentManager,
-                DocsWebDavFragment.newInstance(WebDavService.Providers.valueOf(account.webDavProvider ?: "")),
+                DocsWebDavFragment.newInstance(WebdavProvider.valueOf(account.portal.provider)),
                 R.id.frame_container
             )
         }

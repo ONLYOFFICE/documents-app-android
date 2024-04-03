@@ -1,5 +1,6 @@
 package app.documents.core.network.manager
 
+import app.documents.core.model.login.Settings
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.request.RequestBatchBase
@@ -12,7 +13,6 @@ import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
 import app.documents.core.network.manager.models.request.RequestStorage
 import app.documents.core.network.manager.models.request.RequestTitle
-import app.documents.core.network.manager.models.request.RequestUser
 import app.documents.core.network.manager.models.response.ResponseCloudTree
 import app.documents.core.network.manager.models.response.ResponseConversionStatus
 import app.documents.core.network.manager.models.response.ResponseCount
@@ -24,7 +24,6 @@ import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseFile
 import app.documents.core.network.manager.models.response.ResponseFiles
 import app.documents.core.network.manager.models.response.ResponseFolder
-import app.documents.core.network.manager.models.response.ResponseModules
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.manager.models.response.ResponsePortal
 import app.documents.core.network.manager.models.response.ResponseThirdparty
@@ -75,16 +74,6 @@ interface ManagerService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     fun countUsers(): Call<ResponseCount>
-
-    /*
-     * Users info
-     * */
-    @GET("api/" + ApiContract.API_VERSION + "/people/@self")
-    @Headers(
-        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    fun userInfo(): Observable<app.documents.core.network.login.models.response.ResponseUser>
 
     /*
      * Get folder/files by id
@@ -262,16 +251,6 @@ interface ManagerService {
     )
     fun deleteShare(@Body body: RequestDeleteShare): Call<BaseResponse>
 
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @PUT("api/" + ApiContract.API_VERSION + "/people/{user_id}")
-    fun updateUser(
-        @Path(value = "user_id") userId: String,
-        @Body body: RequestUser
-    ): Call<app.documents.core.network.login.models.response.ResponseUser>
-
     /*
      * Get portal
      * */
@@ -367,13 +346,6 @@ interface ManagerService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/settings/security")
-    fun getModules(@Query("ids") modulesIds: List<String>): Observable<ResponseModules>
-
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
     @POST("api/" + ApiContract.API_VERSION + "/files/favorites")
     fun addToFavorites(@Body body: RequestFavorites): Observable<Response<BaseResponse>>
 
@@ -402,27 +374,9 @@ interface ManagerService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @POST("api/" + ApiContract.API_VERSION + "/settings/push/docregisterdevice")
-    fun registerDevice(
-        @Body body: app.documents.core.network.login.models.RequestDeviceToken,
-    ): Single<Response<ResponseBody>>
-
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @PUT("api/" + ApiContract.API_VERSION + "/settings/push/docsubscribe")
-    fun subscribe(
-        @Body body: app.documents.core.network.login.models.RequestPushSubscribe
-    ): Single<Response<ResponseBody>>
-
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/openedit")
     fun openFile(
-        @Path(value = "id")id: String,
+        @Path(value = "id") id: String,
         @Query("version") version: Int
     ): Single<Response<ResponseBody>>
 
@@ -452,6 +406,17 @@ interface ManagerService {
 
     @Multipart
     @PUT("api/" + ApiContract.API_VERSION + "/files/{fileId}/update")
-    fun updateDocument(@Path(value = "fileId") id: String, @Part part: MultipartBody.Part): Single<Response<ResponseBody>>
+    fun updateDocument(
+        @Path(value = "fileId") id: String,
+        @Part part: MultipartBody.Part
+    ): Single<Response<ResponseBody>>
+
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/${ApiContract.API_VERSION}/settings/version/build")
+    suspend fun getSettings(): app.documents.core.network.BaseResponse<Settings>
 
 }

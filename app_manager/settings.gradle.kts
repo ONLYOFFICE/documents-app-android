@@ -3,6 +3,7 @@ rootProject.name = "app_manager"
 include(
     ":appmanager",
     ":core",
+    ":core:network",
     ":libcompose",
     ":libtoolkit",
     ":libx2t",
@@ -26,3 +27,5 @@ project(":libgeditors").projectDir = File(settingsDir, "../../document-android-e
 project(":libgcells").projectDir = File(settingsDir, "../../document-android-editors/editors_cells/libgcells")
 project(":libgdocs").projectDir = File(settingsDir, "../../document-android-editors/editors_docs/libgdocs")
 project(":libgslides").projectDir = File(settingsDir, "../../document-android-editors/editors_slides/libgslides")
+include(":core:model")
+include(":core:database")

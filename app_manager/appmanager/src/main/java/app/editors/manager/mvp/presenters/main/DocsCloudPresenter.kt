@@ -3,6 +3,9 @@ package app.editors.manager.mvp.presenters.main
 import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.Recent
+import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
 import app.documents.core.network.manager.ManagerService
@@ -17,11 +20,8 @@ import app.documents.core.network.share.models.request.Invitation
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.RoomProvider
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.accountOnline
 import app.editors.manager.app.api
 import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.app.roomProvider
@@ -41,7 +41,6 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -182,7 +181,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun createDocs(title: String) {
         FirebaseUtils.addAnalyticsCreateEntity(
-            networkSettings.getPortal(),
+            account.portalUrl,
             true,
             StringUtils.getExtensionFromPath(title)
         )
@@ -231,18 +230,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun addRecent(file: CloudFile) {
-        CoroutineScope(Dispatchers.Default).launch {
-            recentDao.addRecent(
+        presenterScope.launch {
+            recentDataSource.add(
                 Recent(
-                    idFile = file.id,
-                    path = null,
+                    fileId = file.id,
+                    path = "",
                     name = file.title,
                     size = file.pureContentLength,
-                    isLocal = false,
-                    isWebDav = account.isWebDav,
-                    date = Date().time,
                     ownerId = account.id,
-                    source = account.portal
+                    source = account.portalUrl
                 )
             )
         }
@@ -615,11 +611,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
             else -> viewState.onFileDownloadPermission()
         }
-        FirebaseUtils.addAnalyticsOpenEntity(networkSettings.getPortal(), extension)
+        FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, extension)
     }
 
     private fun downloadTempFile(cloudFile: CloudFile, openMode: OpenMode) {
-        disposable.add((fileProvider as CloudFileProvider).getCachedFile(context, cloudFile, account.getAccountName())
+        disposable.add((fileProvider as CloudFileProvider).getCachedFile(context, cloudFile, account.accountName)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ file ->
@@ -639,7 +635,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private fun openDocumentServer(cloudFile: CloudFile, openMode: OpenMode) {
         with(fileProvider as CloudFileProvider) {
-            val token = AccountUtils.getToken(context, context.accountOnline?.getAccountName().orEmpty())
+            val token = AccountUtils.getToken(context, account.accountName)
             disposable.add(
                 openDocument(cloudFile, token)
                     .subscribe({ result ->
@@ -660,7 +656,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onStateUpdateFilterMenu()
     }
 
-    @Suppress("KotlinConstantConditions")
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
         if (model.file?.id == null && model.folder?.id != null) {
@@ -755,7 +750,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = itemClicked?.intAccess == ApiContract.ShareCode.READ_WRITE || isUserSection
 
     private val isItemEditable: Boolean
-        get() = if (networkSettings.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+        get() = if (account.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
             itemClicked?.isCanEdit == true
         } else {
             !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
@@ -765,7 +760,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
 
     private val isItemShareable: Boolean
-        get() = if (networkSettings.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+        get() = if (account.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
             itemClicked?.isCanShare == true
         } else {
             isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection

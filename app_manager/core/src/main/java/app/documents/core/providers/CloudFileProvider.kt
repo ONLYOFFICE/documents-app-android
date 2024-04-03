@@ -2,9 +2,9 @@ package app.documents.core.providers
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import app.documents.core.manager.ManagerRepository
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
-import app.documents.core.network.login.LoginService
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -26,7 +26,6 @@ import app.documents.core.network.manager.models.response.ResponseFile
 import app.documents.core.network.manager.models.response.ResponseFolder
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.room.RoomService
-import app.documents.core.storage.preference.NetworkSettings
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -35,6 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.MultipartBody
@@ -54,8 +54,7 @@ data class OpenDocumentResult(
 class CloudFileProvider @Inject constructor(
     private val managerService: ManagerService,
     private val roomService: RoomService,
-    private val loginService: LoginService,
-    private val networkSettings: NetworkSettings
+    private val managerRepository: ManagerRepository
 ) : BaseFileProvider, CacheFileHelper {
 
     companion object {
@@ -394,12 +393,7 @@ class CloudFileProvider @Inject constructor(
 
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     fun opeEdit(cloudFile: CloudFile): Single<String?> {
-        return loginService.getSettings().map {
-            if (it.isSuccessful) {
-                networkSettings.documentServerVersion = it.body()?.response?.documentServer
-                    ?: networkSettings.documentServerVersion
-            }
-        }
+        return Single.fromCallable { runBlocking { managerRepository.updateDocumentServerVersion() } }
             .flatMap { managerService.openFile(cloudFile.id, cloudFile.version) }
             .map { response ->
                 val json = JSONObject(managerService.getDocService().blockingGet().body()?.string())

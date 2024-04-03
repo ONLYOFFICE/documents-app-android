@@ -25,8 +25,6 @@ import app.editors.manager.mvp.views.main.DocsOnDeviceView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.ContentResolverUtils
@@ -37,7 +35,6 @@ import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
 import moxy.presenterScope
 import java.io.File
-import java.util.Date
 
 @InjectViewState
 class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
@@ -55,12 +52,8 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     private var webDavFileProvider: WebDavFileProvider? = null
 
     private fun checkWebDav() {
-        CoroutineScope(Dispatchers.Default).launch {
-            accountDao.getAccountOnline()?.let {
-                if (it.isWebDav) {
-                    webDavFileProvider = context.webDavFileProvider
-                }
-            }
+        if (context.accountOnline?.isWebDav == true) {
+            webDavFileProvider = context.webDavFileProvider
         }
     }
 
@@ -94,35 +87,28 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     override fun addRecent(file: CloudFile) {
         presenterScope.launch {
-            recentDao.addRecent(
+            recentDataSource.add(
                 Recent(
-                    idFile = null,
                     path = file.webUrl,
                     name = file.title,
-                    size = file.pureContentLength,
-                    isLocal = true,
-                    isWebDav = false,
-                    date = Date().time
+                    size = file.pureContentLength
                 )
             )
         }
-
     }
 
     private fun addRecent(uri: Uri) {
         presenterScope.launch {
             DocumentFile.fromSingleUri(context, uri)?.let { file ->
-                recentDao.addRecent(
-                    Recent(
-                        idFile = null,
-                        path = uri.toString(),
-                        name = file.name ?: "",
-                        size = file.length(),
-                        isLocal = true,
-                        isWebDav = false,
-                        date = Date().time,
+                presenterScope.launch {
+                    recentDataSource.add(
+                        Recent(
+                            path = uri.toString(),
+                            name = file.name.toString(),
+                            size = file.length()
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -201,7 +187,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                     }
                 }
             } else {
-                uploadWebDav(account.webDavPath ?: "", listOf(uri))
+                uploadWebDav((account.portal.provider as? PortalProvider.Webdav)?.path.orEmpty(), listOf(uri))
             }
         }
     }
@@ -332,7 +318,9 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri, openMode)
             StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri, openMode)
             StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
-            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(uri)
+            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(
+                uri
+            )
             else -> viewState.onError(context.getString(R.string.error_unsupported_format))
         }
     }

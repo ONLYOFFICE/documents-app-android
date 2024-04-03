@@ -13,6 +13,8 @@ import android.util.Log
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -28,15 +30,11 @@ import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.ProviderError.Companion.throwInterruptException
 import app.documents.core.providers.WebDavFileProvider
-import app.documents.core.storage.account.AccountDao
-import app.documents.core.storage.preference.NetworkSettings
-import app.documents.core.storage.recent.RecentDao
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.DownloadWork
@@ -91,13 +89,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     lateinit var operationsState: OperationsState
 
     @Inject
-    lateinit var accountDao: AccountDao
+    lateinit var cloudDataSource: CloudDataSource
 
     @Inject
-    lateinit var networkSettings: NetworkSettings
-
-    @Inject
-    lateinit var recentDao: RecentDao
+    lateinit var recentDataSource: RecentDataSource
 
     /**
      * Handler for some common job
@@ -210,7 +205,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     open fun refresh(): Boolean {
-//        setPlaceholderType(PlaceholderViews.Type.LOAD)
+        //        setPlaceholderType(PlaceholderViews.Type.LOAD)
         modelExplorerStack.currentId?.let { id ->
             fileProvider?.let { provider ->
                 disposable.add(
@@ -274,9 +269,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * */
 
     fun createFolder(title: String?) {
-        preferenceTool.portal?.let {
-            addAnalyticsCreateEntity(it, false, null)
-        }
+        //        preferenceTool.portal?.let {
+        //            addAnalyticsCreateEntity(it, false, null)
+        //        }
 
         modelExplorerStack.currentId?.let { id ->
             val requestCreate = RequestCreate().apply {
@@ -854,27 +849,27 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-//    fun moveContext() {
-//        modelExplorerStack.last()?.clone()?.let { explorer ->
-//            viewState.onBatchMove(getBatchExplorer(explorer))
-//        }
-//    }
-//
-//    open fun copySelected() {
-//        if (modelExplorerStack.countSelectedItems > 0) {
-//            modelExplorerStack.clone()?.let { clonedStack ->
-//                clonedStack.removeUnselected()
-//                viewState.onBatchCopy(clonedStack.explorer)
-//            }
-//        }
-//        viewState.onError(context.getString(R.string.operation_empty_lists_data))
-//    }
-//
-//    fun copyContext() {
-//        modelExplorerStack.last()?.clone()?.let { explorer ->
-//            viewState.onBatchCopy(getBatchExplorer(explorer))
-//        }
-//    }
+    //    fun moveContext() {
+    //        modelExplorerStack.last()?.clone()?.let { explorer ->
+    //            viewState.onBatchMove(getBatchExplorer(explorer))
+    //        }
+    //    }
+    //
+    //    open fun copySelected() {
+    //        if (modelExplorerStack.countSelectedItems > 0) {
+    //            modelExplorerStack.clone()?.let { clonedStack ->
+    //                clonedStack.removeUnselected()
+    //                viewState.onBatchCopy(clonedStack.explorer)
+    //            }
+    //        }
+    //        viewState.onError(context.getString(R.string.operation_empty_lists_data))
+    //    }
+    //
+    //    fun copyContext() {
+    //        modelExplorerStack.last()?.clone()?.let { explorer ->
+    //            viewState.onBatchCopy(getBatchExplorer(explorer))
+    //        }
+    //    }
 
     private fun getBatchExplorer(explorer: Explorer): Explorer {
         return explorer.also {
@@ -1402,7 +1397,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 throwable.response()?.let { response ->
                     onErrorHandle(response.errorBody(), response.code())
                     if (response.code() == 412) {
-                        viewState.onError(context.getString(R.string.operation_move_file_existing, throwable.suppressed[0].message))
+                        viewState.onError(
+                            context.getString(
+                                R.string.operation_move_file_existing,
+                                throwable.suppressed[0].message
+                            )
+                        )
                     } else if (response.code() >= ApiContract.HttpCodes.CLIENT_ERROR && response.code() < ApiContract.HttpCodes.SERVER_ERROR) {
                         if (!isRoot) {
                             modelExplorerStack.previous()
@@ -1482,19 +1482,19 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             }
         } // Delete this block -- END --
 
-//        // Uncomment this block, after added translation to server
-//        // Callback error
-//        if (errorMessage == null) {
-//            if (responseCode >= Api.HttpCodes.REDIRECTION && responseCode < Api.HttpCodes.CLIENT_ERROR) {
-//                getViewState().onError(mContext.getString(R.string.errors_redirect_error) + responseCode);
-//            } else if (responseCode >= Api.HttpCodes.CLIENT_ERROR && responseCode < Api.HttpCodes.SERVER_ERROR) {
-//                getViewState().onError(mContext.getString(R.string.errors_client_error) + responseCode);
-//            } else if (responseCode >= Api.HttpCodes.SERVER_ERROR) {
-//                getViewState().onError(mContext.getString(R.string.errors_server_error) + responseCode);
-//            }
-//        } else {
-//            getViewState().onError(errorMessage);
-//        }
+        //        // Uncomment this block, after added translation to server
+        //        // Callback error
+        //        if (errorMessage == null) {
+        //            if (responseCode >= Api.HttpCodes.REDIRECTION && responseCode < Api.HttpCodes.CLIENT_ERROR) {
+        //                getViewState().onError(mContext.getString(R.string.errors_redirect_error) + responseCode);
+        //            } else if (responseCode >= Api.HttpCodes.CLIENT_ERROR && responseCode < Api.HttpCodes.SERVER_ERROR) {
+        //                getViewState().onError(mContext.getString(R.string.errors_client_error) + responseCode);
+        //            } else if (responseCode >= Api.HttpCodes.SERVER_ERROR) {
+        //                getViewState().onError(mContext.getString(R.string.errors_server_error) + responseCode);
+        //            }
+        //        } else {
+        //            getViewState().onError(errorMessage);
+        //        }
     }
 
     /**
@@ -1578,7 +1578,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         (itemClicked as? CloudFile)?.let { cloudFile ->
             fileProvider?.let { fileProvider ->
                 context.accountOnline?.let { account ->
-                    sendDisposable = fileProvider.getCachedFile(context, cloudFile, account.getAccountName())
+                    sendDisposable = fileProvider.getCachedFile(context, cloudFile, account.accountName)
                         .doOnSubscribe { viewState.onDialogDownloadWaiting() }
                         .doOnError { viewState.onError(context.getString(R.string.errors_create_local_file)) }
                         .doOnSuccess { file ->
@@ -1611,9 +1611,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 result(false)
                 return@getSdk
             }
-            val webSdk = version?.replace(".", "") ?: networkSettings.documentServerVersion.replace(".", "")
+            val webSdk = version?.replace(".", "") ?: context.accountOnline
+                ?.portal?.version?.documentServerVersion?.replace(".", "")
 
-            if (webSdk.isEmpty()) {
+            if (webSdk.isNullOrEmpty()) {
                 result(false)
                 return@getSdk
             }

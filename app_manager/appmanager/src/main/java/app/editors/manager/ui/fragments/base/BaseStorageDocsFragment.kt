@@ -4,10 +4,10 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.presenters.storages.BaseStorageDocsPresenter

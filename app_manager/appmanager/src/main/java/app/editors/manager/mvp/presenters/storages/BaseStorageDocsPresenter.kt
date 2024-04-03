@@ -14,15 +14,14 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
+import app.editors.manager.app.accountOnline
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import app.editors.manager.ui.views.custom.PlaceholderViews
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.StringUtils
-import java.util.Date
+import moxy.presenterScope
 
 abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePresenter<V>(),
     UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
@@ -114,19 +113,17 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
     }
 
     override fun addRecent(file: CloudFile) {
-        CoroutineScope(Dispatchers.Default).launch {
-            accountDao.getAccountOnline()?.let {
-                recentDao.addRecent(
+        presenterScope.launch {
+            context.accountOnline?.let {
+                recentDataSource.addRecent(
                     Recent(
-                        idFile = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
+                        fileId = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
                         path = file.webUrl,
                         name = file.title,
                         size = file.pureContentLength,
-                        isLocal = false,
-                        isWebDav = true,
-                        date = Date().time,
+                        isWebdav = true,
                         ownerId = it.id,
-                        source = it.portal
+                        source = it.portal.url
                     )
                 )
             }

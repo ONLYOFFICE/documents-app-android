@@ -4,13 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.providers.WebDavFileProvider
-import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -35,7 +36,7 @@ import lib.toolkit.base.managers.utils.NetworkUtils.isWifiEnable
 import lib.toolkit.base.managers.utils.PermissionUtils.checkReadWritePermission
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
-import java.util.Date
+import moxy.presenterScope
 
 
 @InjectViewState
@@ -54,13 +55,12 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     }
 
     fun getProvider() {
+        val path = (context.accountOnline?.portal?.provider as? PortalProvider.Webdav)?.path
         fileProvider?.let {
-            context.accountOnline?.let {
-                getItemsById(it.webDavPath)
-            }
+            getItemsById(path)
         } ?: run {
             fileProvider = context.webDavFileProvider
-            getItemsById(context.accountOnline?.webDavPath)
+            getItemsById(path)
         }
     }
 
@@ -137,19 +137,17 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     }
 
     override fun addRecent(file: CloudFile) {
-        CoroutineScope(Dispatchers.Default).launch {
-            accountDao.getAccountOnline()?.let {
-                recentDao.addRecent(
+        presenterScope.launch {
+            context.accountOnline?.let {
+                recentDataSource.addRecent(
                     Recent(
-                        idFile = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
+                        fileId = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
                         path = file.webUrl,
                         name = file.title,
                         size = file.pureContentLength,
-                        isLocal = false,
-                        isWebDav = true,
-                        date = Date().time,
+                        isWebdav = true,
                         ownerId = it.id,
-                        source = it.portal
+                        source = it.portalUrl
                     )
                 )
             }
@@ -237,10 +235,11 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             return
         }
         CoroutineScope(Dispatchers.Default).launch {
-            accountDao.getAccountOnline()?.let {
-                if (it.isWebDav) {
+            context.accountOnline?.let {
+                val webDavProvider = it.portal.provider
+                if (webDavProvider is PortalProvider.Webdav) {
                     withContext(Dispatchers.Main) {
-                        uploadWebDav(it.webDavPath ?: "/", listOf(uri))
+                        uploadWebDav(webDavProvider.path, listOf(uri))
                     }
                 }
             }

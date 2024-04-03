@@ -3,34 +3,32 @@ package app.documents.core.network.storages.onedrive.api
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.storages.onedrive.models.explorer.DriveItemCloudTree
 import app.documents.core.network.storages.onedrive.models.explorer.DriveItemValue
-import app.documents.core.network.storages.onedrive.models.request.*
+import app.documents.core.network.storages.onedrive.models.request.ChangeFileRequest
+import app.documents.core.network.storages.onedrive.models.request.CopyItemRequest
+import app.documents.core.network.storages.onedrive.models.request.CreateFolderRequest
+import app.documents.core.network.storages.onedrive.models.request.ExternalLinkRequest
+import app.documents.core.network.storages.onedrive.models.request.RenameRequest
+import app.documents.core.network.storages.onedrive.models.request.UploadRequest
 import app.documents.core.network.storages.onedrive.models.response.ExternalLinkResponse
 import app.documents.core.network.storages.onedrive.models.response.UploadResponse
-import app.documents.core.network.storages.onedrive.models.user.User
 import io.reactivex.Single
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.PATCH
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
+import retrofit2.http.QueryMap
 
 interface OneDriveService {
 
     companion object {
         private const val API_VERSION = "beta"
     }
-
-    @Headers(
-        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @GET("${API_VERSION}/me/")
-    fun getUserInfo(@Header(ApiContract.HEADER_AUTHORIZATION) token: String): Single<Response<User>>
-
-    @Headers(
-        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + "application/x-www-form-urlencoded",
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @POST("authorization" + ApiContract.RESPONSE_FORMAT)
-    fun authorization(@QueryMap parameters: Map<String, String>): Single<Response<ResponseBody>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

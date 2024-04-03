@@ -15,9 +15,9 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import app.documents.core.network.login.models.request.RequestSignIn
+import app.documents.core.model.login.request.RequestSignIn
 import app.editors.manager.R
-import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.FragmentAuthPageBinding
 import app.editors.manager.managers.receivers.SmsReceiver
 import app.editors.manager.mvp.presenters.login.EnterpriseAppAuthPresenter
@@ -26,7 +26,6 @@ import app.editors.manager.ui.activities.login.AuthAppActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.edits.BaseWatcher
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -245,9 +244,13 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
                 text = getString(R.string.auth_confirm_button)
                 setOnClickListener {
                     showWaitingDialog(getString(R.string.dialogs_wait_title))
-                    presenter.signInPortal(
-                        binding.authSecretKeyEditText.text.toString().replace(" ", ""),
-                        arguments?.getString(AuthAppActivity.REQUEST_KEY)
+                    val request = Json.decodeFromString<RequestSignIn>(
+                            arguments?.getString(AuthAppActivity.REQUEST_KEY).orEmpty()
+                        )
+                    presenter.signInWithEmail(
+                        request.userName,
+                        request.password,
+                        binding.authSecretKeyEditText.text.toString().replace(" ", "")
                     )
                 }
             }
@@ -256,10 +259,9 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
 
     private fun openAuth() {
         val request = Json.decodeFromString<RequestSignIn>(arguments?.getString(AuthAppActivity.REQUEST_KEY) ?: "")
-        val settings = App.getApp().appComponent.networkSettings
         try {
             val uri =
-                "otpauth://totp/" + request.userName + "?secret=" + key + "&issuer= " + settings.getPortal()
+                "otpauth://totp/" + request.userName + "?secret=" + key + "&issuer= " + context?.accountOnline?.portalUrl
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {

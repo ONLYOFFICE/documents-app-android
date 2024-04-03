@@ -20,7 +20,6 @@ import app.editors.manager.viewModels.login.CreatePortalState
 import app.editors.manager.viewModels.login.EnterpriseCreateValidateViewModel
 import lib.toolkit.base.managers.utils.StringUtils.isAlphaNumeric
 import lib.toolkit.base.managers.utils.StringUtils.isCreateUserName
-import lib.toolkit.base.managers.utils.UiUtils.measureTextSizes
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 
 class EnterpriseCreatePortalFragment : BaseAppFragment() {
@@ -86,10 +85,10 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
         message?.let { showSnackBar(message) }
     }
 
-    private fun onValidatePortalSuccess(email: String?, first: String?, last: String?) {
+    private fun onValidatePortalSuccess(portalName: String?, email: String?, first: String?, last: String?) {
         hideDialog()
         showFragment(
-            EnterpriseCreateSignInFragment.newInstance(email, first, last),
+            EnterpriseCreateSignInFragment.newInstance(portalName, email, first, last),
             EnterpriseCreateSignInFragment.TAG, false
         )
     }
@@ -142,6 +141,7 @@ class EnterpriseCreatePortalFragment : BaseAppFragment() {
             when (state) {
                 is CreatePortalState.Success -> {
                     onValidatePortalSuccess(
+                        state.portalModel.portalName,
                         state.portalModel.email,
                         state.portalModel.firstName,
                         state.portalModel.lastName

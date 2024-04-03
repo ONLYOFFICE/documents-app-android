@@ -5,12 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.lifecycle.lifecycleScope
+import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.network.webdav.WebDavService
-import app.documents.core.storage.account.AccountDao
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityOperationBinding
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.ui.activities.base.BaseAppActivity
@@ -48,7 +49,7 @@ class OperationActivity : BaseAppActivity(){
     }
 
     @Inject
-    lateinit var accountDao: AccountDao
+    lateinit var cloudDataSource: CloudDataSource
 
     private var operationType: OperationType? = null
     private var actionClickListener: OnActionClickListener? = null
@@ -91,14 +92,12 @@ class OperationActivity : BaseAppActivity(){
 
     private fun initState() {
        lifecycleScope.launch {
-            accountDao.getAccountOnline()?.let { account ->
+            accountOnline?.let { account ->
                 withContext(Dispatchers.Main) {
                     if (account.isWebDav) {
                         showFragment(
                             DocsWebDavOperationFragment.newInstance(
-                                WebDavService.Providers.valueOf(
-                                    account.webDavProvider ?: ""
-                                )
+                                WebdavProvider.valueOf(account.portal.provider)
                             ), null
                         )
                     } else if(account.isOneDrive) {
