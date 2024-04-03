@@ -1171,7 +1171,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 if (itemClicked is CloudFolder) {
                     openFolder(itemClicked.id, position)
                 } else if (itemClicked is CloudFile) {
-                    getFileInfo(OpenMode.EDIT)
+                    getFileInfo(OpenMode.READ)
                 }
             }
         }

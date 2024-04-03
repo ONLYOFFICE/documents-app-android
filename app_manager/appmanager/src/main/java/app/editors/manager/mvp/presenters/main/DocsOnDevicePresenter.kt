@@ -88,7 +88,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         if (itemClicked != null && itemClicked is CloudFile) {
             val file = itemClicked as CloudFile
             addRecent(file)
-            openFile(file)
+            openFile(file, openMode)
         }
     }
 
@@ -279,7 +279,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
 
         addRecent(uri)
-        openFile(uri, ext)
+        openFile(uri, ext, OpenMode.READ)
     }
 
     fun import(uri: Uri) {
@@ -312,7 +312,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     }
 
-    private fun openFile(file: CloudFile, openMode: OpenMode = OpenMode.READ) {
+    private fun openFile(file: CloudFile, openMode: OpenMode) {
         val path = file.id
         val uri = Uri.fromFile(File(path))
         val ext = StringUtils.getExtensionFromPath(file.id.lowercase())
@@ -320,7 +320,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     @Suppress("KotlinConstantConditions")
-    private fun openFile(uri: Uri, ext: String, openMode: OpenMode = OpenMode.READ) {
+    private fun openFile(uri: Uri, ext: String, openMode: OpenMode) {
         when (val enumExt = StringUtils.getExtension(ext)) {
             StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> {
                 if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && enumExt == StringUtils.Extension.FORM) {
