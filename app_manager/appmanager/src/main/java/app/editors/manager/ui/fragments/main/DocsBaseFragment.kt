@@ -286,20 +286,21 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         show(requireContext())
     }
 
-    override fun onOpenLocalFile(file: CloudFile) {
+    override fun onOpenLocalFile(file: CloudFile, openMode: OpenMode) {
         val uri = Uri.parse(file.webUrl)
+
         when (getExtension(file.fileExst)) {
             StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
                 presenter.addRecent(file)
-                showEditors(uri, EditorsType.DOCS)
+                showEditors(uri, EditorsType.DOCS, openMode = openMode)
             }
             StringUtils.Extension.SHEET -> {
                 presenter.addRecent(file)
-                showEditors(uri, EditorsType.CELLS)
+                showEditors(uri, EditorsType.CELLS, openMode = openMode)
             }
             StringUtils.Extension.PRESENTATION -> {
                 presenter.addRecent(file)
-                showEditors(uri, EditorsType.PRESENTATION)
+                showEditors(uri, EditorsType.PRESENTATION, openMode = openMode)
             }
             StringUtils.Extension.PDF -> {
                 presenter.addRecent(file)
@@ -329,6 +330,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
+            ExplorerContextItem.Preview -> presenter.getFileInfo(OpenMode.READ_ONLY)
             ExplorerContextItem.Move -> presenter.moveCopyOperation(OperationsState.OperationType.MOVE)
             ExplorerContextItem.Copy -> presenter.moveCopyOperation(OperationsState.OperationType.COPY)
             ExplorerContextItem.Send -> presenter.sendCopy()
@@ -342,7 +344,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 cancelButton = getString(R.string.dialogs_common_cancel_button),
                 suffix = presenter.itemExtension
             )
-            is ExplorerContextItem.Edit -> presenter.getFileInfo()
+            is ExplorerContextItem.Edit -> presenter.getFileInfo(OpenMode.EDIT)
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
             else -> {}
         }
@@ -1046,11 +1048,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             }
 
             StringUtils.Extension.SHEET -> {
-                showEditors(null, EditorsType.CELLS, info)
+                showEditors(null, EditorsType.CELLS, info, openMode)
             }
 
             StringUtils.Extension.PRESENTATION -> {
-                showEditors(null, EditorsType.PRESENTATION, info)
+                showEditors(null, EditorsType.PRESENTATION, info, openMode)
             }
 
             StringUtils.Extension.PDF -> {

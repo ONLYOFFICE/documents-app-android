@@ -137,7 +137,7 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onAddUploadsFile(List<? extends Entity> uploadFiles);
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onOpenLocalFile(CloudFile file);
+    void onOpenLocalFile(CloudFile file, OpenMode openMode);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onNoProvider();
 

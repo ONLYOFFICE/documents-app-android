@@ -25,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.receivers.ExportReceiver
 import lib.toolkit.base.managers.receivers.ExportReceiver.OnExportFile
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getSize
@@ -102,7 +103,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                             addFile(file)
                             setPlaceholderType(PlaceholderViews.Type.NONE)
                             viewState.onDialogClose()
-                            viewState.onOpenLocalFile(file)
+                            viewState.onOpenLocalFile(file, OpenMode.EDIT)
                         }, ::fetchError)
                 )
             }
@@ -110,7 +111,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         }
     }
 
-    override fun getFileInfo() {
+    override fun getFileInfo(openMode: OpenMode) {
         if (itemClicked != null && itemClicked is CloudFile) {
             val file = itemClicked as CloudFile
             val extension = file.fileExst
@@ -129,7 +130,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                     { file: CloudFile? ->
                         tempFile = file
                         viewState.onDialogClose()
-                        viewState.onOpenLocalFile(file)
+                        viewState.onOpenLocalFile(file, openMode)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }
         }

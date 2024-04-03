@@ -43,6 +43,7 @@ import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.DialogUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
@@ -205,6 +206,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
+            ExplorerContextItem.Preview -> cloudPresenter.onContextOpenFile(OpenMode.READ_ONLY)
             ExplorerContextItem.Share -> showShareActivity(cloudPresenter.itemClicked)
             ExplorerContextItem.Location -> cloudPresenter.openLocation()
             ExplorerContextItem.CreateRoom -> cloudPresenter.createRoomFromFolder()
@@ -218,7 +220,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 acceptErrorTint = true
             )
 
-            is ExplorerContextItem.Edit -> cloudPresenter.onEditContextClick()
+            is ExplorerContextItem.Edit -> cloudPresenter.onContextOpenFile(OpenMode.EDIT)
             is ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
@@ -390,7 +392,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 }
                 .setNegativeButton(R.string.conversion_dialog_open_in_view_mode) { dialog, _ ->
                     dialog.dismiss()
-                    cloudPresenter.getFileInfo()
+                    cloudPresenter.getFileInfo(OpenMode.READ_ONLY)
                 }
                 .create()
                 .apply {

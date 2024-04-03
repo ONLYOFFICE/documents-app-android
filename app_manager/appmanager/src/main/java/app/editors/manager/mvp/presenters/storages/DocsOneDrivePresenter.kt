@@ -24,6 +24,7 @@ import app.editors.manager.managers.works.onedrive.UploadWork
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import moxy.InjectViewState
@@ -129,7 +130,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         }
     }
 
-    override fun getFileInfo() {
+    override fun getFileInfo(openMode: OpenMode) {
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
         fileProvider?.let { provider ->
             downloadDisposable = provider.fileInfo(itemClicked)
@@ -139,7 +140,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                         tempFile = file
                         viewState.onDialogClose()
                         file?.let { addRecent(it) }
-                        viewState.onOpenLocalFile(file)
+                        viewState.onOpenLocalFile(file, openMode)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }
         }

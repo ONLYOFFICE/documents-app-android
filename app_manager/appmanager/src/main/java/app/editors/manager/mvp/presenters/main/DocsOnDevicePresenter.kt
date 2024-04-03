@@ -84,7 +84,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         }
     }
 
-    override fun getFileInfo() {
+    override fun getFileInfo(openMode: OpenMode) {
         if (itemClicked != null && itemClicked is CloudFile) {
             val file = itemClicked as CloudFile
             addRecent(file)
@@ -460,13 +460,5 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         setSelection(false)
         setFiltering(false)
         updateViewsState()
-    }
-
-    fun getFileInfo(openMode: OpenMode) {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            addRecent(file)
-            openFile(file, openMode)
-        }
     }
 }

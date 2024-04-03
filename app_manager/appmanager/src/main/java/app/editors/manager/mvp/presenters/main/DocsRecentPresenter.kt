@@ -49,10 +49,10 @@ sealed class RecentState {
     class RenderList(val recents: List<Recent>) : RecentState()
 }
 
-sealed class OpenState(val uri: Uri?, val type: EditorsType?) {
-    class Docs(uri: Uri) : OpenState(uri, EditorsType.DOCS)
-    class Cells(uri: Uri) : OpenState(uri, EditorsType.CELLS)
-    class Slide(uri: Uri) : OpenState(uri, EditorsType.PRESENTATION)
+sealed class OpenState(val uri: Uri?, val type: EditorsType?, val openMode: OpenMode = OpenMode.READ) {
+    class Docs(uri: Uri, openMode: OpenMode) : OpenState(uri, EditorsType.DOCS, openMode)
+    class Cells(uri: Uri, openMode: OpenMode) : OpenState(uri, EditorsType.CELLS, openMode)
+    class Slide(uri: Uri, openMode: OpenMode) : OpenState(uri, EditorsType.PRESENTATION, openMode)
     class Pdf(uri: Uri) : OpenState(uri, EditorsType.PDF)
     class Media(val explorer: Explorer, val isWebDav: Boolean) : OpenState(null, null)
 }
@@ -154,7 +154,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    private suspend fun openFile(recent: Recent) {
+    private suspend fun openFile(recent: Recent, openMode: OpenMode) {
         accountDao.getAccount(recent.ownerId ?: "")?.let { account ->
             AccountUtils.getToken(
                 context,
@@ -170,8 +170,9 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                                 return@zipWith arrayOf(file, info)
                             }
                     }.subscribe({ response ->
-                        checkExt(response[0] as CloudFile, response[1] as String)
+                        checkExt(response[0] as CloudFile, response[1] as String, openMode)
                     }, { throwable ->
+                        viewState.onDialogClose()
                         if (throwable is HttpException) {
                             when (throwable.code()) {
                                 ApiContract.HttpCodes.CLIENT_UNAUTHORIZED ->
@@ -194,21 +195,21 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    private fun checkExt(file: CloudFile, info: String) {
+    private fun checkExt(file: CloudFile, info: String, openMode: OpenMode) {
         if (file.rootFolderType.toInt() != ApiContract.SectionType.CLOUD_TRASH) {
             when (StringUtils.getExtension(file.fileExst)) {
                 StringUtils.Extension.DOC, StringUtils.Extension.FORM, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
                     checkSdkVersion { isCheck ->
                         if (isCheck) {
-                            viewState.onOpenDocumentServer(file, info, OpenMode.READ)
+                            viewState.onOpenDocumentServer(file, info, openMode)
                         } else {
-                            viewState.openFile(file)
+                            viewState.openFile(file, openMode)
                         }
                     }
                 }
 
                 StringUtils.Extension.PDF -> {
-                    viewState.openFile(file)
+                    viewState.openFile(file, OpenMode.READ)
                 }
 
                 else -> viewState.onError(context.getString(R.string.error_unsupported_format))
@@ -316,23 +317,24 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         contextPosition = position
     }
 
-    fun fileClick(recent: Recent? = item) {
+    fun fileClick(recent: Recent? = item, openMode: OpenMode) {
+        showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE)
         recent?.let { item = recent }
         item?.let { recentItem ->
             if (recentItem.isLocal) {
                 recentItem.path?.let { path ->
                     Uri.parse(path)?.let { uri ->
                         if (uri.scheme != null) {
-                            openLocalFile(uri)
+                            openLocalFile(uri, openMode)
                         } else {
-                            openLocalFile(Uri.fromFile(File(path)))
+                            openLocalFile(Uri.fromFile(File(path)), openMode)
                         }
                         addRecent(recentItem)
                     }
                 }
             } else {
                 presenterScope.launch {
-                    if (checkCloudFile(recentItem)) {
+                    if (checkCloudFile(recentItem, openMode)) {
                         addRecent(recentItem)
                     }
                 }
@@ -340,7 +342,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    private suspend fun checkCloudFile(recent: Recent): Boolean {
+    private suspend fun checkCloudFile(recent: Recent, openMode: OpenMode): Boolean {
         recent.ownerId?.let { id ->
             accountDao.getAccount(id)?.let { recentAccount ->
                 if (!recentAccount.isOnline) {
@@ -349,11 +351,11 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                     }
                     return false
                 } else if (recentAccount.isWebDav) {
-                    openWebDavFile(recent)
+                    openWebDavFile(recent, openMode)
                 } else if (recentAccount.isDropbox || recentAccount.isGoogleDrive || recentAccount.isOneDrive) {
-                    openStorageFile(recent = recent, recentAccount)
+                    openStorageFile(recent = recent, recentAccount, openMode)
                 } else {
-                    openFile(recent)
+                    openFile(recent, openMode)
                 }
                 return true
             }
@@ -361,7 +363,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         return false
     }
 
-    private fun openStorageFile(recent: Recent, recentAccount: CloudAccount) {
+    private fun openStorageFile(recent: Recent, recentAccount: CloudAccount, openMode: OpenMode) {
         when {
             recentAccount.isOneDrive -> OneDriveFileProvider(context, OneDriveStorageHelper())
             recentAccount.isGoogleDrive -> GoogleDriveFileProvider(context, GoogleDriveStorageHelper())
@@ -382,7 +384,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                     { file: CloudFile? ->
                         viewState.onDialogClose()
                         file?.let { addRecent(it) }
-                        viewState.onOpenLocalFile(file)
+                        viewState.onOpenLocalFile(file, openMode)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }
         } ?: run {
@@ -391,19 +393,19 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     @Suppress("KotlinConstantConditions")
-    private fun openLocalFile(uri: Uri) {
+    private fun openLocalFile(uri: Uri, openMode: OpenMode) {
         val name = getName(context, uri)
         when (val ext = StringUtils.getExtension(StringUtils.getExtensionFromPath(name.lowercase(Locale.ROOT)))) {
             StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
                 if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && ext == StringUtils.Extension.FORM) {
                     viewState.onError(context.getString(R.string.error_unsupported_format))
                 } else {
-                    viewState.onOpenFile(OpenState.Docs(uri))
+                    viewState.onOpenFile(OpenState.Docs(uri, openMode))
                 }
             }
 
-            StringUtils.Extension.SHEET -> viewState.onOpenFile(OpenState.Cells(uri))
-            StringUtils.Extension.PRESENTATION -> viewState.onOpenFile(OpenState.Slide(uri))
+            StringUtils.Extension.SHEET -> viewState.onOpenFile(OpenState.Cells(uri, openMode))
+            StringUtils.Extension.PRESENTATION -> viewState.onOpenFile(OpenState.Slide(uri, openMode))
             StringUtils.Extension.PDF -> viewState.onOpenFile(OpenState.Pdf(uri))
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
                 viewState.onOpenFile(OpenState.Media(getImages(uri), false))
@@ -413,7 +415,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    private suspend fun openWebDavFile(recent: Recent) {
+    private suspend fun openWebDavFile(recent: Recent, openMode: OpenMode) {
         accountDao.getAccount(recent.ownerId ?: "")?.let {
             val provider = context.webDavFileProvider
             val cloudFile = CloudFile().apply {
@@ -438,7 +440,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                         .subscribe({ file ->
                             temp = file
                             viewState.onDialogClose()
-                            openLocalFile(Uri.parse(file.webUrl))
+                            openLocalFile(Uri.parse(file.webUrl), openMode)
                             getRecentFiles(checkFiles = false)
                         }, ::fetchError)
                     )
@@ -463,7 +465,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         // stub
     }
 
-    override fun getFileInfo() {
+    override fun getFileInfo(openMode: OpenMode) {
         // stub
     }
 

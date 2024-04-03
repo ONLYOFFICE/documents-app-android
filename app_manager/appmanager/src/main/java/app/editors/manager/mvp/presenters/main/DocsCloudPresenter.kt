@@ -133,7 +133,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     if (LocalContentTools.isOpenFormat(itemClicked.clearExt)) {
                         viewState.onConversionQuestion()
                     } else {
-                        getFileInfo()
+                        getFileInfo(OpenMode.READ)
                     }
                 }
             } else {
@@ -216,7 +216,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    override fun getFileInfo() {
+    override fun getFileInfo(openMode: OpenMode) {
         val item = itemClicked
         if (item != null) {
             fileProvider?.let { provider ->
@@ -224,7 +224,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     provider.fileInfo(item)
                         .doOnSubscribe { showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE) }
                         .doOnError(::fetchError)
-                        .subscribe { onFileClickAction(it, OpenMode.READ) }
+                        .subscribe { onFileClickAction(it, openMode) }
                 )
             }
         }
@@ -397,7 +397,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         super.openFolder(id, position)
     }
 
-    fun onEditContextClick() {
+    fun onContextOpenFile(openMode: OpenMode) {
+        showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE)
         val file = itemClicked
         if (file is CloudFile) {
             if (LocalContentTools.isOpenFormat(file.clearExt)) {
@@ -411,7 +412,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 file.webUrl = url
             }
             addRecent(file)
-            onFileClickAction(file, OpenMode.EDIT)
+            onFileClickAction(file, openMode)
         }
     }
 
@@ -633,23 +634,22 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
             title = file.name
             viewUrl = file.absolutePath
-        })
+        }, openMode)
     }
 
     private fun openDocumentServer(cloudFile: CloudFile, openMode: OpenMode) {
         with(fileProvider as CloudFileProvider) {
             val token = AccountUtils.getToken(context, context.accountOnline?.getAccountName().orEmpty())
             disposable.add(
-                openDocument(cloudFile, token).subscribe({ result ->
-                    viewState.onDialogClose()
-                    if (result.isPdf) {
-                        downloadTempFile(cloudFile, OpenMode.READ)
-                    } else if (result.info != null) {
-                        viewState.onOpenDocumentServer(cloudFile, result.info, openMode)
-                    }
-                }) { error ->
-                    fetchError(error)
-                }
+                openDocument(cloudFile, token)
+                    .subscribe({ result ->
+                        viewState.onDialogClose()
+                        if (result.isPdf) {
+                            downloadTempFile(cloudFile, openMode)
+                        } else if (result.info != null) {
+                            viewState.onOpenDocumentServer(cloudFile, result.info, openMode)
+                        }
+                    }, ::fetchError)
             )
         }
         addRecent(itemClicked as CloudFile)

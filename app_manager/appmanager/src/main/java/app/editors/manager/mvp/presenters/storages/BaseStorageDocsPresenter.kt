@@ -4,24 +4,25 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.WorkManager
-import app.documents.core.storage.recent.Recent
 import app.documents.core.network.common.contracts.ApiContract
-import app.editors.manager.R
-import app.editors.manager.app.App
-import app.editors.manager.managers.receivers.DownloadReceiver
-import app.editors.manager.managers.receivers.UploadReceiver
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.storage.recent.Recent
+import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.managers.receivers.DownloadReceiver
+import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.StringUtils
-import java.util.*
+import java.util.Date
 
 abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePresenter<V>(),
     UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
@@ -96,7 +97,7 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
                     addFile(file)
                     setPlaceholderType(PlaceholderViews.Type.NONE)
                     viewState.onDialogClose()
-                    viewState.onOpenLocalFile(file)
+                    viewState.onOpenLocalFile(file, OpenMode.EDIT)
                 }) { throwable: Throwable -> fetchError(throwable) })
             }
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)

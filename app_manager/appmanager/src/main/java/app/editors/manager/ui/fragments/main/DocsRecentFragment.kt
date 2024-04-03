@@ -38,6 +38,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
@@ -57,7 +58,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     private var clearItem: MenuItem? = null
 
     private val recentListener: (recent: Recent) -> Unit = { recent ->
-        Debounce.perform(1000L) { presenter.fileClick(recent) }
+        Debounce.perform(1000L) { presenter.fileClick(recent, OpenMode.EDIT) }
     }
 
     private val contextListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
@@ -214,7 +215,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    override fun openFile(response: CloudFile) {
+    override fun openFile(response: CloudFile, openMode: OpenMode) {
         val ext = response.fileExst
         if (StringUtils.isVideoSupport(ext) || StringUtils.isImage(ext)) {
             showMediaActivity(getExplorer(response), false) {
@@ -242,7 +243,8 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            is ExplorerContextItem.Edit -> presenter.fileClick()
+            is ExplorerContextItem.Edit -> presenter.fileClick(openMode = OpenMode.EDIT)
+            is ExplorerContextItem.Preview -> presenter.fileClick(openMode = OpenMode.READ_ONLY)
             is ExplorerContextItem.Delete -> presenter.deleteRecent()
             else -> super.onContextButtonClick(contextItem)
         }
@@ -276,6 +278,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     }
 
     override fun onOpenFile(state: OpenState) {
+        hideDialog()
         when (state) {
             is OpenState.Docs, is OpenState.Cells, is OpenState.Slide, is OpenState.Pdf -> {
                 LaunchActivityForResult(
@@ -291,7 +294,11 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                             }
                         }
                     },
-                    getEditorsIntent(state.uri, checkNotNull(state.type))
+                    getEditorsIntent(
+                        uri = state.uri,
+                        type = checkNotNull(state.type),
+                        openMode = state.openMode
+                    )
                 ).show()
             }
             is OpenState.Media -> {
