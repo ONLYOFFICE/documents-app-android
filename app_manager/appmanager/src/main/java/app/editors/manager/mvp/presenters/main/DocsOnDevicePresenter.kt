@@ -5,6 +5,8 @@ import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.Recent
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -13,7 +15,6 @@ import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.WebDavFileProvider
-import app.documents.core.storage.recent.Recent
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App

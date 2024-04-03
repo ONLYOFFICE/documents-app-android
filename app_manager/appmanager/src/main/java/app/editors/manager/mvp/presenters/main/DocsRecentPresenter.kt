@@ -137,7 +137,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     }
 
     private suspend fun openFile(recent: Recent, openMode: OpenMode) {
-        accountDao.getAccount(recent.ownerId ?: "")?.let { account ->
+        cloudDataSource.getAccount(recent.ownerId ?: "")?.let { account ->
             AccountUtils.getToken(
                 context,
                 Account(account.accountName, context.getString(lib.toolkit.base.R.string.account_type))

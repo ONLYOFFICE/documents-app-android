@@ -4,12 +4,12 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.WorkManager
+import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestCreate
-import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.receivers.DownloadReceiver
