@@ -135,8 +135,7 @@ class AccountContentProvider : ContentProvider() {
                 data.cloudAccount.id,
                 data.cloudAccount.accountName,
                 data.token,
-                data.password,
-                data.online
+                data.password
             )
             cloudDataSource?.updateAccount(data.cloudAccount) ?: -1
         }

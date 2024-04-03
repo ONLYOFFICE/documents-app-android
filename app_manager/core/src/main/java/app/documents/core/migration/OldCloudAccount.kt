@@ -16,8 +16,7 @@ import lib.toolkit.base.managers.utils.CryptUtils
 data class CloudAccountWithTokenAndPassword(
     val token: String?,
     val password: String?,
-    val cloudAccount: CloudAccount,
-    val online: Boolean
+    val cloudAccount: CloudAccount
 )
 
 @Entity(tableName = "CloudAccount")
@@ -88,8 +87,7 @@ fun OldCloudAccount.toCloudAccountWithTokenAndPassword():
             )
         ),
         token = getDecryptToken(),
-        password = getDecryptPassword(),
-        online = isOnline
+        password = getDecryptPassword()
     )
 }
 
