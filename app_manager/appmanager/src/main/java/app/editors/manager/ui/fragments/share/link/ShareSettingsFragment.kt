@@ -51,6 +51,7 @@ import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.openSendTextActivity
 import lib.toolkit.base.managers.utils.putArgs
 
 class ShareSettingsFragment : BaseDialogFragment() {
@@ -119,6 +120,12 @@ class ShareSettingsFragment : BaseDialogFragment() {
                     state = state,
                     onBack = ::dismiss,
                     isCreateLoading = isCreateLoading,
+                    onShareClick = { link ->
+                        requireContext().openSendTextActivity(
+                            getString(R.string.toolbar_menu_main_share),
+                            link
+                        )
+                    },
                     onCreate = viewModel::create
                 )
             }
@@ -132,6 +139,7 @@ private fun ShareSettingsScreen(
     isCreateLoading: State<Boolean>,
     state: ShareSettingsState,
     onCreate: () -> Unit,
+    onShareClick: (String) -> Unit,
     onBack: () -> Unit
 ) {
     AppScaffold(
@@ -168,7 +176,7 @@ private fun ShareSettingsScreen(
                                 internal = link.sharedTo.internal == true,
                                 expirationDate = link.sharedTo.expirationDate,
                                 isExpired = link.sharedTo.isExpired,
-                                onShareClick = { },
+                                onShareClick = { onShareClick.invoke(link.sharedTo.shareLink) },
                                 onClick = {}
                             )
                         }
@@ -237,7 +245,8 @@ private fun ShareSettingsScreenPreview() {
             ),
             isCreateLoading = remember { mutableStateOf(true) },
             onBack = {},
-            onCreate = {}
+            onCreate = {},
+            onShareClick = {}
         )
     }
 }
