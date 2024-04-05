@@ -17,6 +17,7 @@ import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.Invitation
+import app.documents.core.network.share.models.request.RequestCreateSharedLink
 import app.documents.core.network.share.models.request.RequestRoomShare
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -168,6 +169,17 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         val response = roomService.createAdditionalLink(roomId.orEmpty(), request)
         val body = response.body()
         return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
+    }
+
+    suspend fun getSharedLinks(id: String): List<ExternalLink> {
+        val response = roomService.getSharedLinks(id)
+        val body = response.body()
+        return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
+    }
+
+    suspend fun createSharedLink(fileId: String): ExternalLink {
+        val request = RequestCreateSharedLink(access = 2, internal = false, primary = false)
+        return roomService.createSharedLink(fileId, request).response
     }
 
     suspend fun getRoomUsers(id: String): List<Share> {

@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.math.round
 
 object TimeUtils {
 
@@ -138,6 +139,10 @@ object TimeUtils {
     }
 
     fun getDateTimeLeft(context: Context, date: String): String? {
+        if (date.isEmpty()) {
+            return null
+        }
+
         val time = DEFAULT_FORMAT.parse(date)?.time ?: 0
         val timeLeft = time - System.currentTimeMillis()
         val second = 1000
@@ -147,7 +152,7 @@ object TimeUtils {
 
         return when {
             timeLeft / hour > 23 -> {
-                val days = timeLeft / day
+                val days = round(timeLeft.toFloat() / day)
                 "$days ${context.resources.getQuantityString(R.plurals.days, days.toInt())}"
             }
             timeLeft / hour.toFloat() in 0.1f..24f -> {

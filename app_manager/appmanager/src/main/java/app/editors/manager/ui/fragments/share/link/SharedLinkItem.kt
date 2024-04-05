@@ -37,6 +37,7 @@ import lib.toolkit.base.managers.utils.TimeUtils
 
 @Composable
 fun SharedLinkItem(
+    modifier: Modifier = Modifier,
     access: Int,
     expirationDate: String?,
     internal: Boolean,
@@ -45,7 +46,7 @@ fun SharedLinkItem(
     onClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .height(dimensionResource(id = lib.toolkit.base.R.dimen.item_onehalf_line_height))
             .fillMaxWidth()
             .addIfNotNull(onClick) { clickable(onClick = it) },
@@ -79,8 +80,7 @@ fun SharedLinkItem(
                     stringResource(id = R.string.rooms_share_shared_to_anyone)
                 }
             )
-            val timeLeftString = TimeUtils.getDateTimeLeft(context, expirationDate.orEmpty())
-            if (isExpired || timeLeftString == null) {
+            if (isExpired) {
                 Text(
                     text = stringResource(id = R.string.rooms_info_link_expired),
                     style = MaterialTheme.typography.body2,
@@ -88,11 +88,20 @@ fun SharedLinkItem(
                 )
             } else {
                 if (expirationDate != null) {
-                    Text(
-                        text = stringResource(id = R.string.rooms_share_expires_after, timeLeftString) ?: stringResource(id = R.string.rooms_info_link_expired),
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.colorTextSecondary
-                    )
+                    val timeLeftString = TimeUtils.getDateTimeLeft(context, expirationDate)
+                    if (timeLeftString == null) {
+                        Text(
+                            text = stringResource(id = R.string.rooms_info_link_expired),
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.error
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(id = R.string.rooms_share_expires_after, timeLeftString) ?: stringResource(id = R.string.rooms_info_link_expired),
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.colorTextSecondary
+                        )
+                    }
                 } else {
                     Text(
                         text = stringResource(id = R.string.rooms_share_valid_unlimited),
