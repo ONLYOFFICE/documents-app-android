@@ -788,6 +788,23 @@
     <string name="rooms_info_save_button">Save</string>
     <string name="rooms_info_dont_save_button">Don\'t save</string>
 
+    <string name="rooms_share_shared_links">Shared links</string>
+    <string name="rooms_share_shared_link_title">Shared link</string>
+    <string name="rooms_share_shared_desc">Provide access to the document and set the permission levels.</string>
+    <string name="rooms_share_lifetime_hours_12">12 hours</string>
+    <string name="rooms_share_lifetime_days_1">1 day</string>
+    <string name="rooms_share_lifetime_days_7">7 day</string>
+    <string name="rooms_share_lifetime_unlimited">Unlimited</string>
+    <string name="rooms_share_lifetime_custom">Custom</string>
+    <string name="rooms_share_shared_to_docsspace_users">DoсSpace users only</string>
+    <string name="rooms_share_shared_to_anyone">Anyone with the link</string>
+    <string name="rooms_share_expires_after">Expires after %s</string>
+    <string name="rooms_share_valid_unlimited">The link is valid for unlimited</string>
+    <string name="rooms_share_access_rights">Access rights</string>
+    <string name="rooms_share_regenerate_link">Regenerate link</string>
+    <string name="rooms_share_general_header">General</string>
+    <string name="rooms_share_extend_life_time">Extend life time</string>
+
     <string name="rooms_filter_type_filling_forms">Filling form</string>
     <string name="rooms_filter_type_collaboration">Collaboration</string>
     <string name="rooms_filter_type_review">Review</string>

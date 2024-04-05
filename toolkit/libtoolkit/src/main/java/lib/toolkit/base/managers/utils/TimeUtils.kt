@@ -9,6 +9,7 @@ import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import lib.toolkit.base.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -134,6 +135,27 @@ object TimeUtils {
     fun parseDate(string: String?): Date? {
         val time = DEFAULT_FORMAT.parse(string ?: return null)?.time
         return if (time != null) Date(time) else null
+    }
+
+    fun getDateTimeLeft(context: Context, date: String): String? {
+        val time = DEFAULT_FORMAT.parse(date)?.time ?: 0
+        val timeLeft = time - System.currentTimeMillis()
+        val second = 1000
+        val minute = 60 * second
+        val hour = 60 * minute
+        val day = 24 * hour
+
+        return when {
+            timeLeft / hour > 23 -> {
+                val days = timeLeft / day
+                "$days ${context.resources.getQuantityString(R.plurals.days, days.toInt())}"
+            }
+            timeLeft / hour.toFloat() in 0.1f..24f -> {
+                val hours = (timeLeft / hour).coerceAtLeast(1)
+                "$hours ${context.resources.getQuantityString(R.plurals.hours, hours.toInt())}"
+            }
+            else -> null
+        }
     }
 
     fun showDateTimePickerDialog(context: Context, onDateTimeSet: (Date) -> Unit) {
