@@ -152,11 +152,11 @@ object TimeUtils {
 
         return when {
             timeLeft / hour > 23 -> {
-                val days = round(timeLeft.toFloat() / day)
+                val days = round(timeLeft.toFloat() / day).toInt()
                 "$days ${context.resources.getQuantityString(R.plurals.days, days.toInt())}"
             }
             timeLeft / hour.toFloat() in 0.1f..24f -> {
-                val hours = (timeLeft / hour).coerceAtLeast(1)
+                val hours = (timeLeft / hour).coerceAtLeast(1).toInt()
                 "$hours ${context.resources.getQuantityString(R.plurals.hours, hours.toInt())}"
             }
             else -> null

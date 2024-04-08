@@ -19,15 +19,17 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -35,6 +37,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.editors.manager.R
@@ -43,6 +50,9 @@ import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
 import app.editors.manager.viewModels.link.ShareSettingsEffect
 import app.editors.manager.viewModels.link.ShareSettingsState
 import app.editors.manager.viewModels.link.ShareSettingsViewModel
+import app.editors.manager.viewModels.link.SharedLinkSettingsViewModel
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppHeaderItem
@@ -53,6 +63,16 @@ import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.openSendTextActivity
 import lib.toolkit.base.managers.utils.putArgs
+import java.net.URLDecoder
+import java.net.URLEncoder
+
+sealed class Route(val name: String) {
+
+    data object SettingsScreen : Route("settings")
+    data object LinkSettingsScreen : Route("link_settings")
+    data object AccessScreen : Route("access")
+    data object LifeTimeScreen : Route("life_time")
+}
 
 class ShareSettingsFragment : BaseDialogFragment() {
 
@@ -85,61 +105,113 @@ class ShareSettingsFragment : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (view as? ComposeView)?.setContent {
             ManagerTheme {
-                val viewModel = viewModel {
-                    ShareSettingsViewModel(
-                        requireContext().roomProvider,
-                        arguments?.getString(KEY_FILE_ID).orEmpty()
-                    )
-                }
-                val isCreateLoading = remember { mutableStateOf(false) }
-                val state by viewModel.state.collectAsState()
-                val settingsEffect by viewModel.effect.collectAsState(null)
                 val snackBar = remember { UiUtils.getSnackBar(requireView()) }
+                val fileId = remember { arguments?.getString(KEY_FILE_ID).orEmpty() }
+                val viewModel = viewModel { ShareSettingsViewModel(requireContext().roomProvider, fileId) }
+                val navController = rememberNavController()
 
-                when (val effect = settingsEffect) {
-                    is ShareSettingsEffect.Copy -> {
-                        KeyboardUtils.setDataToClipboard(requireContext(), effect.link)
-                        snackBar.setText(R.string.rooms_info_create_link_complete).show()
+                navController.addOnDestinationChangedListener { _, destination, _ ->
+                    if (destination.route == Route.SettingsScreen.name) {
+                        viewModel.fetchLinks()
                     }
-                    is ShareSettingsEffect.Error -> {
-                        snackBar
-                            .setText(
-                                effect.code?.let { code ->
-                                    getString(R.string.errors_client_error) + code
-                                } ?: getString(R.string.errors_unknown_error)
-                            )
-                            .show()
-                    }
-                    is ShareSettingsEffect.OnCreate -> {
-                        isCreateLoading.value = effect.loading
-                    }
-                    else -> Unit
                 }
 
-                ShareSettingsScreen(
-                    state = state,
-                    onBack = ::dismiss,
-                    isCreateLoading = isCreateLoading,
-                    onShareClick = { link ->
-                        requireContext().openSendTextActivity(
-                            getString(R.string.toolbar_menu_main_share),
-                            link
+                NavHost(navController = navController, startDestination = Route.SettingsScreen.name) {
+                    composable(Route.SettingsScreen.name) {
+                        SharedLinkSettingsScreen(
+                            viewModel = viewModel,
+                            onSnackBar = { text -> snackBar.setText(text).show() },
+                            onShare = { link ->
+                                requireContext().openSendTextActivity(
+                                    getString(R.string.toolbar_menu_main_share),
+                                    link
+                                )
+                            },
+                            onLinkClick = { link ->
+                                val json = URLEncoder.encode(Json.encodeToString(link), Charsets.UTF_8.toString())
+                                navController.navigate("${Route.LinkSettingsScreen.name}/$json")
+                            },
+                            onBack = ::dismiss
                         )
-                    },
-                    onCreate = viewModel::create
-                )
+                    }
+                    composable(
+                        route = "${Route.LinkSettingsScreen.name}/{link}",
+                        arguments = listOf(
+                            navArgument("link") {
+                                type = NavType.StringType
+                            }
+                        )
+                    ) {
+                        val json = URLDecoder.decode(it.arguments?.getString("link"), Charsets.UTF_8.toString())
+                        SharedLinkSettingsScreen(
+                            viewModel = viewModel {
+                                SharedLinkSettingsViewModel(
+                                    externalLink = Json.decodeFromString<ExternalLink>(json),
+                                    roomProvider = requireContext().roomProvider,
+                                    fileId = fileId
+                                )
+                            },
+                            onBack = navController::popBackStack,
+                            onSnackBar = { text -> snackBar.setText(text).show() }
+                        )
+                    }
+                }
             }
         }
     }
 }
 
+@Composable
+private fun SharedLinkSettingsScreen(
+    viewModel: ShareSettingsViewModel,
+    onSnackBar: (String) -> Unit,
+    onShare: (String) -> Unit,
+    onLinkClick: (ExternalLink) -> Unit,
+    onBack: () -> Unit
+) {
+    val context = LocalContext.current
+    var isCreateLoading by remember { mutableStateOf(false) }
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(viewModel) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is ShareSettingsEffect.Copy -> {
+                    KeyboardUtils.setDataToClipboard(context, effect.link)
+                    onSnackBar(context.getString(R.string.rooms_info_create_link_complete))
+                }
+                is ShareSettingsEffect.Error -> {
+                    onSnackBar(
+                        effect.code?.let { code ->
+                            context.getString(R.string.errors_client_error) + code
+                        } ?: context.getString(R.string.errors_unknown_error)
+                    )
+                }
+                is ShareSettingsEffect.OnCreate -> {
+                    isCreateLoading = effect.loading
+                }
+            }
+        }
+    }
+
+    ShareSettingsScreen(
+        state = state,
+        onBack = onBack,
+        isCreateLoading = isCreateLoading,
+        onCreate = viewModel::create,
+        onShareClick = onShare,
+        onLinkClick = onLinkClick
+    )
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ShareSettingsScreen(
-    isCreateLoading: State<Boolean>,
+    isCreateLoading: Boolean,
     state: ShareSettingsState,
     onCreate: () -> Unit,
     onShareClick: (String) -> Unit,
+    onLinkClick: (ExternalLink) -> Unit,
     onBack: () -> Unit
 ) {
     AppScaffold(
@@ -177,10 +249,10 @@ private fun ShareSettingsScreen(
                                 expirationDate = link.sharedTo.expirationDate,
                                 isExpired = link.sharedTo.isExpired,
                                 onShareClick = { onShareClick.invoke(link.sharedTo.shareLink) },
-                                onClick = {}
+                                onClick = { onLinkClick(link) }
                             )
                         }
-                    } else if (!isCreateLoading.value) {
+                    } else if (!isCreateLoading) {
                         item {
                             AppTextButton(
                                 modifier = Modifier.padding(start = 8.dp),
@@ -189,7 +261,7 @@ private fun ShareSettingsScreen(
                             )
                         }
                     }
-                    if (isCreateLoading.value) {
+                    if (isCreateLoading) {
                         item {
                             Box(
                                 modifier = Modifier
@@ -209,7 +281,6 @@ private fun ShareSettingsScreen(
         }
     }
 }
-
 
 @Preview
 @Composable
@@ -243,10 +314,11 @@ private fun ShareSettingsScreenPreview() {
                     link.copy(sharedTo = link.sharedTo.copy(isExpired = true, internal = false))
                 )
             ),
-            isCreateLoading = remember { mutableStateOf(true) },
+            isCreateLoading = false,
             onBack = {},
             onCreate = {},
-            onShareClick = {}
+            onShareClick = {},
+            onLinkClick = {}
         )
     }
 }

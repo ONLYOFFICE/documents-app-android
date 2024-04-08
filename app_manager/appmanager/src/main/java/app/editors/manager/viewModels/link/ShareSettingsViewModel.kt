@@ -34,16 +34,12 @@ class ShareSettingsViewModel(private val roomProvider: RoomProvider, private val
     private val _effect: MutableSharedFlow<ShareSettingsEffect> = MutableSharedFlow(1)
     val effect: SharedFlow<ShareSettingsEffect> = _effect.asSharedFlow()
 
-    init {
-        fetchLinks()
-    }
-
     fun create() {
         viewModelScope.launch {
             try {
-                _effect.tryEmit(ShareSettingsEffect.OnCreate(true))
+                _effect.emit(ShareSettingsEffect.OnCreate(true))
                 val link = roomProvider.createSharedLink(fileId)
-                _effect.tryEmit(ShareSettingsEffect.OnCreate(false))
+                _effect.emit(ShareSettingsEffect.OnCreate(false))
 
                 val state = state.value
                 if (state is ShareSettingsState.Success) {
@@ -53,11 +49,13 @@ class ShareSettingsViewModel(private val roomProvider: RoomProvider, private val
                 _effect.emit(ShareSettingsEffect.Error(e.code()))
             } catch (_: Exception) {
                 _effect.emit(ShareSettingsEffect.Error())
+            } finally {
+                _effect.emit(ShareSettingsEffect.OnCreate(false))
             }
         }
     }
 
-    private fun fetchLinks() {
+    fun fetchLinks() {
         viewModelScope.launch {
             try {
                 _state.value = ShareSettingsState.Success(roomProvider.getSharedLinks(fileId))

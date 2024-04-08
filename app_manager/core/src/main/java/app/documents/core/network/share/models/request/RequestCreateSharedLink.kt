@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RequestCreateSharedLink(
-    val access: Int,
-    val internal: Boolean,
-    val primary: Boolean
+    val access: Int = 2,
+    val internal: Boolean = false,
+    val primary: Boolean = false,
 )

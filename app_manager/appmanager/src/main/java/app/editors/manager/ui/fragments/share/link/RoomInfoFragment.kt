@@ -220,16 +220,13 @@ class RoomInfoFragment : BaseDialogFragment() {
                         ) { backStackEntry ->
                             val userId = backStackEntry.arguments?.getString("userId").orEmpty()
                             val roomId = room?.id.orEmpty()
-                            UserAccessScreen(
-                                navController = navController,
-                                roomId = roomId,
+                            RoomAccessScreen(
                                 roomType = room?.roomType,
-                                userId = userId,
                                 currentAccess = backStackEntry.arguments?.getInt("access"),
                                 ownerOrAdmin = backStackEntry.arguments?.getBoolean("ownerOrAdmin") == true,
-                            ) { newAccess ->
-                                viewModel.setUserAccess(roomId, userId, newAccess)
-                            }
+                                onBack = navController::popBackStack,
+                                onSetUserAccess = { newAccess -> viewModel.setUserAccess(roomId, userId, newAccess) }
+                            )
                         }
                     }
                 }

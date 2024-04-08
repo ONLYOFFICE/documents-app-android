@@ -34,6 +34,7 @@ data class ExternalLinkSharedTo(
         result = 31 * result + isExpired.hashCode()
         result = 31 * result + primary.hashCode()
         result = 31 * result + requestToken.hashCode()
+        result = 31 * result + internal.hashCode()
         result = 31 * result + dateToLong().toInt()
         return result
     }
@@ -53,6 +54,7 @@ data class ExternalLinkSharedTo(
         if (isExpired != other.isExpired) return false
         if (primary != other.primary) return false
         if (requestToken != other.requestToken) return false
+        if (internal != other.internal) return false
         return dateToLong().toInt() == other.dateToLong().toInt()
     }
 }
