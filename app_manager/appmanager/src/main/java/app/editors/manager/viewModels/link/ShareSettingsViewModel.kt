@@ -40,6 +40,7 @@ class ShareSettingsViewModel(private val roomProvider: RoomProvider, private val
                 _effect.emit(ShareSettingsEffect.OnCreate(true))
                 val link = roomProvider.createSharedLink(fileId)
                 _effect.emit(ShareSettingsEffect.OnCreate(false))
+                _effect.emit(ShareSettingsEffect.Copy(link.sharedTo.shareLink))
 
                 val state = state.value
                 if (state is ShareSettingsState.Success) {
