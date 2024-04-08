@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -54,6 +53,7 @@ import app.editors.manager.viewModels.link.SharedLinkSettingsViewModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.views.AppCircularProgress
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppScaffold
@@ -278,7 +278,7 @@ private fun ShareSettingsScreen(
                                     .fillMaxWidth(),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator()
+                                AppCircularProgress()
                             }
                         }
                     }
