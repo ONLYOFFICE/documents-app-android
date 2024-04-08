@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.providers.RoomProvider
+import app.editors.manager.ui.fragments.share.link.SharedLinkLifeTime
+import app.editors.manager.ui.fragments.share.link.SharedLinkLifeTimeWithAmount
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -11,7 +13,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.utils.TimeUtils
 import retrofit2.HttpException
+import java.util.Calendar
+import java.util.TimeZone
 
 sealed class SharedLinkSettingsEffect {
 
@@ -22,11 +27,14 @@ sealed class SharedLinkSettingsEffect {
 
 class SharedLinkSettingsViewModel(
     externalLink: ExternalLink,
+    expired: String?,
     private val roomProvider: RoomProvider,
     private val fileId: String
 ) : ViewModel() {
 
-    private val _state: MutableStateFlow<ExternalLink> = MutableStateFlow(externalLink)
+    private val _state: MutableStateFlow<ExternalLink> = MutableStateFlow(
+        externalLink.copy(sharedTo = externalLink.sharedTo.copy(expirationDate = expired))
+    )
     val state: StateFlow<ExternalLink> = _state.asStateFlow()
 
     private val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -62,6 +70,27 @@ class SharedLinkSettingsViewModel(
             val link = state.value.copy(access = access)
             roomProvider.updateSharedLink(fileId, link)
             _state.value = link
+        }
+    }
+
+    fun setLifeTime(lifeTime: SharedLinkLifeTime) {
+        tryRequest {
+            var calendar: Calendar? = Calendar.getInstance()
+            calendar?.timeZone = TimeZone.getTimeZone("gmt")
+
+            when (lifeTime) {
+                SharedLinkLifeTime.Unlimited -> calendar = null
+                is SharedLinkLifeTime.Custom -> calendar?.time = lifeTime.date
+                is SharedLinkLifeTimeWithAmount -> calendar?.add(lifeTime.field, lifeTime.amount)
+            }
+
+            val link = state.value.copy(
+                sharedTo = state.value.sharedTo.copy(
+                    expirationDate = calendar?.let { TimeUtils.DEFAULT_GMT_FORMAT.format(calendar.time) }
+                )
+            )
+
+            _state.value = roomProvider.updateSharedLink(fileId, link)
         }
     }
 

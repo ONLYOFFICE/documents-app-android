@@ -72,7 +72,8 @@ fun SharedLinkSettingsScreen(viewModel: SharedLinkSettingsViewModel, onSnackBar:
                 onDeleteLink = viewModel::delete,
                 onRegenerateLink = viewModel::regenerate,
                 onBack = onBack,
-                onAccessClick = { navController.navigate(Route.AccessScreen.name) }
+                onAccessClick = { navController.navigate(Route.AccessScreen.name) },
+                onLifeTimeClick = { navController.navigate(Route.LifeTimeScreen.name) }
             )
         }
         composable(Route.AccessScreen.name) {
@@ -80,6 +81,12 @@ fun SharedLinkSettingsScreen(viewModel: SharedLinkSettingsViewModel, onSnackBar:
                 currentAccess = state.value.access,
                 onBack = navController::popBackStack,
                 onSetUserAccess = viewModel::setAccess
+            )
+        }
+        composable(Route.LifeTimeScreen.name) {
+            SharedLinkLifeTimeScreen(
+                onBack = navController::popBackStack,
+                onSetLifeTime = viewModel::setLifeTime
             )
         }
     }
@@ -93,6 +100,7 @@ private fun SharedLinkSettingsScreen(
     onSetInternal: (Boolean) -> Unit,
     onDeleteLink: () -> Unit,
     onRegenerateLink: () -> Unit,
+    onLifeTimeClick: () -> Unit,
     onBack: () -> Unit
 ) {
     AppScaffold(
@@ -131,8 +139,8 @@ private fun SharedLinkSettingsScreen(
                             TimeUtils.getCurrentLocale(context) ?: Locale.getDefault()
                         )
                         .format(it)
-                } ?: "-",
-                onClick = onAccessClick
+                } ?: stringResource(id = R.string.rooms_share_lifetime_unlimited),
+                onClick = onLifeTimeClick
             )
             AppHeaderItem(title = R.string.filter_title_type)
             AppSelectItem(
@@ -202,7 +210,8 @@ private fun ShareSettingsScreenPreview() {
             onBack = {},
             onRegenerateLink = {},
             onDeleteLink = {},
-            onAccessClick = {}
+            onAccessClick = {},
+            onLifeTimeClick = {}
         )
     }
 }

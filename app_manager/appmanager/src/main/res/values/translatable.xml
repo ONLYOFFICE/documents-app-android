@@ -803,7 +803,7 @@
     <string name="rooms_share_access_rights">Access rights</string>
     <string name="rooms_share_regenerate_link">Regenerate link</string>
     <string name="rooms_share_general_header">General</string>
-    <string name="rooms_share_extend_life_time">Extend life time</string>
+    <string name="rooms_share_link_life_time">Link life time</string>
 
     <string name="rooms_filter_type_filling_forms">Filling form</string>
     <string name="rooms_filter_type_collaboration">Collaboration</string>

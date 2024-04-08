@@ -97,7 +97,7 @@ fun SharedLinkItem(
                         )
                     } else {
                         Text(
-                            text = stringResource(id = R.string.rooms_share_expires_after, timeLeftString) ?: stringResource(id = R.string.rooms_info_link_expired),
+                            text = stringResource(id = R.string.rooms_share_expires_after, timeLeftString),
                             style = MaterialTheme.typography.body2,
                             color = MaterialTheme.colors.colorTextSecondary
                         )

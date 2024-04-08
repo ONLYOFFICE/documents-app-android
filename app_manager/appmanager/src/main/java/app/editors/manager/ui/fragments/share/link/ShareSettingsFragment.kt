@@ -118,7 +118,7 @@ class ShareSettingsFragment : BaseDialogFragment() {
 
                 NavHost(navController = navController, startDestination = Route.SettingsScreen.name) {
                     composable(Route.SettingsScreen.name) {
-                        SharedLinkSettingsScreen(
+                        MainScreen(
                             viewModel = viewModel,
                             onSnackBar = { text -> snackBar.setText(text).show() },
                             onShare = { link ->
@@ -129,16 +129,24 @@ class ShareSettingsFragment : BaseDialogFragment() {
                             },
                             onLinkClick = { link ->
                                 val json = URLEncoder.encode(Json.encodeToString(link), Charsets.UTF_8.toString())
-                                navController.navigate("${Route.LinkSettingsScreen.name}/$json")
+                                navController.navigate(
+                                    "${Route.LinkSettingsScreen.name}?" +
+                                            "link=$json&" +
+                                            "expired=${link.sharedTo.expirationDate}"
+                                )
                             },
                             onBack = ::dismiss
                         )
                     }
                     composable(
-                        route = "${Route.LinkSettingsScreen.name}/{link}",
+                        route = "${Route.LinkSettingsScreen.name}?link={link}&expired={expired}",
                         arguments = listOf(
                             navArgument("link") {
                                 type = NavType.StringType
+                            },
+                            navArgument("expired") {
+                                type = NavType.StringType
+                                nullable = true
                             }
                         )
                     ) {
@@ -147,6 +155,7 @@ class ShareSettingsFragment : BaseDialogFragment() {
                             viewModel = viewModel {
                                 SharedLinkSettingsViewModel(
                                     externalLink = Json.decodeFromString<ExternalLink>(json),
+                                    expired = it.arguments?.getString("expired"),
                                     roomProvider = requireContext().roomProvider,
                                     fileId = fileId
                                 )
@@ -162,7 +171,7 @@ class ShareSettingsFragment : BaseDialogFragment() {
 }
 
 @Composable
-private fun SharedLinkSettingsScreen(
+private fun MainScreen(
     viewModel: ShareSettingsViewModel,
     onSnackBar: (String) -> Unit,
     onShare: (String) -> Unit,

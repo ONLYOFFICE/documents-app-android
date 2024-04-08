@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import kotlin.math.round
 
 object TimeUtils {
@@ -34,14 +35,17 @@ object TimeUtils {
     val OUTPUT_PATTERN_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss"
     private val OUTPUT_PATTERN_DATE = "dd MMM yyyy"
     private val OUTPUT_PATTERN_TIME = "dd MMM yyyy HH:mm"
+    private val OUTPUT_PATTERN_DATE_TIME_OFFSET = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"
     private val OUTPUT_PATTERN_FILE = "yyyyMMdd_HHmmssSSS"
 
     /*
     * Objects
     * */
     val DEFAULT_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DEFAULT)
+    val DEFAULT_GMT_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DEFAULT).also { it.timeZone = TimeZone.getTimeZone("gmt") }
     private val OUTPUT_TIME_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_TIME)
     private val OUTPUT_DATE_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DATE)
+    private val OUTPUT_DATE_TIME_OFFSET_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DATE_TIME_OFFSET)
 
 
     /*
@@ -134,7 +138,7 @@ object TimeUtils {
     }
 
     fun parseDate(string: String?): Date? {
-        val time = DEFAULT_FORMAT.parse(string ?: return null)?.time
+        val time = OUTPUT_DATE_TIME_OFFSET_FORMAT.parse(string ?: return null)?.time
         return if (time != null) Date(time) else null
     }
 
@@ -143,8 +147,8 @@ object TimeUtils {
             return null
         }
 
-        val time = DEFAULT_FORMAT.parse(date)?.time ?: 0
-        val timeLeft = time - System.currentTimeMillis()
+        val time = OUTPUT_DATE_TIME_OFFSET_FORMAT.parse(date)?.time ?: 0
+        val timeLeft = (time - System.currentTimeMillis()).toFloat()
         val second = 1000
         val minute = 60 * second
         val hour = 60 * minute
@@ -152,11 +156,11 @@ object TimeUtils {
 
         return when {
             timeLeft / hour > 23 -> {
-                val days = round(timeLeft.toFloat() / day).toInt()
+                val days = round(timeLeft / day).toInt()
                 "$days ${context.resources.getQuantityString(R.plurals.days, days.toInt())}"
             }
             timeLeft / hour.toFloat() in 0.1f..24f -> {
-                val hours = (timeLeft / hour).coerceAtLeast(1).toInt()
+                val hours = round(timeLeft / hour).coerceAtLeast(1f).toInt()
                 "$hours ${context.resources.getQuantityString(R.plurals.hours, hours.toInt())}"
             }
             else -> null
