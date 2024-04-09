@@ -65,7 +65,7 @@ fun SharedLinkSettingsScreen(viewModel: SharedLinkSettingsViewModel, onSnackBar:
 
     NavHost(navController = navController, startDestination = Route.LinkSettingsScreen.name) {
         composable(Route.LinkSettingsScreen.name) {
-            SharedLinkSettingsScreen(
+            MainScreen(
                 loading = loading,
                 state = state,
                 onSetInternal = viewModel::setInternal,
@@ -93,7 +93,7 @@ fun SharedLinkSettingsScreen(viewModel: SharedLinkSettingsViewModel, onSnackBar:
 }
 
 @Composable
-private fun SharedLinkSettingsScreen(
+private fun MainScreen(
     loading: State<Boolean>,
     state: State<ExternalLink>,
     onAccessClick: () -> Unit,
@@ -203,7 +203,7 @@ private fun ShareSettingsScreenPreview() {
     )
 
     ManagerTheme {
-        SharedLinkSettingsScreen(
+        MainScreen(
             loading = remember { mutableStateOf(false) },
             state = remember { mutableStateOf(link) },
             onSetInternal = {},
