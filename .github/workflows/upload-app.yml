@@ -1,0 +1,46 @@
+name: Upload Release Files to AWS S3
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  upload-release:
+    name: "Upload Release Files to AWS S3"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Download APK file and Upload on AWS S3
+        id: upload-apk
+        run: |
+          GITHUB_TOKEN=${{ secrets.TOKEN }}
+          GITHUB_API_URL=https://api.github.com/repos/ONLYOFFICE/documents-app-android/releases/latest
+
+          release_info=$(curl -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" -s $GITHUB_API_URL)
+
+          apk_url=$(echo "$release_info" | jq -r '.assets[] | select(.name | test("onlyoffice-manager-.*\\.apk")) | .browser_download_url')
+
+          if [ ! -z "$apk_url" ]; then
+              curl -o onlyoffice-documents.apk -L "$apk_url"
+              aws s3 cp onlyoffice-documents.apk  ${{ secrets.AWS_BUCKET_URL }}/install/mobile/android/
+              echo "apk_uploaded=true" >> $GITHUB_OUTPUT
+          else
+              echo "Error: APK file not found in the release assets. Skipping upload to AWS S3."
+              echo "apk_uploaded=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Invalidate AWS CLOUDFRONT cache
+        if: ${{ steps.upload-apk.outputs.apk_uploaded == 'true' }}
+        run: |
+             aws cloudfront create-invalidation \
+                --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} \
+                --paths \
+                "/install/mobile/android/onlyoffice-documents.apk"
