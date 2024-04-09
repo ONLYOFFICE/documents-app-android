@@ -54,7 +54,7 @@ class SharedLinkSettingsViewModel(
     }
 
     fun regenerate() {
-
+        setLifeTime(SharedLinkLifeTime.Days7)
     }
 
     fun delete() {
