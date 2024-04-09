@@ -25,6 +25,7 @@ import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.viewModels.link.SharedLinkSettingsEffect
 import app.editors.manager.viewModels.link.SharedLinkSettingsViewModel
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppHeaderItem
@@ -46,7 +47,7 @@ fun SharedLinkSettingsScreen(viewModel: SharedLinkSettingsViewModel, onSnackBar:
     val state = viewModel.state.collectAsState()
     val loading = viewModel.loading.collectAsState()
 
-    LaunchedEffect(viewModel) {
+    LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 SharedLinkSettingsEffect.Close -> onBack()
@@ -79,13 +80,13 @@ fun SharedLinkSettingsScreen(viewModel: SharedLinkSettingsViewModel, onSnackBar:
         composable(Route.AccessScreen.name) {
             ShareAccessScreen(
                 currentAccess = state.value.access,
-                onBack = navController::popBackStack,
+                onBack = navController::popBackStackWhenResumed,
                 onSetUserAccess = viewModel::setAccess
             )
         }
         composable(Route.LifeTimeScreen.name) {
             SharedLinkLifeTimeScreen(
-                onBack = navController::popBackStack,
+                onBack = navController::popBackStackWhenResumed,
                 onSetLifeTime = viewModel::setLifeTime
             )
         }

@@ -53,6 +53,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.compose.ui.rememberWaitingDialog
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.TopAppBarAction
@@ -204,7 +205,7 @@ class RoomInfoFragment : BaseDialogFragment() {
                                 isCreate = backStackEntry.arguments?.getBoolean("create") == true,
                                 roomId = room?.id,
                                 roomType = room?.roomType,
-                                onBackListener = navController::popBackStack
+                                onBackListener = navController::popBackStackWhenResumed
                             )
                         }
                         composable(
@@ -224,7 +225,7 @@ class RoomInfoFragment : BaseDialogFragment() {
                                 roomType = room?.roomType,
                                 currentAccess = backStackEntry.arguments?.getInt("access"),
                                 ownerOrAdmin = backStackEntry.arguments?.getBoolean("ownerOrAdmin") == true,
-                                onBack = navController::popBackStack,
+                                onBack = navController::popBackStackWhenResumed,
                                 onSetUserAccess = { newAccess -> viewModel.setUserAccess(roomId, userId, newAccess) }
                             )
                         }

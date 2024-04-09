@@ -54,5 +54,6 @@ dependencies {
     implementation(Compose.ui)
     implementation(Compose.material)
     implementation(Compose.preview)
+    implementation(Compose.navigation)
     debugImplementation(Compose.tooling)
 }
