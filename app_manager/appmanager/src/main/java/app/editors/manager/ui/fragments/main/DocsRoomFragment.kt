@@ -127,10 +127,9 @@ class DocsRoomFragment : DocsCloudFragment() {
         val TAG = DocsRoomFragment::class.java.simpleName
         const val KEY_RESULT_ROOM_ID = "key_result_room_id"
 
-        fun newInstance(stringAccount: String, section: Int, rootPath: String): DocsCloudFragment {
+        fun newInstance(section: Int, rootPath: String): DocsCloudFragment {
             return DocsRoomFragment().apply {
-                arguments = Bundle(3).apply {
-                    putString(KEY_ACCOUNT, stringAccount)
+                arguments = Bundle(2).apply {
                     putString(KEY_PATH, rootPath)
                     putInt(KEY_SECTION, section)
                 }

@@ -11,12 +11,12 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.os.bundleOf
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResult
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
-import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
@@ -508,13 +508,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     companion object {
         const val KEY_SECTION = "section"
         const val KEY_PATH = "path"
-        const val KEY_ACCOUNT = "key_account"
         const val KEY_ROOM_CREATED_REQUEST = "key_room_created_result"
 
-        fun newInstance(stringAccount: String, section: Int, rootPath: String): DocsCloudFragment {
+        fun newInstance(section: Int, rootPath: String): DocsCloudFragment {
             return DocsCloudFragment().apply {
-                arguments = Bundle(3).apply {
-                    putString(KEY_ACCOUNT, stringAccount)
+                arguments = Bundle(2).apply {
                     putString(KEY_PATH, rootPath)
                     putInt(KEY_SECTION, section)
                 }

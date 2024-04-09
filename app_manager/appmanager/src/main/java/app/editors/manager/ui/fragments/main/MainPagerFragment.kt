@@ -31,7 +31,6 @@ import app.editors.manager.ui.views.pager.ViewPagerAdapter
 import app.editors.manager.ui.views.pager.ViewPagerAdapter.Container
 import lib.toolkit.base.managers.utils.UiUtils
 import moxy.presenter.InjectPresenter
-import moxy.presenter.ProvidePresenter
 
 interface IMainPagerFragment {
 
@@ -50,24 +49,13 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         private const val TAG_SCROLL = "TAG_SCROLL"
         private const val OFFSCREEN_COUNT = 5
 
-        const val KEY_FILE_DATA = "KEY_FILE_DATA"
-        const val KEY_ACCOUNT = "KEY_ACCOUNT"
-
-        fun newInstance(accountData: String, fileData: String?): MainPagerFragment {
-            return MainPagerFragment().apply {
-                arguments = Bundle(2).apply {
-                    putString(KEY_ACCOUNT, accountData)
-                    putString(KEY_FILE_DATA, fileData)
-                }
-            }
+        fun newInstance(): MainPagerFragment {
+            return MainPagerFragment()
         }
     }
 
     @InjectPresenter
     lateinit var presenter: MainPagerPresenter
-
-    @ProvidePresenter
-    fun providePresenter() = MainPagerPresenter(arguments?.getString(KEY_ACCOUNT))
 
     private var adapter: AdapterForPages? = null
     private var activity: IMainActivity? = null
@@ -190,7 +178,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         (activeFragment as? DocsBaseFragment)?.showActionDialog()
     }
 
-    override fun onRender(stringAccount: String, sections: List<Explorer>?) {
+    override fun onRender(sections: List<Explorer>?) {
         sections?.let {
             val fragments = sections.mapNotNull { section ->
                 when (val folderType = section.current.rootFolderType) {
@@ -200,13 +188,13 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                             fragment = when (folderType) {
                                 ApiContract.SectionType.CLOUD_TRASH,
                                 ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> {
-                                    DocsTrashFragment.newInstance(stringAccount, folderType, section.current.id)
+                                    DocsTrashFragment.newInstance(folderType, section.current.id)
                                 }
                                 ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> {
-                                    DocsRoomFragment.newInstance(stringAccount, folderType, section.current.id)
+                                    DocsRoomFragment.newInstance(folderType, section.current.id)
                                 }
                                 else -> {
-                                    DocsCloudFragment.newInstance(stringAccount, folderType, section.current.id)
+                                    DocsCloudFragment.newInstance(folderType, section.current.id)
                                 }
                             },
                             title = getTabTitle(folderType),
