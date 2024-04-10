@@ -12,13 +12,14 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
+import app.editors.manager.app.accountOnline
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.launch
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.presenterScope
 
@@ -95,7 +96,7 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
                     addFile(file)
                     setPlaceholderType(PlaceholderViews.Type.NONE)
                     viewState.onDialogClose()
-                    viewState.onOpenLocalFile(file)
+                    viewState.onOpenLocalFile(file, OpenMode.EDIT)
                 }) { throwable: Throwable -> fetchError(throwable) })
             }
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)

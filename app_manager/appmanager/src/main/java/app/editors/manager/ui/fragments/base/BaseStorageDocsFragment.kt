@@ -19,6 +19,7 @@ import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.FolderChooser
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -111,7 +112,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         }
     }
 
-    override fun onOpenLocalFile(file: CloudFile) {
+    override fun onOpenLocalFile(file: CloudFile, openMode: OpenMode) {
         val uri = Uri.parse(file.webUrl)
         when(StringUtils.getExtension(file.fileExst)) {
             StringUtils.Extension.IMAGE -> {
@@ -120,7 +121,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
                     // Stub
                 }
             }
-            else -> super.onOpenLocalFile(file)
+            else -> super.onOpenLocalFile(file, openMode)
         }
 
     }

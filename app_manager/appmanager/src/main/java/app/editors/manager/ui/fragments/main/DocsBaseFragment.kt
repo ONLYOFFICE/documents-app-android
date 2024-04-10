@@ -55,6 +55,7 @@ import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopup
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.CreateDocument
@@ -287,20 +288,21 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         show(requireContext())
     }
 
-    override fun onOpenLocalFile(file: CloudFile) {
+    override fun onOpenLocalFile(file: CloudFile, openMode: OpenMode) {
         val uri = Uri.parse(file.webUrl)
+
         when (getExtension(file.fileExst)) {
             StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
                 presenter.addRecent(file)
-                showEditors(uri, EditorsType.DOCS)
+                showEditors(uri, EditorsType.DOCS, openMode = openMode)
             }
             StringUtils.Extension.SHEET -> {
                 presenter.addRecent(file)
-                showEditors(uri, EditorsType.CELLS)
+                showEditors(uri, EditorsType.CELLS, openMode = openMode)
             }
             StringUtils.Extension.PRESENTATION -> {
                 presenter.addRecent(file)
-                showEditors(uri, EditorsType.PRESENTATION)
+                showEditors(uri, EditorsType.PRESENTATION, openMode = openMode)
             }
             StringUtils.Extension.PDF -> {
                 presenter.addRecent(file)
@@ -330,6 +332,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
+            ExplorerContextItem.Preview -> presenter.getFileInfo(OpenMode.READ_ONLY)
             ExplorerContextItem.Move -> presenter.moveCopyOperation(OperationsState.OperationType.MOVE)
             ExplorerContextItem.Copy -> presenter.moveCopyOperation(OperationsState.OperationType.COPY)
             ExplorerContextItem.Send -> presenter.sendCopy()
@@ -343,7 +346,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 cancelButton = getString(R.string.dialogs_common_cancel_button),
                 suffix = presenter.itemExtension
             )
-            is ExplorerContextItem.Edit -> presenter.getFileInfo()
+            is ExplorerContextItem.Edit -> presenter.getFileInfo(OpenMode.EDIT)
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
             else -> {}
         }
@@ -1040,18 +1043,18 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onOpenDocumentServer(file: CloudFile?, info: String?, isEdit: Boolean) {
+    override fun onOpenDocumentServer(file: CloudFile?, info: String?, openMode: OpenMode) {
         when (getExtension(file?.fileExst ?: "")) {
             StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
-                showEditors(null, EditorsType.DOCS, info, viewMode = !isEdit)
+                showEditors(null, EditorsType.DOCS, info, openMode)
             }
 
             StringUtils.Extension.SHEET -> {
-                showEditors(null, EditorsType.CELLS, info)
+                showEditors(null, EditorsType.CELLS, info, openMode)
             }
 
             StringUtils.Extension.PRESENTATION -> {
-                showEditors(null, EditorsType.PRESENTATION, info)
+                showEditors(null, EditorsType.PRESENTATION, info, openMode)
             }
 
             StringUtils.Extension.PDF -> {
@@ -1073,13 +1076,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun showEditors(uri: Uri?, type: EditorsType, info: String? = null, viewMode: Boolean = true) {
+    protected fun showEditors(uri: Uri?, type: EditorsType, info: String? = null, openMode: OpenMode = OpenMode.READ) {
         try {
             val intent = Intent().apply {
                 data = uri
                 info?.let { putExtra(EditorsContract.KEY_DOC_SERVER, info) }
                 putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-                putExtra(EditorsContract.KEY_VIEW_MODE, viewMode)
+                putExtra(EditorsContract.KEY_OPEN_MODE, openMode)
                 action = Intent.ACTION_VIEW
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
@@ -1107,11 +1110,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, viewMode: Boolean = false): Intent {
+    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, openMode: OpenMode = OpenMode.READ): Intent {
         val intent = Intent().apply {
             data = uri
             putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-            putExtra(EditorsContract.KEY_VIEW_MODE, viewMode)
+            putExtra(EditorsContract.KEY_OPEN_MODE, openMode)
             action = Intent.ACTION_VIEW
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }

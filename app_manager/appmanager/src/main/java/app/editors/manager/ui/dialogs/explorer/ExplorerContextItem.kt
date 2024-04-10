@@ -33,6 +33,11 @@ sealed class ExplorerContextItem(
         }
     }
 
+    object Preview : ExplorerContextItem(
+        icon = lib.toolkit.base.R.drawable.drawable_ic_visibility,
+        title = lib.editors.gbase.R.string.settings_draw_settings_preview
+    ), ExplorerContextBlockOrder.Common
+
     object Share : ExplorerContextItem(
         icon = lib.toolkit.base.R.drawable.ic_list_context_share,
         title = R.string.list_context_share

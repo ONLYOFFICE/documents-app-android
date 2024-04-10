@@ -27,6 +27,7 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
@@ -71,17 +72,17 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                     .subscribe({ file: CloudFile ->
                         addFile(file)
                         addRecent(file)
-                        openFile(file, true)
+                        openFile(file, OpenMode.EDIT)
                     }) { viewState.onError(context.getString(R.string.errors_create_local_file)) })
             }
         }
     }
 
-    override fun getFileInfo() {
+    override fun getFileInfo(openMode: OpenMode) {
         if (itemClicked != null && itemClicked is CloudFile) {
             val file = itemClicked as CloudFile
             addRecent(file)
-            openFile(file)
+            openFile(file, openMode)
         }
     }
 
@@ -265,7 +266,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
 
         addRecent(uri)
-        openFile(uri, ext)
+        openFile(uri, ext, OpenMode.READ)
     }
 
     fun import(uri: Uri) {
@@ -298,25 +299,25 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     }
 
-    private fun openFile(file: CloudFile, viewMode: Boolean = true) {
+    private fun openFile(file: CloudFile, openMode: OpenMode) {
         val path = file.id
         val uri = Uri.fromFile(File(path))
         val ext = StringUtils.getExtensionFromPath(file.id.lowercase())
-        openFile(uri, ext, viewMode)
+        openFile(uri, ext, openMode)
     }
 
     @Suppress("KotlinConstantConditions")
-    private fun openFile(uri: Uri, ext: String, viewMode: Boolean = true) {
+    private fun openFile(uri: Uri, ext: String, openMode: OpenMode) {
         when (val enumExt = StringUtils.getExtension(ext)) {
             StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> {
                 if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && enumExt == StringUtils.Extension.FORM) {
                     viewState.onError(context.getString(R.string.error_unsupported_format))
                 } else {
-                    viewState.onShowDocs(uri, viewMode)
+                    viewState.onShowDocs(uri, openMode)
                 }
             }
-            StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
-            StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
+            StringUtils.Extension.SHEET -> viewState.onShowCells(uri, openMode)
+            StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri, openMode)
             StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(
                 uri
@@ -448,13 +449,5 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         setSelection(false)
         setFiltering(false)
         updateViewsState()
-    }
-
-    fun getFileInfo(viewMode: Boolean) {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            addRecent(file)
-            openFile(file, viewMode)
-        }
     }
 }

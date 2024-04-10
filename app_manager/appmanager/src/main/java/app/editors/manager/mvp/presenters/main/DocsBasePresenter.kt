@@ -57,6 +57,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
@@ -1165,7 +1166,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 if (itemClicked is CloudFolder) {
                     openFolder(itemClicked.id, position)
                 } else if (itemClicked is CloudFile) {
-                    getFileInfo()
+                    getFileInfo(OpenMode.READ)
                 }
             }
         }
@@ -1639,7 +1640,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     abstract fun getNextList()
 
-    abstract fun getFileInfo()
+    abstract fun getFileInfo(openMode: OpenMode)
 
     abstract fun createDocs(title: String)
 

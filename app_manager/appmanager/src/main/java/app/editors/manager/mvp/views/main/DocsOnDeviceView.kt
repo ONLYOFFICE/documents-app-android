@@ -3,6 +3,7 @@ package app.editors.manager.mvp.views.main
 import android.net.Uri
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.mvp.presenters.main.OpenState
+import lib.toolkit.base.OpenMode
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
@@ -14,8 +15,8 @@ interface DocsOnDeviceView : DocsBaseView {
     fun onOpenMedia(state: OpenState.Media)
 
     //Open file
-    fun onShowDocs(uri: Uri, isNew: Boolean = false)
-    fun onShowCells(uri: Uri)
-    fun onShowSlides(uri: Uri)
+    fun onShowDocs(uri: Uri, openMode: OpenMode)
+    fun onShowCells(uri: Uri, openMode: OpenMode)
+    fun onShowSlides(uri: Uri, openMode: OpenMode)
     fun onShowPdf(uri: Uri)
 }

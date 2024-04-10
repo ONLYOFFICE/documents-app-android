@@ -23,9 +23,10 @@ import app.editors.manager.mvp.views.base.DocsGoogleDriveView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.launch
+import lib.toolkit.base.OpenMode
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
+import kotlinx.coroutines.launch
 import moxy.presenterScope
 
 class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>(),
@@ -128,7 +129,7 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
         }
     }
 
-    override fun getFileInfo() {
+    override fun getFileInfo(openMode: OpenMode) {
         downloadDisposable = fileProvider?.fileInfo(itemClicked)
             ?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())
@@ -137,7 +138,7 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
                     tempFile = file
                     viewState.onDialogClose()
                     file?.let { addRecent(it) }
-                    viewState.onOpenLocalFile(file)
+                    viewState.onOpenLocalFile(file, openMode)
                 }
             ) { throwable: Throwable -> fetchError(throwable) }
     }
