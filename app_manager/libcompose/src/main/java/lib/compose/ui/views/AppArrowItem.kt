@@ -21,7 +21,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import lib.compose.ui.theme.ManagerTheme
-import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.theme.colorTextTertiary
 import lib.toolkit.base.R
 
@@ -141,7 +140,7 @@ fun AppArrowItem(
     startIconTint: Color? = MaterialTheme.colors.primary,
     @DrawableRes endIcon: Int = R.drawable.ic_arrow_right,
     endIconTint: Color? = MaterialTheme.colors.colorTextTertiary,
-    optionTint: Color = MaterialTheme.colors.colorTextSecondary,
+    optionTint: Color = MaterialTheme.colors.colorTextTertiary,
     background: Color? = null,
     arrowVisible: Boolean = true,
     dividerVisible: Boolean = true,

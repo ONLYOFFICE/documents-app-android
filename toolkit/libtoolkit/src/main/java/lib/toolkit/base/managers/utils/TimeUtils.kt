@@ -9,11 +9,14 @@ import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
+import lib.toolkit.base.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
+import kotlin.math.round
 
 object TimeUtils {
 
@@ -32,14 +35,17 @@ object TimeUtils {
     val OUTPUT_PATTERN_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss"
     private val OUTPUT_PATTERN_DATE = "dd MMM yyyy"
     private val OUTPUT_PATTERN_TIME = "dd MMM yyyy HH:mm"
+    private val OUTPUT_PATTERN_DATE_TIME_OFFSET = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ"
     private val OUTPUT_PATTERN_FILE = "yyyyMMdd_HHmmssSSS"
 
     /*
     * Objects
     * */
     val DEFAULT_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DEFAULT)
+    val DEFAULT_GMT_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DEFAULT).also { it.timeZone = TimeZone.getTimeZone("gmt") }
     private val OUTPUT_TIME_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_TIME)
     private val OUTPUT_DATE_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DATE)
+    private val OUTPUT_DATE_TIME_OFFSET_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DATE_TIME_OFFSET)
 
 
     /*
@@ -132,8 +138,33 @@ object TimeUtils {
     }
 
     fun parseDate(string: String?): Date? {
-        val time = DEFAULT_FORMAT.parse(string ?: return null)?.time
+        val time = OUTPUT_DATE_TIME_OFFSET_FORMAT.parse(string ?: return null)?.time
         return if (time != null) Date(time) else null
+    }
+
+    fun getDateTimeLeft(context: Context, date: String): String? {
+        if (date.isEmpty()) {
+            return null
+        }
+
+        val time = OUTPUT_DATE_TIME_OFFSET_FORMAT.parse(date)?.time ?: 0
+        val timeLeft = (time - System.currentTimeMillis()).toFloat()
+        val second = 1000
+        val minute = 60 * second
+        val hour = 60 * minute
+        val day = 24 * hour
+
+        return when {
+            timeLeft / hour > 23 -> {
+                val days = round(timeLeft / day).toInt()
+                "$days ${context.resources.getQuantityString(R.plurals.days, days.toInt())}"
+            }
+            timeLeft / hour.toFloat() in 0.1f..24f -> {
+                val hours = round(timeLeft / hour).coerceAtLeast(1f).toInt()
+                "$hours ${context.resources.getQuantityString(R.plurals.hours, hours.toInt())}"
+            }
+            else -> null
+        }
     }
 
     fun showDateTimePickerDialog(context: Context, onDateTimeSet: (Date) -> Unit) {

@@ -12,6 +12,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResult
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -39,6 +40,7 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
+import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -205,7 +207,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            ExplorerContextItem.Share -> showShareActivity(cloudPresenter.itemClicked)
+            ExplorerContextItem.Share -> showShareFragment()
             ExplorerContextItem.Location -> cloudPresenter.openLocation()
             ExplorerContextItem.CreateRoom -> cloudPresenter.createRoomFromFolder()
             ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
@@ -223,6 +225,14 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
             else -> super.onContextButtonClick(contextItem)
+        }
+    }
+
+    private fun showShareFragment() {
+        if (requireContext().accountOnline.isDocSpace) {
+            ShareSettingsFragment.show(requireActivity(), cloudPresenter.itemClicked?.id)
+        } else {
+            showShareActivity(cloudPresenter.itemClicked)
         }
     }
 
