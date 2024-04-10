@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.compose.runtime.Immutable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -51,15 +50,9 @@ data class AddRoomData(
 sealed class ViewState {
     data object None : ViewState()
     data object Loading : ViewState()
-    class Success(val id: String? = null, val tagState: ChipViewState? = null) : ViewState()
+    class Success(val id: String? = null) : ViewState()
     class Error(val message: String) : ViewState()
 }
-
-@Immutable
-data class ChipViewState(
-    val tag: ChipData,
-    val isDelete: Boolean
-)
 
 class AddRoomViewModel(
     private val context: Application,
@@ -90,8 +83,7 @@ class AddRoomViewModel(
     val viewState: StateFlow<ViewState> = _viewState
 
 
-    private val addTags: MutableList<String> = mutableListOf()
-    private val deleteTags: MutableList<String> = mutableListOf()
+    private val roomTags: Set<String> = (roomInfo as? CloudFolder)?.tags?.toSet().orEmpty()
     private var isDeleteLogo: Boolean = false
 
     fun setType(roomType: Int) {
@@ -129,7 +121,7 @@ class AddRoomViewModel(
         }.await()
     }
 
-    fun createRoom(roomType: Int, name: String, image: Any?) {
+    fun createRoom(roomType: Int, name: String, image: Any?, tags: List<String>) {
         viewModelScope.launch {
             if (name.isEmpty()) {
                 _viewState.value = ViewState.Error(context.getString(R.string.rooms_error_name))
@@ -145,9 +137,7 @@ class AddRoomViewModel(
                         type = roomType
                     )
 
-                    if (addTags.isNotEmpty()) {
-                        roomProvider.addTags(id, addTags)
-                    }
+                    roomProvider.addTags(id, tags)
 
                     if (id.isNotEmpty() && image != null) {
                         roomProvider.setLogo(id, loadImage(image, false))
@@ -177,7 +167,7 @@ class AddRoomViewModel(
         }
     }
 
-    fun edit(name: String) {
+    fun edit(name: String, tags: List<String>) {
         viewModelScope.launch {
             if (name.isEmpty()) {
                 _viewState.value = ViewState.Error(context.getString(R.string.rooms_error_name))
@@ -191,13 +181,8 @@ class AddRoomViewModel(
                     val id = roomInfo?.id ?: ""
                     val isSuccess = roomProvider.renameRoom(id, name)
 
-                    if (addTags.isNotEmpty()) {
-                        roomProvider.addTags(id, addTags)
-                    }
-
-                    if (deleteTags.isNotEmpty()) {
-                        roomProvider.deleteTags(id, deleteTags)
-                    }
+                    roomProvider.deleteTags(id, (roomTags - tags.toSet()).toList())
+                    roomProvider.addTags(id, tags - roomTags)
 
                     when {
                         isDeleteLogo -> {
@@ -244,25 +229,5 @@ class AddRoomViewModel(
 
     fun saveData(name: String, tags: List<ChipData>) {
         _roomState.value = _roomState.value.copy(name = name, tags = tags.toMutableList())
-    }
-
-    fun createTag(tag: ChipData) {
-        if (!addTags.contains(tag.text)) {
-            addTags.add(tag.text)
-        }
-        if (deleteTags.contains(tag.text)) {
-            deleteTags.remove(tag.text)
-        }
-        _viewState.value = ViewState.Success(null, ChipViewState(tag, false))
-    }
-
-    fun deleteTag(tag: ChipData) {
-        if (!deleteTags.contains(tag.text)) {
-            deleteTags.add(tag.text)
-        }
-        if (addTags.contains(tag.text)) {
-            addTags.remove(tag.text)
-        }
-        _viewState.value = ViewState.Success(null, ChipViewState(tag, true))
     }
 }

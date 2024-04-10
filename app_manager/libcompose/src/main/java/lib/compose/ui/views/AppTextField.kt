@@ -3,6 +3,7 @@ package lib.compose.ui.views
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -175,32 +176,49 @@ fun AppPasswordTextField(
 }
 
 @Composable
-fun AppTextFieldListItem(state: MutableState<String?>, hint: String = "", isPassword: Boolean = false) {
-    Column {
+fun AppTextFieldListItem(
+    modifier: Modifier = Modifier,
+    state: MutableState<String>,
+    hint: String = "",
+    isPassword: Boolean = false,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    keyboardOptions: KeyboardOptions? = null,
+    focusManager: FocusManager? = null,
+    onDone: (() -> Unit)? = null
+) {
+    Column(
+        modifier = modifier.height(dimensionResource(id = R.dimen.item_one_line_height)),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
         Row(
-            modifier = Modifier
-                .height(dimensionResource(id = R.dimen.item_one_line_height))
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.weight(1f),
             verticalAlignment = Alignment.CenterVertically
         ) {
             var visible by remember { mutableStateOf(false) }
             var focused by remember { mutableStateOf(false) }
+
             BasicTextField(
                 modifier = Modifier
                     .onFocusChanged { focused = it.isFocused }
-                    .weight(1f)
-                    .padding(vertical = 12.dp),
-                value = state.value.orEmpty(),
+                    .weight(1f),
+                value = state.value,
                 onValueChange = { state.value = it },
                 singleLine = true,
                 cursorBrush = SolidColor(MaterialTheme.colors.primary),
                 textStyle = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.colorTextPrimary),
                 visualTransformation = if (!visible && isPassword)
                     PasswordVisualTransformation() else
-                    VisualTransformation.None
+                    VisualTransformation.None,
+                keyboardActions = KeyboardActions(
+                    onDone = { onDone?.invoke() },
+                    onNext = { if (state.value.isNotEmpty()) focusManager?.moveFocus(FocusDirection.Down) }
+                ),
+                keyboardOptions = keyboardOptions ?: KeyboardOptions(
+                    imeAction = onDone?.let { ImeAction.Done } ?: ImeAction.Next,
+                    keyboardType = keyboardType
+                ),
             ) { textField ->
-                if (state.value?.isEmpty() == true && !focused) {
+                if (state.value.isEmpty() && !focused) {
                     Text(
                         text = hint,
                         color = MaterialTheme.colors.colorTextSecondary
@@ -228,7 +246,7 @@ fun AppTextFieldListItem(state: MutableState<String?>, hint: String = "", isPass
                 }
             }
         }
-        AppDivider(startIndent = 16.dp)
+        AppDivider()
     }
 }
 
@@ -249,6 +267,26 @@ class SuffixTransformation(private val suffix: String) : VisualTransformation {
         }
 
         return TransformedText(result, textWithSuffixMapping)
+    }
+}
+
+@Preview
+@Composable
+private fun ListItemPreview() {
+    ManagerTheme {
+        Surface(
+            modifier = Modifier
+                .background(MaterialTheme.colors.background)
+                .padding(16.dp)
+        ) {
+            AppTextFieldListItem(
+                modifier = Modifier.height(56.dp),
+                state = remember { mutableStateOf("") },
+                hint = stringResource(id = R.string.text_hint_required),
+                isPassword = true
+            ) {
+            }
+        }
     }
 }
 

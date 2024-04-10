@@ -10,9 +10,20 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -132,19 +143,23 @@ fun AddRoomItem(
             }
     ) {
         Row(
-            Modifier
-                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 8.dp)
-                .widthIn()
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .widthIn(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                imageVector = ImageVector.vectorResource(id = icon), contentDescription = null, modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .size(40.dp)
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .size(40.dp),
+                imageVector = ImageVector.vectorResource(id = icon),
+                contentDescription = null
             )
             Column(
                 modifier = Modifier
-                    .padding(start = 8.dp)
-                    .weight(1f)
+                    .padding(start = 16.dp, end = 16.dp)
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     text = stringResource(id = title),
@@ -161,30 +176,24 @@ fun AddRoomItem(
             if (isSelect != null) {
                 if (isSelect) {
                     Icon(
+                        modifier = Modifier.padding(end = 16.dp),
                         imageVector = ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_done),
                         tint = MaterialTheme.colors.primary,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .weight(0.1f)
+                        contentDescription = null
                     )
-                } else {
-                    Spacer(modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .weight(0.1f))
                 }
             } else {
                 if (isClickable) {
                     Icon(
+                        modifier = Modifier.padding(end = 16.dp),
                         imageVector = ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_arrow_right),
                         contentDescription = null,
-                        modifier = Modifier.align(Alignment.CenterVertically),
                         tint = MaterialTheme.colors.colorTextTertiary
                     )
                 }
             }
         }
-        AppDivider(startIndent = 64.dp, modifier = Modifier.align(Alignment.BottomStart))
+        AppDivider(startIndent = 64.dp + 8.dp, modifier = Modifier.align(Alignment.BottomStart))
     }
 
 }
