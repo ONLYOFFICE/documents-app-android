@@ -11,4 +11,10 @@
   <string name="text_hint_required">Requis</string>
   <string name="export_send_copy">Envoyer une copie</string>
   <string name="dialogs_edit_forbidden_name">Nom incorrect</string>
+  <string name="common_accept">Accepter</string>
+  <string name="common_cancel">Annuler</string>
+  <string name="common_done">Terminé</string>
+  <string name="common_next">Suivant</string>
+  <string name="common_ok">OK</string>
+  <string name="common_previous">Précédent</string>
 </resources>

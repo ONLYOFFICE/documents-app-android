@@ -19,6 +19,12 @@
 
     <string name="export_send_copy">Send a copy</string>
 
+    <string name="common_accept">Accept</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_next">Next</string>
+    <string name="common_previous">Previous</string>
+    <string name="common_done">Done</string>
+    <string name="common_ok">OK</string>
 
     <plurals name="days">
         <item quantity="one">day</item>
