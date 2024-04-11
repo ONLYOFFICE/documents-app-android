@@ -1,7 +1,9 @@
 package app.editors.manager.ui.fragments.main
 
+import android.Manifest
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +31,7 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
 import app.editors.manager.ui.views.pager.ViewPagerAdapter.Container
+import lib.toolkit.base.managers.utils.RequestPermission
 import lib.toolkit.base.managers.utils.UiUtils
 import moxy.presenter.InjectPresenter
 
@@ -91,6 +94,15 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(savedInstanceState)
+        checkNotificationPermission()
+    }
+
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            RequestPermission(requireActivity().activityResultRegistry, {
+                // TODO set notification flag
+            }, Manifest.permission.POST_NOTIFICATIONS).request()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
