@@ -24,6 +24,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.CryptUtils
+import lib.toolkit.base.managers.utils.FileUtils
 import moxy.InjectViewState
 import moxy.presenterScope
 import javax.inject.Inject
@@ -67,6 +68,17 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         super.onFirstViewAttach()
         preferenceTool.setUserSession()
         preferenceTool.filter = Filter()
+        checkSdk()
+    }
+
+    private fun checkSdk() {
+        presenterScope.launch(Dispatchers.IO) {
+            if (preferenceTool.appVersion != BuildConfig.VERSION_NAME) {
+                context.externalCacheDir?.let(FileUtils::deletePath)
+                context.cacheDir?.let(FileUtils::deletePath)
+            }
+            preferenceTool.appVersion = BuildConfig.VERSION_NAME
+        }
     }
 
     override fun onDestroy() {

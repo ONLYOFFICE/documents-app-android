@@ -164,4 +164,10 @@ class PreferenceTool @Inject constructor(val context: Context) {
         set(value) {
             sharedPreferences.edit().putBoolean(KEY_SKIP_LOCALE_CONFIRMATION, value).apply()
         }
+
+     var appVersion: String
+         get() = sharedPreferences.getString("APP_VERSION", "") ?: ""
+         set(value) {
+             sharedPreferences.edit().putString("APP_VERSION", value).apply()
+         }
 }
