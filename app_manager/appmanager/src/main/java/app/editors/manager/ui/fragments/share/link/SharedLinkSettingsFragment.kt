@@ -33,8 +33,8 @@ import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppSelectItem
 import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
+import lib.compose.ui.views.NestedColumn
 import lib.compose.ui.views.VerticalSpacer
-import lib.editors.gbase.ui.fragments.base.NestedColumn
 import lib.toolkit.base.managers.utils.TimeUtils
 import java.text.DateFormat
 import java.text.SimpleDateFormat
