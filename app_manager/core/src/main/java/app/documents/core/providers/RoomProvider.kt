@@ -17,6 +17,7 @@ import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.Invitation
+import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
 import app.documents.core.network.share.models.request.RequestRoomShare
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -75,6 +76,18 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             RequestCreateRoom(
                 title = title,
                 roomType = type
+            )
+        )
+        return response.body()?.response?.id ?: ""
+    }
+
+    suspend fun createThirdPartyRoom(folderId: String, title: String, asNewFolder: Boolean): String {
+        val response = roomService.createThirdPartyRoom(
+            folderId,
+            RequestCreateThirdPartyRoom(
+                title = title,
+                roomType = ApiContract.RoomType.PUBLIC_ROOM,
+                createAsNewFolder = asNewFolder
             )
         )
         return response.body()?.response?.id ?: ""
