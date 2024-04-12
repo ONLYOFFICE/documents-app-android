@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -197,35 +198,33 @@ fun AppTextFieldListItem(
             var visible by remember { mutableStateOf(false) }
             var focused by remember { mutableStateOf(false) }
 
-            BasicTextField(
-                modifier = Modifier
-                    .onFocusChanged { focused = it.isFocused }
-                    .weight(1f),
-                value = state.value,
-                onValueChange = { state.value = it },
-                singleLine = true,
-                cursorBrush = SolidColor(MaterialTheme.colors.primary),
-                textStyle = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.colorTextPrimary),
-                visualTransformation = if (!visible && isPassword)
-                    PasswordVisualTransformation() else
-                    VisualTransformation.None,
-                keyboardActions = KeyboardActions(
-                    onDone = { onDone?.invoke() },
-                    onNext = { if (state.value.isNotEmpty()) focusManager?.moveFocus(FocusDirection.Down) }
-                ),
-                keyboardOptions = keyboardOptions ?: KeyboardOptions(
-                    imeAction = onDone?.let { ImeAction.Done } ?: ImeAction.Next,
-                    keyboardType = keyboardType
-                ),
-            ) { textField ->
-                if (state.value.isEmpty() && !focused) {
+            Box(modifier = Modifier.weight(1f)) {
+                if (state.value.isEmpty()) {
                     Text(
                         text = hint,
                         color = MaterialTheme.colors.colorTextSecondary
                     )
-                } else {
-                    textField()
                 }
+                BasicTextField(
+                    modifier = Modifier
+                        .onFocusChanged { focused = it.isFocused },
+                    value = state.value,
+                    onValueChange = { state.value = it },
+                    singleLine = true,
+                    cursorBrush = SolidColor(MaterialTheme.colors.primary),
+                    textStyle = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.colorTextPrimary),
+                    visualTransformation = if (!visible && isPassword)
+                        PasswordVisualTransformation() else
+                        VisualTransformation.None,
+                    keyboardActions = KeyboardActions(
+                        onDone = { onDone?.invoke() },
+                        onNext = { if (state.value.isNotEmpty()) focusManager?.moveFocus(FocusDirection.Down) }
+                    ),
+                    keyboardOptions = keyboardOptions ?: KeyboardOptions(
+                        imeAction = onDone?.let { ImeAction.Done } ?: ImeAction.Next,
+                        keyboardType = keyboardType
+                    )
+                )
             }
             if (isPassword) {
                 IconButton(
@@ -279,12 +278,21 @@ private fun ListItemPreview() {
                 .background(MaterialTheme.colors.background)
                 .padding(16.dp)
         ) {
-            AppTextFieldListItem(
-                modifier = Modifier.height(56.dp),
-                state = remember { mutableStateOf("") },
-                hint = stringResource(id = R.string.text_hint_required),
-                isPassword = true
-            ) {
+            Column {
+                AppTextFieldListItem(
+                    modifier = Modifier.height(56.dp),
+                    state = remember { mutableStateOf("") },
+                    hint = stringResource(id = R.string.text_hint_required),
+                    isPassword = true
+                ) {
+                }
+                AppTextFieldListItem(
+                    modifier = Modifier.height(56.dp),
+                    state = remember { mutableStateOf("") },
+                    hint = stringResource(id = R.string.text_hint_required),
+                    isPassword = true
+                ) {
+                }
             }
         }
     }
