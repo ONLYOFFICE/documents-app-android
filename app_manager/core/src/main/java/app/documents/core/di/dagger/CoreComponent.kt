@@ -6,6 +6,7 @@ import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.database.migration.MigrationHelper
 import app.documents.core.login.LoginComponent
+import app.documents.core.manager.ManagerRepository
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.share.ShareService
@@ -42,6 +43,7 @@ interface CoreComponent {
     val webDavService: WebDavService
     val roomService: RoomService
 
+    val managerRepository: ManagerRepository
     val cloudFileProvider: CloudFileProvider
     val localFileProvider: LocalFileProvider
     val roomProvider: RoomProvider

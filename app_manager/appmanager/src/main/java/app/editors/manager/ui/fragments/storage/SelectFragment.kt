@@ -6,27 +6,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import app.documents.core.network.common.models.Storage
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentStorageSelectBinding
-import app.editors.manager.managers.tools.PreferenceTool
-import app.documents.core.network.common.models.Storage
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.editors.manager.mvp.views.storage.SelectView
 import app.editors.manager.ui.adapters.StorageAdapter
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.ui.fragments.login.WebDavSignInFragment
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import moxy.presenter.InjectPresenter
-import javax.inject.Inject
 
 class SelectFragment : BaseAppFragment(), BaseAdapter.OnItemClickListener, SelectView {
 
     @InjectPresenter
     lateinit var presenter: SelectPresenter
-
-    @Inject
-    lateinit var preferenceTool: PreferenceTool
 
     private var storageAdapter: StorageAdapter? = null
     private var viewBinding: FragmentStorageSelectBinding? = null

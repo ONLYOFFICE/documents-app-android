@@ -1,6 +1,7 @@
 package app.editors.manager.managers.utils;
 
 import static app.documents.core.network.common.contracts.StorageContract.*;
+
 import androidx.annotation.Nullable;
 
 import java.io.Serializable;
@@ -30,6 +31,23 @@ public class StorageUtils {
         }
 
         return null;
+    }
+
+    public static @Nullable Integer getStorageTitle(@Nullable final String providerKey) {
+        if (providerKey == null) {
+            return null;
+        }
+
+        return switch (providerKey) {
+            case ApiContract.Storage.BOXNET -> R.string.storage_select_box;
+            case ApiContract.Storage.DROPBOX -> R.string.storage_select_drop_box;
+            case ApiContract.Storage.SHAREPOINT -> R.string.storage_select_share_point;
+            case ApiContract.Storage.GOOGLEDRIVE -> R.string.storage_select_google_drive;
+            case ApiContract.Storage.ONEDRIVE -> R.string.storage_select_one_drive;
+            case ApiContract.Storage.YANDEX -> R.string.storage_select_yandex;
+            case ApiContract.Storage.WEBDAV -> R.string.storage_select_web_dav;
+            default -> null;
+        };
     }
 
     public static Integer getStorageIcon(String providerKey) {

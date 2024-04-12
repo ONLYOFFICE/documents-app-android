@@ -7,6 +7,7 @@ import android.view.WindowManager
 import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
+import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.views.storage.ConnectView
 import app.editors.manager.ui.activities.main.MainActivity
@@ -51,12 +52,16 @@ class WebDavStorageFragment : WebDavBaseFragment(), ConnectView {
         viewBinding?.let {
             showWaitingDialog(getString(R.string.dialogs_wait_title_storage))
             connectPresenter.connectWebDav(
-                providerKey,
-                it.storageWebDavServerEdit.text.toString(),
-                it.storageWebDavLoginEdit.text.toString(),
-                it.storageWebDavPasswordEdit.text.toString(),
-                it.storageWebDavTitleEdit.text.toString(),
-                parentActivity?.isMySection == false
+                providerKey = providerKey,
+                url = it.storageWebDavServerEdit.text.toString(),
+                login = it.storageWebDavLoginEdit.text.toString(),
+                password = it.storageWebDavPasswordEdit.text.toString(),
+                isCorporate = parentActivity?.isMySection == false,
+                title = if (parentActivity?.isTitleRequired == true) {
+                    it.storageWebDavTitleEdit.text.toString()
+                } else {
+                    StorageUtils.getStorageTitle(providerKey)?.let(::getString)
+                }
             )
         }
     }
@@ -98,9 +103,14 @@ class WebDavStorageFragment : WebDavBaseFragment(), ConnectView {
         viewBinding?.let { binding ->
             binding.connectButton.setOnClickListener { onSaveClick() }
             binding.storageWebDavServerEdit.setText(url)
-            binding.storageWebDavTitleEdit.setText(title)
-            binding.storageWebDavTitleEdit.setActionDoneListener(this::onSaveClick)
             hideUrlLayout()
+
+            if (parentActivity?.isTitleRequired == true) {
+                binding.storageWebDavTitleEdit.setText(title)
+                binding.storageWebDavTitleEdit.setActionDoneListener(this::onSaveClick)
+            } else {
+                binding.storageWebDavTitleEdit.isVisible = false
+            }
         }
         super.initViews(isNextCloud)
     }

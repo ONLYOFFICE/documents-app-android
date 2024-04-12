@@ -40,6 +40,7 @@ class WebDavLoginActivity : BaseAppActivity(), WebDavInterface {
 
     private var viewBinding: ActivityWebDavLoginBinding? = null
     override val isMySection: Boolean = false
+    override val isTitleRequired: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
