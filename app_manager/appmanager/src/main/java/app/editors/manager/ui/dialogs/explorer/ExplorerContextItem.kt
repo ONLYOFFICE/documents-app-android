@@ -155,7 +155,7 @@ sealed class ExplorerContextItem(
 
             private fun getTitle(state: ExplorerContextState): Int = with(state) {
                 when {
-                    isStorageFolder -> R.string.list_context_delete_storage
+                    isStorageFolder && !section.isRoom -> R.string.list_context_delete_storage
                     section == ApiContract.Section.Recent -> R.string.list_context_delete_recent
                     section.isRoom && !section.isArchive && isRoot -> R.string.list_context_leave_room
                     else -> R.string.list_context_delete
