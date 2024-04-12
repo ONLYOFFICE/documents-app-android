@@ -7,9 +7,7 @@ import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.PathPart
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.providers.RoomProvider
@@ -53,12 +51,12 @@ sealed class ViewState {
 class AddRoomViewModel(
     private val context: Application,
     private val roomProvider: RoomProvider,
-    private val roomInfo: Item? = null,
+    private val roomInfo: CloudFolder? = null,
     private val isCopy: Boolean = false
 ) : AndroidViewModel(application = context) {
 
     private val _roomState: MutableStateFlow<AddRoomData> = MutableStateFlow(
-        if (roomInfo != null && roomInfo is CloudFolder) {
+        if (roomInfo != null) {
             AddRoomData(
                 type = if (roomInfo.roomType == -1) 2 else roomInfo.roomType,
                 name = roomInfo.title,
@@ -67,7 +65,12 @@ class AddRoomViewModel(
                     ApiContract.SCHEME_HTTPS + context.accountOnline?.portalUrl + roomInfo.logo!!.medium
                 } else {
                     null
-                }
+                },
+                storageState = StorageState(
+                    id = roomInfo.id,
+                    providerKey = roomInfo.providerKey,
+                    location = null
+                ).takeIf { roomInfo.providerItem }
             )
         } else {
             AddRoomData(2)
@@ -78,7 +81,7 @@ class AddRoomViewModel(
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.None)
     val viewState: StateFlow<ViewState> = _viewState
 
-    private val roomTags: Set<String> = (roomInfo as? CloudFolder)?.tags?.toSet().orEmpty()
+    private val roomTags: Set<String> = roomInfo?.tags?.toSet().orEmpty()
     private var isDeleteLogo: Boolean = false
 
     fun setType(roomType: Int) {
@@ -218,8 +221,8 @@ class AddRoomViewModel(
         if (!isCopy) return false
         //TODO check only the first operation???
         context.api.copyCoroutines(RequestBatchOperation(destFolderId = id).apply {
-            folderIds = if (roomInfo is CloudFolder) listOf(roomInfo.id) else emptyList()
-            fileIds = if (roomInfo is CloudFile) listOf(roomInfo.id) else emptyList()
+            folderIds = listOf(roomInfo.id)
+            fileIds = listOf(roomInfo.id)
         }).response.forEach { operation ->
             if (operation.finished) return false
             while (true) {

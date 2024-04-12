@@ -398,8 +398,9 @@ private fun MainScreen(
                     },
                     onChipDelete = { tags.remove(it) }
                 )
-                if (!isEdit && roomState.type == ApiContract.RoomType.PUBLIC_ROOM) {
+                if (roomState.type == ApiContract.RoomType.PUBLIC_ROOM) {
                     ThirdPartyBlock(
+                        isEdit = isEdit,
                         state = roomState.storageState,
                         roomName = name,
                         onLocationClick = { folderId ->
@@ -430,6 +431,7 @@ private fun MainScreen(
 
 @Composable
 fun ThirdPartyBlock(
+    isEdit: Boolean,
     state: StorageState?,
     roomName: State<String>,
     onLocationClick: (String) -> Unit,
@@ -439,36 +441,44 @@ fun ThirdPartyBlock(
     Column {
         val storageName = state?.providerKey?.let(StorageUtils::getStorageTitle)
 
-        AppSwitchItem(
-            title = R.string.room_create_thirdparty_storage_title,
-            checked = storageName != null,
-            onCheck = onStorageConnect
-        )
+        if (!isEdit) {
+            AppSwitchItem(
+                title = R.string.room_create_thirdparty_storage_title,
+                checked = storageName != null,
+                onCheck = onStorageConnect
+            )
+        }
 
         if (state != null && storageName != null) {
             AppArrowItem(
                 title = stringResource(id = R.string.room_create_thirdparty_storage),
                 option = stringResource(id = storageName),
+                enabled = !isEdit,
+                arrowVisible = !isEdit,
                 onClick = { onStorageConnect.invoke(true) }
             )
-            AppArrowItem(
-                title = stringResource(id = R.string.room_create_thirdparty_location),
-                option = if (state.createAsNewFolder) {
-                    state.location?.let { "$it${roomName.value}" } ?: "/${roomName.value}"
-                } else {
-                    state.location ?: stringResource(id = R.string.room_create_thirdparty_location_root)
-                },
-                onClick = { onLocationClick.invoke(state.id) }
-            )
-            AppSwitchItem(
-                title = R.string.room_create_thirdparty_new_folder,
-                checked = state.createAsNewFolder,
-                onCheck = onCreateNewFolder
-            )
-            AppDescriptionItem(
-                modifier = Modifier.padding(top = 8.dp),
-                text = R.string.room_create_thirdparty_desc
-            )
+            if (!isEdit) {
+                AppArrowItem(
+                    title = stringResource(id = R.string.room_create_thirdparty_location),
+                    option = if (state.createAsNewFolder) {
+                        state.location?.let { "$it${roomName.value}" } ?: "/${roomName.value}"
+                    } else {
+                        state.location ?: stringResource(id = R.string.room_create_thirdparty_location_root)
+                    },
+                    enabled = !isEdit,
+                    arrowVisible = !isEdit,
+                    onClick = { onLocationClick.invoke(state.id) }
+                )
+                AppSwitchItem(
+                    title = R.string.room_create_thirdparty_new_folder,
+                    checked = state.createAsNewFolder,
+                    onCheck = onCreateNewFolder
+                )
+                AppDescriptionItem(
+                    modifier = Modifier.padding(top = 8.dp),
+                    text = R.string.room_create_thirdparty_desc
+                )
+            }
         }
     }
 }
@@ -645,7 +655,7 @@ private fun TextFieldPreview() {
 private fun MainScreenPreview() {
     ManagerTheme {
         MainScreen(
-            isEdit = false,
+            isEdit = true,
             navController = rememberNavController(),
             viewState = ViewState.None,
             roomState = AddRoomData(
