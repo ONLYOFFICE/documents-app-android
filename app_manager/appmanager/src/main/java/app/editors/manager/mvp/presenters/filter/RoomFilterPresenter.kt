@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import moxy.presenterScope
+import org.json.JSONArray
 
 class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
 
@@ -41,7 +42,7 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
         if (filterType != RoomFilterType.None)
             put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filterType.filterVal.toString())
         if (filterTag != null)
-            put(ApiContract.Parameters.ARG_FILTER_BY_TAG_ROOM, filterTag?.value ?: "")
+            put(ApiContract.Parameters.ARG_FILTER_BY_TAG_ROOM, (JSONArray(arrayOf(filterTag?.value ?: "")).toString()))
     }
 
     init {
