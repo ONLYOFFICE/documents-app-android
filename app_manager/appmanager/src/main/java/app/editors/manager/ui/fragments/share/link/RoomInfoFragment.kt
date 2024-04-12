@@ -9,12 +9,9 @@ import androidx.activity.ComponentDialog
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -23,7 +20,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -57,6 +53,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.compose.ui.rememberWaitingDialog
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.TopAppBarAction
@@ -208,7 +205,7 @@ class RoomInfoFragment : BaseDialogFragment() {
                                 isCreate = backStackEntry.arguments?.getBoolean("create") == true,
                                 roomId = room?.id,
                                 roomType = room?.roomType,
-                                onBackListener = navController::popBackStack
+                                onBackListener = navController::popBackStackWhenResumed
                             )
                         }
                         composable(
@@ -224,30 +221,17 @@ class RoomInfoFragment : BaseDialogFragment() {
                         ) { backStackEntry ->
                             val userId = backStackEntry.arguments?.getString("userId").orEmpty()
                             val roomId = room?.id.orEmpty()
-                            UserAccessScreen(
-                                navController = navController,
-                                roomId = roomId,
+                            RoomAccessScreen(
                                 roomType = room?.roomType,
-                                userId = userId,
                                 currentAccess = backStackEntry.arguments?.getInt("access"),
                                 ownerOrAdmin = backStackEntry.arguments?.getBoolean("ownerOrAdmin") == true,
-                            ) { newAccess ->
-                                viewModel.setUserAccess(roomId, userId, newAccess)
-                            }
+                                onBack = navController::popBackStackWhenResumed,
+                                onSetUserAccess = { newAccess -> viewModel.setUserAccess(roomId, userId, newAccess) }
+                            )
                         }
                     }
                 }
             }
-        }
-    }
-
-    @Composable
-    private fun LoadingPlaceholder() {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
         }
     }
 

@@ -18,4 +18,11 @@
     <string name="text_hint_required">مطلوب</string>
 
     <string name="export_send_copy">أرسل نسخة</string>
+
+    <string name="common_accept">قبول</string>
+    <string name="common_cancel">إلغاء الأمر</string>
+    <string name="common_next">التالي</string>
+    <string name="common_previous">السابق</string>
+    <string name="common_done">تم</string>
+    <string name="common_ok">موافق</string>
 </resources>

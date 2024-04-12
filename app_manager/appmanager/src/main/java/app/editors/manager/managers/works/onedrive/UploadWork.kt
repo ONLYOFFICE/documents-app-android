@@ -4,15 +4,15 @@ import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.WorkerParameters
-import app.editors.manager.app.App
-import app.documents.core.network.storages.onedrive.api.OneDriveResponse
-import app.editors.manager.managers.works.UploadWork
-import app.documents.core.network.manager.models.explorer.CloudFile
-import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
-import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.documents.core.network.common.utils.OneDriveUtils
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.storages.onedrive.api.OneDriveResponse
 import app.documents.core.network.storages.onedrive.models.response.UploadResponse
+import app.editors.manager.app.App
 import app.editors.manager.app.oneDriveProvider
+import app.editors.manager.managers.works.BaseStorageUploadWork
+import app.editors.manager.managers.works.UploadWork
+import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import lib.toolkit.base.managers.utils.FileUtils
 import java.io.DataOutputStream
 import java.io.OutputStream
@@ -139,6 +139,9 @@ class UploadWork(context: Context, workerParameters: WorkerParameters): BaseStor
                 file?.delete()
             }
             throw e
+        } finally {
+            fileInputStream?.close()
+            outputStream?.close()
         }
     }
 

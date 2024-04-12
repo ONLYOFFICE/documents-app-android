@@ -24,8 +24,6 @@ import app.editors.manager.ui.fragments.operations.DocsWebDavOperationFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.getSerializable
 import javax.inject.Inject
 
@@ -110,7 +108,7 @@ class OperationActivity : BaseAppActivity(){
                         if (account.isPersonal()) {
                             showFragment(DocsCloudOperationFragment.newInstance(ApiContract.SectionType.CLOUD_USER), null)
                         } else {
-                            showFragment(DocsOperationSectionFragment.newInstance(Json.encodeToString(account)), null)
+                            showFragment(DocsOperationSectionFragment.newInstance(), null)
                         }
                     }
                 }

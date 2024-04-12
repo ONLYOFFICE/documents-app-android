@@ -11,4 +11,23 @@
   <string name="sizes_megabytes">Мб</string>
   <string name="sizes_gigabytes">Гб</string>
   <string name="sizes_terabytes">Тб</string>
+  <string name="common_accept">Принять</string>
+  <string name="common_cancel">Отмена</string>
+  <string name="common_next">Далее</string>
+  <string name="common_previous">Назад</string>
+  <string name="common_done">Готово</string>
+  <string name="common_ok">OK</string>
+
+  <plurals name="days">
+    <item quantity="one">день</item>
+    <item quantity="few">дня</item>
+    <item quantity="other">дней</item>
+  </plurals>
+
+  <plurals name="hours">
+    <item quantity="one">час</item>
+    <item quantity="few">часа</item>
+    <item quantity="other">часов</item>
+  </plurals>
+
 </resources>

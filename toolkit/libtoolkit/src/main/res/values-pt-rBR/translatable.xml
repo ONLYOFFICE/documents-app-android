@@ -11,4 +11,10 @@
   <string name="sizes_megabytes">MB</string>
   <string name="sizes_gigabytes">GB</string>
   <string name="sizes_terabytes">TB</string>
+  <string name="common_accept">Aceitar</string>
+  <string name="common_cancel">Cancelar</string>
+  <string name="common_done">Concluído</string>
+  <string name="common_next">Seguinte</string>
+  <string name="common_ok">OK</string>
+  <string name="common_previous">Anterior</string>
 </resources>

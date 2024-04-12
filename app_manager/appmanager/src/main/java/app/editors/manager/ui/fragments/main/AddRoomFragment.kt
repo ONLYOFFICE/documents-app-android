@@ -298,7 +298,7 @@ private fun MainScreen(
                     ) {
                         Text(
                             text = if (isEdit)
-                                stringResource(id = lib.editors.gbase.R.string.common_done) else
+                                stringResource(id = lib.toolkit.base.R.string.common_done) else
                                 stringResource(id = R.string.login_create_signin_create_button).capitalize(),
                         )
                     }

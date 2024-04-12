@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.managers.utils.ManagerUiUtils
@@ -17,22 +15,19 @@ import lib.compose.ui.views.AppSelectItem
 import lib.compose.ui.views.AppTopBar
 
 @Composable
-fun UserAccessScreen(
-    navController: NavController,
-    roomId: String,
+fun RoomAccessScreen(
     roomType: Int?,
-    userId: String,
     currentAccess: Int?,
     ownerOrAdmin: Boolean,
     onSetUserAccess: (newAccess: Int) -> Unit,
+    onBack: () -> Unit
 ) {
-
-    BackHandler(onBack = navController::popBackStack)
+    BackHandler(onBack = onBack)
 
     AppScaffold(
         useTablePaddings = false,
         topBar = {
-            AppTopBar(title = R.string.share_choose_access_title, backListener = navController::popBackStack)
+            AppTopBar(title = R.string.share_choose_access_title, backListener = onBack)
         }
     ) {
         Column {
@@ -44,7 +39,7 @@ fun UserAccessScreen(
                     startIconTint = if (access == 0) MaterialTheme.colors.error else MaterialTheme.colors.primary
                 ) {
                     onSetUserAccess.invoke(access)
-                    navController.popBackStack()
+                    onBack.invoke()
                 }
             }
         }
@@ -79,13 +74,11 @@ private fun getAccessList(ownerOrAdmin: Boolean, roomType: Int?) = when {
 @Composable
 private fun Preview() {
     ManagerTheme {
-        UserAccessScreen(
-            navController = rememberNavController(),
-            roomId = "",
+        RoomAccessScreen(
             roomType = ApiContract.RoomType.COLLABORATION_ROOM,
-            userId = "",
             currentAccess = 2,
-            ownerOrAdmin = false
+            ownerOrAdmin = false,
+            onSetUserAccess = {}
         ) {}
     }
 }

@@ -28,7 +28,7 @@ import moxy.presenterScope
 import java.util.Collections
 
 @InjectViewState
-class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainPagerView>() {
+class MainPagerPresenter : BasePresenter<MainPagerView>() {
 
     init {
         App.getApp().appComponent.inject(this)
@@ -37,6 +37,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     private var disposable: Disposable? = null
 
     private val api: ManagerService = context.api
+    private val account = context.accountOnline
 
     override fun onDestroy() {
         super.onDestroy()
@@ -51,10 +52,10 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             } else {
                 sections
             }
-            accountJson?.let { checkFileData(Json.decodeFromString(accountJson), fileData) }
+//            accountJson?.let { checkFileData(Json.decodeFromString(accountJson), fileData) }
             withContext(Dispatchers.Main) {
                 viewState.onFinishRequest()
-                viewState.onRender(accountJson!!, data)
+                viewState.onRender(data)
             }
         }
     }

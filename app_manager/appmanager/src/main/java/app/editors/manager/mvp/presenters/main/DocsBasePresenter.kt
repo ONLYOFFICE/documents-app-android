@@ -588,18 +588,16 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     open fun download(downloadTo: Uri) {
-        viewState.checkNotificationPermission {
-            if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
-                viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
-            } else if (modelExplorerStack.countSelectedItems > 0) {
-                downloadSelected(downloadTo)
-            } else {
-                itemClicked?.let { item ->
+        if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
+            viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
+        } else if (modelExplorerStack.countSelectedItems > 0) {
+            downloadSelected(downloadTo)
+        } else {
+            itemClicked?.let { item ->
 
-                    when (item) {
-                        is CloudFolder -> bulkDownload(null, listOf(item), downloadTo)
-                        is CloudFile -> startDownloadWork(downloadTo, item.id, item.viewUrl, null)
-                    }
+                when (item) {
+                    is CloudFolder -> bulkDownload(null, listOf(item), downloadTo)
+                    is CloudFile -> startDownloadWork(downloadTo, item.id, item.viewUrl, null)
                 }
             }
         }
@@ -1053,6 +1051,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 updateViewsState()
                 return true
             }
+
             isFilteringMode -> {
                 setFiltering(false)
                 if (modelExplorerStack.isStackFilter) {
@@ -1061,6 +1060,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 updateViewsState()
                 return true
             }
+
             else -> {
                 popBackStack()
                 updateViewsState()
@@ -1464,12 +1464,15 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                         viewState.onError(context.getString(R.string.errors_client_forbidden))
                     }
                 }
+
                 ApiContract.HttpCodes.CLIENT_NOT_FOUND -> {
                     viewState.onError(context.getString(R.string.errors_client_host_not_found))
                 }
+
                 ApiContract.HttpCodes.CLIENT_PAYMENT_REQUIRED -> {
                     viewState.onError(context.getString(R.string.errors_client_payment_required))
                 }
+
                 else -> viewState.onError(context.getString(R.string.errors_client_error) + responseCode)
             }
         } else if (responseCode >= ApiContract.HttpCodes.SERVER_ERROR) {
@@ -1506,9 +1509,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             is UnknownHostException -> {
                 viewState.onError(context.getString(R.string.errors_unknown_host_error))
             }
+
             is SSLHandshakeException -> {
                 viewState.onError(context.getString(R.string.errors_ssl_error))
             }
+
             else -> {
                 throwable?.let {
                     addCrash(BasePresenter::class.java.simpleName + " - method - onFailureHandle()")

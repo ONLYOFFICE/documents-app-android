@@ -12,4 +12,10 @@
     <string name="sizes_megabytes">MB</string>
     <string name="sizes_gigabytes">GB</string>
     <string name="sizes_terabytes">TB</string>
+    <string name="common_accept">Přijmout</string>
+    <string name="common_cancel">Zrušit</string>
+    <string name="common_next">Další</string>
+    <string name="common_previous">Předchozí</string>
+    <string name="common_done">Hotovo</string>
+    <string name="common_ok">OK</string>
 </resources>

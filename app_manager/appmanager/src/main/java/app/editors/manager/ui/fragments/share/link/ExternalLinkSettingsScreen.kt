@@ -155,7 +155,7 @@ private fun MainScreen(
                     actions = {
                         AppTextButton(
                             enabled = link.title.isNotEmpty(),
-                            title = lib.editors.gbase.R.string.common_done,
+                            title = lib.toolkit.base.R.string.common_done,
                             onClick = onDoneClick
                         )
                     }

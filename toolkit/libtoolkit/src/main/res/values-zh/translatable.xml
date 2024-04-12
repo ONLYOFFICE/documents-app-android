@@ -12,4 +12,10 @@
     <string name="sizes_megabytes">MB</string>
     <string name="sizes_gigabytes">GB</string>
     <string name="sizes_terabytes">TB</string>
+    <string name="common_accept">接受</string>
+    <string name="common_cancel">取消</string>
+    <string name="common_next">下一个</string>
+    <string name="common_previous">上一个</string>
+    <string name="common_done">完成</string>
+    <string name="common_ok">确定</string>
 </resources>
