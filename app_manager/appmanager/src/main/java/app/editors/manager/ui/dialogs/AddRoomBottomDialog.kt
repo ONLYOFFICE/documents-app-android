@@ -144,7 +144,7 @@ fun AddRoomItem(
     ) {
         Row(
             modifier = Modifier
-                .padding(vertical = 16.dp)
+                .padding(vertical = 8.dp)
                 .widthIn(),
             verticalAlignment = Alignment.CenterVertically
         ) {

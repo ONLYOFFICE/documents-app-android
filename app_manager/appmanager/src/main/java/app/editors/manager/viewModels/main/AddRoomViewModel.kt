@@ -5,13 +5,12 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.PathPart
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
@@ -23,28 +22,25 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.compose.ui.views.ChipData
 
 
-@Suppress("UNCHECKED_CAST")
-class AddRoomViewModelFactory(
-    private val application: Application,
-    private val roomProvider: RoomProvider,
-    private val roomInfo: Item? = null,
-    private val isCopy: Boolean = false
-) : ViewModelProvider.AndroidViewModelFactory(application) {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return AddRoomViewModel(application, roomProvider, roomInfo, isCopy) as T
-    }
-}
+data class StorageState(
+    val id: String,
+    val providerKey: String,
+    val location: String?,
+    val createAsNewFolder: Boolean = false
+)
 
 data class AddRoomData(
     val type: Int,
     val name: String = "",
     val tags: MutableList<ChipData> = mutableListOf(),
-    val imageUri: Any? = null
+    val imageUri: Any? = null,
+    val storageState: StorageState? = null
 )
 
 sealed class ViewState {
@@ -81,7 +77,6 @@ class AddRoomViewModel(
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.None)
     val viewState: StateFlow<ViewState> = _viewState
-
 
     private val roomTags: Set<String> = (roomInfo as? CloudFolder)?.tags?.toSet().orEmpty()
     private var isDeleteLogo: Boolean = false
@@ -132,10 +127,20 @@ class AddRoomViewModel(
             _viewState.value = ViewState.Loading
             withContext(Dispatchers.IO) {
                 try {
-                    val id = roomProvider.createRoom(
-                        title = name,
-                        type = roomType
-                    )
+                    val id = with(roomState.value.storageState) {
+                        if (this != null) {
+                            roomProvider.createThirdPartyRoom(
+                                folderId = id,
+                                title = name,
+                                asNewFolder = createAsNewFolder
+                            )
+                        } else {
+                            roomProvider.createRoom(
+                                title = name,
+                                type = roomType
+                            )
+                        }
+                    }
 
                     roomProvider.addTags(id, tags)
 
@@ -229,5 +234,52 @@ class AddRoomViewModel(
 
     fun saveData(name: String, tags: List<ChipData>) {
         _roomState.value = _roomState.value.copy(name = name, tags = tags.toMutableList())
+    }
+
+    fun connectStorage(folder: CloudFolder) {
+        if (folder.providerKey.isEmpty()) {
+            _viewState.value = ViewState.Error(context.getString(R.string.errors_unknown_error))
+            return
+        }
+
+        _roomState.update {
+            it.copy(
+                storageState = StorageState(
+                    id = folder.id,
+                    providerKey = folder.providerKey,
+                    location = null,
+                    createAsNewFolder = true
+                )
+            )
+        }
+    }
+
+    fun disconnectStorage() {
+        _roomState.update {
+            it.copy(storageState = null)
+        }
+    }
+
+    fun setCreateNewFolder(value: Boolean) {
+        _roomState.update {
+            it.copy(
+                storageState = it.storageState?.copy(createAsNewFolder = value)
+            )
+        }
+    }
+
+    fun setStorageLocation(pathParts: List<PathPart>) {
+        _roomState.update {
+            it.copy(
+                storageState = it.storageState?.copy(
+                    id = pathParts.last().id,
+                    location = if (pathParts.size > 1) {
+                        pathParts.toMutableList()
+                            .also { it[0] = PathPart("", "") }
+                            .joinToString("") { "${it.title}/" }
+                    } else null
+                )
+            )
+        }
     }
 }

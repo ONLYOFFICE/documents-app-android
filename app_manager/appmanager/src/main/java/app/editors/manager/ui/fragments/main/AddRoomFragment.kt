@@ -4,6 +4,7 @@ package app.editors.manager.ui.fragments.main
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import android.os.Bundle
@@ -16,10 +17,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,8 +43,8 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -54,8 +52,6 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -73,17 +69,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.managers.utils.StorageUtils
+import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.AddRoomItem
 import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.viewModels.main.AddRoomData
 import app.editors.manager.viewModels.main.AddRoomViewModel
-import app.editors.manager.viewModels.main.AddRoomViewModelFactory
+import app.editors.manager.viewModels.main.StorageState
 import app.editors.manager.viewModels.main.ViewState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -92,7 +92,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.AppArrowItem
+import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppScaffold
+import lib.compose.ui.views.AppSwitchItem
 import lib.compose.ui.views.AppTextFieldListItem
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.ChipData
@@ -106,11 +108,10 @@ import lib.toolkit.base.managers.utils.capitalize
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
 import lib.toolkit.base.ui.fragments.base.BaseFragment
-import lib.toolkit.base.ui.fragments.base.ComposeComponent
 import java.io.File
 
 private enum class Navigation(val route: String) {
-    Main("MainScreen"), Select("SelectScreen")
+    Main("MainScreen"), Select("SelectScreen"), Folder("FolderScreen")
 }
 
 class AddRoomFragment : BaseFragment() {
@@ -170,24 +171,26 @@ class AddRoomFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (view as ComposeView).setContent {
-
             navController = rememberNavController()
-
-            val roomType = remember {
-                arguments?.getInt(TAG_ROOM_TYPE)
-            }
-
-            val viewModel =
-                viewModel<AddRoomViewModel>(
-                    factory = AddRoomViewModelFactory(
-                        application = requireActivity().application,
-                        roomProvider = requireContext().roomProvider,
-                        roomInfo = arguments?.getSerializableExt(TAG_ROOM_INFO),
-                        isCopy = arguments?.getBoolean(TAG_COPY) ?: false
-                    )
+            val roomType = remember { arguments?.getInt(TAG_ROOM_TYPE) }
+            val viewModel = viewModel {
+                AddRoomViewModel(
+                    context = requireActivity().application,
+                    roomProvider = requireContext().roomProvider,
+                    roomInfo = arguments?.getSerializableExt(TAG_ROOM_INFO),
+                    isCopy = arguments?.getBoolean(TAG_COPY) ?: false
                 )
+            }
             val roomState = viewModel.roomState.collectAsState()
             val viewState = viewModel.viewState.collectAsState()
+            val storageActivityLauncher =
+                rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+                    if (it.resultCode == Activity.RESULT_OK) {
+                        it.data?.getSerializableExt<CloudFolder>(StorageActivity.TAG_RESULT)?.let { folder ->
+                            viewModel.connectStorage(folder)
+                        }
+                    }
+                }
 
             ManagerTheme {
                 NavHost(navController = navController, startDestination = "${Navigation.Main.route}/{roomType}") {
@@ -202,9 +205,11 @@ class AddRoomFragment : BaseFragment() {
                             navController = navController,
                             viewState = viewState.value,
                             roomState = roomState.value,
-                            saveData = { name, tags ->
-                                viewModel.saveData(name, tags)
-                            },
+                            saveData = viewModel::saveData,
+                            imageCallBack = viewModel::setImageUri,
+                            onBackPressed = ::onBackPressed,
+                            onCreateNewFolder = viewModel::setCreateNewFolder,
+                            onLocationClick = { navController.navigate("${Navigation.Folder.route}/$it") },
                             create = { type1, name, image, tags ->
                                 if (isEdit) {
                                     viewModel.edit(name, tags)
@@ -212,26 +217,45 @@ class AddRoomFragment : BaseFragment() {
                                     viewModel.createRoom(type1, name, image, tags)
                                 }
                             },
-                            imageCallBack = { imageUri ->
-                                viewModel.setImageUri(imageUri)
-                            },
-                            onBackPressed = ::onBackPressed,
                             created = { id ->
                                 requireActivity().supportFragmentManager.setFragmentResult(
                                     TAG_RESULT,
                                     Bundle(1).apply { putString("id", id) })
                                 onBackPressed()
-                            })
+                            },
+                            onStorageConnect = { isConnect ->
+                                if (isConnect) {
+                                    storageActivityLauncher.launch(
+                                        StorageActivity.getIntent(
+                                            context = requireContext(),
+                                            isMySection = true,
+                                            isTitleRequired = false
+                                        )
+                                    )
+                                } else {
+                                    viewModel.disconnectStorage()
+                                }
+                            }
+                        )
                     }
                     composable(
-                        "${Navigation.Select.route}/{roomType}",
+                        route = "${Navigation.Select.route}/{roomType}",
                         arguments = listOf(navArgument("roomType") { type = NavType.IntType })
                     ) {
                         val type = it.arguments?.getInt("roomType") ?: -1
                         SelectRoomScreen(type, navController)
                     }
+                    composable(
+                        route = "${Navigation.Folder.route}/{folderId}",
+                        arguments = listOf(navArgument("folderId") { type = NavType.StringType })
+                    ) {
+                        SelectFolderScreen(
+                            folderId = it.arguments?.getString("folderId").orEmpty(),
+                            onBack = navController::popBackStack,
+                            onAccept = viewModel::setStorageLocation
+                        )
+                    }
                 }
-
             }
         }
     }
@@ -249,7 +273,10 @@ private fun MainScreen(
     create: (Int, String, Any?, List<String>) -> Unit = { _, _, _, _ -> },
     imageCallBack: (uri: Uri?) -> Unit = {},
     onBackPressed: () -> Unit = {},
-    created: (String) -> Unit = {}
+    created: (String) -> Unit = {},
+    onLocationClick: (String) -> Unit,
+    onCreateNewFolder: (Boolean) -> Unit,
+    onStorageConnect: (Boolean) -> Unit
 ) {
     val keyboardController = LocalFocusManager.current
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
@@ -323,12 +350,12 @@ private fun MainScreen(
                 Row(
                     modifier = Modifier
                         .height(dimensionResource(id = lib.toolkit.base.R.dimen.item_two_line_height))
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     val context = LocalContext.current
                     GlideImage(
                         modifier = Modifier
-                            .align(Alignment.CenterVertically)
                             .clip(CircleShape)
                             .size(40.dp)
                             .clickable(onClick = {
@@ -344,8 +371,7 @@ private fun MainScreen(
                                 AccountUtils.getToken(
                                     context,
                                     context.appComponent.accountOnline?.accountName.orEmpty()
-                                )
-                                    .orEmpty()
+                                ).orEmpty()
                             )
                         } else {
                             roomState.imageUri
@@ -358,7 +384,7 @@ private fun MainScreen(
                         modifier = Modifier
                             .height(56.dp)
                             .padding(start = 16.dp),
-                        state = remember { mutableStateOf(roomState.name) },
+                        state = name,
                         hint = stringResource(id = R.string.room_name_hint)
                     )
                 }
@@ -372,6 +398,18 @@ private fun MainScreen(
                     },
                     onChipDelete = { tags.remove(it) }
                 )
+                if (!isEdit && roomState.type == ApiContract.RoomType.PUBLIC_ROOM) {
+                    ThirdPartyBlock(
+                        state = roomState.storageState,
+                        roomName = name,
+                        onLocationClick = { folderId ->
+                            saveData.invoke(name.value, tags)
+                            onLocationClick.invoke(folderId)
+                        },
+                        onCreateNewFolder = onCreateNewFolder,
+                        onStorageConnect = onStorageConnect
+                    )
+                }
             }
             if (viewState is ViewState.Error) {
                 keyboardController.clearFocus(true)
@@ -391,11 +429,57 @@ private fun MainScreen(
 }
 
 @Composable
+fun ThirdPartyBlock(
+    state: StorageState?,
+    roomName: State<String>,
+    onLocationClick: (String) -> Unit,
+    onCreateNewFolder: (Boolean) -> Unit,
+    onStorageConnect: (Boolean) -> Unit
+) {
+    Column {
+        val storageName = state?.providerKey?.let(StorageUtils::getStorageTitle)
+
+        AppSwitchItem(
+            title = R.string.room_create_thirdparty_storage_title,
+            checked = storageName != null,
+            onCheck = onStorageConnect
+        )
+
+        if (state != null && storageName != null) {
+            AppArrowItem(
+                title = stringResource(id = R.string.room_create_thirdparty_storage),
+                option = stringResource(id = storageName),
+                onClick = { onStorageConnect.invoke(true) }
+            )
+            AppArrowItem(
+                title = stringResource(id = R.string.room_create_thirdparty_location),
+                option = if (state.createAsNewFolder) {
+                    state.location?.let { "$it${roomName.value}" } ?: "/${roomName.value}"
+                } else {
+                    state.location ?: stringResource(id = R.string.room_create_thirdparty_location_root)
+                },
+                onClick = { onLocationClick.invoke(state.id) }
+            )
+            AppSwitchItem(
+                title = R.string.room_create_thirdparty_new_folder,
+                checked = state.createAsNewFolder,
+                onCheck = onCreateNewFolder
+            )
+            AppDescriptionItem(
+                modifier = Modifier.padding(top = 8.dp),
+                text = R.string.room_create_thirdparty_desc
+            )
+        }
+    }
+}
+
+@Composable
 private fun SelectRoomScreen(type: Int, navController: NavHostController) {
     AppScaffold(topBar = {
-        AppTopBar(backListener = {
-            navController.popBackStack()
-        }, title = stringResource(id = R.string.rooms_choose_room), isClose = false)
+        AppTopBar(
+            title = stringResource(id = R.string.rooms_choose_room),
+            backListener = navController::popBackStack
+        )
     }, useTablePaddings = false) {
         Column {
             AddRoomItem(
@@ -532,44 +616,6 @@ private fun ChooseImageBottomView(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun TextFieldWithChips(
-    focusManger: FocusManager,
-    list: List<ChipData> = emptyList(),
-    label: Int,
-    onChipCreated: (ChipData) -> Unit,
-    chip: @Composable (data: ChipData, index: Int) -> Unit
-) {
-
-    val text = remember {
-        mutableStateOf("")
-    }
-
-    FlowRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
-    ) {
-        list.forEachIndexed { index, item ->
-            key(item.hashCode()) {
-                chip(item, index)
-            }
-        }
-        AppTextFieldListItem(
-            state = text,
-            focusManager = focusManger,
-            hint = stringResource(id = label)
-        ) {
-            if (text.value.isNotEmpty()) {
-                onChipCreated(ChipData(text.value))
-                text.value = ""
-            }
-        }
-    }
-}
-
 @Preview
 @Composable
 private fun TextFieldPreview() {
@@ -584,12 +630,12 @@ private fun TextFieldPreview() {
                 chips = listOf(
                     ChipData("one"),
                     ChipData("two"),
+                    ChipData("two"),
                     ChipData("three"),
                 ),
-                onChipAdd = {}
-            ) {
-
-            }
+                onChipAdd = {},
+                onChipDelete = {}
+            )
         }
     }
 }
@@ -602,7 +648,19 @@ private fun MainScreenPreview() {
             isEdit = false,
             navController = rememberNavController(),
             viewState = ViewState.None,
-            roomState = AddRoomData(2)
+            roomState = AddRoomData(
+                name = "name",
+                type = ApiContract.RoomType.PUBLIC_ROOM,
+                storageState = StorageState(
+                    id = "",
+                    providerKey = ApiContract.Storage.DROPBOX,
+                    location = null,
+                    createAsNewFolder = false
+                )
+            ),
+            onCreateNewFolder = {},
+            onStorageConnect = {},
+            onLocationClick = {}
         )
     }
 }
