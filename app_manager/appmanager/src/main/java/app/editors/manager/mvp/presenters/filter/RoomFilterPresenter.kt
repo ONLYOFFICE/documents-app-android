@@ -11,6 +11,7 @@ import app.editors.manager.mvp.models.filter.FilterAuthor
 import app.editors.manager.mvp.models.filter.FilterProvider
 import app.editors.manager.mvp.models.filter.RoomFilterTag
 import app.editors.manager.mvp.models.filter.RoomFilterType
+import app.editors.manager.mvp.models.filter.joinToString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -24,7 +25,7 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
             update()
         }
 
-    var filterTag: RoomFilterTag? = null
+    var filterTags: List<RoomFilterTag> = emptyList()
         set(value) {
             field = value
             update()
@@ -44,7 +45,7 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
 
     override val hasFilter: Boolean
         get() = preferenceTool.filter.roomType != RoomFilterType.None || filterAuthor != FilterAuthor() ||
-                filterTag != null || filterProvider != null
+                filterTags.isNotEmpty() || filterProvider != null
 
     private val filters: Map<String, String>
         get() = mutableMapOf<String, String>().apply {
@@ -55,15 +56,16 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
                     filterProvider?.storage?.filterValue.orEmpty()
                 )
             }
-            if (filterType != RoomFilterType.None)
+            if (filterType != RoomFilterType.None) {
                 put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filterType.filterVal.toString())
-            if (filterTag != null)
-                put(ApiContract.Parameters.ARG_FILTER_BY_TAG_ROOM, filterTag?.value ?: "")
+            }
+            if (filterTags.isNotEmpty()) {
+                put(ApiContract.Parameters.ARG_FILTER_BY_TAG_ROOM, filterTags.joinToString())
+            }
         }
 
     init {
         App.getApp().appComponent.inject(this)
-        loadFilter()
     }
 
     override fun loadFilter() {
@@ -71,7 +73,7 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
         filterType = filter.roomType
         filterAuthor = filter.author
         filterProvider = filter.provider?.let { FilterProvider(it) }
-        filterTag = filter.tag
+        filterTags = filter.tags
 
         getTags()
         getThirdParty()
@@ -111,7 +113,7 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
             preferenceTool.filter.copy(
                 roomType = filterType,
                 author = filterAuthor,
-                tag = filterTag,
+                tags = filterTags,
                 provider = filterProvider?.storage
             )
     }
@@ -134,7 +136,7 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
     override fun reset() {
         filterType = RoomFilterType.None
         filterAuthor = FilterAuthor()
-        filterTag = null
+        filterTags = emptyList()
         filterProvider = null
         viewState.onFilterReset()
     }

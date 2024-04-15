@@ -111,7 +111,7 @@ class DocsRoomFragment : DocsCloudFragment() {
             val filter = presenter.preferenceTool.filter
             filter.roomType != RoomFilterType.None ||
                     filter.author.id.isNotEmpty() ||
-                    filter.tag != null ||
+                    filter.tags.isNotEmpty() ||
                     filter.provider != null
         } else super.getFilters()
     }

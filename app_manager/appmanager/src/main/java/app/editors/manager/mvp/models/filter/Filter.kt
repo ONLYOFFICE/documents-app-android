@@ -11,11 +11,13 @@ data class Filter(
     var author: FilterAuthor = FilterAuthor(),
     var excludeSubfolder: Boolean = false,
     var roomType: RoomFilterType = RoomFilterType.None,
-    var tag: RoomFilterTag? = null,
+    var tags: List<RoomFilterTag> = listOf(),
     var provider: Storage? = null
 ) {
 
+
     companion object {
+
         fun toJson(filter: Filter): String {
             return Json.encodeToString(filter)
         }

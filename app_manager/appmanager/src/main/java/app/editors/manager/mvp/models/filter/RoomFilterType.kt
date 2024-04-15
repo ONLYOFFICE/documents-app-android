@@ -32,3 +32,7 @@ data class RoomFilterTag(val value: String) : ChipItem {
     override val chipTitleString: String
         get() = value
 }
+
+fun List<RoomFilterTag>.joinToString(): String {
+    return "[${map(RoomFilterTag::value).joinToString { "\"$it\"" }}]"
+}

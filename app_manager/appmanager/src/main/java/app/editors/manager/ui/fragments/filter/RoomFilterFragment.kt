@@ -13,6 +13,7 @@ import app.editors.manager.mvp.models.filter.RoomFilterTag
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.presenters.filter.BaseFilterPresenter
 import app.editors.manager.mvp.presenters.filter.RoomFilterPresenter
+import app.editors.manager.ui.views.custom.MultiChoiceChipGroupView
 import app.editors.manager.ui.views.custom.SingleChoiceChipGroupView
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
@@ -39,19 +40,19 @@ class RoomFilterFragment : BaseFilterFragment() {
         return RoomFilterPresenter(arguments?.getString(KEY_FOLDER_ID))
     }
 
+    private var authorChipGroup: SingleChoiceChipGroupView? = null
+
+    private var typeChipGroup: SingleChoiceChipGroupView? = null
+    private var tagChipGroup: MultiChoiceChipGroupView<RoomFilterTag>? = null
+    private var thirdPartyChipGroup: SingleChoiceChipGroupView? = null
+
     override val filterPresenter: BaseFilterPresenter
         get() = presenter
 
-    private var authorChipGroup: SingleChoiceChipGroupView? = null
-    private var typeChipGroup: SingleChoiceChipGroupView? = null
-    private var tagChipGroup: SingleChoiceChipGroupView? = null
-    private var thirdPartyChipGroup: SingleChoiceChipGroupView? = null
-
     override fun initViews() {
-        authorChipGroup = SingleChoiceChipGroupView(requireContext()).apply {
+        authorChipGroup = SingleChoiceChipGroupView(requireContext(), R.string.filter_title_author).apply {
             App.getApp().accountOnline?.let { account ->
                 updateAuthorChipGroup(account)
-                setTitle(R.string.filter_title_author)
                 setChip(RoomFilterAuthor.Me, presenter.filterAuthor.id == account.id) { _, checked ->
                     presenter.filterAuthor = if (checked) FilterAuthor(account.id) else FilterAuthor()
                 }
@@ -68,37 +69,32 @@ class RoomFilterFragment : BaseFilterFragment() {
             }
         }
 
-        typeChipGroup = SingleChoiceChipGroupView(requireContext()).apply {
-            setTitle(R.string.filter_title_type)
+        typeChipGroup = SingleChoiceChipGroupView(requireContext(), R.string.filter_title_type).apply {
             setChips(RoomFilterType.allTypes, presenter.filterType) { type, checked ->
                 presenter.filterType = if (checked) type else RoomFilterType.None
             }
         }
 
-        tagChipGroup = SingleChoiceChipGroupView(requireContext()).apply {
-            setTitle(R.string.toolbar_menu_sort_tags)
-        }
-
-        thirdPartyChipGroup = SingleChoiceChipGroupView(requireContext()).apply {
-            setTitle(R.string.rooms_filter_third_party_title)
-        }
-
+        tagChipGroup = MultiChoiceChipGroupView(requireContext(), R.string.toolbar_menu_sort_tags)
+        thirdPartyChipGroup = SingleChoiceChipGroupView(requireContext(), R.string.rooms_filter_third_party_title)
         addChipGroups(authorChipGroup, typeChipGroup, tagChipGroup, thirdPartyChipGroup)
+
+        presenter.loadFilter()
     }
 
     override fun onTagsLoaded(tags: Array<String>) {
         tagChipGroup?.apply {
-            setChips(tags.map {
-                RoomFilterTag(it)
-            }, presenter.filterTag) { tag, checked ->
-                presenter.filterTag = if (checked) tag else null
-            }
+            setChips(
+                chips = tags.map(::RoomFilterTag),
+                checkedChips = presenter.filterTags,
+                onCheckedChange = { tags -> presenter.filterTags = tags }
+            )
         }
     }
 
     override fun onThirdPartyLoaded(providerKeys: List<String>) {
         thirdPartyChipGroup?.setChips(
-            chipItems = providerKeys.mapNotNull { providerKey ->
+            chips = providerKeys.mapNotNull { providerKey ->
                 FilterProvider(Storage.get(providerKey) ?: return@mapNotNull null)
             },
             checkedChip = presenter.filterProvider,

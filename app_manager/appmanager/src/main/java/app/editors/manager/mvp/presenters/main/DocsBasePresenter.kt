@@ -41,6 +41,7 @@ import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.RoomFilterType
+import app.editors.manager.mvp.models.filter.joinToString
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
@@ -791,6 +792,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                     }
                     if (filter.provider != null) {
                         put(ApiContract.Parameters.ARG_FILTER_BY_PROVIDER_ROOM, filter.provider?.filterValue.orEmpty())
+                    }
+                    if (filter.tags.isNotEmpty()) {
+                        put(ApiContract.Parameters.ARG_FILTER_BY_TAG_ROOM, filter.tags.joinToString())
                     }
                     put(ApiContract.Parameters.ARG_FILTER_BY_SUBJECT_ID, filter.author.id)
                 } else {
