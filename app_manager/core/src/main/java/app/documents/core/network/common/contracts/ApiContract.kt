@@ -202,6 +202,7 @@ object ApiContract {
         const val ARG_FILTER_VALUE = "filterValue"
         const val ARG_FILTER_BY_TYPE = "filterType"
         const val ARG_FILTER_BY_TYPE_ROOM = "type"
+        const val ARG_FILTER_BY_PROVIDER_ROOM = "provider"
         const val ARG_FILTER_BY_TAG_ROOM = "tags"
         const val ARG_FILTER_BY_SUBJECT_ID = "subjectId"
         const val ARG_FILTER_BY_AUTHOR = "userIdOrGroupId"

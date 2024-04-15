@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.forEachIndexed
+import androidx.core.view.isVisible
 import app.editors.manager.R
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -15,7 +16,7 @@ interface ChipItem {
             get() = null
     val chipTitle: Int?
     val withOption: Boolean
-    var option: Any?
+    var option: String?
 }
 
 class SingleChoiceChipGroupView : LinearLayout {
@@ -29,6 +30,7 @@ class SingleChoiceChipGroupView : LinearLayout {
 
     init {
         inflate(context, R.layout.single_choice_chip_group_layout, this)
+        chipGroupTitle.isVisible = false
         chipGroup.removeAllViews()
     }
 
@@ -46,6 +48,7 @@ class SingleChoiceChipGroupView : LinearLayout {
         closeListener: (() -> Unit)? = null,
         chipCheckedListener: (T, Boolean) -> Unit
     ) {
+        chipGroupTitle.isVisible = chipItems.isNotEmpty()
         chipItems.forEach { chipItem ->
             setChip(chipItem, chipItem == checkedChip, closeListener, chipCheckedListener)
         }

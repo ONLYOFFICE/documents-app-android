@@ -5,7 +5,9 @@ import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.utils.Storage
 import app.editors.manager.mvp.models.filter.FilterAuthor
+import app.editors.manager.mvp.models.filter.FilterProvider
 import app.editors.manager.mvp.models.filter.RoomFilterAuthor
 import app.editors.manager.mvp.models.filter.RoomFilterTag
 import app.editors.manager.mvp.models.filter.RoomFilterType
@@ -43,6 +45,7 @@ class RoomFilterFragment : BaseFilterFragment() {
     private var authorChipGroup: SingleChoiceChipGroupView? = null
     private var typeChipGroup: SingleChoiceChipGroupView? = null
     private var tagChipGroup: SingleChoiceChipGroupView? = null
+    private var thirdPartyChipGroup: SingleChoiceChipGroupView? = null
 
     override fun initViews() {
         authorChipGroup = SingleChoiceChipGroupView(requireContext()).apply {
@@ -76,7 +79,11 @@ class RoomFilterFragment : BaseFilterFragment() {
             setTitle(R.string.toolbar_menu_sort_tags)
         }
 
-        addChipGroups(authorChipGroup, typeChipGroup)
+        thirdPartyChipGroup = SingleChoiceChipGroupView(requireContext()).apply {
+            setTitle(R.string.rooms_filter_third_party_title)
+        }
+
+        addChipGroups(authorChipGroup, typeChipGroup, tagChipGroup, thirdPartyChipGroup)
     }
 
     override fun onTagsLoaded(tags: Array<String>) {
@@ -87,7 +94,16 @@ class RoomFilterFragment : BaseFilterFragment() {
                 presenter.filterTag = if (checked) tag else null
             }
         }
-        addChipGroup(tagChipGroup)
+    }
+
+    override fun onThirdPartyLoaded(providerKeys: List<String>) {
+        thirdPartyChipGroup?.setChips(
+            chipItems = providerKeys.mapNotNull { providerKey ->
+                FilterProvider(Storage.get(providerKey) ?: return@mapNotNull null)
+            },
+            checkedChip = presenter.filterProvider,
+            chipCheckedListener = { tag, checked -> presenter.filterProvider = if (checked) tag else null }
+        )
     }
 
     override fun updateViewState(isChanged: Boolean) {
@@ -102,6 +118,4 @@ class RoomFilterFragment : BaseFilterFragment() {
         }
         authorChipGroup?.update(RoomFilterAuthor.OtherUsers)
     }
-
-
 }

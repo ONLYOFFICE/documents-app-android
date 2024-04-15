@@ -1,7 +1,9 @@
 package app.editors.manager.mvp.models.filter
 
 import com.google.gson.Gson
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class FilterAuthor(
     val id: String = "",
     val name: String = "",

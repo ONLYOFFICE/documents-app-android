@@ -789,6 +789,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                     if (filter.roomType != RoomFilterType.None) {
                         put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filter.roomType.filterVal.toString())
                     }
+                    if (filter.provider != null) {
+                        put(ApiContract.Parameters.ARG_FILTER_BY_PROVIDER_ROOM, filter.provider?.filterValue.orEmpty())
+                    }
                     put(ApiContract.Parameters.ARG_FILTER_BY_SUBJECT_ID, filter.author.id)
                 } else {
                     put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)

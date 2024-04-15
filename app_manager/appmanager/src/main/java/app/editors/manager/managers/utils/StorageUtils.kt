@@ -1,160 +1,223 @@
-package app.editors.manager.managers.utils;
+package app.editors.manager.managers.utils
 
-import static app.documents.core.network.common.contracts.StorageContract.*;
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.contracts.StorageContract
+import app.editors.manager.R
+import kotlinx.serialization.Serializable
+import lib.toolkit.base.managers.utils.StringUtils.getEncodedString
+import java.util.TreeMap
 
-import androidx.annotation.Nullable;
+@Serializable
+sealed class Storage(
+    val providerKey: String?,
+    val icon: Int,
+    val title: Int,
+    val filterValue: String
+) {
 
-import java.io.Serializable;
-import java.util.Map;
-import java.util.TreeMap;
-
-import app.documents.core.network.common.contracts.ApiContract;
-import app.editors.manager.R;
-import lib.toolkit.base.managers.utils.StringUtils;
-
-public class StorageUtils {
-
-    @Nullable
-    public static String getStorageUrl(final String providerKey, final String clientId, final String redirectUrl) {
-        switch (providerKey) {
-            case ApiContract.Storage.BOXNET:
-                return box(providerKey, clientId, redirectUrl).getUrl();
-
-            case ApiContract.Storage.DROPBOX:
-                return dropBox(providerKey, clientId, redirectUrl).getUrl();
-
-            case ApiContract.Storage.GOOGLEDRIVE:
-                return google(providerKey, clientId, redirectUrl).getUrl();
-
-            case ApiContract.Storage.ONEDRIVE:
-                return oneDrive(providerKey, clientId, redirectUrl).getUrl();
-        }
-
-        return null;
+    override fun hashCode(): Int {
+        return providerKey?.hashCode() ?: super.hashCode()
     }
 
-    public static @Nullable Integer getStorageTitle(@Nullable final String providerKey) {
-        if (providerKey == null) {
-            return null;
-        }
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-        return switch (providerKey) {
-            case ApiContract.Storage.BOXNET -> R.string.storage_select_box;
-            case ApiContract.Storage.DROPBOX -> R.string.storage_select_drop_box;
-            case ApiContract.Storage.SHAREPOINT -> R.string.storage_select_share_point;
-            case ApiContract.Storage.GOOGLEDRIVE -> R.string.storage_select_google_drive;
-            case ApiContract.Storage.ONEDRIVE -> R.string.storage_select_one_drive;
-            case ApiContract.Storage.YANDEX -> R.string.storage_select_yandex;
-            case ApiContract.Storage.WEBDAV -> R.string.storage_select_web_dav;
-            default -> null;
-        };
+        other as Storage
+
+        return providerKey == other.providerKey
     }
 
-    public static Integer getStorageIcon(String providerKey) {
-        switch (providerKey) {
-            case ApiContract.Storage.BOXNET:
-                return R.drawable.ic_storage_box;
-            case ApiContract.Storage.DROPBOX:
-                return R.drawable.ic_storage_dropbox;
-            case ApiContract.Storage.SHAREPOINT:
-                return R.drawable.ic_storage_sharepoint;
-            case ApiContract.Storage.GOOGLEDRIVE:
-                return R.drawable.ic_storage_google;
-            case ApiContract.Storage.ONEDRIVE:
-            case ApiContract.Storage.SKYDRIVE:
-                return R.drawable.ic_storage_onedrive;
-            case ApiContract.Storage.YANDEX:
-                return R.drawable.ic_storage_yandex;
-            case ApiContract.Storage.KDRIVE:
-                return R.drawable.ic_storage_kdrive;
-            case ApiContract.Storage.NEXTCLOUD:
-                return R.drawable.ic_storage_nextcloud;
-            case ApiContract.Storage.OWNCLOUD:
-                return R.drawable.ic_storage_owncloud;
-            case ApiContract.Storage.WEBDAV:
-                return R.drawable.ic_storage_webdav;
-            default:
-                return R.drawable.ic_type_folder;
+    @Serializable
+    data object Box : Storage(
+        providerKey = ApiContract.Storage.BOXNET,
+        icon = R.drawable.ic_storage_box,
+        title = R.string.storage_select_box,
+        filterValue = "Box"
+    )
+
+    @Serializable
+    data object Dropbox : Storage(
+        providerKey = ApiContract.Storage.DROPBOX,
+        icon = R.drawable.ic_storage_dropbox,
+        title = R.string.storage_select_drop_box,
+        filterValue = "DropBox"
+    )
+
+    @Serializable
+    data object GoogleDrive : Storage(
+        providerKey = ApiContract.Storage.GOOGLEDRIVE,
+        icon = R.drawable.ic_storage_google,
+        title = R.string.storage_select_google_drive,
+        filterValue = "GoogleDrive"
+    )
+
+    @Serializable
+    data object OneDrive : Storage(
+        providerKey = ApiContract.Storage.ONEDRIVE,
+        icon = R.drawable.ic_storage_onedrive,
+        title = R.string.storage_select_one_drive,
+        filterValue = "OneDrive"
+    )
+
+    @Serializable
+    data object SharePoint : Storage(
+        providerKey = ApiContract.Storage.SHAREPOINT,
+        icon = R.drawable.ic_storage_sharepoint,
+        title = R.string.storage_select_share_point,
+        filterValue = "SharePoint"
+    )
+
+    @Serializable
+    data object Yandex : Storage(
+        providerKey = ApiContract.Storage.YANDEX,
+        icon = R.drawable.ic_storage_yandex,
+        title = R.string.storage_select_yandex,
+        filterValue = "Yandex"
+    )
+
+    @Serializable
+    data object OwnCloud : Storage(
+        providerKey = ApiContract.Storage.OWNCLOUD,
+        icon = R.drawable.ic_storage_owncloud,
+        title = R.string.storage_select_own_cloud,
+        filterValue = "OwnCloud"
+    )
+
+    @Serializable
+    data object Nextcloud : Storage(
+        providerKey = ApiContract.Storage.NEXTCLOUD,
+        icon = R.drawable.ic_storage_nextcloud,
+        title = R.string.storage_select_next_cloud,
+        filterValue = "NextCloud"
+    )
+
+    @Serializable
+    data object KDrive : Storage(
+        providerKey = ApiContract.Storage.KDRIVE,
+        icon = R.drawable.ic_storage_kdrive,
+        title = R.string.storage_select_kdrive,
+        filterValue = "kDrive"
+    )
+
+    @Serializable
+    data object WebDav : Storage(
+        providerKey = ApiContract.Storage.WEBDAV,
+        icon = R.drawable.ic_storage_webdav,
+        title = R.string.storage_select_web_dav,
+        filterValue = "WebDav"
+    )
+
+    companion object {
+
+        fun get(providerKey: String?): Storage? {
+            return when (providerKey) {
+                ApiContract.Storage.BOXNET -> Box
+                ApiContract.Storage.DROPBOX -> Dropbox
+                ApiContract.Storage.GOOGLEDRIVE -> GoogleDrive
+                ApiContract.Storage.ONEDRIVE -> OneDrive
+                ApiContract.Storage.SHAREPOINT -> SharePoint
+                ApiContract.Storage.YANDEX -> Yandex
+                ApiContract.Storage.OWNCLOUD -> OwnCloud
+                ApiContract.Storage.NEXTCLOUD -> Nextcloud
+                ApiContract.Storage.KDRIVE -> KDrive
+                ApiContract.Storage.WEBDAV -> WebDav
+                else -> null
+            }
         }
+    }
+}
+
+object StorageUtils {
+
+    fun getStorageUrl(providerKey: String?, clientId: String?, redirectUrl: String?): String? {
+        if (clientId == null || redirectUrl == null) {
+            return null
+        }
+
+        return when (providerKey) {
+            ApiContract.Storage.BOXNET -> getBoxUrl(clientId, redirectUrl)
+            ApiContract.Storage.DROPBOX -> getDropboxUrl(clientId, redirectUrl)
+            ApiContract.Storage.GOOGLEDRIVE -> getGoogleDriveUrl(clientId, redirectUrl)
+            ApiContract.Storage.ONEDRIVE -> getOneDriveUrl(clientId, redirectUrl)
+            else -> null
+        }
+    }
+
+    fun getStorageTitle(providerKey: String?): Int? {
+        return Storage.get(providerKey)?.title
+    }
+
+    fun getStorageIcon(providerKey: String?): Int {
+        return Storage.get(providerKey)?.icon ?: R.drawable.ic_type_folder
+    }
+
+    fun getStorageFilterValue(providerKey: String?): String {
+        return Storage.get(providerKey)?.filterValue.orEmpty()
     }
 
     /*
      * Get Box instance for request token
      * */
-    private static Storage box(final String providerKey, final String clientId, final String redirectUrl) {
-        final TreeMap<String, String> uriMap = new TreeMap<>();
-        uriMap.put(ARG_RESPONSE_TYPE, Box.VALUE_RESPONSE_TYPE);
-        uriMap.put(ARG_CLIENT_ID, clientId);
-        uriMap.put(ARG_REDIRECT_URI, redirectUrl);
-        return new Storage(providerKey, Box.AUTH_URL, uriMap);
+    private fun getBoxUrl(clientId: String, redirectUrl: String): String {
+        val uriMap = TreeMap<String, String>()
+        uriMap[StorageContract.ARG_RESPONSE_TYPE] = StorageContract.Box.VALUE_RESPONSE_TYPE
+        uriMap[StorageContract.ARG_CLIENT_ID] = clientId
+        uriMap[StorageContract.ARG_REDIRECT_URI] = redirectUrl
+        return getUrl(StorageContract.Box.AUTH_URL, uriMap)
     }
-
 
     /*
      * Get DropBox instance for request token
      * */
-    private static Storage dropBox(final String providerKey, final String clientId, final String redirectUrl) {
-        final TreeMap<String, String> uriMap = new TreeMap<>();
-        uriMap.put(ARG_RESPONSE_TYPE, DropBox.VALUE_RESPONSE_TYPE);
-        uriMap.put(ARG_CLIENT_ID, clientId);
-        uriMap.put(ARG_REDIRECT_URI, redirectUrl);
-        uriMap.put(ARG_TOKEN_ACCESS, DropBox.VALUE_ACCESS_TYPE);
-        return new Storage(providerKey, DropBox.AUTH_URL, uriMap);
+    private fun getDropboxUrl(clientId: String, redirectUrl: String): String {
+        val uriMap = TreeMap<String, String>()
+        uriMap[StorageContract.ARG_RESPONSE_TYPE] = StorageContract.DropBox.VALUE_RESPONSE_TYPE
+        uriMap[StorageContract.ARG_CLIENT_ID] = clientId
+        uriMap[StorageContract.ARG_REDIRECT_URI] = redirectUrl
+        uriMap[StorageContract.ARG_TOKEN_ACCESS] = StorageContract.DropBox.VALUE_ACCESS_TYPE
+        return getUrl(StorageContract.DropBox.AUTH_URL, uriMap)
     }
-
 
     /*
      * Get Google instance for request token
      * */
-    private static Storage google(final String providerKey, final String clientId, final String redirectUrl) {
-        final TreeMap<String, String> uriMap = new TreeMap<>();
-        uriMap.put(ARG_APPROVAL_PROMPT, Google.VALUE_APPROVAL_PROMPT);
-        uriMap.put(ARG_RESPONSE_TYPE, Google.VALUE_RESPONSE_TYPE);
-        uriMap.put(ARG_ACCESS_TYPE, Google.VALUE_ACCESS_TYPE);
-        uriMap.put(ARG_SCOPE, Google.VALUE_SCOPE);
-        uriMap.put(ARG_CLIENT_ID, clientId);
-        uriMap.put(ARG_REDIRECT_URI, redirectUrl);
-        return new Storage(providerKey, Google.AUTH_URL, uriMap);
+    private fun getGoogleDriveUrl(clientId: String, redirectUrl: String): String {
+        val uriMap = TreeMap<String, String>()
+        uriMap[StorageContract.ARG_APPROVAL_PROMPT] = StorageContract.Google.VALUE_APPROVAL_PROMPT
+        uriMap[StorageContract.ARG_RESPONSE_TYPE] = StorageContract.Google.VALUE_RESPONSE_TYPE
+        uriMap[StorageContract.ARG_ACCESS_TYPE] = StorageContract.Google.VALUE_ACCESS_TYPE
+        uriMap[StorageContract.ARG_SCOPE] = StorageContract.Google.VALUE_SCOPE
+        uriMap[StorageContract.ARG_CLIENT_ID] = clientId
+        uriMap[StorageContract.ARG_REDIRECT_URI] = redirectUrl
+        return getUrl(StorageContract.Google.AUTH_URL, uriMap)
     }
-
 
     /*
      * Get OneDrive instance for request token
      * */
-    private static Storage oneDrive(final String providerKey, final String clientId, final String redirectUrl) {
-        final TreeMap<String, String> uriMap = new TreeMap<>();
-        uriMap.put(ARG_CLIENT_ID, clientId);
-        uriMap.put(ARG_REDIRECT_URI, redirectUrl);
-        uriMap.put(ARG_RESPONSE_TYPE, OneDrive.VALUE_RESPONSE_TYPE);
-        uriMap.put(ARG_SCOPE, OneDrive.VALUE_SCOPE);
-        return new Storage(providerKey, OneDrive.AUTH_URL, uriMap);
+    private fun getOneDriveUrl(clientId: String, redirectUrl: String): String {
+        val uriMap = TreeMap<String, String>()
+        uriMap[StorageContract.ARG_CLIENT_ID] = clientId
+        uriMap[StorageContract.ARG_REDIRECT_URI] = redirectUrl
+        uriMap[StorageContract.ARG_RESPONSE_TYPE] = StorageContract.OneDrive.VALUE_RESPONSE_TYPE
+        uriMap[StorageContract.ARG_SCOPE] = StorageContract.OneDrive.VALUE_SCOPE
+        return getUrl(StorageContract.OneDrive.AUTH_URL, uriMap)
     }
 
-
-    /*
-     * Storage info
-     * */
-    private static final class Storage implements Serializable {
-
-        public final String mProviderKey;
-        public final String mRequestUrl;
-        public final TreeMap<String, String> mRequestArgs;
-
-        public Storage(final String providerKey, final String url, final TreeMap<String, String> requestArgs) {
-            mProviderKey = providerKey;
-            mRequestUrl = url;
-            mRequestArgs = requestArgs;
+    private fun getUrl(
+        requestUrl: String,
+        requestArgs: TreeMap<String, String>
+    ): String {
+        val stringBuilder = StringBuilder()
+        stringBuilder.append(requestUrl)
+        for ((key, value) in requestArgs) {
+            stringBuilder.append(key)
+                .append("=")
+                .append(value)
+                .append("&")
         }
-
-        public String getUrl() {
-            final StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(mRequestUrl);
-            for (Map.Entry<String, String> item : mRequestArgs.entrySet()) {
-                stringBuilder.append(item.getKey()).append("=").append(item.getValue()).append("&");
-            }
-            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-            return StringUtils.getEncodedString(stringBuilder.toString());
-        }
+        stringBuilder.deleteCharAt(stringBuilder.length - 1)
+        return getEncodedString(stringBuilder.toString()).orEmpty()
     }
-
 }

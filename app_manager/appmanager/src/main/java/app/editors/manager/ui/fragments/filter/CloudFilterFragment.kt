@@ -46,13 +46,13 @@ class CloudFilterFragment : BaseFilterFragment() {
     private val usersChipItem = object : ChipItem {
         override val chipTitle: Int = R.string.share_add_common_header_users
         override val withOption: Boolean = true
-        override var option: Any? = null
+        override var option: String? = null
     }
 
     private val groupsChipItem = object : ChipItem {
         override val chipTitle: Int = R.string.share_add_common_header_groups
         override val withOption: Boolean = true
-        override var option: Any? = null
+        override var option: String? = null
     }
 
     override fun initViews() {
@@ -118,7 +118,7 @@ class CloudFilterFragment : BaseFilterFragment() {
              val excludeSubfolderChipItem = object : ChipItem {
                  override val chipTitle: Int = R.string.filter_exclude_subfolders
                  override val withOption: Boolean = false
-                 override var option: Any? = null
+                 override var option: String? = null
              }
 
             setTitle(R.string.filter_exclude_subfolders)

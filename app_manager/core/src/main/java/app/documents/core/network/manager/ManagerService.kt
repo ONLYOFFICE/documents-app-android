@@ -64,7 +64,7 @@ interface ManagerService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    fun thirdPartyList(): Observable<ResponseThirdparty>
+    suspend fun getThirdPartyList(): ResponseThirdparty
 
     /*
      * Counts of users

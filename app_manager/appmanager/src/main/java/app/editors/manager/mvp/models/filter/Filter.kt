@@ -1,24 +1,27 @@
 package app.editors.manager.mvp.models.filter
 
-import com.google.gson.Gson
+import app.editors.manager.managers.utils.Storage
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
+@Serializable
 data class Filter(
     var type: FilterType = FilterType.None,
     var author: FilterAuthor = FilterAuthor(),
     var excludeSubfolder: Boolean = false,
     var roomType: RoomFilterType = RoomFilterType.None,
-    var tag: RoomFilterTag? = null
+    var tag: RoomFilterTag? = null,
+    var provider: Storage? = null
 ) {
 
     companion object {
         fun toJson(filter: Filter): String {
-            val gson = Gson()
-            return gson.toJson(filter)
+            return Json.encodeToString(filter)
         }
 
         fun toObject(json: String?): Filter {
-            val gson = Gson()
-            return gson.fromJson(json, Filter::class.java)
+            return Json.decodeFromString(json ?: return Filter())
         }
     }
 }
