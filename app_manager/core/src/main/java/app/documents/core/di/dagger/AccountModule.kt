@@ -12,11 +12,13 @@ import app.documents.core.model.cloud.CloudAccount
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
+import javax.inject.Singleton
 
 @Module
 object AccountModule {
 
     @Provides
+    @Singleton
     fun provideMigrationHelper(
         context: Context,
         cloudDataSource: CloudDataSource,
@@ -27,11 +29,13 @@ object AccountModule {
     }
 
     @Provides
+    @Singleton
     fun provideAccountPreferences(context: Context): AccountPreferences {
         return AccountPreferences(context)
     }
 
     @Provides
+    @Singleton
     fun provideAccountOnline(
         cloudDataSource: CloudDataSource,
         accountPreferences: AccountPreferences
@@ -44,6 +48,7 @@ object AccountModule {
 
     @Provides
     @Token
+    @Singleton
     fun provideToken(
         accountManager: AccountManager,
         cloudAccount: CloudAccount?
@@ -55,11 +60,13 @@ object AccountModule {
     }
 
     @Provides
+    @Singleton
     fun provideAccountManager(context: Context): AccountManager {
         return AccountManager(context)
     }
 
     @Provides
+    @Singleton
     fun provideAccountRepository(
         cloudDataSource: CloudDataSource,
         accountManager: AccountManager,

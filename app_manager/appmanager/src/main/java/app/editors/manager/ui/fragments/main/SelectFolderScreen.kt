@@ -49,7 +49,7 @@ fun SelectFolderScreen(
     onBack: () -> Unit,
     onAccept: (List<PathPart>) -> Unit
 ) {
-    val viewModel = viewModel { SelectFolderViewModel(App.getApp().coreComponent.managerRepository) }
+    val viewModel = viewModel { SelectFolderViewModel(App.getApp().appComponent.managerRepository) }
     val state by viewModel.state.collectAsState()
 
     BackHandler {

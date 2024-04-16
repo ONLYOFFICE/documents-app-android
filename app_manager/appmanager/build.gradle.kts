@@ -246,6 +246,7 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":core:model"))
     implementation(project(":core:database"))
+    implementation(project(":core:network"))
     implementation(project(":libcompose"))
     implementation(project(":libtoolkit"))
     "managerImplementation"(project(":libx2t"))

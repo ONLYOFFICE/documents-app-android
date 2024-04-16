@@ -49,7 +49,7 @@ class AccountContentProvider : ContentProvider() {
     override fun onCreate(): Boolean {
         App.getApp().refreshLoginComponent(null)
         accountRepository = App.getApp().loginComponent.accountRepository
-        cloudDataSource = App.getApp().coreComponent.cloudDataSource
+        cloudDataSource = App.getApp().appComponent.cloudDataSource
         return true
     }
 

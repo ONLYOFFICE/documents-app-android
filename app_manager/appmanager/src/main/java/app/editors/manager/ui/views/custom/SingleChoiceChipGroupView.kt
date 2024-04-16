@@ -6,7 +6,7 @@ import com.google.android.material.chip.Chip
 
 class SingleChoiceChipGroupView : ChipGroupView {
 
-    constructor(context: Context, title: Int) : super(context, title, false)
+    constructor(context: Context, title: Int) : super(context, title, true)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
     fun <T : ChipItem> setChips(
@@ -27,6 +27,7 @@ class SingleChoiceChipGroupView : ChipGroupView {
         closeListener: (() -> Unit)? = null,
         checkedListener: (T, Boolean) -> Unit
     ) {
+        setTitleVisible()
         chips.add(chip)
         inflate(chip).apply {
             setChipInfo(chip, checked)
