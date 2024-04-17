@@ -14,6 +14,7 @@ import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.editors.manager.mvp.views.storage.SelectView
 import app.editors.manager.ui.adapters.StorageAdapter
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import lib.toolkit.base.managers.utils.putArgs
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import moxy.presenter.InjectPresenter
 
@@ -24,6 +25,8 @@ class SelectFragment : BaseAppFragment(), BaseAdapter.OnItemClickListener, Selec
 
     private var storageAdapter: StorageAdapter? = null
     private var viewBinding: FragmentStorageSelectBinding? = null
+    private val providerKey: String? by lazy { arguments?.getString(PROVIDER_KEY) }
+    private val providerId: Int by lazy { arguments?.getInt(PROVIDER_ID) ?: -1 }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -75,11 +78,16 @@ class SelectFragment : BaseAppFragment(), BaseAdapter.OnItemClickListener, Selec
     }
 
     override fun onUpdate(storages: List<String>) {
-        storageAdapter?.setItems(storages)
+        val key = providerKey
+        if (key == null) {
+            storageAdapter?.setItems(storages)
+        } else {
+            presenter.connect(key)
+        }
     }
 
     override fun showWebTokenFragment(storage: Storage) {
-        showFragment(WebTokenFragment.newInstance(storage), WebTokenFragment.TAG, false)
+        showFragment(WebTokenFragment.newInstance(storage.copy(providerId = providerId)), WebTokenFragment.TAG, false)
     }
 
     override fun showWebDavFragment(providerKey: String, url: String, title: String) {
@@ -96,7 +104,22 @@ class SelectFragment : BaseAppFragment(), BaseAdapter.OnItemClickListener, Selec
 
     companion object {
         val TAG = SelectFragment::class.java.simpleName
+        private const val ROOM_STORAGE_KEY = "provider_key"
+        private const val TITLE_KEY = "provider_key"
+        private const val PROVIDER_KEY = "provider_key"
+        private const val PROVIDER_ID = "provider_id"
 
-        fun newInstance(): SelectFragment = SelectFragment()
+        fun newInstance(
+            isRoomStorage: Boolean = false,
+            title: String? = null,
+            providerKey: String? = null,
+            providerId: Int,
+        ): SelectFragment = SelectFragment()
+            .putArgs(
+                ROOM_STORAGE_KEY to isRoomStorage,
+                TITLE_KEY to title,
+                PROVIDER_KEY to providerKey,
+                PROVIDER_ID to providerId
+            )
     }
 }

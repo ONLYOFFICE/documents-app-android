@@ -29,14 +29,22 @@ class ConnectPresenter : BasePresenter<ConnectView>() {
         disposable = null
     }
 
-    fun connectService(token: String?, providerKey: String?, title: String?, isCorporate: Boolean) {
+    fun connectService(
+        token: String?,
+        providerKey: String?,
+        providerId: Int,
+        title: String?,
+        isCorporate: Boolean,
+        isRoomStorage: Boolean = false
+    ) {
         connectStorage(
             RequestStorage(
                 token = token,
                 providerKey = providerKey,
                 customerTitle = title,
-                corporate = isCorporate
-            )
+                corporate = isCorporate,
+                isRoomStorage = isRoomStorage
+            ).copy(providerId = providerId.takeIf { it > -1 })
         )
     }
 

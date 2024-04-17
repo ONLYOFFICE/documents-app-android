@@ -57,6 +57,11 @@ sealed class ExplorerContextItem(
         title = R.string.list_context_info
     ), ExplorerContextBlockOrder.Common
 
+    object Reconnect : ExplorerContextItem(
+        icon = R.drawable.ic_refresh,
+        title = R.string.room_storage_reconnect
+    ), ExplorerContextBlockOrder.Common
+
     object AddUsers : ExplorerContextItem(
         icon = R.drawable.ic_add_users,
         title = R.string.list_context_add_users

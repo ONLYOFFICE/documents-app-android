@@ -29,6 +29,7 @@ import lib.compose.ui.views.ChipData
 data class StorageState(
     val id: String,
     val providerKey: String,
+    val providerId: Int? = null,
     val location: String?,
     val createAsNewFolder: Boolean = false
 )
@@ -69,6 +70,7 @@ class AddRoomViewModel(
                 storageState = StorageState(
                     id = roomInfo.id,
                     providerKey = roomInfo.providerKey,
+                    providerId = roomInfo.providerId,
                     location = null
                 ).takeIf { roomInfo.providerItem }
             )

@@ -223,13 +223,16 @@ class AddRoomFragment : BaseFragment() {
                                     Bundle(1).apply { putString("id", id) })
                                 onBackPressed()
                             },
-                            onStorageConnect = { isConnect ->
+                            onStorageConnect = { isConnect, roomName ->
                                 if (isConnect) {
                                     storageActivityLauncher.launch(
                                         StorageActivity.getIntent(
                                             context = requireContext(),
                                             isMySection = true,
-                                            isTitleRequired = false
+                                            title = roomName,
+                                            isRoomStorage = true,
+                                            providerKey = null,
+                                            providerId = null
                                         )
                                     )
                                 } else {
@@ -276,7 +279,7 @@ private fun MainScreen(
     created: (String) -> Unit = {},
     onLocationClick: (String) -> Unit,
     onCreateNewFolder: (Boolean) -> Unit,
-    onStorageConnect: (Boolean) -> Unit
+    onStorageConnect: (Boolean, String) -> Unit
 ) {
     val keyboardController = LocalFocusManager.current
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
@@ -436,7 +439,7 @@ fun ThirdPartyBlock(
     roomName: State<String>,
     onLocationClick: (String) -> Unit,
     onCreateNewFolder: (Boolean) -> Unit,
-    onStorageConnect: (Boolean) -> Unit
+    onStorageConnect: (Boolean, String) -> Unit
 ) {
     Column {
         val storageName = state?.providerKey?.let(StorageUtils::getStorageTitle)
@@ -445,7 +448,7 @@ fun ThirdPartyBlock(
             AppSwitchItem(
                 title = R.string.room_create_thirdparty_storage_title,
                 checked = storageName != null,
-                onCheck = onStorageConnect
+                onCheck = { onStorageConnect.invoke(it, roomName.value) }
             )
         }
 
@@ -455,7 +458,7 @@ fun ThirdPartyBlock(
                 option = stringResource(id = storageName),
                 enabled = !isEdit,
                 arrowVisible = !isEdit,
-                onClick = { onStorageConnect.invoke(true) }
+                onClick = { onStorageConnect.invoke(true, roomName.value) }
             )
             if (!isEdit) {
                 AppArrowItem(
@@ -669,7 +672,7 @@ private fun MainScreenPreview() {
                 )
             ),
             onCreateNewFolder = {},
-            onStorageConnect = {},
+            onStorageConnect = { _, _ -> },
             onLocationClick = {}
         )
     }

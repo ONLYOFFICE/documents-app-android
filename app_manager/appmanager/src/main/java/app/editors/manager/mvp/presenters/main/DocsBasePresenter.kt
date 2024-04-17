@@ -1388,7 +1388,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             context.contentResolver.delete(uri, null, null)
         }
     }
-
     @SuppressLint("StringFormatInvalid", "StringFormatMatches")
     protected open fun fetchError(throwable: Throwable) {
         if (throwable.message == ProviderError.INTERRUPT) {
@@ -1439,7 +1438,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         } catch (e: Exception) {
             // No need handle
         }
-
         // Get Json error message
         responseMessage?.let {
             StringUtils.getJsonObject(responseMessage)?.let { jsonObject ->
@@ -1465,10 +1463,17 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             when (responseCode) {
                 ApiContract.HttpCodes.CLIENT_UNAUTHORIZED -> viewState.onError(context.getString(R.string.errors_client_unauthorized))
                 ApiContract.HttpCodes.CLIENT_FORBIDDEN -> {
-                    if (errorMessage?.contains(ApiContract.Errors.DISK_SPACE_QUOTA) == true) {
-                        viewState.onError(errorMessage)
-                    } else {
-                        viewState.onError(context.getString(R.string.errors_client_forbidden))
+                    when {
+                        errorMessage?.contains(ApiContract.Errors.DISK_SPACE_QUOTA) == true -> {
+                            viewState.onError(errorMessage)
+                        }
+                        errorMessage?.contains(ApiContract.Errors.STORAGE_NOT_AVAILABLE) == true -> {
+                            viewState.onError(context.getString(R.string.room_storage_not_availabale))
+                            setPlaceholderType(PlaceholderViews.Type.NONE)
+                        }
+                        else -> {
+                            viewState.onError(context.getString(R.string.errors_client_forbidden))
+                        }
                     }
                 }
 

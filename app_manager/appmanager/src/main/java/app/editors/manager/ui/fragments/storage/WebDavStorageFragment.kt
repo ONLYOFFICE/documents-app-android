@@ -7,7 +7,6 @@ import android.view.WindowManager
 import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
-import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.views.storage.ConnectView
 import app.editors.manager.ui.activities.main.MainActivity
@@ -57,11 +56,7 @@ class WebDavStorageFragment : WebDavBaseFragment(), ConnectView {
                 login = it.storageWebDavLoginEdit.text.toString(),
                 password = it.storageWebDavPasswordEdit.text.toString(),
                 isCorporate = parentActivity?.isMySection == false,
-                title = if (parentActivity?.isTitleRequired == true) {
-                    it.storageWebDavTitleEdit.text.toString()
-                } else {
-                    StorageUtils.getStorageTitle(providerKey)?.let(::getString)
-                }
+                title = parentActivity?.title ?: it.storageWebDavTitleEdit.text.toString()
             )
         }
     }
@@ -105,7 +100,7 @@ class WebDavStorageFragment : WebDavBaseFragment(), ConnectView {
             binding.storageWebDavServerEdit.setText(url)
             hideUrlLayout()
 
-            if (parentActivity?.isTitleRequired == true) {
+            if (parentActivity?.title == null) {
                 binding.storageWebDavTitleEdit.setText(title)
                 binding.storageWebDavTitleEdit.setActionDoneListener(this::onSaveClick)
             } else {

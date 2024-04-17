@@ -87,8 +87,8 @@ object ApiContract {
         const val DISK_SPACE_QUOTA = "Disk space quota exceeded"
         const val EXCEED_FILE_SIZE_100 = "Exceeds the maximum file size (100MB)"
         const val EXCEED_FILE_SIZE_25 = "Exceeds the maximum file size (25MB)"
+        const val STORAGE_NOT_AVAILABLE = "The content of third party folder are not available. Try to reconnect the account"
     }
-
     object ShareType {
         const val NONE = "None"
         const val READ_WRITE = "ReadWrite"

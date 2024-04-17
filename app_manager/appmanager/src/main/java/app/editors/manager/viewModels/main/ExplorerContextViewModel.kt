@@ -34,6 +34,7 @@ class ExplorerContextViewModel : ViewModel() {
             state.section.isRoom && state.isRoot -> listOf(
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.RoomInfo,
+                ExplorerContextItem.Reconnect,
                 ExplorerContextItem.Pin(state.pinned),
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.AddUsers,

@@ -114,6 +114,7 @@ class ConnectFragment : BaseAppFragment(), ConnectView {
                 token = token,
                 providerKey = storage?.name,
                 title = storageTitle,
+                providerId = -1,
                 isCorporate = !storageActivity?.isMySection!!
             )
         } else {
