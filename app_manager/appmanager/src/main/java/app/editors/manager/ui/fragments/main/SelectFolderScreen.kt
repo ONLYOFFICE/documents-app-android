@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.PathPart
@@ -33,7 +34,6 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.viewModels.main.SelectFolderViewModel
-import com.google.gson.Gson
 import lib.compose.ui.enabled
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.ActivityIndicatorView
@@ -153,206 +153,19 @@ private fun MainScreen(
 @Preview
 @Composable
 private fun SelectFolderScreenPreview() {
-    val explorer = """
-        {
-        "files": [
-            {
-                "folderId": "dropbox-337",
-                "version": 1,
-                "versionGroup": 1,
-                "contentLength": "7.37 KB",
-                "pureContentLength": 7543,
-                "fileStatus": 0,
-                "mute": false,
-                "viewUrl": "https://testdocs1.onlyoffice.io/filehandler.ashx?action=download&fileid=dropbox-337-L9Cd0L7QstGL0Lkg0LTQvtC60YPQvC5kb2N4",
-                "webUrl": "https://testdocs1.onlyoffice.io/doceditor?fileid=dropbox-337-L9Cd0L7QstGL0Lkg0LTQvtC60YPQvC5kb2N4&version=1",
-                "fileType": 7,
-                "fileExst": ".docx",
-                "thumbnailUrl": "https://testdocs1.onlyoffice.io/filehandler.ashx?action=thumb&fileid=dropbox-337-L9Cd0L7QstGL0Lkg0LTQvtC60YPQvC5kb2N4&version=1&hash=1885173712",
-                "thumbnailStatus": 1,
-                "denyDownload": false,
-                "denySharing": false,
-                "viewAccessibility": {
-                    "ImageView": false,
-                    "MediaView": false,
-                    "WebView": true,
-                    "WebEdit": true,
-                    "WebReview": true,
-                    "WebCustomFilterEditing": false,
-                    "WebRestrictedEditing": false,
-                    "WebComment": true,
-                    "CoAuhtoring": true,
-                    "CanConvert": true,
-                    "MustConvert": false
-                },
-                "id": "dropbox-337-L9Cd0L7QstGL0Lkg0LTQvtC60YPQvC5kb2N4",
-                "rootFolderId": "21364",
-                "canShare": false,
-                "security": {
-                    "Read": true,
-                    "Comment": true,
-                    "FillForms": true,
-                    "Review": true,
-                    "Edit": true,
-                    "Delete": true,
-                    "CustomFilter": true,
-                    "Rename": true,
-                    "ReadHistory": false,
-                    "Lock": true,
-                    "EditHistory": false,
-                    "Copy": true,
-                    "Move": true,
-                    "Duplicate": true,
-                    "SubmitToFormGallery": false,
-                    "Download": true,
-                    "Convert": true
-                },
-                "title": "Новый докум.docx",
-                "access": 0,
-                "shared": false,
-                "created": "2022-11-14T14:26:22.0000000+03:00",
-                "createdBy": {
-                    "id": "ab2b71b5-6c07-4bdb-a0d4-47bde65c6a38",
-                    "displayName": "Test Infp",
-                    "avatarSmall": "/storage/userPhotos/root/ab2b71b5-6c07-4bdb-a0d4-47bde65c6a38_size_32-32.png?hash=2100898975",
-                    "profileUrl": "https://testdocs1.onlyoffice.io/accounts/view/wertyjokas",
-                    "hasAvatar": true
-                },
-                "updated": "2022-11-14T14:26:22.0000000+03:00",
-                "rootFolderType": 14,
-                "updatedBy": {
-                    "id": "ab2b71b5-6c07-4bdb-a0d4-47bde65c6a38",
-                    "displayName": "Test Infp",
-                    "avatarSmall": "/storage/userPhotos/root/ab2b71b5-6c07-4bdb-a0d4-47bde65c6a38_size_32-32.png?hash=2100898975",
-                    "profileUrl": "https://testdocs1.onlyoffice.io/accounts/view/wertyjokas",
-                    "hasAvatar": true
-                },
-                "providerItem": true,
-                "providerKey": "DropboxV2",
-                "providerId": 337
-            }
-        ],
-        "folders": [
-            {
-                "parentId": "dropbox-337",
-                "filesCount": 0,
-                "foldersCount": 0,
-                "new": 0,
-                "mute": false,
-                "pinned": false,
-                "private": false,
-                "id": "dropbox-337-LzEyMw",
-                "rootFolderId": "21364",
-                "canShare": false,
-                "security": {
-                    "Read": true,
-                    "Create": true,
-                    "Delete": true,
-                    "EditRoom": true,
-                    "Rename": true,
-                    "CopyTo": true,
-                    "Copy": true,
-                    "MoveTo": true,
-                    "Move": true,
-                    "Pin": true,
-                    "Mute": true,
-                    "EditAccess": true,
-                    "Duplicate": true,
-                    "Download": true,
-                    "CopySharedLink": true,
-                    "Reconnect": true
-                },
-                "title": "123",
-                "access": 0,
-                "shared": false,
-                "created": "0001-01-01T00:00:00.0000000Z",
-                "createdBy": {
-                    "id": "ab2b71b5-6c07-4bdb-a0d4-47bde65c6a38",
-                    "displayName": "Test Infp",
-                    "avatarSmall": "/storage/userPhotos/root/ab2b71b5-6c07-4bdb-a0d4-47bde65c6a38_size_32-32.png?hash=2100898975",
-                    "profileUrl": "https://testdocs1.onlyoffice.io/accounts/view/wertyjokas",
-                    "hasAvatar": true
-                },
-                "updated": "0001-01-01T00:00:00.0000000Z",
-                "rootFolderType": 14,
-                "updatedBy": {
-                    "id": "ab2b71b5-6c07-4bdb-a0d4-47bde65c6a38",
-                    "displayName": "Test Infp",
-                    "avatarSmall": "/storage/userPhotos/root/ab2b71b5-6c07-4bdb-a0d4-47bde65c6a38_size_32-32.png?hash=2100898975",
-                    "profileUrl": "https://testdocs1.onlyoffice.io/accounts/view/wertyjokas",
-                    "hasAvatar": true
-                },
-                "providerItem": true,
-                "providerKey": "DropboxV2",
-                "providerId": 337
-            }
-        ],
-        "current": {
-            "filesCount": 0,
-            "foldersCount": 0,
-            "new": 0,
-            "mute": false,
-            "pinned": false,
-            "private": false,
-            "id": "dropbox-337",
-            "rootFolderId": "21364",
-            "canShare": false,
-            "security": {
-                "Read": true,
-                "Create": true,
-                "Delete": true,
-                "EditRoom": true,
-                "Rename": true,
-                "CopyTo": true,
-                "Copy": true,
-                "MoveTo": true,
-                "Move": true,
-                "Pin": true,
-                "Mute": true,
-                "EditAccess": true,
-                "Duplicate": true,
-                "Download": true,
-                "CopySharedLink": true,
-                "Reconnect": true
-            },
-            "title": "Dropbox",
-            "access": 0,
-            "shared": false,
-            "created": "2024-04-10T13:57:11.0000000+03:00",
-            "createdBy": {
-                "id": "ab2b71b5-6c07-4bdb-a0d4-47bde65c6a38",
-                "displayName": "Test Infp",
-                "avatarSmall": "/storage/userPhotos/root/ab2b71b5-6c07-4bdb-a0d4-47bde65c6a38_size_32-32.png?hash=2100898975",
-                "profileUrl": "https://testdocs1.onlyoffice.io/accounts/view/wertyjokas",
-                "hasAvatar": true
-            },
-            "updated": "2024-04-10T13:57:11.0000000+03:00",
-            "rootFolderType": 14,
-            "updatedBy": {
-                "id": "ab2b71b5-6c07-4bdb-a0d4-47bde65c6a38",
-                "displayName": "Test Infp",
-                "avatarSmall": "/storage/userPhotos/root/ab2b71b5-6c07-4bdb-a0d4-47bde65c6a38_size_32-32.png?hash=2100898975",
-                "profileUrl": "https://testdocs1.onlyoffice.io/accounts/view/wertyjokas",
-                "hasAvatar": true
-            },
-            "providerItem": true,
-            "providerKey": "DropboxV2",
-            "providerId": 337
-        },
-        "pathParts": [
-            {
-                "id": "dropbox-337",
-                "title": "Dropbox"
-            }
-        ],
-        "startIndex": 0,
-        "count": 9,
-        "total": 9,
-        "new": 0
-    }"""
 
+    val file = CloudFile().apply { title = "Document.docx" }
     val state = rememberSaveable {
-        Gson().fromJson(explorer, Explorer::class.java)
+        Explorer(
+            folders = mutableListOf(
+                CloudFolder().apply { title = "Folder 1" },
+                CloudFolder().apply { title = "Folder 2" }
+            ),
+            files = mutableListOf(
+                file,
+                file
+            )
+        )
     }
 
     ManagerTheme {

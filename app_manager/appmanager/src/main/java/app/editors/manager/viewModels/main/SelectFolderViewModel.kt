@@ -38,7 +38,12 @@ class SelectFolderViewModel(private val managerRepository: ManagerRepository) : 
                     }
                 }
             } catch (_: Exception) {
-
+                _state.update {
+                    it.copy(
+                        loading = false,
+                        items = emptyList()
+                    )
+                }
             }
         }
     }

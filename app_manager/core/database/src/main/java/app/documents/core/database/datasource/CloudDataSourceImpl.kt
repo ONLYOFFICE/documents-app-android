@@ -18,7 +18,7 @@ internal class CloudDataSourceImpl(private val db: CloudDatabase) : CloudDataSou
     private var _initTimestamp: Long = 0L
 
     init {
-         db.addObserver { _initTimestamp = System.currentTimeMillis() }
+        db.addObserver { _initTimestamp = System.currentTimeMillis() }
     }
 
     override suspend fun getAccount(id: String): CloudAccount? {
