@@ -35,7 +35,6 @@ object AccountModule {
     }
 
     @Provides
-    @Singleton
     fun provideAccountOnline(
         cloudDataSource: CloudDataSource,
         accountPreferences: AccountPreferences
@@ -48,7 +47,6 @@ object AccountModule {
 
     @Provides
     @Token
-    @Singleton
     fun provideToken(
         accountManager: AccountManager,
         cloudAccount: CloudAccount?
