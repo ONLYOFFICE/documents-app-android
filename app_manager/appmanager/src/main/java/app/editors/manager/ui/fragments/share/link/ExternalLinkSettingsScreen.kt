@@ -164,8 +164,9 @@ private fun MainScreen(
         ) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 val context = LocalContext.current
-                val title = remember { mutableStateOf<String?>(link.title) }
-                val password = remember { mutableStateOf(link.password) }
+                val title = remember { mutableStateOf(link.title) }
+                val password = remember { mutableStateOf(link.password.orEmpty()) }
+                val passwordEnabled = remember { mutableStateOf(!link.password.isNullOrEmpty()) }
                 var denyDownload by remember { mutableStateOf(link.denyDownload) }
                 var expirationString by remember { mutableStateOf(link.expirationDate) }
                 var expirationDate by remember { mutableStateOf(TimeUtils.parseDate(expirationString)) }
@@ -190,17 +191,19 @@ private fun MainScreen(
 
                 AppHeaderItem(title = R.string.rooms_info_link_name)
                 AppTextFieldListItem(
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     state = title,
                     hint = stringResource(id = lib.toolkit.base.R.string.text_hint_required)
                 )
                 AppHeaderItem(title = R.string.context_protection_title)
                 AppSwitchItem(
                     title = R.string.rooms_info_password_access,
-                    checked = password.value != null,
-                    onCheck = { checked -> password.value = if (checked) "" else null }
+                    checked = passwordEnabled.value,
+                    onCheck = { checked -> passwordEnabled.value = checked; password.value = "" }
                 )
-                AnimatedVisibilityVerticalFade(visible = password.value != null) {
+                AnimatedVisibilityVerticalFade(visible = passwordEnabled.value) {
                     AppTextFieldListItem(
+                        modifier = Modifier.padding(horizontal = 16.dp),
                         state = password,
                         hint = stringResource(id = R.string.login_enterprise_password_hint),
                         isPassword = true

@@ -2,17 +2,20 @@ package app.editors.manager.mvp.presenters.filter
 
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.user.Thirdparty
 import app.editors.manager.app.App
+import app.editors.manager.app.api
 import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.app.roomApi
 import app.editors.manager.mvp.models.filter.FilterAuthor
+import app.editors.manager.mvp.models.filter.FilterProvider
 import app.editors.manager.mvp.models.filter.RoomFilterTag
 import app.editors.manager.mvp.models.filter.RoomFilterType
+import app.editors.manager.mvp.models.filter.joinToString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import moxy.presenterScope
-import org.json.JSONArray
 
 class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
 
@@ -22,7 +25,7 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
             update()
         }
 
-    var filterTag: RoomFilterTag? = null
+    var filterTags: List<RoomFilterTag> = emptyList()
         set(value) {
             field = value
             update()
@@ -34,28 +37,63 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
             update()
         }
 
-    override val hasFilter: Boolean
-        get() = preferenceTool.filter.roomType != RoomFilterType.None || filterAuthor != FilterAuthor() || filterTag != null
+    var filterProvider: FilterProvider? = null
+        set(value) {
+            field = value
+            update()
+        }
 
-    private val filters: Map<String, String> get() = mutableMapOf<String, String>().apply {
-        put(ApiContract.Parameters.ARG_FILTER_BY_SUBJECT_ID, filterAuthor.id)
-        if (filterType != RoomFilterType.None)
-            put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filterType.filterVal.toString())
-        if (filterTag != null)
-            put(ApiContract.Parameters.ARG_FILTER_BY_TAG_ROOM, (JSONArray(arrayOf(filterTag?.value ?: "")).toString()))
-    }
+    override val hasFilter: Boolean
+        get() = preferenceTool.filter.roomType != RoomFilterType.None || filterAuthor != FilterAuthor() ||
+                filterTags.isNotEmpty() || filterProvider != null
+
+    private val filters: Map<String, String>
+        get() = mutableMapOf<String, String>().apply {
+            put(ApiContract.Parameters.ARG_FILTER_BY_SUBJECT_ID, filterAuthor.id)
+            if (!filterProvider?.storage?.filterValue.isNullOrEmpty()) {
+                put(
+                    ApiContract.Parameters.ARG_FILTER_BY_PROVIDER_ROOM,
+                    filterProvider?.storage?.filterValue.orEmpty()
+                )
+            }
+            if (filterType != RoomFilterType.None) {
+                put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filterType.filterVal.toString())
+            }
+            if (filterTags.isNotEmpty()) {
+                put(ApiContract.Parameters.ARG_FILTER_BY_TAG_ROOM, filterTags.joinToString())
+            }
+        }
 
     init {
         App.getApp().appComponent.inject(this)
-        loadFilter()
     }
 
     override fun loadFilter() {
         val filter = preferenceTool.filter
         filterType = filter.roomType
         filterAuthor = filter.author
+        filterProvider = filter.provider?.let { FilterProvider(it) }
+        filterTags = filter.tags
 
         getTags()
+        getThirdParty()
+    }
+
+    private fun getThirdParty() {
+        presenterScope.launch {
+            val thirdPartyList = context.api
+                .getThirdPartyList()
+                .response
+                .map(Thirdparty::providerKey)
+            if (thirdPartyList.isEmpty()) return@launch
+
+            val uniqueList = mutableListOf<String>()
+            thirdPartyList.forEach { if (!uniqueList.contains(it) && it != null) uniqueList.add(it) }
+
+            withContext(Dispatchers.Main) {
+                viewState.onThirdPartyLoaded(uniqueList)
+            }
+        }
     }
 
     private fun getTags() {
@@ -71,7 +109,13 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
     }
 
     override fun saveFilter() {
-        preferenceTool.filter = preferenceTool.filter.copy(roomType = filterType, author = filterAuthor, tag = filterTag)
+        preferenceTool.filter =
+            preferenceTool.filter.copy(
+                roomType = filterType,
+                author = filterAuthor,
+                tags = filterTags,
+                provider = filterProvider?.storage
+            )
     }
 
     override fun update(initialCall: Boolean) {
@@ -92,7 +136,8 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
     override fun reset() {
         filterType = RoomFilterType.None
         filterAuthor = FilterAuthor()
-        filterTag = null
+        filterTags = emptyList()
+        filterProvider = null
         viewState.onFilterReset()
     }
 

@@ -8,22 +8,31 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.*
+import android.webkit.CookieManager
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.documents.core.network.common.contracts.StorageContract
 import app.documents.core.network.common.models.Storage
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentStorageWebBinding
-import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.StorageUtils
+import app.editors.manager.mvp.presenters.storage.ConnectPresenter
+import app.editors.manager.mvp.views.storage.ConnectView
+import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import lib.toolkit.base.managers.utils.NetworkUtils
 import lib.toolkit.base.managers.utils.getParcelableExt
-import javax.inject.Inject
+import lib.toolkit.base.ui.dialogs.common.CommonDialog
+import moxy.presenter.InjectPresenter
 
-class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener {
+class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener, ConnectView {
 
     private var url: String? = null
     private var storage: Storage? = null
@@ -32,8 +41,11 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
     private var viewBinding: FragmentStorageWebBinding? = null
     private var webView: WebView? = null
 
-    @Inject
-    lateinit var preferenceTool: PreferenceTool
+    private val storageActivity: StorageActivity?
+        get() = activity as? StorageActivity
+
+    @InjectPresenter
+    lateinit var connectPresenter: ConnectPresenter
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -90,7 +102,7 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
             )
             webView = it.webStorageWebview.apply {
                 settings.javaScriptEnabled = true
-//                settings.setAppCacheEnabled(false)
+                //                settings.setAppCacheEnabled(false)
                 settings.cacheMode = WebSettings.LOAD_NO_CACHE
                 settings.userAgentString = getString(R.string.google_user_agent)
                 webViewClient = WebViewCallbacks()
@@ -149,11 +161,7 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
                 val uri = Uri.parse(url)
                 val token = uri.getQueryParameter(StorageContract.ARG_CODE)
                 if (token?.equals("null", ignoreCase = true) == false) {
-                    showFragment(
-                        ConnectFragment.newInstance(token, storage),
-                        ConnectFragment.TAG,
-                        false
-                    )
+                    connectStorage(token)
                 }
             }
         }
@@ -177,11 +185,54 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
         }
     }
 
+    override fun onCancelClick(dialogs: CommonDialog.Dialogs?, tag: String?) {
+        super.onCancelClick(dialogs, tag)
+        if (tag == TAG_CANCEL_DIALOG) {
+            connectPresenter.cancelRequest()
+        }
+    }
+
+    private fun connectStorage(token: String) {
+        val storageActivity = activity as StorageActivity
+        if (storageActivity.title == null && !storageActivity.isRoomStorage) {
+            showFragment(
+                ConnectFragment.newInstance(token, storage),
+                ConnectFragment.TAG,
+                false
+            )
+        } else if (storageActivity.isRoomStorage) {
+            showWaitingDialog(
+                getString(R.string.dialogs_wait_title_storage),
+                getString(R.string.dialogs_common_cancel_button),
+                TAG_CANCEL_DIALOG
+            )
+            if (storageActivity.providerId >= 0) {
+                connectPresenter.reconnectService(
+                    token = token,
+                    providerKey = storage?.name,
+                    title = storageActivity.title,
+                    providerId = storageActivity.providerId,
+                    isCorporate = false,
+                    isRoomStorage = true
+                )
+            } else {
+                connectPresenter.connectService(
+                    token = token,
+                    providerKey = storage?.name,
+                    title = storage?.name?.let(StorageUtils::getStorageTitle)?.let(::getString),
+                    isCorporate = false,
+                    isRoomStorage = true
+                )
+            }
+        }
+    }
+
     companion object {
         val TAG: String = WebTokenFragment::class.java.simpleName
         private const val TAG_STORAGE = "TAG_MEDIA"
         private const val TAG_WEB_VIEW = "TAG_WEB_VIEW"
         private const val TAG_PAGE_LOAD = "TAG_PAGE_LOAD"
+        private const val TAG_CANCEL_DIALOG = "TAG_CANCEL_DIALOG"
 
         fun newInstance(storage: Storage?): WebTokenFragment =
             WebTokenFragment().apply {
@@ -189,5 +240,17 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
                     putParcelable(TAG_STORAGE, storage)
                 }
             }
+    }
+
+    override fun onError(message: String?) {
+        message?.let { showSnackBar(it) }
+    }
+
+    override fun onUnauthorized(message: String?) {
+        message?.let { showSnackBar(it) }
+    }
+
+    override fun onConnect(folder: CloudFolder?) {
+        storageActivity?.finishWithResult(folder)
     }
 }

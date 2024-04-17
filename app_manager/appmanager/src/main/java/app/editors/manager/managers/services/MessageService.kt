@@ -6,7 +6,6 @@ import android.net.Uri
 import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
 import app.editors.manager.app.appComponent
-import app.editors.manager.app.coreComponent
 import app.editors.manager.managers.utils.NotificationUtils
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -88,7 +87,7 @@ class MessageService : FirebaseMessagingService() {
         applicationContext.appComponent.preference.deviceMessageToken = p0
         CoroutineScope(Dispatchers.Default).launch {
             App.getApp().refreshLoginComponent(null)
-            applicationContext.coreComponent.cloudDataSource.getAccounts().forEach { account ->
+            applicationContext.appComponent.cloudDataSource.getAccounts().forEach { account ->
                 val token: String? = AccountUtils.getToken(applicationContext, account.accountName)
                 if (!token.isNullOrEmpty()) {
                     App.getApp().loginComponent.cloudLoginRepository.registerDevice(account.portal.urlWithScheme, token, p0)

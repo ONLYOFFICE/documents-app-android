@@ -8,11 +8,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -33,12 +28,6 @@ fun AppSwitchItem(
     singleLine: Boolean = true,
     onCheck: (Boolean) -> Unit
 ) {
-    var checkedState by remember { mutableStateOf(checked) }
-
-    SideEffect {
-        checkedState = checked
-    }
-
     AppListItem(
         modifier = modifier,
         title = title,
@@ -49,20 +38,14 @@ fun AppSwitchItem(
         dividerVisible = dividerVisible,
         enabled = enabled,
         singleLine = singleLine,
+        onClick = { onCheck(!checked) },
         endContent = {
             Switch(
-                checked = checkedState,
+                checked = checked,
                 enabled = enabled,
-                onCheckedChange = {
-                    checkedState = !checkedState
-                    onCheck(checkedState)
-                },
+                onCheckedChange = onCheck,
                 colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colors.primary)
             )
-        },
-        onClick = {
-            checkedState = !checkedState
-            onCheck(checkedState)
         }
     )
 }

@@ -83,8 +83,21 @@ abstract class BaseAppFragment : BaseFragment() {
         show(this, item)
     }
 
-    protected fun showStorageActivity(isMySection: Boolean) {
-        show(this, isMySection)
+    protected fun showStorageActivity(
+        isMySection: Boolean,
+        isRoom: Boolean = false,
+        title: String? = null,
+        providerKey: String? = null,
+        providerId: Int = -1
+    ) {
+        show(
+            fragment = this,
+            isMySection = isMySection,
+            isRoomStorage = isRoom,
+            title = title,
+            providerKey = providerKey,
+            providerId = providerId
+        )
     }
 
     protected fun getDialogFragment(): IBaseDialogFragment? {

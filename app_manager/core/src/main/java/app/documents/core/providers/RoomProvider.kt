@@ -18,12 +18,16 @@ import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.Invitation
 import app.documents.core.network.share.models.request.RequestCreateSharedLink
+import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.RequestUpdateSharedLink
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -79,6 +83,18 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return response.body()?.response?.id ?: ""
     }
 
+    suspend fun createThirdPartyRoom(folderId: String, title: String, asNewFolder: Boolean): String {
+        val response = roomService.createThirdPartyRoom(
+            folderId,
+            RequestCreateThirdPartyRoom(
+                title = title,
+                roomType = ApiContract.RoomType.PUBLIC_ROOM,
+                createAsNewFolder = asNewFolder
+            )
+        )
+        return response.body()?.response?.id ?: ""
+    }
+
     fun deleteRoom(id: String = "", items: List<String>? = null): Observable<BaseResponse> {
         return if (items != null && id.isEmpty()) {
             Observable.fromIterable(items)
@@ -100,9 +116,11 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
     suspend fun addTags(id: String, tags: List<String>): Boolean {
         val existTags = roomService.getTags().tags
-        tags.forEach { newTag ->
-            if (!existTags.contains(newTag)) {
-                roomService.createTag(RequestCreateTag(newTag))
+        withContext(Dispatchers.IO) {
+            tags.forEach { newTag ->
+                if (!existTags.contains(newTag)) {
+                    launch { roomService.createTag(RequestCreateTag(newTag)) }
+                }
             }
         }
         return roomService.addTags(id, RequestAddTags(tags.toTypedArray())).isSuccessful

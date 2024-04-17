@@ -18,6 +18,7 @@ import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.room.models.ResponseRoomShare
 import app.documents.core.network.room.models.ResponseTags
 import app.documents.core.network.room.models.ResponseUpdateExternalLink
+import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.request.RequestCreateSharedLink
 import app.documents.core.network.share.models.request.RequestRoomShare
@@ -264,4 +265,13 @@ interface RoomService {
         @Body body: RequestRoomShare
     ): Response<ResponseBody>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/files/rooms/thirdparty/{id}")
+    suspend fun createThirdPartyRoom(
+        @Path(value = "id") id: String,
+        @Body body: RequestCreateThirdPartyRoom
+    ): Response<ResponseCreateFolder>
 }

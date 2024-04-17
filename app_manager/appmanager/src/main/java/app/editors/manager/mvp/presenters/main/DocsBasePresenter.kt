@@ -41,6 +41,7 @@ import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.RoomFilterType
+import app.editors.manager.mvp.models.filter.joinToString
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
@@ -789,6 +790,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                     if (filter.roomType != RoomFilterType.None) {
                         put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filter.roomType.filterVal.toString())
                     }
+                    if (filter.provider != null) {
+                        put(ApiContract.Parameters.ARG_FILTER_BY_PROVIDER_ROOM, filter.provider?.filterValue.orEmpty())
+                    }
+                    if (filter.tags.isNotEmpty()) {
+                        put(ApiContract.Parameters.ARG_FILTER_BY_TAG_ROOM, filter.tags.joinToString())
+                    }
                     put(ApiContract.Parameters.ARG_FILTER_BY_SUBJECT_ID, filter.author.id)
                 } else {
                     put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
@@ -1381,7 +1388,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             context.contentResolver.delete(uri, null, null)
         }
     }
-
     @SuppressLint("StringFormatInvalid", "StringFormatMatches")
     protected open fun fetchError(throwable: Throwable) {
         if (throwable.message == ProviderError.INTERRUPT) {
@@ -1432,7 +1438,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         } catch (e: Exception) {
             // No need handle
         }
-
         // Get Json error message
         responseMessage?.let {
             StringUtils.getJsonObject(responseMessage)?.let { jsonObject ->
@@ -1458,10 +1463,17 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             when (responseCode) {
                 ApiContract.HttpCodes.CLIENT_UNAUTHORIZED -> viewState.onError(context.getString(R.string.errors_client_unauthorized))
                 ApiContract.HttpCodes.CLIENT_FORBIDDEN -> {
-                    if (errorMessage?.contains(ApiContract.Errors.DISK_SPACE_QUOTA) == true) {
-                        viewState.onError(errorMessage)
-                    } else {
-                        viewState.onError(context.getString(R.string.errors_client_forbidden))
+                    when {
+                        errorMessage?.contains(ApiContract.Errors.DISK_SPACE_QUOTA) == true -> {
+                            viewState.onError(errorMessage)
+                        }
+                        errorMessage?.contains(ApiContract.Errors.STORAGE_NOT_AVAILABLE) == true -> {
+                            viewState.onError(context.getString(R.string.room_storage_not_availabale))
+                            setPlaceholderType(PlaceholderViews.Type.NONE)
+                        }
+                        else -> {
+                            viewState.onError(context.getString(R.string.errors_client_forbidden))
+                        }
                     }
                 }
 

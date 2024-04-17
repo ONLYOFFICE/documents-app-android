@@ -236,7 +236,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             }
         }
 
-        App.getApp().coreComponent
+        App.getApp().appComponent
             .recentDataSource.getRecentListFlow()
             .flowWithLifecycle(lifecycle)
             .onEach { viewBinding.bottomNavigation.menu.getItem(0).isEnabled = it.isNotEmpty() }

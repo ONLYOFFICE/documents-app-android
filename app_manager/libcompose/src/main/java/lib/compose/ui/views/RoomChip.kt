@@ -26,13 +26,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.ManagerTheme
-import java.util.UUID
 
 @Immutable
-data class ChipData(
-    val text: String,
-    val id: String = UUID.randomUUID().toString()
-)
+class ChipData(val text: String)
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

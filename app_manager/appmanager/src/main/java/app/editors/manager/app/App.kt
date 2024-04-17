@@ -8,8 +8,6 @@ import android.os.Build
 import android.os.Process
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
-import app.documents.core.di.dagger.CoreComponent
-import app.documents.core.di.dagger.DaggerCoreComponent
 import app.documents.core.login.LoginComponent
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
@@ -100,16 +98,10 @@ class App : Application() {
             "LoginComponent component can't be null"
         }
 
-    private var _coreComponent: CoreComponent? = null
-    val coreComponent: CoreComponent
-        get() = checkNotNull(_coreComponent) {
-            "CoreComponent component can't be null"
-        }
-
-    override fun attachBaseContext(base: Context?) {
+    override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
         sApp = this
-        initDagger()
+        initDagger(base)
         accountsMigrate()
         needPasscodeToUnlock = appComponent.preference.passcodeLock.enabled
     }
@@ -117,9 +109,9 @@ class App : Application() {
     private fun accountsMigrate() {
         refreshLoginComponent(null)
         if (ActivitiesUtils.isPackageExist(this, "com.onlyoffice.projects")) {
-            coreComponent.accountHelper.copyData()
+            appComponent.accountHelper.copyData()
         }
-        coreComponent.migrationHelper.migrate()
+        appComponent.migrationHelper.migrate()
         _loginComponent = null
     }
 
@@ -135,7 +127,6 @@ class App : Application() {
         _dropboxComponent = DaggerDropboxComponent
             .builder()
             .appComponent(appComponent)
-            .coreComponent(coreComponent)
             .build()
     }
 
@@ -154,14 +145,14 @@ class App : Application() {
     }
 
     fun refreshLoginComponent(portal: CloudPortal?) {
-        _loginComponent = coreComponent
+        _loginComponent = appComponent
             .loginComponent()
             .create(portal)
     }
 
-    fun refreshCoreComponent() {
-        _coreComponent = DaggerCoreComponent.builder()
-            .context(this)
+    fun refreshAppComponent(context: Context) {
+        _appComponent = DaggerAppComponent.builder()
+            .context(context)
             .build()
     }
 
@@ -216,13 +207,8 @@ class App : Application() {
         return ""
     }
 
-    private fun initDagger() {
-        refreshCoreComponent()
-        _appComponent = DaggerAppComponent.builder()
-            .context(context = this)
-            .coreComponent(coreComponent)
-            .build()
-
+    private fun initDagger(context: Context) {
+        refreshAppComponent(context)
         refreshDropboxInstance()
         refreshGoogleDriveInstance()
         refreshOneDriveInstance()
@@ -249,12 +235,6 @@ val Context.appComponent: AppComponent
         else -> this.applicationContext.appComponent
     }
 
-val Context.coreComponent: CoreComponent
-    get() = when (this) {
-        is App -> this.coreComponent
-        else -> this.applicationContext.coreComponent
-    }
-
 val Context.oneDriveProvider: OneDriveProvider
     get() = when (this) {
         is App -> oneDriveComponent.oneDriveProvider
@@ -275,48 +255,48 @@ val Context.googleDriveProvider: GoogleDriveProvider
 
 val Context.api: ManagerService
     get() = when (this) {
-        is App -> coreComponent.managerService
+        is App -> appComponent.managerService
         else -> applicationContext.api
     }
 
 val Context.roomApi: RoomService
     get() = when (this) {
-        is App -> coreComponent.roomService
+        is App -> appComponent.roomService
         else -> applicationContext.roomApi
     }
 
 val Context.webDavApi: WebDavService
     get() = when (this) {
-        is App -> coreComponent.webDavService
+        is App -> appComponent.webDavService
         else -> applicationContext.webDavApi
     }
 
 val Context.shareApi: ShareService
     get() = when (this) {
-        is App -> coreComponent.shareService
+        is App -> appComponent.shareService
         else -> applicationContext.shareApi
     }
 
 val Context.cloudFileProvider: CloudFileProvider
     get() = when (this) {
-        is App -> coreComponent.cloudFileProvider
+        is App -> appComponent.cloudFileProvider
         else -> applicationContext.cloudFileProvider
     }
 
 val Context.localFileProvider: LocalFileProvider
     get() = when (this) {
-        is App -> coreComponent.localFileProvider
+        is App -> appComponent.localFileProvider
         else -> applicationContext.localFileProvider
     }
 
 val Context.webDavFileProvider: WebDavFileProvider
     get() = when (this) {
-        is App -> coreComponent.webDavFileProvider
+        is App -> appComponent.webDavFileProvider
         else -> applicationContext.webDavFileProvider
     }
 
 val Context.roomProvider: RoomProvider
     get() = when (this) {
-        is App -> coreComponent.roomProvider
+        is App -> appComponent.roomProvider
         else -> applicationContext.roomProvider
     }
