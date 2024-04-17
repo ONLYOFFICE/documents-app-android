@@ -32,6 +32,24 @@ class ConnectPresenter : BasePresenter<ConnectView>() {
     fun connectService(
         token: String?,
         providerKey: String?,
+        title: String?,
+        isCorporate: Boolean,
+        isRoomStorage: Boolean = false
+    ) {
+        connectStorage(
+            RequestStorage(
+                token = token,
+                providerKey = providerKey,
+                customerTitle = title,
+                corporate = isCorporate,
+                isRoomStorage = isRoomStorage
+            )
+        )
+    }
+
+    fun reconnectService(
+        token: String?,
+        providerKey: String?,
         providerId: Int,
         title: String?,
         isCorporate: Boolean,

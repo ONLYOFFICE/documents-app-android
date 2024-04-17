@@ -65,7 +65,7 @@ class StorageActivity : BaseAppActivity(), WebDavInterface {
     }
 
     override fun finishWithResult(folder: CloudFolder?) {
-        if (title == null && providerId == -1 && !isRoomStorage) {
+        if (title == null && providerId == -1) {
             val intent = Intent().apply { putExtra(TAG_RESULT, folder) }
             setResult(Activity.RESULT_OK, intent)
         }
@@ -120,11 +120,11 @@ class StorageActivity : BaseAppActivity(), WebDavInterface {
 
         fun getIntent(
             context: Context,
-            isMySection: Boolean,
-            isRoomStorage: Boolean,
-            title: String?,
-            providerKey: String?,
-            providerId: Int?
+            isMySection: Boolean = true,
+            isRoomStorage: Boolean = true,
+            title: String? = null,
+            providerKey: String? = null,
+            providerId: Int? = null
         ): Intent {
             return Intent(context, StorageActivity::class.java).apply {
                 putExtra(TAG_SECTION, isMySection)

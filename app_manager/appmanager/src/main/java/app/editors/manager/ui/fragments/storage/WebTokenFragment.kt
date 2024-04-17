@@ -193,27 +193,37 @@ class WebTokenFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener
     }
 
     private fun connectStorage(token: String) {
-        val storageActivity = activity as? StorageActivity
-        if (storageActivity?.title == null) {
+        val storageActivity = activity as StorageActivity
+        if (storageActivity.title == null && !storageActivity.isRoomStorage) {
             showFragment(
                 ConnectFragment.newInstance(token, storage),
                 ConnectFragment.TAG,
                 false
             )
-        } else {
+        } else if (storageActivity.isRoomStorage) {
             showWaitingDialog(
                 getString(R.string.dialogs_wait_title_storage),
                 getString(R.string.dialogs_common_cancel_button),
                 TAG_CANCEL_DIALOG
             )
-            connectPresenter.connectService(
-                token = token,
-                providerKey = storage?.name,
-                title = storageActivity.title,
-                providerId = storageActivity.providerId,
-                isCorporate = !storageActivity.isMySection,
-                isRoomStorage = storageActivity.isRoomStorage
-            )
+            if (storageActivity.providerId >= 0) {
+                connectPresenter.reconnectService(
+                    token = token,
+                    providerKey = storage?.name,
+                    title = storageActivity.title,
+                    providerId = storageActivity.providerId,
+                    isCorporate = false,
+                    isRoomStorage = true
+                )
+            } else {
+                connectPresenter.connectService(
+                    token = token,
+                    providerKey = storage?.name,
+                    title = storage?.name?.let(StorageUtils::getStorageTitle)?.let(::getString),
+                    isCorporate = false,
+                    isRoomStorage = true
+                )
+            }
         }
     }
 
