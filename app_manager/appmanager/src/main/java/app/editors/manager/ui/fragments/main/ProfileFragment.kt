@@ -33,7 +33,7 @@ import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTextButton
-import lib.editors.gbase.ui.fragments.base.NestedColumn
+import lib.compose.ui.views.NestedColumn
 import lib.toolkit.base.managers.utils.putArgs
 
 class ProfileFragment : BaseAppFragment() {
@@ -58,7 +58,7 @@ class ProfileFragment : BaseAppFragment() {
 
     private val accountDialogFragment: IBaseDialogFragment? get() = getDialogFragment()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext())
     }
 
