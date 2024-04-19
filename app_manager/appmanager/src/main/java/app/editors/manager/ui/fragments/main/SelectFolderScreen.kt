@@ -63,6 +63,7 @@ fun SelectFolderScreen(
     }
 
     AppScaffold(
+        useTablePaddings = false,
         topBar = {
             AppTopBar(
                 title = {
