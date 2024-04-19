@@ -224,6 +224,7 @@ private fun ShareSettingsScreen(
     onBack: () -> Unit
 ) {
     AppScaffold(
+        useTablePaddings = false,
         topBar = {
             AppTopBar(title = R.string.share_title_main, backListener = onBack)
         }
