@@ -41,6 +41,7 @@ import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.RoomFilterType
+import app.editors.manager.mvp.models.filter.joinToString
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
@@ -588,18 +589,16 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     open fun download(downloadTo: Uri) {
-        viewState.checkNotificationPermission {
-            if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
-                viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
-            } else if (modelExplorerStack.countSelectedItems > 0) {
-                downloadSelected(downloadTo)
-            } else {
-                itemClicked?.let { item ->
+        if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
+            viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
+        } else if (modelExplorerStack.countSelectedItems > 0) {
+            downloadSelected(downloadTo)
+        } else {
+            itemClicked?.let { item ->
 
-                    when (item) {
-                        is CloudFolder -> bulkDownload(null, listOf(item), downloadTo)
-                        is CloudFile -> startDownloadWork(downloadTo, item.id, item.viewUrl, null)
-                    }
+                when (item) {
+                    is CloudFolder -> bulkDownload(null, listOf(item), downloadTo)
+                    is CloudFile -> startDownloadWork(downloadTo, item.id, item.viewUrl, null)
                 }
             }
         }
@@ -790,6 +789,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 if (ApiContract.SectionType.isRoom(currentSectionType) && isRoot) {
                     if (filter.roomType != RoomFilterType.None) {
                         put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filter.roomType.filterVal.toString())
+                    }
+                    if (filter.provider != null) {
+                        put(ApiContract.Parameters.ARG_FILTER_BY_PROVIDER_ROOM, filter.provider?.filterValue.orEmpty())
+                    }
+                    if (filter.tags.isNotEmpty()) {
+                        put(ApiContract.Parameters.ARG_FILTER_BY_TAG_ROOM, filter.tags.joinToString())
                     }
                     put(ApiContract.Parameters.ARG_FILTER_BY_SUBJECT_ID, filter.author.id)
                 } else {
@@ -1053,6 +1058,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 updateViewsState()
                 return true
             }
+
             isFilteringMode -> {
                 setFiltering(false)
                 if (modelExplorerStack.isStackFilter) {
@@ -1061,6 +1067,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 updateViewsState()
                 return true
             }
+
             else -> {
                 popBackStack()
                 updateViewsState()
@@ -1381,7 +1388,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             context.contentResolver.delete(uri, null, null)
         }
     }
-
     @SuppressLint("StringFormatInvalid", "StringFormatMatches")
     protected open fun fetchError(throwable: Throwable) {
         if (throwable.message == ProviderError.INTERRUPT) {
@@ -1432,7 +1438,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         } catch (e: Exception) {
             // No need handle
         }
-
         // Get Json error message
         responseMessage?.let {
             StringUtils.getJsonObject(responseMessage)?.let { jsonObject ->
@@ -1458,18 +1463,28 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             when (responseCode) {
                 ApiContract.HttpCodes.CLIENT_UNAUTHORIZED -> viewState.onError(context.getString(R.string.errors_client_unauthorized))
                 ApiContract.HttpCodes.CLIENT_FORBIDDEN -> {
-                    if (errorMessage?.contains(ApiContract.Errors.DISK_SPACE_QUOTA) == true) {
-                        viewState.onError(errorMessage)
-                    } else {
-                        viewState.onError(context.getString(R.string.errors_client_forbidden))
+                    when {
+                        errorMessage?.contains(ApiContract.Errors.DISK_SPACE_QUOTA) == true -> {
+                            viewState.onError(errorMessage)
+                        }
+                        errorMessage?.contains(ApiContract.Errors.STORAGE_NOT_AVAILABLE) == true -> {
+                            viewState.onError(context.getString(R.string.room_storage_not_availabale))
+                            setPlaceholderType(PlaceholderViews.Type.NONE)
+                        }
+                        else -> {
+                            viewState.onError(context.getString(R.string.errors_client_forbidden))
+                        }
                     }
                 }
+
                 ApiContract.HttpCodes.CLIENT_NOT_FOUND -> {
                     viewState.onError(context.getString(R.string.errors_client_host_not_found))
                 }
+
                 ApiContract.HttpCodes.CLIENT_PAYMENT_REQUIRED -> {
                     viewState.onError(context.getString(R.string.errors_client_payment_required))
                 }
+
                 else -> viewState.onError(context.getString(R.string.errors_client_error) + responseCode)
             }
         } else if (responseCode >= ApiContract.HttpCodes.SERVER_ERROR) {
@@ -1506,9 +1521,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             is UnknownHostException -> {
                 viewState.onError(context.getString(R.string.errors_unknown_host_error))
             }
+
             is SSLHandshakeException -> {
                 viewState.onError(context.getString(R.string.errors_ssl_error))
             }
+
             else -> {
                 throwable?.let {
                     addCrash(BasePresenter::class.java.simpleName + " - method - onFailureHandle()")

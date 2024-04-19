@@ -16,7 +16,7 @@ enum class FilterType(override val chipTitle: Int, val filterVal: String) : Chip
     None(-1, ApiContract.Parameters.VAL_FILTER_BY_NONE);
 
     override val withOption: Boolean = false
-    override var option: Any? = null
+    override var option: String? = null
 
     companion object {
 

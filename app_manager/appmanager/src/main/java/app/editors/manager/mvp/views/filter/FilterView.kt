@@ -20,4 +20,7 @@ interface FilterView : BaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onTagsLoaded(tags: Array<String>) {}
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onThirdPartyLoaded(providerKeys: List<String>) {}
 }

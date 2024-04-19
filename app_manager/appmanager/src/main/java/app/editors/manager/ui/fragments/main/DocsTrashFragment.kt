@@ -157,10 +157,9 @@ class DocsTrashFragment : DocsCloudFragment() {
 
     companion object {
 
-        fun newInstance(stringAccount: String, section: Int, rootPath: String): DocsCloudFragment {
+        fun newInstance(section: Int, rootPath: String): DocsCloudFragment {
             return DocsTrashFragment().apply {
-                arguments = Bundle(3).apply {
-                    putString(KEY_ACCOUNT, stringAccount)
+                arguments = Bundle(2).apply {
                     putString(KEY_PATH, rootPath)
                     putInt(KEY_SECTION, section)
                 }

@@ -12,4 +12,10 @@
     <string name="sizes_megabytes">ເມກະໄບຕ໌</string>
     <string name="sizes_gigabytes">ກິກກະໄບຕ໌</string>
     <string name="sizes_terabytes">ເຕລາໄບຕ໌</string>
+    <string name="common_accept">ຍອມຮັບ</string>
+    <string name="common_cancel">ຍົກເລີກ</string>
+    <string name="common_next">ຕໍ່ໄປ</string>
+    <string name="common_previous">ກ່ອນໜ້າ</string>
+    <string name="common_done">ສຳເລັດ</string>
+    <string name="common_ok">ໂອເຄ</string>
 </resources>

@@ -46,13 +46,13 @@ class CloudFilterFragment : BaseFilterFragment() {
     private val usersChipItem = object : ChipItem {
         override val chipTitle: Int = R.string.share_add_common_header_users
         override val withOption: Boolean = true
-        override var option: Any? = null
+        override var option: String? = null
     }
 
     private val groupsChipItem = object : ChipItem {
         override val chipTitle: Int = R.string.share_add_common_header_groups
         override val withOption: Boolean = true
-        override var option: Any? = null
+        override var option: String? = null
     }
 
     override fun initViews() {
@@ -82,9 +82,11 @@ class CloudFilterFragment : BaseFilterFragment() {
     }
 
     private fun initChipGroups() {
-        typeChipGroup = SingleChoiceChipGroupView(requireContext()).apply {
-            setTitle(R.string.filter_title_type)
-            setChips(FilterType.allTypes, presenter.filterType) { type, checked ->
+        typeChipGroup = SingleChoiceChipGroupView(requireContext(), R.string.filter_title_type).apply {
+            setChips(
+                chips = FilterType.allTypes,
+                checkedChip = presenter.filterType
+            ) { type, checked ->
                 presenter.filterType = if (checked) type else FilterType.None
                 presenter.update()
             }
@@ -93,10 +95,12 @@ class CloudFilterFragment : BaseFilterFragment() {
         authorChipGroup = App.getApp().accountOnline?.let { account ->
             return@let if (!account.isPersonal()) {
                 updateAuthorChipGroup(account)
-                SingleChoiceChipGroupView(requireContext()).apply {
-                    setTitle(R.string.filter_title_author)
+                SingleChoiceChipGroupView(
+                    context = requireContext(),
+                    title = R.string.filter_title_author
+                ).apply {
                     setChips(
-                        chipItems = listOf(usersChipItem, groupsChipItem),
+                        chips = listOf(usersChipItem, groupsChipItem),
                         checkedChip = null,
                         closeListener = presenter::clearAuthor
                     ) { item, _ ->
@@ -114,17 +118,18 @@ class CloudFilterFragment : BaseFilterFragment() {
             } else null
         }
 
-         excludeChipGroup = SingleChoiceChipGroupView(requireContext()).apply {
-             val excludeSubfolderChipItem = object : ChipItem {
-                 override val chipTitle: Int = R.string.filter_exclude_subfolders
-                 override val withOption: Boolean = false
-                 override var option: Any? = null
-             }
-
-            setTitle(R.string.filter_exclude_subfolders)
-            setChip(excludeSubfolderChipItem, presenter.excludeSubfolder) { _, checked ->
-                presenter.excludeSubfolder = checked
+        excludeChipGroup = SingleChoiceChipGroupView(requireContext(), R.string.filter_exclude_subfolders).apply {
+            val excludeSubfolderChipItem = object : ChipItem {
+                override val chipTitle: Int = R.string.filter_exclude_subfolders
+                override val withOption: Boolean = false
+                override var option: String? = null
             }
+
+            setChip(
+                chip = excludeSubfolderChipItem,
+                checked = presenter.excludeSubfolder,
+                checkedListener = { _, checked -> presenter.excludeSubfolder = checked }
+            )
         }
 
         addChipGroups(typeChipGroup, authorChipGroup, excludeChipGroup)

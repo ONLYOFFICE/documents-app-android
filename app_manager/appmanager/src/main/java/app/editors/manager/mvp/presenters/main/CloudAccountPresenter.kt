@@ -82,7 +82,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                     when (result) {
                         is Result.Error -> fetchError(result.exception)
                         is Result.Success -> {
-                            App.getApp().refreshCoreComponent()
+                            App.getApp().refreshAppComponent(context)
                             withContext(Dispatchers.Main) {
                                 viewState.onRender(
                                     CloudAccountState.AccountLoadedState(cloudDataSource.getAccounts())

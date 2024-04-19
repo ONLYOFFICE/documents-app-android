@@ -46,6 +46,7 @@ object RoomUtils {
         ApiContract.ShareCode.FILL_FORMS -> R.string.share_access_room_form_filler
         ApiContract.ShareCode.REVIEW -> R.string.share_access_room_reviewer
         ApiContract.ShareCode.COMMENT -> R.string.share_access_room_commentator
+        ApiContract.ShareCode.RESTRICT -> R.string.share_popup_access_deny_access
         ApiContract.ShareCode.NONE -> R.string.share_popup_access_deny_remove
         else -> R.string.share_access_room_viewer
     }

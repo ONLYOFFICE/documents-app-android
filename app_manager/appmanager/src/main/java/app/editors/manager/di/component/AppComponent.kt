@@ -1,11 +1,25 @@
 package app.editors.manager.di.component
 
 import android.content.Context
-import app.documents.core.di.dagger.CoreComponent
+import app.documents.core.account.AddAccountHelper
+import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.database.datasource.RecentDataSource
+import app.documents.core.database.migration.MigrationHelper
+import app.documents.core.di.dagger.CoreModule
+import app.documents.core.login.LoginComponent
+import app.documents.core.manager.ManagerRepository
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.interceptors.WebDavInterceptor
+import app.documents.core.network.manager.ManagerService
+import app.documents.core.network.room.RoomService
+import app.documents.core.network.share.ShareService
+import app.documents.core.network.webdav.WebDavService
+import app.documents.core.providers.CloudFileProvider
+import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.OneDriveFileProvider
-import app.editors.manager.di.module.AppModule
+import app.documents.core.providers.RoomProvider
+import app.documents.core.providers.WebDavFileProvider
+import app.editors.manager.managers.tools.AppLocaleHelper
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.ErrorHandler
@@ -39,7 +53,6 @@ import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
-import app.editors.manager.managers.tools.AppLocaleHelper
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -76,7 +89,7 @@ import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import javax.inject.Singleton
 
-@Component(modules = [AppModule::class], dependencies = [CoreComponent::class])
+@Component(modules = [CoreModule::class])
 @Singleton
 interface AppComponent {
 
@@ -86,11 +99,11 @@ interface AppComponent {
         @BindsInstance
         fun context(context: Context): Builder
 
-        fun coreComponent(coreComponent: CoreComponent): Builder
-
         fun build(): AppComponent
 
     }
+
+    fun loginComponent(): LoginComponent.Factory
 
     /*
     * TODO scopes!
@@ -106,6 +119,23 @@ interface AppComponent {
     val appLocaleHelper: AppLocaleHelper
     val resourcesProvider: ResourcesProvider
     val errorHandler: ErrorHandler
+
+    val cloudDataSource: CloudDataSource
+    val recentDataSource: RecentDataSource
+
+    val accountHelper: AddAccountHelper
+    val migrationHelper: MigrationHelper
+
+    val shareService: ShareService
+    val managerService: ManagerService
+    val webDavService: WebDavService
+    val roomService: RoomService
+
+    val managerRepository: ManagerRepository
+    val cloudFileProvider: CloudFileProvider
+    val localFileProvider: LocalFileProvider
+    val roomProvider: RoomProvider
+    val webDavFileProvider: WebDavFileProvider
 
     /*
    * Login

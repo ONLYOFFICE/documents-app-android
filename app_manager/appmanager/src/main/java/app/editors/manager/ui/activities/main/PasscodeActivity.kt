@@ -64,7 +64,7 @@ class PasscodeActivity : BaseAppActivity() {
         BiometricsUtils.biometricAuthenticate(
             promptInfo = BiometricsUtils.initBiometricDialog(
                 title = getString(R.string.app_settings_passcode_fingerprint_title),
-                negative = getString(lib.editors.gbase.R.string.common_cancel)
+                negative = getString(lib.toolkit.base.R.string.common_cancel)
             ),
             fragmentActivity = this,
             onSuccess = ::onSuccessUnlock,

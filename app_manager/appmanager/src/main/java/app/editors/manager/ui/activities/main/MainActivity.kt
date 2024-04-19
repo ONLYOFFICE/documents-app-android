@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
@@ -237,7 +236,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             }
         }
 
-        App.getApp().coreComponent
+        App.getApp().appComponent
             .recentDataSource.getRecentListFlow()
             .flowWithLifecycle(lifecycle)
             .onEach { viewBinding.bottomNavigation.menu.getItem(0).isEnabled = it.isNotEmpty() }
@@ -353,7 +352,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     override fun openFile(account: CloudAccount, fileData: String) {
         viewBinding.bottomNavigation.setOnItemSelectedListener(null)
         viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
-        showCloudFragment(account = account, fileData = fileData)
+        showCloudFragment()
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
     }
 
@@ -588,33 +587,16 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             PortalProvider.GoogleDrive -> showGoogleDriveFragment()
             PortalProvider.Onedrive -> showOneDriveFragment(account)
             is PortalProvider.Webdav -> showWebDavFragment(account)
-            else -> showCloudFragment(account)
+            else -> showCloudFragment()
         }
     }
 
-    private fun showCloudFragment(account: CloudAccount?, fileData: String? = null) {
-        supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)?.let { fragment ->
-            (fragment as MainPagerFragment).let { pagerFragment ->
-                fileData?.let {
-                    pagerFragment.setFileData(it)
-                } ?: run {
-                    if (!pagerFragment.isRoot()) {
-                        supportFragmentManager.beginTransaction().remove(fragment).commit()
-                        FragmentUtils.showFragment(
-                            supportFragmentManager,
-                            MainPagerFragment.newInstance(Json.encodeToString(account), fileData),
-                            R.id.frame_container
-                        )
-                    }
-                }
-            }
-        } ?: run {
-            FragmentUtils.showFragment(
-                supportFragmentManager,
-                MainPagerFragment.newInstance(Json.encodeToString(account), fileData),
-                R.id.frame_container
-            )
-        }
+    private fun showCloudFragment() {
+        FragmentUtils.showFragment(
+            supportFragmentManager,
+            MainPagerFragment.newInstance(),
+            R.id.frame_container
+        )
     }
 
     private fun showOneDriveFragment(account: CloudAccount) {

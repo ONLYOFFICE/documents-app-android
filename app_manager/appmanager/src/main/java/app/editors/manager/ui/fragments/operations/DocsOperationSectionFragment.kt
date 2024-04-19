@@ -13,7 +13,6 @@ import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.FragmentOperationSectionBinding
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.ui.fragments.main.DocsCloudFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -23,12 +22,8 @@ class DocsOperationSectionFragment : BaseAppFragment() {
     companion object {
         val TAG: String = DocsOperationSectionFragment::class.java.simpleName
 
-        fun newInstance(account: String): DocsOperationSectionFragment {
-            return DocsOperationSectionFragment().apply {
-                arguments = Bundle(1).apply {
-                    putString(DocsCloudFragment.KEY_ACCOUNT, account)
-                }
-            }
+        fun newInstance(): DocsOperationSectionFragment {
+            return DocsOperationSectionFragment()
         }
     }
 

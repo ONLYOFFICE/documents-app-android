@@ -3,6 +3,7 @@ package app.documents.core.network.manager
 import app.documents.core.model.login.Settings
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.request.RequestBatchBase
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
@@ -63,7 +64,7 @@ interface ManagerService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    fun thirdPartyList(): Observable<ResponseThirdparty>
+    suspend fun getThirdPartyList(): ResponseThirdparty
 
     /*
      * Counts of users
@@ -87,6 +88,16 @@ interface ManagerService {
         @Path(value = "item_id") folderId: String,
         @QueryMap options: Map<String, String>?
     ): Observable<Response<ResponseExplorer>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/{item_id}")
+    suspend fun getExplorer(
+        @Path(value = "item_id") folderId: String,
+        @QueryMap options: Map<String, String>?
+    ): app.documents.core.network.BaseResponse<Explorer>
 
 
     @Headers(

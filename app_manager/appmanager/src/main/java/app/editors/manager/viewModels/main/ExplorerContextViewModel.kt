@@ -34,6 +34,7 @@ class ExplorerContextViewModel : ViewModel() {
             state.section.isRoom && state.isRoot -> listOf(
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.RoomInfo,
+                ExplorerContextItem.Reconnect,
                 ExplorerContextItem.Pin(state.pinned),
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.AddUsers,
@@ -68,7 +69,9 @@ class ExplorerContextViewModel : ViewModel() {
             else -> listOf(
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.Edit(state),
-                ExplorerContextItem.Share.takeIf { state.provider != PortalProvider.Cloud.DocSpace },
+                ExplorerContextItem.Share.takeIf {
+                    state.provider != PortalProvider.Cloud.DocSpace || state.section == ApiContract.Section.User
+                },
                 ExplorerContextItem.CreateRoom.takeIf { state.provider == PortalProvider.Cloud.DocSpace },
                 ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.favorite),
