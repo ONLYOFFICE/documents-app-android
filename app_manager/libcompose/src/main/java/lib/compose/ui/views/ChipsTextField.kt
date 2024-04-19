@@ -158,7 +158,7 @@ fun ChipsTextField(
                             )
                         }
                     ) {
-                        Text(text = "Add tags")
+                        Text(text = label)
                     }
                 }
             }
