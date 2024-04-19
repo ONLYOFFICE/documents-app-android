@@ -105,6 +105,7 @@ private fun MainScreen(
     onBack: () -> Unit
 ) {
     AppScaffold(
+        useTablePaddings = false,
         topBar = {
             AppTopBar(
                 title = R.string.rooms_share_shared_link_title,
