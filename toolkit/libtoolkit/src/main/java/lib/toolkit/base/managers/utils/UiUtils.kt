@@ -663,6 +663,7 @@ object UiUtils {
     fun showEditDialog(
         context: Context,
         title: String,
+        hint: String? = null,
         value: String? = null,
         description: String? = null,
         acceptListener: (value: String) -> Unit,
@@ -681,6 +682,9 @@ object UiUtils {
         val text = EditText(context)
         text.setText(value)
         text.setSelection(value?.length ?: 0)
+        text.hint = hint
+        text.isSingleLine = true
+        text.maxLines = 1
         text.layoutParams = params
         text.focusable = View.FOCUSABLE
         container.addView(text)
