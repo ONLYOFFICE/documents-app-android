@@ -4,9 +4,9 @@ package lib.compose.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.ContextWrapper
-import android.app.Dialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -32,11 +32,13 @@ fun Modifier.enabled(enabled: Boolean) = addIf(!enabled) { alpha(0.4f) }
 @Composable
 fun LockScreenOrientation(orientation: Int) {
     val context = LocalContext.current
-    DisposableEffect(orientation) {
-        val activity = context.findActivity() ?: return@DisposableEffect onDispose {}
-        val originalOrientation = activity.requestedOrientation
-        activity.requestedOrientation = orientation
-        onDispose { activity.requestedOrientation = originalOrientation }
+    if (!UiUtils.isTablet(context)) {
+        DisposableEffect(orientation) {
+            val activity = context.findActivity() ?: return@DisposableEffect onDispose {}
+            val originalOrientation = activity.requestedOrientation
+            activity.requestedOrientation = orientation
+            onDispose { activity.requestedOrientation = originalOrientation }
+        }
     }
 }
 
