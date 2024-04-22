@@ -87,8 +87,8 @@ object ApiContract {
         const val DISK_SPACE_QUOTA = "Disk space quota exceeded"
         const val EXCEED_FILE_SIZE_100 = "Exceeds the maximum file size (100MB)"
         const val EXCEED_FILE_SIZE_25 = "Exceeds the maximum file size (25MB)"
+        const val STORAGE_NOT_AVAILABLE = "The content of third party folder are not available. Try to reconnect the account"
     }
-
     object ShareType {
         const val NONE = "None"
         const val READ_WRITE = "ReadWrite"
@@ -202,6 +202,7 @@ object ApiContract {
         const val ARG_FILTER_VALUE = "filterValue"
         const val ARG_FILTER_BY_TYPE = "filterType"
         const val ARG_FILTER_BY_TYPE_ROOM = "type"
+        const val ARG_FILTER_BY_PROVIDER_ROOM = "provider"
         const val ARG_FILTER_BY_TAG_ROOM = "tags"
         const val ARG_FILTER_BY_SUBJECT_ID = "subjectId"
         const val ARG_FILTER_BY_AUTHOR = "userIdOrGroupId"

@@ -197,7 +197,7 @@ sealed class InviteUserState {
 
 class InviteUserViewModel(private val item: Item) : ViewModel() {
 
-    private val shareApi = App.getApp().coreComponent.shareService
+    private val shareApi = App.getApp().appComponent.shareService
 
     private val _state: MutableStateFlow<InviteUserState> = MutableStateFlow(InviteUserState.None)
     val state: StateFlow<InviteUserState> = _state

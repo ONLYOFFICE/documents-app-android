@@ -8,6 +8,7 @@ import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.login.User
 import app.documents.core.model.login.request.RequestSignIn
 import app.editors.manager.app.App
+import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.base.BaseView
 import com.google.android.gms.auth.UserRecoverableAuthException
@@ -79,8 +80,8 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
     }
 
     protected open fun onAccountCreateSuccess(account: CloudAccount) {
-        App.getApp().refreshCoreComponent()
-        //        FirebaseUtils.addAnalyticsLogin(account.portal.portal, account.portal.provider.toString())
+        App.getApp().refreshAppComponent(context)
+        FirebaseUtils.addAnalyticsLogin(account.portalUrl, account.portal.provider.toString())
     }
 
     protected open fun onTwoFactorAuthApp(secretKey: String?, request: RequestSignIn) {}

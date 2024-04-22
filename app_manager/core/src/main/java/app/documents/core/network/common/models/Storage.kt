@@ -1,9 +1,14 @@
 package app.documents.core.network.common.models
 
-import android.os.Parcelable
 import android.os.Parcel
+import android.os.Parcelable
 
-class Storage(var name: String? = null, var clientId: String? = null, var redirectUrl: String? = null) : Parcelable {
+data class Storage(
+    var name: String? = null,
+    var clientId: String? = null,
+    var redirectUrl: String? = null,
+    val providerId: Int = -1,
+) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readString(),

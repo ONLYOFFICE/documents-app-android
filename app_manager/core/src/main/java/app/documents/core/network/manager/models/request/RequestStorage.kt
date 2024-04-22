@@ -34,7 +34,7 @@ data class RequestStorage(
 
     @SerializedName("providerId")
     @Expose
-    var providerId: String? = null,
+    var providerId: Int? = null,
 
     @SerializedName("isRoomStorage")
     @Expose

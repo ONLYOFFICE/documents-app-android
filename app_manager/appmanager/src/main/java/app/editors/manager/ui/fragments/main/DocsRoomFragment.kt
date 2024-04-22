@@ -5,6 +5,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.forEach
 import androidx.fragment.app.setFragmentResultListener
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.activities.main.ShareActivity
@@ -19,7 +20,6 @@ import lib.toolkit.base.managers.utils.setFragmentResultListener
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 class DocsRoomFragment : DocsCloudFragment() {
-
     private val isRoom get() = cloudPresenter.isCurrentRoom && cloudPresenter.isRoot
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -87,6 +87,7 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
+            ExplorerContextItem.Reconnect -> reconnectStorage()
             ExplorerContextItem.Archive -> cloudPresenter.archiveRoom()
             ExplorerContextItem.AddUsers -> ShareActivity.show(this, cloudPresenter.itemClicked, false)
             is ExplorerContextItem.Edit -> cloudPresenter.editRoom()
@@ -105,11 +106,14 @@ class DocsRoomFragment : DocsCloudFragment() {
             else -> super.onAcceptClick(dialogs, value, tag)
         }
     }
-    
+
     override fun getFilters(): Boolean {
         return if (isRoom) {
             val filter = presenter.preferenceTool.filter
-            filter.roomType != RoomFilterType.None || filter.author.id.isNotEmpty()
+            filter.roomType != RoomFilterType.None ||
+                    filter.author.id.isNotEmpty() ||
+                    filter.tags.isNotEmpty() ||
+                    filter.provider != null
         } else super.getFilters()
     }
 
@@ -120,6 +124,17 @@ class DocsRoomFragment : DocsCloudFragment() {
         } else {
             super.onPlaceholder(type)
         }
+    }
+
+    private fun reconnectStorage() {
+        val room = presenter.itemClicked as? CloudFolder
+        showStorageActivity(
+            isMySection = true,
+            isRoom = true,
+            title = room?.title,
+            providerKey = room?.providerKey,
+            providerId = room?.providerId ?: -1
+        )
     }
 
     companion object {
