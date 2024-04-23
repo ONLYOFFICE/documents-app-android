@@ -228,22 +228,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         }
     }
 
-    fun navigationItemClick(itemId: Int) {
-        when (itemId) {
-            R.id.menu_item_recent -> viewState.onRender(MainActivityState.RecentState)
-            R.id.menu_item_on_device -> viewState.onRender(MainActivityState.OnDeviceState)
-            R.id.menu_item_settings -> viewState.onRender(MainActivityState.SettingsState)
-            R.id.menu_item_cloud -> {
-                presenterScope.launch {
-                    cloudAccount = context.accountOnline
-                    withContext(Dispatchers.Main) {
-                        viewState.onRender(MainActivityState.CloudState(cloudAccount))
-                    }
-                }
-            }
-        }
-    }
-
     fun clear() {
         presenterScope.launch {
             accountPreferences.onlineAccountId = null

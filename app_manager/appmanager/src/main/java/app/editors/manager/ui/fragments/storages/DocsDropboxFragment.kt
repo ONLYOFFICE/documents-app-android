@@ -2,7 +2,6 @@ package app.editors.manager.ui.fragments.storages
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.DropboxUtils
 import app.editors.manager.app.App
@@ -18,11 +17,7 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
         val TAG: String = DocsDropboxFragment::class.java.simpleName
 
 
-        fun newInstance(account: String) = DocsDropboxFragment().apply {
-            arguments = Bundle(1).apply {
-                putString(KEY_ACCOUNT, account)
-            }
-        }
+        fun newInstance() = DocsDropboxFragment()
     }
 
     @InjectPresenter

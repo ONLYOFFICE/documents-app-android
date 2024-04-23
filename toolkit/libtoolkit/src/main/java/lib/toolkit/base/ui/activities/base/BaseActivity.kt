@@ -131,7 +131,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     * */
     protected fun isFragmentBackPress(): Boolean {
         supportFragmentManager.fragments.asReversed().forEach { parentFragment ->
-            if (parentFragment.isAdded && isFragmentBackPress(parentFragment)) {
+            if (parentFragment.isResumed && isFragmentBackPress(parentFragment)) {
                 return true
             }
         }
@@ -141,13 +141,13 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
 
     private fun isFragmentBackPress(fragment: Fragment): Boolean {
         fragment.childFragmentManager.fragments.asReversed().forEach { childFragment ->
-            if (childFragment.isAdded && childFragment.isVisible && isFragmentBackPress(childFragment)) {
+            if (childFragment.isResumed && childFragment.isVisible && isFragmentBackPress(childFragment)) {
                 return true
             }
         }
 
         //TODO need check
-        return if (fragment.isVisible && fragment.isAdded) {
+        return if (fragment.isResumed) {
             fragment is OnBackPressFragment  && fragment.onBackPressed() &&
                     fragment.lifecycle.currentState == Lifecycle.State.RESUMED
         } else {

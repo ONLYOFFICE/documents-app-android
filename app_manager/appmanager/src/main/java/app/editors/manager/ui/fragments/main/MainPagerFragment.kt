@@ -97,6 +97,20 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         checkNotificationPermission()
     }
 
+    private var isFirstResume = true
+
+    override fun onResume() {
+        super.onResume()
+        if (isFirstResume) {
+            isFirstResume = false
+        }  else {
+            viewBinding?.mainViewPager?.post {
+//                activity?.showAccount(true)
+                activeFragment?.onResume()
+            }
+        }
+    }
+
     private fun checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             RequestPermission(requireActivity().activityResultRegistry, {
@@ -161,7 +175,6 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     fun setToolbarState(isRoot: Boolean) {
-        if (isVisibleRoot == isRoot) return
         isVisibleRoot = isRoot
         activity?.setAppBarStates(isVisibleRoot)
         viewBinding?.mainViewPager?.post {
