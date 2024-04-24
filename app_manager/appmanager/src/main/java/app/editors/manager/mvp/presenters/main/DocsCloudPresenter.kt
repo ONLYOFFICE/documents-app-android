@@ -60,7 +60,6 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
-import java.util.Date
 
 @InjectViewState
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
@@ -610,25 +609,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             else -> viewState.onFileDownloadPermission()
         }
         FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, extension)
-    }
-
-    private fun downloadTempFile(cloudFile: CloudFile, edit: Boolean) {
-        disposable.add((fileProvider as CloudFileProvider).getCachedFile(context, cloudFile, account.accountName)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ file ->
-                openFileFromPortal(file, edit)
-            }) { throwable: Throwable -> fetchError(throwable) })
-    }
-
-    private fun openFileFromPortal(file: File, edit: Boolean) {
-        viewState.onDialogClose()
-        viewState.onOpenLocalFile(CloudFile().apply {
-            webUrl = Uri.fromFile(file).toString()
-            fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
-            title = file.name
-            viewUrl = file.absolutePath
-        })
     }
 
     private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean) {

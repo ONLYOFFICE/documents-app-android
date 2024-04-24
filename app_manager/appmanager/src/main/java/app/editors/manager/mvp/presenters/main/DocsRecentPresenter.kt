@@ -80,7 +80,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         disposable.clear()
     }
 
-
     fun getRecentFiles(checkFiles: Boolean = true) {
         presenterScope.launch {
             val list = if (checkFiles) {
@@ -178,20 +177,17 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
     private fun checkExt(file: CloudFile, info: String) {
         if (file.rootFolderType.toInt() != ApiContract.SectionType.CLOUD_TRASH) {
             when (StringUtils.getExtension(file.fileExst)) {
-                StringUtils.Extension.DOC, StringUtils.Extension.FORM, StringUtils.Extension.SHEET, StringUtils.Extension.PRESENTATION, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
+                StringUtils.Extension.DOC, StringUtils.Extension.FORM, StringUtils.Extension.SHEET,
+                StringUtils.Extension.PRESENTATION, StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF,
+                StringUtils.Extension.VIDEO_SUPPORT, StringUtils.Extension.PDF -> {
                     checkSdkVersion { isCheck ->
                         if (isCheck) {
                             viewState.onOpenDocumentServer(file, info, false)
                         } else {
-                            viewState.openFile(file)
+                            downloadTempFile(file, false)
                         }
                     }
                 }
-
-                StringUtils.Extension.PDF -> {
-                    viewState.openFile(file)
-                }
-
                 else -> viewState.onError(context.getString(R.string.error_unsupported_format))
             }
         } else {
