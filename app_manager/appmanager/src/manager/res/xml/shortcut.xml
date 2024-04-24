@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--suppress AndroidDomInspection -->
-<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:targetApi="25">
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
         android:enabled="true"
         android:icon="@drawable/ic_type_text_document"
@@ -10,7 +8,7 @@
         android:shortcutShortLabel="@string/dialogs_edit_create_docs">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="app.editors.manager.ui.activities.main.OnBoardingActivity"
+            android:targetClass="app.editors.manager.ui.activities.main.MainActivity"
             android:targetPackage="com.onlyoffice.documents">
             <extra
                 android:name="create_type"
@@ -26,7 +24,7 @@
         android:shortcutShortLabel="@string/dialogs_edit_create_sheet">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="app.editors.manager.ui.activities.main.OnBoardingActivity"
+            android:targetClass="app.editors.manager.ui.activities.main.MainActivity"
             android:targetPackage="com.onlyoffice.documents">
             <extra
                 android:name="create_type"
@@ -42,7 +40,7 @@
         android:shortcutShortLabel="@string/dialogs_edit_create_presentation">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="app.editors.manager.ui.activities.main.OnBoardingActivity"
+            android:targetClass="app.editors.manager.ui.activities.main.MainActivity"
             android:targetPackage="com.onlyoffice.documents">
             <extra
                 android:name="create_type"

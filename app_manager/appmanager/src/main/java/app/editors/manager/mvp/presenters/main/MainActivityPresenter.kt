@@ -29,13 +29,6 @@ import moxy.InjectViewState
 import moxy.presenterScope
 import javax.inject.Inject
 
-sealed class MainActivityState {
-    object RecentState : MainActivityState()
-    object OnDeviceState : MainActivityState()
-    object SettingsState : MainActivityState()
-    class CloudState(val account: CloudAccount? = null) : MainActivityState()
-}
-
 @InjectViewState
 class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
@@ -86,32 +79,13 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         disposable.dispose()
     }
 
-    fun init(isPortal: Boolean = false, isShortcut: Boolean = false) {
+    fun init(isPortal: Boolean = false) {
         presenterScope.launch {
             context.accountOnline?.let { account ->
-                if (isShortcut) {
-                    viewState.onRender(MainActivityState.OnDeviceState)
-                    return@launch
-                }
-
-                // update portal settings
                 if (isAppColdStart) {
                     App.getApp().refreshLoginComponent(account.portal)
                     App.getApp().loginComponent.cloudLoginRepository.updatePortalSettings()
                     isAppColdStart = false
-                }
-
-                cloudAccount = context.accountOnline
-                withContext(Dispatchers.Main) {
-                    checkToken(account)
-                }
-            } ?: run {
-                withContext(Dispatchers.Main) {
-                    if (isPortal && !isShortcut) {
-                        viewState.onRender(MainActivityState.CloudState())
-                    } else {
-                        viewState.onRender(MainActivityState.OnDeviceState)
-                    }
                 }
             }
         }
@@ -124,24 +98,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                 viewState.onLocaleConfirmation()
             }
         }
-    }
-
-    private fun checkToken(cloudAccount: CloudAccount) {
-        if (cloudAccount.isWebDav) {
-            viewState.onRender(MainActivityState.CloudState(cloudAccount))
-        } else {
-            AccountUtils.getToken(
-                context = context,
-                accountName = cloudAccount.accountName
-            )?.let {
-                viewState.onRender(MainActivityState.CloudState(cloudAccount))
-            } ?: run {
-                viewState.onRender(MainActivityState.CloudState())
-            }
-        }
-    }
-
-    private fun setNetworkSetting(cloudAccount: CloudAccount) {
     }
 
     fun getRemoteConfigRate() {
@@ -177,10 +133,12 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                     viewState.onShowPlayMarket(BuildConfig.RELEASE_ID)
                     viewState.onDialogClose()
                 }
+
                 TAG_DIALOG_REMOTE_APP -> {
                     viewState.onShowApp(BuildConfig.RELEASE_ID)
                     viewState.onDialogClose()
                 }
+
                 TAG_DIALOG_RATE_FIRST -> {
                     getReviewInfo()
                     viewState.onQuestionDialog(
@@ -189,6 +147,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                         context.getString(R.string.dialogs_question_accept_no_thanks), null
                     )
                 }
+
                 TAG_DIALOG_RATE_SECOND -> {
                     viewState.onDialogClose()
                     reviewInfo?.let {
@@ -197,6 +156,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                         viewState.onShowPlayMarket(BuildConfig.RELEASE_ID)
                     }
                 }
+
                 TAG_DIALOG_RATE_FEEDBACK -> {
                     if (value != null) {
                         viewState.onShowEmailClientTemplate(value)
@@ -220,6 +180,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                         context.getString(R.string.dialogs_question_accept_no_thanks), TAG_DIALOG_RATE_FEEDBACK
                     )
                 }
+
                 TAG_DIALOG_RATE_SECOND -> {
                     preferenceTool.isRateOn = false
                     viewState.onDialogClose()
@@ -229,12 +190,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     }
 
     fun clear() {
-        presenterScope.launch {
-            accountPreferences.onlineAccountId = null
-            withContext(Dispatchers.Main) {
-                viewState.onRender(MainActivityState.CloudState())
-            }
-        }
+        accountPreferences.onlineAccountId = null
     }
 
     fun checkFileData(fileData: Uri) {

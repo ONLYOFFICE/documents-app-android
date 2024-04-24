@@ -26,7 +26,6 @@ import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
-import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.main.MainActivityView
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.login.SignInActivity
@@ -180,6 +179,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 REQUEST_ACTIVITY_PORTAL -> {
                     presenter.init(true)
                 }
+
                 REQUEST_ACTIVITY_ACCOUNTS -> {
                     presenter.onRemoveFileData()
                 }
@@ -205,7 +205,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         presenter.checkOnBoardingShowed()
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
-        init(savedInstanceState)
+        init()
     }
 
     override fun onStart() {
@@ -221,11 +221,10 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
-    private fun init(savedInstanceState: Bundle?) {
+    private fun init() {
         initViews()
         initToolbar()
-        setAppBarStates()
-        checkState(savedInstanceState)
+        checkState()
         registerAppLocaleBroadcastReceiver()
 
         if (isNotification()) {
@@ -251,6 +250,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     private fun initViews() {
         viewBinding.appFloatingActionButton.visibility = View.GONE
         viewBinding.appFloatingActionButton.setOnClickListener { onFloatingButtonClick() }
+        viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
     }
 
     private fun initToolbar() {
@@ -264,23 +264,19 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
-    private fun checkState(savedInstanceState: Bundle?) {
-        savedInstanceState?.let {
-            viewBinding.appBarToolbar.bind(Json.decodeFromString(it.getString(ACCOUNT_KEY) ?: ""))
-        } ?: run {
-            val isShortcut = intent?.extras?.contains("create_type") == true
-            presenter.init(isShortcut = isShortcut)
-            if (isShortcut) {
+    private fun checkState() {
+        presenter.init()
+
+        if (intent?.extras?.contains("create_type") == true) {
+            viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
+        } else {
+            accountOnline?.let {
+                viewBinding.appBarToolbar.bind()
+                viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
+            } ?: run {
                 viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
-            } else {
-                accountOnline?.let {
-                    viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
-                } ?: run {
-                    viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
-                }
             }
         }
-        viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
     }
 
     private fun setAppBarStates() {
@@ -321,24 +317,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     override fun showAccount(isShow: Boolean) {
         //        presenter.isDialogOpen = true
         viewBinding.appBarToolbar.showAccount(isShow)
-    }
-
-    override fun onRender(state: MainActivityState) {
-        when (state) {
-            is MainActivityState.RecentState -> {
-                showRecentFragment()
-            }
-            is MainActivityState.OnDeviceState -> {
-                showOnDeviceFragment()
-            }
-            is MainActivityState.CloudState -> {
-                showOnCloudFragment()
-                viewBinding.appBarToolbar.bind(state.account)
-            }
-            is MainActivityState.SettingsState -> {
-                showSettingsFragment()
-            }
-        }
     }
 
     override fun onLocaleConfirmation() {
@@ -560,7 +538,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
 
-
     private fun showSettingsFragment() {
         if (supportFragmentManager.findFragmentByTag(AppSettingsFragment.TAG) != null) {
             return
@@ -591,6 +568,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                     showMainPagerFragment()
                     return
                 }
+
                 else -> OnlyOfficeCloudFragment.newInstance(false)
             }
             FragmentUtils.showFragment(
@@ -604,13 +582,13 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     private fun showMainPagerFragment() {
         supportFragmentManager.beginTransaction().apply {
             supportFragmentManager.fragments.forEach {
-                if (it !is MainPagerFragment ) {
+                if (it !is MainPagerFragment) {
                     remove(it)
                 }
             }
         }.commit()
         val fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
-        if (fragment!= null) {
+        if (fragment != null) {
             supportFragmentManager.beginTransaction().show(fragment).commit()
             (fragment as MainPagerFragment).onResume()
             return
@@ -661,7 +639,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     private fun hidePagerFragment() {
         supportFragmentManager.beginTransaction().apply {
             supportFragmentManager.fragments.forEach {
-                if (it !is MainPagerFragment ) {
+                if (it !is MainPagerFragment) {
                     remove(it)
                 } else {
                     hide(it)

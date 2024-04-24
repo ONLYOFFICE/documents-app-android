@@ -14,6 +14,7 @@ import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
+import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.GlideUtils
 import com.bumptech.glide.Glide
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -36,7 +37,7 @@ class MainToolbar @JvmOverloads constructor(
     private val subtitle by lazy { findViewById<AppCompatTextView>(R.id.toolbarSubTitle) }
 
 
-    var account: CloudAccount? = null
+    var account: CloudAccount? = context.accountOnline
 
     var accountListener: ((view: View) -> Unit)? = null
         set(value) {
@@ -49,9 +50,8 @@ class MainToolbar @JvmOverloads constructor(
         arrowIcon.isVisible = isShow
     }
 
-    fun bind(cloudAccount: CloudAccount?) {
-        account = cloudAccount
-        cloudAccount?.let {
+    fun bind() {
+        account?.let { cloudAccount ->
             title.text = cloudAccount.name
             subtitle.text = cloudAccount.portal.url
             if (cloudAccount.isWebDav) {
@@ -59,13 +59,13 @@ class MainToolbar @JvmOverloads constructor(
             } else if (cloudAccount.isOneDrive) {
                 setOneDriveAvatar()
             } else if(cloudAccount.isDropbox) {
-                if(it.avatarUrl.isEmpty()) {
+                if(cloudAccount.avatarUrl.isEmpty()) {
                     setDropboxAvatar()
                 } else {
-                    loadAvatar(it)
+                    loadAvatar(cloudAccount)
                 }
             } else {
-                loadAvatar(it)
+                loadAvatar(cloudAccount)
             }
         } ?: run {
             showAccount(false)
