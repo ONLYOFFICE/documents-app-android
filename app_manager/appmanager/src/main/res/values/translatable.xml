@@ -696,6 +696,8 @@
     <string name="filter_type_documents">Documents</string>
     <string name="filter_type_presentations">Presentations</string>
     <string name="filter_type_spreadsheets">Spreadsheets</string>
+    <string name="filter_type_form_templates">Form templates</string>
+    <string name="filter_type_forms">Forms</string>
     <string name="filter_type_images">Images</string>
     <string name="filter_type_media">Media</string>
     <string name="filter_type_archives">Archives</string>

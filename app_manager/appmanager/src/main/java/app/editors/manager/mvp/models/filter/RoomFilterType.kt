@@ -18,7 +18,7 @@ enum class RoomFilterType(val title: Int, val filterVal: Int) : ChipItem {
     companion object {
 
         val allTypes: List<RoomFilterType>
-            get() = values().toMutableList().dropLast(1)
+            get() = entries.toMutableList().dropLast(1)
 
     }
 }

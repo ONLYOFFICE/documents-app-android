@@ -2,6 +2,7 @@ package app.editors.manager.ui.fragments.filter
 
 import android.os.Bundle
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.isDocSpace
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -84,7 +85,7 @@ class CloudFilterFragment : BaseFilterFragment() {
     private fun initChipGroups() {
         typeChipGroup = SingleChoiceChipGroupView(requireContext(), R.string.filter_title_type).apply {
             setChips(
-                chips = FilterType.allTypes,
+                chips = if (!context?.accountOnline.isDocSpace) FilterType.types else FilterType.typesWithForms,
                 checkedChip = presenter.filterType
             ) { type, checked ->
                 presenter.filterType = if (checked) type else FilterType.None
