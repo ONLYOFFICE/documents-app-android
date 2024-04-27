@@ -42,7 +42,7 @@ class ExternalLinkSettingsViewModel(
 
     fun deleteOrRevoke() {
         operationJob = viewModelScope.launch {
-            updateExternalLink(deleteOrRevoke = true)
+            updateLink(deleteOrRevoke = true)
             _effect.tryEmit(ExternalLinkSettingsEffect.Delete)
         }
     }
@@ -50,7 +50,7 @@ class ExternalLinkSettingsViewModel(
     fun save() {
         _effect.tryEmit(ExternalLinkSettingsEffect.Loading)
         operationJob = viewModelScope.launch {
-            updateExternalLink()
+            updateLink()
             _effect.tryEmit(ExternalLinkSettingsEffect.Save)
         }
     }
@@ -71,7 +71,7 @@ class ExternalLinkSettingsViewModel(
         operationJob = viewModelScope.launch {
             try {
                 with(state.value.link) {
-                    roomProvider.createAdditionalLink(
+                    roomProvider.createRoomSharedLink(
                         roomId = roomId.orEmpty(),
                         denyDownload = denyDownload,
                         expirationDate = expirationDate,
@@ -86,11 +86,11 @@ class ExternalLinkSettingsViewModel(
         }
     }
 
-    private suspend fun updateExternalLink(deleteOrRevoke: Boolean = false): ExternalLink? {
+    private suspend fun updateLink(deleteOrRevoke: Boolean = false): ExternalLink? {
         _effect.tryEmit(ExternalLinkSettingsEffect.Loading)
         return try {
             with(state.value.link) {
-                roomProvider.updateExternalLink(
+                roomProvider.updateRoomSharedLink(
                     roomId = roomId.orEmpty(),
                     access = if (!deleteOrRevoke) 2 else 0,
                     linkId = id,

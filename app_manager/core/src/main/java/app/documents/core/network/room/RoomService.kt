@@ -18,9 +18,9 @@ import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.room.models.ResponseRoomShare
 import app.documents.core.network.room.models.ResponseTags
 import app.documents.core.network.room.models.ResponseUpdateExternalLink
-import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.request.RequestCreateSharedLink
+import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.RequestUpdateSharedLink
 import app.documents.core.network.share.models.response.ResponseExternalLink
@@ -185,14 +185,27 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share?filterType=2")
-    suspend fun getExternalLinks(@Path("id") id: String): Response<ResponseExternalLink>
+    suspend fun getRoomSharedLinks(@Path("id") id: String): Response<ResponseExternalLink>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/links")
-    suspend fun getSharedLinks(@Path("id") id: String): Response<ResponseExternalLink>
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
+    suspend fun updateRoomSharedLink(
+        @Path("id") id: String,
+        @Body request: RequestUpdateExternalLink
+    ): Response<ResponseUpdateExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
+    suspend fun createRoomSharedLink(
+        @Path("id") id: String,
+        @Body request: RequestCreateExternalLink
+    ): Response<ResponseUpdateExternalLink>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -208,38 +221,18 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/links")
+    suspend fun getSharedLinks(@Path("id") id: String): Response<ResponseExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
     @PUT("api/" + ApiContract.API_VERSION + "/files/file/{id}/links")
     suspend fun updateSharedLink(
         @Path("id") id: String,
         @Body body: RequestUpdateSharedLink
     ): app.documents.core.network.BaseResponse<ExternalLink>
-
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
-    suspend fun updateExternalLink(
-        @Path("id") id: String,
-        @Body request: RequestUpdateExternalLink
-    ): Response<ResponseUpdateExternalLink>
-
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
-    suspend fun createAdditionalLink(
-        @Path("id") id: String,
-        @Body request: RequestCreateExternalLink
-    ): Response<ResponseUpdateExternalLink>
-
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/link")
-    suspend fun createGeneralLink(@Path("id") id: String): Response<ResponseUpdateExternalLink>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

@@ -164,8 +164,7 @@ class RoomInfoFragment : BaseDialogFragment() {
                                                 "&ownerOrAdmin=$ownerOrAdmin"
                                     )
                                 },
-                                onGeneralLinkCreate = viewModel::createGeneralLink,
-                                onAdditionalLinkCreate = {
+                                onSharedLinkCreate = {
                                     navController.navigate("${RoomInfoScreens.LinkSettings.name}?create=true")
                                 },
                                 onLinkClick = { link ->
@@ -246,8 +245,7 @@ class RoomInfoFragment : BaseDialogFragment() {
         onAddUsers: () -> Unit,
         onBackClick: () -> Unit,
         onLinkClick: (ExternalLink) -> Unit,
-        onGeneralLinkCreate: () -> Unit,
-        onAdditionalLinkCreate: () -> Unit
+        onSharedLinkCreate: () -> Unit
     ) {
         BackHandler(onBack = onBackClick)
 
@@ -284,12 +282,10 @@ class RoomInfoFragment : BaseDialogFragment() {
                     val groupedShareList = Share.groupByAccess(state.shareList)
                     if (ApiContract.RoomType.hasExternalLink(roomType)) {
                         ExternalLinkBlock(
-                            generalLink = state.generalLink,
-                            additionalLinks = state.additionalLinks,
+                            sharedLinks = state.sharedLinks,
                             canEditRoom = canEditRoom,
                             onLinkClick = onLinkClick,
-                            onGeneralLinkCreate = onGeneralLinkCreate,
-                            onAdditionalLinkCreate = onAdditionalLinkCreate,
+                            onSharedLinkCreate = onSharedLinkCreate,
                             onCopyLinkClick = { url -> copyLinkToClipboard(requireView(), url, false) }
                         )
                     }
@@ -355,11 +351,10 @@ class RoomInfoFragment : BaseDialogFragment() {
                 portal = "",
                 state = RoomInfoState(
                     isLoading = false,
-                    generalLink = link,
-                    additionalLinks = listOf(
-                        link.copy(sharedTo = link.sharedTo.copy(title = "Additional link 1", expirationDate = "123")),
-                        link.copy(sharedTo = link.sharedTo.copy(title = "Additional link 2", password = "123")),
-                        link.copy(sharedTo = link.sharedTo.copy(title = "Additional link 3", isExpired = true)),
+                    sharedLinks = listOf(
+                        link.copy(sharedTo = link.sharedTo.copy(title = "Shared link 1", expirationDate = "123")),
+                        link.copy(sharedTo = link.sharedTo.copy(title = "Shared link 2", password = "123")),
+                        link.copy(sharedTo = link.sharedTo.copy(title = "Shared link 3", isExpired = true)),
                     ),
                     shareList = listOf(
                         Share(access = "1", sharedTo = SharedTo(displayName = "User 1"), isOwner = true),
@@ -372,8 +367,7 @@ class RoomInfoFragment : BaseDialogFragment() {
                 onBackClick = {},
                 onAddUsers = {},
                 onSetUserAccess = { _, _, _ -> },
-                onGeneralLinkCreate = {},
-                onAdditionalLinkCreate = {},
+                onSharedLinkCreate = {},
                 onLinkClick = {}
             )
         }

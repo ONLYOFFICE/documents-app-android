@@ -9,10 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import app.documents.core.network.share.models.ExternalLink
+import app.editors.manager.R
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppTextButton
@@ -21,74 +21,32 @@ import lib.toolkit.base.managers.utils.openSendTextActivity
 
 @Composable
 internal fun ExternalLinkBlock(
-    generalLink: ExternalLink?,
-    additionalLinks: List<ExternalLink>,
+    sharedLinks: List<ExternalLink>,
     canEditRoom: Boolean,
     onLinkClick: (ExternalLink) -> Unit,
-    onGeneralLinkCreate: () -> Unit,
-    onAdditionalLinkCreate: () -> Unit,
+    onSharedLinkCreate: () -> Unit,
     onCopyLinkClick: (String) -> Unit
 ) {
     val context = LocalContext.current
-    if (!canEditRoom && (generalLink != null || additionalLinks.isNotEmpty()) || canEditRoom) {
-        AppDescriptionItem(
-            modifier = Modifier.padding(top = 8.dp),
-            text = app.editors.manager.R.string.rooms_info_access_desc
-        )
-    }
-    if (!canEditRoom && generalLink != null || canEditRoom) {
-        AppHeaderItem(title = app.editors.manager.R.string.rooms_info_general_link)
-    }
-    if (generalLink != null) {
-        ExternalLinkItem(
-            linkTitle = generalLink.sharedTo.title,
-            access = generalLink.access,
-            hasPassword = !generalLink.sharedTo.password.isNullOrEmpty(),
-            expiring = false,
-            isExpired = generalLink.sharedTo.isExpired,
-            canEdit = canEditRoom,
-            onCopyLinkClick = { onCopyLinkClick.invoke(generalLink.sharedTo.shareLink) },
-            onShareClick = {
-                context.openSendTextActivity(
-                    context.getString(app.editors.manager.R.string.toolbar_menu_main_share),
-                    generalLink.sharedTo.shareLink
-                )
-            },
-            onClick = { onLinkClick.invoke(generalLink) }.takeIf { canEditRoom }
-        )
-    }
+    AppDescriptionItem(
+        modifier = Modifier.padding(top = 8.dp),
+        text = R.string.rooms_info_access_desc
+    )
 
-    if (canEditRoom && generalLink == null) {
-        AppTextButton(
-            modifier = Modifier.padding(start = 8.dp),
-            title = app.editors.manager.R.string.rooms_info_create_link,
-            onClick = onGeneralLinkCreate
-        )
-    }
-
-    if (!canEditRoom && additionalLinks.isNotEmpty() || canEditRoom) {
-        Row {
-            AppHeaderItem(
-                modifier = Modifier.weight(1f),
-                title = stringResource(
-                    id = app.editors.manager.R.string.rooms_info_additional_links,
-                    additionalLinks.size,
-                    RoomInfoFragment.MAX_ADDITIONAL_LINKS_COUNT
+    Row {
+        AppHeaderItem(modifier = Modifier.weight(1f), title = R.string.rooms_share_shared_links)
+        if (canEditRoom) {
+            IconButton(onClick = onSharedLinkCreate) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_action_button_docs_add),
+                    tint = MaterialTheme.colors.primary,
+                    contentDescription = null
                 )
-            )
-            if (additionalLinks.size in 1..4) {
-                IconButton(onClick = onAdditionalLinkCreate) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(app.editors.manager.R.drawable.ic_action_button_docs_add),
-                        tint = MaterialTheme.colors.primary,
-                        contentDescription = null
-                    )
-                }
             }
         }
     }
 
-    additionalLinks.forEach { link ->
+    sharedLinks.forEach { link ->
         ExternalLinkItem(
             linkTitle = link.sharedTo.title,
             access = link.access,
@@ -99,18 +57,19 @@ internal fun ExternalLinkBlock(
             onCopyLinkClick = { onCopyLinkClick.invoke(link.sharedTo.shareLink) },
             onShareClick = {
                 context.openSendTextActivity(
-                    context.getString(app.editors.manager.R.string.toolbar_menu_main_share),
+                    context.getString(R.string.toolbar_menu_main_share),
                     link.sharedTo.shareLink
                 )
             },
             onClick = { onLinkClick.invoke(link) }.takeIf { canEditRoom }
         )
     }
-    if (additionalLinks.isEmpty() && canEditRoom) {
+
+    if (canEditRoom && sharedLinks.isEmpty()) {
         AppTextButton(
             modifier = Modifier.padding(start = 8.dp),
-            title = app.editors.manager.R.string.rooms_info_create_link,
-            onClick = onAdditionalLinkCreate
+            title = R.string.rooms_info_create_link,
+            onClick = onSharedLinkCreate
         )
     }
 }
