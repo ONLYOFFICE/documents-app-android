@@ -137,6 +137,10 @@ class DocsRoomFragment : DocsCloudFragment() {
         )
     }
 
+    private fun showInviteUsersDialog() {
+
+    }
+
     companion object {
 
         val TAG = DocsRoomFragment::class.java.simpleName

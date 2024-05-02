@@ -39,8 +39,8 @@ class ChooseAccessFragment : BaseAppFragment() {
 
     private var viewBinding: ChooseAccessFragmentLayoutBinding? = null
 
-    private val viewModel by viewModels<InviteUserViewModel> {
-        InviteUserViewModelFactory(item)
+    private val viewModel by viewModels<InviteByEmailViewModel> {
+        InviteByEmailViewModelFactory(item)
     }
 
     private val adapter: ShareAdapter = ShareAdapter(ShareHolderFactory { view, position ->
@@ -105,23 +105,23 @@ class ChooseAccessFragment : BaseAppFragment() {
         }
     }
 
-    private fun updateUi(state: InviteUserState) {
+    private fun updateUi(state: InviteByEmailState) {
         when (state) {
-            is InviteUserState.Loading -> {
+            is InviteByEmailState.Loading -> {
                 viewBinding?.progressBar?.isVisible = true
                 viewBinding?.sharePanelLayout?.sharePanelAddButton?.isEnabled = false
             }
-            is InviteUserState.Success -> {
+            is InviteByEmailState.Success -> {
                 viewBinding?.progressBar?.isVisible = false
                 showSnackBar(R.string.invite_link_send_success)
                 showRootFragment()
             }
-            is InviteUserState.Error -> {
+            is InviteByEmailState.Error -> {
                 viewBinding?.progressBar?.isVisible = false
                 viewBinding?.sharePanelLayout?.sharePanelAddButton?.isEnabled = true
                 showSnackBar(state.message)
             }
-            InviteUserState.None -> {
+            InviteByEmailState.None -> {
                 viewBinding?.progressBar?.isVisible = false
                 viewBinding?.sharePanelLayout?.sharePanelAddButton?.isEnabled = true
             }
@@ -177,33 +177,33 @@ class ChooseAccessFragment : BaseAppFragment() {
 
 }
 
-class InviteUserViewModelFactory(private val item: Item) : ViewModelProvider.Factory {
+class InviteByEmailViewModelFactory(private val item: Item) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(InviteUserViewModel::class.java)) {
-            return InviteUserViewModel(item) as T
+        if (modelClass.isAssignableFrom(InviteByEmailViewModel::class.java)) {
+            return InviteByEmailViewModel(item) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
 
-sealed class InviteUserState {
-    object None : InviteUserState()
-    object Loading : InviteUserState()
-    object Success : InviteUserState()
-    data class Error(val message: String) : InviteUserState()
+sealed class InviteByEmailState {
+    object None : InviteByEmailState()
+    object Loading : InviteByEmailState()
+    object Success : InviteByEmailState()
+    data class Error(val message: String) : InviteByEmailState()
 }
 
-class InviteUserViewModel(private val item: Item) : ViewModel() {
+class InviteByEmailViewModel(private val item: Item) : ViewModel() {
 
     private val shareApi = App.getApp().appComponent.shareService
 
-    private val _state: MutableStateFlow<InviteUserState> = MutableStateFlow(InviteUserState.None)
-    val state: StateFlow<InviteUserState> = _state
+    private val _state: MutableStateFlow<InviteByEmailState> = MutableStateFlow(InviteByEmailState.None)
+    val state: StateFlow<InviteByEmailState> = _state
 
     fun inviteUsers(emails: List<ShareUi>, message: String) {
-        _state.value = InviteUserState.Loading
+        _state.value = InviteByEmailState.Loading
         viewModelScope.launch {
             request(
                 func = {
@@ -218,8 +218,8 @@ class InviteUserViewModel(private val item: Item) : ViewModel() {
                         )
                     )
                 },
-                onSuccess = { _state.value = InviteUserState.Success },
-                onError = { _state.value = InviteUserState.Error(it.message ?: "Error") }
+                onSuccess = { _state.value = InviteByEmailState.Success },
+                onError = { _state.value = InviteByEmailState.Error(it.message ?: "Error") }
             )
         }
     }

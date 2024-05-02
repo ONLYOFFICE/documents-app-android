@@ -21,6 +21,7 @@ import app.documents.core.network.room.models.ResponseUpdateExternalLink
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.request.RequestCreateSharedLink
 import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
+import app.documents.core.network.share.models.request.RequestRoomInviteLink
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.RequestUpdateSharedLink
 import app.documents.core.network.share.models.response.ResponseExternalLink
@@ -186,6 +187,23 @@ interface RoomService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share?filterType=2")
     suspend fun getRoomSharedLinks(@Path("id") id: String): Response<ResponseExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share?filterType=1")
+    suspend fun getRoomExternalLink(@Path("id") id: String): app.documents.core.network.BaseResponse<ExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
+    suspend fun setRoomExternalLink(
+        @Path("id") id: String,
+        @Body request: RequestRoomInviteLink
+    ): app.documents.core.network.BaseResponse<ExternalLink>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
