@@ -51,8 +51,40 @@ object RoomUtils {
         else -> R.string.share_access_room_viewer
     }
 
+    fun getAccessOptions(roomType: Int, isRemove: Boolean): List<Int> {
+        return when (roomType) {
+            ApiContract.RoomType.PUBLIC_ROOM -> {
+                mutableListOf(
+                    ApiContract.ShareCode.ROOM_ADMIN,
+                    ApiContract.ShareCode.POWER_USER
+                )
+            }
+            ApiContract.RoomType.COLLABORATION_ROOM -> {
+                mutableListOf(
+                    ApiContract.ShareCode.ROOM_ADMIN,
+                    ApiContract.ShareCode.POWER_USER,
+                    ApiContract.ShareCode.EDITOR,
+                    ApiContract.ShareCode.READ
+                )
+            }
+            ApiContract.RoomType.CUSTOM_ROOM -> {
+                mutableListOf(
+                    ApiContract.ShareCode.ROOM_ADMIN,
+                    ApiContract.ShareCode.POWER_USER,
+                    ApiContract.ShareCode.EDITOR,
+                    ApiContract.ShareCode.FILL_FORMS,
+                    ApiContract.ShareCode.REVIEW,
+                    ApiContract.ShareCode.COMMENT,
+                    ApiContract.ShareCode.READ
+                )
+            }
+            else -> mutableListOf()
+        }.apply { if (isRemove) add(ApiContract.ShareCode.NONE) }
+    }
+
     fun getAccessTitleOrOwner(share: Share): Int =
         if (share.isOwner) R.string.share_access_room_owner else getAccessTitle(share.intAccess)
+
     fun getRoomInitials(title: String): String? {
         return try {
             val words = title.split(" ")

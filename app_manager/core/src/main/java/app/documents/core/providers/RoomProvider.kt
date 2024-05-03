@@ -140,12 +140,19 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return roomService.setRoomInviteLink(id).response?.getOrNull(0)
     }
 
-    suspend fun addRoomInviteLink(roomId: String): ExternalLink {
-        return roomService.addRoomInviteLink(roomId, RequestAddInviteLink(access = 11)).response
+    suspend fun addRoomInviteLink(roomId: String, access: Int): ExternalLink {
+        return roomService.addRoomInviteLink(roomId, RequestAddInviteLink(access = access)).response
     }
 
     suspend fun removeRoomInviteLink(roomId: String, linkId: String) {
         roomService.removeRoomInviteLink(roomId, RequestRemoveInviteLink(linkId = linkId))
+    }
+
+    suspend fun setRoomInviteLinkAccess(roomId: String, linkId: String, access: Int): ExternalLink? {
+        return roomService.removeRoomInviteLink(
+            roomId,
+            RequestRemoveInviteLink(access = access, linkId = linkId)
+        ).response
     }
 
     suspend fun getRoomSharedLinks(id: String): List<ExternalLink> {

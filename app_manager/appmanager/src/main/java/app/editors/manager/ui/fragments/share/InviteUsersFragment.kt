@@ -12,6 +12,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,6 +26,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.editors.manager.R
@@ -32,9 +36,11 @@ import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
+import app.editors.manager.ui.fragments.share.link.RoomAccessScreen
 import app.editors.manager.viewModels.main.InviteUserState
 import app.editors.manager.viewModels.main.InviteUserViewModel
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppScaffold
@@ -49,9 +55,11 @@ class InviteUsersFragment : BaseDialogFragment() {
     companion object {
 
         private const val ROOM_ID_KEY = "room_id_key"
+        private const val ROOM_TYPE_KEY = "room_type_key"
 
-        fun newInstance(roomId: String): InviteUsersFragment = InviteUsersFragment()
+        fun newInstance(roomId: String, roomType: Int): InviteUsersFragment = InviteUsersFragment()
             .putArgs(ROOM_ID_KEY to roomId)
+            .putArgs(ROOM_TYPE_KEY to roomType)
     }
 
     override fun onCreateView(
@@ -66,17 +74,52 @@ class InviteUsersFragment : BaseDialogFragment() {
         (view as ComposeView).setContent {
             ManagerTheme {
                 val roomId = remember(arguments?.getString(ROOM_ID_KEY)::orEmpty)
-                val viewModel = viewModel { InviteUserViewModel(roomId, requireContext().roomProvider) }
-                val state by viewModel.state.collectAsState()
+                val roomType = remember { arguments?.getInt(ROOM_TYPE_KEY) ?: -1 }
+                val viewModel = viewModel { InviteUserViewModel(roomId, roomType, requireContext().roomProvider) }
+                RootScreen(roomType = roomType, viewModel = viewModel)
+            }
+        }
+    }
+}
 
-                InviteUsersScreen(state, viewModel::setInviteLinkEnabled)
+private enum class Screens {
+    InviteScreen, AccessScreen
+}
+
+@Composable
+private fun RootScreen(roomType: Int, viewModel: InviteUserViewModel) {
+    Surface(color = MaterialTheme.colors.background) {
+        val navController = rememberNavController()
+        val state by viewModel.state.collectAsState()
+
+        NavHost(navController = navController, startDestination = Screens.InviteScreen.name) {
+            composable(Screens.InviteScreen.name) {
+                InviteUsersScreen(
+                    state = state,
+                    onLinkEnable = viewModel::setInviteLinkEnabled,
+                    onAccessClick = { navController.navigate(Screens.AccessScreen.name) }
+                )
+            }
+            composable(Screens.AccessScreen.name) {
+                RoomAccessScreen(
+                    roomType = roomType,
+                    currentAccess = state.externalLink?.access ?: -1,
+                    ownerOrAdmin = false,
+                    isRemove = false,
+                    onChangeAccess = viewModel::setAccess,
+                    onBack = navController::popBackStackWhenResumed
+                )
             }
         }
     }
 }
 
 @Composable
-private fun InviteUsersScreen(state: InviteUserState, onLinkEnable: (Boolean) -> Unit) {
+private fun InviteUsersScreen(
+    state: InviteUserState,
+    onLinkEnable: (Boolean) -> Unit,
+    onAccessClick: () -> Unit
+) {
     AppScaffold(
         useTablePaddings = false,
         topBar = {
@@ -101,11 +144,10 @@ private fun InviteUsersScreen(state: InviteUserState, onLinkEnable: (Boolean) ->
                 if (state.externalLink != null) {
                     AppArrowItem(
                         title = R.string.rooms_share_access_rights,
-                        option = stringResource(id = RoomUtils.getAccessTitle(state.externalLink.access))
+                        option = stringResource(id = RoomUtils.getAccessTitle(state.externalLink.access)),
+                        onClick = onAccessClick
                     )
-                    Row(
-                        modifier = Modifier.padding(start = 16.dp, end = 8.dp)
-                    ) {
+                    Row(modifier = Modifier.padding(start = 16.dp, end = 8.dp)) {
                         BasicTextField(
                             modifier = Modifier
                                 .weight(1f)
@@ -153,7 +195,7 @@ private fun InviteUsersScreenPreview() {
                     access = 4,
                     sharedTo = ExternalLinkSharedTo("", "", "https://...", 0, null, null, false, false, false, "", null)
                 )
-            ), {}
+            ), {}, {}
         )
     }
 }

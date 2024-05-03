@@ -16,10 +16,11 @@ import lib.compose.ui.views.AppTopBar
 
 @Composable
 fun RoomAccessScreen(
-    roomType: Int?,
-    currentAccess: Int?,
+    roomType: Int,
+    currentAccess: Int,
     ownerOrAdmin: Boolean,
-    onSetUserAccess: (newAccess: Int) -> Unit,
+    isRemove: Boolean = false,
+    onChangeAccess: (newAccess: Int) -> Unit,
     onBack: () -> Unit
 ) {
     BackHandler(onBack = onBack)
@@ -31,14 +32,14 @@ fun RoomAccessScreen(
         }
     ) {
         Column {
-            getAccessList(ownerOrAdmin, roomType).forEach { access ->
+            getAccessList(ownerOrAdmin, roomType, isRemove).forEach { access ->
                 AppSelectItem(
                     title = RoomUtils.getAccessTitle(access),
                     selected = currentAccess == access,
                     startIcon = ManagerUiUtils.getAccessIcon(access),
                     startIconTint = if (access == 0) MaterialTheme.colors.error else MaterialTheme.colors.primary
                 ) {
-                    onSetUserAccess.invoke(access)
+                    onChangeAccess.invoke(access)
                     onBack.invoke()
                 }
             }
@@ -46,28 +47,14 @@ fun RoomAccessScreen(
     }
 }
 
-private fun getAccessList(ownerOrAdmin: Boolean, roomType: Int?) = when {
-    ownerOrAdmin -> listOf(
-        ApiContract.ShareCode.ROOM_ADMIN,
-        ApiContract.ShareCode.NONE
-    )
-    roomType == ApiContract.RoomType.COLLABORATION_ROOM -> listOf(
-        ApiContract.ShareCode.ROOM_ADMIN,
-        ApiContract.ShareCode.POWER_USER,
-        ApiContract.ShareCode.EDITOR,
-        ApiContract.ShareCode.READ,
-        ApiContract.ShareCode.NONE
-    )
-    else -> listOf(
-        ApiContract.ShareCode.ROOM_ADMIN,
-        ApiContract.ShareCode.POWER_USER,
-        ApiContract.ShareCode.EDITOR,
-        ApiContract.ShareCode.FILL_FORMS,
-        ApiContract.ShareCode.REVIEW,
-        ApiContract.ShareCode.COMMENT,
-        ApiContract.ShareCode.READ,
-        ApiContract.ShareCode.NONE
-    )
+private fun getAccessList(ownerOrAdmin: Boolean, roomType: Int, isRemove: Boolean): List<Int> {
+    return when {
+        ownerOrAdmin -> mutableListOf(
+            ApiContract.ShareCode.ROOM_ADMIN,
+            ApiContract.ShareCode.NONE
+        )
+        else -> RoomUtils.getAccessOptions(roomType, isRemove)
+    }
 }
 
 @Preview(locale = "ru")
@@ -78,7 +65,7 @@ private fun Preview() {
             roomType = ApiContract.RoomType.COLLABORATION_ROOM,
             currentAccess = 2,
             ownerOrAdmin = false,
-            onSetUserAccess = {}
+            onChangeAccess = {}
         ) {}
     }
 }

@@ -138,7 +138,9 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     private fun showInviteUsersDialog() {
-        InviteUsersFragment.newInstance(presenter.itemClicked?.id.orEmpty()).show(parentFragmentManager, null)
+        (presenter.itemClicked as? CloudFolder)?.let { room ->
+            InviteUsersFragment.newInstance(room.id, room.roomType).show(parentFragmentManager, null)
+        }
     }
 
     companion object {

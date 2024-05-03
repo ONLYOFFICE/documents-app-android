@@ -204,7 +204,7 @@ interface RoomService {
     suspend fun removeRoomInviteLink(
         @Path("id") id: String,
         @Body request: RequestRemoveInviteLink
-    )
+    ): app.documents.core.network.BaseResponse<ExternalLink?>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
