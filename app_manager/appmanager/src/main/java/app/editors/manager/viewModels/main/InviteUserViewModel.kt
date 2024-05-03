@@ -4,50 +4,63 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.providers.RoomProvider
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class InviteUserState(
-    val screenLoading: Boolean,
-    val requestLoading: Boolean,
+    val screenLoading: Boolean = false,
+    val requestLoading: Boolean = false,
     val externalLink: ExternalLink?
 )
 
-class InviteUserViewModel(private val roomProvider: RoomProvider) : ViewModel() {
+class InviteUserViewModel(private val roomId: String, private val roomProvider: RoomProvider) : ViewModel() {
 
     private val _state: MutableStateFlow<InviteUserState> = MutableStateFlow(
         InviteUserState(
             screenLoading = true,
-            requestLoading = false,
             externalLink = null
         )
     )
 
     val state: StateFlow<InviteUserState> = _state.asStateFlow()
 
-    fun fetchInviteLink(roomId: String) {
+    private val _error: MutableSharedFlow<Exception> = MutableSharedFlow(1)
+    val error: SharedFlow<Exception> = _error.asSharedFlow()
+
+    init {
         viewModelScope.launch {
-            _state.value = InviteUserState(
-                screenLoading = false,
-                requestLoading = false,
-                externalLink = roomProvider.getRoomInviteLink(roomId)
-            )
+            _state.value = InviteUserState(externalLink = roomProvider.getRoomInviteLink(roomId))
         }
     }
 
-    fun setInviteLinkEnabled(roomId: String, enabled: Boolean) {
+    fun setInviteLinkEnabled(enabled: Boolean) {
         viewModelScope.launch {
-            _state.value = InviteUserState(
-                screenLoading = false,
-                requestLoading = false,
-                externalLink = roomProvider.enableRoomExternalLink(
-                    roomId,
-                    enabled,
-                    state.value.externalLink?.sharedTo?.id
-                )
-            )
+            _state.update { it.copy(requestLoading = true) }
+            if (enabled) {
+                try {
+                    val link = roomProvider.addRoomInviteLink(roomId)
+                    _state.value = InviteUserState(externalLink = link)
+                } catch (e: Exception) {
+                    _error.emit(e)
+                }
+            } else {
+                try {
+                    roomProvider.removeRoomInviteLink(
+                        roomId = roomId,
+                        linkId = state.value.externalLink?.sharedTo?.id.orEmpty()
+                    )
+
+                    _state.value = InviteUserState(externalLink = null)
+                } catch (e: Exception) {
+                    _error.emit(e)
+                }
+            }
         }
     }
 }

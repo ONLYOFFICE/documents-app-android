@@ -64,7 +64,7 @@ sealed class ExplorerContextItem(
 
     object AddUsers : ExplorerContextItem(
         icon = R.drawable.ic_add_users,
-        title = R.string.list_context_add_users
+        title = R.string.share_invite_user
     ), ExplorerContextBlockOrder.Common
 
 

@@ -17,9 +17,10 @@ import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.Invitation
+import app.documents.core.network.share.models.request.RequestAddInviteLink
 import app.documents.core.network.share.models.request.RequestCreateSharedLink
 import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
-import app.documents.core.network.share.models.request.RequestRoomInviteLink
+import app.documents.core.network.share.models.request.RequestRemoveInviteLink
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.RequestUpdateSharedLink
 import io.reactivex.Observable
@@ -39,11 +40,6 @@ import java.util.UUID
 import javax.inject.Inject
 
 class RoomProvider @Inject constructor(private val roomService: RoomService) {
-
-    companion object {
-
-        private const val INVITE_LINK_TITLE = "Invite"
-    }
 
     fun archiveRoom(id: String, isArchive: Boolean = true): Observable<BaseResponse> {
         return if (isArchive) {
@@ -140,25 +136,16 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return roomService.deleteLogo(id).isSuccessful
     }
 
-    suspend fun getRoomInviteLink(id: String): ExternalLink {
-        return roomService.getRoomExternalLink(id).response
+    suspend fun getRoomInviteLink(id: String): ExternalLink? {
+        return roomService.setRoomInviteLink(id).response?.getOrNull(0)
     }
 
-    suspend fun enableRoomExternalLink(id: String, enabled: Boolean, linkId: String?): ExternalLink {
-        val request = if (enabled) {
-            RequestRoomInviteLink(
-                access = ApiContract.ShareCode.READ,
-                linkId = null,
-                title = INVITE_LINK_TITLE
-            )
-        } else {
-            RequestRoomInviteLink(
-                access = ApiContract.ShareCode.NONE,
-                linkId = requireNotNull(linkId),
-                title = INVITE_LINK_TITLE
-            )
-        }
-        return roomService.setRoomExternalLink(id, request).response
+    suspend fun addRoomInviteLink(roomId: String): ExternalLink {
+        return roomService.addRoomInviteLink(roomId, RequestAddInviteLink(access = 11)).response
+    }
+
+    suspend fun removeRoomInviteLink(roomId: String, linkId: String) {
+        roomService.removeRoomInviteLink(roomId, RequestRemoveInviteLink(linkId = linkId))
     }
 
     suspend fun getRoomSharedLinks(id: String): List<ExternalLink> {
