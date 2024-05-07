@@ -40,6 +40,7 @@ import app.editors.manager.ui.fragments.share.link.RoomAccessScreen
 import app.editors.manager.viewModels.main.InviteUserState
 import app.editors.manager.viewModels.main.InviteUserViewModel
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.colorTextPrimary
 import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppHeaderItem
@@ -48,6 +49,9 @@ import lib.compose.ui.views.AppSwitchItem
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.NestedColumn
 import lib.compose.ui.views.VerticalSpacer
+import lib.toolkit.base.managers.utils.KeyboardUtils
+import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.openSendTextActivity
 import lib.toolkit.base.managers.utils.putArgs
 
 class InviteUsersFragment : BaseDialogFragment() {
@@ -60,6 +64,16 @@ class InviteUsersFragment : BaseDialogFragment() {
         fun newInstance(roomId: String, roomType: Int): InviteUsersFragment = InviteUsersFragment()
             .putArgs(ROOM_ID_KEY to roomId)
             .putArgs(ROOM_TYPE_KEY to roomType)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!UiUtils.isTablet(requireContext())) {
+            setStyle(
+                STYLE_NORMAL,
+                R.style.FullScreenDialog
+            )
+        }
     }
 
     override fun onCreateView(
@@ -76,7 +90,20 @@ class InviteUsersFragment : BaseDialogFragment() {
                 val roomId = remember(arguments?.getString(ROOM_ID_KEY)::orEmpty)
                 val roomType = remember { arguments?.getInt(ROOM_TYPE_KEY) ?: -1 }
                 val viewModel = viewModel { InviteUserViewModel(roomId, roomType, requireContext().roomProvider) }
-                RootScreen(roomType = roomType, viewModel = viewModel)
+                RootScreen(
+                    roomType = roomType,
+                    viewModel = viewModel,
+                    onCopyLink = { link ->
+                        KeyboardUtils.setDataToClipboard(requireContext(), link)
+                        UiUtils.getSnackBar(requireView()).setText(R.string.rooms_info_copy_link_to_clipboard).show()
+                    },
+                    onShareLink = { link ->
+                        requireContext().openSendTextActivity(
+                            getString(R.string.toolbar_menu_main_share),
+                            link
+                        )
+                    }
+                )
             }
         }
     }
@@ -87,7 +114,12 @@ private enum class Screens {
 }
 
 @Composable
-private fun RootScreen(roomType: Int, viewModel: InviteUserViewModel) {
+private fun RootScreen(
+    roomType: Int,
+    viewModel: InviteUserViewModel,
+    onCopyLink: (String) -> Unit,
+    onShareLink: (String) -> Unit
+) {
     Surface(color = MaterialTheme.colors.background) {
         val navController = rememberNavController()
         val state by viewModel.state.collectAsState()
@@ -97,7 +129,9 @@ private fun RootScreen(roomType: Int, viewModel: InviteUserViewModel) {
                 InviteUsersScreen(
                     state = state,
                     onLinkEnable = viewModel::setInviteLinkEnabled,
-                    onAccessClick = { navController.navigate(Screens.AccessScreen.name) }
+                    onAccessClick = { navController.navigate(Screens.AccessScreen.name) },
+                    onCopyLink = { onCopyLink.invoke(state.externalLink?.sharedTo?.shareLink.orEmpty()) },
+                    onShareLink = { onShareLink.invoke(state.externalLink?.sharedTo?.shareLink.orEmpty()) }
                 )
             }
             composable(Screens.AccessScreen.name) {
@@ -118,6 +152,8 @@ private fun RootScreen(roomType: Int, viewModel: InviteUserViewModel) {
 private fun InviteUsersScreen(
     state: InviteUserState,
     onLinkEnable: (Boolean) -> Unit,
+    onCopyLink: () -> Unit,
+    onShareLink: () -> Unit,
     onAccessClick: () -> Unit
 ) {
     AppScaffold(
@@ -156,17 +192,17 @@ private fun InviteUsersScreen(
                             value = state.externalLink.sharedTo.shareLink,
                             readOnly = true,
                             onValueChange = {},
-                            textStyle = MaterialTheme.typography.body1,
+                            textStyle = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.colorTextPrimary),
                             singleLine = true
                         )
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = onCopyLink) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(R.drawable.ic_list_context_external_link),
                                 tint = MaterialTheme.colors.primary,
                                 contentDescription = null
                             )
                         }
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = onShareLink) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_list_context_share),
                                 tint = MaterialTheme.colors.primary,
@@ -195,7 +231,7 @@ private fun InviteUsersScreenPreview() {
                     access = 4,
                     sharedTo = ExternalLinkSharedTo("", "", "https://...", 0, null, null, false, false, false, "", null)
                 )
-            ), {}, {}
+            ), {}, {}, {}, {}
         )
     }
 }
