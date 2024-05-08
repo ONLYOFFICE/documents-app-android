@@ -69,9 +69,6 @@ android {
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
-        ndk {
-            abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))  //comment to armv7
-        }
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -149,11 +146,21 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
 
             signingConfig = signingConfigs.getByName("onlyoffice")
+            ndk {
+                abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+            }
         }
 
         debug {
             isMinifyEnabled = false
             extra["enableCrashlytics"] = false
+            ndk {
+                if (System.getProperty("os.arch") == "aarch64") {
+                    abiFilters.add("arm64-v8a")
+                } else {
+                    abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+                }
+            }
         }
 
         applicationVariants.all {
