@@ -52,11 +52,11 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
                 is UserUi -> item.isSelected = !item.isSelected
                 is GroupUi -> item.isSelected = !item.isSelected
                 is AddEmailUi -> {
-                    showParentFragment(
-                        ShareInviteFragment.newInstance(this.item),
-                        ShareInviteFragment.TAG,
-                        false
-                    )
+//                    showParentFragment(
+//                        ShareInviteFragment.newInstance(this.item),
+//                        ShareInviteFragment.TAG,
+//                        false
+//                    )
                 }
             }
         }
@@ -162,11 +162,11 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
                     }
                 } else PlaceholderViews.Type.NONE
             ) {
-                showParentFragment(
-                    ShareInviteFragment.newInstance(this.item),
-                    ShareInviteFragment.TAG,
-                    false
-                )
+//                showParentFragment(
+//                    ShareInviteFragment.newInstance(this.item),
+//                    ShareInviteFragment.TAG,
+//                    false
+//                )
             }
         } else {
             placeholderViews?.setTemplatePlaceholder(

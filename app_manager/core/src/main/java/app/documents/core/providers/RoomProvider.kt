@@ -23,6 +23,7 @@ import app.documents.core.network.share.models.request.RequestCreateThirdPartyRo
 import app.documents.core.network.share.models.request.RequestRemoveInviteLink
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.RequestUpdateSharedLink
+import app.documents.core.network.share.models.request.RoomInvitation
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -266,4 +267,14 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         if (!resultShare.isSuccessful) throw HttpException(resultShare)
     }
 
+    suspend fun inviteByEmail(roomId: String, emails: Map<String, Int>) {
+        val response = roomService.shareRoom(
+            id = roomId,
+            body = RequestRoomShare(
+                invitations = emails.map { (email, access) -> RoomInvitation(email = email, access = access) },
+                notify = false
+            )
+        )
+        if (!response.isSuccessful) throw HttpException(response)
+    }
 }

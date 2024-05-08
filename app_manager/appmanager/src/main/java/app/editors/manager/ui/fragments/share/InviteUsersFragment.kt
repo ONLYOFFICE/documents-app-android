@@ -31,12 +31,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
+import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.fragments.share.link.RoomAccessScreen
+import app.editors.manager.viewModels.main.InviteByEmailViewModel
 import app.editors.manager.viewModels.main.InviteUserState
 import app.editors.manager.viewModels.main.InviteUserViewModel
 import lib.compose.ui.theme.ManagerTheme
@@ -87,12 +89,10 @@ class InviteUsersFragment : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (view as ComposeView).setContent {
             ManagerTheme {
-                val roomId = remember(arguments?.getString(ROOM_ID_KEY)::orEmpty)
-                val roomType = remember { arguments?.getInt(ROOM_TYPE_KEY) ?: -1 }
-                val viewModel = viewModel { InviteUserViewModel(roomId, roomType, requireContext().roomProvider) }
                 RootScreen(
-                    roomType = roomType,
-                    viewModel = viewModel,
+                    roomType = remember { arguments?.getInt(ROOM_TYPE_KEY) ?: -1 },
+                    roomId = remember(arguments?.getString(ROOM_ID_KEY)::orEmpty),
+                    roomProvider = requireContext().roomProvider,
                     onCopyLink = { link ->
                         KeyboardUtils.setDataToClipboard(requireContext(), link)
                         UiUtils.getSnackBar(requireView()).setText(R.string.rooms_info_copy_link_to_clipboard).show()
@@ -102,7 +102,9 @@ class InviteUsersFragment : BaseDialogFragment() {
                             getString(R.string.toolbar_menu_main_share),
                             link
                         )
-                    }
+                    },
+                    onSnackBar = { UiUtils.getSnackBar(requireView()).setText(it).show() },
+                    onBack = ::dismiss
                 )
             }
         }
@@ -110,31 +112,38 @@ class InviteUsersFragment : BaseDialogFragment() {
 }
 
 private enum class Screens {
-    InviteScreen, AccessScreen
+    Main, Access, InviteByEmail, InviteByEmailAccess
 }
 
 @Composable
 private fun RootScreen(
     roomType: Int,
-    viewModel: InviteUserViewModel,
+    roomId: String,
+    roomProvider: RoomProvider,
     onCopyLink: (String) -> Unit,
-    onShareLink: (String) -> Unit
+    onShareLink: (String) -> Unit,
+    onSnackBar: (String) -> Unit,
+    onBack: () -> Unit
 ) {
     Surface(color = MaterialTheme.colors.background) {
+        val viewModel = viewModel { InviteUserViewModel(roomId, roomType, roomProvider) }
+        val byEmailViewModel = viewModel { InviteByEmailViewModel(roomId, roomType, roomProvider) }
         val navController = rememberNavController()
         val state by viewModel.state.collectAsState()
 
-        NavHost(navController = navController, startDestination = Screens.InviteScreen.name) {
-            composable(Screens.InviteScreen.name) {
+        NavHost(navController = navController, startDestination = Screens.Main.name) {
+            composable(Screens.Main.name) {
                 InviteUsersScreen(
                     state = state,
                     onLinkEnable = viewModel::setInviteLinkEnabled,
-                    onAccessClick = { navController.navigate(Screens.AccessScreen.name) },
+                    onAccessClick = { navController.navigate(Screens.Access.name) },
                     onCopyLink = { onCopyLink.invoke(state.externalLink?.sharedTo?.shareLink.orEmpty()) },
-                    onShareLink = { onShareLink.invoke(state.externalLink?.sharedTo?.shareLink.orEmpty()) }
+                    onShareLink = { onShareLink.invoke(state.externalLink?.sharedTo?.shareLink.orEmpty()) },
+                    onInviteByEmailClick = { navController.navigate(Screens.InviteByEmail.name) },
+                    onBack = onBack
                 )
             }
-            composable(Screens.AccessScreen.name) {
+            composable(Screens.Access.name) {
                 RoomAccessScreen(
                     roomType = roomType,
                     currentAccess = state.externalLink?.access ?: -1,
@@ -142,6 +151,28 @@ private fun RootScreen(
                     isRemove = false,
                     onChangeAccess = viewModel::setAccess,
                     onBack = navController::popBackStackWhenResumed
+                )
+            }
+            composable(Screens.InviteByEmail.name) {
+                InviteByEmailScreen(
+                    viewModel = byEmailViewModel,
+                    onBack = navController::popBackStack,
+                    onNext = { navController.navigate(Screens.InviteByEmailAccess.name) }
+                )
+            }
+            composable(Screens.InviteByEmailAccess.name) {
+                InviteByEmailAccessScreen(
+                    roomType = roomType,
+                    viewModel = byEmailViewModel,
+                    onBack = navController::popBackStack,
+                    onSnackBar = onSnackBar,
+                    onSuccess = {
+                        navController.navigate(Screens.Main.name) {
+                            popUpTo(Screens.Main.name) {
+                                inclusive = true
+                            }
+                        }
+                    }
                 )
             }
         }
@@ -154,12 +185,14 @@ private fun InviteUsersScreen(
     onLinkEnable: (Boolean) -> Unit,
     onCopyLink: () -> Unit,
     onShareLink: () -> Unit,
-    onAccessClick: () -> Unit
+    onAccessClick: () -> Unit,
+    onInviteByEmailClick: () -> Unit,
+    onBack: () -> Unit
 ) {
     AppScaffold(
         useTablePaddings = false,
         topBar = {
-            AppTopBar(title = R.string.share_invite_user)
+            AppTopBar(title = R.string.share_invite_user, backListener = onBack)
         }
     ) {
         if (state.screenLoading) {
@@ -212,7 +245,7 @@ private fun InviteUsersScreen(
                     }
                 }
                 AppHeaderItem(title = R.string.invite_add_manually)
-                AppArrowItem(title = R.string.invite_by_email)
+                AppArrowItem(title = R.string.invite_by_email, onClick = onInviteByEmailClick)
                 AppArrowItem(title = R.string.invite_choose_from_list)
             }
         }
@@ -231,7 +264,7 @@ private fun InviteUsersScreenPreview() {
                     access = 4,
                     sharedTo = ExternalLinkSharedTo("", "", "https://...", 0, null, null, false, false, false, "", null)
                 )
-            ), {}, {}, {}, {}
+            ), {}, {}, {}, {}, {}, {}
         )
     }
 }
