@@ -134,20 +134,13 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return roomService.deleteLogo(id).isSuccessful
     }
 
-    suspend fun getExternalLinks(id: String): List<ExternalLink> {
-        val response = roomService.getExternalLinks(id)
+    suspend fun getRoomSharedLinks(id: String): List<ExternalLink> {
+        val response = roomService.getRoomSharedLinks(id)
         val body = response.body()
         return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
     }
 
-    suspend fun createGeneralLink(id: String): String {
-        val response = roomService.createGeneralLink(id)
-        val body = response.body()
-        return if (response.isSuccessful && body != null)
-            body.response.sharedTo.shareLink else throw HttpException(response)
-    }
-
-    suspend fun updateExternalLink(
+    suspend fun updateRoomSharedLink(
         roomId: String?,
         access: Int?,
         linkId: String?,
@@ -166,13 +159,13 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             password = password,
             title = title
         )
-        val response = roomService.updateExternalLink(roomId.orEmpty(), request)
+        val response = roomService.updateRoomSharedLink(roomId.orEmpty(), request)
         val body = response.body()
         return if (response.isSuccessful && body != null)
             body.response else throw HttpException(response)
     }
 
-    suspend fun createAdditionalLink(
+    suspend fun createRoomSharedLink(
         roomId: String?,
         denyDownload: Boolean,
         expirationDate: String?,
@@ -185,7 +178,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             password = password,
             title = title
         )
-        val response = roomService.createAdditionalLink(roomId.orEmpty(), request)
+        val response = roomService.createRoomSharedLink(roomId.orEmpty(), request)
         val body = response.body()
         return if (response.isSuccessful && body != null) body.response else throw HttpException(response)
     }

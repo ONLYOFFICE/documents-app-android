@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.tasks.await
 import java.io.IOException
-import java.net.UnknownHostException
+import java.net.ConnectException
 
 internal class CloudLoginRepositoryImpl(
     private val cloudPortal: CloudPortal?,
@@ -55,7 +55,7 @@ internal class CloudLoginRepositoryImpl(
                     )
                 )
                 emit(PortalResult.Success(cloudPortal))
-            } catch (e: UnknownHostException) {
+            } catch (e: ConnectException) {
                 if (scheme == Scheme.Https) {
                     emit(PortalResult.ShouldUseHttp)
                 } else {

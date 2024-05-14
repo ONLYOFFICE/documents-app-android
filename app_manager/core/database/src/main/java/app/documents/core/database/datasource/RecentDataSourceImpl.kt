@@ -21,7 +21,24 @@ internal class RecentDataSourceImpl(private val db: RecentDatabase) : RecentData
     }
 
     override suspend fun add(recent: Recent) {
-        db.recentDao.add(recent.toEntity())
+        val entity = recent.toEntity()
+        if (recent.fileId.isNotEmpty()) {
+            db.withTransaction {
+                if (db.recentDao.getRecentByFileId(recent.fileId, recent.ownerId) == null) {
+                    db.recentDao.add(entity)
+                } else {
+                    db.recentDao.update(entity)
+                }
+            }
+        } else {
+            db.withTransaction {
+                if (db.recentDao.getRecentByFilePath(recent.path) == null) {
+                    db.recentDao.add(entity)
+                } else {
+                    db.recentDao.update(entity)
+                }
+            }
+        }
     }
 
     override suspend fun updateRecent(recent: Recent) {

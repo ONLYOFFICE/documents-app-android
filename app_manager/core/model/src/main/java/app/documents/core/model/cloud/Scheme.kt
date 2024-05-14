@@ -5,8 +5,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class Scheme(val value: String) {
 
+    @Serializable
     data object Http : Scheme(HTTP_SCHEME)
+
+    @Serializable
     data object Https : Scheme(HTTPS_SCHEME)
+
+    @Serializable
     data class Custom(val scheme: String) : Scheme(scheme)
 
     companion object {

@@ -1117,7 +1117,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
         when (type) {
-            EditorsType.DOCS -> {
+            EditorsType.DOCS, EditorsType.PDF -> {
                 intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
             }
             EditorsType.CELLS -> {
@@ -1125,9 +1125,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             }
             EditorsType.PRESENTATION -> {
                 intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
-            }
-            EditorsType.PDF -> {
-                intent.setClassName(requireContext(), EditorsContract.PDF)
             }
         }
         return intent

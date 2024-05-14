@@ -33,6 +33,7 @@ import app.documents.core.providers.WebDavFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
+import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
@@ -1652,6 +1653,27 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
             result(true)
         }
+    }
+
+    protected fun downloadTempFile(cloudFile: CloudFile, edit: Boolean) {
+        disposable.add(
+            context.cloudFileProvider
+                .getCachedFile(context, cloudFile, context.accountOnline?.accountName.orEmpty())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ file -> openFileFromPortal(file, cloudFile.id, edit) }, ::fetchError)
+        )
+    }
+
+    private fun openFileFromPortal(file: File, fileId: String, edit: Boolean) {
+        viewState.onDialogClose()
+        viewState.onOpenLocalFile(CloudFile().apply {
+            id = fileId
+            webUrl = Uri.fromFile(file).toString()
+            fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
+            title = file.name
+            viewUrl = file.absolutePath
+        })
     }
 
     abstract fun getNextList()

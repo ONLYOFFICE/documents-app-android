@@ -59,10 +59,6 @@ open class EnterpriseLoginPresenter : BaseLoginPresenter<CommonSignInView>() {
             App.getApp().refreshLoginComponent(portal)
         }
 
-        if (useLdap) {
-            // sign in with ldap
-        } else {
-            signInWithEmail(login, password)
-        }
+        signInWithEmail(login, password)
     }
 }
