@@ -75,6 +75,7 @@ fun InviteByEmailAccessScreen(
     }
 
     AppScaffold(
+        useTablePaddings = false,
         topBar = {
             AppTopBar(
                 title = R.string.rooms_share_access_rights,

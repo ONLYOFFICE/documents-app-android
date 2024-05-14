@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
@@ -16,9 +17,11 @@ import app.editors.manager.app.roomProvider
 import app.editors.manager.app.shareApi
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.viewModels.main.UserListEffect
 import app.editors.manager.viewModels.main.UserListViewModel
 import com.google.android.material.appbar.AppBarLayout
 import lib.compose.ui.theme.ManagerTheme
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 
 class UsersFragment : BaseAppFragment() {
@@ -48,7 +51,7 @@ class UsersFragment : BaseAppFragment() {
             ManagerTheme {
                 val viewModel = viewModel {
                     UserListViewModel(
-                        item = checkNotNull(arguments?.getSerializableExt(ShareActivity.TAG_SHARE_ITEM)),
+                        roomId = checkNotNull(arguments?.getSerializableExt<Item>(ShareActivity.TAG_SHARE_ITEM)).id,
                         shareService = requireContext().shareApi,
                         roomProvider = requireContext().roomProvider,
                         resourcesProvider = requireContext().appComponent.resourcesProvider,
@@ -56,13 +59,23 @@ class UsersFragment : BaseAppFragment() {
                 }
                 val state by viewModel.viewState.collectAsState()
 
+                LaunchedEffect(Unit) {
+                    viewModel.effect.collect {
+                        when (it) {
+                            UserListEffect.Success -> requireActivity().finish()
+                            is UserListEffect.Error -> {
+                                UiUtils.getSnackBar(requireActivity()).setText(it.message).show()
+                            }
+                        }
+                    }
+                }
+
                 UserListScreen(
                     title = R.string.room_set_owner_title,
-                    usersViewState = state,
-                    onClick = { viewModel.setOwner(it.id) },
+                    userListState = state,
+                    onClick = viewModel::setOwner,
                     onSearch = viewModel::search,
-                    onBack = ::onBackPressed,
-                    onSuccess = ::onBackPressed
+                    onBack = ::onBackPressed
                 )
             }
         }

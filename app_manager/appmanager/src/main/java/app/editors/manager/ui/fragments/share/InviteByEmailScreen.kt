@@ -32,19 +32,21 @@ import lib.toolkit.base.managers.utils.StringUtils
 fun InviteByEmailScreen(viewModel: InviteByEmailViewModel, onBack: () -> Unit, onNext: () -> Unit) {
     val state by viewModel.state.collectAsState()
 
-    AppScaffold(topBar = {
-        AppTopBar(
-            title = R.string.invite_by_email,
-            backListener = onBack,
-            actions = {
-                TopAppBarAction(
-                    icon = lib.toolkit.base.R.drawable.ic_done,
-                    enabled = state.emails.isNotEmpty(),
-                    onClick = onNext
-                )
-            }
-        )
-    }) {
+    AppScaffold(
+        useTablePaddings = false,
+        topBar = {
+            AppTopBar(
+                title = R.string.invite_by_email,
+                backListener = onBack,
+                actions = {
+                    TopAppBarAction(
+                        icon = lib.toolkit.base.R.drawable.ic_done,
+                        enabled = state.emails.isNotEmpty(),
+                        onClick = onNext
+                    )
+                }
+            )
+        }) {
         NestedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
             val textState = remember { mutableStateOf("") }
             val errorState = remember { mutableStateOf<String?>(null) }

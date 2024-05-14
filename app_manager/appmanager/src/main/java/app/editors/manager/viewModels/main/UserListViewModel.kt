@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.share.ShareService
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.utils.RoomUtils
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -25,7 +25,9 @@ import lib.toolkit.base.managers.tools.ResourcesProvider
 data class UserListState(
     val loading: Boolean = true,
     val requestLoading: Boolean = false,
-    val users: List<Pair<User, Boolean>> = emptyList() // true if selected
+    val users: List<User> = emptyList(),
+    val access: Int? = null,
+    val selected: List<String> = emptyList()
 )
 
 sealed class UserListEffect {
@@ -34,7 +36,8 @@ sealed class UserListEffect {
 }
 
 class UserListViewModel(
-    private val item: CloudFolder,
+    private val roomId: String,
+    roomType: Int? = null,
     private val shareService: ShareService,
     private val roomProvider: RoomProvider,
     private val resourcesProvider: ResourcesProvider
@@ -42,7 +45,11 @@ class UserListViewModel(
 
     private var filterJob: Job? = null
 
-    private val _viewState: MutableStateFlow<UserListState> = MutableStateFlow(UserListState())
+    private val _viewState: MutableStateFlow<UserListState> = MutableStateFlow(
+        UserListState(
+            access = roomType?.let { RoomUtils.getAccessOptions(it, false).lastOrNull() }
+        )
+    )
     val viewState: StateFlow<UserListState> = _viewState
 
     private val _effect: MutableSharedFlow<UserListEffect> = MutableSharedFlow(1)
@@ -55,12 +62,12 @@ class UserListViewModel(
     }
 
     private suspend fun fetchUsers(searchValue: String = "") {
-        val users = shareService.getUsers(getOptions(searchValue))
+        val users = shareService.getRoomUsers(roomId, getOptions(searchValue))
             .response
             .filter { !it.isOwner }
             .map { it.copy(avatarMedium = App.getApp().accountOnline?.portal?.urlWithScheme + it.avatarMedium) }
 
-        _viewState.update { it.copy(loading = false, users = users.map { user -> user to false }) }
+        _viewState.update { it.copy(loading = false, users = users) }
     }
 
     fun search(searchValue: String) {
@@ -78,11 +85,21 @@ class UserListViewModel(
         }
     }
 
+    fun toggleSelect(userId: String) {
+        val selected = ArrayList(_viewState.value.selected)
+        if (selected.contains(userId)) {
+            selected.remove(userId)
+        } else {
+            selected.add(userId)
+        }
+        _viewState.update { it.copy(selected = selected) }
+    }
+
     fun setOwner(userId: String) {
         viewModelScope.launch {
             _viewState.update { it.copy(requestLoading = true) }
             try {
-                roomProvider.setRoomOwner(item.id, userId, App.getApp().accountOnline?.id ?: "")
+                roomProvider.setRoomOwner(roomId, userId, App.getApp().accountOnline?.id ?: "")
                 _effect.emit(UserListEffect.Success)
             } catch (error: Throwable) {
                 val errorMessage = error.message ?: resourcesProvider.getString(R.string.errors_unknown_error)
@@ -99,5 +116,32 @@ class UserListViewModel(
         ApiContract.Parameters.ARG_SORT_ORDER to ApiContract.Parameters.VAL_SORT_ORDER_ASC,
         ApiContract.Parameters.ARG_FILTER_OP to ApiContract.Parameters.VAL_FILTER_OP_CONTAINS
     )
+
+    fun setAccess(access: Int) {
+        _viewState.update { it.copy(access = access) }
+    }
+
+    fun onDelete() {
+        _viewState.update { it.copy(selected = emptyList()) }
+    }
+
+    fun onInvite() {
+        viewModelScope.launch {
+            _viewState.update { it.copy(requestLoading = true) }
+            try {
+                roomProvider.inviteByUserId(
+                    roomId = roomId,
+                    userIds = _viewState.value.selected,
+                    access = _viewState.value.access ?: throw NullPointerException()
+                )
+                _effect.emit(UserListEffect.Success)
+            } catch (error: Throwable) {
+                val errorMessage = error.message ?: resourcesProvider.getString(R.string.errors_unknown_error)
+                _effect.emit(UserListEffect.Error(errorMessage))
+            } finally {
+                _viewState.update { it.copy(requestLoading = false) }
+            }
+        }
+    }
 
 }

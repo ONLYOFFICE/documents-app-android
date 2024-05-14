@@ -14,6 +14,7 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,14 +35,19 @@ import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
+import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
+import app.editors.manager.app.shareApi
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.fragments.share.link.RoomAccessScreen
+import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.InviteByEmailViewModel
 import app.editors.manager.viewModels.main.InviteUserState
 import app.editors.manager.viewModels.main.InviteUserViewModel
+import app.editors.manager.viewModels.main.UserListEffect
+import app.editors.manager.viewModels.main.UserListViewModel
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextPrimary
 import lib.compose.ui.utils.popBackStackWhenResumed
@@ -89,7 +96,7 @@ class InviteUsersFragment : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (view as ComposeView).setContent {
             ManagerTheme {
-                RootScreen(
+                InviteUsersScreen(
                     roomType = remember { arguments?.getInt(ROOM_TYPE_KEY) ?: -1 },
                     roomId = remember(arguments?.getString(ROOM_ID_KEY)::orEmpty),
                     roomProvider = requireContext().roomProvider,
@@ -112,11 +119,11 @@ class InviteUsersFragment : BaseDialogFragment() {
 }
 
 private enum class Screens {
-    Main, Access, InviteByEmail, InviteByEmailAccess
+    Main, Access, InviteByEmail, InviteByEmailAccess, UserList
 }
 
 @Composable
-private fun RootScreen(
+fun InviteUsersScreen(
     roomType: Int,
     roomId: String,
     roomProvider: RoomProvider,
@@ -133,13 +140,14 @@ private fun RootScreen(
 
         NavHost(navController = navController, startDestination = Screens.Main.name) {
             composable(Screens.Main.name) {
-                InviteUsersScreen(
+                MainScreen(
                     state = state,
                     onLinkEnable = viewModel::setInviteLinkEnabled,
                     onAccessClick = { navController.navigate(Screens.Access.name) },
                     onCopyLink = { onCopyLink.invoke(state.externalLink?.sharedTo?.shareLink.orEmpty()) },
                     onShareLink = { onShareLink.invoke(state.externalLink?.sharedTo?.shareLink.orEmpty()) },
                     onInviteByEmailClick = { navController.navigate(Screens.InviteByEmail.name) },
+                    onChooseFromListClick = { navController.navigate(Screens.UserList.name) },
                     onBack = onBack
                 )
             }
@@ -156,7 +164,7 @@ private fun RootScreen(
             composable(Screens.InviteByEmail.name) {
                 InviteByEmailScreen(
                     viewModel = byEmailViewModel,
-                    onBack = navController::popBackStack,
+                    onBack = navController::popBackStackWhenResumed,
                     onNext = { navController.navigate(Screens.InviteByEmailAccess.name) }
                 )
             }
@@ -164,7 +172,7 @@ private fun RootScreen(
                 InviteByEmailAccessScreen(
                     roomType = roomType,
                     viewModel = byEmailViewModel,
-                    onBack = navController::popBackStack,
+                    onBack = navController::popBackStackWhenResumed,
                     onSnackBar = onSnackBar,
                     onSuccess = {
                         navController.navigate(Screens.Main.name) {
@@ -175,18 +183,59 @@ private fun RootScreen(
                     }
                 )
             }
+            composable(Screens.UserList.name) {
+                val context = LocalContext.current
+                val userListViewModel = viewModel {
+                    UserListViewModel(
+                        roomId = roomId,
+                        roomType = roomType,
+                        shareService = context.shareApi,
+                        roomProvider = context.roomProvider,
+                        resourcesProvider = context.appComponent.resourcesProvider,
+                    )
+                }
+                val userListState by userListViewModel.viewState.collectAsState()
+
+                LaunchedEffect(Unit) {
+                    userListViewModel.effect.collect {
+                        when (it) {
+                            is UserListEffect.Error -> onSnackBar.invoke(it.message)
+                            UserListEffect.Success -> navController.popBackStackWhenResumed()
+                        }
+                    }
+                }
+
+                UserListScreen(
+                    title = R.string.filter_toolbar_users_title,
+                    closeable = false,
+                    userListState = userListState,
+                    onClick = userListViewModel::toggleSelect,
+                    onSearch = userListViewModel::search,
+                    onBack = navController::popBackStackWhenResumed
+                ) {
+                    UserListBottomContent(
+                        count = userListState.selected.size,
+                        access = userListState.access ?: 0,
+                        accessList = RoomUtils.getAccessOptions(roomType, false),
+                        onAccess = userListViewModel::setAccess,
+                        onDelete = userListViewModel::onDelete,
+                        onNext = userListViewModel::onInvite
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun InviteUsersScreen(
+private fun MainScreen(
     state: InviteUserState,
     onLinkEnable: (Boolean) -> Unit,
     onCopyLink: () -> Unit,
     onShareLink: () -> Unit,
     onAccessClick: () -> Unit,
     onInviteByEmailClick: () -> Unit,
+    onChooseFromListClick: () -> Unit,
     onBack: () -> Unit
 ) {
     AppScaffold(
@@ -246,7 +295,7 @@ private fun InviteUsersScreen(
                 }
                 AppHeaderItem(title = R.string.invite_add_manually)
                 AppArrowItem(title = R.string.invite_by_email, onClick = onInviteByEmailClick)
-                AppArrowItem(title = R.string.invite_choose_from_list)
+                AppArrowItem(title = R.string.invite_choose_from_list, onClick = onChooseFromListClick)
             }
         }
     }
@@ -256,7 +305,7 @@ private fun InviteUsersScreen(
 @Composable
 private fun InviteUsersScreenPreview() {
     ManagerTheme {
-        InviteUsersScreen(
+        MainScreen(
             InviteUserState(
                 screenLoading = false,
                 requestLoading = true,
@@ -264,7 +313,7 @@ private fun InviteUsersScreenPreview() {
                     access = 4,
                     sharedTo = ExternalLinkSharedTo("", "", "https://...", 0, null, null, false, false, false, "", null)
                 )
-            ), {}, {}, {}, {}, {}, {}
+            ), {}, {}, {}, {}, {}, {}, {}
         )
     }
 }

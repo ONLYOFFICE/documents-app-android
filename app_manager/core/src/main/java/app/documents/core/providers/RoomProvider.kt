@@ -16,6 +16,7 @@ import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
+import app.documents.core.network.share.models.request.EmailInvitation
 import app.documents.core.network.share.models.request.Invitation
 import app.documents.core.network.share.models.request.RequestAddInviteLink
 import app.documents.core.network.share.models.request.RequestCreateSharedLink
@@ -23,7 +24,7 @@ import app.documents.core.network.share.models.request.RequestCreateThirdPartyRo
 import app.documents.core.network.share.models.request.RequestRemoveInviteLink
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.RequestUpdateSharedLink
-import app.documents.core.network.share.models.request.RoomInvitation
+import app.documents.core.network.share.models.request.UserIdInvitation
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -271,10 +272,22 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         val response = roomService.shareRoom(
             id = roomId,
             body = RequestRoomShare(
-                invitations = emails.map { (email, access) -> RoomInvitation(email = email, access = access) },
+                invitations = emails.map { (email, access) -> EmailInvitation(email = email, access = access) },
                 notify = false
             )
         )
         if (!response.isSuccessful) throw HttpException(response)
     }
+
+    suspend fun inviteByUserId(roomId: String, userIds: List<String>, access: Int) {
+        val response = roomService.shareRoom(
+            id = roomId,
+            body = RequestRoomShare(
+                invitations = userIds.map { id -> UserIdInvitation(id = id, access = access) },
+                notify = false
+            )
+        )
+        if (!response.isSuccessful) throw HttpException(response)
+    }
+
 }

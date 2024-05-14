@@ -19,7 +19,15 @@ data class Invitation(
 ) : RequestInvitation
 
 @Serializable
-data class RoomInvitation(
+data class EmailInvitation(
     val email: String,
     val access: Int
 ) : RequestInvitation
+
+
+@Serializable
+data class UserIdInvitation(
+    val id: String,
+    val access: Int
+) : RequestInvitation
+

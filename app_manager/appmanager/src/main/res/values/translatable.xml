@@ -824,6 +824,7 @@
     <string name="invite_new_members">New members</string>
     <string name="invite_add_manually">Add manually</string>
     <string name="invite_choose_from_list">Choose from list</string>
+    <string name="invite_already_invited">Invited</string>
     <string name="share_access_room_owner">Owner</string>
     <string name="share_access_room_admin">Room admin</string>
     <string name="share_access_room_power_user">Power user</string>
