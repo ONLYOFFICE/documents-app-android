@@ -6,9 +6,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ProgressBar
-import com.google.android.material.color.MaterialColors
+import androidx.fragment.app.FragmentManager
 import lib.toolkit.base.R
-import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
@@ -112,8 +111,8 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             return this
         }
 
-        fun show() {
-            dialog.show(CommonDialog.Dialogs.WAITING)
+        fun show(fragmentManager: FragmentManager) {
+            dialog.show(fragmentManager, CommonDialog.Dialogs.WAITING)
         }
     }
 
