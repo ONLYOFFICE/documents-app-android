@@ -54,8 +54,8 @@ import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.capitalize
-import javax.inject.Inject
 import lib.toolkit.base.ui.fragments.base.BaseFragment
+import javax.inject.Inject
 
 private data class ClearCacheMessage(
     val title: String?,
@@ -168,7 +168,10 @@ class AppSettingsFragment : BaseFragment() {
                             }
                         }
                         composable(Screen.About.route) {
-                            AboutScreen(onBackClick = navController::popBackStack)
+                            AboutScreen(
+                                onBackClick = navController::popBackStack,
+                                onShowBrowser = { url -> showUrlInBrowser(getString(url)) }
+                            )
                         }
                     }
                 }
