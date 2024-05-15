@@ -192,7 +192,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                         getString(R.string.dialogs_common_ok_button),
                         null
                     )
-                    dialog?.show()
+                    dialog?.show(supportFragmentManager)
                 }
             }
         } else if (resultCode == AccountsActivity.RESULT_NO_LOGGED_IN_ACCOUNTS) {

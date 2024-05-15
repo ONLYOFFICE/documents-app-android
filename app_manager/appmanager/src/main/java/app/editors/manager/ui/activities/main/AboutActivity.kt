@@ -36,7 +36,7 @@ private sealed class Screen(val screen: String) {
 }
 
 @Composable
-fun AboutScreen(onBackClick: () -> Unit) {
+fun AboutScreen(onShowBrowser: (Int) -> Unit, onBackClick: () -> Unit) {
     val navController = rememberNavController()
     val context = LocalContext.current
 
@@ -46,7 +46,7 @@ fun AboutScreen(onBackClick: () -> Unit) {
                 navController = navController,
                 sdkVersion = FileUtils.readSdkVersion(context, "sdk.version"),
                 backPressed = onBackClick,
-                onClick = context::getString
+                onClick = onShowBrowser
             )
         }
         composable(Screen.License.screen) {
