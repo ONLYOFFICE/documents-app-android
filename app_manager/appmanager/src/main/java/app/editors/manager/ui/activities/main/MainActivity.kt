@@ -84,6 +84,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         val TAG: String = MainActivity::class.java.simpleName
 
         private const val ACCOUNT_KEY = "ACCOUNT_KEY"
+        private const val FRAGMENT_KEY = "FRAGMENT_KEY"
         private const val URL_KEY = "url"
 
         fun show(context: Context) {
@@ -109,6 +110,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(ACCOUNT_KEY, Json.encodeToString(viewBinding.appBarToolbar.account))
+        outState.putInt(FRAGMENT_KEY, viewBinding.bottomNavigation.selectedItemId)
         super.onSaveInstanceState(outState)
     }
 
@@ -205,7 +207,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         presenter.checkOnBoardingShowed()
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
-        init()
+        init(savedInstanceState)
     }
 
     override fun onStart() {
@@ -221,10 +223,9 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
-    private fun init() {
+    private fun init(savedInstanceState: Bundle?) {
         initViews()
         initToolbar()
-        checkState()
         registerAppLocaleBroadcastReceiver()
 
         if (isNotification()) {
@@ -245,6 +246,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 intent.clearIntent()
             }
         }
+        checkState(savedInstanceState)
     }
 
     private fun initViews() {
@@ -264,8 +266,14 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
-    private fun checkState() {
+    private fun checkState(savedInstanceState: Bundle?) {
         presenter.init()
+
+        if (savedInstanceState != null) {
+            viewBinding.bottomNavigation.selectedItemId = savedInstanceState.getInt(FRAGMENT_KEY)
+            viewBinding.appBarToolbar.bind()
+            return
+        }
 
         if (intent?.extras?.contains("create_type") == true) {
             viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
