@@ -29,7 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onPlaced
-import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -48,7 +48,7 @@ private data class TabOffset(val left: Dp = 0.dp, val width: Dp = 0.dp)
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun AppTabRow(pagerState: PagerState, tabs: List<TabRowItem>, onTabClick: (Int) -> Unit) {
+fun AppTabRow(pagerState: PagerState, tabs: List<TabRowItem>, onTabClick: (Int) -> Unit) {
     val tabsOffset = remember { mutableStateListOf(*Array(tabs.size) { TabOffset() }) }
     val density = LocalDensity.current
 
@@ -73,7 +73,7 @@ private fun AppTabRow(pagerState: PagerState, tabs: List<TabRowItem>, onTabClick
                         modifier = Modifier.onPlaced {
                             with(density) {
                                 tabsOffset[index] = TabOffset(
-                                    left = it.positionInWindow().x.toDp(),
+                                    left = it.positionInRoot().x.toDp(),
                                     width = it.size.width.toDp()
                                 )
                             }

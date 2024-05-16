@@ -2,6 +2,7 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.login.RoomGroup
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.ShareService
@@ -10,22 +11,26 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.RoomUtils
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.tools.ResourcesProvider
+import kotlin.time.Duration.Companion.milliseconds
 
 data class UserListState(
     val loading: Boolean = true,
     val requestLoading: Boolean = false,
     val users: List<User> = emptyList(),
+    val groups: List<RoomGroup> = emptyList(),
     val access: Int? = null,
     val selected: List<String> = emptyList()
 )
@@ -35,6 +40,7 @@ sealed class UserListEffect {
     data class Error(val message: String) : UserListEffect()
 }
 
+@OptIn(FlowPreview::class)
 class UserListViewModel(
     private val roomId: String,
     roomType: Int? = null,
@@ -42,8 +48,6 @@ class UserListViewModel(
     private val roomProvider: RoomProvider,
     private val resourcesProvider: ResourcesProvider
 ) : ViewModel() {
-
-    private var filterJob: Job? = null
 
     private val _viewState: MutableStateFlow<UserListState> = MutableStateFlow(
         UserListState(
@@ -55,34 +59,36 @@ class UserListViewModel(
     private val _effect: MutableSharedFlow<UserListEffect> = MutableSharedFlow(1)
     val effect: SharedFlow<UserListEffect> = _effect.asSharedFlow()
 
+    private val filterFlow: MutableSharedFlow<String> = MutableSharedFlow()
+
     init {
         viewModelScope.launch {
-            fetchUsers()
+            filterFlow
+                .onStart { emit("") }
+                .distinctUntilChanged()
+                .debounce(500.milliseconds)
+                .collect { searchValue ->
+                    try {
+                        val users = async {
+                            shareService.getRoomUsers(roomId, getOptions(searchValue))
+                                .response
+                                .filter { !it.isOwner }
+                                .map { it.copy(avatarMedium = App.getApp().accountOnline?.portal?.urlWithScheme + it.avatarMedium) }
+                        }
+
+                        val groups = async { shareService.getRoomGroups(roomId, getOptions(searchValue)).response }
+
+                        _viewState.update { it.copy(loading = false, users = users.await(), groups = groups.await()) }
+                    } catch (error: Throwable) {
+                        val errorMessage = error.message ?: resourcesProvider.getString(R.string.errors_unknown_error)
+                        _effect.emit(UserListEffect.Error(errorMessage))
+                    }
+                }
         }
-    }
-
-    private suspend fun fetchUsers(searchValue: String = "") {
-        val users = shareService.getRoomUsers(roomId, getOptions(searchValue))
-            .response
-            .filter { !it.isOwner }
-            .map { it.copy(avatarMedium = App.getApp().accountOnline?.portal?.urlWithScheme + it.avatarMedium) }
-
-        _viewState.update { it.copy(loading = false, users = users) }
     }
 
     fun search(searchValue: String) {
-        filterJob?.cancel()
-        filterJob = viewModelScope.launch {
-            delay(300L)
-            try {
-                fetchUsers(searchValue)
-            } catch (_: CancellationException) {
-                //
-            } catch (error: Throwable) {
-                val errorMessage = error.message ?: resourcesProvider.getString(R.string.errors_unknown_error)
-                _effect.tryEmit(UserListEffect.Error(errorMessage))
-            }
-        }
+        filterFlow.tryEmit(searchValue)
     }
 
     fun toggleSelect(userId: String) {
@@ -109,13 +115,6 @@ class UserListViewModel(
             }
         }
     }
-
-    private fun getOptions(searchValue: String): Map<String, String> = mapOf(
-        ApiContract.Parameters.ARG_FILTER_VALUE to searchValue,
-        ApiContract.Parameters.ARG_SORT_BY to ApiContract.Parameters.VAL_SORT_BY_FIRST_NAME,
-        ApiContract.Parameters.ARG_SORT_ORDER to ApiContract.Parameters.VAL_SORT_ORDER_ASC,
-        ApiContract.Parameters.ARG_FILTER_OP to ApiContract.Parameters.VAL_FILTER_OP_CONTAINS
-    )
 
     fun setAccess(access: Int) {
         _viewState.update { it.copy(access = access) }
@@ -144,4 +143,10 @@ class UserListViewModel(
         }
     }
 
+    private fun getOptions(searchValue: String): Map<String, String> = mapOf(
+        ApiContract.Parameters.ARG_FILTER_VALUE to searchValue,
+        ApiContract.Parameters.ARG_SORT_BY to ApiContract.Parameters.VAL_SORT_BY_FIRST_NAME,
+        ApiContract.Parameters.ARG_SORT_ORDER to ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+        ApiContract.Parameters.ARG_FILTER_OP to ApiContract.Parameters.VAL_FILTER_OP_CONTAINS
+    )
 }

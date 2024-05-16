@@ -208,6 +208,7 @@ fun InviteUsersScreen(
                 UserListScreen(
                     title = R.string.filter_toolbar_users_title,
                     closeable = false,
+                    withGroups = true,
                     userListState = userListState,
                     onClick = userListViewModel::toggleSelect,
                     onSearch = userListViewModel::search,

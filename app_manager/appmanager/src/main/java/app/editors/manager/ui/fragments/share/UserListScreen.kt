@@ -1,12 +1,14 @@
 package app.editors.manager.ui.fragments.share
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,7 +20,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
@@ -36,11 +41,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -56,54 +63,83 @@ import app.editors.manager.viewModels.main.UserListState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+import kotlinx.coroutines.launch
 import lib.compose.ui.enabled
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppScaffold
+import lib.compose.ui.views.AppTabRow
 import lib.compose.ui.views.AppTextField
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.PlaceholderView
+import lib.compose.ui.views.TabRowItem
 import lib.compose.ui.views.TopAppBarAction
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.R
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UserListScreen(
     title: Int,
     userListState: UserListState,
+    withGroups: Boolean = false,
     closeable: Boolean = true,
-    onClick: (String) -> Unit, // user id
+    onClick: (id: String) -> Unit,
     onSearch: (String) -> Unit,
     onBack: () -> Unit,
     bottomContent: @Composable () -> Unit = {}
 ) {
     val searchState = remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val tabs = remember {
+        listOfNotNull(
+            TabRowItem(
+                context.getString(app.editors.manager.R.string.share_goal_user)
+            ),
+            TabRowItem(
+                context.getString(app.editors.manager.R.string.share_goal_group)
+            )
+        )
+    }
+    val pagerState = rememberPagerState(pageCount = tabs::size)
 
     AppScaffold(
         useTablePaddings = false,
         topBar = {
-            AnimatedVisibility(
-                visible = !searchState.value,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                AppTopBar(
-                    title = stringResource(id = title),
-                    isClose = closeable,
-                    backListener = onBack,
-                    actions = {
-                        TopAppBarAction(
-                            icon = app.editors.manager.R.drawable.ic_toolbar_search,
-                            onClick = { searchState.value = true }
+            Column {
+                AnimatedContent(
+                    targetState = searchState.value,
+                    transitionSpec = { fadeIn().togetherWith(fadeOut()) }, label = "appbar_content"
+                ) { search ->
+                    if (search) {
+                        SearchAppBar(
+                            onClose = { searchState.value = false },
+                            onTextChange = onSearch::invoke
+                        )
+                    } else {
+                        AppTopBar(
+                            title = stringResource(id = title),
+                            isClose = closeable,
+                            backListener = onBack,
+                            actions = {
+                                TopAppBarAction(
+                                    icon = app.editors.manager.R.drawable.ic_toolbar_search,
+                                    onClick = { searchState.value = true }
+                                )
+                            }
                         )
                     }
-                )
-            }
-            AnimatedVisibility(visible = searchState.value, enter = fadeIn(), exit = fadeOut()) {
-                SearchAppBar(
-                    onCloseClick = { searchState.value = false },
-                    onTextChange = onSearch::invoke
-                )
+                }
+                if (withGroups) {
+                    AppTabRow(
+                        pagerState = pagerState,
+                        tabs = tabs,
+                        onTabClick = {
+                            coroutineScope.launch { pagerState.animateScrollToPage(it) }
+                        }
+                    )
+                }
             }
         }
     ) {
@@ -117,29 +153,65 @@ fun UserListScreen(
                     VerticalSpacer(height = 4.dp)
                 }
 
-                val users = userListState.users
-                if (users.isNotEmpty()) {
-                    LazyColumn(modifier = Modifier.weight(1f)) {
-                        val groupUser = users.groupBy { it.displayName.first().uppercaseChar() }.toSortedMap()
-                        groupUser.forEach { (letter, users) ->
-                            itemsIndexed(items = users.orEmpty()) { index, user ->
-                                UserItem(
-                                    letter = letter?.toString().takeIf { index == 0 },
-                                    user = user,
-                                    selected = userListState.selected.contains(user.id),
-                                    onClick = { onClick.invoke(user.id) },
+                HorizontalPager(modifier = Modifier.weight(1f), state = pagerState) {
+                    when (it) {
+                        0 -> {
+                            val users = userListState.users
+                            if (users.isNotEmpty()) {
+                                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                                    users.groupBy { user -> user.displayName.first().uppercaseChar() }
+                                        .toSortedMap()
+                                        .forEach { (letter, users) ->
+                                            itemsIndexed(items = users.orEmpty()) { index, user ->
+                                                UserItem(
+                                                    withLetter = true,
+                                                    letter = letter?.toString().takeIf { index == 0 },
+                                                    name = user.displayName,
+                                                    subtitle = user.email.orEmpty(),
+                                                    avatar = user.avatarMedium,
+                                                    shared = user.shared,
+                                                    selected = userListState.selected.contains(user.id),
+                                                    onClick = { onClick.invoke(user.id) },
+                                                )
+                                            }
+                                        }
+                                }
+                            } else {
+                                PlaceholderView(
+                                    image = R.drawable.placeholder_not_found,
+                                    title = stringResource(id = app.editors.manager.R.string.room_search_not_found),
+                                    subtitle = stringResource(id = app.editors.manager.R.string.room_search_not_found_desc)
+                                )
+                            }
+                        }
+                        1 -> {
+                            val groups = userListState.groups
+                            if (groups.isNotEmpty()) {
+                                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                                    items(items = groups) { group ->
+                                        UserItem(
+                                            withLetter = false,
+                                            name = group.name,
+                                            shared = group.shared,
+                                            letter = null,
+                                            subtitle = null,
+                                            avatar = null,
+                                            selected = userListState.selected.contains(group.id),
+                                            onClick = { onClick.invoke(group.id) },
+                                        )
+                                    }
+                                }
+                            } else {
+                                PlaceholderView(
+                                    image = R.drawable.placeholder_not_found,
+                                    title = stringResource(id = app.editors.manager.R.string.room_search_not_found),
+                                    subtitle = stringResource(id = app.editors.manager.R.string.room_search_not_found_desc)
                                 )
                             }
                         }
                     }
-                    bottomContent()
-                } else {
-                    PlaceholderView(
-                        image = R.drawable.placeholder_not_found,
-                        title = stringResource(id = app.editors.manager.R.string.room_search_not_found),
-                        subtitle = stringResource(id = app.editors.manager.R.string.room_search_not_found_desc)
-                    )
                 }
+                bottomContent()
             }
         }
     }
@@ -147,28 +219,39 @@ fun UserListScreen(
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
-private fun LazyItemScope.UserItem(letter: String?, user: User, selected: Boolean, onClick: () -> Unit) {
+private fun LazyItemScope.UserItem(
+    name: String,
+    selected: Boolean,
+    shared: Boolean,
+    letter: String?,
+    withLetter: Boolean,
+    avatar: String?,
+    subtitle: String?,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp)
             .animateItemPlacement()
-            .clickable(onClick = onClick, enabled = !user.shared),
+            .clickable(onClick = onClick, enabled = !shared),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = letter.orEmpty(),
-            style = MaterialTheme.typography.h5,
-            color = MaterialTheme.colors.primary,
-            textAlign = TextAlign.Start,
-            modifier = Modifier
-                .width(40.dp)
-                .alpha(letter?.let { 1f } ?: 0f)
-                .padding(start = 16.dp)
-        )
+        if (withLetter) {
+            Text(
+                text = letter.orEmpty(),
+                style = MaterialTheme.typography.h5,
+                color = MaterialTheme.colors.primary,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .width(40.dp)
+                    .alpha(letter?.let { 1f } ?: 0f)
+                    .padding(start = 16.dp)
+            )
+        }
         Box(
             modifier = Modifier
-                .enabled(!user.shared)
+                .enabled(!shared)
                 .align(Alignment.CenterVertically)
                 .padding(start = 16.dp)
                 .clip(CircleShape)
@@ -176,7 +259,7 @@ private fun LazyItemScope.UserItem(letter: String?, user: User, selected: Boolea
         ) {
             GlideImage(
                 modifier = Modifier.fillMaxSize(),
-                model = user.avatarMedium,
+                model = avatar,
                 contentDescription = null,
                 loading = placeholder(app.editors.manager.R.drawable.ic_account_placeholder),
                 failure = placeholder(app.editors.manager.R.drawable.ic_account_placeholder)
@@ -184,7 +267,7 @@ private fun LazyItemScope.UserItem(letter: String?, user: User, selected: Boolea
             if (selected) {
                 Box(
                     modifier = Modifier
-                        .background(Color.Gray.copy(alpha = .8f))
+                        .background(Color.Black.copy(alpha = .7f))
                         .fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
@@ -198,22 +281,25 @@ private fun LazyItemScope.UserItem(letter: String?, user: User, selected: Boolea
         }
         Column(
             modifier = Modifier
-                .enabled(!user.shared)
+                .enabled(!shared)
                 .weight(1f)
                 .padding(start = 12.dp, end = 16.dp)
-                .align(Alignment.CenterVertically)
+                .align(Alignment.CenterVertically),
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = user.displayName,
+                text = name,
                 style = MaterialTheme.typography.body1
             )
-            Text(
-                text = user.email.orEmpty(),
-                style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.colorTextSecondary
-            )
+            subtitle?.let {
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.body2,
+                    color = MaterialTheme.colors.colorTextSecondary
+                )
+            }
         }
-        if (user.shared) {
+        if (shared) {
             Text(
                 modifier = Modifier.padding(end = 16.dp),
                 text = stringResource(id = app.editors.manager.R.string.invite_already_invited),
@@ -227,7 +313,7 @@ private fun LazyItemScope.UserItem(letter: String?, user: User, selected: Boolea
 @Composable
 fun SearchAppBar(
     onTextChange: (String) -> Unit,
-    onCloseClick: () -> Unit
+    onClose: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val searchValueState = remember { mutableStateOf("") }
@@ -258,9 +344,9 @@ fun SearchAppBar(
                 IconButton(
                     onClick = {
                         if (searchValueState.value.isNotEmpty()) {
-                            onTextChange("")
+                            searchValueState.value = ""
                         } else {
-                            onCloseClick()
+                            onClose()
                         }
                     }
                 ) {
@@ -284,7 +370,7 @@ private fun PreviewMainWithBottom() {
             title = app.editors.manager.R.string.room_set_owner_title,
             userListState = UserListState(
                 loading = false,
-                requestLoading = true,
+                requestLoading = false,
                 selected = selected,
                 users = listOf(
                     User().copy(displayName = "user", id = "id", email = "email"),
@@ -295,7 +381,7 @@ private fun PreviewMainWithBottom() {
                     User().copy(displayName = "123", id = "id5", email = "email"),
                     User().copy(displayName = "5mike", id = "id6", email = "email", shared = true)
                 )
-            ), false,
+            ), withGroups = true, false,
             { user -> if (selected.contains(user)) selected.remove(user) else selected.add(user) },
             {},
             {}
@@ -335,7 +421,7 @@ private fun PreviewMain() {
                     User().copy(displayName = "5mike", id = "id6", email = "email", shared = true)
                 ),
                 selected = listOf("id5")
-            ), false, {}, {}, {}, {}
+            ), false, false, {}, {}, {}, {}
         )
     }
 }
@@ -350,7 +436,7 @@ private fun PreviewEmptyMain() {
                 loading = false,
                 requestLoading = false,
                 users = emptyList()
-            ), false, {}, {}, {}, {}
+            ), false, false, {}, {}, {}, {}
         )
     }
 }
