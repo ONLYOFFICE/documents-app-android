@@ -50,6 +50,8 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         private const val TAG_SELECTED_PAGE = "TAG_SELECTED_PAGE"
         private const val TAG_VISIBLE = "TAG_VISIBLE"
         private const val TAG_SCROLL = "TAG_SCROLL"
+        private const val TAG_TITLES = "TAG_TITLES"
+        private const val TAG_TYPE = "TAG_TYPE"
         private const val OFFSCREEN_COUNT = 5
 
         fun newInstance(): MainPagerFragment {
@@ -70,6 +72,9 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     private var placeholderViews: PlaceholderViews? = null
 
     private var preferenceTool: PreferenceTool? = null
+
+    private var tabTile: ArrayList<String>? = null
+    private var type: ArrayList<Int>? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -103,7 +108,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         super.onResume()
         if (isFirstResume) {
             isFirstResume = false
-        }  else {
+        } else {
             viewBinding?.mainViewPager?.post {
 //                activity?.showAccount(true)
                 activeFragment?.onResume()
@@ -123,6 +128,8 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         outState.putBoolean(TAG_VISIBLE, isVisibleRoot)
         outState.putBoolean(TAG_SCROLL, isScroll)
         outState.putInt(TAG_SELECTED_PAGE, selectedPage)
+        outState.putStringArrayList(TAG_TITLES, tabTile)
+        outState.putIntegerArrayList(TAG_TYPE, type)
         super.onSaveInstanceState(outState)
     }
 
@@ -133,11 +140,13 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        restoreStates(savedInstanceState)
-        placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.root)
-        placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD)
-        checkBundle()
-        //        presenter.getState(requireActivity().intent.data)
+        if (savedInstanceState != null) {
+            restoreStates(savedInstanceState)
+        } else {
+            placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.root)
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD)
+            checkBundle()
+        }
     }
 
     @Suppress("JSON_FORMAT_REDUNDANT")
@@ -151,18 +160,32 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         presenter.getState(data)
     }
 
-    private fun restoreStates(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(TAG_VISIBLE)) {
-                isVisibleRoot = savedInstanceState.getBoolean(TAG_VISIBLE)
-            }
-            if (savedInstanceState.containsKey(TAG_SCROLL)) {
-                isScroll = savedInstanceState.getBoolean(TAG_SCROLL)
-            }
-            if (savedInstanceState.containsKey(TAG_SELECTED_PAGE)) {
-                selectedPage = savedInstanceState.getInt(TAG_SELECTED_PAGE)
-            }
+    private fun restoreStates(savedInstanceState: Bundle) {
+        if (savedInstanceState.containsKey(TAG_VISIBLE)) {
+            isVisibleRoot = savedInstanceState.getBoolean(TAG_VISIBLE)
         }
+        if (savedInstanceState.containsKey(TAG_SCROLL)) {
+            isScroll = savedInstanceState.getBoolean(TAG_SCROLL)
+        }
+        if (savedInstanceState.containsKey(TAG_SELECTED_PAGE)) {
+            selectedPage = savedInstanceState.getInt(TAG_SELECTED_PAGE)
+        }
+
+        if (savedInstanceState.containsKey(TAG_TITLES) && savedInstanceState.containsKey(TAG_TYPE)) {
+            tabTile = savedInstanceState.getStringArrayList(TAG_TITLES)
+            type = savedInstanceState.getIntegerArrayList(TAG_TYPE)
+
+            val fragments: MutableList<MainPagerContainer> = mutableListOf()
+            childFragmentManager.fragments.forEachIndexed { index, fragment ->
+                fragments.add(MainPagerContainer(fragment, tabTile?.get(index) ?: "", type?.get(index) ?: 0))
+            }
+
+            setAdapter(fragments, true)
+        } else {
+            checkBundle()
+            return
+        }
+
     }
 
     fun isActivePage(fragment: Fragment?): Boolean {
@@ -175,6 +198,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     fun setToolbarState(isRoot: Boolean) {
+        if (!isVisible) return
         isVisibleRoot = isRoot
         activity?.setAppBarStates(isVisibleRoot)
         viewBinding?.mainViewPager?.post {
@@ -187,11 +211,13 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     fun setVisibilityActionButton(isShow: Boolean) {
+        if (!isVisible) return
         activity?.showActionButton(isShow)
     }
 
 
     fun setAccountEnable(isEnable: Boolean) {
+        if (!isVisible) return
         activity?.showAccount(isEnable)
     }
 
@@ -204,20 +230,26 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun onRender(sections: List<Explorer>?) {
+        type = arrayListOf()
+        tabTile = arrayListOf()
         sections?.let {
             val fragments = sections.mapNotNull { section ->
+                type?.add(section.current.rootFolderType)
                 when (val folderType = section.current.rootFolderType) {
                     ApiContract.SectionType.CLOUD_PRIVATE_ROOM, ApiContract.SectionType.CLOUD_RECENT -> null
                     else -> {
+                        tabTile?.add(getTabTitle(folderType))
                         MainPagerContainer(
                             fragment = when (folderType) {
                                 ApiContract.SectionType.CLOUD_TRASH,
                                 ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> {
                                     DocsTrashFragment.newInstance(folderType, section.current.id)
                                 }
+
                                 ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> {
                                     DocsRoomFragment.newInstance(folderType, section.current.id)
                                 }
+
                                 else -> {
                                     DocsCloudFragment.newInstance(folderType, section.current.id)
                                 }
@@ -247,7 +279,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
 
-    private fun setAdapter(fragments: List<MainPagerContainer>) {
+    private fun setAdapter(fragments: List<MainPagerContainer>, isRestore: Boolean = false) {
         adapter = AdapterForPages(childFragmentManager, fragments)
         viewBinding?.mainViewPager?.offscreenPageLimit = OFFSCREEN_COUNT
         viewBinding?.mainViewPager?.adapter = adapter
@@ -257,17 +289,21 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         viewBinding?.appBarTabs?.setupWithViewPager(viewBinding?.mainViewPager, true)
         setToolbarState(true)
 
-        if (context?.accountOnline.isDocSpace) {
-            viewBinding?.mainViewPager?.post {
-                viewBinding?.mainViewPager?.currentItem =
-                    fragments.indexOf(fragments.find { it.mFragment is DocsRoomFragment })
+        if (isRestore) {
+            viewBinding?.mainViewPager?.currentItem = selectedPage
+        } else {
+            if (context?.accountOnline.isDocSpace) {
+                viewBinding?.mainViewPager?.post {
+                    viewBinding?.mainViewPager?.currentItem =
+                        fragments.indexOf(fragments.find { it.mFragment is DocsRoomFragment })
+                }
             }
         }
     }
 
     override fun setFileData(fileData: String) {
         viewBinding?.root?.post {
-            childFragmentManager.fragments.find { it is DocsRoomFragment || it is DocsCloudFragment}?.let { fragment ->
+            childFragmentManager.fragments.find { it is DocsRoomFragment || it is DocsCloudFragment }?.let { fragment ->
                 if (fragment.isAdded) {
                     (fragment as DocsCloudFragment).setFileData(fileData)
                     requireActivity().intent.data = null
