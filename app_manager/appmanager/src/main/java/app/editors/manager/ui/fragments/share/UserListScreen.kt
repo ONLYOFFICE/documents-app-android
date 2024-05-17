@@ -49,11 +49,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import app.documents.core.model.login.RoomGroup
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.managers.utils.RoomUtils
@@ -257,13 +259,29 @@ private fun LazyItemScope.UserItem(
                 .clip(CircleShape)
                 .size(40.dp)
         ) {
-            GlideImage(
-                modifier = Modifier.fillMaxSize(),
-                model = avatar,
-                contentDescription = null,
-                loading = placeholder(app.editors.manager.R.drawable.ic_account_placeholder),
-                failure = placeholder(app.editors.manager.R.drawable.ic_account_placeholder)
-            )
+            if (avatar != null) {
+                GlideImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = avatar,
+                    contentDescription = null,
+                    loading = placeholder(app.editors.manager.R.drawable.ic_account_placeholder),
+                    failure = placeholder(app.editors.manager.R.drawable.ic_account_placeholder)
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(colorResource(id = R.color.colorIconBackground))
+                        .size(40.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = lib.toolkit.base.managers.utils.StringUtils.getAvatarName(name),
+                        style = MaterialTheme.typography.h6,
+                        color = MaterialTheme.colors.colorTextSecondary
+                    )
+                }
+            }
             if (selected) {
                 Box(
                     modifier = Modifier
@@ -380,6 +398,9 @@ private fun PreviewMainWithBottom() {
                     User().copy(displayName = "User", id = "id4", email = "email"),
                     User().copy(displayName = "123", id = "id5", email = "email"),
                     User().copy(displayName = "5mike", id = "id6", email = "email", shared = true)
+                ),
+                groups = listOf(
+                    RoomGroup("", "group 1")
                 )
             ), withGroups = true, false,
             { user -> if (selected.contains(user)) selected.remove(user) else selected.add(user) },

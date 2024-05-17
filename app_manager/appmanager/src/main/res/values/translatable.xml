@@ -777,6 +777,7 @@
     <string name="rooms_info_copy_link_to_clipboard">Link successfully copied to clipboard</string>
     <string name="rooms_info_admin_title">Administration (%d)</string>
     <string name="rooms_info_users_title">Users (%1d)</string>
+    <string name="rooms_info_groups_title">Groups (%1d)</string>
     <string name="rooms_info_expected_title">Expected users (%1d)</string>
     <string name="rooms_info_link_expired">The link has expired</string>
     <string name="rooms_info_link_expired_full">The link has expired and has been disabled</string>

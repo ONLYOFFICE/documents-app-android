@@ -303,19 +303,29 @@ class RoomInfoFragment : BaseDialogFragment() {
                     ShareUsersList(
                         title = R.string.rooms_info_admin_title,
                         portal = portal,
-                        shareList = groupedShareList[ShareGroup.Admin],
+                        groupedShareList = groupedShareList,
+                        key = ShareGroup.Admin,
+                        onClick = onSetUserAccess
+                    )
+                    ShareUsersList(
+                        title = R.string.rooms_info_groups_title,
+                        portal = portal,
+                        groupedShareList = groupedShareList,
+                        key = ShareGroup.Group,
                         onClick = onSetUserAccess
                     )
                     ShareUsersList(
                         title = R.string.rooms_info_users_title,
                         portal = portal,
-                        shareList = groupedShareList[ShareGroup.User],
+                        groupedShareList = groupedShareList,
+                        key = ShareGroup.User,
                         onClick = onSetUserAccess
                     )
                     ShareUsersList(
                         title = R.string.rooms_info_expected_title,
                         portal = portal,
-                        shareList = groupedShareList[ShareGroup.Expected],
+                        groupedShareList = groupedShareList,
+                        key = ShareGroup.Expected,
                         onClick = onSetUserAccess
                     )
                 }
@@ -369,6 +379,7 @@ class RoomInfoFragment : BaseDialogFragment() {
                     ),
                     shareList = listOf(
                         Share(access = "1", sharedTo = SharedTo(displayName = "User 1"), isOwner = true),
+                        Share(access = "5", sharedTo = SharedTo(name = "Group 2"), subjectType = 2),
                         Share(access = "9", sharedTo = SharedTo(displayName = "User 2")),
                         Share(access = "11", sharedTo = SharedTo(displayName = "User 3")),
                         Share(access = "10", sharedTo = SharedTo(displayName = "User 4")),
