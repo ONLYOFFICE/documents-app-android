@@ -50,7 +50,6 @@ import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.managers.utils.clearIntent
 import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -118,11 +117,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         intent?.action?.let { action ->
-            if (action == Intent.ACTION_VIEW) {
-                intent.data?.let {
-                    presenter.checkFileData(it)
-                }
-            }
             if (action == DownloadReceiver.DOWNLOAD_ACTION_CANCELED) {
                 intent.extras?.let { extras ->
                     WorkManager.getInstance(this)
@@ -170,8 +164,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         if (fragment is DocsRecentFragment) {
             fragment.getArgs(intent)
         }
-
-        intent?.clearIntent()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -240,12 +232,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             .onEach { viewBinding.bottomNavigation.menu.getItem(0).isEnabled = it.isNotEmpty() }
             .launchIn(lifecycleScope)
 
-        if (intent?.action == Intent.ACTION_VIEW) {
-            intent.data?.let {
-                presenter.checkFileData(it)
-                intent.clearIntent()
-            }
-        }
         checkState(savedInstanceState)
     }
 
@@ -597,7 +583,10 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }.commit()
         val fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
         if (fragment != null) {
-            supportFragmentManager.beginTransaction().show(fragment).commit()
+            supportFragmentManager.beginTransaction().setCustomAnimations(
+                lib.toolkit.base.R.anim.fragment_fade_in,
+                lib.toolkit.base.R.anim.fragment_fade_out
+            ).show(fragment).commit()
             (fragment as MainPagerFragment).onResume()
             return
         }

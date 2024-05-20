@@ -33,6 +33,7 @@ import app.editors.manager.ui.views.pager.ViewPagerAdapter
 import app.editors.manager.ui.views.pager.ViewPagerAdapter.Container
 import lib.toolkit.base.managers.utils.RequestPermission
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.clearIntent
 import moxy.presenter.InjectPresenter
 
 interface IMainPagerFragment {
@@ -302,14 +303,14 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun setFileData(fileData: String) {
-        viewBinding?.root?.post {
+        viewBinding?.root?.postDelayed({
             childFragmentManager.fragments.find { it is DocsRoomFragment || it is DocsCloudFragment }?.let { fragment ->
                 if (fragment.isAdded) {
                     (fragment as DocsCloudFragment).setFileData(fileData)
-                    requireActivity().intent.data = null
+                    requireActivity().intent.clearIntent()
                 }
             }
-        }
+        }, 1000)
     }
 
     override fun onSwitchAccount(data: OpenDataModel, isToken: Boolean) {
