@@ -27,7 +27,7 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
     var selectMode: Boolean = false
         set(value) {
             field = value
-            background = if (value)
+            foreground = if (value)
                 AppCompatResources.getDrawable(context, R.drawable.drawable_list_image_select_background) else null
         }
 
