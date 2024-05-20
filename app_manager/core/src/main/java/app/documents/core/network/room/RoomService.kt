@@ -19,6 +19,7 @@ import app.documents.core.network.room.models.ResponseRoomShare
 import app.documents.core.network.room.models.ResponseTags
 import app.documents.core.network.room.models.ResponseUpdateExternalLink
 import app.documents.core.network.share.models.ExternalLink
+import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.request.RequestAddInviteLink
 import app.documents.core.network.share.models.request.RequestCreateSharedLink
 import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
@@ -296,4 +297,15 @@ interface RoomService {
         @Path(value = "id") id: String,
         @Body body: RequestCreateThirdPartyRoom
     ): Response<ResponseCreateFolder>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/folder/{roomId}/group/{groupId}/share")
+    suspend fun getGroupUsers(
+        @Path("roomId") roomId: String,
+        @Path("groupId") groupId: String
+    ): app.documents.core.network.BaseResponse<List<GroupShare>>
+
 }

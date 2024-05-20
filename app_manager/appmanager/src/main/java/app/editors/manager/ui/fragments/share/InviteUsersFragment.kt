@@ -35,6 +35,7 @@ import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
 import app.editors.manager.app.shareApi
@@ -133,6 +134,7 @@ fun InviteUsersScreen(
     onBack: () -> Unit
 ) {
     Surface(color = MaterialTheme.colors.background) {
+        val context = LocalContext.current
         val viewModel = viewModel { InviteUserViewModel(roomId, roomType, roomProvider) }
         val byEmailViewModel = viewModel { InviteByEmailViewModel(roomId, roomType, roomProvider) }
         val navController = rememberNavController()
@@ -155,6 +157,7 @@ fun InviteUsersScreen(
                 RoomAccessScreen(
                     roomType = roomType,
                     currentAccess = state.externalLink?.access ?: -1,
+                    portal = remember { context.accountOnline?.portalUrl.orEmpty() },
                     ownerOrAdmin = false,
                     isRemove = false,
                     onChangeAccess = viewModel::setAccess,

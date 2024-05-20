@@ -15,6 +15,7 @@ import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.share.models.ExternalLink
+import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.EmailInvitation
 import app.documents.core.network.share.models.request.Invitation
@@ -290,4 +291,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         if (!response.isSuccessful) throw HttpException(response)
     }
 
+    suspend fun getGroupUsers(roomId: String, groupId: String): List<GroupShare> {
+        return roomService.getGroupUsers(roomId, groupId).response
+    }
 }

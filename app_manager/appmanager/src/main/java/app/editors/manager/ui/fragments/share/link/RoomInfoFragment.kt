@@ -21,9 +21,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -35,7 +38,7 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.network.share.models.Share
-import app.documents.core.network.share.models.ShareGroup
+import app.documents.core.network.share.models.ShareType
 import app.documents.core.network.share.models.SharedTo
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
@@ -43,6 +46,7 @@ import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
 import app.editors.manager.ui.fragments.share.InviteUsersScreen
+import app.editors.manager.viewModels.link.RoomAccessViewModel
 import app.editors.manager.viewModels.link.RoomInfoEffect
 import app.editors.manager.viewModels.link.RoomInfoState
 import app.editors.manager.viewModels.link.RoomInfoViewModel
@@ -74,7 +78,7 @@ class RoomInfoFragment : BaseDialogFragment() {
     }
 
     enum class RoomInfoScreens {
-        RoomInfo, UserAccess, LinkSettings, InviteUsers
+        RoomInfo, UserAccess, GroupAccess, LinkSettings, InviteUsers
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -148,7 +152,15 @@ class RoomInfoFragment : BaseDialogFragment() {
                                         RoomInfoScreens.UserAccess.name +
                                                 "?userId=$userId" +
                                                 "&access=$access" +
+                                                "&removable=true" +
                                                 "&ownerOrAdmin=$ownerOrAdmin"
+                                    )
+                                },
+                                onSetGroupAccess = { groupId, access ->
+                                    navController.navigate(
+                                        RoomInfoScreens.GroupAccess.name +
+                                                "?groupId=$groupId" +
+                                                "&access=$access"
                                     )
                                 },
                                 onSharedLinkCreate = {
@@ -198,24 +210,84 @@ class RoomInfoFragment : BaseDialogFragment() {
                             route = "${RoomInfoScreens.UserAccess.name}?" +
                                     "userId={userId}&" +
                                     "access={access}&" +
+                                    "removable={removable}&" +
                                     "ownerOrAdmin={ownerOrAdmin}",
                             arguments = listOf(
                                 navArgument("userId") { type = NavType.StringType },
                                 navArgument("access") { type = NavType.IntType },
+                                navArgument("removable") { type = NavType.BoolType },
                                 navArgument("ownerOrAdmin") { type = NavType.BoolType }
                             )
                         ) { backStackEntry ->
-                            val userId = backStackEntry.arguments?.getString("userId").orEmpty()
-                            val roomId = room.id
                             RoomAccessScreen(
                                 roomType = room.roomType,
                                 currentAccess = backStackEntry.arguments?.getInt("access") ?: -1,
                                 ownerOrAdmin = backStackEntry.arguments?.getBoolean("ownerOrAdmin") == true,
-                                isRemove = true,
+                                portal = remember { requireContext().accountOnline?.portalUrl.orEmpty() },
+                                isRemove = backStackEntry.arguments?.getBoolean("removable") == true,
                                 onBack = navController::popBackStackWhenResumed,
-                                onChangeAccess = { newAccess -> viewModel.setUserAccess(roomId, userId, newAccess) }
+                                onChangeAccess = { newAccess ->
+                                    viewModel.setUserAccess(
+                                        room.id,
+                                        backStackEntry.arguments?.getString("userId").orEmpty(),
+                                        newAccess
+                                    )
+                                }
                             )
                         }
+                        composable(
+                            route = "${RoomInfoScreens.GroupAccess.name}?" +
+                                    "groupId={groupId}&" +
+                                    "access={access}",
+                            arguments = listOf(
+                                navArgument("groupId") { type = NavType.StringType },
+                                navArgument("access") { type = NavType.IntType }
+                            )
+                        ) { backStackEntry ->
+                            val lifecycleOwner = LocalLifecycleOwner.current
+                            val groupId = remember { backStackEntry.arguments?.getString("groupId").orEmpty() }
+                            val roomAccessViewModel = viewModel {
+                                RoomAccessViewModel(
+                                    roomProvider = requireContext().roomProvider,
+                                    roomId = room.id,
+                                    groupId = groupId
+                                )
+                            }
+                            val users = roomAccessViewModel.users.collectAsState()
+
+                            LaunchedEffect(Unit) {
+                                lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                                    roomAccessViewModel.fetchUsers()
+                                }
+                            }
+
+                            RoomAccessScreen(
+                                roomType = room.roomType,
+                                currentAccess = backStackEntry.arguments?.getInt("access") ?: -1,
+                                ownerOrAdmin = false,
+                                portal = remember { requireContext().accountOnline?.portalUrl.orEmpty() },
+                                isRemove = true,
+                                users = users.value,
+                                onBack = navController::popBackStackWhenResumed,
+                                onChangeAccess = { newAccess ->
+                                    viewModel.setUserAccess(
+                                        room.id,
+                                        groupId,
+                                        newAccess
+                                    )
+                                },
+                                onUserClick = { userId, access, ownerOrAdmin ->
+                                    navController.navigate(
+                                        RoomInfoScreens.UserAccess.name +
+                                                "?userId=$userId" +
+                                                "&access=$access" +
+                                                "&removable=false" +
+                                                "&ownerOrAdmin=$ownerOrAdmin"
+                                    )
+                                }
+                            )
+                        }
+
                         composable(RoomInfoScreens.InviteUsers.name) {
                             InviteUsersScreen(
                                 roomType = room.roomType,
@@ -253,6 +325,7 @@ class RoomInfoFragment : BaseDialogFragment() {
         roomTitle: String?,
         portal: String?,
         onSetUserAccess: (userId: String, access: Int, ownerOrAdmin: Boolean) -> Unit,
+        onSetGroupAccess: (groupId: String, access: Int) -> Unit,
         onAddUsers: () -> Unit,
         onBackClick: () -> Unit,
         onLinkClick: (ExternalLink) -> Unit,
@@ -301,31 +374,27 @@ class RoomInfoFragment : BaseDialogFragment() {
                         )
                     }
                     ShareUsersList(
-                        title = R.string.rooms_info_admin_title,
                         portal = portal,
-                        groupedShareList = groupedShareList,
-                        key = ShareGroup.Admin,
+                        shareList = groupedShareList.getOrElse(ShareType.Admin, ::emptyList),
+                        type = ShareType.Admin,
                         onClick = onSetUserAccess
                     )
                     ShareUsersList(
-                        title = R.string.rooms_info_groups_title,
                         portal = portal,
-                        groupedShareList = groupedShareList,
-                        key = ShareGroup.Group,
+                        shareList = groupedShareList.getOrElse(ShareType.Group, ::emptyList),
+                        type = ShareType.Group,
+                        onClick = { id, access, _ -> onSetGroupAccess.invoke(id, access) }
+                    )
+                    ShareUsersList(
+                        portal = portal,
+                        shareList = groupedShareList.getOrElse(ShareType.User, ::emptyList),
+                        type = ShareType.User,
                         onClick = onSetUserAccess
                     )
                     ShareUsersList(
-                        title = R.string.rooms_info_users_title,
                         portal = portal,
-                        groupedShareList = groupedShareList,
-                        key = ShareGroup.User,
-                        onClick = onSetUserAccess
-                    )
-                    ShareUsersList(
-                        title = R.string.rooms_info_expected_title,
-                        portal = portal,
-                        groupedShareList = groupedShareList,
-                        key = ShareGroup.Expected,
+                        shareList = groupedShareList.getOrElse(ShareType.Expected, ::emptyList),
+                        type = ShareType.Expected,
                         onClick = onSetUserAccess
                     )
                 }
@@ -390,7 +459,8 @@ class RoomInfoFragment : BaseDialogFragment() {
                 onAddUsers = {},
                 onSetUserAccess = { _, _, _ -> },
                 onSharedLinkCreate = {},
-                onLinkClick = {}
+                onLinkClick = {},
+                onSetGroupAccess = { _, _ -> }
             )
         }
     }

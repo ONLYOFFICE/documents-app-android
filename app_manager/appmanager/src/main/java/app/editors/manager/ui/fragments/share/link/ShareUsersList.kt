@@ -29,8 +29,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.Share
-import app.documents.core.network.share.models.ShareGroup
+import app.documents.core.network.share.models.ShareEntity
+import app.documents.core.network.share.models.ShareType
 import app.editors.manager.managers.utils.RoomUtils
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -45,16 +47,20 @@ import lib.toolkit.base.R
 
 @Composable
 internal fun ShareUsersList(
-    title: Int,
     portal: String?,
-    groupedShareList: Map<ShareGroup, List<Share>>,
-    key: ShareGroup,
+    shareList: List<ShareEntity>,
+    type: ShareType,
     onClick: (String, Int, Boolean) -> Unit
 ) {
     var visible by remember { mutableStateOf(true) }
-    val shareList = groupedShareList[key]
+    val title = when (type) {
+        ShareType.Admin -> app.editors.manager.R.string.rooms_info_admin_title
+        ShareType.User -> app.editors.manager.R.string.rooms_info_users_title
+        ShareType.Group -> app.editors.manager.R.string.rooms_info_groups_title
+        ShareType.Expected -> app.editors.manager.R.string.rooms_info_expected_title
+    }
 
-    if (!shareList.isNullOrEmpty()) {
+    if (shareList.isNotEmpty()) {
         Column {
             Row(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)) {
                 Text(
@@ -80,12 +86,25 @@ internal fun ShareUsersList(
             AnimatedVisibilityVerticalFade(visible = visible) {
                 Column {
                     shareList.forEach { share ->
-                        ShareUserItem(share = share, portal = portal, key = key) {
-                            onClick.invoke(
-                                share.sharedTo.id,
-                                share.intAccess,
-                                share.sharedTo.isOwner || share.sharedTo.isAdmin
-                            )
+                        when (share) {
+                            is Share -> {
+                                ShareUserItem(share = share, portal = portal, key = type) {
+                                    onClick.invoke(
+                                        share.sharedTo.id,
+                                        share.accessCode,
+                                        share.sharedTo.isOwner || share.sharedTo.isAdmin
+                                    )
+                                }
+                            }
+                            is GroupShare -> {
+                                ShareUserItem(share = share, portal = portal, key = type) {
+                                    onClick.invoke(
+                                        share.sharedTo.id,
+                                        share.accessCode,
+                                        share.sharedTo.isOwner || share.sharedTo.isAdmin
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -96,7 +115,7 @@ internal fun ShareUsersList(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun ShareUserItem(share: Share, portal: String?, key: ShareGroup, onClick: () -> Unit) {
+private fun ShareUserItem(share: ShareEntity, portal: String?, key: ShareType, onClick: () -> Unit) {
     Column(modifier = Modifier.addIf(share.canEditAccess) { clickable(onClick = onClick) }) {
         Row(
             modifier = Modifier
@@ -105,7 +124,7 @@ private fun ShareUserItem(share: Share, portal: String?, key: ShareGroup, onClic
                 .height(56.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (key != ShareGroup.Group) {
+            if (key != ShareType.Group) {
                 GlideImage(
                     modifier = Modifier
                         .padding(end = 16.dp)
@@ -135,10 +154,10 @@ private fun ShareUserItem(share: Share, portal: String?, key: ShareGroup, onClic
             Text(
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.body1,
-                text = if (key != ShareGroup.Group) share.sharedTo.displayName else share.sharedTo.name
+                text = if (key != ShareType.Group) share.sharedTo.displayName else share.sharedTo.name
             )
             Text(
-                text = stringResource(id = RoomUtils.getAccessTitleOrOwner(share)),
+                text = stringResource(id = RoomUtils.getAccessTitleOrOwner(share.isOwner, share.accessCode)),
                 style = MaterialTheme.typography.body2,
                 color = if (share.canEditAccess)
                     MaterialTheme.colors.colorTextSecondary else

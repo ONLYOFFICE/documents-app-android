@@ -3,7 +3,6 @@ package app.editors.manager.managers.utils
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.share.models.Share
 import app.editors.manager.R
 
 
@@ -51,7 +50,14 @@ object RoomUtils {
         else -> R.string.share_access_room_viewer
     }
 
-    fun getAccessOptions(roomType: Int, isRemove: Boolean): List<Int> {
+    fun getAccessOptions(roomType: Int, isRemove: Boolean, isAdmin: Boolean = false): List<Int> {
+        if (isAdmin) {
+            return listOfNotNull(
+                ApiContract.ShareCode.ROOM_ADMIN,
+                ApiContract.ShareCode.NONE.takeIf { isRemove }
+            )
+        }
+
         return when (roomType) {
             ApiContract.RoomType.PUBLIC_ROOM -> {
                 mutableListOf(
@@ -82,8 +88,8 @@ object RoomUtils {
         }.apply { if (isRemove) add(ApiContract.ShareCode.NONE) }
     }
 
-    fun getAccessTitleOrOwner(share: Share): Int =
-        if (share.isOwner) R.string.share_access_room_owner else getAccessTitle(share.intAccess)
+    fun getAccessTitleOrOwner(isOwner: Boolean, access: Int): Int =
+        if (isOwner) R.string.share_access_room_owner else getAccessTitle(access)
 
     fun getRoomInitials(title: String): String? {
         return try {
