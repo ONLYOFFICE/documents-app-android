@@ -823,6 +823,7 @@
     <string name="dialog_create_room_value">New room</string>
     <string name="invite_by_email">Invite users by email</string>
     <string name="invite_new_members">New members</string>
+    <string name="invite_new_groups">New groups</string>
     <string name="invite_add_manually">Add manually</string>
     <string name="invite_choose_from_list">Choose from list</string>
     <string name="invite_already_invited">Invited</string>

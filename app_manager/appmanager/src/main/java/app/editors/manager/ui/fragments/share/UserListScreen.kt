@@ -38,6 +38,9 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,7 +64,9 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.views.custom.UserListBottomContent
+import app.editors.manager.viewModels.main.UserListEffect
 import app.editors.manager.viewModels.main.UserListState
+import app.editors.manager.viewModels.main.UserListViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -79,17 +84,54 @@ import lib.compose.ui.views.TopAppBarAction
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.R
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UserListScreen(
+    viewModel: UserListViewModel,
     title: Int,
-    userListState: UserListState,
+    withGroups: Boolean = false,
+    closeable: Boolean = true,
+    onClick: (id: String) -> Unit,
+    onBack: () -> Unit,
+    onSnackBar: (String) -> Unit,
+    onSuccess: (() -> Unit)? = null,
+    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> }
+) {
+    val state by viewModel.viewState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect {
+            when (it) {
+                is UserListEffect.Error -> onSnackBar.invoke(it.message)
+                UserListEffect.Success -> onBack.invoke()
+            }
+        }
+    }
+
+    MainScreen(
+        state = state,
+        title = title,
+        withGroups = withGroups,
+        closeable = closeable,
+        onClick = onClick,
+        onSearch = viewModel::search,
+        onBack = onBack,
+        onSnackBar = onSnackBar,
+        bottomContent = bottomContent
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun MainScreen(
+    state: UserListState,
+    title: Int,
     withGroups: Boolean = false,
     closeable: Boolean = true,
     onClick: (id: String) -> Unit,
     onSearch: (String) -> Unit,
     onBack: () -> Unit,
-    bottomContent: @Composable () -> Unit = {}
+    onSnackBar: (String) -> Unit,
+    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> }
 ) {
     val searchState = remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -112,7 +154,8 @@ fun UserListScreen(
             Column {
                 AnimatedContent(
                     targetState = searchState.value,
-                    transitionSpec = { fadeIn().togetherWith(fadeOut()) }, label = "appbar_content"
+                    transitionSpec = { fadeIn().togetherWith(fadeOut()) },
+                    label = "appbar_content"
                 ) { search ->
                     if (search) {
                         SearchAppBar(
@@ -145,11 +188,11 @@ fun UserListScreen(
             }
         }
     ) {
-        if (userListState.loading) {
+        if (state.loading) {
             LoadingPlaceholder()
         } else {
             Column {
-                if (userListState.requestLoading) {
+                if (state.requestLoading) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 } else {
                     VerticalSpacer(height = 4.dp)
@@ -158,7 +201,7 @@ fun UserListScreen(
                 HorizontalPager(modifier = Modifier.weight(1f), state = pagerState) {
                     when (it) {
                         0 -> {
-                            val users = userListState.users
+                            val users = state.users
                             if (users.isNotEmpty()) {
                                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                                     users.groupBy { user -> user.displayName.first().uppercaseChar() }
@@ -172,7 +215,7 @@ fun UserListScreen(
                                                     subtitle = user.email.orEmpty(),
                                                     avatar = user.avatarMedium,
                                                     shared = user.shared,
-                                                    selected = userListState.selected.contains(user.id),
+                                                    selected = state.selected.contains(user.id),
                                                     onClick = { onClick.invoke(user.id) },
                                                 )
                                             }
@@ -187,7 +230,7 @@ fun UserListScreen(
                             }
                         }
                         1 -> {
-                            val groups = userListState.groups
+                            val groups = state.groups
                             if (groups.isNotEmpty()) {
                                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                                     items(items = groups) { group ->
@@ -198,7 +241,7 @@ fun UserListScreen(
                                             letter = null,
                                             subtitle = null,
                                             avatar = null,
-                                            selected = userListState.selected.contains(group.id),
+                                            selected = state.selected.contains(group.id),
                                             onClick = { onClick.invoke(group.id) },
                                         )
                                     }
@@ -213,7 +256,7 @@ fun UserListScreen(
                         }
                     }
                 }
-                bottomContent()
+                bottomContent(state.selected.size, state.access ?: 0)
             }
         }
     }
@@ -329,7 +372,7 @@ private fun LazyItemScope.UserItem(
 }
 
 @Composable
-fun SearchAppBar(
+private fun SearchAppBar(
     onTextChange: (String) -> Unit,
     onClose: () -> Unit
 ) {
@@ -384,9 +427,9 @@ fun SearchAppBar(
 private fun PreviewMainWithBottom() {
     ManagerTheme {
         val selected = remember { mutableStateListOf("id5") }
-        UserListScreen(
-            title = app.editors.manager.R.string.room_set_owner_title,
-            userListState = UserListState(
+        MainScreen(
+            title = app.editors.manager.R.string.invite_choose_from_list,
+            state = UserListState(
                 loading = false,
                 requestLoading = false,
                 selected = selected,
@@ -402,15 +445,20 @@ private fun PreviewMainWithBottom() {
                 groups = listOf(
                     RoomGroup("", "group 1")
                 )
-            ), withGroups = true, false,
-            { user -> if (selected.contains(user)) selected.remove(user) else selected.add(user) },
-            {},
-            {}
-        ) {
-            UserListBottomContent(count = selected.size,
+            ),
+            withGroups = true,
+            closeable = false,
+            onClick = { user -> if (selected.contains(user)) selected.remove(user) else selected.add(user) },
+            onSearch = {},
+            onSnackBar = {},
+            onBack = {}
+        ) { _, _ ->
+            UserListBottomContent(
+                nextButtonTitle = app.editors.manager.R.string.share_invite_title,
+                count = selected.size,
                 access = 4,
                 accessList = RoomUtils.getAccessOptions(ApiContract.RoomType.CUSTOM_ROOM, false),
-                {}, {}, {})
+                {}, {}) {}
         }
     }
 }
@@ -427,9 +475,9 @@ private fun PreviewSearch() {
 @Composable
 private fun PreviewMain() {
     ManagerTheme {
-        UserListScreen(
+        MainScreen(
             title = app.editors.manager.R.string.room_set_owner_title,
-            userListState = UserListState(
+            state = UserListState(
                 loading = false,
                 requestLoading = false,
                 users = listOf(
@@ -439,11 +487,19 @@ private fun PreviewMain() {
                     User().copy(displayName = "mike", id = "id3", email = "email"),
                     User().copy(displayName = "User", id = "id4", email = "email"),
                     User().copy(displayName = "123", id = "id5", email = "email"),
-                    User().copy(displayName = "5mike", id = "id6", email = "email", shared = true)
+                    User().copy(displayName = "5mike", id = "id6", email = "email")
                 ),
-                selected = listOf("id5")
-            ), false, false, {}, {}, {}, {}
-        )
+                groups = listOf(
+                    RoomGroup("", "group 1")
+                )
+            ),
+            withGroups = false,
+            closeable = false,
+            onClick = { },
+            onSearch = {},
+            onSnackBar = {},
+            onBack = {}
+        ) { _, _ -> }
     }
 }
 
@@ -451,13 +507,19 @@ private fun PreviewMain() {
 @Composable
 private fun PreviewEmptyMain() {
     ManagerTheme {
-        UserListScreen(
+        MainScreen(
             title = app.editors.manager.R.string.room_set_owner_title,
-            userListState = UserListState(
+            state = UserListState(
                 loading = false,
                 requestLoading = false,
                 users = emptyList()
-            ), false, false, {}, {}, {}, {}
+            ),
+            withGroups = false,
+            closeable = false,
+            onClick = { },
+            onSearch = {},
+            onSnackBar = {},
+            onBack = {}
         )
     }
 }

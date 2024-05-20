@@ -124,23 +124,12 @@ class UserListViewModel(
         _viewState.update { it.copy(selected = emptyList()) }
     }
 
-    fun onInvite() {
-        viewModelScope.launch {
-            _viewState.update { it.copy(requestLoading = true) }
-            try {
-                roomProvider.inviteByUserId(
-                    roomId = roomId,
-                    userIds = _viewState.value.selected,
-                    access = _viewState.value.access ?: throw NullPointerException()
-                )
-                _effect.emit(UserListEffect.Success)
-            } catch (error: Throwable) {
-                val errorMessage = error.message ?: resourcesProvider.getString(R.string.errors_unknown_error)
-                _effect.emit(UserListEffect.Error(errorMessage))
-            } finally {
-                _viewState.update { it.copy(requestLoading = false) }
-            }
-        }
+    fun getSelectedUsers(): List<User> {
+        return _viewState.value.users.filter { _viewState.value.selected.contains(it.id) }
+    }
+
+    fun getSelectedGroups(): List<RoomGroup> {
+        return _viewState.value.groups.filter { _viewState.value.selected.contains(it.id) }
     }
 
     private fun getOptions(searchValue: String): Map<String, String> = mapOf(

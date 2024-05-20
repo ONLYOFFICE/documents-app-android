@@ -28,11 +28,12 @@ import lib.toolkit.base.R
 
 @Composable
 fun UserListBottomContent(
-    count: Int,
-    access: Int,
-    accessList: List<Int>,
-    onAccess: (Int) -> Unit,
-    onDelete: () -> Unit,
+    nextButtonTitle: Int,
+    count: Int? = null,
+    access: Int? = null,
+    accessList: List<Int> = emptyList(),
+    onAccess: (Int) -> Unit = {},
+    onDelete: (() -> Unit)? = null,
     onNext: () -> Unit
 ) {
     var dropdown by remember { mutableStateOf(false) }
@@ -44,42 +45,48 @@ fun UserListBottomContent(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        IconButton(onClick = onDelete) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_close),
-                contentDescription = null,
-                tint = MaterialTheme.colors.colorTextSecondary
-            )
+        onDelete?.let {
+            IconButton(onClick = onDelete) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_close),
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.colorTextSecondary
+                )
+            }
         }
-        Text(text = "$count", style = MaterialTheme.typography.h6, textAlign = TextAlign.Center)
-        IconButton(onClick = { dropdown = true }) {
-            Row(
-                modifier = Modifier,
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(access)),
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.colorTextSecondary
-                )
-                Icon(
-                    imageVector = ImageVector.vectorResource(app.editors.manager.R.drawable.ic_drawer_menu_header_arrow),
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.colorTextSecondary
-                )
-                AccessDropdownMenu(
-                    onDismissRequest = { dropdown = false },
-                    expanded = dropdown,
-                    accessList = accessList,
-                    onClick = { newAccess -> dropdown = false; onAccess.invoke(newAccess) }
-                )
+        count?.let {
+            Text(text = "$count", style = MaterialTheme.typography.h6, textAlign = TextAlign.Center)
+        }
+        access?.let {
+            IconButton(onClick = { dropdown = true }) {
+                Row(
+                    modifier = Modifier,
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(access)),
+                        contentDescription = null,
+                        tint = MaterialTheme.colors.colorTextSecondary
+                    )
+                    Icon(
+                        imageVector = ImageVector.vectorResource(app.editors.manager.R.drawable.ic_drawer_menu_header_arrow),
+                        contentDescription = null,
+                        tint = MaterialTheme.colors.colorTextSecondary
+                    )
+                    AccessDropdownMenu(
+                        onDismissRequest = { dropdown = false },
+                        expanded = dropdown,
+                        accessList = accessList,
+                        onClick = { newAccess -> dropdown = false; onAccess.invoke(newAccess) }
+                    )
+                }
             }
         }
         Spacer(modifier = Modifier.weight(1f))
         AppTextButton(
-            enabled = count > 0,
-            title = app.editors.manager.R.string.share_invite_title,
+            enabled = count?.let { count > 0 } ?: true,
+            title = nextButtonTitle,
             onClick = onNext
         )
     }

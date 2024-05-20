@@ -14,7 +14,6 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -28,9 +27,14 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import app.documents.core.model.login.RoomGroup
+import app.documents.core.model.login.User
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.providers.RoomProvider
@@ -44,11 +48,12 @@ import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.fragments.share.link.RoomAccessScreen
 import app.editors.manager.ui.views.custom.UserListBottomContent
-import app.editors.manager.viewModels.main.InviteByEmailViewModel
+import app.editors.manager.viewModels.main.InviteAccessViewModel
 import app.editors.manager.viewModels.main.InviteUserState
 import app.editors.manager.viewModels.main.InviteUserViewModel
-import app.editors.manager.viewModels.main.UserListEffect
 import app.editors.manager.viewModels.main.UserListViewModel
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextPrimary
 import lib.compose.ui.utils.popBackStackWhenResumed
@@ -61,8 +66,10 @@ import lib.compose.ui.views.NestedColumn
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.getJsonString
 import lib.toolkit.base.managers.utils.openSendTextActivity
 import lib.toolkit.base.managers.utils.putArgs
+import java.net.URLEncoder
 
 class InviteUsersFragment : BaseDialogFragment() {
 
@@ -120,7 +127,7 @@ class InviteUsersFragment : BaseDialogFragment() {
 }
 
 private enum class Screens {
-    Main, Access, InviteByEmail, InviteByEmailAccess, UserList
+    Main, Access, InviteByEmail, InviteAccess, UserList
 }
 
 @Composable
@@ -136,7 +143,6 @@ fun InviteUsersScreen(
     Surface(color = MaterialTheme.colors.background) {
         val context = LocalContext.current
         val viewModel = viewModel { InviteUserViewModel(roomId, roomType, roomProvider) }
-        val byEmailViewModel = viewModel { InviteByEmailViewModel(roomId, roomType, roomProvider) }
         val navController = rememberNavController()
         val state by viewModel.state.collectAsState()
 
@@ -166,28 +172,18 @@ fun InviteUsersScreen(
             }
             composable(Screens.InviteByEmail.name) {
                 InviteByEmailScreen(
-                    viewModel = byEmailViewModel,
                     onBack = navController::popBackStackWhenResumed,
-                    onNext = { navController.navigate(Screens.InviteByEmailAccess.name) }
-                )
-            }
-            composable(Screens.InviteByEmailAccess.name) {
-                InviteByEmailAccessScreen(
-                    roomType = roomType,
-                    viewModel = byEmailViewModel,
-                    onBack = navController::popBackStackWhenResumed,
-                    onSnackBar = onSnackBar,
-                    onSuccess = {
-                        navController.navigate(Screens.Main.name) {
-                            popUpTo(Screens.Main.name) {
-                                inclusive = true
-                            }
-                        }
+                    onNext = {
+                        navController.navigate(
+                            Screens.InviteAccess.name +
+                                    "?emails=${Json.encodeToString<List<String>>(it)}&" +
+                                    "users=null&" +
+                                    "groups=null&"
+                        )
                     }
                 )
             }
             composable(Screens.UserList.name) {
-                val context = LocalContext.current
                 val userListViewModel = viewModel {
                     UserListViewModel(
                         roomId = roomId,
@@ -197,35 +193,72 @@ fun InviteUsersScreen(
                         resourcesProvider = context.appComponent.resourcesProvider,
                     )
                 }
-                val userListState by userListViewModel.viewState.collectAsState()
-
-                LaunchedEffect(Unit) {
-                    userListViewModel.effect.collect {
-                        when (it) {
-                            is UserListEffect.Error -> onSnackBar.invoke(it.message)
-                            UserListEffect.Success -> navController.popBackStackWhenResumed()
-                        }
-                    }
-                }
-
                 UserListScreen(
                     title = R.string.filter_toolbar_users_title,
                     closeable = false,
-                    withGroups = true,
-                    userListState = userListState,
+                    withGroups = roomType != ApiContract.RoomType.PUBLIC_ROOM,
+                    viewModel = userListViewModel,
                     onClick = userListViewModel::toggleSelect,
-                    onSearch = userListViewModel::search,
-                    onBack = navController::popBackStackWhenResumed
-                ) {
+                    onBack = navController::popBackStackWhenResumed,
+                    onSnackBar = onSnackBar
+                ) { size, access ->
                     UserListBottomContent(
-                        count = userListState.selected.size,
-                        access = userListState.access ?: 0,
+                        nextButtonTitle = lib.toolkit.base.R.string.common_next,
+                        count = size,
+                        access = access,
                         accessList = RoomUtils.getAccessOptions(roomType, false),
                         onAccess = userListViewModel::setAccess,
-                        onDelete = userListViewModel::onDelete,
-                        onNext = userListViewModel::onInvite
+                        onDelete = userListViewModel::onDelete
+                    ) {
+                        val users = Json.encodeToString(userListViewModel.getSelectedUsers().ifEmpty { null })
+                        val groups = Json.encodeToString(userListViewModel.getSelectedGroups().ifEmpty { null })
+                        navController.navigate(
+                            Screens.InviteAccess.name +
+                                    "?emails=null&" +
+                                    "users=${URLEncoder.encode(users, Charsets.UTF_8.toString())}&" +
+                                    "groups=${URLEncoder.encode(groups, Charsets.UTF_8.toString())}&" +
+                                    "access=$access"
+                        )
+                    }
+                }
+            }
+            composable(
+                route = "${Screens.InviteAccess.name}?" +
+                        "emails={emails}&" +
+                        "users={users}&" +
+                        "groups={groups}&" +
+                        "access={access}",
+                arguments = listOf(
+                    navArgument("emails") { type = NavType.StringType; nullable = true },
+                    navArgument("users") { type = NavType.StringType; nullable = true },
+                    navArgument("groups") { type = NavType.StringType; nullable = true },
+                    navArgument("access") { type = NavType.IntType; defaultValue = 2 }
+                )
+            ) {
+                val inviteAccessViewModel = viewModel {
+                    InviteAccessViewModel(
+                        roomId = roomId,
+                        roomProvider = roomProvider,
+                        access = it.arguments?.getInt("access") ?: 2,
+                        users = it.arguments?.getJsonString<List<User>>("users", true).orEmpty(),
+                        groups = it.arguments?.getJsonString<List<RoomGroup>>("groups", true).orEmpty(),
+                        emails = it.arguments?.getJsonString<List<String>>("emails").orEmpty(),
                     )
                 }
+                InviteAccessScreen(
+                    roomType = roomType,
+                    viewModel = inviteAccessViewModel,
+                    onBack = navController::popBackStackWhenResumed,
+                    onSnackBar = onSnackBar,
+                    onSuccess = {
+                        onSnackBar.invoke(context.getString(R.string.invite_link_send_success))
+                        navController.navigate(Screens.Main.name) {
+                            popUpTo(Screens.Main.name) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                )
             }
         }
     }

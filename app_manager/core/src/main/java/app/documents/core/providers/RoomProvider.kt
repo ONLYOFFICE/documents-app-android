@@ -280,11 +280,11 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         if (!response.isSuccessful) throw HttpException(response)
     }
 
-    suspend fun inviteByUserId(roomId: String, userIds: List<String>, access: Int) {
+    suspend fun inviteById(roomId: String, users: Map<String, Int>) {
         val response = roomService.shareRoom(
             id = roomId,
             body = RequestRoomShare(
-                invitations = userIds.map { id -> UserIdInvitation(id = id, access = access) },
+                invitations = users.map { (id, access) -> UserIdInvitation(id, access) },
                 notify = false
             )
         )

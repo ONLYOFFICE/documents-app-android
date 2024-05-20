@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.isVisible
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -17,7 +14,6 @@ import app.editors.manager.app.roomProvider
 import app.editors.manager.app.shareApi
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.viewModels.main.UserListEffect
 import app.editors.manager.viewModels.main.UserListViewModel
 import com.google.android.material.appbar.AppBarLayout
 import lib.compose.ui.theme.ManagerTheme
@@ -57,25 +53,14 @@ class UsersFragment : BaseAppFragment() {
                         resourcesProvider = requireContext().appComponent.resourcesProvider,
                     )
                 }
-                val state by viewModel.viewState.collectAsState()
-
-                LaunchedEffect(Unit) {
-                    viewModel.effect.collect {
-                        when (it) {
-                            UserListEffect.Success -> requireActivity().finish()
-                            is UserListEffect.Error -> {
-                                UiUtils.getSnackBar(requireActivity()).setText(it.message).show()
-                            }
-                        }
-                    }
-                }
 
                 UserListScreen(
+                    viewModel = viewModel,
                     title = R.string.room_set_owner_title,
-                    userListState = state,
                     onClick = viewModel::setOwner,
-                    onSearch = viewModel::search,
-                    onBack = ::onBackPressed
+                    onBack = ::onBackPressed,
+                    onSuccess = requireActivity()::finish,
+                    onSnackBar = { UiUtils.getSnackBar(requireActivity()).setText(it).show() }
                 )
             }
         }
