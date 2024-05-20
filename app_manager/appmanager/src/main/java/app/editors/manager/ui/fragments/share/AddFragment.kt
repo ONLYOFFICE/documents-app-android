@@ -7,7 +7,6 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.mvp.models.models.ModelShareStack
-import app.editors.manager.mvp.models.ui.AddEmailUi
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.UserUi
 import app.editors.manager.mvp.presenters.share.AddPresenter
@@ -51,13 +50,6 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
             when (item) {
                 is UserUi -> item.isSelected = !item.isSelected
                 is GroupUi -> item.isSelected = !item.isSelected
-                is AddEmailUi -> {
-                    showParentFragment(
-                        ShareInviteFragment.newInstance(this.item),
-                        ShareInviteFragment.TAG,
-                        false
-                    )
-                }
             }
         }
         shareAdapter?.notifyItemChanged(position, ShareAdapter.PAYLOAD_SET_SELECT)
@@ -84,7 +76,7 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
         setPlaceholder(true, empty)
         swipeRefreshLayout?.isRefreshing = false
         shareAdapter?.setMode(BaseAdapter.Mode.USERS)
-        shareAdapter?.setItems(if (isRoom) mutableListOf(AddEmailUi()) + list else list)
+        shareAdapter?.setItems(list)
         (parentFragment as? AddPagerFragment)?.selectionMenu?.forEach { it.isVisible = !empty }
     }
 
@@ -161,13 +153,7 @@ class AddFragment : ListFragment(), AddView, BaseAdapter.OnItemClickListener {
                         PlaceholderViews.Type.USERS
                     }
                 } else PlaceholderViews.Type.NONE
-            ) {
-                showParentFragment(
-                    ShareInviteFragment.newInstance(this.item),
-                    ShareInviteFragment.TAG,
-                    false
-                )
-            }
+            )
         } else {
             placeholderViews?.setTemplatePlaceholder(
                 if (isEmpty) PlaceholderViews.Type.GROUPS else PlaceholderViews.Type.NONE

@@ -19,8 +19,11 @@ import app.documents.core.network.room.models.ResponseRoomShare
 import app.documents.core.network.room.models.ResponseTags
 import app.documents.core.network.room.models.ResponseUpdateExternalLink
 import app.documents.core.network.share.models.ExternalLink
+import app.documents.core.network.share.models.GroupShare
+import app.documents.core.network.share.models.request.RequestAddInviteLink
 import app.documents.core.network.share.models.request.RequestCreateSharedLink
 import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
+import app.documents.core.network.share.models.request.RequestRemoveInviteLink
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.RequestUpdateSharedLink
 import app.documents.core.network.share.models.response.ResponseExternalLink
@@ -191,6 +194,33 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
+    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share?filterType=1")
+    suspend fun setRoomInviteLink(@Path("id") id: String): app.documents.core.network.BaseResponse<List<ExternalLink>?>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
+    suspend fun removeRoomInviteLink(
+        @Path("id") id: String,
+        @Body request: RequestRemoveInviteLink
+    ): app.documents.core.network.BaseResponse<ExternalLink?>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
+    suspend fun addRoomInviteLink(
+        @Path("id") id: String,
+        @Body request: RequestAddInviteLink
+    ): app.documents.core.network.BaseResponse<ExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
     suspend fun updateRoomSharedLink(
         @Path("id") id: String,
@@ -267,4 +297,15 @@ interface RoomService {
         @Path(value = "id") id: String,
         @Body body: RequestCreateThirdPartyRoom
     ): Response<ResponseCreateFolder>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/folder/{roomId}/group/{groupId}/share")
+    suspend fun getGroupUsers(
+        @Path("roomId") roomId: String,
+        @Path("groupId") groupId: String
+    ): app.documents.core.network.BaseResponse<List<GroupShare>>
+
 }
