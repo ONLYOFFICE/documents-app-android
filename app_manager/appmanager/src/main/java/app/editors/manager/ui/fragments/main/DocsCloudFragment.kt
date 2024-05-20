@@ -23,6 +23,7 @@ import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.Header
+import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter
@@ -295,13 +296,25 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onDocsGet(list: List<Entity>?) {
-        super.onDocsGet(list)
+        val newList = ArrayList(list.orEmpty())
+        if (presenter.getSectionType() == ApiContract.SectionType.CLOUD_USER &&
+            context?.accountOnline.isDocSpace
+        ) {
+            newList.add(0, RecentViaLink)
+        }
+        super.onDocsGet(newList)
         setMenuFilterEnabled(true)
     }
 
 
     override fun onDocsRefresh(list: List<Entity>?) {
-        super.onDocsRefresh(list)
+        val newList = ArrayList(list.orEmpty())
+        if (presenter.getSectionType() == ApiContract.SectionType.CLOUD_USER &&
+            context?.accountOnline.isDocSpace
+        ) {
+            newList.add(0, RecentViaLink)
+        }
+        super.onDocsRefresh(newList)
         setMenuFilterEnabled(true)
     }
 
