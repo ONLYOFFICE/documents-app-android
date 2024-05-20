@@ -1,7 +1,6 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
-import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.ManagerService
@@ -52,7 +51,7 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
             } else {
                 sections
             }
-//            accountJson?.let { checkFileData(Json.decodeFromString(accountJson), fileData) }
+            checkFileData(fileData)
             withContext(Dispatchers.Main) {
                 viewState.onFinishRequest()
                 viewState.onRender(data)
@@ -134,7 +133,7 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
         }
     }
 
-    private suspend fun checkFileData(account: CloudAccount, fileData: Uri?) {
+    private suspend fun checkFileData(fileData: Uri?) {
         if ((fileData?.scheme?.equals(BuildConfig.PUSH_SCHEME) == true && fileData.host.equals("openfile")) || preferenceTool.fileData.isNotEmpty()) {
             if (fileData?.queryParameterNames?.contains("push") == true) {
                 viewState.setFileData(fileData.getQueryParameter("data") ?: "")
@@ -147,10 +146,10 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
             }
             preferenceTool.fileData = ""
             if (dataModel.getPortalWithoutScheme()?.equals(
-                    account.portal.url,
+                    account?.portal?.url,
                     ignoreCase = true
                 ) == true && dataModel.email?.equals(
-                    account.login,
+                    account?.login,
                     ignoreCase = true
                 ) == true
             ) {

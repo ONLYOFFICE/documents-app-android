@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
 import lib.toolkit.base.R
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import java.lang.ref.WeakReference
@@ -71,8 +72,8 @@ class CustomHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             return this
         }
 
-        fun show() {
-            dialog.show(getType())
+        fun show(fragmentManager: FragmentManager) {
+            dialog.show(fragmentManager, getType())
         }
     }
 }

@@ -1686,7 +1686,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     abstract fun onActionClick()
 
-    protected abstract fun updateViewsState()
+    abstract fun updateViewsState()
 
     companion object {
 

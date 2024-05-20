@@ -7,6 +7,7 @@ import android.widget.ProgressBar
 import androidx.annotation.ColorRes
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.FragmentManager
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -111,8 +112,8 @@ class ProgressHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             return this
         }
 
-        fun show() {
-            dialog.show(getType())
+        fun show(fragmentManager: FragmentManager) {
+            dialog.show(fragmentManager, getType())
         }
 
         fun update(maxProgress: Int, progress: Int) {

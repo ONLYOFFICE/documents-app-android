@@ -27,8 +27,6 @@ import app.editors.manager.R
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.Previews
 import lib.compose.ui.views.AppArrowItem
-import lib.compose.ui.views.AppScaffold
-import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.managers.utils.FileUtils
 
@@ -38,7 +36,7 @@ private sealed class Screen(val screen: String) {
 }
 
 @Composable
-fun AboutScreen(onBackClick: () -> Unit) {
+fun AboutScreen(onShowBrowser: (Int) -> Unit, onBackClick: () -> Unit) {
     val navController = rememberNavController()
     val context = LocalContext.current
 
@@ -48,11 +46,11 @@ fun AboutScreen(onBackClick: () -> Unit) {
                 navController = navController,
                 sdkVersion = FileUtils.readSdkVersion(context, "sdk.version"),
                 backPressed = onBackClick,
-                onClick = context::getString
+                onClick = onShowBrowser
             )
         }
         composable(Screen.License.screen) {
-            LicenseScreen(backListener = navController::popBackStack)
+            LicenseScreen()
         }
     }
 }
@@ -117,21 +115,17 @@ private fun MainScreen(
 }
 
 @Composable
-private fun LicenseScreen(backListener: () -> Unit) {
+private fun LicenseScreen() {
     ManagerTheme {
-        AppScaffold(topBar = {
-            AppTopBar(title = R.string.about_license, backListener = backListener)
-        }) {
-            AndroidView(factory = { context ->
-                WebView(context).apply {
-                    layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
-                    loadUrl(context.getString(R.string.app_licenses_path))
-                }
-            })
-        }
+        AndroidView(factory = { context ->
+            WebView(context).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+                loadUrl(context.getString(R.string.app_licenses_path))
+            }
+        })
     }
 }
 

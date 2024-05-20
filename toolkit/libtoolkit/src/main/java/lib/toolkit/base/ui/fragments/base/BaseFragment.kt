@@ -16,10 +16,20 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
 import com.google.android.material.snackbar.Snackbar
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.ActivitiesUtils
+import lib.toolkit.base.managers.utils.DocumentsPicker
+import lib.toolkit.base.managers.utils.FragmentUtils
+import lib.toolkit.base.managers.utils.KeyboardUtils
+import lib.toolkit.base.managers.utils.PermissionUtils
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
-import lib.toolkit.base.ui.dialogs.common.holders.*
+import lib.toolkit.base.ui.dialogs.common.holders.EditLineHolder
+import lib.toolkit.base.ui.dialogs.common.holders.EditMultilineHolder
+import lib.toolkit.base.ui.dialogs.common.holders.InfoHolder
+import lib.toolkit.base.ui.dialogs.common.holders.ProgressHolder
+import lib.toolkit.base.ui.dialogs.common.holders.QuestionHolder
+import lib.toolkit.base.ui.dialogs.common.holders.WaitingHolder
 import moxy.MvpAppCompatFragment
 
 abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFragment,
@@ -372,7 +382,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     * Action bar
     * */
     protected fun setActionBarTitle(title: String?) {
-        if (title != null) {
+        if (title != null && isVisible) {
             toolbarTitle = title
             supportActionBar?.title = toolbarTitle
         }

@@ -1,6 +1,7 @@
 package lib.toolkit.base.ui.dialogs.common.holders
 
 import android.view.View
+import androidx.fragment.app.FragmentManager
 import lib.toolkit.base.R
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
@@ -62,8 +63,8 @@ class QuestionHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             return this
         }
 
-        fun show() {
-            dialog.show(getType())
+        fun show(fragmentManager: FragmentManager) {
+            dialog.show(fragmentManager, getType())
         }
     }
 

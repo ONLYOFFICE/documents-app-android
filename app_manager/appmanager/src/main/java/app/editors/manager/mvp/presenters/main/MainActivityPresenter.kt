@@ -1,16 +1,13 @@
 package app.editors.manager.mvp.presenters.main
 
-import android.net.Uri
 import android.os.Build
 import app.documents.core.account.AccountPreferences
-import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
 import app.editors.manager.mvp.models.filter.Filter
-import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainActivityView
 import com.google.android.play.core.review.ReviewInfo
@@ -19,22 +16,10 @@ import com.google.android.play.core.tasks.Task
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.AccountUtils
-import lib.toolkit.base.managers.utils.CryptUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import moxy.InjectViewState
 import moxy.presenterScope
 import javax.inject.Inject
-
-sealed class MainActivityState {
-    object RecentState : MainActivityState()
-    object OnDeviceState : MainActivityState()
-    object SettingsState : MainActivityState()
-    class CloudState(val account: CloudAccount? = null) : MainActivityState()
-}
 
 @InjectViewState
 class MainActivityPresenter : BasePresenter<MainActivityView>() {
@@ -58,7 +43,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     private val disposable = CompositeDisposable()
 
-    private var cloudAccount: CloudAccount? = null
     private var reviewInfo: ReviewInfo? = null
     private var isAppColdStart = true
 
@@ -86,32 +70,13 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         disposable.dispose()
     }
 
-    fun init(isPortal: Boolean = false, isShortcut: Boolean = false) {
+    fun init(isPortal: Boolean = false) {
         presenterScope.launch {
             context.accountOnline?.let { account ->
-                if (isShortcut) {
-                    viewState.onRender(MainActivityState.OnDeviceState)
-                    return@launch
-                }
-
-                // update portal settings
                 if (isAppColdStart) {
                     App.getApp().refreshLoginComponent(account.portal)
                     App.getApp().loginComponent.cloudLoginRepository.updatePortalSettings()
                     isAppColdStart = false
-                }
-
-                cloudAccount = context.accountOnline
-                withContext(Dispatchers.Main) {
-                    checkToken(account)
-                }
-            } ?: run {
-                withContext(Dispatchers.Main) {
-                    if (isPortal && !isShortcut) {
-                        viewState.onRender(MainActivityState.CloudState())
-                    } else {
-                        viewState.onRender(MainActivityState.OnDeviceState)
-                    }
                 }
             }
         }
@@ -124,24 +89,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                 viewState.onLocaleConfirmation()
             }
         }
-    }
-
-    private fun checkToken(cloudAccount: CloudAccount) {
-        if (cloudAccount.isWebDav) {
-            viewState.onRender(MainActivityState.CloudState(cloudAccount))
-        } else {
-            AccountUtils.getToken(
-                context = context,
-                accountName = cloudAccount.accountName
-            )?.let {
-                viewState.onRender(MainActivityState.CloudState(cloudAccount))
-            } ?: run {
-                viewState.onRender(MainActivityState.CloudState())
-            }
-        }
-    }
-
-    private fun setNetworkSetting(cloudAccount: CloudAccount) {
     }
 
     fun getRemoteConfigRate() {
@@ -162,14 +109,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
             }
     }
 
-    fun setAccount() {
-        presenterScope.launch {
-            context.accountOnline?.let {
-                cloudAccount = it
-            }
-        }
-    }
-
     fun onAcceptClick(value: String?, tag: String?) {
         tag?.let {
             when (tag) {
@@ -177,10 +116,12 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                     viewState.onShowPlayMarket(BuildConfig.RELEASE_ID)
                     viewState.onDialogClose()
                 }
+
                 TAG_DIALOG_REMOTE_APP -> {
                     viewState.onShowApp(BuildConfig.RELEASE_ID)
                     viewState.onDialogClose()
                 }
+
                 TAG_DIALOG_RATE_FIRST -> {
                     getReviewInfo()
                     viewState.onQuestionDialog(
@@ -189,6 +130,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                         context.getString(R.string.dialogs_question_accept_no_thanks), null
                     )
                 }
+
                 TAG_DIALOG_RATE_SECOND -> {
                     viewState.onDialogClose()
                     reviewInfo?.let {
@@ -197,6 +139,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                         viewState.onShowPlayMarket(BuildConfig.RELEASE_ID)
                     }
                 }
+
                 TAG_DIALOG_RATE_FEEDBACK -> {
                     if (value != null) {
                         viewState.onShowEmailClientTemplate(value)
@@ -220,6 +163,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                         context.getString(R.string.dialogs_question_accept_no_thanks), TAG_DIALOG_RATE_FEEDBACK
                     )
                 }
+
                 TAG_DIALOG_RATE_SECOND -> {
                     preferenceTool.isRateOn = false
                     viewState.onDialogClose()
@@ -228,77 +172,19 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         }
     }
 
-    fun navigationItemClick(itemId: Int) {
-        when (itemId) {
-            R.id.menu_item_recent -> viewState.onRender(MainActivityState.RecentState)
-            R.id.menu_item_on_device -> viewState.onRender(MainActivityState.OnDeviceState)
-            R.id.menu_item_settings -> viewState.onRender(MainActivityState.SettingsState)
-            R.id.menu_item_cloud -> {
-                presenterScope.launch {
-                    cloudAccount = context.accountOnline
-                    withContext(Dispatchers.Main) {
-                        viewState.onRender(MainActivityState.CloudState(cloudAccount))
-                    }
-                }
-            }
-        }
-    }
-
     fun clear() {
-        presenterScope.launch {
-            accountPreferences.onlineAccountId = null
-            withContext(Dispatchers.Main) {
-                viewState.onRender(MainActivityState.CloudState())
-            }
-        }
+        accountPreferences.onlineAccountId = null
     }
 
-    fun checkFileData(fileData: Uri) {
-        presenterScope.launch {
-            val data: OpenDataModel = if (preferenceTool.fileData.isNotEmpty()) {
-                Json.decodeFromString(preferenceTool.fileData)
-            } else {
-                Json.decodeFromString(CryptUtils.decodeUri(fileData.query))
-            }
-
-            context.accountOnline?.let { account ->
-                if (fileData.queryParameterNames.contains("push")) {
-                    viewState.openFile(account, fileData.getQueryParameter("data") ?: "")
-                    return@launch
-                }
-
-                preferenceTool.fileData = ""
-                if (data.getPortalWithoutScheme()?.equals(
-                        account.portal.url,
-                        ignoreCase = true
-                    ) == true &&
-                    data.email?.equals(account.login, ignoreCase = true) == true
-                ) {
-                    preferenceTool.fileData = Json.encodeToString(data)
-                    withContext(Dispatchers.Main) {
-                        viewState.openFile(account, Json.encodeToString(data))
-                    }
-                } else {
-                    val isToken = checkAccountLogin(data)
-                    preferenceTool.fileData = Json.encodeToString(data)
-                    withContext(Dispatchers.Main) {
-                        viewState.onSwitchAccount(data, isToken)
-                    }
-                }
-
-            } ?: run {
-                withContext(Dispatchers.Main) {
-                    viewState.onSwitchAccount(data, false)
-                }
-            }
-        }
-    }
-
-    private suspend fun checkAccountLogin(data: OpenDataModel): Boolean {
-        val account = cloudDataSource.getAccountByLogin(data.email?.lowercase() ?: "")
-        val token = AccountUtils.getToken(context, account?.accountName.orEmpty())
-        return !token.isNullOrEmpty()
-    }
+//    fun checkFileData(fileData: Uri) {
+//        preferenceTool.fileData
+//
+//        context.accountOnline?.let { account ->
+//            if (fileData.queryParameterNames.contains("push")) {
+//                viewState.openFile(account, fileData.getQueryParameter("data") ?: "")
+//            }
+//        }
+//    }
 
     fun onRemoveFileData() {
         preferenceTool.fileData = ""

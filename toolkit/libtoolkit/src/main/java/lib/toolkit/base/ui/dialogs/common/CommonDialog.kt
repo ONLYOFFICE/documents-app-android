@@ -71,7 +71,6 @@ class CommonDialog : BaseDialog() {
         Dialogs.CUSTOM to CustomHolder(this)
     )
 
-    private var frManager: FragmentManager? = null
     private var onClickListener: OnClickListener? = null
     private var dialogType: Dialogs = Dialogs.NONE
 
@@ -87,7 +86,6 @@ class CommonDialog : BaseDialog() {
     override fun onDestroyView() {
         super.onDestroyView()
         onClickListener = null
-        frManager = null
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -165,16 +163,9 @@ class CommonDialog : BaseDialog() {
         }
     }
 
-    fun show(type: Dialogs) {
-        frManager?.let {
-            dialogType = type
-            show(it, TAG)
-        }
-    }
-
-    fun setFragmentManager(fragmentManager: FragmentManager): CommonDialog {
-        frManager = fragmentManager
-        return this
+    fun show(fragmentManager: FragmentManager, type: Dialogs) {
+        dialogType = type
+        show(fragmentManager, TAG)
     }
 
     fun waiting(): WaitingHolder.Builder {
