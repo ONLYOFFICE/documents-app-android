@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/list_explorer_file_layout"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height"
     android:clickable="true"
     android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
     android:paddingBottom="@dimen/line_separator_height">
 
     <LinearLayout

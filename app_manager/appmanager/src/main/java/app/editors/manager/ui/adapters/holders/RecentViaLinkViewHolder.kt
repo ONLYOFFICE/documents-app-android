@@ -11,6 +11,12 @@ class RecentViaLinkViewHolder(private val view: View, adapter: ExplorerAdapter) 
 
     private val initHeight = view.resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.item_two_line_height)
 
+    init {
+        view.setOnClickListener {
+            adapter.mOnItemClickListener?.onItemClick(view, layoutPosition)
+        }
+    }
+
     override fun bind(element: RecentViaLink) {
         view.layoutParams = view.layoutParams.apply {
             height = if (adapter.isSelectMode || adapter.isFoldersMode) 0 else initHeight

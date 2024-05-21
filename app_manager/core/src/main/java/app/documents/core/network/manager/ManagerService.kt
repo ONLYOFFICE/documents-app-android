@@ -99,6 +99,14 @@ interface ManagerService {
         @QueryMap options: Map<String, String>?
     ): app.documents.core.network.BaseResponse<Explorer>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/recent")
+    suspend fun getRecentViaLink(
+        @QueryMap options: Map<String, String>?
+    ): app.documents.core.network.BaseResponse<Explorer>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

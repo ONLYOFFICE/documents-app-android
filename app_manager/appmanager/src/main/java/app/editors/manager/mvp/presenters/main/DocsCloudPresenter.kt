@@ -33,6 +33,7 @@ import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.Filter
+import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
@@ -73,6 +74,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private var roomProvider: RoomProvider? = null
 
     private var conversionJob: Job? = null
+    private var requestJob: Job? = null
 
     init {
         App.getApp().appComponent.inject(this)
@@ -132,6 +134,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     } else {
                         getFileInfo()
                     }
+                } else if (itemClicked is RecentViaLink) {
+                    openRecentViaLink()
                 }
             } else {
                 viewState.onSnackBarWithAction(
@@ -981,4 +985,19 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     }
 
+    private fun openRecentViaLink() {
+        setPlaceholderType(PlaceholderViews.Type.LOAD)
+        (fileProvider as? CloudFileProvider)?.let { provider ->
+            requestJob = presenterScope.launch {
+                val explorer = provider.getRecentViaLink()
+                withContext(Dispatchers.Main) {
+                    loadSuccess(explorer)
+                }
+            }
+        }
+    }
+
+    fun cancelRequest() {
+        requestJob?.cancel()
+    }
 }

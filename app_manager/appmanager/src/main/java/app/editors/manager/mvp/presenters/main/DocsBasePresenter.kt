@@ -44,6 +44,7 @@ import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.models.filter.joinToString
 import app.editors.manager.mvp.models.list.Header
+import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.states.OperationsState
@@ -1155,7 +1156,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     fun onClickEvent(item: Item?, position: Int, isContext: Boolean = false) {
         itemClickedPosition = position
-        itemClicked = modelExplorerStack.getItemById(item)
+        itemClicked = if (item is RecentViaLink) item else modelExplorerStack.getItemById(item)
         isContextClick = isContext
     }
 

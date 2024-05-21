@@ -462,4 +462,9 @@ class CloudFileProvider @Inject constructor(
             .decodeToString()
             .contains("/ONLYOFFICEFORM")
     }
+
+    suspend fun getRecentViaLink(filter: Map<String, String> = mapOf()): Explorer {
+        val params = filter.plus("searchArea" to "3")
+        return managerService.getRecentViaLink(params).response
+    }
 }

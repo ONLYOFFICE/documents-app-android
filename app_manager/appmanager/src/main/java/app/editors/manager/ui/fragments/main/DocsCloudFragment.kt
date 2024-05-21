@@ -296,9 +296,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onDocsGet(list: List<Entity>?) {
-        val newList = ArrayList(list.orEmpty())
+        val newList = list.orEmpty().toMutableList()
         if (presenter.getSectionType() == ApiContract.SectionType.CLOUD_USER &&
-            context?.accountOnline.isDocSpace
+            context?.accountOnline.isDocSpace &&
+            presenter.isRoot
         ) {
             newList.add(0, RecentViaLink)
         }
@@ -306,11 +307,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         setMenuFilterEnabled(true)
     }
 
-
     override fun onDocsRefresh(list: List<Entity>?) {
-        val newList = ArrayList(list.orEmpty())
+        val newList = list.orEmpty().toMutableList()
         if (presenter.getSectionType() == ApiContract.SectionType.CLOUD_USER &&
-            context?.accountOnline.isDocSpace
+            context?.accountOnline.isDocSpace &&
+            presenter.isRoot
         ) {
             newList.add(0, RecentViaLink)
         }
@@ -507,7 +508,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 .setPagerPosition(ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
                     setFragmentResult(KEY_ROOM_CREATED_REQUEST, bundleOf(DocsRoomFragment.KEY_RESULT_ROOM_ID to id))
                 }
-        } catch (_: NoSuchElementException) { }
+        } catch (_: NoSuchElementException) {
+        }
     }
 
     override fun onLeaveRoomDialog(title: Int, question: Int, tag: String, isOwner: Boolean) {
