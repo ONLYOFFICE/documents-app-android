@@ -19,11 +19,13 @@ class CloudFilterFragment : BaseFilterFragment() {
 
     companion object {
         val TAG = CloudFilterFragment::class.simpleName
+        private const val KEY_SECTION: String = "key_section"
 
-        fun newInstance(folderId: String?): CloudFilterFragment {
+        fun newInstance(folderId: String?, section: Int): CloudFilterFragment {
             return CloudFilterFragment().apply {
                 arguments = Bundle(1).apply {
                     putString(KEY_FOLDER_ID, folderId)
+                    putInt(KEY_SECTION, section)
                 }
             }
         }
@@ -34,7 +36,7 @@ class CloudFilterFragment : BaseFilterFragment() {
 
     @ProvidePresenter
     fun providePresenter(): CloudFilterPresenter {
-        return CloudFilterPresenter(arguments?.getString(KEY_FOLDER_ID))
+        return CloudFilterPresenter(arguments?.getString(KEY_FOLDER_ID), arguments?.getInt(KEY_SECTION))
     }
 
     override val filterPresenter: BaseFilterPresenter
