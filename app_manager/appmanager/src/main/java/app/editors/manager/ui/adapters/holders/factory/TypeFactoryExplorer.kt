@@ -1,14 +1,14 @@
 package app.editors.manager.ui.adapters.holders.factory
 
 import android.view.View
-import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.editors.manager.mvp.models.list.Footer
-import app.documents.core.network.manager.models.explorer.UploadFile
-import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.ui.adapters.ExplorerAdapter
-import app.editors.manager.ui.adapters.holders.*
-import java.lang.RuntimeException
+import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
+import app.editors.manager.ui.adapters.holders.FileViewHolder
+import app.editors.manager.ui.adapters.holders.FolderViewHolder
+import app.editors.manager.ui.adapters.holders.FooterViewHolder
+import app.editors.manager.ui.adapters.holders.HeaderViewHolder
+import app.editors.manager.ui.adapters.holders.RecentViaLinkViewHolder
+import app.editors.manager.ui.adapters.holders.UploadFileViewHolder
 
 class TypeFactoryExplorer private constructor() {
 
@@ -19,6 +19,7 @@ class TypeFactoryExplorer private constructor() {
         HeaderViewHolder.LAYOUT -> HeaderViewHolder(parent, adapter)
         FooterViewHolder.LAYOUT -> FooterViewHolder(parent, adapter)
         UploadFileViewHolder.LAYOUT -> UploadFileViewHolder(parent, adapter)
+        RecentViaLinkViewHolder.LAYOUT -> RecentViaLinkViewHolder(parent, adapter)
         else -> throw RuntimeException("Unknown type is unacceptable: $type")
     }
 

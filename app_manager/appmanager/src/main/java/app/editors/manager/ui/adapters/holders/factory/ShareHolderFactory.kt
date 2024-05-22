@@ -2,7 +2,6 @@ package app.editors.manager.ui.adapters.holders.factory
 
 import android.view.View
 import app.editors.manager.R
-import app.editors.manager.ui.adapters.holders.ShareAddEmailViewHolder
 import app.editors.manager.ui.adapters.holders.ShareAddItemViewHolder
 import app.editors.manager.ui.adapters.holders.ShareHeaderViewHolder
 import app.editors.manager.ui.adapters.holders.ShareItemViewHolder
@@ -17,7 +16,6 @@ class ShareHolderFactory(private val clickListener: (view: View, position: Int) 
             R.layout.list_share_add_item -> ShareAddItemViewHolder(view, clickListener)
             lib.toolkit.base.R.layout.list_item_header -> ShareHeaderViewHolder(view)
             R.layout.list_share_settings_item -> ShareItemViewHolder(view, clickListener)
-            R.layout.add_item_layout -> ShareAddEmailViewHolder(view, clickListener)
             else -> throw RuntimeException("Need holder")
         }
     }

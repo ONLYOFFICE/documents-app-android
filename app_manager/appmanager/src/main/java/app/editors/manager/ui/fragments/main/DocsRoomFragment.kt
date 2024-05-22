@@ -8,9 +8,9 @@ import androidx.fragment.app.setFragmentResultListener
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.mvp.models.filter.RoomFilterType
-import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
+import app.editors.manager.ui.fragments.share.InviteUsersFragment
 import app.editors.manager.ui.popup.MainPopup
 import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.popup.SelectPopupItem
@@ -89,7 +89,7 @@ class DocsRoomFragment : DocsCloudFragment() {
         when (contextItem) {
             ExplorerContextItem.Reconnect -> reconnectStorage()
             ExplorerContextItem.Archive -> cloudPresenter.archiveRoom()
-            ExplorerContextItem.AddUsers -> ShareActivity.show(this, cloudPresenter.itemClicked, false)
+            ExplorerContextItem.AddUsers -> showInviteUsersDialog()
             is ExplorerContextItem.Edit -> cloudPresenter.editRoom()
             is ExplorerContextItem.ExternalLink -> cloudPresenter.copyGeneralLink()
             is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()
@@ -135,6 +135,12 @@ class DocsRoomFragment : DocsCloudFragment() {
             providerKey = room?.providerKey,
             providerId = room?.providerId ?: -1
         )
+    }
+
+    private fun showInviteUsersDialog() {
+        (presenter.itemClicked as? CloudFolder)?.let { room ->
+            InviteUsersFragment.newInstance(room.id, room.roomType).show(parentFragmentManager, null)
+        }
     }
 
     companion object {

@@ -98,7 +98,7 @@ class FilterActivity : BaseAppActivity(), IFilterActivity {
         return when {
             (ApiContract.SectionType.isRoom(section) || ApiContract.SectionType.isArchive(section))
                     && isRoot -> RoomFilterFragment.newInstance(folderId)
-            else -> CloudFilterFragment.newInstance(folderId)
+            else -> CloudFilterFragment.newInstance(folderId, section)
         }
     }
 }

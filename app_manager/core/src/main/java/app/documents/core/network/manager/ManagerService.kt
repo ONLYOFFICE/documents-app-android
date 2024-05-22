@@ -7,6 +7,7 @@ import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.request.RequestBatchBase
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestDeleteRecent
 import app.documents.core.network.manager.models.request.RequestDeleteShare
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.network.manager.models.request.RequestExternal
@@ -99,6 +100,21 @@ interface ManagerService {
         @QueryMap options: Map<String, String>?
     ): app.documents.core.network.BaseResponse<Explorer>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/recent")
+    fun getRecentViaLink(
+        @QueryMap options: Map<String, String>?
+    ): Single<app.documents.core.network.BaseResponse<Explorer>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @HTTP(method = "DELETE",  path = "api/" + ApiContract.API_VERSION + "/files/recent", hasBody = true)
+    fun deleteRecent(@Body request: RequestDeleteRecent): Single<Response<ResponseBody>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

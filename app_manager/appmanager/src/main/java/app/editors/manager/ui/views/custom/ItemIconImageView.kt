@@ -19,6 +19,7 @@ import app.editors.manager.managers.utils.ManagerUiUtils.setFileIcon
 import app.editors.manager.managers.utils.ManagerUiUtils.setFolderIcon
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.StorageUtils
+import app.editors.manager.mvp.models.list.RecentViaLink
 
 class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
 
@@ -27,7 +28,7 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
     var selectMode: Boolean = false
         set(value) {
             field = value
-            background = if (value)
+            foreground = if (value)
                 AppCompatResources.getDrawable(context, R.drawable.drawable_list_image_select_background) else null
         }
 
@@ -59,11 +60,16 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
         when (item) {
             is CloudFile -> setCloudFile(item)
             is CloudFolder -> setCloudFolder(item, isRoot)
+            RecentViaLink -> setRecent()
             else -> throw IllegalArgumentException(
                 "Item must be ${CloudFile::class.simpleName}" +
                         " or ${CloudFolder::class.simpleName}"
             )
         }
+    }
+
+    private fun setRecent() {
+        imageView.setImageResource(R.drawable.ic_type_archive)
     }
 
     fun setIconFromExtension(extension: String) {

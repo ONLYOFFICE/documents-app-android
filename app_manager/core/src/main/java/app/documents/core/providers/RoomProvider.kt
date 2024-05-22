@@ -15,12 +15,17 @@ import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.share.models.ExternalLink
+import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.Share
+import app.documents.core.network.share.models.request.EmailInvitation
 import app.documents.core.network.share.models.request.Invitation
+import app.documents.core.network.share.models.request.RequestAddInviteLink
 import app.documents.core.network.share.models.request.RequestCreateSharedLink
 import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
+import app.documents.core.network.share.models.request.RequestRemoveInviteLink
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.RequestUpdateSharedLink
+import app.documents.core.network.share.models.request.UserIdInvitation
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -134,6 +139,25 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return roomService.deleteLogo(id).isSuccessful
     }
 
+    suspend fun getRoomInviteLink(id: String): ExternalLink? {
+        return roomService.setRoomInviteLink(id).response?.getOrNull(0)
+    }
+
+    suspend fun addRoomInviteLink(roomId: String, access: Int): ExternalLink {
+        return roomService.addRoomInviteLink(roomId, RequestAddInviteLink(access = access)).response
+    }
+
+    suspend fun removeRoomInviteLink(roomId: String, linkId: String) {
+        roomService.removeRoomInviteLink(roomId, RequestRemoveInviteLink(linkId = linkId))
+    }
+
+    suspend fun setRoomInviteLinkAccess(roomId: String, linkId: String, access: Int): ExternalLink? {
+        return roomService.removeRoomInviteLink(
+            roomId,
+            RequestRemoveInviteLink(access = access, linkId = linkId)
+        ).response
+    }
+
     suspend fun getRoomSharedLinks(id: String): List<ExternalLink> {
         val response = roomService.getRoomSharedLinks(id)
         val body = response.body()
@@ -236,11 +260,38 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
     suspend fun setRoomOwner(id: String, userId: String, ownerId: String) {
         val resultSetOwner = roomService.setOwner(RequestRoomOwner(userId, listOf(id)))
         delay(200)
-        val resultShare = roomService.shareRoom(id, RequestRoomShare(
-            listOf(Invitation(id = ownerId, access = ApiContract.ShareCode.NONE))
-        ))
+        val resultShare = roomService.shareRoom(
+            id, RequestRoomShare(
+                listOf(Invitation(id = ownerId, access = ApiContract.ShareCode.NONE))
+            )
+        )
         if (!resultSetOwner.isSuccessful) throw HttpException(resultSetOwner)
         if (!resultShare.isSuccessful) throw HttpException(resultShare)
     }
 
+    suspend fun inviteByEmail(roomId: String, emails: Map<String, Int>) {
+        val response = roomService.shareRoom(
+            id = roomId,
+            body = RequestRoomShare(
+                invitations = emails.map { (email, access) -> EmailInvitation(email = email, access = access) },
+                notify = false
+            )
+        )
+        if (!response.isSuccessful) throw HttpException(response)
+    }
+
+    suspend fun inviteById(roomId: String, users: Map<String, Int>) {
+        val response = roomService.shareRoom(
+            id = roomId,
+            body = RequestRoomShare(
+                invitations = users.map { (id, access) -> UserIdInvitation(id, access) },
+                notify = false
+            )
+        )
+        if (!response.isSuccessful) throw HttpException(response)
+    }
+
+    suspend fun getGroupUsers(roomId: String, groupId: String): List<GroupShare> {
+        return roomService.getGroupUsers(roomId, groupId).response
+    }
 }

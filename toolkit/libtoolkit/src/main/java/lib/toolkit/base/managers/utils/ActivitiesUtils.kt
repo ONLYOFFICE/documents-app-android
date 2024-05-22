@@ -29,6 +29,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.ActivitiesUtils.IMAGE_TYPE
 import java.io.File
@@ -419,6 +420,12 @@ fun Bundle.contains(key: String): Boolean {
     } catch (error: BadParcelableException) {
         false
     }
+}
+
+inline fun <reified T> Bundle?.getJsonString(key: String, encodedUrl: Boolean = false): T? {
+    return this?.getString(key)
+        ?.let { if (encodedUrl) java.net.URLDecoder.decode(it, Charsets.UTF_8.toString()) else it }
+        ?.let(Json::decodeFromString)
 }
 
 fun FragmentActivity.getSendFileIntent(title: Int, file: File? = null, uri: Uri? = null): Intent =

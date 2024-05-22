@@ -34,6 +34,7 @@ data class User(
     val isSSO: Boolean = false,
     val avatarSmall: String = "",
     val profileUrl: String = "",
-    val mobilePhone: String = ""
+    val mobilePhone: String = "",
+    val shared: Boolean = false
 )
 
