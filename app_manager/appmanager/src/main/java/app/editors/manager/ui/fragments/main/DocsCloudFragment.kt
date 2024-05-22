@@ -484,8 +484,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     private fun showFilter() {
         if (isTablet) {
-            FilterDialogFragment.newInstance(presenter.folderId, section, presenter.isRoot)
-                .show(requireActivity().supportFragmentManager, FilterDialogFragment.TAG)
+            FilterDialogFragment.newInstance(
+                presenter.folderId,
+                if (!cloudPresenter.isRecentViaLinkSection()) section else ApiContract.SectionType.CLOUD_RECENT,
+                presenter.isRoot
+            ).show(requireActivity().supportFragmentManager, FilterDialogFragment.TAG)
 
             requireActivity().supportFragmentManager
                 .setFragmentResultListener(REQUEST_KEY_REFRESH, this) { _, bundle ->
@@ -495,7 +498,12 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     }
                 }
         } else {
-            filterActivity.launch(FilterActivity.getIntent(this, presenter.folderId, section, presenter.isRoot))
+            filterActivity.launch(FilterActivity.getIntent(
+                this,
+                presenter.folderId,
+                if (!cloudPresenter.isRecentViaLinkSection()) section else ApiContract.SectionType.CLOUD_RECENT,
+                presenter.isRoot
+            ))
         }
     }
 

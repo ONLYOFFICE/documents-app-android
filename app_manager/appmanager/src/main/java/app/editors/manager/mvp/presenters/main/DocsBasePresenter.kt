@@ -26,6 +26,7 @@ import app.documents.core.network.manager.models.explorer.UploadFile
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.providers.BaseFileProvider
+import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.ProviderError.Companion.throwInterruptException
@@ -347,6 +348,26 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
         showDialogProgress(true, TAG_DIALOG_CANCEL_BATCH_OPERATIONS)
         fileProvider?.let { provider ->
+
+            if (isRecentViaLinkSection()) {
+                batchDisposable = (fileProvider as? CloudFileProvider)
+                    ?.deleteRecent(items.map { it.id })
+                    ?.subscribe({
+                        viewState.onDialogProgress(100, 100)
+                        if (modelExplorerStack.countSelectedItems > 0) {
+                            modelExplorerStack.removeSelected()
+                            getBackStack()
+                        } else if (itemClicked != null) {
+                            modelExplorerStack.removeItemById(itemClicked?.id)
+                        }
+                        resetDatesHeaders()
+                        setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                        viewState.onDialogClose()
+                        viewState.onDeleteBatch(getListWithHeaders(modelExplorerStack.last(), true))
+                    }, ::fetchError)
+                return
+            }
+
             batchDisposable = provider.delete(items, null)
                 .switchMap { status }
                 .subscribe({ progress ->
@@ -377,6 +398,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     open fun delete(): Boolean {
         if (modelExplorerStack.countSelectedItems > 0) {
+            if (isRecentViaLinkSection()) {
+                deleteItems()
+                return true
+            }
+
             for (item in modelExplorerStack.selectedFiles) {
                 isFileDeleteProtected(item)?.let { observable ->
                     disposable.add(
@@ -1390,6 +1416,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             context.contentResolver.delete(uri, null, null)
         }
     }
+
     @SuppressLint("StringFormatInvalid", "StringFormatMatches")
     protected open fun fetchError(throwable: Throwable) {
         if (throwable.message == ProviderError.INTERRUPT) {
@@ -1675,6 +1702,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             title = file.name
             viewUrl = file.absolutePath
         })
+    }
+
+    fun isRecentViaLinkSection(): Boolean {
+        return modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_RECENT
     }
 
     abstract fun getNextList()

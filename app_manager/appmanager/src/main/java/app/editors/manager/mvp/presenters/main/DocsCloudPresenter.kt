@@ -74,7 +74,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private var roomProvider: RoomProvider? = null
 
     private var conversionJob: Job? = null
-    private var requestJob: Job? = null
 
     init {
         App.getApp().appComponent.inject(this)
@@ -89,6 +88,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
 
                 override fun isArchive(): Boolean = ApiContract.SectionType.isArchive(currentSectionType)
+
+                override fun isRecent(): Boolean {
+                    return modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_RECENT
+                }
             }
         }
     }
@@ -988,16 +991,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private fun openRecentViaLink() {
         setPlaceholderType(PlaceholderViews.Type.LOAD)
         (fileProvider as? CloudFileProvider)?.let { provider ->
-            requestJob = presenterScope.launch {
-                val explorer = provider.getRecentViaLink()
-                withContext(Dispatchers.Main) {
-                    loadSuccess(explorer)
-                }
-            }
+            disposable.add(
+                provider.getRecentViaLink()
+                    .subscribe(::loadSuccess, ::fetchError)
+            )
         }
-    }
-
-    fun cancelRequest() {
-        requestJob?.cancel()
     }
 }
