@@ -1,14 +1,14 @@
 package app.editors.manager.mvp.presenters.filter
 
 import app.documents.core.network.common.contracts.ApiContract
-import app.editors.manager.app.App
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.editors.manager.app.App
+import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.mvp.models.filter.FilterAuthor
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.isNotEmpty
-import app.editors.manager.app.cloudFileProvider
 
-class CloudFilterPresenter(private val folderId: String?) : BaseFilterPresenter() {
+class CloudFilterPresenter(private val folderId: String?, private val section: Int?) : BaseFilterPresenter() {
 
     var filterType: FilterType = FilterType.None
     var filterAuthor: FilterAuthor = FilterAuthor()
@@ -58,7 +58,13 @@ class CloudFilterPresenter(private val folderId: String?) : BaseFilterPresenter(
         viewState.updateViewState(isChanged = !initialCall)
         disposable?.clear()
         disposable?.add(
-            context.cloudFileProvider.getFiles(folderId, filters)
+            with(context.cloudFileProvider) {
+                if (section == ApiContract.SectionType.CLOUD_RECENT) {
+                    getRecentViaLink(filters).toObservable()
+                } else {
+                    getFiles(folderId, filters)
+                }
+            }
                 .doOnSubscribe { viewState.onFilterProgress() }
                 .subscribe(
                     { explorer: Explorer ->

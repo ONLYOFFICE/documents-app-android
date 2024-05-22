@@ -13,12 +13,14 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.list.Footer
 import app.editors.manager.mvp.models.list.Header
+import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
 import app.editors.manager.ui.adapters.holders.FileViewHolder
 import app.editors.manager.ui.adapters.holders.FolderViewHolder
 import app.editors.manager.ui.adapters.holders.FooterViewHolder
 import app.editors.manager.ui.adapters.holders.HeaderViewHolder
+import app.editors.manager.ui.adapters.holders.RecentViaLinkViewHolder
 import app.editors.manager.ui.adapters.holders.UploadFileViewHolder
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import lib.toolkit.base.ui.adapters.factory.inflate
@@ -97,6 +99,7 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
                 is CloudFolder -> FolderViewHolder.LAYOUT
                 is UploadFile -> UploadFileViewHolder.LAYOUT
                 is Header -> HeaderViewHolder.LAYOUT
+                RecentViaLink -> RecentViaLinkViewHolder.LAYOUT
                 else -> 0
             }
         }

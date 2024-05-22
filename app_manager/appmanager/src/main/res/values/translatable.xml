@@ -743,6 +743,7 @@
     <string name="room_search_not_found_desc">The list of users previously invited to DocSpace or separate rooms will appear here.</string>
     <string name="room_placeholder_created_room_title">Room created!</string>
     <string name="room_placeholder_created_room_subtitle">Create new folders to organize your files.</string>
+    <string name="room_recent_via_link">Accessible via link</string>
 
     <plurals name="rooms_restore_title">
         <item quantity="one">Restore room?</item>

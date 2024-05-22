@@ -33,6 +33,7 @@ import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.Filter
+import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
@@ -87,6 +88,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
 
                 override fun isArchive(): Boolean = ApiContract.SectionType.isArchive(currentSectionType)
+
+                override fun isRecent(): Boolean {
+                    return modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_RECENT
+                }
             }
         }
     }
@@ -132,6 +137,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     } else {
                         getFileInfo()
                     }
+                } else if (itemClicked is RecentViaLink) {
+                    openRecentViaLink()
                 }
             } else {
                 viewState.onSnackBarWithAction(
@@ -260,7 +267,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             if (isRoom && modelExplorerStack.last()?.current?.security?.create == true) {
                 viewState.onStateActionButton(true)
             } else {
-                viewState.onStateActionButton(isContextEditable)
+                viewState.onStateActionButton(isContextEditable && !isRecentViaLinkSection())
             }
             viewState.onActionBarTitle(currentTitle)
         } else {
@@ -981,4 +988,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     }
 
+    private fun openRecentViaLink() {
+        setPlaceholderType(PlaceholderViews.Type.LOAD)
+        (fileProvider as? CloudFileProvider)?.let { provider ->
+            disposable.add(
+                provider.getRecentViaLink()
+                    .subscribe(::loadSuccess, ::fetchError)
+            )
+        }
+    }
 }
