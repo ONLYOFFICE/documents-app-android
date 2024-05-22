@@ -13,12 +13,19 @@ import lib.toolkit.base.ui.popup.BasePopupItem
 
 sealed class MainPopupItem(
     title: Int,
-    withDivider: Boolean = false
-) : BasePopupItem(title, withDivider) {
+    withDivider: Boolean = false,
+    items: List<BasePopupItem> = emptyList(),
+) : BasePopupItem(title, withDivider, items) {
 
     object Select : MainPopupItem(R.string.toolbar_menu_main_select)
     object SelectAll : MainPopupItem(R.string.toolbar_menu_main_select_all, true)
     object EmptyTrash : MainPopupItem(R.string.trash_dialog_empty_title, true)
+    object TestNestedItem1 : MainPopupItem(R.string.settings_item_title, false)
+    object TestNestedItem2 : MainPopupItem(R.string.about_title, false)
+    object TestArrowItem : MainPopupItem(R.string.app_name, true, items = listOf(
+        TestNestedItem1,
+        TestNestedItem2
+    ))
 
     sealed class SortBy(
         title: Int,
@@ -97,6 +104,7 @@ class MainPopup(
         private fun getItems(section: Int): MutableList<MainPopupItem> =
             mutableListOf<MainPopupItem>().apply {
                 if (ApiContract.SectionType.isRoom(section)) {
+                    add(MainPopupItem.TestArrowItem)
                     addAll(selectPopupItems)
                     addAll(roomSortPopupItems)
                 } else {
@@ -118,7 +126,6 @@ class MainPopup(
                 else -> throw NoSuchElementException("There is no such sort type")
             }
         }
-
     }
 
     private open class MainPopupAdapter(
@@ -126,12 +133,15 @@ class MainPopup(
         private val sortBy: MainPopupItem,
         clickListener: (MainPopupItem) -> Unit
     ) : PopupAdapter<MainPopupItem>(clickListener) {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainPopupItemViewHolder {
-            return MainPopupItemViewHolder(
-                view = parent.inflate(lib.toolkit.base.R.layout.action_popup_item_list),
-                isAsc = isAsc,
-                sortBy = sortBy
-            )
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PopupItemViewHolder<out MainPopupItem> {
+            return if (viewType == POPUP_ITEM_NONE) {
+                MainPopupItemViewHolder(
+                    view = parent.inflate(lib.toolkit.base.R.layout.action_popup_item_list),
+                    isAsc = isAsc,
+                    sortBy = sortBy
+                )
+            } else super.onCreateViewHolder(parent, viewType)
         }
     }
 
