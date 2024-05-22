@@ -319,6 +319,17 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         setMenuFilterEnabled(true)
     }
 
+    override fun onDocsNext(list: List<Entity>?) {
+        val newList = list.orEmpty().toMutableList()
+        if (presenter.getSectionType() == ApiContract.SectionType.CLOUD_USER &&
+            context?.accountOnline.isDocSpace &&
+            presenter.isRoot
+        ) {
+            newList.add(0, RecentViaLink)
+        }
+        super.onDocsNext(newList)
+    }
+
     override fun onDocsFilter(list: List<Entity>?) {
         super.onDocsFilter(list)
         setMenuFilterEnabled(true)
