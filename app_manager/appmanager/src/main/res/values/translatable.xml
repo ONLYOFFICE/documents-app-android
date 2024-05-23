@@ -348,14 +348,14 @@
     <!-- Dialog info -->
 
     <!-- Pager -->
-    <string name="main_pager_docs_my">Documents</string>
+    <string name="main_pager_docs_my">My documents</string>
     <string name="main_pager_docs_common">Common</string>
     <string name="main_pager_docs_share">Shared with me</string>
     <string name="main_pager_docs_projects">Projects</string>
     <string name="main_pager_docs_trash">Trash</string>
     <string name="main_pager_docs_favorites">Favorites</string>
-    <string name="main_pager_docs_virtual_room">My rooms</string>
-    <string name="main_pager_docs_archive_room">My archive</string>
+    <string name="main_pager_docs_virtual_room">Rooms</string>
+    <string name="main_pager_docs_archive_room">Archive</string>
 
     <!-- Placeholder -->
     <string name="placeholder_connection">Connection error</string>

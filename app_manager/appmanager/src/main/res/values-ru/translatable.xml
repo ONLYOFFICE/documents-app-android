@@ -515,8 +515,6 @@
     <string name="errors_webdav_username_password">Неправильное имя пользователя или пароль</string>
     <string name="errors_webdav_server">Неправильный сервер</string>
     <string name="toolbar_menu_sort_tags">Теги</string>
-    <string name="main_pager_docs_virtual_room">Мои комнаты</string>
-    <string name="main_pager_docs_archive_room">Мой архив</string>
     <string name="share_invite_user">Пригласить пользователей</string>
     <string name="storage_web_dav_settings_server">Сервер</string>
     <string name="storage_web_dav_settings_required">Требуется</string>

@@ -353,8 +353,6 @@
     <string name="main_pager_docs_projects">المشاريع</string>
     <string name="main_pager_docs_trash">سلة المحذوقات</string>
     <string name="main_pager_docs_favorites">المفضلة</string>
-    <string name="main_pager_docs_virtual_room">الغرف الخاصة بي</string>
-    <string name="main_pager_docs_archive_room">أرشيفي</string>
 
     <!-- Placeholder -->
     <string name="placeholder_connection">خطأ في الإتصال</string>

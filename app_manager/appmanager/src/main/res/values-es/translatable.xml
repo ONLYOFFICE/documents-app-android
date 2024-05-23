@@ -497,8 +497,6 @@
     <string name="errors_webdav_username_password">Nombre de usuario o contraseña incorrectos</string>
     <string name="errors_webdav_server">Servidor incorrecto</string>
     <string name="toolbar_menu_sort_tags">Etiquetas</string>
-    <string name="main_pager_docs_virtual_room">Mis salas</string>
-    <string name="main_pager_docs_archive_room">Mi archivo</string>
     <string name="share_invite_user">Invitar usuarios</string>
     <string name="storage_web_dav_settings_server">Servidor</string>
     <string name="storage_web_dav_settings_required">Obligatorio</string>
