@@ -11,7 +11,6 @@ import app.editors.manager.app.App
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
 import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import app.editors.manager.ui.fragments.base.StorageLoginFragment
-import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -61,14 +60,6 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
                     }
                 }
             }
-        }
-    }
-
-    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        if (!presenter.isFoldersInSelection()) {
-            super.showSelectActionPopup(SelectPopupItem.Download)
-        } else {
-            super.showSelectActionPopup(*excluded)
         }
     }
 

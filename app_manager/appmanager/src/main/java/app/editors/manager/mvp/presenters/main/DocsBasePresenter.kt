@@ -49,8 +49,6 @@ import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
-import app.editors.manager.ui.popup.MainPopup
-import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.gson.Gson
 import io.reactivex.Observable
@@ -228,12 +226,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return false
     }
 
-    open fun sortBy(type: MainPopupItem.SortBy): Boolean {
-        val isRepeatedTap = MainPopup.getSortPopupItem(preferenceTool.sortBy) == type
-        preferenceTool.sortBy = type.value
-        if (isRepeatedTap) {
-            reverseSortOrder()
-        }
+    open fun sortBy(sortValue: String): Boolean {
+        val isRepeatedTap = preferenceTool.sortBy == sortValue
+        preferenceTool.sortBy = sortValue
+        if (isRepeatedTap) reverseSortOrder()
         return refresh()
     }
 

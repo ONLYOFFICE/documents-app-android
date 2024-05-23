@@ -30,6 +30,9 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.tools.ActionMenuAdapter
+import app.editors.manager.managers.tools.ActionMenuItem
+import app.editors.manager.managers.tools.ActionMenuItemsFactory
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
@@ -49,10 +52,6 @@ import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextState
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
-import app.editors.manager.ui.popup.MainPopup
-import app.editors.manager.ui.popup.MainPopupItem
-import app.editors.manager.ui.popup.SelectPopup
-import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.CameraPicker
@@ -74,6 +73,7 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.OnCommonDialogClose
 import lib.toolkit.base.ui.dialogs.common.holders.WaitingHolder
+import lib.toolkit.base.ui.popup.ActionBarMenu
 import lib.toolkit.base.ui.views.search.CommonSearchView
 import java.io.File
 
@@ -1128,58 +1128,40 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     protected fun showActionBarMenu() {
-        if (presenter.isSelectionMode) {
-            showSelectActionPopup()
-        } else {
-            showMainActionPopup()
-        }
-    }
-
-    protected open fun showMainActionPopup(vararg excluded: MainPopupItem) {
-        MainPopup(
-            context = requireContext(),
-            section = presenter.getSectionType(),
-            clickListener = mainActionBarClickListener,
-            sortBy = presenter.preferenceTool.sortBy.orEmpty(),
-            isAsc = isAsc,
-            excluded = excluded.toList()
+        ActionBarMenu(
+            requireContext(),
+            ActionMenuAdapter(actionMenuClickListener),
+            ActionMenuItemsFactory.getDocsItems(
+                section = presenter.getSectionType(),
+                selected = presenter.isSelectionMode,
+                allSelected = presenter.isSelectedAll,
+                sortBy = presenter.preferenceTool.sortBy,
+                asc = presenter.preferenceTool.sortOrder.equals(
+                    ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                    ignoreCase = true
+                )
+            )
         ).show(requireActivity().window.decorView)
     }
-
-    protected open fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        SelectPopup(
-            context = requireContext(),
-            section = presenter.getSectionType(),
-            clickListener = selectActionBarClickListener,
-            excluded = excluded.toMutableList().apply {
-                if (presenter.isSelectedAll) add(SelectPopupItem.SelectAll)
-            }
-        ).show(requireActivity().window.decorView)
-    }
-
-    val isAsc: Boolean
-        get() = presenter.preferenceTool.sortOrder.equals(
-            ApiContract.Parameters.VAL_SORT_ORDER_ASC,
-            ignoreCase = true
-        )
 
     protected open fun getSection(): ApiContract.Section = ApiContract.Section.getSection(presenter.getSectionType())
 
-    protected open val mainActionBarClickListener: (MainPopupItem) -> Unit = { item ->
+    protected open val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
-            MainPopupItem.Select -> presenter.setSelection(true)
-            MainPopupItem.SelectAll -> presenter.setSelectionAll()
-            is MainPopupItem.SortBy -> presenter.sortBy(item)
-            else -> { }
-        }
-    }
-
-    protected open val selectActionBarClickListener: (SelectPopupItem) -> Unit = { item ->
-        when (item) {
-            SelectPopupItem.Deselect -> presenter.deselectAll()
-            SelectPopupItem.Download -> presenter.createDownloadFile()
-            SelectPopupItem.SelectAll -> presenter.selectAll()
-            is SelectPopupItem.Operation -> presenter.moveCopySelected(item.value)
+            is ActionMenuItem.Sort -> presenter.sortBy(item.sortValue)
+            is ActionMenuItem.Operation -> presenter.moveCopySelected(item.value)
+            ActionMenuItem.Select -> presenter.setSelection(true)
+            ActionMenuItem.SelectAll -> presenter.setSelectionAll()
+            ActionMenuItem.Deselect -> presenter.deselectAll()
+            ActionMenuItem.Download -> presenter.createDownloadFile()
+            ActionMenuItem.SelectAll -> presenter.selectAll()
+            ActionMenuItem.EmptyTrash -> {
+                showDeleteDialog(
+                    count = -1,
+                    tag = DocsBasePresenter.TAG_DIALOG_BATCH_EMPTY
+                )
+            }
+            else -> Unit
         }
     }
 

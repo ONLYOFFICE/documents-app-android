@@ -41,8 +41,6 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.B
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
-import app.editors.manager.ui.popup.MainPopupItem
-import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import lib.toolkit.base.managers.tools.LocalContentTools
@@ -244,18 +242,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             MoveCopyDialog.TAG_SKIP -> operationType = ApiContract.Operation.SKIP
         }
         cloudPresenter.transfer(operationType, action != MoveCopyDialog.ACTION_COPY)
-    }
-
-    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        super.showSelectActionPopup(*excluded.toMutableList().apply {
-            if (!cloudPresenter.isContextItemEditable) add(SelectPopupItem.Operation.Move)
-        }.toTypedArray())
-    }
-
-    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
-        if (requireContext().accountOnline?.isPersonal() == true) {
-            super.showMainActionPopup(MainPopupItem.SortBy.Author)
-        } else super.showMainActionPopup(*excluded)
     }
 
     override fun onFileWebView(file: CloudFile, isEditMode: Boolean) {

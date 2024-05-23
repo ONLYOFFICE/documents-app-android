@@ -32,7 +32,6 @@ import app.editors.manager.ui.adapters.RecentAdapter
 import app.editors.manager.ui.adapters.holders.factory.RecentHolderFactory
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextState
-import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -300,14 +299,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                 }
             }
         }
-    }
-
-    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
-        super.showMainActionPopup(
-            MainPopupItem.SortBy.Author,
-            MainPopupItem.Select,
-            MainPopupItem.SelectAll
-        )
     }
 
     override val isWebDav: Boolean

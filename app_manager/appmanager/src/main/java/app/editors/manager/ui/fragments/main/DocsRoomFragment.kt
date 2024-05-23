@@ -11,9 +11,6 @@ import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
-import app.editors.manager.ui.popup.MainPopup
-import app.editors.manager.ui.popup.MainPopupItem
-import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.setFragmentResultListener
@@ -44,27 +41,6 @@ class DocsRoomFragment : DocsCloudFragment() {
         } else {
             super.onActionDialog(isThirdParty, isDocs)
         }
-    }
-
-    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
-        MainPopup(
-            context = requireContext(),
-            section = if (isRoom) presenter.getSectionType() else -1,
-            clickListener = mainActionBarClickListener,
-            sortBy = presenter.preferenceTool.sortBy.orEmpty(),
-            isAsc = isAsc,
-            excluded = excluded.toList()
-        ).show(requireActivity().window.decorView)
-    }
-
-    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        return if (isRoom) {
-            super.showSelectActionPopup(
-                SelectPopupItem.Operation.Move,
-                SelectPopupItem.Operation.Copy,
-                SelectPopupItem.Download
-            )
-        } else super.showSelectActionPopup(*excluded)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
