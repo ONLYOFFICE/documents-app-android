@@ -35,17 +35,17 @@
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
                     android:nestedScrollingEnabled="false"
-                    tools:listitem="@layout/list_share_settings_item"
                     android:paddingBottom="@dimen/share_settings_list_padding"
-                    android:scrollbars="none" />
+                    android:scrollbars="none"
+                    tools:listitem="@layout/list_share_settings_item" />
 
                 <include
                     android:id="@+id/placeholder_layout"
                     layout="@layout/include_placeholders_text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="gone"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
 
             </FrameLayout>
         </LinearLayout>
@@ -53,6 +53,7 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/share_settings_add_item"
+        style="@style/App.Fab.Style"
         android:layout_width="@dimen/default_action_bottom_size"
         android:layout_height="@dimen/default_action_bottom_size"
         android:layout_margin="@dimen/default_action_button_margin"
