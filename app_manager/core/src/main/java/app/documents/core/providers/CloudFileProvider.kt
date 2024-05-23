@@ -60,7 +60,6 @@ class CloudFileProvider @Inject constructor(
 
     companion object {
         private const val KEY_RESPONSE = "response"
-        private const val KEY_URL = "url"
         private const val STATIC_DOC_URL = "/web-apps/apps/api/documents/api.js"
     }
 
@@ -407,7 +406,10 @@ class CloudFileProvider @Inject constructor(
                     json.getString(KEY_RESPONSE)
                         .replace(STATIC_DOC_URL, "")
                 }
-                return@map JSONObject(response.body()?.string()).getJSONObject(KEY_RESPONSE).put(KEY_URL, docService)
+                return@map JSONObject(response.body()?.string()).getJSONObject(KEY_RESPONSE)
+                    .put("url", docService)
+                    .put("size", cloudFile.pureContentLength)
+                    .put("updated", cloudFile.updated.time)
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).map { response ->
