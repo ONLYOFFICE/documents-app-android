@@ -133,8 +133,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     private var itemClickedPosition = 0
     protected var isContextClick = false
+
     var itemClicked: Item? = null
         protected set
+
+    var roomClicked: CloudFolder? = null
+        private set
 
     /**
      * Headers date
@@ -1044,7 +1048,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     fun initMenuState() {
-        viewState.onStateMenuEnabled(!modelExplorerStack.isListEmpty)
+        viewState.onStateMenuEnabled(
+            !modelExplorerStack.isListEmpty ||
+                    ApiContract.SectionType.isRoom(currentSectionType)
+        )
     }
 
     open fun getBackStack(): Boolean {
@@ -1079,6 +1086,16 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
             viewState.onDocsGet(entities)
             viewState.onScrollToPosition(modelExplorerStack.listPosition)
+        }
+    }
+
+    fun popToRoot() {
+        modelExplorerStack.popToRoot()?.let {
+            val entities = getListWithHeaders(modelExplorerStack.last(), true)
+            setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+            viewState.onDocsGet(entities)
+            viewState.onScrollToPosition(modelExplorerStack.listPosition)
+            updateViewsState()
         }
     }
 
@@ -1152,6 +1169,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     fun onClickEvent(item: Item?, position: Int, isContext: Boolean = false) {
         itemClickedPosition = position
         itemClicked = modelExplorerStack.getItemById(item)
+        if (item is CloudFolder && item.isRoom) roomClicked = item
         isContextClick = isContext
     }
 
@@ -1670,6 +1688,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             title = file.name
             viewUrl = file.absolutePath
         })
+    }
+
+    fun isListEmpty(): Boolean {
+        return modelExplorerStack.isListEmpty
     }
 
     abstract fun getNextList()

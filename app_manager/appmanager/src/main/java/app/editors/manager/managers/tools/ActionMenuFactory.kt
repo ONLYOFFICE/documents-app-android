@@ -1,7 +1,7 @@
 package app.editors.manager.managers.tools
 
-import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.contracts.ApiContract.Parameters
+import app.documents.core.network.common.contracts.ApiContract.SectionType
 import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState
 import lib.toolkit.base.ui.popup.IActionMenuItem
@@ -9,9 +9,17 @@ import lib.toolkit.base.ui.popup.IActionMenuItem
 sealed class ActionMenuItem(override val title: Int) : IActionMenuItem {
 
     class TopBar(title: Int) : ActionMenuItem(title = title)
+
     data object Divider : ActionMenuItem(title = -1)
-    sealed class Arrow(title: Int, val items: List<ActionMenuItem> = listOf()) : ActionMenuItem(title = title)
+
     sealed class None(title: Int) : ActionMenuItem(title = title)
+
+    sealed class Arrow(title: Int, var items: List<ActionMenuItem> = listOf()) : ActionMenuItem(title = title) {
+
+        fun get(items: List<ActionMenuItem>): Arrow {
+            return apply { this.items = items }
+        }
+    }
 
     sealed class Sort(
         title: Int,
@@ -35,10 +43,21 @@ sealed class ActionMenuItem(override val title: Int) : IActionMenuItem {
     data object Deselect : None(R.string.toolbar_menu_main_deselect)
     data object EmptyTrash : None(R.string.trash_dialog_empty_title)
     data object Download : None(R.string.toolbar_menu_main_download)
+    data object Archive : None(R.string.context_room_move_to_archive)
+    data object Info : None(R.string.list_context_info)
+    data object EditRoom : None(R.string.list_context_edit_room)
+    data object Invite : None(R.string.share_invite_user)
+    data object CopyLink : None(R.string.rooms_info_copy_link)
+    data object LeaveRoom : None(R.string.leave_room_title)
+
+    data object ManageRoom : Arrow(R.string.room_manage_room)
+    data object SortBy : Arrow(R.string.toolbar_menu_sort_by)
+
     data object Move : Operation(R.string.toolbar_menu_main_move, OperationsState.OperationType.MOVE)
     data object Copy : Operation(R.string.toolbar_menu_main_copy, OperationsState.OperationType.COPY)
     data object Restore : Operation(R.string.device_trash_files_restore, OperationsState.OperationType.RESTORE)
     data object Delete : Operation(R.string.list_context_delete, OperationsState.OperationType.DELETE)
+
     data object Date : Sort(R.string.toolbar_menu_sort_date_modified, sortValue = Parameters.VAL_SORT_BY_UPDATED)
     data object Title : Sort(R.string.toolbar_menu_sort_title, sortValue = Parameters.VAL_SORT_BY_TITLE)
     data object Type : Sort(R.string.toolbar_menu_sort_type, sortValue = Parameters.VAL_SORT_BY_TYPE)
@@ -50,114 +69,151 @@ sealed class ActionMenuItem(override val title: Int) : IActionMenuItem {
 
 object ActionMenuItemsFactory {
 
-    fun getDocsItems(
+    fun getItems(
         section: Int,
-        selected: Boolean = false,
-        allSelected: Boolean = false,
-        asc: Boolean = false,
-        sortBy: String? = null,
-    ): List<ActionMenuItem> =
+        root: Boolean,
+        empty: Boolean,
+        selected: Boolean,
+        allSelected: Boolean,
+        asc: Boolean,
+        isVisitor: Boolean,
+        sortBy: String?,
+    ): List<ActionMenuItem> {
+        return if (SectionType.isRoom(section) || section == SectionType.CLOUD_ARCHIVE_ROOM) {
+            if (root) {
+                getRoomRootItems(section, selected, allSelected, asc, sortBy)
+            } else {
+                getRoomItems(selected, empty, allSelected, asc, sortBy)
+            }
+        } else {
+            getDocsItems(section, selected, allSelected, asc, sortBy)
+        }
+    }
+
+    private fun getDocsItems(
+        section: Int,
+        selected: Boolean,
+        allSelected: Boolean,
+        asc: Boolean,
+        sortBy: String?,
+    ) = mutableListOf<ActionMenuItem>().apply {
+        // select block
+        addAll(getSelectItems(selected, allSelected))
+        if (!selected) {
+            // empty trash
+            if (section == SectionType.CLOUD_TRASH) {
+                add(ActionMenuItem.EmptyTrash)
+                add(ActionMenuItem.Divider)
+            }
+
+            // sort block
+            addAll(
+                listOfNotNull(
+                    ActionMenuItem.Title,
+                    ActionMenuItem.Type,
+                    ActionMenuItem.Size,
+                    ActionMenuItem.Author.takeIf { section != SectionType.DEVICE_DOCUMENTS },
+                    ActionMenuItem.Date
+                ).map { it.get(asc, sortBy) }
+            )
+        } else if (section == SectionType.CLOUD_TRASH) {
+            // trash action block
+            add(ActionMenuItem.Restore)
+            add(ActionMenuItem.Delete)
+        } else {
+            // action block
+            if (section != SectionType.DEVICE_DOCUMENTS) add(ActionMenuItem.Download)
+            add(ActionMenuItem.Move)
+            add(ActionMenuItem.Copy)
+            add(ActionMenuItem.Delete)
+        }
+    }
+
+    private fun getSelectItems(selected: Boolean, allSelected: Boolean, divider: Boolean = true) =
         mutableListOf<ActionMenuItem>().apply {
-            // select block
             if (!selected) {
                 add(ActionMenuItem.Select)
             } else {
                 add(ActionMenuItem.Deselect)
             }
             if (!allSelected) add(ActionMenuItem.SelectAll)
-            add(ActionMenuItem.Divider)
+            if (divider) add(ActionMenuItem.Divider)
+        }
 
+    private fun getRoomRootItems(
+        section: Int,
+        selected: Boolean,
+        allSelected: Boolean,
+        asc: Boolean,
+        sortBy: String?,
+    ) = mutableListOf<ActionMenuItem>().apply {
+        // select block
+        addAll(getSelectItems(selected, allSelected, !selected || section == SectionType.CLOUD_ARCHIVE_ROOM))
+        // sort block
+        if (!selected) {
+            addAll(
+                arrayOf(
+                    ActionMenuItem.Title,
+                    ActionMenuItem.RoomType,
+                    ActionMenuItem.RoomTags,
+                    ActionMenuItem.Author,
+                    ActionMenuItem.Date
+                ).map { it.get(asc, sortBy) }
+            )
+        } else if (section == SectionType.CLOUD_ARCHIVE_ROOM) {
+            // archive action block
+            add(ActionMenuItem.Restore)
+            add(ActionMenuItem.Delete)
+        }
+    }
+
+    private fun getRoomItems(
+        selected: Boolean,
+        empty: Boolean,
+        allSelected: Boolean,
+        asc: Boolean,
+        sortBy: String?,
+    ) = mutableListOf<ActionMenuItem>().apply {
+        if (!selected) {
+            add(
+               ActionMenuItem.ManageRoom.get(
+                   listOf(
+                       ActionMenuItem.Info,
+                       ActionMenuItem.EditRoom,
+                       ActionMenuItem.Invite,
+                       ActionMenuItem.CopyLink,
+                       ActionMenuItem.Divider,
+                       ActionMenuItem.Archive,
+                       ActionMenuItem.Download,
+                       ActionMenuItem.LeaveRoom
+                   )
+               )
+            )
+        }
+        if (!empty) {
             if (!selected) {
-                // empty trash
-                if (section == ApiContract.SectionType.CLOUD_TRASH) {
-                    add(ActionMenuItem.EmptyTrash)
-                    add(ActionMenuItem.Divider)
-                }
-
-                // sort block
-                addAll(
-                    listOfNotNull(
-                        ActionMenuItem.Title,
-                        ActionMenuItem.Type,
-                        ActionMenuItem.Size,
-                        ActionMenuItem.Author.takeIf { section != ApiContract.SectionType.DEVICE_DOCUMENTS },
-                        ActionMenuItem.Date
-                    ).map { it.get(asc, sortBy) }
+                add(
+                    ActionMenuItem.SortBy.get(
+                        listOf(
+                            ActionMenuItem.Title,
+                            ActionMenuItem.Type,
+                            ActionMenuItem.Size,
+                            ActionMenuItem.Author,
+                            ActionMenuItem.Date
+                        ).map { it.get(asc, sortBy) }
+                    )
                 )
-            } else if (section == ApiContract.SectionType.CLOUD_TRASH) {
-                // trash action block
-                add(ActionMenuItem.Restore)
-                add(ActionMenuItem.Delete)
+                add(ActionMenuItem.Divider)
+            }
+            addAll(getSelectItems(selected, allSelected))
+            if (!selected) {
+                add(ActionMenuItem.CopyLink)
             } else {
-                // action block
-                if (section != ApiContract.SectionType.DEVICE_DOCUMENTS) add(ActionMenuItem.Download)
+                add(ActionMenuItem.Download)
                 add(ActionMenuItem.Move)
                 add(ActionMenuItem.Copy)
                 add(ActionMenuItem.Delete)
             }
         }
-
-    //    listOfNotNull(
-    //    ActionMenuItem.Operation.Restore().takeIf
-    //    {
-    //        section in arrayOf(
-    //            ApiContract.SectionType.CLOUD_TRASH,
-    //            ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
-    //        )
-    //    },
-    //    ActionMenuItem.Operation.Delete().takeIf
-    //    { section == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM },
-    //    ActionMenuItem.Deselect(),
-    //    ActionMenuItem.SelectAll(),
-    //    ActionMenuItem.Download(),
-    //    ActionMenuItem.Operation.Move(),
-    //    ActionMenuItem.Operation.Copy()
-    //    )
-    //
-    //    private val selectPopupItems: List<MainPopupItem> = listOf(
-    //        MainPopupItem.Select,
-    //        MainPopupItem.SelectAll
-    //    )
-    //
-    //    private val roomSortPopupItems: List<MainPopupItem> = listOf(
-    //        MainPopupItem.SortBy.Date,
-    //        MainPopupItem.SortBy.Title,
-    //        MainPopupItem.SortBy.RoomType,
-    //        MainPopupItem.SortBy.RoomTags,
-    //        MainPopupItem.SortBy.Author
-    //    )
-    //
-    //    private val sortPopupItems: List<MainPopupItem> = listOf(
-    //        MainPopupItem.SortBy.Date,
-    //        MainPopupItem.SortBy.Title,
-    //        MainPopupItem.SortBy.Type,
-    //        MainPopupItem.SortBy.Size,
-    //        MainPopupItem.SortBy.Author
-    //    )
-    //
-    //    fun getItems(section: Int): MutableList<MainPopupItem> =
-    //        mutableListOf<MainPopupItem>().apply {
-    //            if (ApiContract.SectionType.isRoom(section)) {
-    //                add(MainPopupItem.TestArrowItem)
-    //                addAll(MainPopup.selectPopupItems)
-    //                addAll(MainPopup.roomSortPopupItems)
-    //            } else {
-    //                addAll(MainPopup.selectPopupItems)
-    //                if (section == ApiContract.SectionType.CLOUD_TRASH) add(MainPopupItem.EmptyTrash)
-    //                addAll(MainPopup.sortPopupItems)
-    //            }
-    //        }
-    //
-    //    fun getSortPopupItem(sortBy: String?): MainPopupItem {
-    //        return when (sortBy) {
-    //            Parameters.VAL_SORT_BY_UPDATED -> MainPopupItem.SortBy.Date
-    //            Parameters.VAL_SORT_BY_TYPE -> MainPopupItem.SortBy.Type
-    //            Parameters.VAL_SORT_BY_SIZE -> MainPopupItem.SortBy.Size
-    //            Parameters.VAL_SORT_BY_TITLE -> MainPopupItem.SortBy.Title
-    //            Parameters.VAL_SORT_BY_OWNER -> MainPopupItem.SortBy.Author
-    //            Parameters.VAL_SORT_BY_ROOM_TYPE -> MainPopupItem.SortBy.RoomType
-    //            Parameters.VAL_SORT_BY_TAGS -> MainPopupItem.SortBy.RoomTags
-    //            else -> throw NoSuchElementException("There is no such sort type")
-    //        }
-    //    }
+    }
 }

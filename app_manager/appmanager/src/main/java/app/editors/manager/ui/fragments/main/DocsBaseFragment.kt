@@ -125,7 +125,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         presenter.removeSendingFile()
     }
 
-    private val downloadActivityResult = registerForActivityResult(CreateDocument()) {uri ->
+    private val downloadActivityResult = registerForActivityResult(CreateDocument()) { uri ->
         uri?.let { presenter.download(uri) }
     }
 
@@ -146,7 +146,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         moveCopyDialog = null
     }
 
-    protected fun showOperationActivity(operation: OperationsState.OperationType, explorer: Explorer, callback: (result: ActivityResult) -> Unit) {
+    protected fun showOperationActivity(
+        operation: OperationsState.OperationType,
+        explorer: Explorer,
+        callback: (result: ActivityResult) -> Unit,
+    ) {
         LaunchActivityForResult(
             requireActivity().activityResultRegistry,
             callback,
@@ -160,7 +164,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             when (requestCode) {
                 REQUEST_DOCS,
                 REQUEST_SHEETS,
-                REQUEST_PRESENTATION -> removeCommonDialog()
+                REQUEST_PRESENTATION,
+                -> removeCommonDialog()
             }
         }
     }
@@ -169,7 +174,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (isActivePage) {
@@ -318,7 +323,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 }
             }
             StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH,
-            StringUtils.Extension.VIDEO, StringUtils.Extension.HTML -> {
+            StringUtils.Extension.VIDEO, StringUtils.Extension.HTML,
+            -> {
                 onSnackBar(getString(R.string.download_manager_complete))
             }
             else -> {
@@ -465,7 +471,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         resetIndicators()
         hideDialog()
         message?.let {
-//            TODO add webdav exception
+            //            TODO add webdav exception
             if (it == "HTTP 503 Service Unavailable") {
                 setAccessDenied()
                 presenter.clearStack()
@@ -573,7 +579,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             }
             menu?.let {
                 onCreateOptionsMenu(it, requireActivity().menuInflater)
-//                it.findItem(R.id.toolbar_selection_select_all)?.isVisible = !presenter.isSelectedAll
+                //                it.findItem(R.id.toolbar_selection_select_all)?.isVisible = !presenter.isSelectedAll
             }
         }
     }
@@ -707,7 +713,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onCreateDownloadFile(name: String) {
-       downloadActivityResult.launch(name)
+        downloadActivityResult.launch(name)
     }
 
     override fun onScrollToPosition(position: Int) {
@@ -873,7 +879,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * Menu methods
      * */
     protected open fun setMenuMainEnabled(isEnabled: Boolean) {
-        mainItem?.isVisible = isEnabled
+        mainItem?.isVisible = isEnabled || ApiContract.SectionType.isRoom(presenter.getSectionType())
     }
 
     fun setMenuSearchEnabled(isEnabled: Boolean) {
@@ -1084,10 +1090,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
                     startActivityForResult(intent, REQUEST_PRESENTATION)
                 }
-//                EditorsType.PDF -> {
-//                    intent.setClassName(requireContext(), EditorsContract.PDF)
-//                    startActivity(intent)
-//                }
+                //                EditorsType.PDF -> {
+                //                    intent.setClassName(requireContext(), EditorsContract.PDF)
+                //                    startActivity(intent)
+                //                }
             }
         } catch (e: ActivityNotFoundException) {
             e.printStackTrace()
@@ -1129,13 +1135,16 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     protected fun showActionBarMenu() {
         ActionBarMenu(
-            requireContext(),
-            ActionMenuAdapter(actionMenuClickListener),
-            ActionMenuItemsFactory.getDocsItems(
+            context = requireContext(),
+            adapter = ActionMenuAdapter(actionMenuClickListener),
+            items = ActionMenuItemsFactory.getItems(
                 section = presenter.getSectionType(),
+                root = presenter.isRoot,
                 selected = presenter.isSelectionMode,
                 allSelected = presenter.isSelectedAll,
                 sortBy = presenter.preferenceTool.sortBy,
+                empty = presenter.isListEmpty(),
+                isVisitor = requireContext().accountOnline?.isVisitor == true,
                 asc = presenter.preferenceTool.sortOrder.equals(
                     ApiContract.Parameters.VAL_SORT_ORDER_ASC,
                     ignoreCase = true

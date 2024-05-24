@@ -777,7 +777,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             }
                         }, ::fetchError)
                 } else {
-                    it.archiveRoom(itemClicked?.id ?: "", isArchive = isArchive)
+                    it.archiveRoom(roomClicked?.id ?: "", isArchive = isArchive)
                         .doOnSubscribe { viewState.onSwipeEnable(true) }
                         .subscribe({ response ->
                             if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
@@ -791,9 +791,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun editRoom() {
-        if (itemClicked is CloudFolder && (itemClicked as CloudFolder).isRoom) {
-            viewState.onCreateRoom((itemClicked as CloudFolder).roomType, itemClicked as CloudFolder)
-        }
+        val room = roomClicked ?: error("room can not be null")
+        viewState.onCreateRoom(room.roomType, room)
     }
 
     fun copyGeneralLink() {
@@ -902,7 +901,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun checkRoomOwner() {
-        if (itemClicked is CloudFolder) {
+        if (roomClicked != null) {
             viewState.onLeaveRoomDialog(
                 R.string.leave_room_title,
                 if (isItemOwner) R.string.leave_room_owner_desc else R.string.leave_room_desc,
@@ -919,7 +918,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 request(
                     func = {
                         context.shareApi.shareRoom(
-                            itemClicked?.id ?: "", RequestRoomShare(
+                            roomClicked?.id ?: "", RequestRoomShare(
                                 invitations = listOf(Invitation(id = account.id, access = ApiContract.Access.None.code))
                             )
                         )
@@ -936,7 +935,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 )
             }
         } else {
-            viewState.showSetOwnerFragment(itemClicked as CloudFolder)
+            viewState.showSetOwnerFragment(roomClicked ?: error("room can not be null"))
         }
     }
 

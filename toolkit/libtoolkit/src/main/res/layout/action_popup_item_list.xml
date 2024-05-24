@@ -24,7 +24,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_sort_order_arrow_selector"
-        android:tint="@color/colorOnSurface" />
+        android:tint="@color/colorOnSurface"
+        android:visibility="gone" />
 
 </LinearLayout>
 

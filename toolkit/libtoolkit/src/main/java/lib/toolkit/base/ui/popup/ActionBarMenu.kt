@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupWindow
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import lib.toolkit.base.R
@@ -43,12 +42,12 @@ class ActionBarMenu(
         viewBinding = ActionPopupLayoutBinding.inflate(inflater).also { binding ->
             contentView = binding.root
             binding.popupView.layoutManager = LinearLayoutManager(context)
-            binding.popupView.itemAnimator = DefaultItemAnimator()
         }
         animationStyle = R.style.MainPopupAnimation
         isOutsideTouchable = true
         isClippingEnabled = true
         elevation = context.resources.getDimension(R.dimen.elevation_height_popup)
+        isFocusable = true
     }
 
     fun show(view: View) {

@@ -21,6 +21,7 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.states.OperationsState
@@ -223,6 +224,25 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
             else -> super.onContextButtonClick(contextItem)
+        }
+    }
+
+    override val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
+        when (item) {
+            ActionMenuItem.Archive -> {
+                cloudPresenter.popToRoot()
+                cloudPresenter.archiveRoom()
+            }
+            ActionMenuItem.Info -> showRoomInfoFragment()
+            ActionMenuItem.EditRoom -> cloudPresenter.editRoom()
+            ActionMenuItem.Invite -> ShareActivity.show(
+                this,
+                presenter.roomClicked ?: error("room can not be null"),
+                false
+            )
+            ActionMenuItem.CopyLink -> cloudPresenter.copyGeneralLink()
+            ActionMenuItem.LeaveRoom -> cloudPresenter.checkRoomOwner()
+            else -> super.actionMenuClickListener.invoke(item)
         }
     }
 
@@ -448,10 +468,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     private fun showRoomInfoFragment() {
-        (presenter.itemClicked as? CloudFolder)?.let { room ->
-            RoomInfoFragment.newInstance(room)
-                .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
-        }
+        RoomInfoFragment.newInstance(presenter.roomClicked ?: error("room can not be null"))
+            .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
     }
 
     private fun showFilter() {
@@ -480,7 +498,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 .setPagerPosition(ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
                     setFragmentResult(KEY_ROOM_CREATED_REQUEST, bundleOf(DocsRoomFragment.KEY_RESULT_ROOM_ID to id))
                 }
-        } catch (_: NoSuchElementException) { }
+        } catch (_: NoSuchElementException) {
+        }
     }
 
     override fun onLeaveRoomDialog(title: Int, question: Int, tag: String, isOwner: Boolean) {

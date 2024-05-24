@@ -20,10 +20,10 @@
         tools:text="Date" />
 
     <ImageView
-        android:id="@+id/order"
         style="@style/Widget.Common.ImageView.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_arrow_right" />
+        android:src="@drawable/ic_arrow_right"
+        tools:ignore="ContentDescription" />
 
 </LinearLayout>
