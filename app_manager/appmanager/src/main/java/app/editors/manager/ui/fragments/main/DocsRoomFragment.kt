@@ -67,7 +67,7 @@ class DocsRoomFragment : DocsCloudFragment() {
             ExplorerContextItem.Archive -> cloudPresenter.archiveRoom()
             ExplorerContextItem.AddUsers -> showInviteUsersDialog()
             is ExplorerContextItem.Edit -> cloudPresenter.editRoom()
-            is ExplorerContextItem.ExternalLink -> cloudPresenter.copyGeneralLink()
+            is ExplorerContextItem.ExternalLink -> cloudPresenter.copyLinkFromContextMenu()
             is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()
             is ExplorerContextItem.Delete -> cloudPresenter.checkRoomOwner()
             else -> super.onContextButtonClick(contextItem)

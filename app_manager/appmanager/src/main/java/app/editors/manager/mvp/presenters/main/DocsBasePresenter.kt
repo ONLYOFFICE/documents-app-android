@@ -1726,6 +1726,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return modelExplorerStack.isListEmpty
     }
 
+    fun isRoomFolder(): Boolean {
+        return modelExplorerStack.last()?.current?.id == roomClicked?.id
+    }
+    
     abstract fun getNextList()
 
     abstract fun getFileInfo()

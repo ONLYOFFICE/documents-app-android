@@ -241,7 +241,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 presenter.roomClicked ?: error("room can not be null"),
                 false
             )
-            ActionMenuItem.CopyLink -> cloudPresenter.copyGeneralLink()
+            is ActionMenuItem.CopyLink -> cloudPresenter.copyLinkFromActionMenu(item.isRoom)
             ActionMenuItem.LeaveRoom -> cloudPresenter.checkRoomOwner()
             else -> super.actionMenuClickListener.invoke(item)
         }

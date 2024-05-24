@@ -47,8 +47,8 @@ sealed class ActionMenuItem(override val title: Int) : IActionMenuItem {
     data object Info : None(R.string.list_context_info)
     data object EditRoom : None(R.string.list_context_edit_room)
     data object Invite : None(R.string.share_invite_user)
-    data object CopyLink : None(R.string.rooms_info_copy_link)
     data object LeaveRoom : None(R.string.leave_room_title)
+    data class CopyLink(val isRoom: Boolean) : None(R.string.rooms_info_copy_link)
 
     data object ManageRoom : Arrow(R.string.room_manage_room)
     data object SortBy : Arrow(R.string.toolbar_menu_sort_by)
@@ -73,6 +73,7 @@ object ActionMenuItemsFactory {
         section: Int,
         root: Boolean,
         empty: Boolean,
+        currentRoom: Boolean,
         selected: Boolean,
         allSelected: Boolean,
         asc: Boolean,
@@ -83,7 +84,7 @@ object ActionMenuItemsFactory {
             if (root) {
                 getRoomRootItems(section, selected, allSelected, asc, sortBy)
             } else {
-                getRoomItems(selected, empty, allSelected, asc, sortBy)
+                getRoomItems(selected, empty, allSelected, asc, sortBy, currentRoom)
             }
         } else {
             getDocsItems(section, selected, allSelected, asc, sortBy)
@@ -173,7 +174,9 @@ object ActionMenuItemsFactory {
         allSelected: Boolean,
         asc: Boolean,
         sortBy: String?,
+        currentRoom: Boolean
     ) = mutableListOf<ActionMenuItem>().apply {
+        val showCopyLink = !currentRoom && !selected
         if (!selected) {
             add(
                ActionMenuItem.ManageRoom.get(
@@ -181,7 +184,7 @@ object ActionMenuItemsFactory {
                        ActionMenuItem.Info,
                        ActionMenuItem.EditRoom,
                        ActionMenuItem.Invite,
-                       ActionMenuItem.CopyLink,
+                       ActionMenuItem.CopyLink(true),
                        ActionMenuItem.Divider,
                        ActionMenuItem.Archive,
                        ActionMenuItem.Download,
@@ -205,15 +208,18 @@ object ActionMenuItemsFactory {
                 )
                 add(ActionMenuItem.Divider)
             }
-            addAll(getSelectItems(selected, allSelected))
-            if (!selected) {
-                add(ActionMenuItem.CopyLink)
-            } else {
+            addAll(getSelectItems(selected, allSelected, false))
+            if (selected) {
+                add(ActionMenuItem.Divider)
                 add(ActionMenuItem.Download)
                 add(ActionMenuItem.Move)
                 add(ActionMenuItem.Copy)
                 add(ActionMenuItem.Delete)
             }
+        }
+        if (showCopyLink) {
+            add(ActionMenuItem.Divider)
+            add(ActionMenuItem.CopyLink(false))
         }
     }
 }

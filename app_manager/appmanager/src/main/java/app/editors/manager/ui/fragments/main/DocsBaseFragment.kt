@@ -1167,6 +1167,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 allSelected = presenter.isSelectedAll,
                 sortBy = presenter.preferenceTool.sortBy,
                 empty = presenter.isListEmpty(),
+                currentRoom = presenter.isRoomFolder(),
                 isVisitor = requireContext().accountOnline?.isVisitor == true,
                 asc = presenter.preferenceTool.sortOrder.equals(
                     ApiContract.Parameters.VAL_SORT_ORDER_ASC,
