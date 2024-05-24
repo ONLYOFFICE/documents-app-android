@@ -29,6 +29,7 @@ import lib.toolkit.base.ui.adapters.holder.ViewType
 import moxy.InjectViewState
 import moxy.presenterScope
 import java.io.Serializable
+import java.util.TreeSet
 
 @InjectViewState
 class AddPresenter(
@@ -94,51 +95,57 @@ class AddPresenter(
     }
 
     private suspend fun getUsers(searchValue: String = ""): List<UserUi> {
-
-        val invitedUsersId = if ((item as? CloudFolder)?.isRoom == true) {
-            context.roomProvider.getRoomUsers(item.id).map { it.sharedTo.id }
-        } else {
-            emptyList()
-        }
-
-        return shareApi.getUsers(getOptions(searchValue))
-            .checkStatusCode(::fetchError)
-            .response
-            .filter { user ->
-                user.id != account.id
-                        && user.id != item.createdBy.id
-                        && user.displayName.isNotEmpty()
-                        && !invitedUsersId.contains(user.id)
+        try {
+            val invitedUsersId = if ((item as? CloudFolder)?.isRoom == true) {
+                context.roomProvider.getRoomUsers(item.id).map { it.sharedTo.id }
+            } else {
+                emptyList()
             }
-            .map { user ->
-                UserUi(
-                    id = user.id,
-                    department = user.department,
-                    displayName = user.displayName,
-                    avatarUrl = user.avatar,
-                    status = user.activationStatus,
-                    isAdmin = user.isAdmin
-                )
-            }.sortedBy { it.status }
+
+            return shareApi.getUsers(getOptions(searchValue))
+                .checkStatusCode(::fetchError)
+                .response
+                .filter { user ->
+                    user.id != account.id
+                            && user.id != item.createdBy.id
+                            && user.displayName.isNotEmpty()
+                            && !invitedUsersId.contains(user.id)
+                }
+                .map { user ->
+                    UserUi(
+                        id = user.id,
+                        department = user.department,
+                        displayName = user.displayName,
+                        avatarUrl = user.avatar,
+                        status = user.activationStatus,
+                        isAdmin = user.isAdmin
+                    )
+                }.sortedBy { it.status }
+        } catch (error: Exception) {
+            return emptyList()
+        }
     }
 
     private suspend fun getGroups(searchValue: String = ""): List<GroupUi> {
-        return shareApi.getGroups(getOptions(searchValue, true))
-            .checkStatusCode(::fetchError)
-            .response
-            .map {
-                GroupUi(
-                    id = it.id,
-                    name = it.name,
-                    manager = it.manager.orEmpty()
-                )
-            }
-            .toMutableList()
-            .also { list ->
-                list.add(GroupUi(GroupUi.GROUP_ADMIN_ID, "", ""))
-                list.add(GroupUi(GroupUi.GROUP_EVERYONE_ID, "", ""))
-            }
-
+        try {
+            return shareApi.getGroups(getOptions(searchValue, true))
+                .checkStatusCode(::fetchError)
+                .response
+                .map {
+                    GroupUi(
+                        id = it.id,
+                        name = it.name,
+                        manager = it.manager.orEmpty()
+                    )
+                }
+                .toMutableList()
+                .also { list ->
+                    list.add(GroupUi(GroupUi.GROUP_ADMIN_ID, "", ""))
+                    list.add(GroupUi(GroupUi.GROUP_EVERYONE_ID, "", ""))
+                }
+        } catch (error: Exception) {
+            return emptyList()
+        }
     }
 
     private suspend fun shareFileTo(id: String) {
@@ -237,21 +244,35 @@ class AddPresenter(
 
     fun fetchSharedList(searchValue: String = "") {
         presenterScope.launch {
-            when (type) {
-                Type.Common -> {
-                    shareStack.clearModel()
-                    shareStack.addGroups(getGroups(searchValue))
-                    shareStack.addUsers(getUsers(searchValue))
-                    viewState.onGetCommon(commonList)
-                }
-                Type.Groups -> {
-                    shareStack.addGroups(getGroups(searchValue))
-                    viewState.onGetGroups(groupListItems)
-                }
-                Type.Users -> {
-                    shareStack.clearModel()
-                    shareStack.addUsers(getUsers(searchValue))
-                    viewState.onGetUsers(userListItems)
+            if (searchValue.isNotEmpty()) {
+                val groups = TreeSet(shareStack.groupSet)
+                val users = TreeSet(shareStack.userSet)
+
+                shareStack.clearModel()
+                shareStack.addUsers(users.sortedBy { it.displayName }
+                    .filter { it.displayName.contains(searchValue, ignoreCase = true) })
+                shareStack.addGroups(groups.sortedWith(groupComparator())
+                    .filter { it.name.contains(searchValue, ignoreCase = true) })
+                viewState.onGetCommon(commonList)
+            } else {
+                when (type) {
+                    Type.Common -> {
+                        shareStack.clearModel()
+                        shareStack.addGroups(getGroups(searchValue))
+                        shareStack.addUsers(getUsers(searchValue))
+                        viewState.onGetCommon(commonList)
+                    }
+
+                    Type.Groups -> {
+                        shareStack.addGroups(getGroups(searchValue))
+                        viewState.onGetGroups(groupListItems)
+                    }
+
+                    Type.Users -> {
+                        shareStack.clearModel()
+                        shareStack.addUsers(getUsers(searchValue))
+                        viewState.onGetUsers(userListItems)
+                    }
                 }
             }
         }
