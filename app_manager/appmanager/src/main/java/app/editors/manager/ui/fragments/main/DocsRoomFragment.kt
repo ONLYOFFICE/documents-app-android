@@ -5,16 +5,24 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.forEach
 import androidx.fragment.app.setFragmentResultListener
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Security
 import app.editors.manager.R
+import app.editors.manager.managers.tools.ActionMenuAdapter
+import app.editors.manager.managers.tools.ActionMenuItem
+import app.editors.manager.managers.tools.ActionMenuItemsFactory
 import app.editors.manager.mvp.models.filter.RoomFilterType
+import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.share.InviteUsersFragment
+import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.setFragmentResultListener
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
+import lib.toolkit.base.ui.popup.ActionBarMenu
 
 class DocsRoomFragment : DocsCloudFragment() {
     private val isRoom get() = cloudPresenter.isCurrentRoom && cloudPresenter.isRoot
@@ -61,8 +69,30 @@ class DocsRoomFragment : DocsCloudFragment() {
         } else super.onStateMenuSelection()
     }
 
+    override fun showActionBarMenu() {
+        ActionBarMenu(
+            context = requireContext(),
+            adapter = ActionMenuAdapter(actionMenuClickListener),
+            items = ActionMenuItemsFactory.getRoomItems(
+                section = presenter.getSectionType(),
+                root = presenter.isRoot,
+                selected = presenter.isSelectionMode,
+                allSelected = presenter.isSelectedAll,
+                sortBy = presenter.preferenceTool.sortBy,
+                empty = presenter.isListEmpty(),
+                currentRoom = presenter.isRoomFolder(),
+                security = presenter.roomClicked?.security ?: Security(),
+                asc = presenter.preferenceTool.sortOrder.equals(
+                    ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                    ignoreCase = true
+                )
+            )
+        ).show(requireActivity().window.decorView)
+    }
+
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
+            ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             ExplorerContextItem.Reconnect -> reconnectStorage()
             ExplorerContextItem.Archive -> cloudPresenter.archiveRoom()
             ExplorerContextItem.AddUsers -> showInviteUsersDialog()
@@ -71,6 +101,25 @@ class DocsRoomFragment : DocsCloudFragment() {
             is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()
             is ExplorerContextItem.Delete -> cloudPresenter.checkRoomOwner()
             else -> super.onContextButtonClick(contextItem)
+        }
+    }
+
+    override val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
+        when (item) {
+            ActionMenuItem.Archive -> {
+                cloudPresenter.popToRoot()
+                cloudPresenter.archiveRoom()
+            }
+            ActionMenuItem.Info -> showRoomInfoFragment()
+            ActionMenuItem.EditRoom -> cloudPresenter.editRoom()
+            ActionMenuItem.Invite -> ShareActivity.show(
+                this,
+                presenter.roomClicked ?: error("room can not be null"),
+                false
+            )
+            is ActionMenuItem.CopyLink -> cloudPresenter.copyLinkFromActionMenu(item.isRoom)
+            ActionMenuItem.LeaveRoom -> cloudPresenter.checkRoomOwner()
+            else -> super.actionMenuClickListener.invoke(item)
         }
     }
 
@@ -117,6 +166,11 @@ class DocsRoomFragment : DocsCloudFragment() {
         (presenter.itemClicked as? CloudFolder)?.let { room ->
             InviteUsersFragment.newInstance(room.id, room.roomType).show(parentFragmentManager, null)
         }
+    }
+
+    private fun showRoomInfoFragment() {
+        RoomInfoFragment.newInstance(presenter.roomClicked ?: error("room can not be null"))
+            .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
     }
 
     companion object {

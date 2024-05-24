@@ -70,7 +70,7 @@ sealed class ActionMenuItem(override val title: Int) : IActionMenuItem {
 
 object ActionMenuItemsFactory {
 
-    fun getItems(
+    fun getRoomItems(
         section: Int,
         root: Boolean,
         empty: Boolean,
@@ -81,18 +81,14 @@ object ActionMenuItemsFactory {
         security: Security,
         sortBy: String?,
     ): List<ActionMenuItem> {
-        return if (SectionType.isRoom(section) || section == SectionType.CLOUD_ARCHIVE_ROOM) {
-            if (root) {
-                getRoomRootItems(section, selected, allSelected, asc, sortBy)
-            } else {
-                getRoomItems(selected, empty, allSelected, asc, sortBy, currentRoom, security)
-            }
+        return if (root) {
+            getRoomRootItems(section, selected, allSelected, asc, sortBy)
         } else {
-            getDocsItems(section, selected, allSelected, asc, sortBy)
+            getRoomFolderItems(selected, empty, allSelected, asc, sortBy, currentRoom, security)
         }
     }
 
-    private fun getDocsItems(
+    fun getDocsItems(
         section: Int,
         selected: Boolean,
         allSelected: Boolean,
@@ -169,7 +165,7 @@ object ActionMenuItemsFactory {
         }
     }
 
-    private fun getRoomItems(
+    private fun getRoomFolderItems(
         selected: Boolean,
         empty: Boolean,
         allSelected: Boolean,

@@ -21,7 +21,6 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
-import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.list.RecentViaLink
@@ -41,7 +40,6 @@ import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
-import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -210,7 +208,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             ExplorerContextItem.Share -> showShareFragment()
             ExplorerContextItem.Location -> cloudPresenter.openLocation()
             ExplorerContextItem.CreateRoom -> cloudPresenter.createRoomFromFolder()
-            ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             ExplorerContextItem.ShareDelete -> showQuestionDialog(
                 title = getString(R.string.dialogs_question_share_remove),
                 string = "${cloudPresenter.itemClicked?.title}",
@@ -225,25 +222,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
             else -> super.onContextButtonClick(contextItem)
-        }
-    }
-
-    override val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
-        when (item) {
-            ActionMenuItem.Archive -> {
-                cloudPresenter.popToRoot()
-                cloudPresenter.archiveRoom()
-            }
-            ActionMenuItem.Info -> showRoomInfoFragment()
-            ActionMenuItem.EditRoom -> cloudPresenter.editRoom()
-            ActionMenuItem.Invite -> ShareActivity.show(
-                this,
-                presenter.roomClicked ?: error("room can not be null"),
-                false
-            )
-            is ActionMenuItem.CopyLink -> cloudPresenter.copyLinkFromActionMenu(item.isRoom)
-            ActionMenuItem.LeaveRoom -> cloudPresenter.checkRoomOwner()
-            else -> super.actionMenuClickListener.invoke(item)
         }
     }
 
@@ -490,11 +468,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         menu?.let {
             deleteItem?.isEnabled = false
         }
-    }
-
-    private fun showRoomInfoFragment() {
-        RoomInfoFragment.newInstance(presenter.roomClicked ?: error("room can not be null"))
-            .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
     }
 
     private fun showFilter() {

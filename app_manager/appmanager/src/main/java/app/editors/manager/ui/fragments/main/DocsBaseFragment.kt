@@ -27,7 +27,6 @@ import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
-import app.documents.core.network.manager.models.explorer.Security
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
@@ -1157,19 +1156,15 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun showActionBarMenu() {
+    protected open fun showActionBarMenu() {
         ActionBarMenu(
             context = requireContext(),
             adapter = ActionMenuAdapter(actionMenuClickListener),
-            items = ActionMenuItemsFactory.getItems(
+            items = ActionMenuItemsFactory.getDocsItems(
                 section = presenter.getSectionType(),
-                root = presenter.isRoot,
                 selected = presenter.isSelectionMode,
                 allSelected = presenter.isSelectedAll,
                 sortBy = presenter.preferenceTool.sortBy,
-                empty = presenter.isListEmpty(),
-                currentRoom = presenter.isRoomFolder(),
-                security = presenter.roomClicked?.security ?: Security(),
                 asc = presenter.preferenceTool.sortOrder.equals(
                     ApiContract.Parameters.VAL_SORT_ORDER_ASC,
                     ignoreCase = true
