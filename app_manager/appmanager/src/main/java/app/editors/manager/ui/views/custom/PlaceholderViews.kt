@@ -95,11 +95,7 @@ class PlaceholderViews(val view: View?) {
             }
             Type.LOAD_USERS -> setTitle(R.string.placeholder_loading_users)
             Type.LOAD_GROUPS -> setTitle(R.string.placeholder_loading_groups)
-            Type.OTHER_ACCOUNTS -> {
-                setTitle(R.string.placeholder_other_accounts)
-                binding.inviteByEmailButton.isVisible = true
-                binding.inviteByEmailButton.setOnClickListener { onButtonClick.invoke() }
-            }
+            Type.OTHER_ACCOUNTS -> setTitle(R.string.placeholder_other_accounts)
             Type.MEDIA -> {
                 setImage(R.drawable.ic_media_error)
                 setImageTint(lib.toolkit.base.R.color.colorTextSecondary)

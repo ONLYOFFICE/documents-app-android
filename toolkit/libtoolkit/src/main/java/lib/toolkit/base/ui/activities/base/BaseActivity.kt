@@ -131,7 +131,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     * */
     protected fun isFragmentBackPress(): Boolean {
         supportFragmentManager.fragments.asReversed().forEach { parentFragment ->
-            if (parentFragment.isAdded && isFragmentBackPress(parentFragment)) {
+            if (parentFragment.isResumed && isFragmentBackPress(parentFragment)) {
                 return true
             }
         }
@@ -141,13 +141,13 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
 
     private fun isFragmentBackPress(fragment: Fragment): Boolean {
         fragment.childFragmentManager.fragments.asReversed().forEach { childFragment ->
-            if (childFragment.isAdded && childFragment.isVisible && isFragmentBackPress(childFragment)) {
+            if (childFragment.isResumed && childFragment.isVisible && isFragmentBackPress(childFragment)) {
                 return true
             }
         }
 
         //TODO need check
-        return if (fragment.isVisible && fragment.isAdded) {
+        return if (fragment.isResumed) {
             fragment is OnBackPressFragment  && fragment.onBackPressed() &&
                     fragment.lifecycle.currentState == Lifecycle.State.RESUMED
         } else {
@@ -219,7 +219,6 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         if (commonDialog == null) {
             commonDialog = CommonDialog.newInstance()
         }
-        commonDialog?.setFragmentManager(supportFragmentManager)
     }
 
     fun addDialogListener(onDialogClickListener: CommonDialog.OnClickListener?) {
@@ -431,7 +430,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
             setProgressType(type)
             setTextColor(textColor)
             setTopTitleGravity(textGravity)
-            show()
+            show(supportFragmentManager)
         }
     }
 
@@ -474,7 +473,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
             setIsPassword(isPassword)
             setError(error)
             setSuffix(suffix)
-            show()
+            show(supportFragmentManager)
         }
     }
 
@@ -489,12 +488,12 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         question: String?,
         acceptErrorTint: Boolean = false
     ) {
-        getQuestionDialog(title, acceptTitle, cancelTitle, question, tag, acceptErrorTint)?.show()
+        getQuestionDialog(title, acceptTitle, cancelTitle, question, tag, acceptErrorTint)?.show(supportFragmentManager)
     }
 
     fun showEditMultilineDialog(title: String, hint: String, acceptTitle: String?, cancelTitle: String?, tag: String?) {
         getEditMultilineDialog(title, hint, acceptTitle, cancelTitle, tag)?.run {
-            show()
+            show(supportFragmentManager)
         }
     }
 
@@ -504,7 +503,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
                 setCancelTitle(cancelTitle)
             }
             setProgressColor(R.color.colorPrimary)
-            show()
+            show(supportFragmentManager)
         }
     }
 

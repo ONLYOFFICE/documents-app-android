@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.FragmentManager
 import com.google.android.material.textfield.TextInputLayout
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -134,8 +135,8 @@ class EditMultilineHolder(private val dialog: CommonDialog) : BaseHolder(dialog)
             return this
         }
 
-        fun show() {
-            dialog.show(getType())
+        fun show(fragmentManager: FragmentManager) {
+            dialog.show(fragmentManager, getType())
         }
     }
 

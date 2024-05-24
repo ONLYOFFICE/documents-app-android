@@ -348,14 +348,14 @@
     <!-- Dialog info -->
 
     <!-- Pager -->
-    <string name="main_pager_docs_my">Documents</string>
+    <string name="main_pager_docs_my">My documents</string>
     <string name="main_pager_docs_common">Common</string>
     <string name="main_pager_docs_share">Shared with me</string>
     <string name="main_pager_docs_projects">Projects</string>
     <string name="main_pager_docs_trash">Trash</string>
     <string name="main_pager_docs_favorites">Favorites</string>
-    <string name="main_pager_docs_virtual_room">My rooms</string>
-    <string name="main_pager_docs_archive_room">My archive</string>
+    <string name="main_pager_docs_virtual_room">Rooms</string>
+    <string name="main_pager_docs_archive_room">Archive</string>
 
     <!-- Placeholder -->
     <string name="placeholder_connection">Connection error</string>
@@ -743,6 +743,7 @@
     <string name="room_search_not_found_desc">The list of users previously invited to DocSpace or separate rooms will appear here.</string>
     <string name="room_placeholder_created_room_title">Room created!</string>
     <string name="room_placeholder_created_room_subtitle">Create new folders to organize your files.</string>
+    <string name="room_recent_via_link">Accessible via link</string>
     <string name="room_manage_room">Manage room</string>
 
     <plurals name="rooms_restore_title">
@@ -778,6 +779,7 @@
     <string name="rooms_info_copy_link_to_clipboard">Link successfully copied to clipboard</string>
     <string name="rooms_info_admin_title">Administration (%d)</string>
     <string name="rooms_info_users_title">Users (%1d)</string>
+    <string name="rooms_info_groups_title">Groups (%1d)</string>
     <string name="rooms_info_expected_title">Expected users (%1d)</string>
     <string name="rooms_info_link_expired">The link has expired</string>
     <string name="rooms_info_link_expired_full">The link has expired and has been disabled</string>
@@ -822,6 +824,13 @@
     <string name="dialog_create_room">Create room</string>
     <string name="dialog_create_room_value">New room</string>
     <string name="invite_by_email">Invite users by email</string>
+    <string name="invite_new_members">New members</string>
+    <string name="invite_new_groups">New groups</string>
+    <string name="invite_add_manually">Add manually</string>
+    <string name="invite_choose_from_list">Choose from list</string>
+    <string name="invite_already_invited">Invited</string>
+    <string name="share_access_room_type">Access type</string>
+    <string name="share_access_room_group_desc">Access rights for all users in the group</string>
     <string name="share_access_room_owner">Owner</string>
     <string name="share_access_room_admin">Room admin</string>
     <string name="share_access_room_power_user">Power user</string>

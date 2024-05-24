@@ -14,6 +14,7 @@ import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestBatchBase
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestDeleteRecent
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
@@ -59,13 +60,13 @@ class CloudFileProvider @Inject constructor(
 
     companion object {
         private const val KEY_RESPONSE = "response"
-        private const val KEY_URL = "url"
         private const val STATIC_DOC_URL = "/web-apps/apps/api/documents/api.js"
     }
 
     interface RoomCallback {
         fun isRoomRoot(id: String?): Boolean
         fun isArchive(): Boolean
+        fun isRecent(): Boolean
     }
 
     var roomCallback: RoomCallback? = null
@@ -73,6 +74,7 @@ class CloudFileProvider @Inject constructor(
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return when {
             roomCallback?.isRoomRoot(id) == true -> getRooms(filter, roomCallback!!::isArchive)
+            roomCallback?.isRecent() == true -> getRecentViaLink(filter.orEmpty()).toObservable()
             else -> managerService.getItemById(id.orEmpty(), filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -404,7 +406,10 @@ class CloudFileProvider @Inject constructor(
                     json.getString(KEY_RESPONSE)
                         .replace(STATIC_DOC_URL, "")
                 }
-                return@map JSONObject(response.body()?.string()).getJSONObject(KEY_RESPONSE).put(KEY_URL, docService)
+                return@map JSONObject(response.body()?.string()).getJSONObject(KEY_RESPONSE)
+                    .put("url", docService)
+                    .put("size", cloudFile.pureContentLength)
+                    .put("updated", cloudFile.updated.time)
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).map { response ->
@@ -461,5 +466,19 @@ class CloudFileProvider @Inject constructor(
             .apply { inputStream?.use { stream -> stream.read(this, 0, size) } }
             .decodeToString()
             .contains("/ONLYOFFICEFORM")
+    }
+
+    fun getRecentViaLink(filter: Map<String, String> = mapOf()): Single<Explorer> {
+        val params = filter.plus("searchArea" to "3")
+        return managerService.getRecentViaLink(params)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { it.response }
+    }
+
+    fun deleteRecent(fileIds: List<String>): Single<Response<ResponseBody>> {
+        return managerService.deleteRecent(RequestDeleteRecent(fileIds))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 }

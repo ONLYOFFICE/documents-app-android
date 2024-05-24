@@ -5,8 +5,6 @@
     <string name="errors_webdav_username_password">පරිශ්‍රීලක නාමය හෝ මුරපදය වැරදිය</string>
     <string name="errors_webdav_server">වැරදි සේවාදායකයකි</string>
     <string name="toolbar_menu_sort_tags">අනන්‍යන</string>
-    <string name="main_pager_docs_virtual_room">මාගේ කාමර</string>
-    <string name="main_pager_docs_archive_room">මාගේ සංරක්‍ෂිත</string>
     <string name="share_invite_user">පරිශ්‍රීලකයින්ට ආරාධනා</string>
     <string name="storage_web_dav_settings_server">සේවාදායකය</string>
     <string name="storage_web_dav_settings_required">වුවමනාය</string>

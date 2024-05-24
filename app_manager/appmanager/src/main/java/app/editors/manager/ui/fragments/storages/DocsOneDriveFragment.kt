@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.editors.manager.app.App
@@ -21,11 +20,7 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
     companion object {
         val TAG: String = DocsOneDriveFragment::class.java.simpleName
 
-        fun newInstance(account: String) = DocsOneDriveFragment().apply {
-            arguments = Bundle(1).apply {
-                putString(KEY_ACCOUNT, account)
-            }
-        }
+        fun newInstance() = DocsOneDriveFragment()
     }
 
     @InjectPresenter

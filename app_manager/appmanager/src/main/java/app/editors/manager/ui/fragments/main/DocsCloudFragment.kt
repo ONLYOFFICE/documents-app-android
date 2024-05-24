@@ -24,6 +24,7 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.Header
+import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter
@@ -301,14 +302,38 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onDocsGet(list: List<Entity>?) {
-        super.onDocsGet(list)
+        val newList = list.orEmpty().toMutableList()
+        if (presenter.getSectionType() == ApiContract.SectionType.CLOUD_USER &&
+            context?.accountOnline.isDocSpace &&
+            presenter.isRoot
+        ) {
+            newList.add(0, RecentViaLink)
+        }
+        super.onDocsGet(newList)
         setMenuFilterEnabled(true)
     }
 
-
     override fun onDocsRefresh(list: List<Entity>?) {
-        super.onDocsRefresh(list)
+        val newList = list.orEmpty().toMutableList()
+        if (presenter.getSectionType() == ApiContract.SectionType.CLOUD_USER &&
+            context?.accountOnline.isDocSpace &&
+            presenter.isRoot
+        ) {
+            newList.add(0, RecentViaLink)
+        }
+        super.onDocsRefresh(newList)
         setMenuFilterEnabled(true)
+    }
+
+    override fun onDocsNext(list: List<Entity>?) {
+        val newList = list.orEmpty().toMutableList()
+        if (presenter.getSectionType() == ApiContract.SectionType.CLOUD_USER &&
+            context?.accountOnline.isDocSpace &&
+            presenter.isRoot
+        ) {
+            newList.add(0, RecentViaLink)
+        }
+        super.onDocsNext(newList)
     }
 
     override fun onDocsFilter(list: List<Entity>?) {
@@ -474,8 +499,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     private fun showFilter() {
         if (isTablet) {
-            FilterDialogFragment.newInstance(presenter.folderId, section, presenter.isRoot)
-                .show(requireActivity().supportFragmentManager, FilterDialogFragment.TAG)
+            FilterDialogFragment.newInstance(
+                presenter.folderId,
+                if (!cloudPresenter.isRecentViaLinkSection()) section else ApiContract.SectionType.CLOUD_RECENT,
+                presenter.isRoot
+            ).show(requireActivity().supportFragmentManager, FilterDialogFragment.TAG)
 
             requireActivity().supportFragmentManager
                 .setFragmentResultListener(REQUEST_KEY_REFRESH, this) { _, bundle ->
@@ -485,7 +513,12 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     }
                 }
         } else {
-            filterActivity.launch(FilterActivity.getIntent(this, presenter.folderId, section, presenter.isRoot))
+            filterActivity.launch(FilterActivity.getIntent(
+                this,
+                presenter.folderId,
+                if (!cloudPresenter.isRecentViaLinkSection()) section else ApiContract.SectionType.CLOUD_RECENT,
+                presenter.isRoot
+            ))
         }
     }
 

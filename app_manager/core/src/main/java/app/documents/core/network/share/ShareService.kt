@@ -1,9 +1,14 @@
 package app.documents.core.network.share
 
+import app.documents.core.model.login.RoomGroup
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.room.models.ResponseRoomShare
-import app.documents.core.network.share.models.request.*
+import app.documents.core.network.share.models.request.RequestDeleteShare
+import app.documents.core.network.share.models.request.RequestExternal
+import app.documents.core.network.share.models.request.RequestExternalAccess
+import app.documents.core.network.share.models.request.RequestRoomShare
+import app.documents.core.network.share.models.request.RequestShare
 import app.documents.core.network.share.models.response.ResponseExternal
 import app.documents.core.network.share.models.response.ResponseGroups
 import app.documents.core.network.share.models.response.ResponseShare
@@ -131,6 +136,26 @@ interface ShareService {
     suspend fun getUsers(
         @QueryMap options: Map<String, String> = mapOf()
     ): ResponseUsers
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/people/room/{id}")
+    suspend fun getRoomUsers(
+        @Path(value = "id") id: String,
+        @QueryMap options: Map<String, String> = mapOf()
+    ): ResponseUsers
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/group/room/{id}")
+    suspend fun getRoomGroups(
+        @Path(value = "id") id: String,
+        @QueryMap options: Map<String, String> = mapOf()
+    ): app.documents.core.network.BaseResponse<List<RoomGroup>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

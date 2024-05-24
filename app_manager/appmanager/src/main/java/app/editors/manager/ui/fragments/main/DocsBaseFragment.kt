@@ -149,7 +149,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     protected fun showOperationActivity(
         operation: OperationsState.OperationType,
         explorer: Explorer,
-        callback: (result: ActivityResult) -> Unit,
+        callback: (result: ActivityResult) -> Unit
     ) {
         LaunchActivityForResult(
             requireActivity().activityResultRegistry,
@@ -197,6 +197,19 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     it.clipData?.getItemAt(0)?.uri?.let { uri -> presenter.uploadToMy(uri) }
                     requireActivity().intent = null
                 }
+            }
+        }
+    }
+
+    private var isFirstResume = true
+
+    override fun onResume() {
+        super.onResume()
+        if (isFirstResume) {
+            isFirstResume = false
+        } else {
+            view?.post {
+                presenter.updateViewsState()
             }
         }
     }
@@ -249,7 +262,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     item = item,
                     userId = requireContext().accountOnline?.id
                 ),
-                sectionType = getSection().type,
+                sectionType = if (presenter.isRecentViaLinkSection()) {
+                    ApiContract.SectionType.CLOUD_RECENT
+                } else {
+                    getSection().type
+                },
                 provider = context?.accountOnline?.portal?.provider ?: PortalProvider.default,
                 isSearching = presenter.isFilteringMode,
                 isRoot = presenter.isRoot
@@ -348,7 +365,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 suffix = presenter.itemExtension
             )
             is ExplorerContextItem.Edit -> presenter.getFileInfo()
-            is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
+            is ExplorerContextItem.Delete -> {
+                if (presenter.isRecentViaLinkSection()) {
+                    presenter.deleteItems()
+                } else {
+                    showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
+                }
+            }
             else -> {}
         }
     }

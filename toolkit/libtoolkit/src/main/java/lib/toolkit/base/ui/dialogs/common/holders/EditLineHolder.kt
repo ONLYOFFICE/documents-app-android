@@ -9,8 +9,8 @@ import android.text.Spanned
 import android.view.View
 import android.widget.EditText
 import android.widget.FrameLayout
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.FragmentManager
 import com.google.android.material.textfield.TextInputLayout
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -247,8 +247,8 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             return this
         }
 
-        fun show() {
-            dialog.show(CommonDialog.Dialogs.EDIT_LINE)
+        fun show(fragmentManager: FragmentManager) {
+            dialog.show(fragmentManager, CommonDialog.Dialogs.EDIT_LINE)
         }
 
     }
