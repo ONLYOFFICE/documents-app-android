@@ -43,7 +43,7 @@ fun ExternalLinkItem(
     canEdit: Boolean,
     onCopyLinkClick: () -> Unit,
     onShareClick: () -> Unit,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     Row(
         modifier = Modifier
@@ -85,21 +85,21 @@ fun ExternalLinkItem(
                 }
             }
         }
+        IconButton(modifier = Modifier, onClick = onCopyLinkClick) {
+            Icon(
+                imageVector = ImageVector.vectorResource(app.editors.manager.R.drawable.ic_list_context_external_link),
+                tint = MaterialTheme.colors.primary,
+                contentDescription = null
+            )
+        }
+        IconButton(modifier = Modifier, onClick = onShareClick) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_list_context_share),
+                tint = MaterialTheme.colors.primary,
+                contentDescription = null
+            )
+        }
         if (canEdit) {
-            IconButton(modifier = Modifier, onClick = onCopyLinkClick) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(app.editors.manager.R.drawable.ic_list_context_external_link),
-                    tint = MaterialTheme.colors.primary,
-                    contentDescription = null
-                )
-            }
-            IconButton(modifier = Modifier, onClick = onShareClick) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_list_context_share),
-                    tint = MaterialTheme.colors.primary,
-                    contentDescription = null
-                )
-            }
             Icon(
                 modifier = Modifier.padding(horizontal = 8.dp),
                 imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_right),
