@@ -2,6 +2,7 @@ package app.editors.manager.managers.tools
 
 import app.documents.core.network.common.contracts.ApiContract.Parameters
 import app.documents.core.network.common.contracts.ApiContract.SectionType
+import app.documents.core.network.manager.models.explorer.Security
 import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState
 import lib.toolkit.base.ui.popup.IActionMenuItem
@@ -77,14 +78,14 @@ object ActionMenuItemsFactory {
         selected: Boolean,
         allSelected: Boolean,
         asc: Boolean,
-        isVisitor: Boolean,
+        security: Security,
         sortBy: String?,
     ): List<ActionMenuItem> {
         return if (SectionType.isRoom(section) || section == SectionType.CLOUD_ARCHIVE_ROOM) {
             if (root) {
                 getRoomRootItems(section, selected, allSelected, asc, sortBy)
             } else {
-                getRoomItems(selected, empty, allSelected, asc, sortBy, currentRoom)
+                getRoomItems(selected, empty, allSelected, asc, sortBy, currentRoom, security)
             }
         } else {
             getDocsItems(section, selected, allSelected, asc, sortBy)
@@ -174,23 +175,24 @@ object ActionMenuItemsFactory {
         allSelected: Boolean,
         asc: Boolean,
         sortBy: String?,
-        currentRoom: Boolean
+        currentRoom: Boolean,
+        security: Security,
     ) = mutableListOf<ActionMenuItem>().apply {
         val showCopyLink = !currentRoom && !selected
         if (!selected) {
             add(
-               ActionMenuItem.ManageRoom.get(
-                   listOf(
-                       ActionMenuItem.Info,
-                       ActionMenuItem.EditRoom,
-                       ActionMenuItem.Invite,
-                       ActionMenuItem.CopyLink(true),
-                       ActionMenuItem.Divider,
-                       ActionMenuItem.Archive,
-                       ActionMenuItem.Download,
-                       ActionMenuItem.LeaveRoom
-                   )
-               )
+                ActionMenuItem.ManageRoom.get(
+                    listOfNotNull(
+                        ActionMenuItem.Info,
+                        ActionMenuItem.EditRoom.takeIf { security.editRoom },
+                        ActionMenuItem.Invite.takeIf { security.editRoom },
+                        ActionMenuItem.CopyLink(true),
+                        ActionMenuItem.Divider,
+                        ActionMenuItem.Archive.takeIf { security.editRoom },
+                        ActionMenuItem.Download,
+                        ActionMenuItem.LeaveRoom
+                    )
+                )
             )
         }
         if (!empty) {
