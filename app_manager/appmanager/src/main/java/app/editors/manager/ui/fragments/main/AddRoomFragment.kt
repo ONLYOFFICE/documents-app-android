@@ -284,6 +284,7 @@ class AddRoomFragment : BaseFragment() {
                             onClick = { userId -> userListViewModel.setOwner(userId, leave = false) },
                             onBack = navController::popBackStackWhenResumed,
                             onSuccess = {
+                                navController.popBackStackWhenResumed()
                                 viewModel.setOwner(it)
                                 requireActivity().supportFragmentManager.setFragmentResult(
                                     TAG_RESULT,

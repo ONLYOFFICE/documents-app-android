@@ -103,10 +103,7 @@ fun UserListScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is UserListEffect.Error -> onSnackBar.invoke(effect.message)
-                is UserListEffect.Success -> onSuccess?.let {
-                    onSuccess.invoke(effect.user)
-                    onBack.invoke()
-                } ?: onBack.invoke()
+                is UserListEffect.Success -> onSuccess?.invoke(effect.user)
             }
         }
     }

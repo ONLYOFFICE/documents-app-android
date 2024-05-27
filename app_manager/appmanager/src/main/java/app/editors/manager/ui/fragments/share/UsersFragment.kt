@@ -21,6 +21,7 @@ import com.google.android.material.appbar.AppBarLayout
 import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
+import lib.toolkit.base.ui.activities.base.BaseActivity
 
 class UsersFragment : BaseAppFragment() {
 
@@ -64,8 +65,12 @@ class UsersFragment : BaseAppFragment() {
                     title = R.string.room_set_owner_title,
                     disableInvited = false,
                     onClick = { userId -> viewModel.setOwner(userId, leave = true) },
-                    onBack = ::onBackPressed,
-                    onSnackBar = { UiUtils.getSnackBar(requireActivity()).setText(it).show() }
+                    onBack = requireActivity()::finish,
+                    onSuccess = {
+                        requireActivity().setResult(BaseActivity.REQUEST_ACTIVITY_REFRESH)
+                        requireActivity().finish()
+                    },
+                    onSnackBar = { UiUtils.getSnackBar(requireActivity()).setText(it).show() },
                 )
             }
         }
