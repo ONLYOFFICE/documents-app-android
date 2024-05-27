@@ -728,7 +728,7 @@ object UiUtils {
                 "#%06X",
                 0xFFFFFF and ContextCompat.getColor(context, R.color.colorError)
             )
-        }'>$acceptTitle</font>"
+        }'>${acceptTitle?.capitalize()}</font>"
 
         MaterialAlertDialogBuilder(context, R.style.App_Dialog_Alert)
             .setTitle(title)

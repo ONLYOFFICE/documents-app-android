@@ -85,11 +85,7 @@ class DocsTrashFragment : DocsCloudFragment() {
             } else {
                 getString(R.string.dialogs_question_delete_all_title)
             },
-            description = if (isArchive) {
-                resources.getQuantityString(R.plurals.dialogs_question_message_to_trash, count)
-            } else {
-                resources.getQuantityString(R.plurals.dialogs_question_message_delete, count)
-            },
+            description = resources.getQuantityString(R.plurals.dialogs_question_message_delete, count),
             acceptTitle = getString(R.string.dialogs_question_accept_delete),
             cancelTitle = getString(R.string.dialogs_common_cancel_button),
             acceptErrorTint = true,

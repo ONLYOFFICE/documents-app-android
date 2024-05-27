@@ -850,16 +850,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun deleteRoom() {
         if (isSelectionMode && modelExplorerStack.countSelectedItems > 0) {
-            val ids = modelExplorerStack.selectedFolders.map {
-                it.id
-            }
             roomProvider?.let { provider ->
                 disposable.add(
-                    provider.deleteRoom(items = ids).subscribe({
-                        viewState.onDialogClose()
-                        viewState.onSnackBar(context.getString(R.string.room_delete_success))
-                        refresh()
-                    }) { fetchError(it) }
+                    provider.deleteRoom(items = modelExplorerStack.selectedFolders.map(CloudFolder::id))
+                        .subscribe({
+                            viewState.onDialogClose()
+                            viewState.onSnackBar(context.getString(R.string.room_delete_success))
+                            deselectAll()
+                            refresh()
+                        }) { fetchError(it) }
                 )
             }
         } else if (itemClicked != null) {
@@ -868,6 +867,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     provider.deleteRoom(itemClicked?.id ?: "").subscribe({
                         viewState.onDialogClose()
                         viewState.onSnackBar(context.getString(R.string.room_delete_success))
+                        refresh()
                     }) { fetchError(it) }
                 )
             }
