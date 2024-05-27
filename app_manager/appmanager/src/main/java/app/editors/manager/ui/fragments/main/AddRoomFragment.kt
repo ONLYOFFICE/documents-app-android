@@ -69,21 +69,26 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
+import app.editors.manager.app.shareApi
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.AddRoomItem
 import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
+import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.viewModels.main.AddRoomData
 import app.editors.manager.viewModels.main.AddRoomViewModel
 import app.editors.manager.viewModels.main.StorageState
+import app.editors.manager.viewModels.main.UserListMode
+import app.editors.manager.viewModels.main.UserListViewModel
 import app.editors.manager.viewModels.main.ViewState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -91,6 +96,7 @@ import com.bumptech.glide.integration.compose.placeholder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppScaffold
@@ -99,11 +105,13 @@ import lib.compose.ui.views.AppTextFieldListItem
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.ChipData
 import lib.compose.ui.views.ChipsTextField
+import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.TimeUtils
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.capitalize
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
@@ -111,7 +119,10 @@ import lib.toolkit.base.ui.fragments.base.BaseFragment
 import java.io.File
 
 private enum class Navigation(val route: String) {
-    Main("MainScreen"), Select("SelectScreen"), Folder("FolderScreen")
+    Main("MainScreen"),
+    Select("SelectScreen"),
+    Folder("FolderScreen"),
+    ChangeOwner("ChangeOwnerScreen")
 }
 
 class AddRoomFragment : BaseFragment() {
@@ -132,7 +143,7 @@ class AddRoomFragment : BaseFragment() {
             fragmentManager: FragmentManager,
             roomType: Int,
             roomInfo: Item? = null,
-            isCopy: Boolean = false
+            isCopy: Boolean = false,
         ) {
             FragmentUtils.showFragment(
                 fragmentManager = fragmentManager,
@@ -161,7 +172,7 @@ class AddRoomFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         return ComposeView(requireContext()).apply {
             layoutParams =
@@ -173,11 +184,12 @@ class AddRoomFragment : BaseFragment() {
         (view as ComposeView).setContent {
             navController = rememberNavController()
             val roomType = remember { arguments?.getInt(TAG_ROOM_TYPE) }
+            val room = remember { arguments?.getSerializableExt<CloudFolder>(TAG_ROOM_INFO) }
             val viewModel = viewModel {
                 AddRoomViewModel(
                     context = requireActivity().application,
                     roomProvider = requireContext().roomProvider,
-                    roomInfo = arguments?.getSerializableExt(TAG_ROOM_INFO),
+                    roomInfo = room,
                     isCopy = arguments?.getBoolean(TAG_COPY) ?: false
                 )
             }
@@ -198,8 +210,12 @@ class AddRoomFragment : BaseFragment() {
                         "${Navigation.Main.route}/{roomType}",
                         arguments = listOf(navArgument("roomType") { type = NavType.IntType })
                     ) {
-                        val type = it.arguments?.getInt("roomType", roomType ?: -1) ?: -1
-                        viewModel.setType(type)
+                        val type = remember { it.arguments?.getInt("roomType", roomType ?: -1) }
+
+                        LaunchedEffect(Unit) {
+                            viewModel.setType(type ?: -1)
+                        }
+
                         MainScreen(
                             isEdit = isEdit,
                             navController = navController,
@@ -210,6 +226,7 @@ class AddRoomFragment : BaseFragment() {
                             onBackPressed = ::onBackPressed,
                             onCreateNewFolder = viewModel::setCreateNewFolder,
                             onLocationClick = { navController.navigate("${Navigation.Folder.route}/$it") },
+                            onSetOwnerClick = { navController.navigate(Navigation.ChangeOwner.route) },
                             create = { type1, name, image, tags ->
                                 if (isEdit) {
                                     viewModel.edit(name, tags)
@@ -220,7 +237,8 @@ class AddRoomFragment : BaseFragment() {
                             created = { id ->
                                 requireActivity().supportFragmentManager.setFragmentResult(
                                     TAG_RESULT,
-                                    Bundle(1).apply { putString("id", id) })
+                                    Bundle(1).apply { putString("id", id) }
+                                )
                                 onBackPressed()
                             },
                             onStorageConnect = { isConnect ->
@@ -249,6 +267,34 @@ class AddRoomFragment : BaseFragment() {
                             onAccept = viewModel::setStorageLocation
                         )
                     }
+                    composable(route = Navigation.ChangeOwner.route) {
+                        val userListViewModel = UserListViewModel(
+                            roomId = room?.id.orEmpty(),
+                            roomType = roomType,
+                            roomOwnerId = room?.createdBy?.id.orEmpty(),
+                            mode = UserListMode.ChangeOwner,
+                            shareService = requireContext().shareApi,
+                            roomProvider = requireContext().roomProvider,
+                            resourcesProvider = ResourcesProvider(requireContext())
+                        )
+                        UserListScreen(
+                            viewModel = userListViewModel,
+                            title = R.string.room_set_owner_title,
+                            disableInvited = false,
+                            onClick = { userId -> userListViewModel.setOwner(userId, leave = false) },
+                            onBack = navController::popBackStackWhenResumed,
+                            onSuccess = {
+                                viewModel.setOwner(it)
+                                requireActivity().supportFragmentManager.setFragmentResult(
+                                    TAG_RESULT,
+                                    Bundle.EMPTY
+                                )
+                            },
+                            onSnackBar = {
+                                UiUtils.getSnackBar(requireActivity()).setText(it).show()
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -270,7 +316,8 @@ private fun MainScreen(
     created: (String) -> Unit = {},
     onLocationClick: (String) -> Unit,
     onCreateNewFolder: (Boolean) -> Unit,
-    onStorageConnect: (Boolean) -> Unit
+    onStorageConnect: (Boolean) -> Unit,
+    onSetOwnerClick: () -> Unit,
 ) {
     val keyboardController = LocalFocusManager.current
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
@@ -392,6 +439,15 @@ private fun MainScreen(
                     },
                     onChipDelete = { tags.remove(it) }
                 )
+
+                if (isEdit) {
+                    AppArrowItem(
+                        title = R.string.share_access_room_owner,
+                        option = roomState.owner.displayName,
+                        onClick = onSetOwnerClick
+                    )
+                }
+
                 if (roomState.type == ApiContract.RoomType.PUBLIC_ROOM) {
                     ThirdPartyBlock(
                         isEdit = isEdit,
@@ -430,7 +486,7 @@ fun ThirdPartyBlock(
     roomName: State<String>,
     onLocationClick: (String) -> Unit,
     onCreateNewFolder: (Boolean) -> Unit,
-    onStorageConnect: (Boolean) -> Unit
+    onStorageConnect: (Boolean) -> Unit,
 ) {
     Column {
         val storageName = state?.providerKey?.let(StorageUtils::getStorageTitle)
@@ -533,7 +589,7 @@ private fun ChooseImageBottomView(
     scope: CoroutineScope,
     state: ModalBottomSheetState,
     imageUri: Any? = null,
-    uriCallback: (Uri?) -> Unit
+    uriCallback: (Uri?) -> Unit,
 ) {
     val context = LocalContext.current
     var photo: Uri? = null
@@ -654,6 +710,7 @@ private fun MainScreenPreview() {
             viewState = ViewState.None,
             roomState = AddRoomData(
                 name = "name",
+                owner = User(displayName = "Owner Name"),
                 type = ApiContract.RoomType.PUBLIC_ROOM,
                 storageState = StorageState(
                     id = "",
@@ -664,7 +721,8 @@ private fun MainScreenPreview() {
             ),
             onCreateNewFolder = {},
             onStorageConnect = { _ -> },
-            onLocationClick = {}
+            onLocationClick = {},
+            onSetOwnerClick = {}
         )
     }
 }

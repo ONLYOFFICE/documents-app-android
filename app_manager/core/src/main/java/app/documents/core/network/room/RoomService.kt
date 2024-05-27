@@ -2,6 +2,7 @@ package app.documents.core.network.room
 
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.manager.models.response.ResponseExplorer
 import app.documents.core.network.room.models.RequestAddTags
@@ -181,7 +182,7 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @POST("api/" + ApiContract.API_VERSION + "/files/owner")
-    suspend fun setOwner(@Body body: RequestRoomOwner): Response<ResponseBody>
+    suspend fun setOwner(@Body body: RequestRoomOwner): app.documents.core.network.BaseResponse<List<CloudFolder>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.PathPart
@@ -31,15 +32,16 @@ data class StorageState(
     val providerKey: String,
     val providerId: Int? = null,
     val location: String?,
-    val createAsNewFolder: Boolean = false
+    val createAsNewFolder: Boolean = false,
 )
 
 data class AddRoomData(
     val type: Int,
     val name: String = "",
+    val owner: User = User(),
     val tags: MutableList<ChipData> = mutableListOf(),
     val imageUri: Any? = null,
-    val storageState: StorageState? = null
+    val storageState: StorageState? = null,
 )
 
 sealed class ViewState {
@@ -53,7 +55,7 @@ class AddRoomViewModel(
     private val context: Application,
     private val roomProvider: RoomProvider,
     private val roomInfo: CloudFolder? = null,
-    private val isCopy: Boolean = false
+    private val isCopy: Boolean = false,
 ) : AndroidViewModel(application = context) {
 
     private val _roomState: MutableStateFlow<AddRoomData> = MutableStateFlow(
@@ -61,6 +63,7 @@ class AddRoomViewModel(
             AddRoomData(
                 type = if (roomInfo.roomType == -1) 2 else roomInfo.roomType,
                 name = roomInfo.title,
+                owner = roomInfo.createdBy.run { User(id = id, displayName = displayName) },
                 tags = roomInfo.tags.map { ChipData(it) }.toMutableList(),
                 imageUri = if (roomInfo.logo?.medium?.isNotEmpty() == true) {
                     ApiContract.SCHEME_HTTPS + context.accountOnline?.portalUrl + roomInfo.logo!!.medium
@@ -286,5 +289,9 @@ class AddRoomViewModel(
                 )
             )
         }
+    }
+
+    fun setOwner(user: User) {
+        _roomState.update { it.copy(owner = user) }
     }
 }
