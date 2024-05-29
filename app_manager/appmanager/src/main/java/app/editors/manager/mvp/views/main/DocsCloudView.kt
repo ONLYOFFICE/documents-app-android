@@ -34,7 +34,7 @@ interface DocsCloudView : DocsBaseView {
     fun onCreateRoom(type: Int = 2, item: Item, isCopy: Boolean = false)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onLeaveRoomDialog(@StringRes title: Int, @StringRes question: Int, tag: String, isOwner: Boolean)
+    fun onLeaveRoomDialog(@StringRes title: Int, @StringRes question: Int, isOwner: Boolean)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showSetOwnerFragment(cloudFolder: CloudFolder)
