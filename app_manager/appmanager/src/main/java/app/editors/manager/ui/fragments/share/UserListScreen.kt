@@ -90,19 +90,20 @@ fun UserListScreen(
     title: Int,
     withGroups: Boolean = false,
     closeable: Boolean = true,
+    disableInvited: Boolean = false,
     onClick: (id: String) -> Unit,
     onBack: () -> Unit,
     onSnackBar: (String) -> Unit,
-    onSuccess: (() -> Unit)? = null,
-    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> }
+    onSuccess: ((User) -> Unit)? = null,
+    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> },
 ) {
     val state by viewModel.viewState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.effect.collect {
-            when (it) {
-                is UserListEffect.Error -> onSnackBar.invoke(it.message)
-                UserListEffect.Success -> onBack.invoke()
+    LaunchedEffect(viewModel) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is UserListEffect.Error -> onSnackBar.invoke(effect.message)
+                is UserListEffect.Success -> onSuccess?.invoke(effect.user)
             }
         }
     }
@@ -112,6 +113,7 @@ fun UserListScreen(
         title = title,
         withGroups = withGroups,
         closeable = closeable,
+        disableInvited = disableInvited,
         onClick = onClick,
         onSearch = viewModel::search,
         onBack = onBack,
@@ -127,11 +129,12 @@ private fun MainScreen(
     title: Int,
     withGroups: Boolean = false,
     closeable: Boolean = true,
+    disableInvited: Boolean = false,
     onClick: (id: String) -> Unit,
     onSearch: (String) -> Unit,
     onBack: () -> Unit,
     onSnackBar: (String) -> Unit,
-    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> }
+    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> },
 ) {
     val searchState = remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -214,7 +217,7 @@ private fun MainScreen(
                                                     name = user.displayName,
                                                     subtitle = user.email.orEmpty(),
                                                     avatar = user.avatarMedium,
-                                                    shared = user.shared,
+                                                    shared = disableInvited && user.shared,
                                                     selected = state.selected.contains(user.id),
                                                     onClick = { onClick.invoke(user.id) },
                                                 )
@@ -272,7 +275,7 @@ private fun LazyItemScope.UserItem(
     withLetter: Boolean,
     avatar: String?,
     subtitle: String?,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -374,7 +377,7 @@ private fun LazyItemScope.UserItem(
 @Composable
 private fun SearchAppBar(
     onTextChange: (String) -> Unit,
-    onClose: () -> Unit
+    onClose: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
     val searchValueState = remember { mutableStateOf("") }
@@ -446,6 +449,7 @@ private fun PreviewMainWithBottom() {
                     RoomGroup("", "group 1")
                 )
             ),
+            disableInvited = true,
             withGroups = true,
             closeable = false,
             onClick = { user -> if (selected.contains(user)) selected.remove(user) else selected.add(user) },

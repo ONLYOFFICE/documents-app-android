@@ -32,21 +32,28 @@ data class UserListState(
     val users: List<User> = emptyList(),
     val groups: List<RoomGroup> = emptyList(),
     val access: Int? = null,
-    val selected: List<String> = emptyList()
+    val selected: List<String> = emptyList(),
 )
 
 sealed class UserListEffect {
-    data object Success : UserListEffect()
+    data class Success(val user: User) : UserListEffect()
     data class Error(val message: String) : UserListEffect()
+}
+
+sealed class UserListMode {
+    data object Invite : UserListMode()
+    data object ChangeOwner : UserListMode()
 }
 
 @OptIn(FlowPreview::class)
 class UserListViewModel(
     private val roomId: String,
+    private val roomOwnerId: String = "",
     roomType: Int? = null,
+    private val mode: UserListMode,
     private val shareService: ShareService,
     private val roomProvider: RoomProvider,
-    private val resourcesProvider: ResourcesProvider
+    private val resourcesProvider: ResourcesProvider,
 ) : ViewModel() {
 
     private val _viewState: MutableStateFlow<UserListState> = MutableStateFlow(
@@ -72,8 +79,18 @@ class UserListViewModel(
                         val users = async {
                             shareService.getRoomUsers(roomId, getOptions(searchValue))
                                 .response
-                                .filter { !it.isOwner }
-                                .map { it.copy(avatarMedium = App.getApp().accountOnline?.portal?.urlWithScheme + it.avatarMedium) }
+                                .filterNot {
+                                    when (mode) {
+                                        UserListMode.Invite -> it.isOwner
+                                        UserListMode.ChangeOwner -> it.isVisitor || it.id == roomOwnerId
+                                    }
+                                }
+                                .map {
+                                    it.copy(
+                                        avatarMedium = App.getApp().accountOnline?.portal?.urlWithScheme +
+                                                it.avatarMedium
+                                    )
+                                }
                         }
 
                         val groups = async { shareService.getRoomGroups(roomId, getOptions(searchValue)).response }
@@ -101,12 +118,22 @@ class UserListViewModel(
         _viewState.update { it.copy(selected = selected) }
     }
 
-    fun setOwner(userId: String) {
+    fun setOwner(userId: String, leave: Boolean) {
         viewModelScope.launch {
             _viewState.update { it.copy(requestLoading = true) }
             try {
-                roomProvider.setRoomOwner(roomId, userId, App.getApp().accountOnline?.id ?: "")
-                _effect.emit(UserListEffect.Success)
+                val room = roomProvider.setRoomOwner(roomId, userId)
+                if (leave) {
+                    roomProvider.leaveRoom(roomId, App.getApp().accountOnline?.id.orEmpty())
+                }
+                _effect.emit(
+                    UserListEffect.Success(
+                        User(
+                            id = room.createdBy.id,
+                            displayName = room.createdBy.displayName
+                        )
+                    )
+                )
             } catch (error: Throwable) {
                 val errorMessage = error.message ?: resourcesProvider.getString(R.string.errors_unknown_error)
                 _effect.emit(UserListEffect.Error(errorMessage))

@@ -3,6 +3,7 @@ package app.documents.core.providers
 import android.graphics.Bitmap
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.room.models.RequestAddTags
 import app.documents.core.network.room.models.RequestArchive
@@ -30,7 +31,6 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
@@ -172,7 +172,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         denyDownload: Boolean?,
         expirationDate: String?,
         password: String?,
-        title: String?
+        title: String?,
     ): ExternalLink {
         val request = RequestUpdateExternalLink(
             access = access ?: ApiContract.ShareCode.READ,
@@ -194,7 +194,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         denyDownload: Boolean,
         expirationDate: String?,
         password: String?,
-        title: String
+        title: String,
     ): ExternalLink {
         val request = RequestCreateExternalLink(
             denyDownload = denyDownload,
@@ -257,16 +257,13 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         }
     }
 
-    suspend fun setRoomOwner(id: String, userId: String, ownerId: String) {
-        val resultSetOwner = roomService.setOwner(RequestRoomOwner(userId, listOf(id)))
-        delay(200)
-        val resultShare = roomService.shareRoom(
-            id, RequestRoomShare(
-                listOf(Invitation(id = ownerId, access = ApiContract.ShareCode.NONE))
-            )
-        )
-        if (!resultSetOwner.isSuccessful) throw HttpException(resultSetOwner)
-        if (!resultShare.isSuccessful) throw HttpException(resultShare)
+    suspend fun setRoomOwner(id: String, userId: String): CloudFolder {
+        val result = roomService.setOwner(RequestRoomOwner(userId, listOf(id)))
+        return result.response[0]
+    }
+
+    suspend fun leaveRoom(roomId: String, userId: String) {
+        inviteById(roomId, mapOf(userId to ApiContract.ShareCode.NONE))
     }
 
     suspend fun inviteByEmail(roomId: String, emails: Map<String, Int>) {

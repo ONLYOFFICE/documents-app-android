@@ -51,6 +51,7 @@ import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.InviteAccessViewModel
 import app.editors.manager.viewModels.main.InviteUserState
 import app.editors.manager.viewModels.main.InviteUserViewModel
+import app.editors.manager.viewModels.main.UserListMode
 import app.editors.manager.viewModels.main.UserListViewModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -186,6 +187,7 @@ fun InviteUsersScreen(
             composable(Screens.UserList.name) {
                 val userListViewModel = viewModel {
                     UserListViewModel(
+                        mode = UserListMode.Invite,
                         roomId = roomId,
                         roomType = roomType,
                         shareService = context.shareApi,
@@ -196,6 +198,7 @@ fun InviteUsersScreen(
                 UserListScreen(
                     title = R.string.filter_toolbar_users_title,
                     closeable = false,
+                    disableInvited = true,
                     withGroups = roomType != ApiContract.RoomType.PUBLIC_ROOM,
                     viewModel = userListViewModel,
                     onClick = userListViewModel::toggleSelect,
