@@ -391,6 +391,14 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    override fun onPlaceholder(type: PlaceholderViews.Type) {
+        if (type == PlaceholderViews.Type.EMPTY && presenter.isRecentViaLinkSection()) {
+            super.onPlaceholder(PlaceholderViews.Type.EMPTY_RECENT_VIA_LINK)
+        } else {
+            super.onPlaceholder(type)
+        }
+    }
+
     override fun onUpdateFavoriteItem() {
         if (section == ApiContract.SectionType.CLOUD_FAVORITES) explorerAdapter?.removeItem(presenter.itemClicked)
         else super.onUpdateFavoriteItem()

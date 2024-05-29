@@ -718,6 +718,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {
+        hideDialog()
         showMediaActivity(explorer, isWebDAv) {
             // Stub
         }

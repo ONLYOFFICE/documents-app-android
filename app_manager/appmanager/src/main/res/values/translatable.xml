@@ -374,17 +374,20 @@
     <string name="placeholder_loading_groups">Loading groups…</string>
     <string name="placeholder_other_accounts">No other accounts here yet</string>
     <string name="placeholder_empty_folder">No docs here yet</string>
-    <string name="placeholder_empty_folder_desc">Files and folders uploaded by admins will appeared here</string>
+    <string name="placeholder_empty_trash_desc">All deleted files are moved to \'Trash\'. Restore files deleted by mistake or delete them permanently. Files in \'Trash\' are automatically deleted after 30 days. Please note, that the files deleted from the \'Trash\' cannot be restored any longer</string>
     <string name="placeholder_no_users_found">No users found</string>
     <string name="placeholder_no_users_found_desc">No users match your search. Please adjust your search parameters or clear the search field to view the full list of users</string>
     <string name="placeholder_no_members_found">No members found</string>
     <string name="placeholder_no_members_found_desc">You can add new team members manually or invite them via link</string>
     <string name="placeholder_no_rooms">Welcome to DocSpace!</string>
     <string name="placeholder_no_rooms_desc">Please create the first room</string>
+    <string name="placeholder_no_rooms_visitor_desc">Rooms shared with you will appear here</string>
     <string name="placeholder_empty_archive">No archived rooms here yet</string>
     <string name="placeholder_empty_archive_desc">You can archive rooms you don’t use and restore them in your DocSpace at any moment or delete them permanently. These rooms will appear here</string>
     <string name="placeholder_no_search_result">No search result</string>
     <string name="placeholder_no_search_result_desc">No results matching your search could be found. Please try another phrase</string>
+    <string name="placeholder_empty_room_visitor_desc">Files and folders uploaded by admins will appeared here</string>
+    <string name="placeholder_empty_recent_via_link_desc">Here you will find a list of the recently opened files shared with you via an external link</string>
 
     <!-- Time marks-->
     <string name="list_headers_folder">Folders</string>
