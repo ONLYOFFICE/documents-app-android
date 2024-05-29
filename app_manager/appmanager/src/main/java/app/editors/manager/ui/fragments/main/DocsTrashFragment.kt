@@ -5,12 +5,11 @@ import android.view.View
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.editors.manager.R
+import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
-import app.editors.manager.ui.popup.MainPopupItem
-import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
@@ -115,29 +114,12 @@ class DocsTrashFragment : DocsCloudFragment() {
         } else super.getFilters()
     }
 
-    override val mainActionBarClickListener: (MainPopupItem) -> Unit = { item ->
-        if (item == MainPopupItem.EmptyTrash) {
-            showDeleteDialog(
-                count = -1,
-                tag = DocsBasePresenter.TAG_DIALOG_BATCH_EMPTY
-            )
-        } else super.mainActionBarClickListener(item)
-    }
-
-    override val selectActionBarClickListener: (SelectPopupItem) -> Unit = { item ->
+    override val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
-            SelectPopupItem.Operation.Restore -> showRestoreDialog()
-            SelectPopupItem.Operation.Delete -> presenter.delete()
-            else -> super.selectActionBarClickListener(item)
+            ActionMenuItem.Restore -> showRestoreDialog()
+            ActionMenuItem.Delete -> presenter.delete()
+            else -> super.actionMenuClickListener(item)
         }
-    }
-
-    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        super.showSelectActionPopup(
-            SelectPopupItem.Operation.Move,
-            SelectPopupItem.Operation.Copy,
-            SelectPopupItem.Download
-        )
     }
 
     private fun showRestoreDialog() {

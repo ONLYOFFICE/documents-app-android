@@ -17,8 +17,6 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
-import app.editors.manager.ui.popup.MainPopupItem
-import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.managers.utils.FolderChooser
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -182,14 +180,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     override val presenter: BaseStorageDocsPresenter<out BaseStorageDocsView>
         get() = getDocsPresenter()
-
-    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
-        super.showMainActionPopup(MainPopupItem.SortBy.Type, MainPopupItem.SortBy.Author)
-    }
-
-    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        super.showSelectActionPopup(SelectPopupItem.Operation.Restore)
-    }
 
     override fun onFileUploadPermission() {
         showMultipleFilePickerActivity { uris ->

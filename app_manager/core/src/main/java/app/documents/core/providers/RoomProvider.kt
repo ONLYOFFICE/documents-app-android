@@ -291,4 +291,8 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
     suspend fun getGroupUsers(roomId: String, groupId: String): List<GroupShare> {
         return roomService.getGroupUsers(roomId, groupId).response
     }
+
+    suspend fun getExternalLink(roomId: String): String {
+        return roomService.getExternalLink(roomId).response.sharedTo.shareLink
+    }
 }

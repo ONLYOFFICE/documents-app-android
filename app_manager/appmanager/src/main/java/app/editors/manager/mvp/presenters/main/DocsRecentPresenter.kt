@@ -23,8 +23,6 @@ import app.editors.manager.managers.providers.DropboxStorageHelper
 import app.editors.manager.managers.providers.GoogleDriveStorageHelper
 import app.editors.manager.managers.providers.OneDriveStorageHelper
 import app.editors.manager.mvp.views.main.DocsRecentView
-import app.editors.manager.ui.popup.MainPopup
-import app.editors.manager.ui.popup.MainPopupItem
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -450,15 +448,12 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         // stub
     }
 
-    override fun sortBy(type: MainPopupItem.SortBy): Boolean {
-        val isRepeatedTap = MainPopup.getSortPopupItem(preferenceTool.sortBy) == type
-        preferenceTool.sortBy = type.value
-        if (isRepeatedTap) {
-            reverseSortOrder()
-        }
+    override fun sortBy(sortValue: String): Boolean {
+        val isRepeatedTap = preferenceTool.sortBy == sortValue
+        preferenceTool.sortBy = sortValue
+        if (isRepeatedTap) reverseSortOrder()
         presenterScope.launch(Dispatchers.IO) {
-            val list = recentDataSource.getRecentList().sort(type.value)
-
+            val list = recentDataSource.getRecentList().sort(sortValue)
             withContext(Dispatchers.Main) {
                 updateFiles(list)
             }

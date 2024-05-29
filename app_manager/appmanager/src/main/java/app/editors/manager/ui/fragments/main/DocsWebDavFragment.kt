@@ -16,8 +16,6 @@ import app.editors.manager.mvp.views.main.DocsWebDavView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
-import app.editors.manager.ui.popup.MainPopupItem
-import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -101,14 +99,6 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
             }
             mainActivity?.showAccount(false)
         }
-    }
-
-    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
-        super.showMainActionPopup(MainPopupItem.SortBy.Size)
-    }
-
-    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        super.showSelectActionPopup(SelectPopupItem.Operation.Restore)
     }
 
     override fun onListEnd() {}

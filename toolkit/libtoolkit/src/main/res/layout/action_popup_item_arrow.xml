@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/popup_main_menu_item_width"
     android:layout_height="@dimen/popup_main_menu_item_height"
@@ -7,7 +8,6 @@
     android:clickable="true"
     android:focusable="true"
     android:gravity="center"
-    android:orientation="horizontal"
     android:paddingHorizontal="@dimen/default_margin_large"
     tools:theme="@style/AppBaseTheme">
 
@@ -20,12 +20,10 @@
         tools:text="Date" />
 
     <ImageView
-        android:id="@+id/order"
+        style="@style/Widget.Common.ImageView.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_sort_order_arrow_selector"
-        android:tint="@color/colorOnSurface"
-        android:visibility="gone" />
+        android:src="@drawable/ic_arrow_right"
+        tools:ignore="ContentDescription" />
 
 </LinearLayout>
-
