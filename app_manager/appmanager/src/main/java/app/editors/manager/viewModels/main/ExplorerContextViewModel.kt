@@ -66,6 +66,12 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Delete(state)
             )
 
+            state.section is ApiContract.Section.Trash && state.provider == PortalProvider.Cloud.DocSpace -> listOf(
+                ExplorerContextItem.Header(state),
+                ExplorerContextItem.Restore,
+                ExplorerContextItem.Delete(state)
+            )
+
             else -> listOf(
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.Edit(state),
