@@ -125,7 +125,7 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
         when (tag) {
-            "leave" -> {
+            TAG_LEAVE_ROOM -> {
                 cloudPresenter.leaveRoom()
             }
             else -> super.onAcceptClick(dialogs, value, tag)
@@ -175,8 +175,9 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     companion object {
 
-        val TAG = DocsRoomFragment::class.java.simpleName
+        val TAG: String = DocsRoomFragment::class.java.simpleName
         const val KEY_RESULT_ROOM_ID = "key_result_room_id"
+        const val TAG_LEAVE_ROOM = "tag_leave_room"
 
         fun newInstance(section: Int, rootPath: String): DocsCloudFragment {
             return DocsRoomFragment().apply {

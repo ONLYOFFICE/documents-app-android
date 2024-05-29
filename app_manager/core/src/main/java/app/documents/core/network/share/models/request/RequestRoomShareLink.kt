@@ -9,25 +9,26 @@ data class RequestRoomShare(
     val message: String = ""
 )
 
-interface RequestInvitation
+@Serializable
+open class RequestInvitation
 
 @Serializable
 data class Invitation(
     val email: String? = null,
     val id: String? = null,
     val access: Int
-) : RequestInvitation
+) : RequestInvitation()
 
 @Serializable
 data class EmailInvitation(
     val email: String,
     val access: Int
-) : RequestInvitation
+) : RequestInvitation()
 
 
 @Serializable
 data class UserIdInvitation(
     val id: String,
     val access: Int
-) : RequestInvitation
+) : RequestInvitation()
 

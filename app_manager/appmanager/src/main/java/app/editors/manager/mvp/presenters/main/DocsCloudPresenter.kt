@@ -926,7 +926,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onLeaveRoomDialog(
                 R.string.leave_room_title,
                 if (isItemOwner) R.string.leave_room_owner_desc else R.string.leave_room_desc,
-                "leave",
                 isItemOwner
             )
         }
