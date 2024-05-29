@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/popup_main_menu_item_width"
     android:layout_height="@dimen/popup_main_menu_item_height"
-    android:background="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
     android:gravity="center"
     android:orientation="horizontal"
-    android:paddingHorizontal="@dimen/default_margin_large"
+    android:paddingEnd="@dimen/default_margin_large"
+    tools:ignore="RtlSymmetry"
     tools:theme="@style/AppBaseTheme">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/backButton"
+        style="@style/Widget.Common.Button.IconButton"
+        android:layout_margin="12dp"
+        app:icon="@drawable/ic_back"
+        app:iconTint="@color/colorOnSurface" />
 
     <TextView
         android:id="@+id/title"
@@ -18,14 +24,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         tools:text="Date" />
-
-    <ImageView
-        android:id="@+id/order"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_sort_order_arrow_selector"
-        android:tint="@color/colorOnSurface"
-        android:visibility="gone" />
 
 </LinearLayout>
 

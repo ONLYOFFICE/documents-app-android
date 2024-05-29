@@ -744,6 +744,7 @@
     <string name="room_placeholder_created_room_title">Room created!</string>
     <string name="room_placeholder_created_room_subtitle">Create new folders to organize your files.</string>
     <string name="room_recent_via_link">Accessible via link</string>
+    <string name="room_manage_room">Manage room</string>
 
     <plurals name="rooms_restore_title">
         <item quantity="one">Restore room?</item>

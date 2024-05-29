@@ -108,6 +108,7 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
                 binding.badge.isVisible = false
             }
         } else {
+            binding.badge.isVisible = false
             textView.isVisible = false
             imageView.isVisible = true
             imageView.setFolderIcon(folder, isRoot)

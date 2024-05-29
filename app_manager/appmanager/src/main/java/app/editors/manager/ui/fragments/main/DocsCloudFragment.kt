@@ -40,10 +40,7 @@ import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
-import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
-import app.editors.manager.ui.popup.MainPopupItem
-import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import lib.toolkit.base.managers.tools.LocalContentTools
@@ -214,7 +211,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             ExplorerContextItem.Share -> showShareFragment()
             ExplorerContextItem.Location -> cloudPresenter.openLocation()
             ExplorerContextItem.CreateRoom -> cloudPresenter.createRoomFromFolder()
-            ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             ExplorerContextItem.ShareDelete -> showQuestionDialog(
                 title = getString(R.string.dialogs_question_share_remove),
                 string = "${cloudPresenter.itemClicked?.title}",
@@ -248,18 +244,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             MoveCopyDialog.TAG_SKIP -> operationType = ApiContract.Operation.SKIP
         }
         cloudPresenter.transfer(operationType, action != MoveCopyDialog.ACTION_COPY)
-    }
-
-    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        super.showSelectActionPopup(*excluded.toMutableList().apply {
-            if (!cloudPresenter.isContextItemEditable) add(SelectPopupItem.Operation.Move)
-        }.toTypedArray())
-    }
-
-    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
-        if (requireContext().accountOnline?.isPersonal() == true) {
-            super.showMainActionPopup(MainPopupItem.SortBy.Author)
-        } else super.showMainActionPopup(*excluded)
     }
 
     override fun onFileWebView(file: CloudFile, isEditMode: Boolean) {
@@ -486,13 +470,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     private fun disableMenu() {
         menu?.let {
             deleteItem?.isEnabled = false
-        }
-    }
-
-    private fun showRoomInfoFragment() {
-        (presenter.itemClicked as? CloudFolder)?.let { room ->
-            RoomInfoFragment.newInstance(room)
-                .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
         }
     }
 

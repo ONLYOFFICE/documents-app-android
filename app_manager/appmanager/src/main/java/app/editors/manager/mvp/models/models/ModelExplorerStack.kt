@@ -1,11 +1,11 @@
 package app.editors.manager.mvp.models.models
 
-import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
-import java.util.*
+import java.util.LinkedList
 
 class ModelExplorerStack {
     private val navigationStack: LinkedList<ExplorerStack> = LinkedList()
@@ -18,6 +18,14 @@ class ModelExplorerStack {
 
     fun previous(): Explorer? {
         return previous?.explorer
+    }
+
+    fun popToRoot(): Explorer? {
+        return navigationStack.apply {
+            val first = navigationStack.first
+            clear()
+            add(first)
+        }.last?.explorer
     }
 
     fun addStack(explorer: Explorer?) {

@@ -118,6 +118,15 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
+    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/link")
+    suspend fun getExternalLink(
+        @Path("id") id: String,
+    ): app.documents.core.network.BaseResponse<ExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
     @GET("api/" + ApiContract.API_VERSION + "/files/tags")
     suspend fun getTags(): ResponseTags
 
@@ -174,7 +183,7 @@ interface RoomService {
     @Multipart
     @POST("api/" + ApiContract.API_VERSION + "/files/logos")
     suspend fun uploadLogo(
-        @Part part: MultipartBody.Part
+        @Part part: MultipartBody.Part,
     ): Response<ResponseBody>
 
     @Headers(
@@ -205,7 +214,7 @@ interface RoomService {
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
     suspend fun removeRoomInviteLink(
         @Path("id") id: String,
-        @Body request: RequestRemoveInviteLink
+        @Body request: RequestRemoveInviteLink,
     ): app.documents.core.network.BaseResponse<ExternalLink?>
 
     @Headers(
@@ -215,7 +224,7 @@ interface RoomService {
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
     suspend fun addRoomInviteLink(
         @Path("id") id: String,
-        @Body request: RequestAddInviteLink
+        @Body request: RequestAddInviteLink,
     ): app.documents.core.network.BaseResponse<ExternalLink>
 
     @Headers(
@@ -225,7 +234,7 @@ interface RoomService {
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
     suspend fun updateRoomSharedLink(
         @Path("id") id: String,
-        @Body request: RequestUpdateExternalLink
+        @Body request: RequestUpdateExternalLink,
     ): Response<ResponseUpdateExternalLink>
 
     @Headers(
@@ -235,7 +244,7 @@ interface RoomService {
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links")
     suspend fun createRoomSharedLink(
         @Path("id") id: String,
-        @Body request: RequestCreateExternalLink
+        @Body request: RequestCreateExternalLink,
     ): Response<ResponseUpdateExternalLink>
 
     @Headers(
@@ -245,7 +254,7 @@ interface RoomService {
     @PUT("api/" + ApiContract.API_VERSION + "/files/file/{id}/links")
     suspend fun createSharedLink(
         @Path("id") id: String,
-        @Body body: RequestCreateSharedLink
+        @Body body: RequestCreateSharedLink,
     ): app.documents.core.network.BaseResponse<ExternalLink>
 
     @Headers(
@@ -262,7 +271,7 @@ interface RoomService {
     @PUT("api/" + ApiContract.API_VERSION + "/files/file/{id}/links")
     suspend fun updateSharedLink(
         @Path("id") id: String,
-        @Body body: RequestUpdateSharedLink
+        @Body body: RequestUpdateSharedLink,
     ): app.documents.core.network.BaseResponse<ExternalLink>
 
     @Headers(
@@ -286,7 +295,7 @@ interface RoomService {
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share")
     suspend fun shareRoom(
         @Path(value = "id") id: String,
-        @Body body: RequestRoomShare
+        @Body body: RequestRoomShare,
     ): Response<ResponseBody>
 
     @Headers(
@@ -296,7 +305,7 @@ interface RoomService {
     @POST("api/" + ApiContract.API_VERSION + "/files/rooms/thirdparty/{id}")
     suspend fun createThirdPartyRoom(
         @Path(value = "id") id: String,
-        @Body body: RequestCreateThirdPartyRoom
+        @Body body: RequestCreateThirdPartyRoom,
     ): Response<ResponseCreateFolder>
 
     @Headers(
@@ -306,7 +315,7 @@ interface RoomService {
     @GET("api/" + ApiContract.API_VERSION + "/files/folder/{roomId}/group/{groupId}/share")
     suspend fun getGroupUsers(
         @Path("roomId") roomId: String,
-        @Path("groupId") groupId: String
+        @Path("groupId") groupId: String,
     ): app.documents.core.network.BaseResponse<List<GroupShare>>
 
 }

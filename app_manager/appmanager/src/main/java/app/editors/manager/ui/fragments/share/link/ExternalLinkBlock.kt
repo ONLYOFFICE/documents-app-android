@@ -28,41 +28,43 @@ internal fun ExternalLinkBlock(
     onCopyLinkClick: (String) -> Unit
 ) {
     val context = LocalContext.current
-    AppDescriptionItem(
-        modifier = Modifier.padding(top = 8.dp),
-        text = R.string.rooms_info_access_desc
-    )
+    if (sharedLinks.isNotEmpty()) {
+        AppDescriptionItem(
+            modifier = Modifier.padding(top = 8.dp),
+            text = R.string.rooms_info_access_desc
+        )
 
-    Row {
-        AppHeaderItem(modifier = Modifier.weight(1f), title = R.string.rooms_share_shared_links)
-        if (canEditRoom) {
-            IconButton(onClick = onSharedLinkCreate) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_action_button_docs_add),
-                    tint = MaterialTheme.colors.primary,
-                    contentDescription = null
-                )
+        Row {
+            AppHeaderItem(modifier = Modifier.weight(1f), title = R.string.rooms_share_shared_links)
+            if (canEditRoom) {
+                IconButton(onClick = onSharedLinkCreate) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_action_button_docs_add),
+                        tint = MaterialTheme.colors.primary,
+                        contentDescription = null
+                    )
+                }
             }
         }
-    }
 
-    sharedLinks.forEach { link ->
-        ExternalLinkItem(
-            linkTitle = link.sharedTo.title,
-            access = link.access,
-            hasPassword = !link.sharedTo.password.isNullOrEmpty(),
-            expiring = !link.sharedTo.expirationDate.isNullOrEmpty(),
-            isExpired = link.sharedTo.isExpired,
-            canEdit = canEditRoom,
-            onCopyLinkClick = { onCopyLinkClick.invoke(link.sharedTo.shareLink) },
-            onShareClick = {
-                context.openSendTextActivity(
-                    context.getString(R.string.toolbar_menu_main_share),
-                    link.sharedTo.shareLink
-                )
-            },
-            onClick = { onLinkClick.invoke(link) }.takeIf { canEditRoom }
-        )
+        sharedLinks.forEach { link ->
+            ExternalLinkItem(
+                linkTitle = link.sharedTo.title,
+                access = link.access,
+                hasPassword = !link.sharedTo.password.isNullOrEmpty(),
+                expiring = !link.sharedTo.expirationDate.isNullOrEmpty(),
+                isExpired = link.sharedTo.isExpired,
+                canEdit = canEditRoom,
+                onCopyLinkClick = { onCopyLinkClick.invoke(link.sharedTo.shareLink) },
+                onShareClick = {
+                    context.openSendTextActivity(
+                        context.getString(R.string.toolbar_menu_main_share),
+                        link.sharedTo.shareLink
+                    )
+                },
+                onClick = { onLinkClick.invoke(link) }.takeIf { canEditRoom }
+            )
+        }
     }
 
     if (canEditRoom && sharedLinks.isEmpty()) {
