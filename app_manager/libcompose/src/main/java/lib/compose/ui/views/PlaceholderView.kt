@@ -1,5 +1,6 @@
 package lib.compose.ui.views
 
+import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -23,7 +24,12 @@ import lib.compose.ui.theme.colorTextSecondary
 import lib.toolkit.base.managers.utils.UiUtils
 
 @Composable
-fun PlaceholderView(image: Int, title: String, subtitle: String) {
+fun PlaceholderView(
+    image: Int,
+    title: String,
+    subtitle: String,
+    button: @Composable () -> Unit = {}
+) {
     val notUseWeight = with(LocalContext.current) {
         !UiUtils.isTablet(this) && UiUtils.isLandscape(this)
     }
@@ -62,6 +68,7 @@ fun PlaceholderView(image: Int, title: String, subtitle: String) {
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colors.colorTextSecondary
                 )
+                button()
             }
         }
     }
@@ -85,16 +92,20 @@ private fun Preview() {
     }
 }
 
-@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
 private fun Preview2() {
     ManagerTheme {
         AppScaffold {
             PlaceholderView(
-                image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
-                title = "No docs here yet",
-                subtitle = "All deleted files are moved to \'Trash\'. Restore files deleted by mistake or delete them permanently. Files in \'Trash\' are automatically deleted after 30 days. Please note, that the files deleted from the \'Trash\' cannot be restored any longer"
-            )
+                image = lib.toolkit.base.R.drawable.placeholder_payment_required,
+                title = "Business subscription expired",
+                subtitle = "Your current tariff plan \"Business\" expired. Please renew your subscription in the account settings to be able to use your DocSpace. If you have any questions, please contact support"
+            ) {
+                AppButton(title = "Renew Business plan") {
+                    
+                }
+            }
         }
     }
 }

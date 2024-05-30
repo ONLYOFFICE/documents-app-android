@@ -388,6 +388,9 @@
     <string name="placeholder_no_search_result_desc">No results matching your search could be found. Please try another phrase</string>
     <string name="placeholder_empty_room_visitor_desc">Files and folders uploaded by admins will appeared here</string>
     <string name="placeholder_empty_recent_via_link_desc">Here you will find a list of the recently opened files shared with you via an external link</string>
+    <string name="placeholder_payment_required">Business subscription expired</string>
+    <string name="placeholder_payment_required_desc">Your current tariff plan "Business" expired. Please renew your subscription in the account settings to be able to use your DocSpace. If you have any questions, please contact support</string>
+    <string name="placeholder_payment_required_button">Renew Business plan</string>
 
     <!-- Time marks-->
     <string name="list_headers_folder">Folders</string>

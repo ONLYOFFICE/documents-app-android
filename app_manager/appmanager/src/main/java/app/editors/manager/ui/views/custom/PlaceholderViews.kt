@@ -9,6 +9,7 @@ import app.editors.manager.R
 import app.editors.manager.databinding.IncludePlaceholdersTextBinding
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.ActivityIndicatorView
+import lib.compose.ui.views.AppButton
 import lib.compose.ui.views.PlaceholderView
 
 class PlaceholderViews(val view: View?) {
@@ -17,16 +18,19 @@ class PlaceholderViews(val view: View?) {
         NONE, CONNECTION, EMPTY, EMPTY_ROOM, VISITOR_EMPTY_ROOM, SEARCH, SHARE, ACCESS,
         SUBFOLDER, USERS, GROUPS, COMMON, MEDIA, LOAD, LOAD_GROUPS, LOAD_USERS,
         OTHER_ACCOUNTS, EMPTY_TRASH, EMPTY_ARCHIVE, NO_ROOMS, VISITOR_NO_ROOMS,
-        EMPTY_RECENT_VIA_LINK
+        EMPTY_RECENT_VIA_LINK, PAYMENT_REQUIRED
     }
 
     interface OnClickListener {
-        fun onRetryClick()
+        fun onRetryClick() {}
     }
 
     private val requiredView: View = checkNotNull(view) { "View can not be null" }
     private var binding = IncludePlaceholdersTextBinding.bind(requiredView)
     private var viewForHide: View? = null
+
+    var type: Type = Type.NONE
+        private set
 
     init {
         binding.root.isVisible = false
@@ -42,7 +46,8 @@ class PlaceholderViews(val view: View?) {
         this.viewForHide = viewForHide
     }
 
-    fun setTemplatePlaceholder(type: Type) {
+    fun setTemplatePlaceholder(type: Type, onClick: () -> Unit = {}) {
+        this.type = type
         val title = when (type) {
             Type.NONE -> {
                 setVisibility(false)
@@ -50,13 +55,13 @@ class PlaceholderViews(val view: View?) {
             }
             Type.EMPTY, Type.LOAD, Type.EMPTY_ROOM, Type.SEARCH, Type.EMPTY_TRASH,
             Type.EMPTY_ARCHIVE, Type.VISITOR_EMPTY_ROOM, Type.NO_ROOMS, Type.VISITOR_NO_ROOMS,
-            Type.EMPTY_RECENT_VIA_LINK -> {
+            Type.EMPTY_RECENT_VIA_LINK, Type.PAYMENT_REQUIRED -> {
                 setVisibility(true)
                 with(binding.composeView) {
                     isVisible = true
                     setContent {
                         ManagerTheme {
-                            PlaceholderView(type = type)
+                            PlaceholderView(type = type, onClick = onClick)
                         }
                     }
                 }
@@ -83,7 +88,7 @@ class PlaceholderViews(val view: View?) {
     }
 
     @Composable
-    private fun PlaceholderView(type: Type) {
+    private fun PlaceholderView(type: Type, onClick: () -> Unit = {}) {
         val context = LocalContext.current
         when (type) {
             Type.LOAD -> ActivityIndicatorView(title = context.getString(R.string.placeholder_loading_files))
@@ -138,6 +143,11 @@ class PlaceholderViews(val view: View?) {
                         title = R.string.placeholder_empty_folder
                         subtitle = R.string.placeholder_empty_recent_via_link_desc
                     }
+                    Type.PAYMENT_REQUIRED -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_payment_required
+                        title = R.string.placeholder_payment_required
+                        subtitle = R.string.placeholder_payment_required_desc
+                    }
                     else -> error("${type.name} is invalid type")
                 }
 
@@ -145,7 +155,14 @@ class PlaceholderViews(val view: View?) {
                     image = image,
                     title = context.getString(title),
                     subtitle = subtitle?.let(context::getString).orEmpty()
-                )
+                ) {
+                    if (type == Type.PAYMENT_REQUIRED) {
+                        AppButton(
+                            title = R.string.placeholder_payment_required_button,
+                            onClick = onClick
+                        )
+                    }
+                }
             }
         }
     }
