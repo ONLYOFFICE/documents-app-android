@@ -61,6 +61,8 @@ import androidx.compose.ui.unit.dp
 import app.documents.core.model.login.RoomGroup
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
+import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.views.custom.UserListBottomContent
@@ -83,6 +85,7 @@ import lib.compose.ui.views.TabRowItem
 import lib.compose.ui.views.TopAppBarAction
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.R
+import lib.toolkit.base.managers.utils.AccountUtils
 
 @Composable
 fun UserListScreen(
@@ -139,6 +142,7 @@ private fun MainScreen(
     val searchState = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val token = remember { context.accountOnline?.accountName?.let { AccountUtils.getToken(context, it) }.orEmpty() }
     val tabs = remember {
         listOfNotNull(
             TabRowItem(
@@ -216,10 +220,10 @@ private fun MainScreen(
                                                     letter = letter?.toString().takeIf { index == 0 },
                                                     name = user.displayName,
                                                     subtitle = user.email.orEmpty(),
-                                                    avatar = user.avatarMedium,
+                                                    avatar = GlideUtils.getCorrectLoad(user.avatarMedium, token),
                                                     shared = disableInvited && user.shared,
                                                     selected = state.selected.contains(user.id),
-                                                    onClick = { onClick.invoke(user.id) },
+                                                    onClick = { onClick.invoke(user.id) }
                                                 )
                                             }
                                         }
@@ -245,7 +249,7 @@ private fun MainScreen(
                                             subtitle = null,
                                             avatar = null,
                                             selected = state.selected.contains(group.id),
-                                            onClick = { onClick.invoke(group.id) },
+                                            onClick = { onClick.invoke(group.id) }
                                         )
                                     }
                                 }
@@ -273,7 +277,7 @@ private fun LazyItemScope.UserItem(
     shared: Boolean,
     letter: String?,
     withLetter: Boolean,
-    avatar: String?,
+    avatar: Any?,
     subtitle: String?,
     onClick: () -> Unit,
 ) {

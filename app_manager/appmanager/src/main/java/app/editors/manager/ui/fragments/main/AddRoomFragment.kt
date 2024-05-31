@@ -271,7 +271,7 @@ class AddRoomFragment : BaseFragment() {
                         val userListViewModel = UserListViewModel(
                             roomId = room?.id.orEmpty(),
                             roomType = roomType,
-                            roomOwnerId = room?.createdBy?.id.orEmpty(),
+                            roomOwnerId = roomState.value.owner.id,
                             mode = UserListMode.ChangeOwner,
                             shareService = requireContext().shareApi,
                             roomProvider = requireContext().roomProvider,
