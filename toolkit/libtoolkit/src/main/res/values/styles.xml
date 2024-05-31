@@ -160,6 +160,7 @@
         <item name="tabTextAppearance">@style/TextAppearance.Common.TabItem</item>
         <item name="tabSelectedTextColor">?attr/colorPrimary</item>
         <item name="tabTextColor">@color/colorTextSecondary</item>
+        <item name="android:background">@color/colorSurface</item>
         <item name="tabMode">auto</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/default_tab_layout_height</item>
@@ -255,7 +256,15 @@
         <item name="iconTint">@color/colorTextSecondary</item>
     </style>
 
-    <style name="Widget.Common.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface" />
+    <style name="Widget.Common.AppBarLayout" parent="Widget.MaterialComponents.AppBarLayout.Surface">
+        <item name="android:elevation">@dimen/elevation_height_micro</item>
+        <item name="android:theme">@style/ThemeOverlay.Common.AppBarLayout</item>
+        <item name="android:background">@color/colorAppBar</item>
+    </style>
+
+    <style name="ThemeOverlay.Common.AppBarLayout" parent="Theme.MaterialComponents.DayNight">
+        <item name="colorPrimary">@color/colorPrimary</item>
+    </style>
 
     <style name="Widget.Common.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
         <item name="android:background">@color/colorBottomBar</item>

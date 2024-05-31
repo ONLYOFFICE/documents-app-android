@@ -107,6 +107,8 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
+    private val toolbarElevation by lazy { resources.getDimension(lib.toolkit.base.R.dimen.default_elevation_height) }
+
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(ACCOUNT_KEY, Json.encodeToString(viewBinding.appBarToolbar.account))
         outState.putInt(FRAGMENT_KEY, viewBinding.bottomNavigation.selectedItemId)
@@ -311,6 +313,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     override fun showAccount(isShow: Boolean) {
         //        presenter.isDialogOpen = true
         viewBinding.appBarToolbar.showAccount(isShow)
+        viewBinding.appBarLayout.elevation = if (isShow) 0f else toolbarElevation
     }
 
     override fun onLocaleConfirmation() {
