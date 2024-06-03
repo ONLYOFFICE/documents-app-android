@@ -13,7 +13,6 @@ import app.editors.manager.managers.tools.ActionMenuAdapter
 import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.managers.tools.ActionMenuItemsFactory
 import app.editors.manager.mvp.models.filter.RoomFilterType
-import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.share.InviteUsersFragment
@@ -112,11 +111,7 @@ class DocsRoomFragment : DocsCloudFragment() {
             }
             ActionMenuItem.Info -> showRoomInfoFragment()
             ActionMenuItem.EditRoom -> cloudPresenter.editRoom()
-            ActionMenuItem.Invite -> ShareActivity.show(
-                this,
-                presenter.roomClicked ?: error("room can not be null"),
-                false
-            )
+            ActionMenuItem.Invite -> showInviteUsersDialog()
             is ActionMenuItem.CopyLink -> cloudPresenter.copyLinkFromActionMenu(item.isRoom)
             ActionMenuItem.LeaveRoom -> cloudPresenter.checkRoomOwner()
             else -> super.actionMenuClickListener.invoke(item)
@@ -163,7 +158,7 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     private fun showInviteUsersDialog() {
-        (presenter.itemClicked as? CloudFolder)?.let { room ->
+        presenter.roomClicked?.let { room ->
             InviteUsersFragment.newInstance(room.id, room.roomType).show(parentFragmentManager, null)
         }
     }

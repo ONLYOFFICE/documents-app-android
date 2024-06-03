@@ -1,11 +1,9 @@
 package app.editors.manager.ui.fragments.share.link
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.ComponentDialog
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -88,14 +86,6 @@ class ShareSettingsFragment : BaseDialogFragment() {
                 .putArgs(KEY_FILE_ID to fileId)
                 .show(activity.supportFragmentManager, TAG)
         }
-    }
-
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return ComponentDialog(
-            requireContext(),
-            if (!UiUtils.isTablet(requireContext())) R.style.FullScreenDialog else 0
-        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
