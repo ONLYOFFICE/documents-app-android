@@ -117,7 +117,14 @@ class DocsTrashFragment : DocsCloudFragment() {
 
     override val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
-            ActionMenuItem.Restore -> showRestoreDialog()
+            ActionMenuItem.Restore -> {
+                if (isArchive) {
+                    showRestoreDialog()
+                } else {
+                    cloudPresenter.moveCopySelected(OperationsState.OperationType.RESTORE)
+                }
+            }
+
             ActionMenuItem.Delete -> presenter.delete()
             else -> super.actionMenuClickListener(item)
         }
