@@ -212,7 +212,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             if (result) {
                                 viewState.onOpenDocumentServer(info[0] as CloudFile, info[1] as String, true)
                             } else {
-                                viewState.onCreateFile(info[0] as CloudFile)
+                                downloadTempFile(info[0] as CloudFile, true)
+
                             }
                         }
                     }) { throwable: Throwable -> fetchError(throwable) })
