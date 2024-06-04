@@ -36,7 +36,6 @@ import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
-import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
@@ -452,8 +451,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 openRoom(id = args.getString("id"))
             }
         }
-        AddRoomDialog.newInstance(type, cloudFolder, isCopy)
-            .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
+        AddRoomFragment.show(requireActivity().supportFragmentManager, type, cloudFolder, isCopy)
     }
 
     protected open fun getFilters(): Boolean {

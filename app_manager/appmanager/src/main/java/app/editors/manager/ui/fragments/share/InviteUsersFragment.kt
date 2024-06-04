@@ -1,9 +1,5 @@
 package app.editors.manager.ui.fragments.share
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -44,7 +39,7 @@ import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
 import app.editors.manager.app.shareApi
 import app.editors.manager.managers.utils.RoomUtils
-import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
+import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.fragments.share.link.RoomAccessScreen
 import app.editors.manager.ui.views.custom.UserListBottomContent
@@ -72,7 +67,7 @@ import lib.toolkit.base.managers.utils.openSendTextActivity
 import lib.toolkit.base.managers.utils.putArgs
 import java.net.URLEncoder
 
-class InviteUsersFragment : BaseDialogFragment() {
+class InviteUsersFragment : ComposeDialogFragment() {
 
     companion object {
 
@@ -84,45 +79,26 @@ class InviteUsersFragment : BaseDialogFragment() {
             .putArgs(ROOM_TYPE_KEY to roomType)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (!UiUtils.isTablet(requireContext())) {
-            setStyle(
-                STYLE_NORMAL,
-                R.style.FullScreenDialog
+    @Composable
+    override fun Content() {
+        ManagerTheme {
+            InviteUsersScreen(
+                roomType = remember { arguments?.getInt(ROOM_TYPE_KEY) ?: -1 },
+                roomId = remember(arguments?.getString(ROOM_ID_KEY)::orEmpty),
+                roomProvider = requireContext().roomProvider,
+                onCopyLink = { link ->
+                    KeyboardUtils.setDataToClipboard(requireContext(), link)
+                    UiUtils.getSnackBar(requireView()).setText(R.string.rooms_info_copy_link_to_clipboard).show()
+                },
+                onShareLink = { link ->
+                    requireContext().openSendTextActivity(
+                        getString(R.string.toolbar_menu_main_share),
+                        link
+                    )
+                },
+                onSnackBar = { UiUtils.getSnackBar(requireView()).setText(it).show() },
+                onBack = ::dismiss
             )
-        }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return ComposeView(requireContext())
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        (view as ComposeView).setContent {
-            ManagerTheme {
-                InviteUsersScreen(
-                    roomType = remember { arguments?.getInt(ROOM_TYPE_KEY) ?: -1 },
-                    roomId = remember(arguments?.getString(ROOM_ID_KEY)::orEmpty),
-                    roomProvider = requireContext().roomProvider,
-                    onCopyLink = { link ->
-                        KeyboardUtils.setDataToClipboard(requireContext(), link)
-                        UiUtils.getSnackBar(requireView()).setText(R.string.rooms_info_copy_link_to_clipboard).show()
-                    },
-                    onShareLink = { link ->
-                        requireContext().openSendTextActivity(
-                            getString(R.string.toolbar_menu_main_share),
-                            link
-                        )
-                    },
-                    onSnackBar = { UiUtils.getSnackBar(requireView()).setText(it).show() },
-                    onBack = ::dismiss
-                )
-            }
         }
     }
 }

@@ -1,9 +1,6 @@
 package app.editors.manager.ui.fragments.share.link
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -25,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -43,7 +39,7 @@ import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
-import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
+import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.viewModels.link.ShareSettingsEffect
 import app.editors.manager.viewModels.link.ShareSettingsState
 import app.editors.manager.viewModels.link.ShareSettingsViewModel
@@ -72,7 +68,7 @@ sealed class Route(val name: String) {
     data object LifeTimeScreen : Route("life_time")
 }
 
-class ShareSettingsFragment : BaseDialogFragment() {
+class ShareSettingsFragment : ComposeDialogFragment() {
 
     companion object {
 
@@ -88,76 +84,76 @@ class ShareSettingsFragment : BaseDialogFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return ComposeView(requireContext())
-    }
+    @Composable
+    override fun Content() {
+        ManagerTheme {
+            val snackBar = remember { UiUtils.getSnackBar(requireView()) }
+            val fileId = remember { arguments?.getString(KEY_FILE_ID).orEmpty() }
+            val viewModel = viewModel { ShareSettingsViewModel(requireContext().roomProvider, fileId) }
+            val navController = rememberNavController()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        (view as? ComposeView)?.setContent {
-            ManagerTheme {
-                val snackBar = remember { UiUtils.getSnackBar(requireView()) }
-                val fileId = remember { arguments?.getString(KEY_FILE_ID).orEmpty() }
-                val viewModel = viewModel { ShareSettingsViewModel(requireContext().roomProvider, fileId) }
-                val navController = rememberNavController()
-
-                navController.addOnDestinationChangedListener { _, destination, _ ->
-                    if (destination.route == Route.SettingsScreen.name) {
-                        viewModel.fetchLinks()
-                    }
+            navController.addOnDestinationChangedListener { _, destination, _ ->
+                if (destination.route == Route.SettingsScreen.name) {
+                    viewModel.fetchLinks()
                 }
+            }
 
-                NavHost(navController = navController, startDestination = Route.SettingsScreen.name) {
-                    composable(Route.SettingsScreen.name) {
-                        MainScreen(
-                            viewModel = viewModel,
-                            onSnackBar = { text -> snackBar.setText(text).show() },
-                            onShare = { link ->
-                                requireContext().openSendTextActivity(
-                                    getString(R.string.toolbar_menu_main_share),
-                                    link
-                                )
-                            },
-                            onLinkClick = { link ->
-                                val json = URLEncoder.encode(Json.encodeToString(link), Charsets.UTF_8.toString())
-                                navController.navigate(
-                                    "${Route.LinkSettingsScreen.name}?" +
-                                            "link=$json&" +
-                                            "expired=${link.sharedTo.expirationDate}"
-                                )
-                            },
-                            onBack = ::dismiss
-                        )
-                    }
-                    composable(
-                        route = "${Route.LinkSettingsScreen.name}?link={link}&expired={expired}",
-                        arguments = listOf(
-                            navArgument("link") {
-                                type = NavType.StringType
-                            },
-                            navArgument("expired") {
-                                type = NavType.StringType
-                                nullable = true
-                            }
-                        )
-                    ) {
-                        val json = URLDecoder.decode(it.arguments?.getString("link"), Charsets.UTF_8.toString())
-                        SharedLinkSettingsScreen(
-                            viewModel = viewModel {
-                                SharedLinkSettingsViewModel(
-                                    externalLink = Json.decodeFromString<ExternalLink>(json),
-                                    expired = it.arguments?.getString("expired"),
-                                    roomProvider = requireContext().roomProvider,
-                                    fileId = fileId
-                                )
-                            },
-                            onBack = navController::popBackStack,
-                            onSnackBar = { text -> snackBar.setText(text).show() }
-                        )
-                    }
+            BackHandler {
+                dismiss()
+            }
+
+            NavHost(navController = navController, startDestination = Route.SettingsScreen.name) {
+                composable(Route.SettingsScreen.name) {
+                    MainScreen(
+                        viewModel = viewModel,
+                        onSnackBar = { text -> snackBar.setText(text).show() },
+                        onShare = { link ->
+                            requireContext().openSendTextActivity(
+                                getString(R.string.toolbar_menu_main_share),
+                                link
+                            )
+                        },
+                        onLinkClick = { link ->
+                            val json = URLEncoder.encode(Json.encodeToString(link), Charsets.UTF_8.toString())
+                            navController.navigate(
+                                "${Route.LinkSettingsScreen.name}?" +
+                                        "link=$json&" +
+                                        "expired=${link.sharedTo.expirationDate}"
+                            )
+                        },
+                        onBack = ::dismiss
+                    )
+                }
+                composable(
+                    route = "${Route.LinkSettingsScreen.name}?link={link}&expired={expired}",
+                    arguments = listOf(
+                        navArgument("link") {
+                            type = NavType.StringType
+                        },
+                        navArgument("expired") {
+                            type = NavType.StringType
+                            nullable = true
+                        }
+                    )
+                ) {
+                    val json = URLDecoder.decode(it.arguments?.getString("link"), Charsets.UTF_8.toString())
+                    SharedLinkSettingsScreen(
+                        viewModel = viewModel {
+                            SharedLinkSettingsViewModel(
+                                externalLink = Json.decodeFromString<ExternalLink>(json),
+                                expired = it.arguments?.getString("expired"),
+                                roomProvider = requireContext().roomProvider,
+                                fileId = fileId
+                            )
+                        },
+                        onBack = navController::popBackStack,
+                        onSnackBar = { text -> snackBar.setText(text).show() }
+                    )
                 }
             }
         }
     }
+
 }
 
 @Composable
