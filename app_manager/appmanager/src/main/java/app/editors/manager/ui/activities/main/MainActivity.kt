@@ -19,7 +19,6 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.ActivityMainBinding
 import app.editors.manager.managers.receivers.AppLocaleReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver
@@ -211,7 +210,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onDestroy() {
         super.onDestroy()
-        appComponent.preference.modules = ""
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             unregisterReceiver(AppLocaleReceiver)
         }
