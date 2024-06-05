@@ -3,6 +3,7 @@ package app.documents.core.network.manager
 import app.documents.core.model.login.Settings
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.request.RequestBatchBase
 import app.documents.core.network.manager.models.request.RequestBatchOperation
@@ -145,6 +146,14 @@ interface ManagerService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}")
     fun getFileInfo(@Path(value = "file_id") fileId: String?): Observable<Response<ResponseFile>>
+
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}")
+    suspend fun getCloudFileInfo(@Path(value = "file_id") fileId: String?): app.documents.core.network.BaseResponse<CloudFile>
 
     /*
      * Create folder

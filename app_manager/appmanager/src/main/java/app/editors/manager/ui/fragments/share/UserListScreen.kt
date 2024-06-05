@@ -25,18 +25,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -51,10 +45,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -65,6 +57,7 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
+import app.editors.manager.ui.views.custom.SearchAppBar
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.UserListEffect
 import app.editors.manager.viewModels.main.UserListState
@@ -78,7 +71,6 @@ import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTabRow
-import lib.compose.ui.views.AppTextField
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.PlaceholderView
 import lib.compose.ui.views.TabRowItem
@@ -375,57 +367,6 @@ private fun LazyItemScope.UserItem(
                 color = MaterialTheme.colors.colorTextSecondary
             )
         }
-    }
-}
-
-@Composable
-private fun SearchAppBar(
-    onTextChange: (String) -> Unit,
-    onClose: () -> Unit,
-) {
-    val focusManager = LocalFocusManager.current
-    val searchValueState = remember { mutableStateOf("") }
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-    ) {
-        AppTextField(
-            state = searchValueState,
-            onValueChange = {
-                searchValueState.value = it
-                onTextChange.invoke(it)
-            },
-            focusManager = focusManager,
-            label = app.editors.manager.R.string.share_title_search,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            onDone = { focusManager.clearFocus(true) },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = stringResource(id = android.R.string.search_go),
-                    modifier = Modifier.alpha(ContentAlpha.medium)
-                )
-            },
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        if (searchValueState.value.isNotEmpty()) {
-                            searchValueState.value = ""
-                        } else {
-                            onClose()
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(id = android.R.string.cancel),
-                        tint = MaterialTheme.colors.primary
-                    )
-                }
-            }
-        )
     }
 }
 

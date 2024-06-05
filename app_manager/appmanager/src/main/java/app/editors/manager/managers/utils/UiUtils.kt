@@ -175,6 +175,52 @@ object ManagerUiUtils {
         }
     }
 
+    fun getAccessList(extension: StringUtils.Extension): List<Int> {
+        return when (extension) {
+            StringUtils.Extension.DOC, StringUtils.Extension.DOCXF -> {
+                listOf(
+                    ApiContract.ShareCode.READ_WRITE,
+                    ApiContract.ShareCode.REVIEW,
+                    ApiContract.ShareCode.COMMENT,
+                    ApiContract.ShareCode.READ,
+                    ApiContract.ShareCode.RESTRICT
+                )
+            }
+            StringUtils.Extension.PRESENTATION -> {
+                listOf(
+                    ApiContract.ShareCode.READ_WRITE,
+                    ApiContract.ShareCode.COMMENT,
+                    ApiContract.ShareCode.READ,
+                    ApiContract.ShareCode.RESTRICT
+                )
+            }
+            StringUtils.Extension.SHEET -> {
+                listOf(
+                    ApiContract.ShareCode.READ_WRITE,
+                    ApiContract.ShareCode.CUSTOM_FILTER,
+                    ApiContract.ShareCode.COMMENT,
+                    ApiContract.ShareCode.READ,
+                    ApiContract.ShareCode.RESTRICT
+                )
+            }
+            StringUtils.Extension.PDF, StringUtils.Extension.OFORM -> {
+                listOf(
+                    ApiContract.ShareCode.READ_WRITE,
+                    ApiContract.ShareCode.FILL_FORMS,
+                    ApiContract.ShareCode.READ,
+                    ApiContract.ShareCode.RESTRICT
+                )
+            }
+            else -> {
+                listOf(
+                    ApiContract.ShareCode.READ_WRITE,
+                    ApiContract.ShareCode.READ,
+                    ApiContract.ShareCode.RESTRICT
+                )
+            }
+        }
+    }
+
     fun setAccessIcon(icon: ImageView?, accessCode: Int) {
         icon?.setImageResource(getAccessIcon(accessCode))
     }
