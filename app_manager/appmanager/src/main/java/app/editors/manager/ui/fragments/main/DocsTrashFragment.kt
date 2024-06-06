@@ -61,7 +61,7 @@ class DocsTrashFragment : DocsCloudFragment() {
                     cloudPresenter.moveCopyOperation(OperationsState.OperationType.RESTORE)
                 }
             }
-
+            is ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             else -> super.onContextButtonClick(contextItem)
         }
     }
