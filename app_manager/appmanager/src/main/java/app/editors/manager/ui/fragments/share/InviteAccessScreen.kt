@@ -2,7 +2,6 @@ package app.editors.manager.ui.fragments.share
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,8 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -23,26 +20,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.documents.core.model.login.RoomGroup
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
-import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.RoomUtils
-import app.editors.manager.ui.views.custom.AccessDropdownMenu
+import app.editors.manager.ui.views.custom.AccessIconButton
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.InviteAccessEffect
 import app.editors.manager.viewModels.main.InviteAccessState
@@ -267,38 +259,16 @@ private fun <T> InviteItem(
                     .padding(end = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                var dropdown by remember { mutableStateOf(false) }
                 Column(modifier = Modifier.weight(1f)) {
                     Text(text = title)
                     subtitle?.let { Text(text = it, style = MaterialTheme.typography.body2) }
                 }
-                IconButton(onClick = { dropdown = true }) {
-                    Row(
-                        modifier = Modifier,
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(access)),
-                            contentDescription = null,
-                            tint = MaterialTheme.colors.colorTextSecondary
-                        )
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_drawer_menu_header_arrow),
-                            contentDescription = null,
-                            tint = MaterialTheme.colors.colorTextSecondary
-                        )
-                        AccessDropdownMenu(
-                            onDismissRequest = { dropdown = false },
-                            expanded = dropdown,
-                            accessList = accessList,
-                            onClick = { newAccess ->
-                                dropdown = false
-                                onSetAccess.invoke(value, newAccess)
-                            }
-                        )
-                    }
-                }
+                AccessIconButton(
+                    access = access,
+                    enabled = true,
+                    accessList = accessList,
+                    onAccess = { access -> onSetAccess.invoke(value, access) }
+                )
             }
             AppDivider()
         }

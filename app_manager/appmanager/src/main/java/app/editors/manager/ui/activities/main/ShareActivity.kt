@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -29,7 +28,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -67,7 +65,7 @@ import app.editors.manager.app.shareApi
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.ui.activities.base.BaseAppActivity
-import app.editors.manager.ui.views.custom.AccessDropdownMenu
+import app.editors.manager.ui.views.custom.AccessIconButton
 import app.editors.manager.ui.views.custom.SearchAppBar
 import app.editors.manager.viewModels.main.ShareEffect
 import app.editors.manager.viewModels.main.ShareState
@@ -323,7 +321,6 @@ private fun ExternalLinkContent(
                 .padding(horizontal = 16.dp)
                 .padding(top = 16.dp)
         ) {
-            var dropdown by remember { mutableStateOf(false) }
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = stringResource(id = R.string.share_main_external_access))
                 Text(
@@ -332,35 +329,12 @@ private fun ExternalLinkContent(
                     color = MaterialTheme.colors.colorTextSecondary
                 )
             }
-            IconButton(onClick = { dropdown = true }, enabled = !externalLink.isLocked) {
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(externalLink.accessCode)),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.colorTextSecondary
-                    )
-                    if (!externalLink.isLocked) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_drawer_menu_header_arrow),
-                            contentDescription = null,
-                            tint = MaterialTheme.colors.colorTextSecondary
-                        )
-                    }
-                    AccessDropdownMenu(
-                        onDismissRequest = { dropdown = false },
-                        expanded = dropdown,
-                        accessList = accessList,
-                        onClick = { newAccess ->
-                            onAccess.invoke(newAccess)
-                            dropdown = false
-                        }
-                    )
-                }
-            }
+            AccessIconButton(
+                access = externalLink.accessCode,
+                enabled = !externalLink.isLocked,
+                accessList = accessList,
+                onAccess = onAccess::invoke
+            )
         }
         AnimatedVisibilityVerticalFade(visible = externalLink.accessCode != ApiContract.ShareCode.RESTRICT) {
             Row(
@@ -415,7 +389,7 @@ private fun LazyListScope.ListContent(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun LazyItemScope.UserItem(
+private fun UserItem(
     share: Share,
     portalWithScheme: String,
     token: String,
@@ -462,7 +436,6 @@ private fun LazyItemScope.UserItem(
                 modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                var dropdown by remember { mutableStateOf(false) }
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -494,39 +467,12 @@ private fun LazyItemScope.UserItem(
                         )
                     }
                 }
-                IconButton(
-                    onClick = { dropdown = true },
-                    modifier = Modifier.padding(end = 16.dp),
-                    enabled = !share.isLocked
-                ) {
-                    Row(
-                        modifier = Modifier,
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(share.accessCode)),
-                            contentDescription = null,
-                            tint = MaterialTheme.colors.colorTextSecondary
-                        )
-                        if (!share.isLocked) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_drawer_menu_header_arrow),
-                                contentDescription = null,
-                                tint = MaterialTheme.colors.colorTextSecondary
-                            )
-                        }
-                        AccessDropdownMenu(
-                            onDismissRequest = { dropdown = false },
-                            expanded = dropdown,
-                            accessList = accessList,
-                            onClick = { newAccess ->
-                                onAccess.invoke(share.sharedTo.id, newAccess)
-                                dropdown = false
-                            }
-                        )
-                    }
-                }
+                AccessIconButton(
+                    access = share.accessCode,
+                    enabled = !share.isLocked,
+                    accessList = accessList,
+                    onAccess = { access -> onAccess.invoke(share.sharedTo.id, access) }
+                )
             }
             Divider()
         }
