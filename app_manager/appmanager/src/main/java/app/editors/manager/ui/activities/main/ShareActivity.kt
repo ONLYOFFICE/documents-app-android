@@ -5,6 +5,10 @@ package app.editors.manager.ui.activities.main
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,8 +21,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.FloatingActionButton
@@ -80,7 +86,6 @@ import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.PlaceholderView
 import lib.compose.ui.views.TopAppBarAction
 import lib.compose.ui.views.VerticalSpacer
-import lib.compose.ui.visible
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
@@ -208,28 +213,40 @@ private fun MainScreen(
     onBack: () -> Unit
 ) {
     var searchState by remember { mutableStateOf(false) }
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(searchState) {
+        listState.animateScrollToItem(0)
+    }
+
     AppScaffold(
         topBar = {
-            if (searchState) {
-                SearchAppBar(onTextChange = onSearch) {
-                    onSearch.invoke("")
-                    searchState = false
-                }
-            } else {
-                AppTopBar(
-                    title = R.string.share_title_main,
-                    isClose = true,
-                    backListener = onBack,
-                    actions = {
-                        TopAppBarAction(
-                            icon = R.drawable.ic_list_context_external_link,
-                            onClick = onCopyInternalLink
-                        )
-                        TopAppBarAction(icon = R.drawable.ic_toolbar_search) {
-                            searchState = true
-                        }
+            AnimatedContent(
+                targetState = searchState,
+                label = "search_bar",
+                transitionSpec = { fadeIn().togetherWith(fadeOut()) },
+            ) { state ->
+                if (state) {
+                    SearchAppBar(onTextChange = onSearch) {
+                        onSearch.invoke("")
+                        searchState = false
                     }
-                )
+                } else {
+                    AppTopBar(
+                        title = R.string.share_title_main,
+                        isClose = true,
+                        backListener = onBack,
+                        actions = {
+                            TopAppBarAction(
+                                icon = R.drawable.ic_list_context_external_link,
+                                onClick = onCopyInternalLink
+                            )
+                            TopAppBarAction(icon = R.drawable.ic_toolbar_search) {
+                                searchState = true
+                            }
+                        }
+                    )
+                }
             }
         },
         fab = {
@@ -253,7 +270,7 @@ private fun MainScreen(
                     subtitle = ""
                 )
             } else {
-                LazyColumn {
+                LazyColumn(state = listState) {
                     item {
                         AnimatedVisibilityVerticalFade(visible = shareState.requestLoading) {
                             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -315,7 +332,7 @@ private fun ExternalLinkContent(
                     color = MaterialTheme.colors.colorTextSecondary
                 )
             }
-            IconButton(onClick = { dropdown = true }) {
+            IconButton(onClick = { dropdown = true }, enabled = !externalLink.isLocked) {
                 Row(
                     modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically,
@@ -326,11 +343,13 @@ private fun ExternalLinkContent(
                         contentDescription = null,
                         tint = MaterialTheme.colors.colorTextSecondary
                     )
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_drawer_menu_header_arrow),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.colorTextSecondary
-                    )
+                    if (!externalLink.isLocked) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_drawer_menu_header_arrow),
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.colorTextSecondary
+                        )
+                    }
                     AccessDropdownMenu(
                         onDismissRequest = { dropdown = false },
                         expanded = dropdown,
@@ -383,14 +402,20 @@ private fun LazyListScope.ListContent(
             VerticalSpacer(height = 8.dp)
         }
         items(shareList) { share ->
-            UserItem(share, portalWithScheme, token, accessList, onAccess)
+            UserItem(
+                share = share,
+                portalWithScheme = portalWithScheme,
+                token = token,
+                accessList = accessList,
+                onAccess = onAccess
+            )
         }
     }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun UserItem(
+private fun LazyItemScope.UserItem(
     share: Share,
     portalWithScheme: String,
     token: String,
@@ -484,12 +509,13 @@ private fun UserItem(
                             contentDescription = null,
                             tint = MaterialTheme.colors.colorTextSecondary
                         )
-                        Icon(
-                            modifier = Modifier.visible(!share.isLocked),
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_drawer_menu_header_arrow),
-                            contentDescription = null,
-                            tint = MaterialTheme.colors.colorTextSecondary
-                        )
+                        if (!share.isLocked) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_drawer_menu_header_arrow),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.colorTextSecondary
+                            )
+                        }
                         AccessDropdownMenu(
                             onDismissRequest = { dropdown = false },
                             expanded = dropdown,
