@@ -1,5 +1,6 @@
 package app.editors.manager.ui.views.custom
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardOptions
@@ -31,6 +32,8 @@ fun SearchAppBar(
 ) {
     val focusManager = LocalFocusManager.current
     val searchValueState = remember { mutableStateOf("") }
+
+    BackHandler(onBack = onClose::invoke)
 
     Surface(
         modifier = Modifier
