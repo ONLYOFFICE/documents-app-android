@@ -230,7 +230,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         if (requireContext().accountOnline.isDocSpace) {
             ShareSettingsFragment.show(requireActivity(), cloudPresenter.itemClicked?.id)
         } else {
-            ShareActivity.show(this, presenter.itemClicked?.id.orEmpty())
+            ShareActivity.show(
+                this,
+                presenter.itemClicked?.id.orEmpty(),
+                presenter.itemClicked is CloudFolder
+            )
         }
     }
 

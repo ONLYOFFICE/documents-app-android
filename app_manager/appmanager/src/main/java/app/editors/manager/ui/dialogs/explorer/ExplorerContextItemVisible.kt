@@ -101,6 +101,8 @@ interface ExplorerContextItemVisible {
     private val ExplorerContextState.share: Boolean
         get() = if (provider is PortalProvider.Cloud.DocSpace) {
             section == ApiContract.Section.User && item is CloudFile
+        } else if (item is CloudFile) {
+            !item.isDenySharing && access in arrayOf(ApiContract.Access.ReadWrite, ApiContract.Access.None)
         } else {
             isShareVisible(access, section)
         }

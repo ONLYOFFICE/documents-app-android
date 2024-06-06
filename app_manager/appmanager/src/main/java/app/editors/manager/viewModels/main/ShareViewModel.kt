@@ -29,12 +29,13 @@ data class ShareState(
     val groups: List<Share> = emptyList(),
     val externalLink: Share = Share(),
     val extension: StringUtils.Extension = StringUtils.Extension.UNKNOWN,
-    val webUrl: String? = null
+    val webUrl: String? = null,
+    val folder: Boolean = false
 )
 
 sealed class ShareEffect {
     data class Error(val throwable: Throwable) : ShareEffect()
-    data class InternalLink(val url: String) : ShareEffect()
+    data class InternalLink(val url: String, val withPortal: Boolean) : ShareEffect()
 }
 
 @OptIn(FlowPreview::class)
@@ -52,7 +53,7 @@ class ShareViewModel(
 
     private var cachedShareList: List<Share> = emptyList()
 
-    private val _state: MutableStateFlow<ShareState> = MutableStateFlow(ShareState(loading = true))
+    private val _state: MutableStateFlow<ShareState> = MutableStateFlow(ShareState(loading = true, folder = folder))
     val state: StateFlow<ShareState> = _state.asStateFlow()
 
     private val _effect: MutableSharedFlow<ShareEffect> = MutableSharedFlow(1)
@@ -134,13 +135,13 @@ class ShareViewModel(
     fun copyInternalLink() {
         viewModelScope.launch {
             if (folder) {
-                _effect.tryEmit(ShareEffect.InternalLink("$TAG_FOLDER_PATH$itemId"))
+                _effect.tryEmit(ShareEffect.InternalLink("$TAG_FOLDER_PATH$itemId", false))
                 return@launch
             }
 
-            if (!state.value.webUrl.isNullOrEmpty()) {
-                _effect.tryEmit(ShareEffect.InternalLink(state.value.externalLink.sharedTo.shareLink))
-            } else {
+            state.value.webUrl?.let { url ->
+                _effect.tryEmit(ShareEffect.InternalLink(url, true))
+            } ?: run {
                 _effect.tryEmit(ShareEffect.Error(NullPointerException()))
             }
         }
@@ -158,18 +159,17 @@ class ShareViewModel(
     }
 
     fun setUserAccess(userId: String, access: Int) {
-        if (!folder) {
-            request {
-                shareApi.setFileAccess(itemId, RequestShare(listOf(RequestShareItem(userId, access.toString()))))
-                _state.update { state ->
-                    state.copy(
-                        users = state.users.map { user ->
-                            if (user.sharedTo.id == userId) {
-                                user.copy(access = access.toString())
-                            } else user
-                        }
-                    )
-                }
+        request {
+            val request = RequestShare(listOf(RequestShareItem(userId, access.toString())))
+            if (!folder) shareApi.setFileAccess(itemId, request) else shareApi.setFolderAccess(itemId, request)
+            _state.update { state ->
+                state.copy(
+                    users = state.users.map { user ->
+                        if (user.sharedTo.id == userId) {
+                            user.copy(access = access.toString())
+                        } else user
+                    }
+                )
             }
         }
     }

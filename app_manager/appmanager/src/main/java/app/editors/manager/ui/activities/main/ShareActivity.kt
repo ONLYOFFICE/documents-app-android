@@ -94,12 +94,17 @@ import retrofit2.HttpException
 class ShareActivity : BaseAppActivity() {
 
     companion object {
+
         private const val KEY_SHARE_ITEM_ID: String = "KEY_SHARE_ITEM_ID"
+        private const val KEY_SHARE_IS_FOLDER: String = "KEY_SHARE_IS_FOLDER"
 
         @JvmStatic
-        fun show(fragment: Fragment, itemId: String) {
+        fun show(fragment: Fragment, itemId: String, isFolder: Boolean) {
             fragment.startActivityForResult(
-                Intent(fragment.context, ShareActivity::class.java).apply { putExtra(KEY_SHARE_ITEM_ID, itemId) },
+                Intent(fragment.context, ShareActivity::class.java).apply {
+                    putExtra(KEY_SHARE_ITEM_ID, itemId)
+                    putExtra(KEY_SHARE_IS_FOLDER, isFolder)
+                },
                 REQUEST_ACTIVITY_SHARE
             )
         }
@@ -115,7 +120,7 @@ class ShareActivity : BaseAppActivity() {
                         itemId = intent.getStringExtra(KEY_SHARE_ITEM_ID).orEmpty(),
                         shareApi = shareApi,
                         managerApi = api,
-                        folder = false
+                        folder = intent.getBooleanExtra(KEY_SHARE_IS_FOLDER, false)
                     )
                 }
                 val state by viewModel.state.collectAsState()
@@ -145,11 +150,15 @@ class ShareActivity : BaseAppActivity() {
                             is ShareEffect.InternalLink -> {
                                 KeyboardUtils.setDataToClipboard(
                                     context,
-                                    effect.url,
-                                    getString(R.string.share_clipboard_external_link_label)
+                                    if (effect.withPortal) {
+                                        effect.url
+                                    } else {
+                                        context.accountOnline?.portal?.urlWithScheme + effect.url
+                                    },
+                                    "Internal link"
                                 )
                                 UiUtils.getSnackBar(this@ShareActivity)
-                                    .setText(R.string.share_clipboard_external_copied)
+                                    .setText(R.string.share_clipboard_internal_copied)
                                     .show()
                             }
                         }
@@ -275,7 +284,7 @@ private fun MainScreen(
                         }
                     }
                     item {
-                        AnimatedVisibilityVerticalFade(visible = !searchState) {
+                        AnimatedVisibilityVerticalFade(visible = !searchState && !shareState.folder) {
                             ExternalLinkContent(
                                 externalLink = shareState.externalLink,
                                 accessList = accessList,
@@ -318,7 +327,7 @@ private fun ExternalLinkContent(
     Column {
         Row(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .padding(start = 16.dp)
                 .padding(top = 16.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
