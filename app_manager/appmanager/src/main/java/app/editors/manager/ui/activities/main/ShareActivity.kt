@@ -8,6 +8,7 @@ import android.view.MenuItem
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import androidx.fragment.app.Fragment
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.databinding.ActivityShareBinding
 import app.editors.manager.ui.activities.base.BaseAppActivity
@@ -26,6 +27,7 @@ class ShareActivity : BaseAppActivity() {
         const val TAG_INFO = "TAG_INFO"
         const val TAG_LEAVE = "TAG_LEAVE"
         const val TAG_RESULT = "TAG_RESULT"
+        const val TAG_ID = "TAG_ID"
         private const val PIXEL_C = "Pixel C"
 
         @JvmStatic
@@ -99,6 +101,11 @@ class ShareActivity : BaseAppActivity() {
 
         if (savedInstanceState == null) {
             when  {
+                intent.getStringExtra(TAG_ID)?.isNotEmpty() == true -> {
+                    showFragment(AddPagerFragment.newInstance(CloudFile().apply {
+                        id = intent.getStringExtra(TAG_ID)!!
+                    }),null)
+                }
                 intent.getBooleanExtra(TAG_INFO, false) -> {
                     showFragment(SettingsFragment.newInstance(intent.getSerializableExt(TAG_SHARE_ITEM)), null)
 
@@ -108,7 +115,6 @@ class ShareActivity : BaseAppActivity() {
                 }
                 else ->  {
                     showFragment(AddPagerFragment.newInstance(intent.getSerializableExt(TAG_SHARE_ITEM)), null)
-
                 }
             }
         }
