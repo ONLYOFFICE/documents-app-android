@@ -19,7 +19,6 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.ActivityMainBinding
 import app.editors.manager.managers.receivers.AppLocaleReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver
@@ -106,6 +105,8 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             true
         }
     }
+
+    private val toolbarElevation by lazy { resources.getDimension(lib.toolkit.base.R.dimen.default_elevation_height) }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(ACCOUNT_KEY, Json.encodeToString(viewBinding.appBarToolbar.account))
@@ -209,7 +210,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onDestroy() {
         super.onDestroy()
-        appComponent.preference.modules = ""
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             unregisterReceiver(AppLocaleReceiver)
         }
@@ -311,6 +311,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     override fun showAccount(isShow: Boolean) {
         //        presenter.isDialogOpen = true
         viewBinding.appBarToolbar.showAccount(isShow)
+        viewBinding.appBarLayout.elevation = if (isShow) 0f else toolbarElevation
     }
 
     override fun onLocaleConfirmation() {
@@ -559,6 +560,8 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 PortalProvider.Onedrive -> DocsOneDriveFragment.newInstance()
                 is PortalProvider.Webdav -> DocsWebDavFragment.newInstance(WebdavProvider.valueOf(accountOnline?.portal?.provider!!))
                 is PortalProvider.Cloud -> {
+                    showActionButton(false)
+                    setAppBarStates(true)
                     showMainPagerFragment()
                     return
                 }

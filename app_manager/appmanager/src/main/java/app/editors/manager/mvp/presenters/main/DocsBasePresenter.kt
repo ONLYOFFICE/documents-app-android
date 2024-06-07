@@ -1033,11 +1033,25 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             }
         }
 
-        if (isFilteringMode) {
-            setPlaceholderType(if (entityList.isEmpty()) PlaceholderViews.Type.SEARCH else PlaceholderViews.Type.NONE)
+        val placeholderType = if (entityList.isEmpty()) {
+            if (isFilteringMode) {
+                PlaceholderViews.Type.SEARCH
+            } else {
+                if (ApiContract.SectionType.isRoom(currentSectionType) && isRoot) {
+                    if (itemClicked?.security?.editRoom == true) {
+                        PlaceholderViews.Type.NO_ROOMS
+                    } else {
+                        PlaceholderViews.Type.VISITOR_NO_ROOMS
+                    }
+                } else {
+                    PlaceholderViews.Type.EMPTY
+                }
+            }
         } else {
-            setPlaceholderType(if (entityList.isEmpty()) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+            PlaceholderViews.Type.NONE
         }
+
+        setPlaceholderType(placeholderType)
 
         return entityList
     }

@@ -105,7 +105,9 @@ class UserListViewModel(
     }
 
     fun search(searchValue: String) {
-        filterFlow.tryEmit(searchValue)
+        viewModelScope.launch {
+            filterFlow.emit(searchValue)
+        }
     }
 
     fun toggleSelect(userId: String) {

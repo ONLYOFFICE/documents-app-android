@@ -5,7 +5,6 @@ import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.network.manager.models.response.ResponseCloudTree
 import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -21,7 +20,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.CryptUtils
-import lib.toolkit.base.managers.utils.JsonUtils
 import moxy.InjectViewState
 import moxy.presenterScope
 
@@ -60,21 +58,15 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
 
     private suspend fun getPortalModules(): List<Explorer> {
         try {
-            val response = if (preferenceTool.modules.isNotEmpty()) {
-                JsonUtils.jsonToObject(preferenceTool.modules, ResponseCloudTree::class.java)
-            } else {
-                api.getRootFolder(
-                    mapOf(ApiContract.Modules.FILTER_TYPE_HEADER to ApiContract.Modules.FILTER_TYPE_VALUE),
-                    mapOf(
-                        ApiContract.Modules.FLAG_SUBFOLDERS to false,
-                        ApiContract.Modules.FLAG_TRASH to false,
-                        ApiContract.Modules.FLAG_ADDFOLDERS to false
-                    )
+            val response = api.getRootFolder(
+                mapOf(ApiContract.Modules.FILTER_TYPE_HEADER to ApiContract.Modules.FILTER_TYPE_VALUE),
+                mapOf(
+                    ApiContract.Modules.FLAG_SUBFOLDERS to false,
+                    ApiContract.Modules.FLAG_TRASH to false,
+                    ApiContract.Modules.FLAG_ADDFOLDERS to false
                 )
-            }
+            )
             return withContext(Dispatchers.Default) {
-                preferenceTool.modules = JsonUtils.objectToJson(response)
-
                 val folderTypes = response.response.map { explorer -> explorer.current.rootFolderType }
                 preferenceTool.setFavoritesEnable(folderTypes.contains(ApiContract.SectionType.CLOUD_FAVORITES))
                 preferenceTool.isProjectDisable = !folderTypes.contains(ApiContract.SectionType.CLOUD_PROJECTS)
@@ -153,7 +145,8 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
 
     private suspend fun checkAccountLogin(data: OpenDataModel): Boolean {
         val account = cloudDataSource.getAccountByLogin(data.email?.lowercase() ?: "")
-        val token = AccountUtils.getToken(context, account?.accountName.orEmpty())
+        if (account == null) return true
+        val token = AccountUtils.getToken(context, account.accountName)
         return !token.isNullOrEmpty()
     }
 

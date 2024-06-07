@@ -40,6 +40,7 @@ import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
+import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -391,6 +392,14 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    override fun onPlaceholder(type: PlaceholderViews.Type) {
+        if (type == PlaceholderViews.Type.EMPTY && presenter.isRecentViaLinkSection()) {
+            super.onPlaceholder(PlaceholderViews.Type.EMPTY_RECENT_VIA_LINK)
+        } else {
+            super.onPlaceholder(type)
+        }
+    }
+
     override fun onUpdateFavoriteItem() {
         if (section == ApiContract.SectionType.CLOUD_FAVORITES) explorerAdapter?.removeItem(presenter.itemClicked)
         else super.onUpdateFavoriteItem()
@@ -524,6 +533,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun showSetOwnerFragment(cloudFolder: CloudFolder) {
         hideDialog()
         ShareActivity.show(fragment = this, item = cloudFolder, isInfo = false, leave = true)
+    }
+
+    protected fun showRoomInfoFragment() {
+        RoomInfoFragment.newInstance(presenter.roomClicked ?: error("room can not be null"))
+            .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
     }
 
     val isRoot: Boolean

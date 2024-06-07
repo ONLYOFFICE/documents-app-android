@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.tasks.await
+import retrofit2.HttpException
 import java.io.IOException
 import java.net.ConnectException
 
@@ -220,7 +221,11 @@ internal class CloudLoginRepositoryImpl(
                 response.sms -> emit(LoginResult.Sms(response.phoneNoise))
             }
         }
-            .catch { cause -> emit(LoginResult.Error(cause)) }
+            .catch { cause ->
+                if (cause is HttpException && cause.code() != ApiContract.HttpCodes.CLIENT_PAYMENT_REQUIRED) {
+                    emit(LoginResult.Error(cause))
+                }
+            }
             .flowOn(Dispatchers.IO)
     }
 
@@ -243,7 +248,13 @@ internal class CloudLoginRepositoryImpl(
             accessToken = accessToken,
             onOldAccount = ::unsubscribePush
         )
-        subscribePush(cloudAccount.portal, response.token.orEmpty())
+
+        try {
+            subscribePush(cloudAccount.portal, response.token.orEmpty())
+        } catch (_: Exception) {
+            // Stub
+        }
+
         return cloudAccount
     }
 

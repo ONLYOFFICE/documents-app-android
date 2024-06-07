@@ -166,7 +166,7 @@ private fun MainScreen(
                 ) { search ->
                     if (search) {
                         SearchAppBar(
-                            onClose = { searchState.value = false },
+                            onClose = { searchState.value = false; onSearch.invoke("") },
                             onTextChange = onSearch::invoke
                         )
                     } else {
@@ -229,11 +229,7 @@ private fun MainScreen(
                                         }
                                 }
                             } else {
-                                PlaceholderView(
-                                    image = R.drawable.placeholder_not_found,
-                                    title = stringResource(id = app.editors.manager.R.string.room_search_not_found),
-                                    subtitle = stringResource(id = app.editors.manager.R.string.room_search_not_found_desc)
-                                )
+                                PlaceholderView(withGroups, searchState.value)
                             }
                         }
                         1 -> {
@@ -254,11 +250,7 @@ private fun MainScreen(
                                     }
                                 }
                             } else {
-                                PlaceholderView(
-                                    image = R.drawable.placeholder_not_found,
-                                    title = stringResource(id = app.editors.manager.R.string.room_search_not_found),
-                                    subtitle = stringResource(id = app.editors.manager.R.string.room_search_not_found_desc)
-                                )
+                                PlaceholderView(withGroups, searchState.value)
                             }
                         }
                     }
@@ -267,6 +259,29 @@ private fun MainScreen(
             }
         }
     }
+}
+
+@Composable
+private fun PlaceholderView(withGroups: Boolean, search: Boolean) {
+    val title: Int
+    val subtitle: Int
+
+    if (search) {
+        title = app.editors.manager.R.string.placeholder_no_search_result
+        subtitle = app.editors.manager.R.string.placeholder_no_search_result_desc
+    } else if (withGroups) {
+        title = app.editors.manager.R.string.placeholder_no_members_found
+        subtitle = app.editors.manager.R.string.placeholder_no_members_found_desc
+    } else {
+        title = app.editors.manager.R.string.placeholder_no_users_found
+        subtitle = app.editors.manager.R.string.placeholder_no_users_found_desc
+    }
+
+    PlaceholderView(
+        image = R.drawable.placeholder_no_search_result,
+        title = stringResource(id = title),
+        subtitle = stringResource(id = subtitle)
+    )
 }
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)

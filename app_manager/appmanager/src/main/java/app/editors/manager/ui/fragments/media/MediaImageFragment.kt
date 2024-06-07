@@ -152,7 +152,6 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
     private fun initViews() {
         placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.root).apply {
             setViewForHide(viewBinding?.mediaImageLayout)
-            setOnClickListener(this@MediaImageFragment)
         }
         viewBinding?.let {
             it.mediaImageView.maximumScale = SCALE_MAX

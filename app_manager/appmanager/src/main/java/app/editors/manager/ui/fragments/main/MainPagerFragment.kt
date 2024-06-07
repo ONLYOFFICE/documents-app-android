@@ -266,12 +266,23 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun onFinishRequest() {
-        placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
+        if (placeholderViews?.type == PlaceholderViews.Type.PAYMENT_REQUIRED) {
+            activity?.showActionButton(false)
+        } else {
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.NONE)
+        }
     }
 
     override fun onError(message: String?) {
-        message?.let { showSnackBar(it) }
-        (requireActivity() as? MainActivity)?.onUnauthorized(message)
+        if (message == getString(R.string.errors_client_payment_required)) {
+            activity?.showActionButton(false)
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.PAYMENT_REQUIRED) {
+                context?.accountOnline?.portal?.urlWithScheme?.let(::showUrlInBrowser)
+            }
+        } else {
+            message?.let { showSnackBar(it) }
+            (requireActivity() as? MainActivity)?.onUnauthorized(message)
+        }
     }
 
     override fun onError(@StringRes res: Int) {
@@ -279,8 +290,12 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         requireActivity().intent.data = null
     }
 
-
     private fun setAdapter(fragments: List<MainPagerContainer>, isRestore: Boolean = false) {
+        if (fragments.isEmpty()) {
+            viewBinding?.appBarTabs?.isVisible = false
+            return
+        }
+
         adapter = AdapterForPages(childFragmentManager, fragments)
         viewBinding?.mainViewPager?.offscreenPageLimit = OFFSCREEN_COUNT
         viewBinding?.mainViewPager?.adapter = adapter
@@ -310,7 +325,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                     requireActivity().intent.clearIntent()
                 }
             }
-        }, 1000)
+        }, 500)
     }
 
     override fun onSwitchAccount(data: OpenDataModel, isToken: Boolean) {
@@ -340,7 +355,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         get() = adapter?.selectedPage
 
     private val activeFragment: Fragment?
-        get() = adapter?.getActiveFragment(viewBinding?.mainViewPager)
+        get() = runCatching { adapter?.getActiveFragment(viewBinding?.mainViewPager) }.getOrNull()
 
     override fun onClick(view: View?) {
         activity?.onSwitchAccount()

@@ -17,7 +17,6 @@ import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.share.InviteUsersFragment
-import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.setFragmentResultListener
@@ -145,7 +144,7 @@ class DocsRoomFragment : DocsCloudFragment() {
     override fun onPlaceholder(type: PlaceholderViews.Type) {
         val isRoom = (presenter.currentFolder?.roomType ?: -1) > -1
         if (type == PlaceholderViews.Type.EMPTY && isRoom) {
-            super.onPlaceholder(PlaceholderViews.Type.EMPTY_ROOM)
+            placeholderViews?.setEmptyRoomPlaceholder(presenter.itemClicked?.security?.editRoom == true)
         } else {
             super.onPlaceholder(type)
         }
@@ -166,11 +165,6 @@ class DocsRoomFragment : DocsCloudFragment() {
         (presenter.itemClicked as? CloudFolder)?.let { room ->
             InviteUsersFragment.newInstance(room.id, room.roomType).show(parentFragmentManager, null)
         }
-    }
-
-    private fun showRoomInfoFragment() {
-        RoomInfoFragment.newInstance(presenter.roomClicked ?: error("room can not be null"))
-            .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
     }
 
     companion object {

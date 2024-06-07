@@ -1,39 +1,40 @@
 package app.editors.manager.ui.views.custom
 
-import android.content.Context
 import android.view.View
-import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludePlaceholdersTextBinding
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.ActivityIndicatorView
+import lib.compose.ui.views.AppButton
 import lib.compose.ui.views.PlaceholderView
-import lib.toolkit.base.managers.tools.ResourcesProvider
 
 class PlaceholderViews(val view: View?) {
 
     enum class Type {
-        NONE, CONNECTION, EMPTY, EMPTY_ROOM, SEARCH, SHARE, ACCESS,
-        SUBFOLDER, USERS, GROUPS, COMMON, MEDIA, LOAD, LOAD_GROUPS, LOAD_USERS, OTHER_ACCOUNTS
+        NONE, CONNECTION, EMPTY, EMPTY_ROOM, VISITOR_EMPTY_ROOM, SEARCH, SHARE, ACCESS,
+        SUBFOLDER, USERS, GROUPS, COMMON, MEDIA, LOAD, LOAD_GROUPS, LOAD_USERS,
+        OTHER_ACCOUNTS, EMPTY_TRASH, EMPTY_ARCHIVE, NO_ROOMS, VISITOR_NO_ROOMS,
+        EMPTY_RECENT_VIA_LINK, PAYMENT_REQUIRED
     }
 
     interface OnClickListener {
-        fun onRetryClick()
+        fun onRetryClick() {}
     }
 
-    private val context: Context = view?.context ?: throw RuntimeException("View can not be null")
-    private var binding = IncludePlaceholdersTextBinding.bind(view!!)
+    private val requiredView: View = checkNotNull(view) { "View can not be null" }
+    private var binding = IncludePlaceholdersTextBinding.bind(requiredView)
     private var viewForHide: View? = null
-    private var onClickListener: OnClickListener? = null
+
+    var type: Type = Type.NONE
+        private set
 
     init {
         binding.root.isVisible = false
-        //        imageBinding.placeholderRetry.setOnClickListener {
-        //            mOnClickListener?.onRetryClick()
-        //        }
+        binding.composeView.isVisible = false
     }
 
     fun setVisibility(isVisible: Boolean) {
@@ -45,83 +46,129 @@ class PlaceholderViews(val view: View?) {
         this.viewForHide = viewForHide
     }
 
-    fun setTitle(@StringRes resId: Int) {
-        binding.placeholderText.setText(resId)
-    }
-
-    private fun setTitleColor(@ColorRes resId: Int) {
-        binding.placeholderText.setTextColor(ResourcesProvider(context).getColor(resId))
-    }
-
-    fun setImage(@DrawableRes resId: Int) {
-        //        imageBinding.placeholderImage.setImageResource(resId)
-    }
-
-    fun setImageTint(@ColorRes resId: Int) {
-        //        UiUtils.setImageTint(imageBinding.placeholderImage, resId)
-    }
-
-    private fun setRetryTint(@ColorRes resId: Int) {
-        //        imageBinding.placeholderRetry.setTextColor(ResourcesProvider(context).getColor(resId))
-    }
-
-    fun setTemplatePlaceholder(type: Type?, onButtonClick: () -> Unit = {}) {
-        binding.composeView.isVisible = false
-        when (type) {
-            Type.NONE, null -> {
+    fun setTemplatePlaceholder(type: Type, onClick: () -> Unit = {}) {
+        this.type = type
+        val title = when (type) {
+            Type.NONE -> {
                 setVisibility(false)
                 return
             }
-            Type.CONNECTION -> setTitle(R.string.placeholder_connection)
-            Type.EMPTY -> setTitle(R.string.placeholder_empty)
-            Type.SEARCH -> setTitle(R.string.placeholder_search)
-            Type.SHARE -> setTitle(R.string.placeholder_share)
-            Type.ACCESS -> setTitle(R.string.placeholder_access_denied)
-            Type.SUBFOLDER -> setTitle(R.string.placeholder_no_subfolders)
-            Type.USERS -> setTitle(R.string.placeholder_no_users)
-            Type.GROUPS -> setTitle(R.string.placeholder_no_groups)
-            Type.COMMON -> setTitle(R.string.placeholder_no_users_groups)
-            Type.LOAD -> {
+            Type.EMPTY, Type.LOAD, Type.EMPTY_ROOM, Type.SEARCH, Type.EMPTY_TRASH,
+            Type.EMPTY_ARCHIVE, Type.VISITOR_EMPTY_ROOM, Type.NO_ROOMS, Type.VISITOR_NO_ROOMS,
+            Type.EMPTY_RECENT_VIA_LINK, Type.PAYMENT_REQUIRED -> {
+                setVisibility(true)
                 with(binding.composeView) {
                     isVisible = true
                     setContent {
                         ManagerTheme {
-                            ActivityIndicatorView(
-                                title = context?.getString(R.string.placeholder_loading_files)
-                            )
+                            PlaceholderView(type = type, onClick = onClick)
                         }
                     }
                 }
+                return
             }
-            Type.LOAD_USERS -> setTitle(R.string.placeholder_loading_users)
-            Type.LOAD_GROUPS -> setTitle(R.string.placeholder_loading_groups)
-            Type.OTHER_ACCOUNTS -> setTitle(R.string.placeholder_other_accounts)
-            Type.MEDIA -> {
-                setImage(R.drawable.ic_media_error)
-                setImageTint(lib.toolkit.base.R.color.colorTextSecondary)
-                setTitle(R.string.placeholder_media_error)
-                setTitleColor(lib.toolkit.base.R.color.colorTextSecondary)
-                setRetryTint(lib.toolkit.base.R.color.colorSecondary)
-            }
-            Type.EMPTY_ROOM -> {
-                with(binding.composeView) {
-                    isVisible = true
-                    setContent {
-                        ManagerTheme {
-                            PlaceholderView(
-                                image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
-                                title = context.getString(R.string.room_placeholder_created_room_title),
-                                subtitle = context.getString(R.string.room_placeholder_created_room_subtitle)
-                            )
-                        }
+            Type.CONNECTION -> R.string.placeholder_connection
+            Type.SHARE -> R.string.placeholder_share
+            Type.ACCESS -> R.string.placeholder_access_denied
+            Type.SUBFOLDER -> R.string.placeholder_no_subfolders
+            Type.USERS -> R.string.placeholder_no_users
+            Type.GROUPS -> R.string.placeholder_no_groups
+            Type.COMMON -> R.string.placeholder_no_users_groups
+            Type.LOAD_USERS -> R.string.placeholder_loading_users
+            Type.LOAD_GROUPS -> R.string.placeholder_loading_groups
+            Type.OTHER_ACCOUNTS -> R.string.placeholder_other_accounts
+            Type.MEDIA -> R.string.placeholder_media_error
+        }
+        setTitle(title)
+        setVisibility(true)
+    }
+
+    fun setEmptyRoomPlaceholder(canEdit: Boolean) {
+        setTemplatePlaceholder(if (!canEdit) Type.VISITOR_EMPTY_ROOM else Type.EMPTY_ROOM)
+    }
+
+    @Composable
+    private fun PlaceholderView(type: Type, onClick: () -> Unit = {}) {
+        val context = LocalContext.current
+        when (type) {
+            Type.LOAD -> ActivityIndicatorView(title = context.getString(R.string.placeholder_loading_files))
+            else -> {
+                val image: Int
+                val title: Int
+                val subtitle: Int?
+
+                when (type) {
+                    Type.EMPTY -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_empty_folder
+                        title = R.string.placeholder_empty_folder
+                        subtitle = null
+                    }
+                    Type.VISITOR_EMPTY_ROOM -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_empty_folder
+                        title = R.string.placeholder_empty_folder
+                        subtitle = R.string.placeholder_empty_room_visitor_desc
+                    }
+                    Type.EMPTY_ROOM -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_empty_folder
+                        title = R.string.room_placeholder_created_room_title
+                        subtitle = R.string.room_placeholder_created_room_subtitle
+                    }
+                    Type.SEARCH -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_no_search_result
+                        title = R.string.placeholder_no_search_result
+                        subtitle = R.string.placeholder_no_search_result_desc
+                    }
+                    Type.EMPTY_TRASH -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_empty_trash
+                        title = R.string.placeholder_empty_folder
+                        subtitle = R.string.placeholder_empty_trash_desc
+                    }
+                    Type.EMPTY_ARCHIVE -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_empty_folder
+                        title = R.string.placeholder_empty_archive
+                        subtitle = R.string.placeholder_empty_archive_desc
+                    }
+                    Type.NO_ROOMS -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_empty_folder
+                        title = R.string.placeholder_no_rooms
+                        subtitle = R.string.placeholder_no_rooms_desc
+                    }
+                    Type.VISITOR_NO_ROOMS -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_empty_folder
+                        title = R.string.placeholder_no_rooms
+                        subtitle = R.string.placeholder_no_rooms_visitor_desc
+                    }
+                    Type.EMPTY_RECENT_VIA_LINK -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_empty_folder
+                        title = R.string.placeholder_empty_folder
+                        subtitle = R.string.placeholder_empty_recent_via_link_desc
+                    }
+                    Type.PAYMENT_REQUIRED -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_payment_required
+                        title = R.string.placeholder_payment_required
+                        subtitle = R.string.placeholder_payment_required_desc
+                    }
+                    else -> error("${type.name} is invalid type")
+                }
+
+                PlaceholderView(
+                    image = image,
+                    title = context.getString(title),
+                    subtitle = subtitle?.let(context::getString).orEmpty()
+                ) {
+                    if (type == Type.PAYMENT_REQUIRED) {
+                        AppButton(
+                            title = R.string.placeholder_payment_required_button,
+                            onClick = onClick
+                        )
                     }
                 }
             }
         }
-        setVisibility(true)
     }
 
-    fun setOnClickListener(onClickListener: OnClickListener?) {
-        this.onClickListener = onClickListener
+    private fun setTitle(@StringRes resId: Int) {
+        binding.placeholderText.setText(resId)
     }
+
 }

@@ -108,12 +108,6 @@ class PreferenceTool @Inject constructor(val context: Context) {
         sharedPreferences.edit().putBoolean(KEY_WIFI_STATE, wifiState).apply()
     }
 
-    var modules: String
-        get() = sharedPreferences.getString("KEY_MODULES", "") ?: ""
-        set(value) {
-            sharedPreferences.edit().putString("KEY_MODULES", value).apply()
-        }
-
     var fileData: String
         get() = sharedPreferences.getString("KEY_FILE_DATA", "") ?: ""
         set(value) {
