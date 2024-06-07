@@ -325,7 +325,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                     requireActivity().intent.clearIntent()
                 }
             }
-        }, 1000)
+        }, 500)
     }
 
     override fun onSwitchAccount(data: OpenDataModel, isToken: Boolean) {

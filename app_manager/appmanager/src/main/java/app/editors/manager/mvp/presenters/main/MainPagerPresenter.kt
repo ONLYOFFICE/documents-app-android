@@ -145,7 +145,8 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
 
     private suspend fun checkAccountLogin(data: OpenDataModel): Boolean {
         val account = cloudDataSource.getAccountByLogin(data.email?.lowercase() ?: "")
-        val token = AccountUtils.getToken(context, account?.accountName.orEmpty())
+        if (account == null) return true
+        val token = AccountUtils.getToken(context, account.accountName)
         return !token.isNullOrEmpty()
     }
 
