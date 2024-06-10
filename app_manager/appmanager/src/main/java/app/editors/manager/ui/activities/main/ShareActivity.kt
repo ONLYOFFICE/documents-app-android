@@ -224,7 +224,8 @@ class ShareActivity : BaseAppActivity() {
                             UserListViewModel(
                                 access = accessListWithOutRestricted.last(),
                                 resourcesProvider = ResourcesProvider(context),
-                                shareService = shareApi
+                                shareService = shareApi,
+                                invitedIds = state.users.map { it.sharedTo.id } + state.groups.map { it.sharedTo.id },
                             )
                         }
                         UserListScreen(

@@ -46,6 +46,7 @@ sealed class UserListEffect {
 @OptIn(FlowPreview::class)
 open class UserListViewModel(
     access: Int?,
+    private val invitedIds: List<String> = emptyList(),
     private val shareService: ShareService,
     private val resourcesProvider: ResourcesProvider,
 ) : ViewModel() {
@@ -59,8 +60,24 @@ open class UserListViewModel(
     private val searchFlow: MutableSharedFlow<String> = MutableSharedFlow(1)
 
     protected open var cachedMembersFlow: SharedFlow<List<Member>> = flow {
-        val users = shareService.getUsers(getOptions()).response
-        val groups = shareService.getGroups(getOptions()).response
+        val groups = shareService.getGroups(getOptions())
+            .response
+            .run { if (invitedIds.isNotEmpty()) map { it.copy(shared = it.id in invitedIds) } else this }
+
+        val users = shareService.getUsers(getOptions())
+            .response
+            .run { if (invitedIds.isNotEmpty()) map { it.copy(shared = it.id in invitedIds) } else this }
+            .run {
+                val invitedGroups = groups.filter { it.shared }.map { it.id }
+                if (invitedGroups.isNotEmpty()) {
+                    map {
+                        if (!it.shared) {
+                            it.copy(shared = it.groups.any { group -> group.id in invitedGroups })
+                        } else it
+                    }
+                } else this
+            }
+
         emit(users + groups)
     }
         .catch { error -> handleError(error) }
@@ -92,12 +109,14 @@ open class UserListViewModel(
     protected fun updateListState(searchValue: String = "") {
         viewModelScope.launch {
             cachedMembersFlow.replayCache.lastOrNull()?.let { cachedMembers ->
-                val users = cachedMembers.filterIsInstance<User>().filter {
-                    it.displayNameFromHtml.startsWith(searchValue, true)
-                }
-                val groups = cachedMembers.filterIsInstance<Group>().filter {
-                    it.name.startsWith(searchValue, true)
-                }
+                val groups = cachedMembers
+                    .filterIsInstance<Group>()
+                    .filter { it.name.startsWith(searchValue, true) }
+
+                val users = cachedMembers
+                    .filterIsInstance<User>()
+                    .filter { it.displayNameFromHtml.startsWith(searchValue, true) }
+
                 _viewState.update { it.copy(loading = false, users = users, groups = groups) }
             }
         }
