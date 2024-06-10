@@ -175,7 +175,7 @@ object ManagerUiUtils {
         }
     }
 
-    fun getAccessList(extension: StringUtils.Extension): List<Int> {
+    fun getAccessList(extension: StringUtils.Extension, removable: Boolean = false): List<Int> {
         return when (extension) {
             StringUtils.Extension.DOC, StringUtils.Extension.DOCXF -> {
                 listOf(
@@ -218,7 +218,7 @@ object ManagerUiUtils {
                     ApiContract.ShareCode.RESTRICT
                 )
             }
-        }
+        }.run { if (removable) plus(ApiContract.ShareCode.NONE) else this }
     }
 
     fun setAccessIcon(icon: ImageView?, accessCode: Int) {
