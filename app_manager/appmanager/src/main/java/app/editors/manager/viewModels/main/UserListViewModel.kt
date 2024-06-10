@@ -2,35 +2,38 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.documents.core.model.login.RoomGroup
+import app.documents.core.model.login.Group
+import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.ShareService
-import app.documents.core.providers.RoomProvider
+import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
-import app.editors.manager.app.App
-import app.editors.manager.app.accountOnline
-import app.editors.manager.managers.utils.RoomUtils
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.tools.ResourcesProvider
+import retrofit2.HttpException
 import kotlin.time.Duration.Companion.milliseconds
 
 data class UserListState(
     val loading: Boolean = true,
     val requestLoading: Boolean = false,
     val users: List<User> = emptyList(),
-    val groups: List<RoomGroup> = emptyList(),
+    val groups: List<Group> = emptyList(),
     val access: Int? = null,
     val selected: List<String> = emptyList(),
 )
@@ -40,72 +43,68 @@ sealed class UserListEffect {
     data class Error(val message: String) : UserListEffect()
 }
 
-sealed class UserListMode {
-    data object Invite : UserListMode()
-    data object ChangeOwner : UserListMode()
-}
-
 @OptIn(FlowPreview::class)
-class UserListViewModel(
-    private val roomId: String,
-    private val roomOwnerId: String = "",
-    roomType: Int? = null,
-    private val mode: UserListMode,
+open class UserListViewModel(
+    access: Int?,
     private val shareService: ShareService,
-    private val roomProvider: RoomProvider,
     private val resourcesProvider: ResourcesProvider,
 ) : ViewModel() {
 
-    private val _viewState: MutableStateFlow<UserListState> = MutableStateFlow(
-        UserListState(
-            access = roomType?.let { RoomUtils.getAccessOptions(it, false).lastOrNull() }
-        )
-    )
+    private val _viewState: MutableStateFlow<UserListState> = MutableStateFlow(UserListState(access = access))
     val viewState: StateFlow<UserListState> = _viewState
 
     private val _effect: MutableSharedFlow<UserListEffect> = MutableSharedFlow(1)
     val effect: SharedFlow<UserListEffect> = _effect.asSharedFlow()
 
-    private val filterFlow: MutableSharedFlow<String> = MutableSharedFlow()
+    private val searchFlow: MutableSharedFlow<String> = MutableSharedFlow(1)
+
+    protected open var cachedMembersFlow: SharedFlow<List<Member>> = flow {
+        val users = shareService.getUsers(getOptions()).response
+        val groups = shareService.getGroups(getOptions()).response
+        emit(users + groups)
+    }
+        .catch { error -> handleError(error) }
+        .onCompletion { updateListState() }
+        .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
+
+    protected fun handleError(error: Throwable) {
+        val message = when (error) {
+            is HttpException -> resourcesProvider.getString(R.string.errors_client_error) + error.code()
+            else -> resourcesProvider.getString(R.string.errors_unknown_error)
+        }
+        _effect.tryEmit(UserListEffect.Error(message))
+    }
 
     init {
+        collectSearchFlow()
+    }
+
+    private fun collectSearchFlow() {
         viewModelScope.launch {
-            filterFlow
+            searchFlow
                 .onStart { emit("") }
                 .distinctUntilChanged()
                 .debounce(500.milliseconds)
-                .collect { searchValue ->
-                    try {
-                        val users = async {
-                            shareService.getRoomUsers(roomId, getOptions(searchValue))
-                                .response
-                                .filterNot {
-                                    when (mode) {
-                                        UserListMode.Invite -> it.isOwner
-                                        UserListMode.ChangeOwner -> it.isVisitor || it.id == roomOwnerId
-                                    }
-                                }
-                                .map {
-                                    it.copy(
-                                        avatarMedium = App.getApp().accountOnline?.portal?.urlWithScheme +
-                                                it.avatarMedium
-                                    )
-                                }
-                        }
+                .collect(::updateListState)
+        }
+    }
 
-                        val groups = async { shareService.getRoomGroups(roomId, getOptions(searchValue)).response }
-
-                        _viewState.update { it.copy(loading = false, users = users.await(), groups = groups.await()) }
-                    } catch (error: Throwable) {
-                        val errorMessage = error.message ?: resourcesProvider.getString(R.string.errors_unknown_error)
-                        _effect.emit(UserListEffect.Error(errorMessage))
-                    }
+    protected fun updateListState(searchValue: String = "") {
+        viewModelScope.launch {
+            cachedMembersFlow.replayCache.lastOrNull()?.let { cachedMembers ->
+                val users = cachedMembers.filterIsInstance<User>().filter {
+                    it.displayNameFromHtml.startsWith(searchValue, true)
                 }
+                val groups = cachedMembers.filterIsInstance<Group>().filter {
+                    it.name.startsWith(searchValue, true)
+                }
+                _viewState.update { it.copy(loading = false, users = users, groups = groups) }
+            }
         }
     }
 
     fun search(searchValue: String) {
-        filterFlow.tryEmit(searchValue)
+        searchFlow.tryEmit(searchValue)
     }
 
     fun toggleSelect(userId: String) {
@@ -116,31 +115,6 @@ class UserListViewModel(
             selected.add(userId)
         }
         _viewState.update { it.copy(selected = selected) }
-    }
-
-    fun setOwner(userId: String, leave: Boolean) {
-        viewModelScope.launch {
-            _viewState.update { it.copy(requestLoading = true) }
-            try {
-                val room = roomProvider.setRoomOwner(roomId, userId)
-                if (leave) {
-                    roomProvider.leaveRoom(roomId, App.getApp().accountOnline?.id.orEmpty())
-                }
-                _effect.emit(
-                    UserListEffect.Success(
-                        User(
-                            id = room.createdBy.id,
-                            displayName = room.createdBy.displayName
-                        )
-                    )
-                )
-            } catch (error: Throwable) {
-                val errorMessage = error.message ?: resourcesProvider.getString(R.string.errors_unknown_error)
-                _effect.emit(UserListEffect.Error(errorMessage))
-            } finally {
-                _viewState.update { it.copy(requestLoading = false) }
-            }
-        }
     }
 
     fun setAccess(access: Int) {
@@ -155,12 +129,19 @@ class UserListViewModel(
         return _viewState.value.users.filter { _viewState.value.selected.contains(it.id) }
     }
 
-    fun getSelectedGroups(): List<RoomGroup> {
+    fun getSelectedGroups(): List<Group> {
         return _viewState.value.groups.filter { _viewState.value.selected.contains(it.id) }
     }
 
-    private fun getOptions(searchValue: String): Map<String, String> = mapOf(
-        ApiContract.Parameters.ARG_FILTER_VALUE to searchValue,
+    protected fun emitEffect(effect: UserListEffect) {
+        _effect.tryEmit(effect)
+    }
+
+    protected fun updateState(block: (UserListState) -> UserListState) {
+        _viewState.update(block)
+    }
+
+    protected fun getOptions(): Map<String, String> = mapOf(
         ApiContract.Parameters.ARG_SORT_BY to ApiContract.Parameters.VAL_SORT_BY_FIRST_NAME,
         ApiContract.Parameters.ARG_SORT_ORDER to ApiContract.Parameters.VAL_SORT_ORDER_ASC,
         ApiContract.Parameters.ARG_FILTER_OP to ApiContract.Parameters.VAL_FILTER_OP_CONTAINS

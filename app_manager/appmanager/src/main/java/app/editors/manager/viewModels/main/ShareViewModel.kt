@@ -2,12 +2,14 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.share.ShareService
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.RequestExternal
 import app.documents.core.network.share.models.request.RequestShare
 import app.documents.core.network.share.models.request.RequestShareItem
+import app.editors.manager.managers.utils.ManagerUiUtils
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,9 +30,9 @@ data class ShareState(
     val users: List<Share> = emptyList(),
     val groups: List<Share> = emptyList(),
     val externalLink: Share = Share(),
-    val extension: StringUtils.Extension = StringUtils.Extension.UNKNOWN,
     val webUrl: String? = null,
-    val folder: Boolean = false
+    val folder: Boolean = false,
+    val accessList: List<Int> = ManagerUiUtils.getAccessList(StringUtils.Extension.UNKNOWN, true)
 )
 
 sealed class ShareEffect {
@@ -76,7 +78,7 @@ class ShareViewModel(
                     _state.update {
                         it.copy(
                             webUrl = fileInfo.webUrl,
-                            extension = StringUtils.getExtension(fileInfo.fileExst)
+                            accessList = ManagerUiUtils.getAccessList(StringUtils.getExtension(fileInfo.fileExst), true)
                         )
                     }
                     shareApi.getShareFile(itemId).response
@@ -163,13 +165,20 @@ class ShareViewModel(
             val request = RequestShare(listOf(RequestShareItem(userId, access.toString())))
             if (!folder) shareApi.setFileAccess(itemId, request) else shareApi.setFolderAccess(itemId, request)
             _state.update { state ->
-                state.copy(
-                    users = state.users.map { user ->
-                        if (user.sharedTo.id == userId) {
-                            user.copy(access = access.toString())
-                        } else user
-                    }
-                )
+                if (access == ApiContract.ShareCode.NONE) {
+                    state.copy(
+                        users = state.users
+                            .toMutableList()
+                            .apply { removeIf { it.sharedTo.id == userId } })
+                } else {
+                    state.copy(
+                        users = state.users.map { user ->
+                            if (user.sharedTo.id == userId)
+                                user.copy(access = access.toString()) else
+                                user
+                        }
+                    )
+                }
             }
         }
     }

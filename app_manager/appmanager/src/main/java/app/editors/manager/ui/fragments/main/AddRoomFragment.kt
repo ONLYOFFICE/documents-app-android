@@ -83,9 +83,9 @@ import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.viewModels.main.AddRoomData
 import app.editors.manager.viewModels.main.AddRoomViewModel
+import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.StorageState
 import app.editors.manager.viewModels.main.UserListMode
-import app.editors.manager.viewModels.main.UserListViewModel
 import app.editors.manager.viewModels.main.ViewState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -230,7 +230,7 @@ class AddRoomFragment : ComposeDialogFragment() {
                     )
                 }
                 composable(Screens.ChangeOwner.name) {
-                    val userListViewModel = UserListViewModel(
+                    val userListViewModel = RoomUserListViewModel(
                         roomId = room?.id.orEmpty(),
                         roomType = roomType,
                         roomOwnerId = roomState.value.owner.id,

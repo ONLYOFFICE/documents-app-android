@@ -50,7 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import app.documents.core.model.login.RoomGroup
+import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.accountOnline
@@ -90,7 +90,7 @@ fun UserListScreen(
     onBack: () -> Unit,
     onSnackBar: (String) -> Unit,
     onSuccess: ((User) -> Unit)? = null,
-    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> },
+    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> }
 ) {
     val state by viewModel.viewState.collectAsState()
 
@@ -129,7 +129,7 @@ private fun MainScreen(
     onSearch: (String) -> Unit,
     onBack: () -> Unit,
     onSnackBar: (String) -> Unit,
-    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> },
+    bottomContent: @Composable (count: Int, access: Int) -> Unit = { _, _ -> },
 ) {
     val searchState = remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -211,7 +211,7 @@ private fun MainScreen(
                                                     withLetter = true,
                                                     letter = letter?.toString().takeIf { index == 0 },
                                                     name = user.displayName,
-                                                    subtitle = user.email.orEmpty(),
+                                                    subtitle = user.groups.joinToString { group -> group.name },
                                                     avatar = GlideUtils.getCorrectLoad(user.avatarMedium, token),
                                                     shared = disableInvited && user.shared,
                                                     selected = state.selected.contains(user.id),
@@ -349,12 +349,14 @@ private fun LazyItemScope.UserItem(
         ) {
             Text(
                 text = name,
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1,
+                maxLines = 1
             )
-            subtitle?.let {
+            if (!subtitle.isNullOrEmpty()) {
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.body2,
+                    maxLines = 1,
                     color = MaterialTheme.colors.colorTextSecondary
                 )
             }
@@ -391,7 +393,7 @@ private fun PreviewMainWithBottom() {
                     User().copy(displayName = "5mike", id = "id6", email = "email", shared = true)
                 ),
                 groups = listOf(
-                    RoomGroup("", "group 1")
+                    Group("", "group 1")
                 )
             ),
             disableInvited = true,
@@ -439,7 +441,7 @@ private fun PreviewMain() {
                     User().copy(displayName = "5mike", id = "id6", email = "email")
                 ),
                 groups = listOf(
-                    RoomGroup("", "group 1")
+                    Group("", "group 1")
                 )
             ),
             withGroups = false,

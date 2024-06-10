@@ -27,7 +27,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import app.documents.core.model.login.RoomGroup
+import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.ExternalLink
@@ -43,11 +43,11 @@ import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.fragments.share.link.RoomAccessScreen
 import app.editors.manager.ui.views.custom.UserListBottomContent
-import app.editors.manager.viewModels.main.InviteAccessViewModel
 import app.editors.manager.viewModels.main.InviteUserState
 import app.editors.manager.viewModels.main.InviteUserViewModel
+import app.editors.manager.viewModels.main.RoomInviteAccessViewModel
+import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.UserListMode
-import app.editors.manager.viewModels.main.UserListViewModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.compose.ui.theme.ManagerTheme
@@ -162,7 +162,7 @@ fun InviteUsersScreen(
             }
             composable(Screens.UserList.name) {
                 val userListViewModel = viewModel {
-                    UserListViewModel(
+                    RoomUserListViewModel(
                         mode = UserListMode.Invite,
                         roomId = roomId,
                         roomType = roomType,
@@ -215,17 +215,17 @@ fun InviteUsersScreen(
                 )
             ) {
                 val inviteAccessViewModel = viewModel {
-                    InviteAccessViewModel(
+                    RoomInviteAccessViewModel(
                         roomId = roomId,
                         roomProvider = roomProvider,
                         access = it.arguments?.getInt("access") ?: 2,
                         users = it.arguments?.getJsonString<List<User>>("users", true).orEmpty(),
-                        groups = it.arguments?.getJsonString<List<RoomGroup>>("groups", true).orEmpty(),
+                        groups = it.arguments?.getJsonString<List<Group>>("groups", true).orEmpty(),
                         emails = it.arguments?.getJsonString<List<String>>("emails").orEmpty(),
                     )
                 }
                 InviteAccessScreen(
-                    roomType = roomType,
+                    accessList = remember { RoomUtils.getAccessOptions(roomType, false) },
                     viewModel = inviteAccessViewModel,
                     onBack = navController::popBackStackWhenResumed,
                     onSnackBar = onSnackBar,

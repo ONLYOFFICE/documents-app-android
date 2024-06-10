@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,11 +28,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import app.documents.core.model.login.RoomGroup
+import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
-import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.views.custom.AccessIconButton
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.InviteAccessEffect
@@ -55,14 +53,13 @@ import kotlin.random.Random
 
 @Composable
 fun InviteAccessScreen(
-    roomType: Int,
+    accessList: List<Int>,
     viewModel: InviteAccessViewModel,
     onBack: () -> Unit,
     onSuccess: () -> Unit,
     onSnackBar: (String) -> Unit
 ) {
     val context = LocalContext.current
-    val accessList = remember { RoomUtils.getAccessOptions(roomType, false) }
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -141,7 +138,7 @@ private fun MainScreen(
                         items(users) { user ->
                             InviteItem(
                                 title = user.displayName,
-                                subtitle = user.email,
+                                subtitle = user.groups.joinToString { group -> group.name },
                                 avatar = user.avatarMedium,
                                 access = state.idAccessList[user.id] ?: -1,
                                 accessList = accessList,
@@ -254,14 +251,23 @@ private fun <T> InviteItem(
         }
         Column {
             Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 16.dp),
+                modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = title)
-                    subtitle?.let { Text(text = it, style = MaterialTheme.typography.body2) }
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.body1,
+                        maxLines = 1
+                    )
+                    if (!subtitle.isNullOrEmpty()) {
+                        Text(
+                            text = subtitle,
+                            maxLines = 1,
+                            style = MaterialTheme.typography.body2,
+                            color = MaterialTheme.colors.colorTextSecondary
+                        )
+                    }
                 }
                 AccessIconButton(
                     access = access,
@@ -307,9 +313,9 @@ private fun InviteAccessScreenUsersPreview() {
                 email = "email@email $it",
             )
         }.toList()
-        val groups = Array(5) { RoomGroup(name = "group $it") }.toList()
+        val groups = Array(5) { Group(name = "group $it") }.toList()
         val accessList = users.map(User::id)
-            .plus(groups.map(RoomGroup::id))
+            .plus(groups.map(Group::id))
             .associateWith { Random.nextInt(0, 2) }
 
         MainScreen(

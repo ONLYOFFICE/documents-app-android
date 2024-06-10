@@ -6,8 +6,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -51,10 +54,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import app.documents.core.model.login.Group
+import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.SharedTo
@@ -63,18 +69,25 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.app.api
 import app.editors.manager.app.shareApi
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.ui.activities.base.BaseAppActivity
+import app.editors.manager.ui.fragments.share.InviteAccessScreen
+import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.ui.views.custom.AccessIconButton
 import app.editors.manager.ui.views.custom.SearchAppBar
+import app.editors.manager.ui.views.custom.UserListBottomContent
+import app.editors.manager.viewModels.main.InviteAccessViewModel
 import app.editors.manager.viewModels.main.ShareEffect
 import app.editors.manager.viewModels.main.ShareState
 import app.editors.manager.viewModels.main.ShareViewModel
+import app.editors.manager.viewModels.main.UserListViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorButtonBackground
 import lib.compose.ui.theme.colorTextSecondary
+import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.ActivityIndicatorView
 import lib.compose.ui.views.AnimatedVisibilityVerticalFade
 import lib.compose.ui.views.AppHeaderItem
@@ -84,12 +97,15 @@ import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.PlaceholderView
 import lib.compose.ui.views.TopAppBarAction
 import lib.compose.ui.views.VerticalSpacer
+import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.capitalize
+import lib.toolkit.base.managers.utils.getJsonString
 import lib.toolkit.base.managers.utils.openSendTextActivity
 import retrofit2.HttpException
+import java.net.URLEncoder
 
 class ShareActivity : BaseAppActivity() {
 
@@ -135,6 +151,16 @@ class ShareActivity : BaseAppActivity() {
                         .orEmpty()
                 }
 
+                val accessListWithOutRestricted = state.accessList.filter {
+                    it != ApiContract.ShareCode.RESTRICT && it != ApiContract.ShareCode.NONE
+                }
+
+                fun onSnackBar(text: String) {
+                    UiUtils.getSnackBar(this@ShareActivity)
+                        .setText(text)
+                        .show()
+                }
+
                 LaunchedEffect(Unit) {
                     viewModel.effect.collect { effect ->
                         when (effect) {
@@ -143,9 +169,7 @@ class ShareActivity : BaseAppActivity() {
                                     is HttpException -> getString(R.string.errors_client_error) + error.code()
                                     else -> getString(R.string.errors_unknown_error)
                                 }
-                                UiUtils.getSnackBar(this@ShareActivity)
-                                    .setText(text)
-                                    .show()
+                                onSnackBar(text)
                             }
                             is ShareEffect.InternalLink -> {
                                 KeyboardUtils.setDataToClipboard(
@@ -157,9 +181,7 @@ class ShareActivity : BaseAppActivity() {
                                     },
                                     "Internal link"
                                 )
-                                UiUtils.getSnackBar(this@ShareActivity)
-                                    .setText(R.string.share_clipboard_internal_copied)
-                                    .show()
+                                onSnackBar(getString(R.string.share_clipboard_internal_copied))
                             }
                         }
                     }
@@ -175,7 +197,6 @@ class ShareActivity : BaseAppActivity() {
                             onSearch = viewModel::search,
                             onLinkAccess = viewModel::setExternalLinkAccess,
                             onUserAccess = viewModel::setUserAccess,
-                            accessList = ManagerUiUtils.getAccessList(state.extension),
                             onBack = ::finish,
                             onCopyExternalLink = {
                                 KeyboardUtils.setDataToClipboard(
@@ -183,15 +204,93 @@ class ShareActivity : BaseAppActivity() {
                                     state.externalLink.sharedTo.shareLink,
                                     getString(R.string.share_clipboard_external_link_label)
                                 )
-                                UiUtils.getSnackBar(this@ShareActivity)
-                                    .setText(R.string.share_clipboard_external_copied)
-                                    .show()
+                                onSnackBar(getString(R.string.share_clipboard_external_copied))
                             },
                             onSendExternalLink = {
                                 openSendTextActivity(
                                     getString(R.string.share_clipboard_external_link_label),
                                     state.externalLink.sharedTo.shareLink
                                 )
+                            },
+                            onAddUsers = {
+                                navController.navigate(Screens.AddUsers.name)
+                            }
+                        )
+                    }
+                    composable(Screens.AddUsers.name) {
+                        val userListViewModel = viewModel {
+                            UserListViewModel(
+                                access = accessListWithOutRestricted.last(),
+                                resourcesProvider = ResourcesProvider(context),
+                                shareService = shareApi
+                            )
+                        }
+                        UserListScreen(
+                            viewModel = userListViewModel,
+                            title = R.string.share_invite_user,
+                            onClick = userListViewModel::toggleSelect,
+                            closeable = false,
+                            withGroups = true,
+                            disableInvited = true,
+                            onBack = navController::popBackStackWhenResumed,
+                            onSnackBar = {
+                                UiUtils.getSnackBar(this@ShareActivity)
+                                    .setText(it)
+                                    .show()
+                            },
+                            bottomContent = { count, access ->
+                                UserListBottomContent(
+                                    nextButtonTitle = lib.toolkit.base.R.string.common_next,
+                                    count = count,
+                                    access = accessListWithOutRestricted.last(),
+                                    accessList = accessListWithOutRestricted,
+                                    onAccess = userListViewModel::setAccess,
+                                    onDelete = userListViewModel::onDelete
+                                ) {
+                                    val users =
+                                        Json.encodeToString(userListViewModel.getSelectedUsers().ifEmpty { null })
+                                    val groups =
+                                        Json.encodeToString(userListViewModel.getSelectedGroups().ifEmpty { null })
+                                    navController.navigate(
+                                        "${Screens.InviteAccess.name}?" +
+                                                "users=${URLEncoder.encode(users, Charsets.UTF_8.toString())}&" +
+                                                "groups=${URLEncoder.encode(groups, Charsets.UTF_8.toString())}&" +
+                                                "access=$access"
+                                    )
+                                }
+                            }
+                        )
+                    }
+                    composable(
+                        route = "${Screens.InviteAccess.name}?" +
+                                "users={users}&" +
+                                "groups={groups}&" +
+                                "access={access}",
+                        arguments = listOf(
+                            navArgument("users") { type = NavType.StringType; nullable = true },
+                            navArgument("groups") { type = NavType.StringType; nullable = true },
+                            navArgument("access") { type = NavType.IntType; defaultValue = 2 }
+                        )
+                    ) {
+                        val inviteAccessViewModel = viewModel {
+                            InviteAccessViewModel(
+                                access = it.arguments?.getInt("access") ?: 2,
+                                users = it.arguments?.getJsonString<List<User>>("users", true).orEmpty(),
+                                groups = it.arguments?.getJsonString<List<Group>>("groups", true).orEmpty()
+                            )
+                        }
+                        InviteAccessScreen(
+                            accessList = accessListWithOutRestricted,
+                            viewModel = inviteAccessViewModel,
+                            onBack = navController::popBackStackWhenResumed,
+                            onSnackBar = ::onSnackBar,
+                            onSuccess = {
+                                onSnackBar(getString(R.string.invite_link_send_success))
+                                navController.navigate(Screens.Main.name) {
+                                    popUpTo(Screens.Main.name) {
+                                        inclusive = true
+                                    }
+                                }
                             }
                         )
                     }
@@ -202,7 +301,7 @@ class ShareActivity : BaseAppActivity() {
 }
 
 private enum class Screens {
-    Main, Members
+    Main, AddUsers, InviteAccess
 }
 
 @Composable
@@ -210,13 +309,13 @@ private fun MainScreen(
     shareState: ShareState,
     token: String,
     portalWithScheme: String,
-    accessList: List<Int>,
     onCopyInternalLink: () -> Unit,
     onCopyExternalLink: () -> Unit,
     onSendExternalLink: () -> Unit,
     onSearch: (String) -> Unit,
     onLinkAccess: (Int) -> Unit,
     onUserAccess: (String, Int) -> Unit,
+    onAddUsers: () -> Unit,
     onBack: () -> Unit
 ) {
     var searchState by remember { mutableStateOf(false) }
@@ -257,13 +356,17 @@ private fun MainScreen(
             }
         },
         fab = {
-            FloatingActionButton({
-
-            }) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_add_users),
-                    contentDescription = null
-                )
+            AnimatedVisibility(
+                visible = !searchState,
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut()
+            ) {
+                FloatingActionButton(onClick = onAddUsers) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_add_users),
+                        contentDescription = null
+                    )
+                }
             }
         }
     ) {
@@ -287,7 +390,7 @@ private fun MainScreen(
                         AnimatedVisibilityVerticalFade(visible = !searchState && !shareState.folder) {
                             ExternalLinkContent(
                                 externalLink = shareState.externalLink,
-                                accessList = accessList,
+                                accessList = shareState.accessList.filter { it != ApiContract.ShareCode.NONE },
                                 onAccess = onLinkAccess,
                                 onCopy = onCopyExternalLink,
                                 onSend = onSendExternalLink
@@ -299,7 +402,7 @@ private fun MainScreen(
                         shareList = shareState.users,
                         portalWithScheme = portalWithScheme,
                         token = token,
-                        accessList = accessList,
+                        accessList = shareState.accessList,
                         onAccess = onUserAccess
                     )
                     ListContent(
@@ -307,7 +410,7 @@ private fun MainScreen(
                         shareList = shareState.groups,
                         portalWithScheme = portalWithScheme,
                         token = token,
-                        accessList = accessList,
+                        accessList = shareState.accessList,
                         onAccess = onUserAccess
                     )
                 }
@@ -414,7 +517,7 @@ private fun UserItem(
         if (share.sharedTo.avatarMedium.isNotEmpty()) {
             GlideImage(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(40.dp)
                     .clip(CircleShape),
                 model = GlideUtils.getCorrectLoad(
                     token = token,
@@ -426,7 +529,7 @@ private fun UserItem(
         } else {
             Box(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(40.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colors.colorButtonBackground),
                 contentAlignment = Alignment.Center
@@ -535,9 +638,9 @@ private fun ShareScreenPreview() {
             onSearch = {},
             onLinkAccess = {},
             onUserAccess = { _, _ -> },
-            accessList = listOf(),
             onCopyExternalLink = {},
-            onSendExternalLink = {}
+            onSendExternalLink = {},
+            onAddUsers = {}
         ) {}
     }
 }

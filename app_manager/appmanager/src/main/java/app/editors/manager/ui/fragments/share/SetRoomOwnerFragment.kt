@@ -15,8 +15,8 @@ import app.editors.manager.app.roomProvider
 import app.editors.manager.app.shareApi
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
+import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.UserListMode
-import app.editors.manager.viewModels.main.UserListViewModel
 import com.google.android.material.appbar.AppBarLayout
 import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.managers.utils.UiUtils
@@ -59,7 +59,7 @@ class SetRoomOwnerFragment : BaseDialogFragment() {
         (view as ComposeView).setContent {
             ManagerTheme {
                 val viewModel = viewModel {
-                    UserListViewModel(
+                    RoomUserListViewModel(
                         mode = UserListMode.ChangeOwner,
                         roomId = checkNotNull(arguments?.getSerializableExt<String>(ROOM_ID_KEY)),
                         roomOwnerId = checkNotNull(arguments?.getSerializableExt<String>(ROOM_CREATED_BY_ID_KEY)),

@@ -2,10 +2,9 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.documents.core.model.login.RoomGroup
+import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.providers.RoomProvider
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -20,7 +19,7 @@ data class InviteAccessState(
     val access: Int,
     val emails: List<String> = emptyList(),
     val users: List<User> = emptyList(),
-    val groups: List<RoomGroup> = emptyList(),
+    val groups: List<Group> = emptyList(),
     val idAccessList: Map<String, Int> = emptyMap(),
 )
 
@@ -30,13 +29,11 @@ sealed class InviteAccessEffect {
     data class Error(val exception: Exception) : InviteAccessEffect()
 }
 
-class InviteAccessViewModel(
-    private val roomId: String,
-    private val roomProvider: RoomProvider,
+open class InviteAccessViewModel(
     access: Int,
     users: List<User>,
-    groups: List<RoomGroup>,
-    emails: List<String>
+    groups: List<Group>,
+    emails: List<String> = emptyList()
 ) : ViewModel() {
 
     companion object {
@@ -44,7 +41,7 @@ class InviteAccessViewModel(
         fun initState(
             access: Int,
             users: List<User>,
-            groups: List<RoomGroup>,
+            groups: List<Group>,
             emails: List<String>
         ): InviteAccessState {
             return InviteAccessState(
@@ -55,7 +52,7 @@ class InviteAccessViewModel(
                 idAccessList = users.map(User::id)
                     .plus(emails)
                     .associateWith { access } +
-                        groups.map(RoomGroup::id)
+                        groups.map(Group::id)
                             .associateWith {
                                 access.takeIf {
                                     it !in arrayOf(
@@ -91,30 +88,17 @@ class InviteAccessViewModel(
         }
     }
 
-    fun invite() {
+    open fun invite() {
         viewModelScope.launch {
-            try {
-                _state.update { it.copy(loading = true) }
-                if (_state.value.emails.isNotEmpty()) {
-                    roomProvider.inviteByEmail(
-                        roomId,
-                        state.value.emails.associateWith { _state.value.idAccessList[it] ?: 2 }
-                    )
-                } else {
-                    roomProvider.inviteById(
-                        roomId,
-                        state.value.users
-                            .map(User::id)
-                            .plus(state.value.groups.map(RoomGroup::id))
-                            .associateWith { _state.value.idAccessList[it] ?: 2 }
-                    )
-                }
-                _effect.emit(InviteAccessEffect.Success)
-            } catch (e: Exception) {
-                _effect.emit(InviteAccessEffect.Error(e))
-            } finally {
-                _state.update { it.copy(loading = false) }
-            }
+
         }
+    }
+
+    protected fun updateState(block: (InviteAccessState) -> InviteAccessState) {
+        _state.update(block)
+    }
+
+    protected fun emitEffect(effect: InviteAccessEffect) {
+        _effect.tryEmit(effect)
     }
 }
