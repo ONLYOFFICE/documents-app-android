@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.share.ShareService
+import app.documents.core.network.share.models.request.RequestShare
+import app.documents.core.network.share.models.request.RequestShareItem
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -33,7 +36,10 @@ open class InviteAccessViewModel(
     access: Int,
     users: List<User>,
     groups: List<Group>,
-    emails: List<String> = emptyList()
+    emails: List<String> = emptyList(),
+    private val shareService: ShareService? = null,
+    private val itemId: String? = null,
+    private val isFolder: Boolean = false
 ) : ViewModel() {
 
     companion object {
@@ -90,7 +96,28 @@ open class InviteAccessViewModel(
 
     open fun invite() {
         viewModelScope.launch {
+            try {
+                _state.update { it.copy(loading = true) }
+                val api = checkNotNull(shareService) { "api can't be null" }
+                val itemId = checkNotNull(itemId) { "item id can't be null" }
 
+                val request = RequestShare(
+                    share = state.value.users.map(User::id)
+                        .plus(state.value.groups.map(Group::id))
+                        .associateWith { state.value.idAccessList[it] }
+                        .mapNotNull { (id, access) -> access?.let { RequestShareItem(id, it.toString()) } }
+                )
+                if (isFolder) {
+                    api.setFolderAccess(itemId, request)
+                } else {
+                    api.setFileAccess(itemId, request)
+                }
+                emitEffect(InviteAccessEffect.Success)
+            } catch (e: Exception) {
+                emitEffect(InviteAccessEffect.Error(e))
+            } finally {
+                _state.update { it.copy(loading = false) }
+            }
         }
     }
 

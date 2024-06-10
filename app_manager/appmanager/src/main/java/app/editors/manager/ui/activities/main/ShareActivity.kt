@@ -131,12 +131,14 @@ class ShareActivity : BaseAppActivity() {
         setContent {
             ManagerTheme {
                 val navController = rememberNavController()
+                val isFolder = remember { intent.getBooleanExtra(KEY_SHARE_IS_FOLDER, false) }
+                val itemId = remember { intent.getStringExtra(KEY_SHARE_ITEM_ID).orEmpty() }
                 val viewModel = viewModel {
                     ShareViewModel(
-                        itemId = intent.getStringExtra(KEY_SHARE_ITEM_ID).orEmpty(),
+                        itemId = itemId,
                         shareApi = shareApi,
                         managerApi = api,
-                        folder = intent.getBooleanExtra(KEY_SHARE_IS_FOLDER, false)
+                        folder = isFolder
                     )
                 }
                 val state by viewModel.state.collectAsState()
@@ -196,7 +198,7 @@ class ShareActivity : BaseAppActivity() {
                             onCopyInternalLink = viewModel::copyInternalLink,
                             onSearch = viewModel::search,
                             onLinkAccess = viewModel::setExternalLinkAccess,
-                            onUserAccess = viewModel::setUserAccess,
+                            onMemberAccess = viewModel::setMemberAccess,
                             onBack = ::finish,
                             onCopyExternalLink = {
                                 KeyboardUtils.setDataToClipboard(
@@ -276,7 +278,10 @@ class ShareActivity : BaseAppActivity() {
                             InviteAccessViewModel(
                                 access = it.arguments?.getInt("access") ?: 2,
                                 users = it.arguments?.getJsonString<List<User>>("users", true).orEmpty(),
-                                groups = it.arguments?.getJsonString<List<Group>>("groups", true).orEmpty()
+                                groups = it.arguments?.getJsonString<List<Group>>("groups", true).orEmpty(),
+                                isFolder = isFolder,
+                                shareService = shareApi,
+                                itemId = itemId
                             )
                         }
                         InviteAccessScreen(
@@ -285,6 +290,7 @@ class ShareActivity : BaseAppActivity() {
                             onBack = navController::popBackStackWhenResumed,
                             onSnackBar = ::onSnackBar,
                             onSuccess = {
+                                viewModel.fetchShareList()
                                 onSnackBar(getString(R.string.invite_link_send_success))
                                 navController.navigate(Screens.Main.name) {
                                     popUpTo(Screens.Main.name) {
@@ -314,7 +320,7 @@ private fun MainScreen(
     onSendExternalLink: () -> Unit,
     onSearch: (String) -> Unit,
     onLinkAccess: (Int) -> Unit,
-    onUserAccess: (String, Int) -> Unit,
+    onMemberAccess: (String, Int, Boolean) -> Unit,
     onAddUsers: () -> Unit,
     onBack: () -> Unit
 ) {
@@ -403,7 +409,7 @@ private fun MainScreen(
                         portalWithScheme = portalWithScheme,
                         token = token,
                         accessList = shareState.accessList,
-                        onAccess = onUserAccess
+                        onAccess = { id, access -> onMemberAccess.invoke(id, access, false) }
                     )
                     ListContent(
                         title = R.string.rooms_info_groups_title,
@@ -411,7 +417,7 @@ private fun MainScreen(
                         portalWithScheme = portalWithScheme,
                         token = token,
                         accessList = shareState.accessList,
-                        onAccess = onUserAccess
+                        onAccess = { id, access -> onMemberAccess.invoke(id, access, true) }
                     )
                 }
             }
@@ -637,7 +643,7 @@ private fun ShareScreenPreview() {
             onCopyInternalLink = {},
             onSearch = {},
             onLinkAccess = {},
-            onUserAccess = { _, _ -> },
+            onMemberAccess = { _, _, _ -> },
             onCopyExternalLink = {},
             onSendExternalLink = {},
             onAddUsers = {}

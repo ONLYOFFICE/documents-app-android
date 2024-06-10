@@ -68,7 +68,7 @@ class ShareViewModel(
         collectSearchFlow()
     }
 
-    private fun fetchShareList() {
+    fun fetchShareList() {
         viewModelScope.launch {
             try {
                 val shareList = if (folder) {
@@ -160,24 +160,44 @@ class ShareViewModel(
         }
     }
 
-    fun setUserAccess(userId: String, access: Int) {
+    fun setMemberAccess(userId: String, access: Int, isGroup: Boolean) {
         request {
             val request = RequestShare(listOf(RequestShareItem(userId, access.toString())))
             if (!folder) shareApi.setFileAccess(itemId, request) else shareApi.setFolderAccess(itemId, request)
             _state.update { state ->
                 if (access == ApiContract.ShareCode.NONE) {
-                    state.copy(
-                        users = state.users
-                            .toMutableList()
-                            .apply { removeIf { it.sharedTo.id == userId } })
+                    if (isGroup) {
+                        state.copy(
+                            groups = state.groups
+                                .toMutableList()
+                                .apply { removeIf { it.sharedTo.id == userId } }
+                        )
+
+                    } else {
+                        state.copy(
+                            users = state.users
+                                .toMutableList()
+                                .apply { removeIf { it.sharedTo.id == userId } }
+                        )
+                    }
                 } else {
-                    state.copy(
-                        users = state.users.map { user ->
-                            if (user.sharedTo.id == userId)
-                                user.copy(access = access.toString()) else
-                                user
-                        }
-                    )
+                    if (isGroup) {
+                        state.copy(
+                            groups = state.groups.map { group ->
+                                if (group.sharedTo.id == userId)
+                                    group.copy(access = access.toString()) else
+                                    group
+                            }
+                        )
+                    } else {
+                        state.copy(
+                            users = state.users.map { user ->
+                                if (user.sharedTo.id == userId)
+                                    user.copy(access = access.toString()) else
+                                    user
+                            }
+                        )
+                    }
                 }
             }
         }
