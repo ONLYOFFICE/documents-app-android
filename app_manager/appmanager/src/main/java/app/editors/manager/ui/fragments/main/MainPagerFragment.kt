@@ -178,9 +178,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
             val fragments: MutableList<MainPagerContainer> = mutableListOf()
             childFragmentManager.fragments.forEachIndexed { index, fragment ->
-                fragments.add(MainPagerContainer(fragment, tabTile?.get(index) ?: "", type?.get(index) ?: 0))
+                if (fragment is DocsBaseFragment) {
+                    fragments.add(MainPagerContainer(fragment, tabTile?.get(index) ?: "", type?.get(index) ?: 0))
+                }
             }
-
             setAdapter(fragments, true)
         } else {
             checkBundle()
