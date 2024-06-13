@@ -44,19 +44,12 @@ import javax.inject.Inject
 
 class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
-    fun archiveRoom(id: String, isArchive: Boolean = true): Observable<BaseResponse> {
-        return if (isArchive) {
-            roomService.archive(id, RequestArchive())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { it.body() }
+    suspend fun archiveRoom(id: String, isArchive: Boolean) {
+        if (isArchive) {
+            require(roomService.archive(id, RequestArchive()).isSuccessful)
         } else {
-            roomService.unarchive(id, RequestArchive())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { it.body() }
+            require(roomService.unarchive(id, RequestArchive()).isSuccessful)
         }
-
     }
 
     fun pinRoom(id: String, isPin: Boolean = true): Observable<BaseResponse> {

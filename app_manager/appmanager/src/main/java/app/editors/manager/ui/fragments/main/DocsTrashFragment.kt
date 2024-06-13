@@ -145,7 +145,7 @@ class DocsTrashFragment : DocsCloudFragment() {
             title = resources.getQuantityString(R.plurals.rooms_restore_title, count),
             description = resources.getQuantityString(R.plurals.rooms_restore_desc, count),
             acceptTitle = getString(R.string.trash_snackbar_move_button),
-            acceptListener = { cloudPresenter.archiveRoom(false) }
+            acceptListener = { cloudPresenter.archiveRooms(false) }
         )
     }
 

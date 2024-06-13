@@ -52,7 +52,7 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.toolbar_selection_archive -> cloudPresenter.archiveSelectedRooms()
+            R.id.toolbar_selection_archive -> cloudPresenter.archiveRooms(true)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -93,7 +93,7 @@ class DocsRoomFragment : DocsCloudFragment() {
         when (contextItem) {
             ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             ExplorerContextItem.Reconnect -> reconnectStorage()
-            ExplorerContextItem.Archive -> cloudPresenter.archiveRoom()
+            ExplorerContextItem.Archive -> cloudPresenter.archiveRooms(true)
             ExplorerContextItem.AddUsers -> showInviteUsersDialog()
             is ExplorerContextItem.Edit -> cloudPresenter.editRoom()
             is ExplorerContextItem.ExternalLink -> cloudPresenter.copyLinkFromContextMenu()
@@ -107,7 +107,7 @@ class DocsRoomFragment : DocsCloudFragment() {
         when (item) {
             ActionMenuItem.Archive -> {
                 cloudPresenter.popToRoot()
-                cloudPresenter.archiveRoom()
+                cloudPresenter.archiveRooms(true)
             }
             ActionMenuItem.Info -> showRoomInfoFragment()
             ActionMenuItem.EditRoom -> cloudPresenter.editRoom()

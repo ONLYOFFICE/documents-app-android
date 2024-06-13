@@ -53,20 +53,25 @@ interface RoomService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/rooms/")
     fun getAllRooms(@QueryMap options: Map<String, String>?): Observable<Response<ResponseExplorer>>
-
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/archive")
-    fun archive(@Path(value = "id") id: String, @Body body: RequestArchive): Observable<Response<BaseResponse>>
+    suspend fun archive(
+        @Path(value = "id") id: String,
+        @Body body: RequestArchive
+    ): Response<ResponseBody>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/unarchive")
-    fun unarchive(@Path(value = "id") id: String, @Body body: RequestArchive): Observable<Response<BaseResponse>>
+    suspend fun unarchive(
+        @Path(value = "id") id: String,
+        @Body body: RequestArchive
+    ): Response<ResponseBody>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

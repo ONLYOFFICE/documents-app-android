@@ -362,36 +362,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         cloudPresenter.getItemsById(arguments?.getString(KEY_PATH))
     }
 
-    override fun onArchiveRoom(isArchived: Boolean, count: Int) {
-        val message = if (isArchived) {
-            if (count > 1) {
-                getString(R.string.context_rooms_archive_message)
-            } else {
-                getString(R.string.context_room_archive_message)
-            }
-        } else {
-            resources.getQuantityString(R.plurals.context_rooms_unarchive_message, count)
-        }
-        onSnackBar(message)
-        explorerAdapter?.removeItem(presenter.itemClicked)
-        if (explorerAdapter?.itemList?.none { it !is Header } == true) {
-            onPlaceholder(PlaceholderViews.Type.EMPTY)
-        }
-    }
-
-    override fun onArchiveSelectedRooms(rooms: List<Entity>) {
-        val message = if (rooms.size > 1) {
-            R.string.context_rooms_archive_message
-        } else {
-            R.string.context_room_archive_message
-        }
-        onSnackBar(getString(message))
-        rooms.forEach { explorerAdapter?.removeItem(it) }
-        if (explorerAdapter?.itemList?.none { it !is Header } == true) {
-            onPlaceholder(PlaceholderViews.Type.EMPTY)
-        }
-    }
-
     override fun onPlaceholder(type: PlaceholderViews.Type) {
         if (type == PlaceholderViews.Type.EMPTY && presenter.isRecentViaLinkSection()) {
             super.onPlaceholder(PlaceholderViews.Type.EMPTY_RECENT_VIA_LINK)
