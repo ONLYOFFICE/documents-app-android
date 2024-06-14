@@ -608,7 +608,7 @@ private fun ChooseImageBottomView(
     val cameraPermission =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                photoLauncher.launch(photo)
+                photo?.let { photoLauncher.launch(it) }
             }
         }
 
