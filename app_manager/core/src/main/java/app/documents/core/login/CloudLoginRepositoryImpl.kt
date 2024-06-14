@@ -146,6 +146,22 @@ internal class CloudLoginRepositoryImpl(
                             isVisitor = userInfo.isVisitor,
                         )
                     }
+
+                    try {
+                        val oldAccount = accountRepository.getAccount(result.oldAccountId)
+                        if (oldAccount != null) {
+                            unsubscribePush(oldAccount)
+                        }
+
+                        val newAccount = accountRepository.getOnlineAccount()
+                        val token = accountRepository.getToken(newAccount?.accountName.orEmpty())
+                        val portal = newAccount?.portal
+                        if (token != null && portal != null) {
+                            subscribePush(portal, token)
+                        }
+                    } catch (_: Exception) {
+                        // Nothing
+                    }
                 }
             }
             .flowOn(Dispatchers.IO)

@@ -33,6 +33,8 @@ interface AccountRepository {
 
     suspend fun getOnlineAccount(): CloudAccount?
 
+    suspend fun getAccount(id: String): CloudAccount?
+
     suspend fun logOut(accountId: String): CloudAccount
 
     suspend fun deleteAccounts(
@@ -100,20 +102,21 @@ internal class AccountRepositoryImpl(
     }
 
     override suspend fun checkLogin(accountId: String): CheckLoginResult {
-        if (accountId == accountPreferences.onlineAccountId) return CheckLoginResult.AlreadyUse
+        val oldAccountId = accountPreferences.onlineAccountId.orEmpty()
+        if (accountId == oldAccountId) return CheckLoginResult.AlreadyUse
         val account = cloudDataSource.getAccount(accountId) ?: return CheckLoginResult.NeedLogin
-        val accessToken = accountManager.getToken(account.accountName)
+        val accessToken = accountManager.getToken(account.accountName) ?: return CheckLoginResult.NeedLogin
 
         when (account.portal.provider) {
             is PortalProvider.Webdav -> {
                 if (accountManager.getPassword(account.accountName).isNullOrEmpty())
                     return CheckLoginResult.NeedLogin
             }
-            else -> if (accessToken.isNullOrEmpty()) return CheckLoginResult.NeedLogin
+            else -> if (accessToken.isEmpty()) return CheckLoginResult.NeedLogin
         }
 
         accountPreferences.onlineAccountId = account.id
-        return CheckLoginResult.Success(account.portal.provider, accessToken.orEmpty())
+        return CheckLoginResult.Success(account.portal.provider, accessToken, oldAccountId)
     }
 
     override suspend fun getPortals(): List<String> {
@@ -248,5 +251,9 @@ internal class AccountRepositoryImpl(
 
     override suspend fun getOnlineAccount(): CloudAccount? {
         return cloudDataSource.getAccount(accountPreferences.onlineAccountId ?: return null)
+    }
+
+    override suspend fun getAccount(id: String): CloudAccount? {
+        return cloudDataSource.getAccount(id)
     }
 }
