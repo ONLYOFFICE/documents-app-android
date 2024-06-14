@@ -464,3 +464,11 @@ fun Fragment.launchAfterResume(block: () -> Unit) {
         }
     }
 }
+
+fun Fragment.suspendLaunchAfterResume(block: suspend () -> Unit) {
+    lifecycleScope.launch {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            block()
+        }
+    }
+}
