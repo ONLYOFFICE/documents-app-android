@@ -141,25 +141,30 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
     }
 
     fun checkHeaders() {
-        if (mList != null) {
-            for (i in mList.indices) {
-                if (mList[i] is Header) {
-                    val header = mList[i] as Header
-                    val position = mList.indexOf(header)
-                    if (position + 1 < mList.size - 1) {
-                        if (mList[i + 1] is Header) {
+        try {
+            if (mList != null) {
+                for (i in mList.indices) {
+                    if (mList[i] is Header) {
+                        val header = mList[i] as Header
+                        val position = mList.indexOf(header)
+                        if (position + 1 < mList.size - 1) {
+                            if (mList[i + 1] is Header) {
+                                mList.remove(header)
+                                notifyItemRemoved(position)
+                            }
+                        } else if (mList.lastIndexOf(header) == mList.size - 1) {
                             mList.remove(header)
                             notifyItemRemoved(position)
                         }
-                    } else if (mList.lastIndexOf(header) == mList.size - 1) {
-                        mList.remove(header)
-                        notifyItemRemoved(position)
                     }
                 }
+                if (mList.size == 1 && mList[0] is Header) {
+                    mList.clear()
+                }
             }
-            if (mList.size == 1 && mList[0] is Header) {
-                mList.clear()
-            }
+        } catch (error: Throwable) {
+            // stub
         }
+
     }
 }

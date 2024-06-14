@@ -11,6 +11,7 @@ object EditorsContract {
     const val KEY_HELP_URL = "KEY_HELP_URL"
     const val KEY_VIEW_MODE = "KEY_VIEW_MODE"
     const val KEY_DOC_SERVER = "KEY_DOC_SERVER"
+    const val KEY_PDF = "KEY_PDF"
 
     const val EDITOR_DOCUMENTS = "lib.editors.gdocs.ui.activities.DocsActivity"
     const val EDITOR_CELLS = "lib.editors.gcells.ui.activities.CellsActivity"

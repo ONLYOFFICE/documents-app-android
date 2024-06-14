@@ -179,6 +179,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
+        if (!isVisible) return
         when (buttons) {
             ActionBottomDialog.Buttons.STORAGE -> {
                 showStorageActivity(cloudPresenter.isUserSection)
@@ -191,6 +192,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onAcceptClick(dialogs: Dialogs?, value: String?, tag: String?) {
+        if (!isVisible) return
         super.onAcceptClick(dialogs, value, tag)
         tag?.let {
             when (tag) {
@@ -201,6 +203,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onCancelClick(dialogs: Dialogs?, tag: String?) {
+        if (!isVisible) return
         when (tag) {
             DocsBasePresenter.TAG_DIALOG_CANCEL_CONVERSION -> cloudPresenter.interruptConversion()
             else -> super.onCancelClick(dialogs, tag)
@@ -208,6 +211,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
+        if (!isVisible) return
         when (contextItem) {
             ExplorerContextItem.Share -> showShareFragment()
             ExplorerContextItem.Location -> cloudPresenter.openLocation()
