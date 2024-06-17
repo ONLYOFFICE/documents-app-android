@@ -1,5 +1,6 @@
 package app.editors.manager.ui.activities.main
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -48,6 +49,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
+import lib.toolkit.base.managers.utils.RequestPermission
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
@@ -270,6 +272,16 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             } ?: run {
                 viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
             }
+        }
+
+        checkNotification()
+    }
+
+    private fun checkNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            RequestPermission(activityResultRegistry, {
+                // TODO set notification flag
+            }, Manifest.permission.POST_NOTIFICATIONS).request()
         }
     }
 
