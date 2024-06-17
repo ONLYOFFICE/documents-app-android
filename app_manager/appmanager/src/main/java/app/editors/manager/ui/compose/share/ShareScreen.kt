@@ -114,174 +114,172 @@ fun ShareScreen(
     managerService: ManagerService,
     onClose: () -> Unit
 ) {
-    ManagerTheme {
-        val navController = rememberNavController()
-        val viewModel = viewModel {
-            ShareViewModel(
-                itemId = itemId,
-                shareApi = shareApi,
-                managerApi = managerService,
-                folder = isFolder
+    val navController = rememberNavController()
+    val viewModel = viewModel {
+        ShareViewModel(
+            itemId = itemId,
+            shareApi = shareApi,
+            managerApi = managerService,
+            folder = isFolder
+        )
+    }
+    val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
+    val token = remember {
+        AccountUtils
+            .getToken(context, context.accountOnline?.accountName.orEmpty())
+            .orEmpty()
+    }
+    val portal = remember {
+        context.accountOnline?.portal?.urlWithScheme
+            .orEmpty()
+    }
+
+    val accessListWithOutRestricted = state.accessList.filter {
+        it != ApiContract.ShareCode.RESTRICT && it != ApiContract.ShareCode.NONE
+    }
+
+    fun onSnackBar(text: String) {
+        UiUtils.getSnackBar(context as ComponentActivity)
+            .setText(text)
+            .show()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is ShareEffect.Error -> {
+                    val text = when (val error = effect.throwable) {
+                        is HttpException -> context.getString(R.string.errors_client_error) + error.code()
+                        else -> context.getString(R.string.errors_unknown_error)
+                    }
+                    onSnackBar(text)
+                }
+                is ShareEffect.InternalLink -> {
+                    KeyboardUtils.setDataToClipboard(
+                        context,
+                        if (effect.withPortal) {
+                            effect.url
+                        } else {
+                            context.accountOnline?.portal?.urlWithScheme + effect.url
+                        },
+                        "Internal link"
+                    )
+                    onSnackBar(context.getString(R.string.share_clipboard_internal_copied))
+                }
+            }
+        }
+    }
+
+    NavHost(navController, startDestination = Screens.Main.name) {
+        composable(Screens.Main.name) {
+            MainScreen(
+                shareState = state,
+                token = token,
+                portalWithScheme = portal,
+                useTabletPaddings = useTabletPaddings,
+                onCopyInternalLink = viewModel::copyInternalLink,
+                onSearch = viewModel::search,
+                onLinkAccess = viewModel::setExternalLinkAccess,
+                onMemberAccess = viewModel::setMemberAccess,
+                onBack = onClose,
+                onCopyExternalLink = {
+                    KeyboardUtils.setDataToClipboard(
+                        context,
+                        state.externalLink.sharedTo.shareLink,
+                        context.getString(R.string.share_clipboard_external_link_label)
+                    )
+                    onSnackBar(context.getString(R.string.share_clipboard_external_copied))
+                },
+                onSendExternalLink = {
+                    context.openSendTextActivity(
+                        context.getString(R.string.share_clipboard_external_link_label),
+                        state.externalLink.sharedTo.shareLink
+                    )
+                },
+                onAddUsers = {
+                    navController.navigate(Screens.AddUsers.name)
+                }
             )
         }
-        val state by viewModel.state.collectAsState()
-        val context = LocalContext.current
-        val token = remember {
-            AccountUtils
-                .getToken(context, context.accountOnline?.accountName.orEmpty())
-                .orEmpty()
-        }
-        val portal = remember {
-            context.accountOnline?.portal?.urlWithScheme
-                .orEmpty()
-        }
-
-        val accessListWithOutRestricted = state.accessList.filter {
-            it != ApiContract.ShareCode.RESTRICT && it != ApiContract.ShareCode.NONE
-        }
-
-        fun onSnackBar(text: String) {
-            UiUtils.getSnackBar(context as ComponentActivity)
-                .setText(text)
-                .show()
-        }
-
-        LaunchedEffect(Unit) {
-            viewModel.effect.collect { effect ->
-                when (effect) {
-                    is ShareEffect.Error -> {
-                        val text = when (val error = effect.throwable) {
-                            is HttpException -> context.getString(R.string.errors_client_error) + error.code()
-                            else -> context.getString(R.string.errors_unknown_error)
-                        }
-                        onSnackBar(text)
-                    }
-                    is ShareEffect.InternalLink -> {
-                        KeyboardUtils.setDataToClipboard(
-                            context,
-                            if (effect.withPortal) {
-                                effect.url
-                            } else {
-                                context.accountOnline?.portal?.urlWithScheme + effect.url
-                            },
-                            "Internal link"
-                        )
-                        onSnackBar(context.getString(R.string.share_clipboard_internal_copied))
-                    }
-                }
-            }
-        }
-
-        NavHost(navController, startDestination = Screens.Main.name) {
-            composable(Screens.Main.name) {
-                MainScreen(
-                    shareState = state,
-                    token = token,
-                    portalWithScheme = portal,
-                    useTabletPaddings = useTabletPaddings,
-                    onCopyInternalLink = viewModel::copyInternalLink,
-                    onSearch = viewModel::search,
-                    onLinkAccess = viewModel::setExternalLinkAccess,
-                    onMemberAccess = viewModel::setMemberAccess,
-                    onBack = onClose,
-                    onCopyExternalLink = {
-                        KeyboardUtils.setDataToClipboard(
-                            context,
-                            state.externalLink.sharedTo.shareLink,
-                            context.getString(R.string.share_clipboard_external_link_label)
-                        )
-                        onSnackBar(context.getString(R.string.share_clipboard_external_copied))
-                    },
-                    onSendExternalLink = {
-                        context.openSendTextActivity(
-                            context.getString(R.string.share_clipboard_external_link_label),
-                            state.externalLink.sharedTo.shareLink
-                        )
-                    },
-                    onAddUsers = {
-                        navController.navigate(Screens.AddUsers.name)
-                    }
+        composable(Screens.AddUsers.name) {
+            val userListViewModel = viewModel {
+                UserListViewModel(
+                    access = accessListWithOutRestricted.last(),
+                    resourcesProvider = ResourcesProvider(context),
+                    shareService = shareApi,
+                    invitedIds = state.users.map { it.sharedTo.id } + state.groups.map { it.sharedTo.id },
                 )
             }
-            composable(Screens.AddUsers.name) {
-                val userListViewModel = viewModel {
-                    UserListViewModel(
+            UserListScreen(
+                viewModel = userListViewModel,
+                title = R.string.share_invite_user,
+                onClick = userListViewModel::toggleSelect,
+                closeable = false,
+                withGroups = true,
+                disableInvited = true,
+                useTabletPaddings = useTabletPaddings,
+                onBack = navController::popBackStackWhenResumed,
+                onSnackBar = ::onSnackBar,
+                bottomContent = { count, access ->
+                    UserListBottomContent(
+                        nextButtonTitle = lib.toolkit.base.R.string.common_next,
+                        count = count,
                         access = accessListWithOutRestricted.last(),
-                        resourcesProvider = ResourcesProvider(context),
-                        shareService = shareApi,
-                        invitedIds = state.users.map { it.sharedTo.id } + state.groups.map { it.sharedTo.id },
-                    )
-                }
-                UserListScreen(
-                    viewModel = userListViewModel,
-                    title = R.string.share_invite_user,
-                    onClick = userListViewModel::toggleSelect,
-                    closeable = false,
-                    withGroups = true,
-                    disableInvited = true,
-                    useTabletPaddings = useTabletPaddings,
-                    onBack = navController::popBackStackWhenResumed,
-                    onSnackBar = ::onSnackBar,
-                    bottomContent = { count, access ->
-                        UserListBottomContent(
-                            nextButtonTitle = lib.toolkit.base.R.string.common_next,
-                            count = count,
-                            access = accessListWithOutRestricted.last(),
-                            accessList = accessListWithOutRestricted,
-                            onAccess = userListViewModel::setAccess,
-                            onDelete = userListViewModel::onDelete
-                        ) {
-                            val users =
-                                Json.encodeToString(userListViewModel.getSelectedUsers().ifEmpty { null })
-                            val groups =
-                                Json.encodeToString(userListViewModel.getSelectedGroups().ifEmpty { null })
-                            navController.navigate(
-                                "${Screens.InviteAccess.name}?" +
-                                        "users=${URLEncoder.encode(users, Charsets.UTF_8.toString())}&" +
-                                        "groups=${URLEncoder.encode(groups, Charsets.UTF_8.toString())}&" +
-                                        "access=$access"
-                            )
-                        }
+                        accessList = accessListWithOutRestricted,
+                        onAccess = userListViewModel::setAccess,
+                        onDelete = userListViewModel::onDelete
+                    ) {
+                        val users =
+                            Json.encodeToString(userListViewModel.getSelectedUsers().ifEmpty { null })
+                        val groups =
+                            Json.encodeToString(userListViewModel.getSelectedGroups().ifEmpty { null })
+                        navController.navigate(
+                            "${Screens.InviteAccess.name}?" +
+                                    "users=${URLEncoder.encode(users, Charsets.UTF_8.toString())}&" +
+                                    "groups=${URLEncoder.encode(groups, Charsets.UTF_8.toString())}&" +
+                                    "access=$access"
+                        )
                     }
+                }
+            )
+        }
+        composable(
+            route = "${Screens.InviteAccess.name}?" +
+                    "users={users}&" +
+                    "groups={groups}&" +
+                    "access={access}",
+            arguments = listOf(
+                navArgument("users") { type = NavType.StringType; nullable = true },
+                navArgument("groups") { type = NavType.StringType; nullable = true },
+                navArgument("access") { type = NavType.IntType; defaultValue = 2 }
+            )
+        ) {
+            val inviteAccessViewModel = viewModel {
+                InviteAccessViewModel(
+                    access = it.arguments?.getInt("access") ?: 2,
+                    users = it.arguments?.getJsonString<List<User>>("users", true).orEmpty(),
+                    groups = it.arguments?.getJsonString<List<Group>>("groups", true).orEmpty(),
+                    isFolder = isFolder,
+                    shareService = shareApi,
+                    itemId = itemId
                 )
             }
-            composable(
-                route = "${Screens.InviteAccess.name}?" +
-                        "users={users}&" +
-                        "groups={groups}&" +
-                        "access={access}",
-                arguments = listOf(
-                    navArgument("users") { type = NavType.StringType; nullable = true },
-                    navArgument("groups") { type = NavType.StringType; nullable = true },
-                    navArgument("access") { type = NavType.IntType; defaultValue = 2 }
-                )
-            ) {
-                val inviteAccessViewModel = viewModel {
-                    InviteAccessViewModel(
-                        access = it.arguments?.getInt("access") ?: 2,
-                        users = it.arguments?.getJsonString<List<User>>("users", true).orEmpty(),
-                        groups = it.arguments?.getJsonString<List<Group>>("groups", true).orEmpty(),
-                        isFolder = isFolder,
-                        shareService = shareApi,
-                        itemId = itemId
-                    )
-                }
-                InviteAccessScreen(
-                    accessList = accessListWithOutRestricted,
-                    viewModel = inviteAccessViewModel,
-                    onBack = navController::popBackStackWhenResumed,
-                    onSnackBar = ::onSnackBar,
-                    onSuccess = {
-                        viewModel.fetchShareList()
-                        onSnackBar(context.getString(R.string.invite_link_send_success))
-                        navController.navigate(Screens.Main.name) {
-                            popUpTo(Screens.Main.name) {
-                                inclusive = true
-                            }
+            InviteAccessScreen(
+                accessList = accessListWithOutRestricted,
+                viewModel = inviteAccessViewModel,
+                onBack = navController::popBackStackWhenResumed,
+                onSnackBar = ::onSnackBar,
+                onSuccess = {
+                    viewModel.fetchShareList()
+                    onSnackBar(context.getString(R.string.invite_link_send_success))
+                    navController.navigate(Screens.Main.name) {
+                        popUpTo(Screens.Main.name) {
+                            inclusive = true
                         }
                     }
-                )
-            }
+                }
+            )
         }
     }
 }

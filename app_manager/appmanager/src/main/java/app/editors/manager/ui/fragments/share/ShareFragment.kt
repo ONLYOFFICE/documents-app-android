@@ -7,6 +7,7 @@ import app.editors.manager.app.api
 import app.editors.manager.app.shareApi
 import app.editors.manager.ui.compose.share.ShareScreen
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
+import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.managers.utils.putArgs
 
 class ShareFragment : ComposeDialogFragment() {
@@ -29,13 +30,15 @@ class ShareFragment : ComposeDialogFragment() {
 
     @Composable
     override fun Content() {
-        ShareScreen(
-            itemId = remember { arguments?.getString(KEY_SHARE_ITEM_ID) }.orEmpty(),
-            isFolder = remember { arguments?.getBoolean(KEY_SHARE_IS_FOLDER) } ?: false,
-            shareApi = requireContext().shareApi,
-            managerService = requireContext().api,
-            useTabletPaddings = false,
-            onClose = ::dismiss
-        )
+        ManagerTheme {
+            ShareScreen(
+                itemId = remember { arguments?.getString(KEY_SHARE_ITEM_ID) }.orEmpty(),
+                isFolder = remember { arguments?.getBoolean(KEY_SHARE_IS_FOLDER) } ?: false,
+                shareApi = requireContext().shareApi,
+                managerService = requireContext().api,
+                useTabletPaddings = false,
+                onClose = ::dismiss
+            )
+        }
     }
 }
