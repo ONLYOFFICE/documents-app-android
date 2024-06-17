@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
@@ -138,6 +139,7 @@ private fun MainScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val token = remember { context.accountOnline?.accountName?.let { AccountUtils.getToken(context, it) }.orEmpty() }
+    val portal = remember { context.accountOnline?.portal?.urlWithScheme }
     val tabs = remember {
         listOfNotNull(
             TabRowItem(
@@ -206,19 +208,23 @@ private fun MainScreen(
                             val users = state.users
                             if (users.isNotEmpty()) {
                                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                    users.groupBy { user -> user.displayName.first().uppercaseChar() }
+                                    users.groupBy { user -> user.displayNameFromHtml.first().uppercaseChar() }
                                         .toSortedMap()
                                         .forEach { (letter, users) ->
                                             itemsIndexed(items = users.orEmpty()) { index, user ->
                                                 UserItem(
                                                     withLetter = true,
                                                     letter = letter?.toString().takeIf { index == 0 },
-                                                    name = user.displayName,
+                                                    name = user.displayNameFromHtml,
                                                     subtitle = user.groups.joinToString { group -> group.name },
-                                                    avatar = GlideUtils.getCorrectLoad(user.avatarMedium, token),
                                                     shared = disableInvited && user.shared,
                                                     selected = state.selected.contains(user.id),
-                                                    onClick = { onClick.invoke(user.id) }
+                                                    onClick = { onClick.invoke(user.id) },
+                                                    avatar = GlideUtils.getCorrectLoad(
+                                                        user.avatarMedium,
+                                                        token,
+                                                        portal
+                                                    )
                                                 )
                                             }
                                         }

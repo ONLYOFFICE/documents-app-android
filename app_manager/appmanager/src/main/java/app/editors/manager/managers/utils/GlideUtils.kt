@@ -33,9 +33,15 @@ object GlideUtils {
         )
     }
 
-    fun getCorrectLoad(url: String?, token: String): Any {
+    fun getCorrectLoad(url: String?, token: String, portal: String? = null): Any {
+        if (url.isNullOrEmpty()) {
+            return Any()
+        }
+
+        val urlWithPortal = if (url.startsWith("http")) url else portal.orEmpty() + url
+
         return GlideUrl(
-            URI(url).normalize().toString(), // remove duplicated slashes
+            URI(urlWithPortal).normalize().toString(), // remove duplicated slashes
             LazyHeaders.Builder()
                 .addHeader(ApiContract.HEADER_AUTHORIZATION, token)
                 .build()

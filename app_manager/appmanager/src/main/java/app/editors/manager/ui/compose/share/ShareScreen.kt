@@ -503,8 +503,8 @@ private fun UserItem(
                     .clip(CircleShape),
                 model = GlideUtils.getCorrectLoad(
                     token = token,
-                    url = (if (share.sharedTo.avatarMedium.startsWith("http")) "" else portalWithScheme) +
-                            share.sharedTo.avatarMedium
+                    portal = portalWithScheme,
+                    url = share.sharedTo.avatarMedium
                 ),
                 contentDescription = null
             )
