@@ -185,6 +185,7 @@ private fun MainScreen(
                 is ShareSettingsEffect.OnCreate -> {
                     isCreateLoading = effect.loading
                 }
+                else -> Unit
             }
         }
     }
@@ -274,6 +275,7 @@ private fun ShareSettingsScreen(
                     }
                 }
             }
+            else -> Unit
         }
     }
 }

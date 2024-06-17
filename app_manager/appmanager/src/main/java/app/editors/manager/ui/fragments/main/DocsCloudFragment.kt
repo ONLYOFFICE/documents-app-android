@@ -31,7 +31,6 @@ import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.activities.main.FilterActivity
 import app.editors.manager.ui.activities.main.IMainActivity
-import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
@@ -39,8 +38,9 @@ import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
-import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
+import app.editors.manager.ui.fragments.share.ShareFragment
+import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -235,8 +235,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         if (requireContext().accountOnline.isDocSpace) {
             ShareSettingsFragment.show(requireActivity(), cloudPresenter.itemClicked?.id)
         } else {
-            ShareActivity.show(
-                this,
+            ShareFragment.show(
+                requireActivity(),
                 presenter.itemClicked?.id.orEmpty(),
                 presenter.itemClicked is CloudFolder
             )

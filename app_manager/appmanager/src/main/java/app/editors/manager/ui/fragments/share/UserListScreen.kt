@@ -86,6 +86,7 @@ fun UserListScreen(
     withGroups: Boolean = false,
     closeable: Boolean = true,
     disableInvited: Boolean = false,
+    useTabletPaddings: Boolean = false,
     onClick: (id: String) -> Unit,
     onBack: () -> Unit,
     onSnackBar: (String) -> Unit,
@@ -109,6 +110,7 @@ fun UserListScreen(
         withGroups = withGroups,
         closeable = closeable,
         disableInvited = disableInvited,
+        useTabletPaddings = useTabletPaddings,
         onClick = onClick,
         onSearch = viewModel::search,
         onBack = onBack,
@@ -125,6 +127,7 @@ private fun MainScreen(
     withGroups: Boolean = false,
     closeable: Boolean = true,
     disableInvited: Boolean = false,
+    useTabletPaddings: Boolean = false,
     onClick: (id: String) -> Unit,
     onSearch: (String) -> Unit,
     onBack: () -> Unit,
@@ -148,7 +151,7 @@ private fun MainScreen(
     val pagerState = rememberPagerState(pageCount = tabs::size)
 
     AppScaffold(
-        useTablePaddings = false,
+        useTablePaddings = useTabletPaddings,
         topBar = {
             Column {
                 AnimatedContent(
