@@ -27,7 +27,12 @@ sealed class PortalResult {
 
 sealed class CheckLoginResult {
 
-    data class Success(val provider: PortalProvider, val accessToken: String) : CheckLoginResult()
+    data class Success(
+        val provider: PortalProvider,
+        val accessToken: String,
+        val oldAccountId: String
+    ) : CheckLoginResult()
+
     data class Error(val exception: Throwable) : CheckLoginResult()
     data object NeedLogin : CheckLoginResult()
     data object AlreadyUse : CheckLoginResult()

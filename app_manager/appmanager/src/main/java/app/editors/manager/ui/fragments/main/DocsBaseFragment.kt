@@ -718,6 +718,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {
+        hideDialog()
         showMediaActivity(explorer, isWebDAv) {
             // Stub
         }
@@ -1103,6 +1104,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             when (type) {
                 EditorsType.DOCS, EditorsType.PDF -> {
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
+                    if (type == EditorsType.PDF) {
+                        intent.putExtra(EditorsContract.KEY_PDF, true)
+                    }
                     startActivityForResult(intent, REQUEST_DOCS)
                 }
                 EditorsType.CELLS -> {
@@ -1135,6 +1139,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         when (type) {
             EditorsType.DOCS, EditorsType.PDF -> {
                 intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
+                if (type == EditorsType.PDF) {
+                    intent.extras?.putBoolean("pdf", true)
+                }
             }
             EditorsType.CELLS -> {
                 intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS)

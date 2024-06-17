@@ -216,7 +216,6 @@ class MediaVideoFragment : BaseAppFragment(), MediaPlayer.OnErrorListener, OnPre
     private fun initViews() {
         placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.root)
         placeholderViews.setViewForHide(viewBinding?.mediaVideoContainer)
-        placeholderViews.setOnClickListener(this)
         mediaController = MediaController(context)
         mediaController?.setMediaPlayer(viewBinding?.mediaVideoView)
         mediaController?.setAnchorView(viewBinding?.mediaVideoView)

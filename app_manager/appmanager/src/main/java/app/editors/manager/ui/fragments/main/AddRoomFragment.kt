@@ -153,7 +153,7 @@ class AddRoomFragment : ComposeDialogFragment() {
         ManagerTheme {
             val navController = rememberNavController()
             val roomType = remember { arguments?.getInt(TAG_ROOM_TYPE) }
-            val room = remember { arguments?.getSerializableExt<CloudFolder>(TAG_ROOM_INFO) }
+            val room = remember { arguments?.getSerializableExt<Item>(TAG_ROOM_INFO) }
             val viewModel = viewModel {
                 AddRoomViewModel(
                     context = requireActivity().application,
@@ -552,7 +552,7 @@ private fun ChooseImageBottomView(
     val cameraPermission =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                photoLauncher.launch(photo)
+                photo?.let { photoLauncher.launch(it) }
             }
         }
 

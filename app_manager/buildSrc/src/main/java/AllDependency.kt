@@ -15,27 +15,27 @@ object Moxy {
 }
 
 object Koin {
-    private const val version = "3.5.0"
+    private const val version = "3.5.6"
 
     const val koinAndroid = "io.insert-koin:koin-android:$version"
     const val koinCompose = "io.insert-koin:koin-androidx-compose:$version"
 }
 
 object AndroidX {
-    private const val androidxVersion = "1.6.1"
+    private const val androidxVersion = "1.7.0"
     private const val recyclerViewVersion = "1.3.2"
     private const val recyclerViewSelectionVersion = "1.1.0"
-    private const val kotlinKtxVersion = "1.12.0"
+    private const val kotlinKtxVersion = "1.13.1"
 
     const val appCompat = "androidx.appcompat:appcompat:$androidxVersion"
     const val appCompatResources = "androidx.appcompat:appcompat-resources:$androidxVersion"
-    const val composeActivity = "androidx.activity:activity-compose:1.8.2"
+    const val composeActivity = "androidx.activity:activity-compose:1.9.0"
     const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     const val recyclerViewSelection = "androidx.recyclerview:recyclerview-selection:$recyclerViewSelectionVersion"
     const val cardView = "androidx.cardview:cardview:1.0.0"
     const val constraint = "androidx.constraintlayout:constraintlayout:2.1.4"
     const val ktx = "androidx.core:core-ktx:$kotlinKtxVersion"
-    const val fragmentKtx = "androidx.fragment:fragment-ktx:1.6.2"
+    const val fragmentKtx = "androidx.fragment:fragment-ktx:1.7.1"
     const val biometric = "androidx.biometric:biometric:1.1.0"
 
 }
@@ -52,10 +52,10 @@ object Retrofit {
 }
 
 object Kotlin {
-    const val version = "1.9.21"
-    const val kspVersion = "1.9.21-1.0.15"
-    private const val coroutinesVersion = "1.7.3"
-    private const val serializationVersion = "1.6.0"
+    const val version = "1.9.24"
+    const val kspVersion = "1.9.24-1.0.20"
+    private const val coroutinesVersion = "1.8.1"
+    private const val serializationVersion = "1.6.3"
 
     const val kotlinCore = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$version"
     const val coroutineCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
@@ -64,11 +64,11 @@ object Kotlin {
 }
 
 object Google {
-    private const val playServicesAuthVersion = "21.0.0"
+    private const val playServicesAuthVersion = "21.2.0"
     private const val playCoreVersion = "1.10.3"
-    private const val materialVersion = "1.11.0"
+    private const val materialVersion = "1.12.0"
     private const val gsonVersion = "2.10.1"
-    private const val safetynetVersion = "18.0.1"
+    private const val safetynetVersion = "18.1.0"
 
 
     const val playServiceAuth = "com.google.android.gms:play-services-auth:$playServicesAuthVersion"
@@ -81,9 +81,9 @@ object Google {
 
 object Firebase {
     private const val firebaseCoreVersion = "21.1.1"
-    private const val firebaseConfigVersion = "21.6.1"
-    private const val firebaseMessagingVersion = "23.4.1"
-    private const val firebaseCrashlyticsVersion = "18.6.2"
+    private const val firebaseConfigVersion = "22.0.0"
+    private const val firebaseMessagingVersion = "24.0.0"
+    private const val firebaseCrashlyticsVersion = "19.0.1"
 
     const val firebaseCore = "com.google.firebase:firebase-core:$firebaseCoreVersion"
     const val firebaseConfig = "com.google.firebase:firebase-config:$firebaseConfigVersion"
@@ -107,7 +107,7 @@ object Rx {
 }
 
 object Lifecycle {
-    private const val version = "2.6.2"
+    private const val version = "2.8.1"
 
     const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
     const val liveData = "androidx.lifecycle:lifecycle-livedata-ktx:$version"
@@ -115,10 +115,10 @@ object Lifecycle {
 }
 
 object Compose {
-    const val version = "1.5.4"
-    const val versionMaterial = "1.5.4"
-    const val versionCompiler = "1.5.6"
-    const val composeMaterial3 = "1.1.2"
+    const val version = "1.6.7"
+    const val versionMaterial = "1.6.7"
+    const val versionCompiler = "1.5.14"
+    const val composeMaterial3 = "1.2.1"
     private const val navigationVersion = "2.7.7"
 
     const val ui = "androidx.compose.ui:ui:$version"

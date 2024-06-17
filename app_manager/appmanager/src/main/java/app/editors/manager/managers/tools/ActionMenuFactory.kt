@@ -118,8 +118,12 @@ object ActionMenuItemsFactory {
             // trash action block
             add(ActionMenuItem.Restore)
             add(ActionMenuItem.Delete)
+        } else if (section == SectionType.CLOUD_ARCHIVE_ROOM) {
+            // archive action block
+            add(ActionMenuItem.Download)
+            add(ActionMenuItem.Delete)
         } else {
-            // action block
+            // common action block
             if (section != SectionType.DEVICE_DOCUMENTS) add(ActionMenuItem.Download)
             add(ActionMenuItem.Move)
             add(ActionMenuItem.Copy)

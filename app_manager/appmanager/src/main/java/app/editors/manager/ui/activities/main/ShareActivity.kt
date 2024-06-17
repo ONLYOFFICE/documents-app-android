@@ -110,7 +110,6 @@ import java.net.URLEncoder
 class ShareActivity : BaseAppActivity() {
 
     companion object {
-
         private const val KEY_SHARE_ITEM_ID: String = "KEY_SHARE_ITEM_ID"
         private const val KEY_SHARE_IS_FOLDER: String = "KEY_SHARE_IS_FOLDER"
 

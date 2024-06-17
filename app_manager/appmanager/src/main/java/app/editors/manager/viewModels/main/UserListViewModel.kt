@@ -123,7 +123,9 @@ open class UserListViewModel(
     }
 
     fun search(searchValue: String) {
-        searchFlow.tryEmit(searchValue)
+        viewModelScope.launch {
+            searchFlow.emit(searchValue)
+        }
     }
 
     fun toggleSelect(userId: String) {
