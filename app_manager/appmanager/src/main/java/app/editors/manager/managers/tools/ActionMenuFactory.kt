@@ -96,7 +96,7 @@ object ActionMenuItemsFactory {
         sortBy: String?,
     ) = mutableListOf<ActionMenuItem>().apply {
         // select block
-        addAll(getSelectItems(selected, allSelected))
+        if (section != SectionType.LOCAL_RECENT) addAll(getSelectItems(selected, allSelected))
         if (!selected) {
             // empty trash
             if (section == SectionType.CLOUD_TRASH) {
