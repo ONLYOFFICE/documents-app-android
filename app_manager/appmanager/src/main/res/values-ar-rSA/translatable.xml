@@ -216,17 +216,17 @@
     <string name="dialogs_question_rate_second_info">هل تمانع في تقييم التطبيق على Google Play؟</string>
     <string name="dialogs_question_delete_all_title">هل تريد حذف جميع العناصر؟</string>
 
-    <plurals name="dialogs_question_message_delete">
+    <plurals name="dialogs_question_message_delete" tools:ignore="MissingQuantity">
         <item quantity="one">سيتم حذفه نهائيًا. \nلا يمكن التراجع عن هذا الإجراء.</item>
         <item quantity="other">سيتم حذفها نهائيًا. \nلا يمكن التراجع عن هذا الإجراء.</item>
     </plurals>
 
-    <plurals name="dialogs_question_message_to_trash">
+    <plurals name="dialogs_question_message_to_trash" tools:ignore="MissingQuantity">
         <item quantity="one">سيتم نقله إلى سلة المهملات.</item>
         <item quantity="other">سيتم نقلهم إلى سلة المهملات.</item>
     </plurals>
 
-    <plurals name="dialogs_question_delete_title">
+    <plurals name="dialogs_question_delete_title" tools:ignore="MissingQuantity">
         <item quantity="one">هل تريد حذف هذا العنصر؟</item>
         <item quantity="other">هل تريد حذف %1$d من العناصر؟</item>
     </plurals>
@@ -348,7 +348,6 @@
     <!-- Dialog info -->
 
     <!-- Pager -->
-    <string name="main_pager_docs_common">شائع</string>
     <string name="main_pager_docs_share">شارك معي</string>
     <string name="main_pager_docs_projects">المشاريع</string>
     <string name="main_pager_docs_trash">سلة المحذوقات</string>
@@ -486,12 +485,12 @@
     <string name="operation_add_to_favorites">تمت الإضافة إلى المفضلة</string>
     <string name="operation_remove_from_favorites">تمت الإزالة من المفضلة</string>
 
-    <plurals name="operation_moved_to_trash">
+    <plurals name="operation_moved_to_trash" tools:ignore="MissingQuantity">
         <item quantity="one">تم نقل العنصر إلى سلة المهملات</item>
         <item quantity="other">تم نقل العناصر إلى سلة المهملات</item>
     </plurals>
 
-    <plurals name="operation_delete_irretrievably">
+    <plurals name="operation_delete_irretrievably" tools:ignore="MissingQuantity">
         <item quantity="one">تم حذف العنصر نهائيًا</item>
         <item quantity="other">تم حذف العناصر نهائيًا</item>
     </plurals>
@@ -696,7 +695,7 @@
     <string name="context_room_archive_message">تم نقل الغرفة إلى الأرشيف</string>
     <string name="context_rooms_archive_message">تم نقل الغرف إلى الأرشيف</string>
 
-    <plurals name="context_rooms_unarchive_message">
+    <plurals name="context_rooms_unarchive_message" tools:ignore="MissingQuantity">
         <item quantity="one">تمت استعادة الغرفة بنجاح</item>
         <item quantity="other">تمت استعادة الغرف بنجاح</item>
     </plurals>
@@ -728,12 +727,12 @@
     <string name="room_search_not_found">لم يتم العثور على مستخدمين</string>
     <string name="room_search_not_found_desc">ستظهر هنا قائمة المستخدمين الذين تمت دعوتهم مسبقًا إلى </string>
 
-    <plurals name="rooms_restore_title">
+    <plurals name="rooms_restore_title" tools:ignore="MissingQuantity">
         <item quantity="one">استعادة الغرفة؟</item>
         <item quantity="other">استعادة الغرف؟</item>
     </plurals>
 
-    <plurals name="rooms_restore_desc">
+    <plurals name="rooms_restore_desc" tools:ignore="MissingQuantity">
         <item quantity="one">ستصبح جميع الروابط المشتركة في الغرفة نشطة، وستكون محتوياتها متاحة لكل من لديه</item>
         <item quantity="other">ستصبح جميع الروابط المشتركة في الغرف نشطة، وستكون محتوياتها متاحة لكل من لديه</item>
     </plurals>
@@ -829,5 +828,67 @@
     <string name="conversion_dialog_open_in_view_mode">فتح في وضع العرض</string>
     <string name="conversion_dialog_convert_to">تحويل إلى %1s</string>
     <string name="conversion_dialog_converting_to">التحويل إلى %1s</string>
-
+    <string name="main_pager_docs_my">ملفاتي</string>
+    <string name="main_pager_docs_common">شائع</string>
+    <string name="main_pager_docs_virtual_room">الغرف</string>
+    <string name="main_pager_docs_archive_room">الأرشيف</string>
+    <string name="errors_sign_in_ldap_checkbox">تسجيل الدخول كمستخدم بروتوكول LDAP</string>
+    <string name="placeholder_empty_folder">لا يوجد ملفات هنا حتى الآن</string>
+    <string name="placeholder_empty_trash_desc">تم نقل كافة الملفات المحذوفة إلى \'سلة المهملات\'. قم باستعادة الملفات المحذوفة بالخطأ أو حذفها نهائيًا. يتم حذف الملفات من \'سلة المهملات\' بشكل تلقائي بعد مرور 30 يوم. يرجى الانتباه في حال تم حذف الملفات من \'سلة المهملات\' لا يمكن استعادتها.</string>
+    <string name="placeholder_no_users_found">لم يتم العثور على مستخدمين</string>
+    <string name="placeholder_no_users_found_desc">لا يوجد مستخدمون يطابقون بحثك. يرجى ضبط معايير البحث الخاصة بك أو مسح محتوى البحث لعرض القائمة الكاملة للمستخدمين</string>
+    <string name="placeholder_no_members_found">لم يتم العثور على أعضاء</string>
+    <string name="placeholder_no_members_found_desc">يمكنك إضافة أعضاء جدد للفريق يدويًا، أو دعوتهم بواسطة رابط</string>
+    <string name="placeholder_no_rooms">مرحبا بك في DocSpace!</string>
+    <string name="placeholder_no_rooms_desc">يرجى إنشاء أول غرفة</string>
+    <string name="placeholder_no_rooms_visitor_desc">ستظهر الغرف المشتركة معك هنا</string>
+    <string name="placeholder_empty_archive">لا توجد غرف مؤرشفة هنا حتى الآن</string>
+    <string name="placeholder_empty_archive_desc">يمكنك أرشفة الغرف التي لا تستخدمها واستعادتها في DocSpaceالخاص بك في أي لحظة أو حذفها نهائيًا. ستظهر هذه الغرف هنا</string>
+    <string name="placeholder_no_search_result">لا توجد نتيجة بحث</string>
+    <string name="placeholder_no_search_result_desc">لا يمكن العثور على نتائج مطابقة لبحثك. من فضلك حاول عبارة أخرى</string>
+    <string name="placeholder_empty_room_visitor_desc">ستظهر هنا الملفات والمجلدات التي تم تحميلها بواسطة المسؤولين</string>
+    <string name="placeholder_empty_recent_via_link_desc">ستجد هنا قائمة بالملفات المفتوحة مؤخرًا والتي تمت مشاركتها معك عبر رابط خارجي</string>
+    <string name="placeholder_payment_required">انتهت صلاحية الاشتراك التجاري</string>
+    <string name="placeholder_payment_required_desc">انتهت صلاحية خطة التعريفة الحالية "الأعمال". يرجى تجديد اشتراكك في إعدادات الحساب لتتمكن من استخدام DocSpace الخاص بك. إذا كان لديك أي أسئلة، يرجى الاتصال بالدعم</string>
+    <string name="placeholder_payment_required_button">تجديد خطة الأعمال</string>
+    <string name="filter_type_form_templates">قوالب النماذج</string>
+    <string name="filter_type_forms">النماذج</string>
+    <string name="room_placeholder_created_room_title">تم انشاء الغرفة!</string>
+    <string name="room_placeholder_created_room_subtitle">قم بإنشاء مجلدات لتنظيم ملفاتك.</string>
+    <string name="room_recent_via_link">يمكن الوصول إليها عبر الرابط</string>
+    <string name="room_manage_room">إدارة الغرفة</string>
+    <string name="rooms_info_edit_link">تعديل الرابط</string>
+    <string name="rooms_info_create_link_title">إنشاء الرابط</string>
+    <string name="rooms_info_groups_title">المجموعات (%1d)</string>
+    <string name="rooms_share_shared_links">الروابط المشتركة</string>
+    <string name="rooms_share_shared_link_title">الرابط المشترك</string>
+    <string name="rooms_share_shared_desc">توفير الوصول إلى المستند وتعيين مستويات الأذونات.</string>
+    <string name="rooms_share_lifetime_hours_12">12 ساعة</string>
+    <string name="rooms_share_lifetime_days_1">يوم</string>
+    <string name="rooms_share_lifetime_days_7">7 أيام</string>
+    <string name="rooms_share_lifetime_unlimited">غير محدود</string>
+    <string name="rooms_share_lifetime_custom">مخصص</string>
+    <string name="rooms_share_shared_to_docsspace_users">مستخدمين DoсSpace فقط</string>
+    <string name="rooms_share_shared_to_anyone">أي شخص لديه الرابط</string>
+    <string name="rooms_share_expires_after">تنتهي الصلاحية بعد %s</string>
+    <string name="rooms_share_valid_unlimited">الرابط متاح لعدد غير محدود</string>
+    <string name="rooms_share_access_rights">حقوق الوصول</string>
+    <string name="rooms_share_regenerate_link">إعادة إنشاء الرابط</string>
+    <string name="rooms_share_general_header">عام</string>
+    <string name="rooms_share_link_life_time">رابط مدى الحياة</string>
+    <string name="invite_new_members">أعضاء جدد</string>
+    <string name="invite_new_groups">مجموعات جديدة</string>
+    <string name="invite_add_manually">أضف يدويًا</string>
+    <string name="invite_choose_from_list">اختر من القائمة</string>
+    <string name="invite_already_invited">تم دعوته</string>
+    <string name="share_access_room_type">نوع الوصول</string>
+    <string name="share_access_room_group_desc">حقوق الوصول لكافة المستخدمين في المجموعة</string>
+    <string name="room_create_thirdparty_storage_title">تخزين الطرف الثالث</string>
+    <string name="room_create_thirdparty_storage">التخزين</string>
+    <string name="room_create_thirdparty_location">الموقع</string>
+    <string name="room_create_thirdparty_location_root">جذر</string>
+    <string name="room_create_thirdparty_new_folder">إنشاء مجلد جديد</string>
+    <string name="room_create_thirdparty_desc">استخدم خدمات الطرف الثالث كمخزن للبيانات لهذه الغرفة. سيتم إنشاء مجلد جديد لتخزين بيانات هذه الغرفة في وحدة التخزين المرتبطة</string>
+    <string name="room_storage_reconnect">إعادة توصيل وحدة التخزين</string>
+    <string name="room_storage_not_availabale">محتوى مجلد الطرف الثالث غير متوفر. حاول إعادة ربط الحساب.</string>
 </resources>

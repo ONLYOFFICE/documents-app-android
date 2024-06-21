@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_title" translatable="false">ONLYOFFICE</string>
     <string name="dialogs_edit_forbidden_symbols">لا تستخدم هذه الرموز\u0020</string>
     <string name="dialogs_edit_forbidden_name">اسم غير صالح</string>
@@ -25,4 +25,13 @@
     <string name="common_previous">السابق</string>
     <string name="common_done">تم</string>
     <string name="common_ok">موافق</string>
+    <plurals name="days" tools:ignore="MissingQuantity">
+        <item quantity="one">يوم</item>
+        <item quantity="other">أيام</item>
+    </plurals>
+
+    <plurals name="hours" tools:ignore="MissingQuantity">
+        <item quantity="one">ساعة</item>
+        <item quantity="other">ساعات</item>
+    </plurals>
 </resources>

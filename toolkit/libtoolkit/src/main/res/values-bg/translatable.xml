@@ -18,4 +18,13 @@
     <string name="common_previous">Предишен</string>
     <string name="common_done">Готово</string>
     <string name="common_ok">ОК</string>
+    <plurals name="days">
+        <item quantity="one">ден</item>
+        <item quantity="other">дни</item>
+    </plurals>
+
+    <plurals name="hours">
+        <item quantity="one">час</item>
+        <item quantity="other">часове</item>
+    </plurals>
 </resources>

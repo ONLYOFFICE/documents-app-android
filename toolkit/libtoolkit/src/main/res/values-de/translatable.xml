@@ -1,21 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="chooser_email_client">E-Mail-Client wählen</string>
-  <string name="about_email_subject">ONLYOFFICE Documents Android-Feedback</string>
-  <string name="about_feedback">Feedback und Support</string>
-  <string name="text_hint_required">Erforderlich</string>
-  <string name="export_send_copy">Kopie senden</string>
-  <string name="dialogs_edit_forbidden_symbols">Verwenden Sie diese Symbole nicht\u0020</string>
-  <string name="dialogs_edit_forbidden_name">Ungültiger Name</string>
-  <string name="sizes_bytes">Byte</string>
-  <string name="sizes_kilobytes">KB</string>
-  <string name="sizes_megabytes">MB</string>
-  <string name="sizes_gigabytes">GB</string>
-  <string name="sizes_terabytes">TB</string>
-  <string name="common_accept">Annehmen</string>
-  <string name="common_cancel">Abbrechen</string>
-  <string name="common_next">Weiter</string>
-  <string name="common_previous">Zurück</string>
-  <string name="common_done">Fertig</string>
-  <string name="common_ok">OK</string>
+    <string name="chooser_email_client">E-Mail-Client wählen</string>
+    <string name="about_email_subject">ONLYOFFICE Documents Android-Feedback</string>
+    <string name="about_feedback">Feedback und Support</string>
+    <string name="text_hint_required">Erforderlich</string>
+    <string name="export_send_copy">Kopie senden</string>
+    <string name="dialogs_edit_forbidden_symbols">Verwenden Sie diese Symbole nicht\u0020</string>
+    <string name="dialogs_edit_forbidden_name">Ungültiger Name</string>
+    <string name="sizes_bytes">Byte</string>
+    <string name="sizes_kilobytes">KB</string>
+    <string name="sizes_megabytes">MB</string>
+    <string name="sizes_gigabytes">GB</string>
+    <string name="sizes_terabytes">TB</string>
+    <string name="common_accept">Annehmen</string>
+    <string name="common_cancel">Abbrechen</string>
+    <string name="common_next">Weiter</string>
+    <string name="common_previous">Zurück</string>
+    <string name="common_done">Fertig</string>
+    <string name="common_ok">OK</string>
+    <plurals name="days">
+        <item quantity="one">Tag</item>
+        <item quantity="other">Tage</item>
+    </plurals>
+
+    <plurals name="hours">
+        <item quantity="one">Stunde</item>
+        <item quantity="other">Stunden</item>
+    </plurals>
 </resources>
