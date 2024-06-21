@@ -1,5 +1,6 @@
 package app.editors.manager.managers.tools
 
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract.Parameters
 import app.documents.core.network.common.contracts.ApiContract.SectionType
 import app.documents.core.network.manager.models.explorer.Security
@@ -89,6 +90,7 @@ object ActionMenuItemsFactory {
     }
 
     fun getDocsItems(
+        provider: PortalProvider,
         section: Int,
         selected: Boolean,
         allSelected: Boolean,
@@ -105,15 +107,19 @@ object ActionMenuItemsFactory {
             }
 
             // sort block
-            addAll(
-                listOfNotNull(
-                    ActionMenuItem.Title,
-                    ActionMenuItem.Type,
-                    ActionMenuItem.Size,
-                    ActionMenuItem.Author.takeIf { section != SectionType.DEVICE_DOCUMENTS },
-                    ActionMenuItem.Date
-                ).map { it.get(asc, sortBy) }
-            )
+            if (provider == PortalProvider.Onedrive) {
+                add(ActionMenuItem.Title.get(asc, sortBy))
+            } else {
+                addAll(
+                    listOfNotNull(
+                        ActionMenuItem.Title,
+                        ActionMenuItem.Type,
+                        ActionMenuItem.Size,
+                        ActionMenuItem.Author.takeIf { section != SectionType.DEVICE_DOCUMENTS },
+                        ActionMenuItem.Date
+                    ).map { it.get(asc, sortBy) }
+                )
+            }
         } else if (section == SectionType.CLOUD_TRASH) {
             // trash action block
             add(ActionMenuItem.Restore)
