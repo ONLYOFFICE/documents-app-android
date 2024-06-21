@@ -606,7 +606,7 @@
     <string name="rooms_info_access_desc">Тази стая е налична за всеки с линк. Външните потребители ще имат позволение Само за Четене за всички файлове.</string>
     <string name="rooms_info_general_link">Главен линк</string>
     <string name="rooms_info_additional_link">Допълнителен линк</string>
-    <string name="rooms_info_additional_links">"Допълнителни линкове (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"Допълнителни линкове (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Създай и копирай</string>
     <string name="rooms_info_create_link_complete">Линкът беше успешно създаден и копиран в клипборда</string>
     <string name="rooms_info_delete_link">Изтрий линк</string>

@@ -250,8 +250,6 @@
     <string name="operation_title">Selecionar a pasta</string>
     <string name="permission_account_read_description">Descrição de permissão de gravação da conta</string>
     <string name="permission_account_read_label">Etiqueta de permissão de gravação da conta</string>
-    <string name="permission_account_write_description">Descrição de permissão de gravação da conta</string>
-    <string name="permission_account_write_label">Etiqueta de permissão de gravação da conta</string>
     <string name="placeholder_access_denied">Acesso negado</string>
     <string name="placeholder_connection">Erro de conexão</string>
     <string name="placeholder_empty">Pasta vazia</string>
@@ -613,7 +611,7 @@
     <string name="rooms_info_access_desc">Esta sala está disponível para qualquer pessoa com o link. Os usuários externos terão permissão Somente visualização para todos os arquivos.</string>
     <string name="rooms_info_general_link">Ligação geral</string>
     <string name="rooms_info_additional_link">Link adicional</string>
-    <string name="rooms_info_additional_links">"Links adicionais (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"Links adicionais (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Criar e copiar</string>
     <string name="rooms_info_create_link_complete">Link criado e copiado com sucesso para a área de transferência</string>
     <string name="rooms_info_delete_link">Excluir link</string>

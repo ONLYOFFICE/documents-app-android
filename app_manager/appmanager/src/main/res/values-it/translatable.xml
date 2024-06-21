@@ -248,10 +248,6 @@
     <string name="operation_snackbar_return">RITORNA</string>
     <string name="operation_snackbar_send_link">INVIA LINK</string>
     <string name="operation_title">Seleziona cartella</string>
-    <string name="permission_account_read_description">Descrizione del permesso di scrittura dell’account</string>
-    <string name="permission_account_read_label">Etichetta di permesso di scrittura dell’account</string>
-    <string name="permission_account_write_description">Descrizione del permesso di scrittura dell’account</string>
-    <string name="permission_account_write_label">Etichetta di permesso di scrittura dell’account</string>
     <string name="placeholder_access_denied">Accesso negato</string>
     <string name="placeholder_connection">Errore di connessione</string>
     <string name="placeholder_empty">Svuota cartella</string>
@@ -611,7 +607,7 @@
     <string name="rooms_info_access_desc">Questa stanza è disponibile per chiunque abbia il link. Gli utenti esterni avranno l\'autorizzazione di sola visualizzazione per tutti i file.</string>
     <string name="rooms_info_general_link">Link generale</string>
     <string name="rooms_info_additional_link">Link aggiuntivo</string>
-    <string name="rooms_info_additional_links">"Link aggiuntivi (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"Link aggiuntivi (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Crea e copia</string>
     <string name="rooms_info_create_link_complete">Link creato e copiato con successo negli appunti</string>
     <string name="rooms_info_delete_link">Elimina il link</string>
@@ -670,7 +666,7 @@
     <string name="placeholder_empty_room_visitor_desc">I file e le cartelle caricati dagli amministratori verranno visualizzati qui</string>
     <string name="placeholder_empty_recent_via_link_desc">Qui troverai un elenco dei file aperti di recente condivisi con te tramite un link esterno</string>
     <string name="placeholder_payment_required">L\'abbonamento Business è scaduto</string>
-    <string name="placeholder_payment_required_desc">Il tuo attuale piano tariffario "Business" è scaduto. Rinnova l\'abbonamento nelle impostazioni dell\'account per poter utilizzare DocSpace. In caso di domande, ti preghiamo di contattare l'assistenza</string>
+    <string name="placeholder_payment_required_desc">Il tuo attuale piano tariffario "Business" è scaduto. Rinnova l\'abbonamento nelle impostazioni dell\'account per poter utilizzare DocSpace. In caso di domande, ti preghiamo di contattare l\'assistenza</string>
     <string name="placeholder_payment_required_button">Rinnova il piano Business</string>
     <string name="filter_type_form_templates">Modelli di moduli</string>
     <string name="filter_type_forms">Moduli</string>

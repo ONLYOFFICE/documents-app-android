@@ -634,7 +634,7 @@
     <string name="rooms_info_access_desc">Эта комната доступна всем, у кого есть ссылка. Сторонние пользователи получат разрешение только на просмотр для всех файлов.</string>
     <string name="rooms_info_general_link">Общая ссылка</string>
     <string name="rooms_info_additional_link">Дополнительная ссылка</string>
-    <string name="rooms_info_additional_links">"Дополнительные ссылки (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"Дополнительные ссылки (%1d/%2d)"</string>
     <string name="rooms_info_create_link">Создать и скопировать</string>
     <string name="rooms_info_create_link_complete">Ссылка успешно создана и скопирована в буфер обмена</string>
     <string name="rooms_info_delete_link">Удалить ссылку</string>

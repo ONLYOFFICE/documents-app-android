@@ -246,7 +246,7 @@
     <string name="list_context_delete">删除</string>
     <string name="list_context_delete_storage">断开存储</string>
     <string name="list_context_delete_success">删除成功</string>
-    <string name="list_context_remove_from_list" translatable="false">@string/toolbar_menu_main_remove_from_list</string>
+    <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">从最近中移除</string>
     <string name="list_context_upload_to_portal">上传到门户</string>
     <!-- List action menu -->
@@ -671,7 +671,7 @@
     <string name="rooms_info_access_desc">所有拥有链接的人都能访问该房间。外部用户对所有文件只有查看权限。</string>
     <string name="rooms_info_general_link">通用链接</string>
     <string name="rooms_info_additional_link">附加链接</string>
-    <string name="rooms_info_additional_links">"附加链接 (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"附加链接 (%1d/%2d)"</string>
     <string name="rooms_info_create_link">创建并复制</string>
     <string name="rooms_info_create_link_complete">链接已成功创建并复制到剪贴板</string>
     <string name="rooms_info_delete_link">删除链接</string>

@@ -325,7 +325,7 @@
     <string name="list_context_delete">Delete</string>
     <string name="list_context_delete_storage">Disconnect storage</string>
     <string name="list_context_delete_success">Deleted successfully</string>
-    <string name="list_context_remove_from_list" translatable="false">@string/toolbar_menu_main_remove_from_list</string>
+    <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">Remove from recent</string>
     <string name="list_context_upload_to_portal">Upload to portal</string>
     <string name="list_context_add_to_favorite">Add to Favorites</string>
@@ -782,7 +782,7 @@
     <string name="rooms_info_edit_link">Edit link</string>
     <string name="rooms_info_create_link_title">Create link</string>
     <string name="rooms_info_additional_link">Additional link</string>
-    <string name="rooms_info_additional_links">"Additional links (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"Additional links (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Create and copy</string>
     <string name="rooms_info_create_link_complete">Link successfully created and copied to clipboard</string>
     <string name="rooms_info_delete_link">Delete link</string>

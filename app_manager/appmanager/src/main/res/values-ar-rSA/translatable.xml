@@ -743,7 +743,7 @@
     <string name="rooms_info_access_desc">هذه الغرفة متاحة لأي شخص لديه الرابط. سيكون لدى المستخدمين الخارجيين إذن العرض فقط لجميع</string>
     <string name="rooms_info_general_link">الرابط العام</string>
     <string name="rooms_info_additional_link">رابط إضافي</string>
-    <string name="rooms_info_additional_links">"الارتباطات الإضافية (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"الارتباطات الإضافية (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">إنشاء ونسخ</string>
     <string name="rooms_info_create_link_complete">تم إنشاء الرابط ونسخه إلى الحافظة بنجاح</string>
     <string name="rooms_info_delete_link">حذف الرابط</string>

@@ -613,7 +613,7 @@
     <string name="rooms_info_access_desc">Esta sala está disponible para cualquier persona con el enlace. Los usuarios externos tendrán permiso Solo Ver para todos los archivos.</string>
     <string name="rooms_info_general_link">Enlace general</string>
     <string name="rooms_info_additional_link">Enlace adicional</string>
-    <string name="rooms_info_additional_links">"Enlaces adicionales (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"Enlaces adicionales (%1d/%2d)"</string>
     <string name="rooms_info_create_link">Crear y copiar</string>
     <string name="rooms_info_create_link_complete">Enlace creado y copiado correctamente en el portapapeles</string>
     <string name="rooms_info_delete_link">Eliminar enlace</string>

@@ -4,10 +4,6 @@
 
     <!-- ======================================================================================= -->
     <!-- Permissions -->
-    <string name="permission_account_write_label">Štítek oprávnění účtu k zápisu</string>
-    <string name="permission_account_write_description">Popis oprávnění účtu k zápisu</string>
-    <string name="permission_account_read_label">Štítek oprávnění účtu k zápisu</string>
-    <string name="permission_account_read_description">Popis oprávnění účtu k zápisu</string>
 
     <!-- ======================================================================================= -->
     <!-- Versions -->
@@ -763,7 +759,7 @@
     <string name="rooms_info_access_desc">Tato místnost je dostupná komukoli s odkazem. Externí uživatelé budou mít pro všechny soubory oprávnění pouze k prohlížení.</string>
     <string name="rooms_info_general_link">Obecný odkaz</string>
     <string name="rooms_info_additional_link">Doplňkový odkaz</string>
-    <string name="rooms_info_additional_links">"Další odkazy (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"Další odkazy (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Vytvořit a zkopírovat</string>
     <string name="rooms_info_create_link_complete">Odkaz úspěšně vytvořen a zkopírován do schránky</string>
     <string name="rooms_info_delete_link">Odstranit odkaz</string>

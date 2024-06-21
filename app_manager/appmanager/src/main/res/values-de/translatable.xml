@@ -1,10 +1,6 @@
 <resources>
     <string name="app_name">Dokumente</string>
     <string name="app_name_full">ONLYOFFICE Dokumente</string>
-    <string name="permission_account_write_label">Label der Konto-Schreibberechtigung</string>
-    <string name="permission_account_write_description">Beschreibung der Konto-Schreibberechtigung</string>
-    <string name="permission_account_read_label">Label der Konto-Schreibberechtigung</string>
-    <string name="permission_account_read_description">Beschreibung der Konto-Schreibberechtigung</string>
     <string name="app_versions_title">Version 3.0 veröffentlicht</string>
     <string name="app_versions_cancel">Später</string>
     <string name="app_versions_without_release_accept">Offizielle App installieren</string>
@@ -614,7 +610,7 @@
     <string name="rooms_info_access_desc">Dieser Raum ist für jeden zugänglich, der den Link hat. Externe Benutzer haben die Berechtigung "Schreibgeschützt" für alle Dateien.</string>
     <string name="rooms_info_general_link">Allgemeiner Link</string>
     <string name="rooms_info_additional_link">Zusätzlicher Link</string>
-    <string name="rooms_info_additional_links">"Zusätzliche Links (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"Zusätzliche Links (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Erstellen und kopieren</string>
     <string name="rooms_info_create_link_complete">Link erfolgreich erstellt und in die Zwischenablage kopiert</string>
     <string name="rooms_info_delete_link">Link löschen</string>
