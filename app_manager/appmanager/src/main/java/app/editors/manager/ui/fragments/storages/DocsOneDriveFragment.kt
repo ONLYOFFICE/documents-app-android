@@ -4,12 +4,12 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.utils.OneDriveUtils
 import app.editors.manager.app.App
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
 import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
-import app.editors.manager.ui.popup.SelectPopupItem
+import app.editors.manager.ui.fragments.base.StorageLoginFragment
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -20,11 +20,7 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
     companion object {
         val TAG: String = DocsOneDriveFragment::class.java.simpleName
 
-        fun newInstance(account: String) = DocsOneDriveFragment().apply {
-            arguments = Bundle(1).apply {
-                putString(KEY_ACCOUNT, account)
-            }
-        }
+        fun newInstance() = DocsOneDriveFragment()
     }
 
     @InjectPresenter
@@ -62,16 +58,12 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
         }
     }
 
-    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        if (!presenter.isFoldersInSelection()) {
-            super.showSelectActionPopup(SelectPopupItem.Download)
-        } else {
-            super.showSelectActionPopup(*excluded)
-        }
-    }
-
     override fun onAuthorization() {
-        //stub
+        showFragment(
+            StorageLoginFragment.newInstance(OneDriveUtils.storage),
+            StorageLoginFragment.TAG,
+            false
+        )
     }
 
     override fun onShowCamera(photoUri: Uri) {

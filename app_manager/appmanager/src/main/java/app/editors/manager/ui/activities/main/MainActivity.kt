@@ -1,5 +1,6 @@
 package app.editors.manager.ui.activities.main
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -8,44 +9,53 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.viewModels
 import androidx.annotation.StringRes
-import androidx.core.view.isVisible
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.network.webdav.WebDavService
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.ActivityMainBinding
 import app.editors.manager.managers.receivers.AppLocaleReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
-import app.editors.manager.mvp.presenters.main.MainActivityState
 import app.editors.manager.mvp.views.main.MainActivityView
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
-import app.editors.manager.ui.fragments.main.*
+import app.editors.manager.ui.fragments.main.AppSettingsFragment
+import app.editors.manager.ui.fragments.main.CloudAccountFragment
+import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment
+import app.editors.manager.ui.fragments.main.DocsRecentFragment
+import app.editors.manager.ui.fragments.main.DocsWebDavFragment
+import app.editors.manager.ui.fragments.main.MainPagerFragment
+import app.editors.manager.ui.fragments.main.OnlyOfficeCloudFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
-import app.editors.manager.viewModels.main.RecentViewModel
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.android.play.core.tasks.Task
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.FragmentUtils
+import lib.toolkit.base.managers.utils.LaunchActivityForResult
+import lib.toolkit.base.managers.utils.RequestPermission
+import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
-import java.util.*
+import java.util.UUID
 
 
 interface ActionButtonFragment {
@@ -56,11 +66,9 @@ interface IMainActivity {
     fun showNavigationButton(isShow: Boolean)
     fun showActionButton(isShow: Boolean)
     fun showAccount(isShow: Boolean)
-    fun getTabLayout(): TabLayout
     fun setAppBarStates(isVisible: Boolean)
-    fun getNavigationBottom(): BottomNavigationView
     fun onSwitchAccount()
-    fun showOnCloudFragment(account: CloudAccount? = null)
+    fun showOnCloudFragment()
     fun showAccountsActivity(isSwitch: Boolean = false)
     fun showWebViewer(file: CloudFile, isEditMode: Boolean = false, callback: (() -> Unit)? = null)
     fun onLogOut()
@@ -68,21 +76,20 @@ interface IMainActivity {
 
 
 class MainActivity : BaseAppActivity(), MainActivityView,
-    BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose, IMainActivity, View.OnClickListener {
+    BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose, IMainActivity,
+    View.OnClickListener {
 
     companion object {
 
         val TAG: String = MainActivity::class.java.simpleName
 
         private const val ACCOUNT_KEY = "ACCOUNT_KEY"
+        private const val FRAGMENT_KEY = "FRAGMENT_KEY"
         private const val URL_KEY = "url"
-        const val KEY_CODE = "code"
 
-        fun show(context: Context, isCode: Boolean? = true, bundle: Bundle? = null) {
+        fun show(context: Context) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                isCode?.let { putExtra(KEY_CODE, isCode) }
-                bundle?.let { putExtras(bundle) }
             })
         }
     }
@@ -90,20 +97,22 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     @InjectPresenter
     lateinit var presenter: MainActivityPresenter
 
-    private val recentViewModel: RecentViewModel by viewModels()
     private lateinit var viewBinding: ActivityMainBinding
 
     private val navigationListener: (item: MenuItem) -> Boolean = { item ->
         if (presenter.isDialogOpen) {
             false
         } else {
-            presenter.navigationItemClick(item.itemId)
+            navigate(item.itemId)
             true
         }
     }
 
+    private val toolbarElevation by lazy { resources.getDimension(lib.toolkit.base.R.dimen.default_elevation_height) }
+
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(ACCOUNT_KEY, Json.encodeToString(viewBinding.appBarToolbar.account))
+        outState.putInt(FRAGMENT_KEY, viewBinding.bottomNavigation.selectedItemId)
         super.onSaveInstanceState(outState)
     }
 
@@ -111,11 +120,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         intent?.action?.let { action ->
-            if (action == Intent.ACTION_VIEW) {
-                intent.data?.let {
-                    presenter.checkFileData(it)
-                }
-            }
             if (action == DownloadReceiver.DOWNLOAD_ACTION_CANCELED) {
                 intent.extras?.let { extras ->
                     WorkManager.getInstance(this)
@@ -142,11 +146,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         var fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
         if (fragment is MainPagerFragment) {
             val fragments = fragment.getChildFragmentManager().fragments
-//            for (fr in fragments) {
-//                if (fr is DocsMyFragment) {
-//                    fr.getArgs(intent)
-//                }
-//            }
+            //            for (fr in fragments) {
+            //                if (fr is DocsMyFragment) {
+            //                    fr.getArgs(intent)
+            //                }
+            //            }
         }
 
         fragment = supportFragmentManager.findFragmentByTag(DocsWebDavFragment.TAG)
@@ -163,8 +167,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         if (fragment is DocsRecentFragment) {
             fragment.getArgs(intent)
         }
-
-        intent?.clearIntent()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -174,6 +176,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 REQUEST_ACTIVITY_PORTAL -> {
                     presenter.init(true)
                 }
+
                 REQUEST_ACTIVITY_ACCOUNTS -> {
                     presenter.onRemoveFileData()
                 }
@@ -186,7 +189,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                         getString(R.string.dialogs_common_ok_button),
                         null
                     )
-                    dialog?.show()
+                    dialog?.show(supportFragmentManager)
                 }
             }
         } else if (resultCode == AccountsActivity.RESULT_NO_LOGGED_IN_ACCOUNTS) {
@@ -196,14 +199,19 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        presenter.checkOnBoardingShowed()
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
         init(savedInstanceState)
     }
 
+    override fun onStart() {
+        if (App.getApp().needPasscodeToUnlock) PasscodeActivity.show(this)
+        super.onStart()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        appComponent.preference.modules = ""
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             unregisterReceiver(AppLocaleReceiver)
         }
@@ -212,8 +220,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     private fun init(savedInstanceState: Bundle?) {
         initViews()
         initToolbar()
-        setAppBarStates()
-        checkState(savedInstanceState)
         registerAppLocaleBroadcastReceiver()
 
         if (isNotification()) {
@@ -221,21 +227,20 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 showBrowser(it)
             }
         }
-        recentViewModel.isRecent.observe(this) { recents ->
-            viewBinding.bottomNavigation.menu.getItem(0).isEnabled = recents.isNotEmpty()
-        }
 
-        if (intent?.action == Intent.ACTION_VIEW) {
-            intent.data?.let {
-                presenter.checkFileData(it)
-                intent.clearIntent()
-            }
-        }
+        App.getApp().appComponent
+            .recentDataSource.getRecentListFlow()
+            .flowWithLifecycle(lifecycle)
+            .onEach { viewBinding.bottomNavigation.menu.getItem(0).isEnabled = it.isNotEmpty() }
+            .launchIn(lifecycleScope)
+
+        checkState(savedInstanceState)
     }
 
     private fun initViews() {
         viewBinding.appFloatingActionButton.visibility = View.GONE
         viewBinding.appFloatingActionButton.setOnClickListener { onFloatingButtonClick() }
+        viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
     }
 
     private fun initToolbar() {
@@ -250,26 +255,33 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     private fun checkState(savedInstanceState: Bundle?) {
-        savedInstanceState?.let {
-            viewBinding.appBarToolbar.bind(Json.decodeFromString(it.getString(ACCOUNT_KEY) ?: ""))
-        } ?: run {
-            val isShortcut = intent?.extras?.contains("create_type") == true
-            presenter.init(isShortcut = isShortcut)
-            if (isShortcut) {
+        presenter.init()
+
+        if (savedInstanceState != null) {
+            viewBinding.bottomNavigation.selectedItemId = savedInstanceState.getInt(FRAGMENT_KEY)
+            viewBinding.appBarToolbar.bind()
+            return
+        }
+
+        if (intent?.extras?.contains("create_type") == true) {
+            viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
+        } else {
+            accountOnline?.let {
+                viewBinding.appBarToolbar.bind()
+                viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
+            } ?: run {
                 viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
-            } else {
-                accountOnline?.let {
-                    viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
-                } ?: run {
-                    viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
-                }
             }
         }
-        viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
-        if (intent.extras?.contains(KEY_CODE) == true) {
-            presenter.checkPassCode(true)
-        } else {
-            presenter.checkPassCode()
+
+        checkNotification()
+    }
+
+    private fun checkNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            RequestPermission(activityResultRegistry, {
+                // TODO set notification flag
+            }, Manifest.permission.POST_NOTIFICATIONS).request()
         }
     }
 
@@ -309,34 +321,9 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     override fun showAccount(isShow: Boolean) {
-//        presenter.isDialogOpen = true
+        //        presenter.isDialogOpen = true
         viewBinding.appBarToolbar.showAccount(isShow)
-    }
-
-    override fun getTabLayout(): TabLayout {
-        return viewBinding.appBarTabs
-    }
-
-    override fun onRender(state: MainActivityState) {
-        when (state) {
-            is MainActivityState.RecentState -> {
-                showRecentFragment()
-            }
-            is MainActivityState.OnDeviceState -> {
-                showOnDeviceFragment()
-            }
-            is MainActivityState.CloudState -> {
-                state.account?.let {
-                    showOnCloudFragment(state.account)
-                } ?: run {
-                    showOnCloudFragment()
-                }
-                viewBinding.appBarToolbar.bind(state.account)
-            }
-            is MainActivityState.SettingsState -> {
-                showSettingsFragment()
-            }
-        }
+        viewBinding.appBarLayout.elevation = if (isShow) 0f else toolbarElevation
     }
 
     override fun onLocaleConfirmation() {
@@ -348,13 +335,8 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     override fun openFile(account: CloudAccount, fileData: String) {
         viewBinding.bottomNavigation.setOnItemSelectedListener(null)
         viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
-        showCloudFragment(account = account, fileData = fileData)
+        showOnCloudFragment()
         viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
-    }
-
-    override fun onCodeActivity() {
-        PasscodeActivity.show(this, true, intent.extras)
-        finish()
     }
 
     override fun showActionButton(isShow: Boolean) {
@@ -529,8 +511,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         )
     }
 
-    override fun getNavigationBottom(): BottomNavigationView = viewBinding.bottomNavigation
-
     override fun onSwitchAccount() {
         FragmentUtils.showFragment(
             supportFragmentManager,
@@ -541,143 +521,100 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     private fun showOnDeviceFragment() {
-        supportFragmentManager.findFragmentByTag(DocsOnDeviceFragment.TAG)?.let { fragment ->
-            if (fragment is DocsOnDeviceFragment && fragment.isActivePage) {
-                fragment.showRoot()
-            }
-        } ?: run {
-            FragmentUtils.showFragment(supportFragmentManager, DocsOnDeviceFragment.newInstance(), R.id.frame_container)
+        if (supportFragmentManager.findFragmentByTag(DocsOnDeviceFragment.TAG) != null) {
+            return
         }
+        hidePagerFragment()
+        val fragment = DocsOnDeviceFragment.newInstance()
+        supportFragmentManager.beginTransaction().apply {
+            add(R.id.frame_container, fragment, DocsOnDeviceFragment.TAG)
+            show(fragment)
+        }.commit()
     }
 
     private fun showRecentFragment() {
-        supportFragmentManager.findFragmentByTag(DocsRecentFragment.TAG)?.let {
-            FragmentUtils.showFragment(supportFragmentManager, it, R.id.frame_container)
-        } ?: run {
-            FragmentUtils.showFragment(supportFragmentManager, DocsRecentFragment.newInstance(), R.id.frame_container)
+        if (supportFragmentManager.findFragmentByTag(DocsRecentFragment.TAG) != null) {
+            return
         }
+        hidePagerFragment()
+        val fragment = DocsRecentFragment.newInstance()
+        supportFragmentManager.beginTransaction().apply {
+            add(R.id.frame_container, fragment, DocsRecentFragment.TAG)
+            show(fragment)
+        }.commit()
     }
+
 
     private fun showSettingsFragment() {
-        supportFragmentManager.findFragmentByTag(AppSettingsFragment.TAG)?.let { fragment ->
-            FragmentUtils.showFragment(
-                supportFragmentManager,
-                fragment,
-                R.id.frame_container
-            )
-        } ?: run {
-            FragmentUtils.showFragment(
-                supportFragmentManager,
-                AppSettingsFragment.newInstance(),
-                R.id.frame_container
-            )
+        if (supportFragmentManager.findFragmentByTag(AppSettingsFragment.TAG) != null) {
+            return
         }
+        hidePagerFragment()
+        val fragment = AppSettingsFragment.newInstance()
+        supportFragmentManager.beginTransaction().apply {
+            add(R.id.frame_container, fragment, AppSettingsFragment.TAG)
+            show(fragment)
+        }.commit()
     }
 
-    override fun showOnCloudFragment(account: CloudAccount?) {
-        account?.let {
-            when {
-                it.isWebDav -> {
-                    showWebDavFragment(it)
-                }
-                it.isOneDrive -> {
-                    showOneDriveFragment(account)
-                }
-                it.isDropbox -> {
-                    showDropboxFragment(account)
-                }
-                it.isGoogleDrive -> {
-                    showGoogleDriveFragment()
-                }
-                else -> {
-                    showCloudFragment(account)
-                }
-            }
-        } ?: run {
+    override fun showOnCloudFragment() {
+        if (accountOnline == null) {
             FragmentUtils.showFragment(
                 supportFragmentManager,
                 OnlyOfficeCloudFragment.newInstance(false),
                 R.id.frame_container
             )
+            return
+        } else {
+            val fragment = when (accountOnline?.portal?.provider) {
+                PortalProvider.Dropbox -> DocsDropboxFragment.newInstance()
+                PortalProvider.GoogleDrive -> DocsGoogleDriveFragment.newInstance()
+                PortalProvider.Onedrive -> DocsOneDriveFragment.newInstance()
+                is PortalProvider.Webdav -> DocsWebDavFragment.newInstance(WebdavProvider.valueOf(accountOnline?.portal?.provider!!))
+                is PortalProvider.Cloud -> {
+                    showActionButton(false)
+                    setAppBarStates(true)
+                    showMainPagerFragment()
+                    return
+                }
+
+                else -> OnlyOfficeCloudFragment.newInstance(false)
+            }
+            FragmentUtils.showFragment(
+                supportFragmentManager,
+                fragment,
+                R.id.frame_container
+            )
         }
     }
 
-    private fun showCloudFragment(account: CloudAccount?, fileData: String? = null) {
-        supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)?.let { fragment ->
-            (fragment as MainPagerFragment).let { pagerFragment ->
-                fileData?.let {
-                    pagerFragment.setFileData(it)
-                } ?: run {
-                    if (!pagerFragment.isRoot()) {
-                        supportFragmentManager.beginTransaction().remove(fragment).commit()
-                        FragmentUtils.showFragment(
-                            supportFragmentManager,
-                            MainPagerFragment.newInstance(Json.encodeToString(account), fileData),
-                            R.id.frame_container
-                        )
-                    }
+    private fun showMainPagerFragment() {
+        supportFragmentManager.beginTransaction().apply {
+            supportFragmentManager.fragments.forEach {
+                if (it !is MainPagerFragment) {
+                    remove(it)
                 }
             }
-        } ?: run {
-            FragmentUtils.showFragment(
-                supportFragmentManager,
-                MainPagerFragment.newInstance(Json.encodeToString(account), fileData),
-                R.id.frame_container
-            )
+        }.commit()
+        val fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
+        if (fragment != null) {
+            supportFragmentManager.beginTransaction().setCustomAnimations(
+                lib.toolkit.base.R.anim.fragment_fade_in,
+                lib.toolkit.base.R.anim.fragment_fade_out
+            ).show(fragment).commit()
+            (fragment as MainPagerFragment).onResume()
+            return
         }
-    }
 
-    private fun showOneDriveFragment(account: CloudAccount) {
-        supportFragmentManager.findFragmentByTag(DocsOneDriveFragment.TAG)?.let {
-            FragmentUtils.showFragment(supportFragmentManager, it, R.id.frame_container)
-        } ?: run {
-            FragmentUtils.showFragment(
-                supportFragmentManager,
-                DocsOneDriveFragment.newInstance(Json.encodeToString(account)),
-                R.id.frame_container
-            )
-        }
-    }
-
-    private fun showDropboxFragment(account: CloudAccount) {
-        supportFragmentManager.findFragmentByTag(DocsDropboxFragment.TAG)?.let {
-            FragmentUtils.showFragment(supportFragmentManager, it, R.id.frame_container)
-        } ?: run {
-            FragmentUtils.showFragment(
-                supportFragmentManager,
-                DocsDropboxFragment.newInstance(Json.encodeToString(account)),
-                R.id.frame_container
-            )
-        }
-    }
-
-    private fun showGoogleDriveFragment() {
-        supportFragmentManager.findFragmentByTag(DocsDropboxFragment.TAG)?.let {
-            FragmentUtils.showFragment(supportFragmentManager, it, R.id.frame_container)
-        } ?: run {
-            FragmentUtils.showFragment(
-                supportFragmentManager,
-                DocsGoogleDriveFragment.newInstance(),
-                R.id.frame_container
-            )
-        }
-    }
-
-
-    private fun showWebDavFragment(account: CloudAccount) {
-        supportFragmentManager.findFragmentByTag(DocsWebDavFragment.TAG)?.let {
-            FragmentUtils.showFragment(supportFragmentManager, it, R.id.frame_container)
-        } ?: run {
-            FragmentUtils.showFragment(
-                supportFragmentManager,
-                DocsWebDavFragment.newInstance(WebDavService.Providers.valueOf(account.webDavProvider ?: "")),
-                R.id.frame_container
-            )
-        }
+        supportFragmentManager.beginTransaction().apply {
+            val mainPagerFragment = MainPagerFragment.newInstance()
+            add(R.id.frame_container, mainPagerFragment, MainPagerFragment.TAG)
+            show(mainPagerFragment)
+        }.commit()
     }
 
     override fun onLogOut() {
-        showOnCloudFragment(null)
+        showOnCloudFragment()
         setAppBarStates(false)
         showNavigationButton(false)
     }
@@ -695,16 +632,32 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         setAppBarMode(isVisible)
         showAccount(isVisible)
         showNavigationButton(!isVisible)
-        viewBinding.appBarLayout.post {
-            viewBinding.appBarTabs.isVisible = isVisible
-
-        }
-//        viewBinding.appBarLayout.postDelayed({
-//            viewBinding.appBarTabs.isVisible = isVisible
-//        }, 150)
     }
 
     private fun isNotification(): Boolean =
         intent?.categories?.contains(Intent.CATEGORY_LAUNCHER) == true && intent.extras?.contains(URL_KEY) == true
+
+    private fun navigate(itemId: Int) {
+        when (itemId) {
+            R.id.menu_item_recent -> showRecentFragment()
+            R.id.menu_item_on_device -> showOnDeviceFragment()
+            R.id.menu_item_settings -> showSettingsFragment()
+            R.id.menu_item_cloud -> {
+                showOnCloudFragment()
+            }
+        }
+    }
+
+    private fun hidePagerFragment() {
+        supportFragmentManager.beginTransaction().apply {
+            supportFragmentManager.fragments.forEach {
+                if (it !is MainPagerFragment) {
+                    remove(it)
+                } else {
+                    hide(it)
+                }
+            }
+        }.commit()
+    }
 
 }

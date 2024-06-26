@@ -73,6 +73,7 @@
     <string name="errors_sign_in_splash_error">Failed to access the portal</string>
     <string name="errors_sign_in_account_error">Login failed</string>
     <string name="errors_sign_in_account_already_use">You are already using this account</string>
+    <string name="errors_sign_in_ldap_checkbox">Sign in as LDAP User</string>
 
     <!-- ======================================================================================= -->
     <!-- Login -->
@@ -267,7 +268,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!-- Main drawer menu-->
-    <string name="navigation_drawer_menu_my">My documents</string>
     <string name="navigation_drawer_menu_shared">Shared with me</string>
     <string name="navigation_drawer_menu_common">Common documents</string>
     <string name="navigation_drawer_menu_projects">Projects</string>
@@ -325,7 +325,7 @@
     <string name="list_context_delete">Delete</string>
     <string name="list_context_delete_storage">Disconnect storage</string>
     <string name="list_context_delete_success">Deleted successfully</string>
-    <string name="list_context_remove_from_list" translatable="false">@string/toolbar_menu_main_remove_from_list</string>
+    <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">Remove from recent</string>
     <string name="list_context_upload_to_portal">Upload to portal</string>
     <string name="list_context_add_to_favorite">Add to Favorites</string>
@@ -354,8 +354,8 @@
     <string name="main_pager_docs_projects">Projects</string>
     <string name="main_pager_docs_trash">Trash</string>
     <string name="main_pager_docs_favorites">Favorites</string>
-    <string name="main_pager_docs_virtual_room">My rooms</string>
-    <string name="main_pager_docs_archive_room">My archive</string>
+    <string name="main_pager_docs_virtual_room">Rooms</string>
+    <string name="main_pager_docs_archive_room">Archive</string>
 
     <!-- Placeholder -->
     <string name="placeholder_connection">Connection error</string>
@@ -373,6 +373,24 @@
     <string name="placeholder_loading_users">Loading users…</string>
     <string name="placeholder_loading_groups">Loading groups…</string>
     <string name="placeholder_other_accounts">No other accounts here yet</string>
+    <string name="placeholder_empty_folder">No docs here yet</string>
+    <string name="placeholder_empty_trash_desc">All deleted files are moved to \'Trash\'. Restore files deleted by mistake or delete them permanently. Files in \'Trash\' are automatically deleted after 30 days. Please note, that the files deleted from the \'Trash\' cannot be restored any longer</string>
+    <string name="placeholder_no_users_found">No users found</string>
+    <string name="placeholder_no_users_found_desc">No users match your search. Please adjust your search parameters or clear the search field to view the full list of users</string>
+    <string name="placeholder_no_members_found">No members found</string>
+    <string name="placeholder_no_members_found_desc">You can add new team members manually or invite them via link</string>
+    <string name="placeholder_no_rooms">Welcome to DocSpace!</string>
+    <string name="placeholder_no_rooms_desc">Please create the first room</string>
+    <string name="placeholder_no_rooms_visitor_desc">Rooms shared with you will appear here</string>
+    <string name="placeholder_empty_archive">No archived rooms here yet</string>
+    <string name="placeholder_empty_archive_desc">You can archive rooms you don’t use and restore them in your DocSpace at any moment or delete them permanently. These rooms will appear here</string>
+    <string name="placeholder_no_search_result">No search result</string>
+    <string name="placeholder_no_search_result_desc">No results matching your search could be found. Please try another phrase</string>
+    <string name="placeholder_empty_room_visitor_desc">Files and folders uploaded by admins will appeared here</string>
+    <string name="placeholder_empty_recent_via_link_desc">Here you will find a list of the recently opened files shared with you via an external link</string>
+    <string name="placeholder_payment_required">Business subscription expired</string>
+    <string name="placeholder_payment_required_desc">Your current tariff plan "Business" expired. Please renew your subscription in the account settings to be able to use your DocSpace. If you have any questions, please contact support</string>
+    <string name="placeholder_payment_required_button">Renew Business plan</string>
 
     <!-- Time marks-->
     <string name="list_headers_folder">Folders</string>
@@ -642,7 +660,7 @@
     <string name="app_settings_analytic">Share app analytics</string>
     <string name="app_manage_files_title">Access manage files</string>
     <string name="app_manage_files_description">Need to grant access to the files. If access is denied all files after lost applications will be deleted.</string>
-    //passcode
+
     <string name="app_settings_security">Security</string>
     <string name="app_settings_passcode">Passcode lock</string>
     <string name="app_settings_disabled">Disabled</string>
@@ -660,6 +678,16 @@
     <string name="app_settings_passcode_change_disable_error">Incorrect passcode entered</string>
     <string name="app_settings_passcode_description"> - this is code which requested at application start.\n\nPay attention! If you forget passcode you have to remove or reinstall application. All documents on device will be lost. </string>
     <string name="app_settings_passcode_fingerprint_title">Access to Documents</string>
+
+    <plurals name="app_settings_passcode_many_attempt_seconds">
+        <item quantity="one">Too many attempts.\nTry again in %d second</item>
+        <item quantity="other">Too many attempts.\nTry again in %d seconds</item>
+    </plurals>
+
+    <plurals name="app_settings_passcode_many_attempt_minutes">
+        <item quantity="one">Too many attempts.\nTry again in %d minute</item>
+        <item quantity="other">Too many attempts.\nTry again in %d minutes</item>
+    </plurals>
 
     <string name="app_internal_error">Internal error</string>
     <string name="app_fragment_crash_error">Please close this app and try again</string>
@@ -686,6 +714,8 @@
     <string name="filter_type_documents">Documents</string>
     <string name="filter_type_presentations">Presentations</string>
     <string name="filter_type_spreadsheets">Spreadsheets</string>
+    <string name="filter_type_form_templates">Form templates</string>
+    <string name="filter_type_forms">Forms</string>
     <string name="filter_type_images">Images</string>
     <string name="filter_type_media">Media</string>
     <string name="filter_type_archives">Archives</string>
@@ -731,6 +761,8 @@
     <string name="room_search_not_found_desc">The list of users previously invited to DocSpace or separate rooms will appear here.</string>
     <string name="room_placeholder_created_room_title">Room created!</string>
     <string name="room_placeholder_created_room_subtitle">Create new folders to organize your files.</string>
+    <string name="room_recent_via_link">Accessible via link</string>
+    <string name="room_manage_room">Manage room</string>
 
     <plurals name="rooms_restore_title">
         <item quantity="one">Restore room?</item>
@@ -747,8 +779,10 @@
 
     <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.</string>
     <string name="rooms_info_general_link">General link</string>
+    <string name="rooms_info_edit_link">Edit link</string>
+    <string name="rooms_info_create_link_title">Create link</string>
     <string name="rooms_info_additional_link">Additional link</string>
-    <string name="rooms_info_additional_links">"Additional links (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"Additional links (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Create and copy</string>
     <string name="rooms_info_create_link_complete">Link successfully created and copied to clipboard</string>
     <string name="rooms_info_delete_link">Delete link</string>
@@ -763,6 +797,7 @@
     <string name="rooms_info_copy_link_to_clipboard">Link successfully copied to clipboard</string>
     <string name="rooms_info_admin_title">Administration (%d)</string>
     <string name="rooms_info_users_title">Users (%1d)</string>
+    <string name="rooms_info_groups_title">Groups (%1d)</string>
     <string name="rooms_info_expected_title">Expected users (%1d)</string>
     <string name="rooms_info_link_expired">The link has expired</string>
     <string name="rooms_info_link_expired_full">The link has expired and has been disabled</string>
@@ -778,6 +813,23 @@
     <string name="rooms_info_save_button">Save</string>
     <string name="rooms_info_dont_save_button">Don\'t save</string>
 
+    <string name="rooms_share_shared_links">Shared links</string>
+    <string name="rooms_share_shared_link_title">Shared link</string>
+    <string name="rooms_share_shared_desc">Provide access to the document and set the permission levels.</string>
+    <string name="rooms_share_lifetime_hours_12">12 hours</string>
+    <string name="rooms_share_lifetime_days_1">1 day</string>
+    <string name="rooms_share_lifetime_days_7">7 day</string>
+    <string name="rooms_share_lifetime_unlimited">Unlimited</string>
+    <string name="rooms_share_lifetime_custom">Custom</string>
+    <string name="rooms_share_shared_to_docsspace_users">DoсSpace users only</string>
+    <string name="rooms_share_shared_to_anyone">Anyone with the link</string>
+    <string name="rooms_share_expires_after">Expires after %s</string>
+    <string name="rooms_share_valid_unlimited">The link is valid for unlimited</string>
+    <string name="rooms_share_access_rights">Access rights</string>
+    <string name="rooms_share_regenerate_link">Regenerate link</string>
+    <string name="rooms_share_general_header">General</string>
+    <string name="rooms_share_link_life_time">Link life time</string>
+
     <string name="rooms_filter_type_filling_forms">Filling form</string>
     <string name="rooms_filter_type_collaboration">Collaboration</string>
     <string name="rooms_filter_type_review">Review</string>
@@ -790,6 +842,13 @@
     <string name="dialog_create_room">Create room</string>
     <string name="dialog_create_room_value">New room</string>
     <string name="invite_by_email">Invite users by email</string>
+    <string name="invite_new_members">New members</string>
+    <string name="invite_new_groups">New groups</string>
+    <string name="invite_add_manually">Add manually</string>
+    <string name="invite_choose_from_list">Choose from list</string>
+    <string name="invite_already_invited">Invited</string>
+    <string name="share_access_room_type">Access type</string>
+    <string name="share_access_room_group_desc">Access rights for all users in the group</string>
     <string name="share_access_room_owner">Owner</string>
     <string name="share_access_room_admin">Room admin</string>
     <string name="share_access_room_power_user">Power user</string>
@@ -804,6 +863,14 @@
     <string name="share_invite_title">Invite</string>
     <string name="room_create_success">Room created</string>
     <string name="room_delete_success">Room deleted</string>
+    <string name="room_create_thirdparty_storage_title">Third party storage</string>
+    <string name="room_create_thirdparty_storage">Storage</string>
+    <string name="room_create_thirdparty_location">Location</string>
+    <string name="room_create_thirdparty_location_root">Root</string>
+    <string name="room_create_thirdparty_new_folder">Create new folder</string>
+    <string name="room_create_thirdparty_desc">Use third-party services as data storage for this room. A new folder for storing this room’s data will be created in the connected storage</string>
+    <string name="room_storage_reconnect">Reconnect storage</string>
+    <string name="room_storage_not_availabale">The content of third party folder are not available. Try to reconnect the account.</string>
     <string name="switch_account_title">Switch account?</string>
     <string name="switch_account_description">Log in to the portal account %1$s to open the document.</string>
     <string name="share_expected_member">Expect members</string>
@@ -817,15 +884,6 @@
     </string>
     <string name="settings_language_confirmation_accept">Good</string>
     <string name="settings_language_continue_using_app_language">Continue using %1$s</string>
-
-    // TODO: show question dialog
-    // Convert and open document
-    //
-    // The document you open is not OOXML (Office Open XML) file.
-    // Convert it to OOXML format for faster viewing and editing.
-    //
-    // Open in view mode / Convert to $ext
-    showQuestionDialog()
 
     <!-- For example  -->
     <string name="conversion_dialog_title">Convert and open document</string>

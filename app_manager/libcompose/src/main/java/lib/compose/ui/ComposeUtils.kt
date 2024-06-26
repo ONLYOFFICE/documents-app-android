@@ -3,8 +3,12 @@
 package lib.compose.ui
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -24,6 +28,25 @@ fun Modifier.visible(visible: Boolean) = addIf(!visible) { alpha(0f) }
 
 @Composable
 fun Modifier.enabled(enabled: Boolean) = addIf(!enabled) { alpha(0.4f) }
+
+@Composable
+fun LockScreenOrientation(orientation: Int) {
+    val context = LocalContext.current
+    if (!UiUtils.isTablet(context)) {
+        DisposableEffect(orientation) {
+            val activity = context.findActivity() ?: return@DisposableEffect onDispose {}
+            val originalOrientation = activity.requestedOrientation
+            activity.requestedOrientation = orientation
+            onDispose { activity.requestedOrientation = originalOrientation }
+        }
+    }
+}
+
+private fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
 
 @Composable
 @SuppressLint("ComposableNaming")

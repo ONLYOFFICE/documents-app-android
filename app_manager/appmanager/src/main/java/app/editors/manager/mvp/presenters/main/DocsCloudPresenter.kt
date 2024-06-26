@@ -3,6 +3,9 @@ package app.editors.manager.mvp.presenters.main
 import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.Recent
+import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
 import app.documents.core.network.manager.ManagerService
@@ -17,8 +20,6 @@ import app.documents.core.network.share.models.request.Invitation
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.RoomProvider
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -33,6 +34,7 @@ import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.Filter
+import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
@@ -41,7 +43,6 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -61,7 +62,6 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
-import java.util.Date
 
 @InjectViewState
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
@@ -89,6 +89,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
 
                 override fun isArchive(): Boolean = ApiContract.SectionType.isArchive(currentSectionType)
+
+                override fun isRecent(): Boolean {
+                    return modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_RECENT
+                }
             }
         }
     }
@@ -134,6 +138,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     } else {
                         getFileInfo()
                     }
+                } else if (itemClicked is RecentViaLink) {
+                    openRecentViaLink()
                 }
             } else {
                 viewState.onSnackBarWithAction(
@@ -181,7 +187,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun createDocs(title: String) {
         FirebaseUtils.addAnalyticsCreateEntity(
-            networkSettings.getPortal(),
+            account.portalUrl,
             true,
             StringUtils.getExtensionFromPath(title)
         )
@@ -206,7 +212,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             if (result) {
                                 viewState.onOpenDocumentServer(info[0] as CloudFile, info[1] as String, true)
                             } else {
-                                viewState.onCreateFile(info[0] as CloudFile)
+                                downloadTempFile(info[0] as CloudFile, true)
+
                             }
                         }
                     }) { throwable: Throwable -> fetchError(throwable) })
@@ -230,18 +237,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun addRecent(file: CloudFile) {
-        CoroutineScope(Dispatchers.Default).launch {
-            recentDao.addRecent(
+        presenterScope.launch {
+            recentDataSource.add(
                 Recent(
-                    idFile = file.id,
-                    path = null,
+                    fileId = file.id,
+                    path = "",
                     name = file.title,
                     size = file.pureContentLength,
-                    isLocal = false,
-                    isWebDav = account.isWebDav,
-                    date = Date().time,
                     ownerId = account.id,
-                    source = account.portal
+                    source = account.portalUrl
                 )
             )
         }
@@ -265,7 +269,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             if (isRoom && modelExplorerStack.last()?.current?.security?.create == true) {
                 viewState.onStateActionButton(true)
             } else {
-                viewState.onStateActionButton(isContextEditable)
+                viewState.onStateActionButton(isContextEditable && !isRecentViaLinkSection())
             }
             viewState.onActionBarTitle(currentTitle)
         } else {
@@ -613,31 +617,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
             else -> viewState.onFileDownloadPermission()
         }
-        FirebaseUtils.addAnalyticsOpenEntity(networkSettings.getPortal(), extension)
-    }
-
-    private fun downloadTempFile(cloudFile: CloudFile, edit: Boolean) {
-        disposable.add((fileProvider as CloudFileProvider).getCachedFile(context, cloudFile, account.getAccountName())
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ file ->
-                openFileFromPortal(file, edit)
-            }) { throwable: Throwable -> fetchError(throwable) })
-    }
-
-    private fun openFileFromPortal(file: File, edit: Boolean) {
-        viewState.onDialogClose()
-        viewState.onOpenLocalFile(CloudFile().apply {
-            webUrl = Uri.fromFile(file).toString()
-            fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
-            title = file.name
-            viewUrl = file.absolutePath
-        })
+        FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, extension)
     }
 
     private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean) {
         with(fileProvider as CloudFileProvider) {
-            val token = AccountUtils.getToken(context, context.accountOnline?.getAccountName().orEmpty())
+            val token = AccountUtils.getToken(context, account.accountName)
             disposable.add(
                 openDocument(cloudFile, token).subscribe({ result ->
                     viewState.onDialogClose()
@@ -659,7 +644,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onStateUpdateFilterMenu()
     }
 
-    @Suppress("KotlinConstantConditions")
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
         if (model.file?.id == null && model.folder?.id != null) {
@@ -754,7 +738,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = itemClicked?.intAccess == ApiContract.ShareCode.READ_WRITE || isUserSection
 
     private val isItemEditable: Boolean
-        get() = if (networkSettings.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+        get() = if (account.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
             itemClicked?.isCanEdit == true
         } else {
             !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
@@ -764,7 +748,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
 
     private val isItemShareable: Boolean
-        get() = if (networkSettings.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+        get() = if (account.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
             itemClicked?.isCanShare == true
         } else {
             isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection
@@ -802,7 +786,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             }
                         }, ::fetchError)
                 } else {
-                    it.archiveRoom(itemClicked?.id ?: "", isArchive = isArchive)
+                    it.archiveRoom(roomClicked?.id ?: "", isArchive = isArchive)
                         .doOnSubscribe { viewState.onSwipeEnable(true) }
                         .subscribe({ response ->
                             if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
@@ -816,13 +800,25 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun editRoom() {
-        if (itemClicked is CloudFolder && (itemClicked as CloudFolder).isRoom) {
-            viewState.onCreateRoom((itemClicked as CloudFolder).roomType, itemClicked as CloudFolder)
+        val room = roomClicked ?: error("room can not be null")
+        viewState.onCreateRoom(room.roomType, room)
+    }
+
+    fun copyLinkFromActionMenu(isRoom: Boolean) {
+        if (isRoom) {
+            copyRoomLink()
+        } else {
+            (itemClicked as? CloudFolder)?.let { saveLink(getInternalLink(it)) }
         }
     }
 
-    fun copyGeneralLink() {
-
+    fun copyLinkFromContextMenu() {
+        val item = itemClicked
+        when  {
+            (item as? CloudFolder)?.isRoom == true -> copyRoomLink()
+            item is CloudFolder -> saveLink(getInternalLink(item))
+            else -> saveExternalLinkToClipboard()
+        }
     }
 
     fun archiveSelectedRooms() {
@@ -868,16 +864,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun deleteRoom() {
         if (isSelectionMode && modelExplorerStack.countSelectedItems > 0) {
-            val ids = modelExplorerStack.selectedFolders.map {
-                it.id
-            }
             roomProvider?.let { provider ->
                 disposable.add(
-                    provider.deleteRoom(items = ids).subscribe({
-                        viewState.onDialogClose()
-                        viewState.onSnackBar(context.getString(R.string.room_delete_success))
-                        refresh()
-                    }) { fetchError(it) }
+                    provider.deleteRoom(items = modelExplorerStack.selectedFolders.map(CloudFolder::id))
+                        .subscribe({
+                            viewState.onDialogClose()
+                            viewState.onSnackBar(context.getString(R.string.room_delete_success))
+                            deselectAll()
+                            refresh()
+                        }) { fetchError(it) }
                 )
             }
         } else if (itemClicked != null) {
@@ -886,6 +881,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     provider.deleteRoom(itemClicked?.id ?: "").subscribe({
                         viewState.onDialogClose()
                         viewState.onSnackBar(context.getString(R.string.room_delete_success))
+                        refresh()
                     }) { fetchError(it) }
                 )
             }
@@ -927,11 +923,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun checkRoomOwner() {
-        if (itemClicked is CloudFolder) {
+        if (roomClicked != null) {
             viewState.onLeaveRoomDialog(
                 R.string.leave_room_title,
                 if (isItemOwner) R.string.leave_room_owner_desc else R.string.leave_room_desc,
-                "leave",
                 isItemOwner
             )
         }
@@ -944,7 +939,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 request(
                     func = {
                         context.shareApi.shareRoom(
-                            itemClicked?.id ?: "", RequestRoomShare(
+                            roomClicked?.id ?: "", RequestRoomShare(
                                 invitations = listOf(Invitation(id = account.id, access = ApiContract.Access.None.code))
                             )
                         )
@@ -961,7 +956,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 )
             }
         } else {
-            viewState.showSetOwnerFragment(itemClicked as CloudFolder)
+            viewState.showSetOwnerFragment(roomClicked ?: error("room can not be null"))
         }
     }
 
@@ -1004,6 +999,48 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             )
         }
 
+    }
+
+    private fun openRecentViaLink() {
+        setPlaceholderType(PlaceholderViews.Type.LOAD)
+        (fileProvider as? CloudFileProvider)?.let { provider ->
+            disposable.add(
+                provider.getRecentViaLink()
+                    .subscribe(::loadSuccess, ::fetchError)
+            )
+        }
+    }
+
+    private fun copyRoomLink() {
+        roomClicked?.let { room ->
+            if (room.roomType == ApiContract.RoomType.COLLABORATION_ROOM) {
+                setDataToClipboard(getInternalLink(room))
+            } else {
+                presenterScope.launch {
+                    val externalLink = roomProvider?.getExternalLink(roomClicked?.id.orEmpty())
+                    withContext(Dispatchers.Main) {
+                        if (externalLink.isNullOrEmpty()) {
+                            viewState.onError(context.getString(R.string.errors_unknown_error))
+                        } else {
+                            saveLink(externalLink)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun saveLink(link: String) {
+        setDataToClipboard(link)
+        viewState.onSnackBar(context.getString(R.string.rooms_info_copy_link_to_clipboard))
+    }
+
+    private fun getInternalLink(folder: CloudFolder): String {
+        return "${context.accountOnline?.portal?.urlWithScheme}" + if (folder.isRoom) {
+            "rooms/shared/filter?folder=${folder.id}"
+        } else {
+            "rooms/shared/${folder.id}/filter?folder=${folder.id}"
+        }
     }
 
 }

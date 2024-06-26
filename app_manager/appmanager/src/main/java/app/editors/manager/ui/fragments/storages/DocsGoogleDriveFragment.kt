@@ -16,7 +16,7 @@ import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
 import app.editors.manager.mvp.views.base.DocsGoogleDriveView
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
-import app.editors.manager.ui.popup.MainPopupItem
+import app.editors.manager.ui.fragments.base.StorageLoginFragment
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
@@ -98,11 +98,10 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
     override fun onAuthorization() { }
 
     override fun onSignIn() {
-        showFragment(GoogleDriveSignInFragment.newInstance(GoogleDriveUtils.storage), GoogleDriveSignInFragment.TAG, false)
+        showFragment(
+            StorageLoginFragment.newInstance(GoogleDriveUtils.storage),
+            StorageLoginFragment.TAG,
+            false
+        )
     }
-
-    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
-        super.showMainActionPopup(MainPopupItem.SortBy.Size)
-    }
-
 }

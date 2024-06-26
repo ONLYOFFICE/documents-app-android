@@ -18,6 +18,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
@@ -29,14 +30,17 @@ import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
-import app.editors.manager.ui.popup.MainPopupItem
-import app.editors.manager.ui.popup.SelectPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.tools.LocalContentTools
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.ActivitiesUtils
+import lib.toolkit.base.managers.utils.EditorsType
+import lib.toolkit.base.managers.utils.FolderChooser
+import lib.toolkit.base.managers.utils.RequestPermissions
+import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.launchAfterResume
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
-import java.util.*
+import java.util.Locale
 
 class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonFragment {
 
@@ -201,7 +205,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT)
             else -> super.onContextButtonClick(contextItem)
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun onActionDialog() {
@@ -355,14 +358,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         onPlaceholder(if (isEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
     }
 
-    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
-        super.showMainActionPopup(MainPopupItem.SortBy.Author)
-    }
-
-    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        super.showSelectActionPopup(SelectPopupItem.Operation.Restore, SelectPopupItem.Download)
-    }
-
     fun showRoot() {
         presenter.recreateStack()
         presenter.getItemsById(LocalContentTools.getDir(requireContext()))
@@ -378,10 +373,10 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         }).show()
     }
 
-    override val selectActionBarClickListener: (SelectPopupItem) -> Unit = { item ->
+    override val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
-            is SelectPopupItem.Operation -> showFolderChooser(item.value)
-            else -> super.selectActionBarClickListener(item)
+            is ActionMenuItem.Operation -> showFolderChooser(item.value)
+            else -> super.actionMenuClickListener(item)
         }
     }
 

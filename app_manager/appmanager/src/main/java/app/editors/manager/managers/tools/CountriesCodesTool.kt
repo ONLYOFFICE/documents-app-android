@@ -1,15 +1,17 @@
 package app.editors.manager.managers.tools
 
+import android.content.Context
 import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
-import java.util.*
+import java.util.Collections
+import java.util.Locale
+import java.util.TreeSet
 import javax.inject.Inject
 
-class CountriesCodesTool @Inject constructor(
-    private val phoneNumberUtil: PhoneNumberUtil
-) {
+class CountriesCodesTool @Inject constructor(private val context: Context) {
     data class Codes(val name: String, val code: String, val number: Int)
 
     private val codesList: MutableList<Codes> = ArrayList()
+    private val phoneNumberUtil: PhoneNumberUtil = PhoneNumberUtil.createInstance(context)
 
     private val codesComparator: Comparator<Codes> =
         Comparator { o1, o2 -> o1?.name?.compareTo(o2?.name ?: "") ?: -1 }

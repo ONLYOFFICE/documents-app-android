@@ -5,10 +5,6 @@
 
     <!-- ======================================================================================= -->
     <!-- Permissions -->
-    <string name="permission_account_write_label" translatable="false">ບັນຊີການອະນຸຍາດ</string>
-    <string name="permission_account_write_description" translatable="false">ປ້າຍອະນຸຍາດໃຫ້ບັນຊີ</string>
-    <string name="permission_account_read_label" translatable="false">ປ້າຍອະນຸຍາດໃຫ້ບັນຊີ</string>
-    <string name="permission_account_read_description" translatable="false">ຂຽນລາຍລະອຽດການອະນຸຍາດ</string>
 
     <!-- ======================================================================================= -->
     <!-- Versions -->
@@ -233,7 +229,6 @@
     <string name="navigation_drawer_close">ປິດແຜນທີ່ນຳທາງ </string>
 
     <!-- Main drawer menu-->
-    <string name="navigation_drawer_menu_my">ເອກະສານຂອງຂ້ອຍ</string>
     <string name="navigation_drawer_menu_shared">ແບ່ງປັນກັບຂ້ອຍ</string>
     <string name="navigation_drawer_menu_common">ເອກະສານທົ່ວໄປ</string>
     <string name="navigation_drawer_menu_projects">ໂຄງການ </string>
@@ -651,9 +646,6 @@
     <string name="errors_webdav_username_password">ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ</string>
     <string name="errors_webdav_server">ເຊີບເວີບໍ່ຖືກຕ້ອງ</string>
     <string name="toolbar_menu_sort_tags">ປ້າຍກຳກັບ</string>
-    <string name="main_pager_docs_my">ເອກະສານຂອງຂ້ອຍ</string>
-    <string name="main_pager_docs_virtual_room">ຫ້ອງຂອງຂ້ອຍ</string>
-    <string name="main_pager_docs_archive_room">ບ່ອນມ້ຽນເອກະສານສຳຄັນຂອງຂ້ອຍ</string>
     <string name="share_invite_user">ເຊີນຜູ້ໃຊ້</string>
     <string name="storage_web_dav_settings_server">ເຊີບເວີ</string>
     <string name="storage_web_dav_settings_required">ຕ້ອງການ</string>
@@ -763,7 +755,7 @@
     <string name="rooms_info_access_desc">ທຸກຄົນທີ່ມີລິ້ງສາມາດໃຊ້ຫ້ອງນີ້ໄດ້. ຜູ້ໃຊ້ພາຍນອກຈະມີສິດເບິ່ງໄຟລ໌ທັງຫມົດເທົ່ານັ້ນ.</string>
     <string name="rooms_info_general_link">ການເຊື່ອມຕໍ່ທົ່ວໄປ</string>
     <string name="rooms_info_additional_link">ການເຊື່ອມຕໍ່ເພີ່ມເຕີມ</string>
-    <string name="rooms_info_additional_links">"ລິ້ງເພີ່ມເຕີມ (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"ລິ້ງເພີ່ມເຕີມ (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">ສ້າງ ແລະສຳເນົາ</string>
     <string name="rooms_info_create_link_complete">ສ້າງລິ້ງສຳເລັດ ແລະສຳເນົາໄປໃສ່ຄລິບບອດແລ້ວ</string>
     <string name="rooms_info_delete_link">ລຶບລິ້ງ</string>

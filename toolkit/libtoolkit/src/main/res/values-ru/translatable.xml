@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <string name="chooser_email_client">Выберите почтовый клиент…</string>
   <string name="about_email_subject">Обратная связь по приложению ONLYOFFICE Документы для Android</string>
   <string name="about_feedback">Обратная связь и поддержка</string>
@@ -11,4 +11,25 @@
   <string name="sizes_megabytes">Мб</string>
   <string name="sizes_gigabytes">Гб</string>
   <string name="sizes_terabytes">Тб</string>
+  <string name="common_accept">Принять</string>
+  <string name="common_cancel">Отмена</string>
+  <string name="common_next">Далее</string>
+  <string name="common_previous">Назад</string>
+  <string name="common_done">Готово</string>
+  <string name="common_ok">OK</string>
+
+  <plurals name="days" tools:ignore="MissingQuantity">
+    <item quantity="one" tools:ignore="ImpliedQuantity">день</item>
+    <item quantity="few">дня</item>
+    <item quantity="other">дней</item>
+  </plurals>
+
+  <plurals name="hours" tools:ignore="MissingQuantity">
+    <item quantity="one" tools:ignore="ImpliedQuantity">час</item>
+    <item quantity="few">часа</item>
+    <item quantity="other">часов</item>
+  </plurals>
+
+
+
 </resources>

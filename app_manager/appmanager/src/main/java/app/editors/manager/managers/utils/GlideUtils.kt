@@ -4,9 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.webdav.WebDavService
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import com.bumptech.glide.Glide
@@ -41,7 +41,7 @@ object GlideUtils {
     }
 
     fun getWebDavUrl(webUrl: String, account: CloudAccount, password: String): Any {
-        return getWebDavLoad(account.scheme + account.portal + webUrl, account, password)
+        return getWebDavLoad(account.portal.scheme.value + account.portal.url + webUrl, account, password)
     }
 
     val avatarOptions: RequestOptions
@@ -57,11 +57,11 @@ object GlideUtils {
         withContext(Dispatchers.IO) {
             return@withContext try {
                 context.accountOnline?.let { account ->
-                    val token = checkNotNull(AccountUtils.getToken(context, account.getAccountName()))
+                    val token = checkNotNull(AccountUtils.getToken(context, account.accountName))
                     val url = when {
                         avatarUrl.contains("http") -> avatarUrl
-                        avatarUrl.contains("storage") -> "${account.scheme}${account.portal}$avatarUrl"
-                        else -> "${account.scheme}${account.portal}/static/$avatarUrl"
+                        avatarUrl.contains("storage") -> "${account.portal.scheme}${account.portal.url}$avatarUrl"
+                        else -> "${account.portal.scheme}${account.portal.url}/static/$avatarUrl"
                     }
                     Glide.with(context)
                         .asDrawable()
@@ -88,8 +88,8 @@ object GlideUtils {
 
     fun ImageView.setRoomLogo(logo: String, placeholder: Int) {
         context.accountOnline?.let { account ->
-            val token = checkNotNull(AccountUtils.getToken(context, account.getAccountName()))
-            val url = getCorrectLoad(account.scheme + account.portal + logo, token)
+            val token = checkNotNull(AccountUtils.getToken(context, account.accountName))
+            val url = getCorrectLoad(account.portal.scheme.value + account.portal.url + logo, token)
             Glide.with(context)
                 .load(url)
                 .apply(
@@ -108,8 +108,8 @@ object GlideUtils {
 fun ImageView.setAvatarFromUrl(avatar: String) {
     val placeholderDrawable = R.drawable.drawable_list_share_image_item_user_placeholder
     context.accountOnline?.let { account ->
-        val token = checkNotNull(AccountUtils.getToken(context, account.getAccountName()))
-        val url = GlideUtils.getCorrectLoad(account.scheme + account.portal + avatar, token)
+        val token = checkNotNull(AccountUtils.getToken(context, account.accountName))
+        val url = GlideUtils.getCorrectLoad(account.portal.scheme.value + account.portal.url + avatar, token)
         Glide.with(context)
             .load(url)
             .apply(

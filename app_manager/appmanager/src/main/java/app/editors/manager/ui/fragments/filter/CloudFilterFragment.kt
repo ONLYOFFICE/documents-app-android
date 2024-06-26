@@ -1,7 +1,8 @@
 package app.editors.manager.ui.fragments.filter
 
 import android.os.Bundle
-import app.documents.core.storage.account.CloudAccount
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.isDocSpace
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -18,11 +19,13 @@ class CloudFilterFragment : BaseFilterFragment() {
 
     companion object {
         val TAG = CloudFilterFragment::class.simpleName
+        private const val KEY_SECTION: String = "key_section"
 
-        fun newInstance(folderId: String?): CloudFilterFragment {
+        fun newInstance(folderId: String?, section: Int): CloudFilterFragment {
             return CloudFilterFragment().apply {
                 arguments = Bundle(1).apply {
                     putString(KEY_FOLDER_ID, folderId)
+                    putInt(KEY_SECTION, section)
                 }
             }
         }
@@ -33,7 +36,7 @@ class CloudFilterFragment : BaseFilterFragment() {
 
     @ProvidePresenter
     fun providePresenter(): CloudFilterPresenter {
-        return CloudFilterPresenter(arguments?.getString(KEY_FOLDER_ID))
+        return CloudFilterPresenter(arguments?.getString(KEY_FOLDER_ID), arguments?.getInt(KEY_SECTION))
     }
 
     override val filterPresenter: BaseFilterPresenter
@@ -46,13 +49,13 @@ class CloudFilterFragment : BaseFilterFragment() {
     private val usersChipItem = object : ChipItem {
         override val chipTitle: Int = R.string.share_add_common_header_users
         override val withOption: Boolean = true
-        override var option: Any? = null
+        override var option: String? = null
     }
 
     private val groupsChipItem = object : ChipItem {
         override val chipTitle: Int = R.string.share_add_common_header_groups
         override val withOption: Boolean = true
-        override var option: Any? = null
+        override var option: String? = null
     }
 
     override fun initViews() {
@@ -82,9 +85,11 @@ class CloudFilterFragment : BaseFilterFragment() {
     }
 
     private fun initChipGroups() {
-        typeChipGroup = SingleChoiceChipGroupView(requireContext()).apply {
-            setTitle(R.string.filter_title_type)
-            setChips(FilterType.allTypes, presenter.filterType) { type, checked ->
+        typeChipGroup = SingleChoiceChipGroupView(requireContext(), R.string.filter_title_type).apply {
+            setChips(
+                chips = if (!context?.accountOnline.isDocSpace) FilterType.types else FilterType.typesWithForms,
+                checkedChip = presenter.filterType
+            ) { type, checked ->
                 presenter.filterType = if (checked) type else FilterType.None
                 presenter.update()
             }
@@ -93,10 +98,12 @@ class CloudFilterFragment : BaseFilterFragment() {
         authorChipGroup = App.getApp().accountOnline?.let { account ->
             return@let if (!account.isPersonal()) {
                 updateAuthorChipGroup(account)
-                SingleChoiceChipGroupView(requireContext()).apply {
-                    setTitle(R.string.filter_title_author)
+                SingleChoiceChipGroupView(
+                    context = requireContext(),
+                    title = R.string.filter_title_author
+                ).apply {
                     setChips(
-                        chipItems = listOf(usersChipItem, groupsChipItem),
+                        chips = listOf(usersChipItem, groupsChipItem),
                         checkedChip = null,
                         closeListener = presenter::clearAuthor
                     ) { item, _ ->
@@ -114,17 +121,18 @@ class CloudFilterFragment : BaseFilterFragment() {
             } else null
         }
 
-         excludeChipGroup = SingleChoiceChipGroupView(requireContext()).apply {
-             val excludeSubfolderChipItem = object : ChipItem {
-                 override val chipTitle: Int = R.string.filter_exclude_subfolders
-                 override val withOption: Boolean = false
-                 override var option: Any? = null
-             }
-
-            setTitle(R.string.filter_exclude_subfolders)
-            setChip(excludeSubfolderChipItem, presenter.excludeSubfolder) { _, checked ->
-                presenter.excludeSubfolder = checked
+        excludeChipGroup = SingleChoiceChipGroupView(requireContext(), R.string.filter_exclude_subfolders).apply {
+            val excludeSubfolderChipItem = object : ChipItem {
+                override val chipTitle: Int = R.string.filter_exclude_subfolders
+                override val withOption: Boolean = false
+                override var option: String? = null
             }
+
+            setChip(
+                chip = excludeSubfolderChipItem,
+                checked = presenter.excludeSubfolder,
+                checkedListener = { _, checked -> presenter.excludeSubfolder = checked }
+            )
         }
 
         addChipGroups(typeChipGroup, authorChipGroup, excludeChipGroup)

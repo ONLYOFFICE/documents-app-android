@@ -87,8 +87,8 @@ object ApiContract {
         const val DISK_SPACE_QUOTA = "Disk space quota exceeded"
         const val EXCEED_FILE_SIZE_100 = "Exceeds the maximum file size (100MB)"
         const val EXCEED_FILE_SIZE_25 = "Exceeds the maximum file size (25MB)"
+        const val STORAGE_NOT_AVAILABLE = "The content of third party folder are not available. Try to reconnect the account"
     }
-
     object ShareType {
         const val NONE = "None"
         const val READ_WRITE = "ReadWrite"
@@ -202,6 +202,8 @@ object ApiContract {
         const val ARG_FILTER_VALUE = "filterValue"
         const val ARG_FILTER_BY_TYPE = "filterType"
         const val ARG_FILTER_BY_TYPE_ROOM = "type"
+        const val ARG_FILTER_BY_PROVIDER_ROOM = "provider"
+        const val ARG_FILTER_BY_TAG_ROOM = "tags"
         const val ARG_FILTER_BY_SUBJECT_ID = "subjectId"
         const val ARG_FILTER_BY_AUTHOR = "userIdOrGroupId"
         const val ARG_FILTER_SUBFOLDERS = "withSubfolders"
@@ -217,6 +219,8 @@ object ApiContract {
         const val VAL_FILTER_SUBFOLDERS = "true"
         const val VAL_FILTER_BY_FOLDERS = "FoldersOnly"
         const val VAL_FILTER_BY_DOCUMENTS = "DocumentsOnly"
+        const val VAL_FILTER_BY_FORM_TEMPLATES = "OFormTemplateOnly"
+        const val VAL_FILTER_BY_FORMS = "OFormOnly"
         const val VAL_FILTER_BY_PRESENTATIONS = "PresentationsOnly"
         const val VAL_FILTER_BY_SPREADSHEETS = "SpreadsheetsOnly"
         const val VAL_FILTER_BY_IMAGES = "ImagesOnly"
@@ -256,6 +260,8 @@ object ApiContract {
         const val GOOGLE_DRIVE = 110
         const val DROPBOX = 111
         const val ONEDRIVE = 112
+
+        const val LOCAL_RECENT = 200
 
         fun isRoom(type: Int): Boolean = type == 14
         fun isArchive(type: String): Boolean = isArchive(type.toInt())

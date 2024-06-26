@@ -1,0 +1,894 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">ملفات</string>
+    <string name="app_name_full">ملفات ONLYOFFICE</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Permissions -->
+    <string name="permission_account_write_label" translatable="false">علامة صلاحية الكتابة للحساب</string>
+    <string name="permission_account_write_description" translatable="false">وصف صلاحية الكتابة للحساب</string>
+    <string name="permission_account_read_label" translatable="false">علامة صلاحية الكتابة للحساب</string>
+    <string name="permission_account_read_description" translatable="false">وصف صلاحية الكتابة للحساب</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Versions -->
+    <string name="app_versions_title">صدر الإصدار 3.0</string>
+    <string name="app_versions_cancel">لاحقا</string>
+    <string name="app_versions_without_release_accept">تثبيت التطبيق الرسمي</string>
+    <string name="app_versions_without_release_info">
+      شكرا للاختبار التجريبي! تم الآن إصدار ONLYOFFICE ملفات 3.0، ولم يعد الإصدار التجريبي مدعومًا. قم بالتبديل إلى التطبيق الرسمي
+    </string>
+    <string name="app_versions_update_accept">تحديث التطبيق الرسمي</string>
+    <string name="app_versions_update_info">
+      شكرا للاختبار التجريبي! تم الآن إصدار ONLYOFFICE الملفات 3.0، ولم يعد الإصدار التجريبي مدعومًا. يرجى التبديل إلى التطبيق
+    </string>
+    <string name="app_versions_actual_release_accept">افتح التطبيق الرسمي</string>
+    <string name="app_versions_actual_release_info">
+      شكرا للاختبار التجريبي! تم الآن إصدار ONLYOFFICE الملفات 3.0، ولم يعد الإصدار التجريبي مدعومًا. من فضلك قم بالتبديل إلى
+    </string>
+
+    <!-- ======================================================================================= -->
+    <!-- Snackbar common -->
+    <string name="snackbar_copied">نسخ</string>
+    <string name="snackbar_undo">الغاء التحميل</string>
+
+    <!-- ======================================================================================= -->
+    <!-- About -->
+    <string name="about_title">عن</string>
+    <string name="about_app_version">نسخة %1$s, بناء %2$s, أدوات تطوير البرمجيات %3$s</string>
+    <string name="about_terms">شروط الاستخدام</string>
+    <string name="about_policy">سياسة الخصوصية</string>
+    <string name="about_license">اتفاقية الترخيص</string>
+    <string name="about_website">موقع ONLYOFFICE</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Common errors -->
+    <string name="errors_unknown_error">خطأ في الإتصال. حاول مرة أخرى في وقت لاحق.</string>
+    <string name="errors_ssl_error">خطأ في مصافحة SSL</string>
+    <string name="errors_connection_error">تحقق من الاتصال بالإنترنت</string>
+    <string name="errors_unknown_host_error">مضيف غير معروف</string>
+    <string name="errors_redirect_error">خطأ غير معروف في إعادة التوجيه بالرمز:\u0020</string>
+    <string name="errors_client_error">خطأ عميل غير معروف في الكود:\u0020</string>
+    <string name="errors_client_portal_exist">البوابة التي تحمل نفس الاسم موجودة بالفعل</string>
+    <string name="errors_client_portal_sms">لقد أرسلت عددًا كبيرًا جدًا من الرسائل النصية. الرجاء معاودة </string>
+    <string name="errors_client_host_not_found">لم يتم العثور على العنوان</string>
+    <string name="errors_client_forbidden">تم الرفض</string>
+    <string name="errors_client_unauthorized">طلب غير مصرح به</string>
+    <string name="errors_client_payment_required">الدفع مطلوب</string>
+    <string name="errors_server_error">خطأ غير معروف في الخادم بالرمز:\u0020</string>
+    <string name="errors_server_auth_error">خطأ مصادقة</string>
+    <string name="errors_server_auth_too_many_attempts">محاولات كثيرة. حاول مرة أخرى في وقت لاحق</string>
+    <string name="errors_email_syntax_error">بريد إلكتروني خاطئ</string>
+    <string name="errors_viewer_download_name">التحميل فشل</string>
+    <string name="errors_email_already_registered">المستخدم الذي لديه هذا البريد الإلكتروني مسجل بالفعل</string>
+    <string name="errors_path_url">رابط غير صالح</string>
+    <string name="errors_create_local_file">فشل إنشاء الملف</string>
+    <string name="errors_import_local_file_desc">تم رفض الإذن</string>
+    <string name="errors_import_local_file">تم الرفض. منح أذونات القراءة والكتابة</string>
+    <string name="errors_web_viewr">حدث خطأ أثناء تحرير مستند ويب</string>
+    <string name="errors_webdav_sign_in">خادم أو اسم مستخدم أو كلمة مرور خاطئة</string>
+    <string name="errors_webdav_username_password">اسم المستخدم أو كلمة المرور خاطئة</string>
+    <string name="errors_webdav_server">خادم خاطئ</string>
+
+    <!-- SignIn -->
+    <string name="errors_sign_in_splash_error">فشل في الوصول إلى البوابة</string>
+    <string name="errors_sign_in_account_error">فشل تسجيل الدخول</string>
+    <string name="errors_sign_in_account_already_use">أنت تستخدم هذا الحساب بالفعل</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Login -->
+    <string name="login_api_init_error">خطأ في البداية</string>
+    <string name="login_api_init_portal_error">خطأ في بناء جملة اسم البوابة الإلكترونية</string>
+    <string name="login_api_portal_name">اسم البوابة خاطئ. مثال: example.onlyoffice.com</string>
+    <string name="login_api_portal_name_length">يجب أن يتكون اسم البوابة الإلكترونية من 6 أحرف على الأقل</string>
+    <string name="login_api_portal_name_content">يجب أن يتكون اسم البوابة الإلكترونية من A–Z، وa–z، و0–9</string>
+
+
+    <string name="login_retry">أعد محاولة الاتصال</string>
+
+    <!-- Accounts -->
+    <string name="login_accounts_select_title">حدد حساب</string>
+    <string name="login_accounts_select_add">إضافة حساب</string>
+
+    <!-- Portal pager -->
+    <string name="login_pager_enterprise">بوابة</string>
+    <string name="login_pager_personal">شخصي</string>
+    <string name="login_pager_title">قم بتوصيل سحابة ONLYOFFICE</string>
+
+    <!-- Portal enterprise-->
+    <string name="login_enterprise_edit_hint">عنوان البوابة</string>
+    <string name="login_enterprise_button_next">التالي</string>
+    <string name="login_enterprise_edit_error_hint">أدخل عنوانًا صالحًا</string>
+    <string name="login_enterprise_forgot_password">هل نسيت كلمة السر؟</string>
+    <string name="login_enterprise_button_create">إنشاء بوابة</string>
+    <string name="login_enterprise_button_select">حسابات</string>
+    <string name="login_enterprise_email_hint">بريد إلكتروني</string>
+    <string name="login_enterprise_password_hint">كلمة المرور</string>
+    <string name="login_enterprise_signin_button">تسجيل الدخول</string>
+    <string name="login_enterprise_single_sign_button">تسجيل دخول واحد</string>
+    <string name="login_enterprise_single_sign_button_login">تسجيل الدخول بواسطة %1$s</string>
+    <string name="login_enterprise_single_sign_button_login_default">تسجيل دخول واحد</string>
+    <string name="login_enterprise_info">
+      تسمح بوابة ONLYOFFICE بحفظ الملفات في السحابة ومشاركتها مع زملاء العمل والتحرير المشترك في
+    </string>
+    <string name="login_not_authorization_info">تعذر تسجيل الدخول إلى %1$s في %2$s</string>
+    <string name="login_not_authorization_info_token">انتهى وقت الجلسة</string>
+    <string name="login_not_authorization_button">حاول ثانية</string>
+    <string name="errors_first_name">الاسم الأول غير صالح</string>
+    <string name="errors_last_name">الاسم الأخير غير صالح</string>
+    <string name="login_password_recovery_hint">أدخل البريد الإلكتروني الذي استخدمته للتسجيل في البوابة. سيتم إرسال تعليمات استعادة كلمة المرور إلى هذا البريد</string>
+    <string name="login_password_recovery_button_text">العودة إلى شاشة الدخول</string>
+    <string name="login_password_recovery_success_hint">في حالة وجود مستخدم لديه البريد الإلكتروني %1$s، فسيتم إرسال تعليمات تغيير كلمة المرور إلى</string>
+    <string name="login_password_recovery_toolbar_title">استعادة كلمة السر</string>
+    <!-- Portal personal -->
+    <string name="login_personal_edit_email_hint">بريد إلكتروني</string>
+    <string name="login_personal_edit_password_hint">كلمة المرور</string>
+    <string name="login_personal_signin_button">تسجيل الدخول</string>
+    <string name="login_personal_signup_button">اشتراك</string>
+    <string name="login_personal_signup_title">قم بالتسجيل في البوابة الشخصية</string>
+    <string name="login_personal_signup_edit_info">سيتم إرسال رابط التأكيد إلى هذا العنوان</string>
+    <string name="login_personal_signup_dialog_info">تم إرسال رابط التأكيد إلى البريد الإلكتروني %1$s\nاتبع الرابط </string>
+    <string name="login_personal_info">
+      قم بتوصيل ONLYOFFICE Personal لحفظ الملفات في السحابة
+    </string>
+    <string name="login_web_dav_title">الاتصال بـ %1$s</string>
+
+    <!-- Portal create-->
+    <string name="login_create_portal_title">إنشاء بوابة للمنظمة</string>
+    <string name="login_create_portal_address_hint">عنوان البوابة</string>
+    <string name="login_create_portal_email_hint">بريد إلكتروني</string>
+    <string name="login_create_signin_first_name_hint">الاسم الأول</string>
+    <string name="login_create_signin_last_name_hint">اسم العائلة</string>
+    <string name="login_create_portal_next_button">التالي</string>
+
+    <!-- Portal create sign in -->
+    <string name="login_create_signin_title">ضبط كلمة السر</string>
+    <string name="login_create_signin_password">كلمة المرور</string>
+    <string name="login_create_signin_repeat">اعد كلمة السر</string>
+    <string name="login_create_signin_create_button">إنشاء</string>
+    <string name="login_create_signin_passwords_mismatch">كلمات المرور غير متطابقة</string>
+    <string name="login_create_signin_passwords_length">يجب أن تحتوي كلمة المرور على: من 8 إلى 30 حرفًا</string>
+    <string name="login_create_signin_info">
+      بالنقر على هذا الزر فإنك توافق على شروط الخدمة الخاصة بنا
+    </string>
+
+    <!-- Portal SMS -->
+    <string name="login_sms_code_label">أرسلنا رسالة نصية تحتوي على الرمز إلى الرقم</string>
+    <string name="login_sms_send_again">أعد الإرسال</string>
+    <string name="login_sms_send_again_after">إرسال مرة أخرى بعد</string>
+    <string name="login_sms_change_number">تغيير رقم</string>
+    <string name="login_sms_phone_number_verification">التحقق من رقم الهاتف</string>
+    <string name="login_sms_phone_header">ضبط رقم الهاتف</string>
+    <string name="login_sms_phone_country_label">دولة</string>
+    <string name="login_sms_phone_number_label">رقم التليفون</string>
+    <string name="login_sms_phone_send_button">إرسال الرمز</string>
+    <string name="login_sms_phone_error_format">صيغة خاطئة</string>
+    <string name="login_sms_phone_send_code">سوف نقوم بإرسال رمز التحقق عبر رسالة نصية</string>
+    <string name="login_sms_resend_ok">تم إرسال رمز الرسالة النصية</string>
+
+    <!-- Countries codes -->
+    <string name="countries_codes_title">حدد الدولة</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Dialogs -->
+    <string name="bottom_sheet_portal_title">بوابة</string>
+    <string name="bottom_sheet_cloud_title">سحاب</string>
+    <!--Move copy dialog-->
+    <string name="dialog_move_copy_title_files">%1$d مستند بنفس الأسماء موجود بالفعل في المجلد \"%2$s\".</string>
+    <string name="dialog_move_copy_title_one_file">الملف الذي يحمل الاسم \"%1$s\" موجود بالفعل في المجلد \"%2$s\".</string>
+    <string name="dialog_move_copy_overwrite">استبدال مع تحديث الإصدار</string>
+    <string name="dialog_move_copy_copy">إنشاء نسخة ملف</string>
+    <string name="dialog_move_copy_skip">يتخطى</string>
+    <string name="dialog_move_copy_title">الملف بنفس الاسم</string>
+
+    <!-- Common -->
+    <string name="dialogs_common_ok_button">قبول</string>
+    <string name="dialogs_common_cancel_button" tools:ignore="ButtonCase">الغاء</string>
+    <string name="dialogs_check_portal_header_text">التحقق من إمكانيات البوابة</string>
+    <string name="dialogs_sign_in_portal_header_text">تسجيل الدخول إلى البوابة</string>
+    <string name="dialogs_sign_in_register_portal">بوابة التسجيل</string>
+
+    <!-- Waiting -->
+    <string name="dialogs_wait_title">العملية جارية…</string>
+    <string name="dialogs_wait_title_storage">جارٍ توصيل وحدة التخزين…</string>
+
+    <!-- Question -->
+    <string name="dialogs_question_accept_yes">نعم</string>
+    <string name="dialogs_question_accept_no">لا</string>
+    <string name="dialogs_question_accept_delete">مسح</string>
+    <string name="dialogs_question_accept_remove">إزالة</string>
+    <string name="dialogs_question_accept_not_really">ليس حقيقيًا</string>
+    <string name="dialogs_question_accept_sure">حسنا، بالتأكيد</string>
+    <string name="dialogs_question_accept_no_thanks">لا، شكراً</string>
+    <string name="dialogs_question_share_remove">هل تريد إزالة العنصر المحدد من القائمة؟</string>
+    <string name="dialogs_question_http_title">تحذير الأمان</string>
+    <string name="dialogs_question_http_question">اتصال HTTPS غير متاح، ولكن يمكن استخدام اتصال HTTP. يكمل؟</string>
+    <string name="dialogs_question_facebook_title">فيسبوك</string>
+    <string name="dialogs_question_facebook_question">المتابعة باستخدام الحساب:\u0020</string>
+    <string name="dialogs_question_remove_account_title">هل تريد إزالة الحساب؟</string>
+    <string name="dialogs_question_remove_account_info">
+      سيتم تسجيل الخروج من الحساب بالبريد الإلكتروني %1$s من
+    </string>
+    <string name="dialogs_question_personal_confirm_link_title">تأكيد عنوان البريد الإلكتروني</string>
+    <string name="dialogs_question_personal_confirm_cancel">حاول ثانية</string>
+    <string name="dialogs_question_personal_confirm_accept">يكمل</string>
+    <string name="dialogs_question_rate_first_info">هل تستمتع باستخدام مستندات ONLYOFFICE؟</string>
+    <string name="dialogs_question_rate_second_info">هل تمانع في تقييم التطبيق على Google Play؟</string>
+    <string name="dialogs_question_delete_all_title">هل تريد حذف جميع العناصر؟</string>
+
+    <plurals name="dialogs_question_message_delete" tools:ignore="MissingQuantity">
+        <item quantity="one">سيتم حذفه نهائيًا. \nلا يمكن التراجع عن هذا الإجراء.</item>
+        <item quantity="other">سيتم حذفها نهائيًا. \nلا يمكن التراجع عن هذا الإجراء.</item>
+    </plurals>
+
+    <plurals name="dialogs_question_message_to_trash" tools:ignore="MissingQuantity">
+        <item quantity="one">سيتم نقله إلى سلة المهملات.</item>
+        <item quantity="other">سيتم نقلهم إلى سلة المهملات.</item>
+    </plurals>
+
+    <plurals name="dialogs_question_delete_title" tools:ignore="MissingQuantity">
+        <item quantity="one">هل تريد حذف هذا العنصر؟</item>
+        <item quantity="other">هل تريد حذف %1$d من العناصر؟</item>
+    </plurals>
+
+    <!-- Edit -->
+    <string name="dialogs_edit_rename_title">إعادة تسمية</string>
+    <string name="dialogs_edit_hint">أدخل العنوان</string>
+    <string name="dialogs_edit_create_sheet">جدول بيانات جديد</string>
+    <string name="dialogs_edit_create_presentation">عرض جديد</string>
+    <string name="dialogs_edit_create_docs">مستند جديد</string>
+    <string name="dialogs_edit_create_folder">ملف جديد</string>
+    <string name="dialogs_edit_forbidden_symbols">لا تستخدم هذه الرموز\u0020</string>
+    <string name="dialogs_edit_accept_create">إنشاء</string>
+    <string name="dialogs_edit_accept_rename">إعادة تسمية</string>
+    <string name="dialogs_edit_feedback_title">تعليق</string>
+    <string name="dialogs_edit_feedback_rate_title">هل تمانع في إرسال تعليقات إلينا؟</string>
+    <string name="dialogs_edit_feedback_rate_hint">أخبرنا ما الذي يجب تحسينه</string>
+    <string name="dialogs_edit_feedback_rate_accept">إرسال</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Activity chooser -->
+    <string name="chooser_web_browser">اختر المتصفح…</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Main -->
+    <!-- Title -->
+    <string name="actionbar_title_main">ملفات</string>
+    <string name="chooser_activity_not_found">تعذر العثور على أي تطبيق لهذا الإجراء…</string>
+    <string name="fragment_clouds_title">سحاب</string>
+    <string name="fragment_clouds_portal_title">الاتصال بالبوابة</string>
+    <string name="fragment_clouds_storage_title">الاتصال بالتخزين</string>
+    <string name="fragment_clouds_onlyoffice_item">ONLYOFFICE</string>
+    <string name="fragment_recent_title">مؤخرًا</string>
+    <string name="fragment_on_device_title">على الجهاز</string>
+    <string name="fragment_profile_title">حساب تعريفي</string>
+
+    <!-- Drawer -->
+    <string name="navigation_drawer_open">افتح درج التنقل</string>
+    <string name="navigation_drawer_close">إغلاق درج التنقل</string>
+
+    <!-- Main drawer menu-->
+    <string name="navigation_drawer_menu_shared">شارك معي</string>
+    <string name="navigation_drawer_menu_common">الملفات المشتركة</string>
+    <string name="navigation_drawer_menu_projects">المشاريع</string>
+    <string name="navigation_drawer_menu_trash">سلة المحذوفات</string>
+    <string name="navigation_drawer_menu_help">مساعدة</string>
+    <string name="navigation_drawer_menu_logout">تسجيل خروج</string>
+    <string name="navigation_drawer_menu_sign_in">تسجيل الدخول</string>
+    <string name="settings_item_title">إعدادات</string>
+    <string name="settings_item_change_account">تغير الحساب</string>
+    <string name="settings_clear_cache">مسح ذاكرة التخزين المؤقت</string>
+    <string name="settings_title_common">شائع</string>
+    <string name="setting_wifi">تحميل الملفات فقط باستخدام شبكة Wi-Fi</string>
+    <string name="setting_title_wifi">واي فاي</string>
+    <string name="setting_cache_cleared">تم مسح ذاكرة التخزين المؤقت</string>
+
+    <!-- Main toolbar menu -->
+    <string name="toolbar_menu_search_result">نتيجة البحث</string>
+    <string name="toolbar_menu_search_hint">يبحث…</string>
+    <string name="toolbar_menu_search_view_hint">أدخل الاستعلام الخاص بك</string>
+    <string name="toolbar_menu_main_options">خيارات</string>
+    <string name="toolbar_menu_main_share">مشاركة</string>
+    <string name="toolbar_menu_main_move">نقل</string>
+    <string name="toolbar_menu_main_copy">نسخ</string>
+    <string name="toolbar_menu_main_remove_from_list">ازله من القائمة</string>
+    <string name="toolbar_menu_main_rename">إعادة تسمية</string>
+    <string name="toolbar_menu_main_delete">مسح</string>
+    <string name="toolbar_menu_main_select">يختار…</string>
+    <string name="toolbar_menu_main_select_all">اختر الكل</string>
+    <string name="toolbar_menu_main_deselect">إلغاء التحديد</string>
+    <string name="toolbar_menu_sort_by">ترتيب حسب</string>
+    <string name="toolbar_menu_sort_order">امر ترتيب</string>
+    <string name="toolbar_menu_sort_date_modified">تاريخ</string>
+    <string name="toolbar_menu_sort_title">عنوان</string>
+    <string name="toolbar_menu_sort_type">نوع</string>
+    <string name="toolbar_menu_sort_tags">العلامات</string>
+    <string name="toolbar_menu_sort_size">مقاس</string>
+    <string name="toolbar_menu_sort_asc">تصاعدي</string>
+    <string name="toolbar_menu_sort_desc">تنازلي</string>
+    <string name="toolbar_menu_main_download">تحميل</string>
+    <string name="toolbar_menu_main_open">يفتح</string>
+    <string name="toolbar_menu_main_filter">تصفية</string>
+
+    <!-- List context menu -->
+    <string name="list_context_folder_name">إسم الملف</string>
+    <string name="list_context_folder_title">عنوان المجلد</string>
+    <string name="list_context_edit">تحرير المستند</string>
+    <string name="list_context_share">مشاركة</string>
+    <string name="list_context_external_link">الوصول الخارجي عن طريق الرابط</string>
+    <string name="list_context_move">نقل</string>
+    <string name="list_context_create_copy">نسخ</string>
+    <string name="list_context_create_download">تحميل</string>
+    <string name="list_context_open_location">فتح الموقع</string>
+    <string name="list_context_rename">إعادة تسمية</string>
+    <string name="list_context_rename_success">تمت إعادة التسمية بنجاح</string>
+    <string name="list_context_delete">مسح</string>
+    <string name="list_context_delete_storage">افصل وحدة التخزين</string>
+    <string name="list_context_delete_success">حذف بنجاح</string>
+    <string name="list_context_remove_from_list" translatable="false">@string/toolbar_menu_main_remove_from_list</string>
+    <string name="list_context_delete_recent">إزالة من الأخيرة</string>
+    <string name="list_context_upload_to_portal">تحميل إلى البوابة</string>
+    <string name="list_context_add_to_favorite">اضافة الى المفضلة</string>
+    <string name="list_context_delete_from_favorite">حذف من المفضلة</string>
+    <string name="list_context_leave_room">غادر الغرفة</string>
+    <string name="list_context_copy_general_link">انسخ الرابط العام</string>
+    <string name="list_context_edit_room">تحرير غرفة</string>
+
+    <!-- List action menu -->
+    <string name="list_action_sheet">جدول</string>
+    <string name="list_action_presentation">عرض تقديمي</string>
+    <string name="list_action_doc">وثيقة نصية</string>
+    <string name="list_action_folder">مجلد</string>
+    <string name="list_action_photo">اصنع صورة</string>
+    <string name="list_action_upload">رفع ملف</string>
+    <string name="list_action_storage">قم بتوصيل وحدة تخزين الطرف الثالث</string>
+    <string name="list_action_import">استيراد ملف</string>
+    <string name="list_action_image_from_library">صورة من المكتبة</string>
+    <string name="list_action_delete_link">حذف الرابط</string>
+    <!-- Dialog info -->
+
+    <!-- Pager -->
+    <string name="main_pager_docs_share">شارك معي</string>
+    <string name="main_pager_docs_projects">المشاريع</string>
+    <string name="main_pager_docs_trash">سلة المحذوقات</string>
+    <string name="main_pager_docs_favorites">المفضلة</string>
+
+    <!-- Placeholder -->
+    <string name="placeholder_connection">خطأ في الإتصال</string>
+    <string name="placeholder_empty">مجلد فارغ</string>
+    <string name="placeholder_search">لم يتم العثور على شيء</string>
+    <string name="placeholder_share">غير مشارك</string>
+    <string name="placeholder_access_denied">تم الرفض</string>
+    <string name="placeholder_no_subfolders">لا توجد مجلدات فرعية</string>
+    <string name="placeholder_no_users">لا يوجد مستخدمين</string>
+    <string name="placeholder_no_groups">لا توجد مجموعات</string>
+    <string name="placeholder_no_users_groups">لا يوجد مستخدمين ومجموعات</string>
+    <string name="placeholder_media_error">غير قادر على تحميل الوسائط</string>
+    <string name="placeholder_try_again">حاول ثانية</string>
+    <string name="placeholder_loading_files">تحميل ملفات…</string>
+    <string name="placeholder_loading_users">جارٍ تحميل المستخدمين…</string>
+    <string name="placeholder_loading_groups">جارٍ تحميل المجموعات…</string>
+    <string name="placeholder_other_accounts">لا توجد حسابات أخرى هنا حتى الآن</string>
+
+    <!-- Time marks-->
+    <string name="list_headers_folder">المجلدات</string>
+    <string name="list_headers_files">ملفات</string>
+    <string name="list_headers_created">أُنشىء للتو</string>
+    <string name="list_headers_today">اليوم</string>
+    <string name="list_headers_yesterday">أمس</string>
+    <string name="list_headers_week">هذا الاسبوع</string>
+    <string name="list_headers_month">هذا الشهر</string>
+    <string name="list_headers_year">هذا العام</string>
+    <string name="list_headers_more_year">أكثر من سنة</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Share -->
+    <string name="share_title_main">إعدادات المشاركة</string>
+    <string name="share_title_add">أضف أشخاصا</string>
+    <string name="share_invite_user">دعوة المستخدمين</string>
+    <string name="share_title_search">بحث عن الأشخاص</string>
+
+    <string name="share_goal_user">المستخدمين</string>
+    <string name="share_goal_group">مجموعات</string>
+    <string name="share_main_external_access">الوصول الخارجي عن طريق الرابط</string>
+    <string name="share_main_external_access_info">توفير الوصول لكل من لديه الرابط</string>
+    <string name="share_main_external_copy_button">نسخ الرابط</string>
+    <string name="list_context_get_external_link">الحصول على رابط للوصول الخارجي</string>
+
+    <string name="share_popup_access_full">الوصول الكامل</string>
+    <string name="share_popup_access_review">مراجعة</string>
+    <string name="share_popup_access_read_only">يقرأ فقط</string>
+    <string name="share_popup_access_deny_access">يمنع الدخول</string>
+    <string name="share_popup_access_deny_remove">إزالة المستخدم</string>
+    <string name="share_popup_access_fill_forms">ملء النماذج</string>
+    <string name="share_popup_access_comment">تعليق</string>
+    <string name="share_popup_access_custom_filter">تصفية مخصصة</string>
+
+    <string name="share_snackbar_remove_user">تتم إزالة المستخدم</string>
+
+    <string name="share_group_admin">مسؤل</string>
+    <string name="share_group_everyone">الجميع</string>
+
+    <!-- External link -->
+    <string name="share_access_success">تم الوصول الخارجي بنجاح</string>
+    <string name="share_access_denied">تم رفض الوصول الخارجي</string>
+    <string name="share_clipboard_external_copied">تم نسخ الرابط السري إلى الحافظة</string>
+    <string name="share_clipboard_internal_copied">تم نسخ الرابط لمستخدمي البوابة الإلكترونية إلى الحافظة</string>
+    <string name="share_clipboard_external_link_label">رابط خارجي</string>
+
+    <!-- Tabs -->
+    <string name="share_tab_users">المستخدمين</string>
+    <string name="share_tab_groups">مجموعات</string>
+
+    <!-- List headers -->
+    <string name="share_add_common_header_users">المستخدمين</string>
+    <string name="share_add_common_header_groups">مجموعات</string>
+
+    <!-- Panel -->
+    <string name="share_panel_message_notification">أدخل رسالة للإخطار</string>
+    <string name="share_panel_button_add">يضيف</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Storage -->
+    <string name="storage_select_title">اختر الخدمة</string>
+    <string name="storage_select_google_drive">Google Drive</string>
+    <string name="storage_select_drop_box">Dropbox</string>
+    <string name="storage_select_one_drive">OneDrive</string>
+    <string name="storage_select_next_cloud">Nextcloud</string>
+    <string name="storage_select_yandex">Yandex.Disk</string>
+    <string name="storage_select_box">Box</string>
+    <string name="storage_select_share_point">SharePoint</string>
+    <string name="storage_select_own_cloud">ownCloud</string>
+    <string name="storage_select_kdrive" translatable="false">KDrive</string>
+    <string name="krdive_password_helper_text">إذا قمت بتنشيط المصادقة المزدوجة، فيرجى إنشاء تطبيق</string>
+    <string name="kdrive_info_title">يجب أن يكون لديك نسخة مدفوعة من المشغل لاستخدام هذه الخدمة.</string>
+    <string name="storage_email_connection">اتصال البريد الإلكتروني</string>
+    <string name="storage_select_web_dav">تخزين WebDAV آخر</string>
+
+    <string name="storage_connect_title">إعدادات المجلد</string>
+    <string name="storage_connect_folder_name">إسم الملف</string>
+    <string name="storage_connect_save_button">يحفظ</string>
+    <string name="storage_connect_empty_title">عنوان تخزين الإدخال</string>
+
+    <string name="storage_web_title">ربط الخدمة</string>
+    <string name="storage_connect_button">ربط</string>
+
+    <string name="storage_web_dav_settings_login">تسجيل الدخول</string>
+    <string name="storage_web_dav_settings_password">كلمة المرور</string>
+    <string name="storage_web_dav_settings_title">عنوان الإدخال للخدمة</string>
+    <string name="storage_web_dav_settings_hint" tools:ignore="MissingTranslation">https://cloud.yourdomain.com</string>
+    <string name="storage_web_dav_settings_server">الخادم</string>
+    <string name="storage_web_dav_settings_required">مطلوب</string>
+
+    <string name="storage_onedrive_error_opened">الملف مفتوح على البوابة</string>
+    <string name="storage_onedrive_error_exist">الملف الذي يحمل نفس الاسم موجود بالفعل في هذا المجلد</string>
+    <string name="storage_google_drive_copy_folder_error">لا يمكن نسخ المجلدات</string>
+    <string name="storage_dropbox_email_not_verified_error">لم يتم التحقق من البريد الإلكتروني</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Operations -->
+    <string name="operation_title">اختر مجلد</string>
+    <string name="operation_choose_section">اختر القسم</string>
+    <string name="operation_complete_message">اكتملت العملية</string>
+    <string name="operation_delete_impossible">لا يمكن حذف الملف. الملف مفتوح على البوابة</string>
+    <string name="operation_delete_multiple">. لم يتم حذف ملف واحد أو أكثر بسبب فتحه على البوابة</string>
+    <string name="operation_panel_move_button">تحرك هنا</string>
+    <string name="operation_panel_copy_button">نسخ هنا</string>
+    <string name="operation_panel_restore_button">استعادة هنا</string>
+    <string name="operation_panel_cancel_button">الغاء</string>
+    <string name="operation_empty_lists_data">حدد العناصر للتشغيل</string>
+    <string name="operation_error_move_to_same">لا يمكن نقلها إلى نفس المجلد</string>
+    <string name="operation_error_move_to_same_subfolder">لا يمكن نقلها إلى نفس المجلد الفرعي</string>
+    <string name="operation_snackbar_send_link">أرسل الرابط</string>
+    <string name="operation_snackbar_return">يعود</string>
+    <string name="operation_share_send_link">يرسل</string>
+    <string name="operation_add_to_favorites">تمت الإضافة إلى المفضلة</string>
+    <string name="operation_remove_from_favorites">تمت الإزالة من المفضلة</string>
+
+    <plurals name="operation_moved_to_trash" tools:ignore="MissingQuantity">
+        <item quantity="one">تم نقل العنصر إلى سلة المهملات</item>
+        <item quantity="other">تم نقل العناصر إلى سلة المهملات</item>
+    </plurals>
+
+    <plurals name="operation_delete_irretrievably" tools:ignore="MissingQuantity">
+        <item quantity="one">تم حذف العنصر نهائيًا</item>
+        <item quantity="other">تم حذف العناصر نهائيًا</item>
+    </plurals>
+
+    <!-- ======================================================================================= -->
+    <!-- Trash -->
+    <string name="trash_dialog_empty_title">سلة مهملات فارغة</string>
+    <string name="trash_snackbar_move_text">يمكنك استعادة الملفات من سلة المهملات</string>
+    <string name="trash_snackbar_move_button">يعيد</string>
+    <string name="trash_popup_move">استعادة الى</string>
+    <string name="trash_popup_delete">الحذف للأبد</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Managers load -->
+    <string name="download_manager_title">تنزيلات ONLYOFFICE</string>
+    <string name="download_manager_progress_title">التنزيل قيد التقدم</string>
+    <string name="download_manager_archiving_progress">إنشاء أرشيف</string>
+    <string name="download_manager_complete">تم التحميل</string>
+    <string name="download_manager_error">الخطأ تحميل</string>
+    <string name="download_manager_error_free_space">لا توجد مساحة كافية</string>
+    <string name="download_manager_error_url">خطأ في بناء جملة عنوان URL</string>
+    <string name="download_manager_cancel">تم إلغاء التنزيل</string>
+    <string name="download_manager_repeat">يتم تنزيل الملف بالفعل</string>
+    <string name="download_manager_open">فتح</string>
+    <string name="download_manager_downloading">جارى التحميل…</string>
+    <string name="download_manager_notification_cancel_download">إلغاء التنزيل</string>
+    <string name="download_manager_folders_download">لا يمكن تنزيل المجلدات</string>
+    <string name="download_manager_select_files">اختر الملفات</string>
+    <string name="download_manager_exceed_size_100">يتجاوز الحد الأقصى لحجم الملف (100 ميجابايت)</string>
+    <string name="download_manager_exceed_size_25">يتجاوز الحد الأقصى لحجم الملف (25 ميغابايت)</string>
+
+    <string name="upload_manager_file_picker_title">حدد ملفًا لتحميله</string>
+    <string name="upload_manager_progress_title">التحميل قيد التقدم</string>
+    <string name="upload_manager_error">خطأ في التحميل</string>
+    <string name="upload_manager_cancel">تم إلغاء التحميل</string>
+    <string name="upload_manager_repeat">يتم تحميل الملف بالفعل</string>
+    <string name="upload_manager_complete">اكتمل التحميل</string>
+    <string name="upload_manager_error_url">خطأ في بناء جملة عنوان URL</string>
+    <string name="upload_manager_error_number_files">لا يمكنك تحميل أكثر من 20 ملفا في وقت واحد</string>
+    <string name="upload_manager_image_picker_title">اختيار صورة لتحميل</string>
+    <string name="upload_manager_error_file_size">لا يمكن أن يزيد حجم الملف عن 100 ميجابايت</string>
+    <string name="upload_manager_notification_cancel_upload">إلغاء الرفع</string>
+    <string name="upload_manager_waiting_title">في انتظار التحميل</string>
+    <string name="upload_error_wifi">لا يمكنك التحميل إلا عند تمكين Wi-Fi</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Socials -->
+    <string name="socials_twitter_failed_auth">فشل تسجيل الدخول بتويتر</string>
+    <string name="socials_facebook_cancel_auth">إلغاء تسجيل الدخول باستخدام الفيسبوك</string>
+    <string name="socials_facebook_failed_auth">فشل تسجيل الدخول بالفيسبوك</string>
+    <string name="socials_google_failed_auth">فشل تسجيل الدخول مع جوجل</string>
+    <string name="socials_google_cancel_auth">إلغاء تسجيل الدخول مع جوجل</string>
+
+    <!-- ======================================================================================= -->
+    <!-- On boarding -->
+    <string name="on_boarding_skip_button">تخطي</string>
+    <string name="on_boarding_back_button">خلف</string>
+    <string name="on_boarding_next_button">التالي</string>
+    <string name="on_boarding_finish_button">تم</string>
+
+    <string name="on_boarding_welcome_header">مرحبًا بك في ONLYOFFICE</string>
+    <string name="on_boarding_welcome_info">
+      لقد قمنا بتحديث مستندات ONLYOFFICE لنظام Android بشكل
+    </string>
+
+    <string name="on_boarding_edit_header">تحرير المستندات المكتبية</string>
+    <string name="on_boarding_edit_info">
+      قم بإنشاء وتحرير المستندات النصية وجداول البيانات والعروض
+    </string>
+
+    <string name="on_boarding_access_header">منح حق الوصول إلى المستندات</string>
+    <string name="on_boarding_access_info">
+      قم بمشاركة المستندات مع فريقك ومنحهم حقوق الوصول الكامل أو المراجعة أو القراءة فقط. المشاركة
+    </string>
+
+    <string name="on_boarding_collaborate_header">تعاون</string>
+    <string name="on_boarding_collaborate_info">
+      شارك في تحرير مستندات المكتب مع زملائك في الفريق في الوقت
+    </string>
+
+    <string name="on_boarding_third_party_header">الاتصال بسحابات الطرف الثالث</string>
+    <string name="on_boarding_third_party_info">
+      قم بتوصيل التطبيق بوحدات التخزين السحابية الأخرى التي تستخدمها: Google Drive، وDropbox،
+    </string>
+
+    <!-- ======================================================================================= -->
+    <!-- Media -->
+    <string name="media_image_share_chooser">اختر التطبيق للمشاركة</string>
+    <string name="media_image_list_info">ملفات الوسائط: %1$s</string>
+    <string name="media_video_error">خطأ غير معروف في المشغل: %1$s</string>
+
+    <string name="auth_header_screen_1">قم بإعداد المصادقة الثنائية</string>
+    <string name="auth_info_screen_1">قم بتثبيت تطبيق المصادقة لإنشاء رموز الوصول (مثل Google Authenticator، Authy) لمواصلة العمل </string>
+    <string name="auth_header_screen_2">قم بتشغيل تطبيق المصادقة</string>
+    <string name="auth_info_screen_2">قم بتشغيل التطبيق واضغط على أيقونة الحساب الجديد</string>
+    <string name="auth_header_screen_3">أضف مفتاحًا سريًا</string>
+    <string name="auth_info_screen_3"> انسخ المفتاح والصقه في تطبيق المصادقة الخاص بك</string>
+    <string name="auth_header_screen_4">اكتب الرمز</string>
+    <string name="auth_info_screen_4">اكتب الرمز من تطبيق المصادقة الخاص بك إلى حقل الإدخال</string>
+    <string name="auth_step_title">الخطوة %1$d من %2$d</string>
+    <string name="auth_install_button">ثَبَّتَ</string>
+    <string name="auth_confirm_button">تأكيد</string>
+    <string name="auth_clipboard_key_copied">تم نسخ المفتاح إلى الحافظة</string>
+    <string name="auth_edit_hint">شفرة</string>
+
+    <string name="rename_file_exist">يوجد ملف بنفس الاسم</string>
+    <string name="device_path_file_error">هذا الملف غير موجود.</string>
+    <string name="device_trash_files_restore">استعادة</string>
+    <string name="error_recent_account">تم حذف الملف أو أنه غير متوفر من هذا الحساب.</string>
+    <string name="error_recent_enter_account">الرجاء إدخال الحساب.</string>
+    <string name="error_open_project_file">هذا الحساب ليس لديه حق الوصول إلى المشروع</string>
+    <string name="switch_account_open_project_file">تبديل الحساب</string>
+    <string name="operation_move_file_existing">الملف %1$s موجود بالفعل في الدليل الوجهة.</string>
+    <string name="upload_to_portal">تحميل إلى البوابة</string>
+    <string name="this_device">هذا الجهاز</string>
+    <string name="dialog_clear_cache">
+      هل تريد مسح ذاكرة التخزين المؤقت؟\nستؤدي هذه العملية إلى تحرير مساحة على جهازك عن طريق حذف الملفات المؤقتة. لن تتم إزالة ملفاتك وبياناتك الشخصية غير المتصلة بالإنترنت..
+    </string>
+
+    <string name="error_unsupported_path">مسار غير مدعومة</string>
+    <string name="error_unsupported_format">صيغة غير مدعومة</string>
+
+    <string name="cloud_account_description">التعاون في بيئة آمنة وربط مخازن الطرف الثالث</string>
+    <string name="cloud_account_start_button">البدء</string>
+    <string name="cloud_account_other_storages_button">مخازن أخرى</string>
+    <string name="cloud_only_office">سحابة ONLYOFFICE</string>
+    <string name="cloud_only_office_description">قم بتخزين المستندات في السحابة والتعاون عليها</string>
+    <string name="cloud_accounts_title">حسابات</string>
+    <string name="error_long_file_name">اسم الملف طويل جدًا</string>
+    <string name="dialog_remove_account_title">حذف من الجهاز</string>
+    <string name="dialog_remove_account_description">
+      سيتم تسجيل خروج المستخدم الذي لديه %1$s من بوابة %2$s وإزالته من قائمة الحسابات. \n\nالرجاء ملاحظة: لتسجيل الدخول، ستحتاج إلى إدخال عنوان البوابة الإلكترونية
+    </string>
+    <string name="dialog_logout_account_title">هل أنت متأكد من تسجيل الخروج؟</string>
+    <string name="dialog_logout_account_description">
+      بعد تسجيل الخروج، لن تحتاج إلى إدخال عنوان البوابة الإلكترونية أو البريد الإلكتروني، فقط كلمة المرور. لا تقلق، جميع الملفات
+    </string>
+    <string name="profile_username_title">اسم المستخدم</string>
+    <string name="profile_portal_address">عنوان البوابة</string>
+    <string name="profile_type_admin">مسؤل</string>
+    <string name="profile_type_visitor">ضيف</string>
+    <string name="profile_type_user">مستخدم</string>
+    <string name="profile_thirdparty_title">الخدمات المتصلة</string>
+
+    <string name="app_settings_analytic_title">المساعدة في تحسين المنتج</string>
+    <string name="app_settings_analytic">مشاركة تحليلات التطبيق</string>
+    <string name="app_manage_files_title">الوصول إلى إدارة الملفات</string>
+    <string name="app_manage_files_description">تحتاج إلى منح حق الوصول إلى الملفات. إذا تم رفض الوصول سيتم حذف كافة الملفات بعد التطبيقات</string>
+    //passcode
+    <string name="app_settings_security">حماية</string>
+    <string name="app_settings_passcode">قفل رمز المرور</string>
+    <string name="app_settings_disabled">عاجز</string>
+    <string name="app_settings_enabled">ممكّن</string>
+    <string name="app_Settings_passcode_enable">تمكين رمز المرور</string>
+    <string name="app_settings_passcode_change">تغيير رمز المرور</string>
+    <string name="app_settings_passcode_fingerprint">استخدم بصمة الإصبع لفتح القفل</string>
+    <string name="app_settings_passcode_enter_title">أدخل رمز المرور</string>
+    <string name="app_settings_passscode_enter_full_title">أدخل رمز المرور لفتح التطبيق</string>
+    <string name="app_settings_passcode_enter_subtitle">اختر رمز المرور لفتح التطبيق</string>
+    <string name="app_settings_passcode_confirm_title">تأكيد رمز المرور</string>
+    <string name="app_settings_passcode_confirm_subtitle">أدخل رمز المرور مرة أخرى</string>
+    <string name="app_settings_passcode_confirm_error">رموز المرور غير متطابقة</string>
+    <string name="app_settings_passcode_change_disable_title">أدخل رمز المرور الحالي الخاص بك</string>
+    <string name="app_settings_passcode_change_disable_error">تم إدخال رمز مرور غير صحيح</string>
+    <string name="app_settings_passcode_description"> -  - هذا هو الرمز الذي تم طلبه عند بدء التطبيق. \n\nانتبه! إذا نسيت رمز المرور، فيجب عليك إزالة التطبيق أو إعادة تثبيته. سيتم فقدان</string>
+    <string name="app_settings_passcode_fingerprint_title">الوصول إلى المستندات</string>
+
+    <string name="app_internal_error">خطأ داخلي</string>
+    <string name="app_fragment_crash_error">يرجى إغلاق هذا التطبيق والمحاولة مرة أخرى</string>
+    <string name="item_owner_self">أنا</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           من خلال المتابعة، فإنك توافق على
+            <a href="%1$s">سياسة الخصوصية</a>
+            و
+            <a href="%2$s">شروط الخدمة</a>
+        ]]>
+    </string>
+    <string name="app_settings_color_theme">سمة</string>
+    <string name="app_settings_follow_the_system">نفس النظام</string>
+    <string name="app_settings_light_theme">موضوع فاتح</string>
+    <string name="app_settings_dark_theme">موضوع مظلم</string>
+
+    <string name="filter_toolbar_title">التصفية</string>
+    <string name="filter_toolbar_users_title">اختر المستخدم</string>
+    <string name="filter_toolbar_groups_title">اختر مجموعة</string>
+    <string name="filter_title_type">نوع</string>
+    <string name="filter_title_author">مؤلف</string>
+    <string name="filter_title_search">بحث</string>
+    <string name="filter_type_documents">وثائق</string>
+    <string name="filter_type_presentations">العروض التقديمية</string>
+    <string name="filter_type_spreadsheets">جداول البيانات</string>
+    <string name="filter_type_images">الصور</string>
+    <string name="filter_type_media">وسائط</string>
+    <string name="filter_type_archives">أرشيف</string>
+    <string name="filter_type_all">كل الملفات</string>
+    <string name="filter_exclude_subfolders">استبعاد المجلدات الفرعية</string>
+    <string name="filter_show_results">عرض نتائج %1$s</string>
+    <string name="filter_button_reset">إعادة ضبط</string>
+
+    <string name="context_room_move_to_archive">انتقل إلى الأرشيف</string>
+    <string name="context_room_archive_message">تم نقل الغرفة إلى الأرشيف</string>
+    <string name="context_rooms_archive_message">تم نقل الغرف إلى الأرشيف</string>
+
+    <plurals name="context_rooms_unarchive_message" tools:ignore="MissingQuantity">
+        <item quantity="one">تمت استعادة الغرفة بنجاح</item>
+        <item quantity="other">تمت استعادة الغرف بنجاح</item>
+    </plurals>
+
+    <string name="list_context_pin_to_top">تثبيت أعلى الصفحة</string>
+    <string name="list_rooms_title">غرف</string>
+    <string name="list_context_unpin">إزالة التثبيت</string>
+    <string name="list_context_info">معلومات</string>
+    <string name="list_context_add_users">إضافة مستخدمين</string>
+
+    <string name="rooms_add_collaboration">غرفة التعاون</string>
+    <string name="rooms_add_collaboration_des">تعاون في مستند واحد أو عدة وثائق مع فريقك</string>
+    <string name="rooms_add_public_room">غرفة عامة</string>
+    <string name="rooms_add_public_room_des">قم بدعوة المستخدمين عبر الروابط المشتركة لعرض المستندات دون تسجيل. يمكنك أيضًا تضمين هذه الغرفة في أي واجهة</string>
+    <string name="rooms_add_custom">غرفة مخصصة</string>
+    <string name="rooms_add_custom_des">قم بتطبيق الإعدادات الخاصة بك لاستخدام هذه الغرفة لأي غرض </string>
+    <string name="rooms_choose_room">اختر نوع الغرفة</string>
+    <string name="room_name_hint">اسم الغرفة</string>
+    <string name="room_add_tag_hint">اضف اشارة</string>
+    <string name="rooms_error_name">لا يمكن أن يكون اسم الغرفة فارغًا</string>
+    <string name="rooms_error_create">حدث خطأ أثناء إنشاء الغرفة</string>
+    <string name="rooms_error_edit">خطأ في غرفة التحرير</string>
+    <string name="leave_room_title">غادر الغرفة</string>
+    <string name="leave_room_owner_desc">أنت مالك هذه الغرفة. قبل أن تغادر الغرفة، يجب عليك نقل دور المالك </string>
+    <string name="leave_room_desc">هل تريد حقًا مغادرة هذه الغرفة؟ ستتمكن من الانضمام إليها مرة أخرى عبر دعوة جديدة من مشرف</string>
+    <string name="leave_room_assign">تعيين المالك</string>
+    <string name="leave_room_message">لقد غادرت الغرفة</string>
+    <string name="room_set_owner_title">تغيير مالك الغرفة</string>
+    <string name="room_search_not_found">لم يتم العثور على مستخدمين</string>
+    <string name="room_search_not_found_desc">ستظهر هنا قائمة المستخدمين الذين تمت دعوتهم مسبقًا إلى </string>
+
+    <plurals name="rooms_restore_title" tools:ignore="MissingQuantity">
+        <item quantity="one">استعادة الغرفة؟</item>
+        <item quantity="other">استعادة الغرف؟</item>
+    </plurals>
+
+    <plurals name="rooms_restore_desc" tools:ignore="MissingQuantity">
+        <item quantity="one">ستصبح جميع الروابط المشتركة في الغرفة نشطة، وستكون محتوياتها متاحة لكل من لديه</item>
+        <item quantity="other">ستصبح جميع الروابط المشتركة في الغرف نشطة، وستكون محتوياتها متاحة لكل من لديه</item>
+    </plurals>
+
+    <string name="rooms_move_to_public_title">انتقل إلى الغرفة العامة</string>
+    <string name="rooms_move_to_public_title_desc">هذه الغرفة وجميع محتوياتها متاحة لأي شخص لديه الرابط. هل تريد </string>
+
+    <string name="rooms_info_access_desc">هذه الغرفة متاحة لأي شخص لديه الرابط. سيكون لدى المستخدمين الخارجيين إذن العرض فقط لجميع</string>
+    <string name="rooms_info_general_link">الرابط العام</string>
+    <string name="rooms_info_additional_link">رابط إضافي</string>
+    <string name="rooms_info_additional_links">"الارتباطات الإضافية (%1$d/%2$d)"</string>
+    <string name="rooms_info_create_link">إنشاء ونسخ</string>
+    <string name="rooms_info_create_link_complete">تم إنشاء الرابط ونسخه إلى الحافظة بنجاح</string>
+    <string name="rooms_info_delete_link">حذف الرابط</string>
+    <string name="rooms_info_delete_link_complete">تم حذف الرابط</string>
+    <string name="rooms_info_delete_link_desc">سيتم حذف الرابط نهائيا لن تتمكن من التراجع عن هذا الإجراء</string>
+    <string name="rooms_info_revoke_link">إبطال الارتباط</string>
+    <string name="rooms_info_revoke_link_desc">سيصبح الرابط السابق غير متاح. سيتم إنشاء رابط عام جديد</string>
+    <string name="rooms_info_revoke_link_complete">تم إبطال الرابط</string>
+    <string name="rooms_info_revoke">سحب او إبطال</string>
+    <string name="rooms_info_copy_link">نسخ الوصلة</string>
+    <string name="rooms_info_copy_link_and_password">انسخ الرابط وكلمة المرور</string>
+    <string name="rooms_info_copy_link_to_clipboard">تم نسخ الرابط إلى الحافظة بنجاح</string>
+    <string name="rooms_info_admin_title">الإدارة (%d)</string>
+    <string name="rooms_info_users_title">المستخدمون (%1d)</string>
+    <string name="rooms_info_expected_title">المستخدمون المتوقعون (%1d)</string>
+    <string name="rooms_info_link_expired">انتهت صلاحية الرابط</string>
+    <string name="rooms_info_link_expired_full">لقد انتهت صلاحية الرابط وتم تعطيله</string>
+    <string name="rooms_info_link_name">اسم الرابط</string>
+    <string name="rooms_info_password_access">الوصول إلى كلمة المرور</string>
+    <string name="rooms_info_file_rectrict">تقييد نسخ محتوى الملف وتنزيل الملف وطباعته</string>
+    <string name="rooms_info_file_rectrict_desc">قم بتمكين هذا الإعداد لتعطيل تنزيلات الملفات والمجلدات من هذه الغرفة المشتركة عبر رابط</string>
+    <string name="rooms_info_time_limit_title">الحد الزمني</string>
+    <string name="rooms_info_time_limit">تمكين الحد الزمني</string>
+    <string name="rooms_info_valid_through">صالحة من خلال</string>
+    <string name="rooms_info_save_link_title">حفظ الرابط</string>
+    <string name="rooms_info_save_link_question">هل أنت متأكد أنك تريد الحفظ والخروج؟</string>
+    <string name="rooms_info_save_button">حفظ</string>
+    <string name="rooms_info_dont_save_button">لا تحفظ</string>
+
+    <string name="rooms_filter_type_filling_forms">ملء النموذج</string>
+    <string name="rooms_filter_type_collaboration">تعاون</string>
+    <string name="rooms_filter_type_review">مراجعة</string>
+    <string name="rooms_filter_type_public">عام</string>
+    <string name="rooms_filter_type_view_only">للاطلاع فقط</string>
+    <string name="rooms_filter_type_custom">مخصص</string>
+    <string name="rooms_filter_author_other_users">مستخدمين آخرين…</string>
+    <string name="rooms_filter_third_party_title">موارد الطرف الثالث</string>
+
+    <string name="dialog_create_room">إنشاء غرفة</string>
+    <string name="dialog_create_room_value">غرفة جديدة</string>
+    <string name="invite_by_email">دعوة المستخدمين عن طريق البريد الإلكتروني</string>
+    <string name="share_access_room_owner">مالك</string>
+    <string name="share_access_room_admin">مشرف الغرفة</string>
+    <string name="share_access_room_power_user">مستخدم قوي</string>
+    <string name="share_access_room_editor">محرر</string>
+    <string name="share_access_room_form_filler">ملئ النموذج</string>
+    <string name="share_access_room_reviewer">المراجع</string>
+    <string name="share_access_room_commentator">المعلق</string>
+    <string name="share_access_room_viewer">مشاهد</string>
+    <string name="share_invite_error_empty">الرجاء إدخال عناوين البريد الإلكتروني</string>
+    <string name="invite_link_send_success">تم إرسال رابط الدعوة</string>
+    <string name="share_choose_access_title">اختر الوصول</string>
+    <string name="share_invite_title">دعوة</string>
+    <string name="room_create_success">تم إنشاء الغرفة</string>
+    <string name="room_delete_success">تم حذف الغرفة</string>
+    <string name="switch_account_title">تبديل الحساب؟</string>
+    <string name="switch_account_description">قم بتسجيل الدخول إلى حساب البوابة %1$s لفتح المستند.</string>
+    <string name="share_expected_member">توقع الأعضاء</string>
+    <string name="app_settings_main_help">مساعدة</string>
+    <string name="settings_language">لغة</string>
+    <string name="clear_recents">"هل تريد مسح الأحداث الأخيرة؟"</string>
+    <string name="context_protection_title">حماية</string>
+    <!--  TODO example  -->
+    <string name="settings_language_confirmation_message">
+      الآن يستخدم التطبيق اللغة الإنجليزية بسبب تغير لغة
+    </string>
+    <string name="settings_language_confirmation_accept">جيد</string>
+    <string name="settings_language_continue_using_app_language">استمر في استخدام %1$s</string>
+
+    // TODO: عرض مربع حوار الأسئلة
+    // تحويل وفتح المستند
+    //
+    // المستند الذي تفتحه ليس ملف OOXML (Office Open XML).
+    // تحويله إلى تنسيق OOXML لعرض وتحرير أسرع.
+    //
+    // فتح في وضع العرض / تحويل إلى $ext
+    showQuestionDialog()
+
+    <!-- For example  -->
+    <string name="conversion_dialog_title">تحويل وفتح الوثيقة</string>
+    <string name="conversion_dialog_message">المستند الذي تفتحه ليس ملف OOXML (Office Open XML). قم بتحويله إلى تنسيق OOXML</string>
+    <string name="conversion_dialog_open_in_view_mode">فتح في وضع العرض</string>
+    <string name="conversion_dialog_convert_to">تحويل إلى %1s</string>
+    <string name="conversion_dialog_converting_to">التحويل إلى %1s</string>
+    <string name="main_pager_docs_my">ملفاتي</string>
+    <string name="main_pager_docs_common">شائع</string>
+    <string name="main_pager_docs_virtual_room">الغرف</string>
+    <string name="main_pager_docs_archive_room">الأرشيف</string>
+    <string name="errors_sign_in_ldap_checkbox">تسجيل الدخول كمستخدم بروتوكول LDAP</string>
+    <string name="placeholder_empty_folder">لا يوجد ملفات هنا حتى الآن</string>
+    <string name="placeholder_empty_trash_desc">تم نقل كافة الملفات المحذوفة إلى \'سلة المهملات\'. قم باستعادة الملفات المحذوفة بالخطأ أو حذفها نهائيًا. يتم حذف الملفات من \'سلة المهملات\' بشكل تلقائي بعد مرور 30 يوم. يرجى الانتباه في حال تم حذف الملفات من \'سلة المهملات\' لا يمكن استعادتها.</string>
+    <string name="placeholder_no_users_found">لم يتم العثور على مستخدمين</string>
+    <string name="placeholder_no_users_found_desc">لا يوجد مستخدمون يطابقون بحثك. يرجى ضبط معايير البحث الخاصة بك أو مسح محتوى البحث لعرض القائمة الكاملة للمستخدمين</string>
+    <string name="placeholder_no_members_found">لم يتم العثور على أعضاء</string>
+    <string name="placeholder_no_members_found_desc">يمكنك إضافة أعضاء جدد للفريق يدويًا، أو دعوتهم بواسطة رابط</string>
+    <string name="placeholder_no_rooms">مرحبا بك في DocSpace!</string>
+    <string name="placeholder_no_rooms_desc">يرجى إنشاء أول غرفة</string>
+    <string name="placeholder_no_rooms_visitor_desc">ستظهر الغرف المشتركة معك هنا</string>
+    <string name="placeholder_empty_archive">لا توجد غرف مؤرشفة هنا حتى الآن</string>
+    <string name="placeholder_empty_archive_desc">يمكنك أرشفة الغرف التي لا تستخدمها واستعادتها في DocSpaceالخاص بك في أي لحظة أو حذفها نهائيًا. ستظهر هذه الغرف هنا</string>
+    <string name="placeholder_no_search_result">لا توجد نتيجة بحث</string>
+    <string name="placeholder_no_search_result_desc">لا يمكن العثور على نتائج مطابقة لبحثك. من فضلك حاول عبارة أخرى</string>
+    <string name="placeholder_empty_room_visitor_desc">ستظهر هنا الملفات والمجلدات التي تم تحميلها بواسطة المسؤولين</string>
+    <string name="placeholder_empty_recent_via_link_desc">ستجد هنا قائمة بالملفات المفتوحة مؤخرًا والتي تمت مشاركتها معك عبر رابط خارجي</string>
+    <string name="placeholder_payment_required">انتهت صلاحية الاشتراك التجاري</string>
+    <string name="placeholder_payment_required_desc">انتهت صلاحية خطة التعريفة الحالية "الأعمال". يرجى تجديد اشتراكك في إعدادات الحساب لتتمكن من استخدام DocSpace الخاص بك. إذا كان لديك أي أسئلة، يرجى الاتصال بالدعم</string>
+    <string name="placeholder_payment_required_button">تجديد خطة الأعمال</string>
+    <string name="filter_type_form_templates">قوالب النماذج</string>
+    <string name="filter_type_forms">النماذج</string>
+    <string name="room_placeholder_created_room_title">تم انشاء الغرفة!</string>
+    <string name="room_placeholder_created_room_subtitle">قم بإنشاء مجلدات لتنظيم ملفاتك.</string>
+    <string name="room_recent_via_link">يمكن الوصول إليها عبر الرابط</string>
+    <string name="room_manage_room">إدارة الغرفة</string>
+    <string name="rooms_info_edit_link">تعديل الرابط</string>
+    <string name="rooms_info_create_link_title">إنشاء الرابط</string>
+    <string name="rooms_info_groups_title">المجموعات (%1d)</string>
+    <string name="rooms_share_shared_links">الروابط المشتركة</string>
+    <string name="rooms_share_shared_link_title">الرابط المشترك</string>
+    <string name="rooms_share_shared_desc">توفير الوصول إلى المستند وتعيين مستويات الأذونات.</string>
+    <string name="rooms_share_lifetime_hours_12">12 ساعة</string>
+    <string name="rooms_share_lifetime_days_1">يوم</string>
+    <string name="rooms_share_lifetime_days_7">7 أيام</string>
+    <string name="rooms_share_lifetime_unlimited">غير محدود</string>
+    <string name="rooms_share_lifetime_custom">مخصص</string>
+    <string name="rooms_share_shared_to_docsspace_users">مستخدمين DoсSpace فقط</string>
+    <string name="rooms_share_shared_to_anyone">أي شخص لديه الرابط</string>
+    <string name="rooms_share_expires_after">تنتهي الصلاحية بعد %s</string>
+    <string name="rooms_share_valid_unlimited">الرابط متاح لعدد غير محدود</string>
+    <string name="rooms_share_access_rights">حقوق الوصول</string>
+    <string name="rooms_share_regenerate_link">إعادة إنشاء الرابط</string>
+    <string name="rooms_share_general_header">عام</string>
+    <string name="rooms_share_link_life_time">رابط مدى الحياة</string>
+    <string name="invite_new_members">أعضاء جدد</string>
+    <string name="invite_new_groups">مجموعات جديدة</string>
+    <string name="invite_add_manually">أضف يدويًا</string>
+    <string name="invite_choose_from_list">اختر من القائمة</string>
+    <string name="invite_already_invited">تم دعوته</string>
+    <string name="share_access_room_type">نوع الوصول</string>
+    <string name="share_access_room_group_desc">حقوق الوصول لكافة المستخدمين في المجموعة</string>
+    <string name="room_create_thirdparty_storage_title">تخزين الطرف الثالث</string>
+    <string name="room_create_thirdparty_storage">التخزين</string>
+    <string name="room_create_thirdparty_location">الموقع</string>
+    <string name="room_create_thirdparty_location_root">جذر</string>
+    <string name="room_create_thirdparty_new_folder">إنشاء مجلد جديد</string>
+    <string name="room_create_thirdparty_desc">استخدم خدمات الطرف الثالث كمخزن للبيانات لهذه الغرفة. سيتم إنشاء مجلد جديد لتخزين بيانات هذه الغرفة في وحدة التخزين المرتبطة</string>
+    <string name="room_storage_reconnect">إعادة توصيل وحدة التخزين</string>
+    <string name="room_storage_not_availabale">محتوى مجلد الطرف الثالث غير متوفر. حاول إعادة ربط الحساب.</string>
+</resources>

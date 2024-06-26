@@ -1,37 +1,40 @@
 package app.editors.manager.managers.tools
 
-import android.accounts.Account
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.UriMatcher
 import android.database.Cursor
+import android.database.MatrixCursor
 import android.net.Uri
 import android.os.Bundle
-import app.documents.core.storage.account.AccountDao
-import app.documents.core.storage.account.CloudAccount
-import app.editors.manager.app.appComponent
+import androidx.core.os.bundleOf
+import app.documents.core.account.AccountManager
+import app.documents.core.account.AccountRepository
+import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.migration.CloudAccountWithTokenAndPassword
+import app.documents.core.migration.OldCloudAccount
+import app.documents.core.migration.toCloudAccountWithTokenAndPassword
+import app.documents.core.model.cloud.CloudAccount
+import app.editors.manager.app.App
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.R
-import lib.toolkit.base.managers.utils.AccountData
-import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.CryptUtils
+
 
 class AccountContentProvider : ContentProvider() {
 
     companion object {
 
-        const val AUTHORITY = "com.onlyoffice.accounts"
-        const val PATH = "accounts"
-        const val ID = "id"
-        const val TIME = "time"
+        private const val AUTHORITY = "com.onlyoffice.accounts"
+        private const val PATH = "accounts"
+        private const val TIME = "time"
 
-        const val ALL_ID = 0
-        const val ACCOUNT_ID = 1
-        const val TIME_ID = 2
+        private const val ALL_ID = 0
+        private const val ACCOUNT_ID = 1
+        private const val TIME_ID = 2
 
-        const val CLOUD_ACCOUNT_KEY = "account"
-        const val TIME_KEY = "time"
+        private const val CLOUD_ACCOUNT_KEY = "account"
+        private const val TIME_KEY = "time"
     }
 
     private val uriMatcher: UriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
@@ -40,12 +43,13 @@ class AccountContentProvider : ContentProvider() {
         addURI(AUTHORITY, TIME, TIME_ID)
     }
 
-    private var dao: AccountDao? = null
-    private var pref: PreferenceTool? = null
+    private var cloudDataSource: CloudDataSource? = null
+    private var accountRepository: AccountRepository? = null
 
     override fun onCreate(): Boolean {
-        dao = context?.appComponent?.accountsDao
-        pref = context?.appComponent?.preference
+        App.getApp().refreshLoginComponent(null)
+        accountRepository = App.getApp().loginComponent.accountRepository
+        cloudDataSource = App.getApp().appComponent.cloudDataSource
         return true
     }
 
@@ -56,26 +60,28 @@ class AccountContentProvider : ContentProvider() {
         selectionArgs: Array<out String?>?,
         sortOrder: String?
     ): Cursor? {
-        when (uriMatcher.match(uri)) {
-            ALL_ID -> {
-                return selectionArgs?.get(0)?.let { arg ->
-                    dao?.getCursorAccountsByLogin(arg)
-                } ?: run {
-                    dao?.getCursorAccounts()
-                }
-            }
-            ACCOUNT_ID -> {
-                return dao?.getCursorAccount(uri.lastPathSegment ?: "")
-            }
-            TIME_ID -> {
-                return dao?.getCursorAccounts()?.apply {
-                    extras = Bundle(1).apply {
-                        putLong(TIME_KEY, pref?.dbTimestamp ?: 0L)
+        return cloudDataSource?.let { dataSource ->
+            runBlocking {
+                when (uriMatcher.match(uri)) {
+                    ACCOUNT_ID -> getMatrixCursor(
+                        uri,
+                        dataSource.getAccount(uri.lastPathSegment.orEmpty())
+                    )
+
+                    ALL_ID -> selectionArgs?.get(0)?.let { arg ->
+                        getMatrixCursor(uri, dataSource.getAccountByLogin(arg))
+                    } ?: run {
+                        getMatrixCursor(uri, *dataSource.getAccounts().toTypedArray())
                     }
+
+                    TIME_ID -> getMatrixCursor(uri, *dataSource.getAccounts().toTypedArray())?.apply {
+                        extras = bundleOf(TIME_KEY to cloudDataSource?.initTimestamp)
+                    }
+
+                    else -> null
                 }
             }
         }
-        return null
     }
 
     override fun getType(uri: Uri): String {
@@ -83,118 +89,125 @@ class AccountContentProvider : ContentProvider() {
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
-        val account: CloudAccount = if (values?.containsKey(CLOUD_ACCOUNT_KEY) == true) {
-            Json.decodeFromString(values.getAsString(CLOUD_ACCOUNT_KEY))
-        } else {
-            getAccount(values)
-        }.apply {
-            if (token.isNotEmpty()) {
-                setCryptToken(token)
-                setCryptPassword(password)
-            }
-        }
-        runBlocking {
-            val online = dao?.getAccountOnline()
-            if (account.id == online?.id) {
-                return@runBlocking dao?.addAccount(account.copy(isOnline = true))
+        return try {
+            val data = if (values?.containsKey(CLOUD_ACCOUNT_KEY) == true) {
+                val json = values.getAsString(CLOUD_ACCOUNT_KEY)
+                Json.decodeFromString<OldCloudAccount>(json).toCloudAccountWithTokenAndPassword()
             } else {
-                return@runBlocking dao?.addAccount(account)
+                getAccountWithTokenAndPassword(values)
             }
 
+            insertAccount(data)
+            Uri.parse("content://$AUTHORITY/$PATH/${data.cloudAccount.id}")
+        } catch (_: Exception) {
+            null
         }
-        addSystemAccount(account)
-        return Uri.parse("content://$AUTHORITY/$PATH/${account.id}")
     }
 
     override fun insert(uri: Uri, values: ContentValues?, extras: Bundle?): Uri? {
-        var id = ""
-        extras?.let {
-            if (extras.containsKey(CLOUD_ACCOUNT_KEY)) {
-                val account: CloudAccount = Json.decodeFromString(extras.getString(CLOUD_ACCOUNT_KEY) ?: "")
-                id = account.id
-                runBlocking {
-                    dao?.addAccount(account = account)
+        return try {
+            val data = extras?.let { bundle ->
+                if (extras.containsKey(CLOUD_ACCOUNT_KEY)) {
+                    val json = extras.getString(CLOUD_ACCOUNT_KEY).orEmpty()
+                    Json.decodeFromString<OldCloudAccount>(json).toCloudAccountWithTokenAndPassword()
+                } else {
+                    getAccountWithTokenAndPassword(bundle)
                 }
-                addSystemAccount(account)
-            } else {
-                val account: CloudAccount = getAccount(it).apply {
-                    if (token.isNotEmpty()) {
-                        setCryptToken(token)
-                        setCryptPassword(password)
-                    }
-                }
-                id = account.id
-                runBlocking {
-                    val online = dao?.getAccountOnline()
-                    if (online?.id == id) {
-                        dao?.addAccount(account = account.copy(isOnline = true))
-                    } else {
-                        dao?.addAccount(account = account)
-                    }
-                }
-                addSystemAccount(account)
             }
+
+            insertAccount(requireNotNull(data))
+            Uri.parse("content://$AUTHORITY/$PATH/${data.cloudAccount.id}")
+        } catch (_: Exception) {
+            null
         }
-        return Uri.parse("content://$AUTHORITY/$PATH/$id")
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
-        when (uriMatcher.match(uri)) {
-            ACCOUNT_ID -> {
-                runBlocking {
-                    dao?.getAccount(uri.lastPathSegment ?: "")?.let { account ->
-                        return@let dao?.deleteCursorAccount(account)
-                    }
-
-                }
-            }
-        }
-        return -1
+        return if (uriMatcher.match(uri) == ACCOUNT_ID) {
+            runBlocking { cloudDataSource?.deleteAccount(uri.lastPathSegment.orEmpty()) ?: -1 }
+        } else -1
     }
 
     override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
         return runBlocking {
-            return@runBlocking dao?.updateCursorAccount(getAccount(values)) ?: -1
+            val data = getAccountWithTokenAndPassword(values)
+            accountRepository?.updateAccountData(
+                data.cloudAccount.id,
+                data.cloudAccount.accountName,
+                data.token,
+                data.password
+            )
+            cloudDataSource?.updateAccount(data.cloudAccount) ?: -1
         }
     }
 
-    private fun addSystemAccount(cloudAccount: CloudAccount) {
-        val account = Account(cloudAccount.getAccountName(), context?.getString(R.string.account_type))
-        val accountData = AccountData(
-            portal = cloudAccount.portal ?: "",
-            scheme = cloudAccount.scheme ?: "",
-            displayName = cloudAccount.name ?: "",
-            userId = cloudAccount.id,
-            provider = cloudAccount.provider ?: "",
-            accessToken = "",
-            email = cloudAccount.login ?: "",
-            avatar = cloudAccount.avatarUrl,
-            expires = ""
-        )
-
-        val token: String
-        val password: String
-        if (cloudAccount.token.isNotEmpty()) {
-            token = cloudAccount.getDecryptToken() ?: ""
-            password = cloudAccount.getDecryptPassword() ?: ""
-        } else {
-            token = ""
-            password = ""
-        }
-
-        if (!AccountUtils.addAccount(checkNotNull(context), account, password, accountData)) {
-            AccountUtils.setAccountData(checkNotNull(context), account, accountData)
-            AccountUtils.setPassword(checkNotNull(context), account, password)
-        }
-        AccountUtils.setToken(checkNotNull(context), account, token)
+    private fun insertAccount(cloudAccount: CloudAccountWithTokenAndPassword) {
+        runBlocking { accountRepository?.addAccounts(listOf(cloudAccount)) }
     }
 
-    private fun getAccount(values: ContentValues?): CloudAccount {
-        return CloudAccount(
-            id = values?.getAsString("id") ?: "",
+    private fun getMatrixCursor(uri: Uri, vararg accounts: CloudAccount?): MatrixCursor? {
+        if (accounts.filterNotNull().isEmpty()) {
+            return null
+        }
+
+        return context?.let { context ->
+            val accountManager = AccountManager(context)
+            val cursor = MatrixCursor(
+                arrayOf(
+                    "id",
+                    "login",
+                    "portal",
+                    "serverVersion",
+                    "scheme",
+                    "name",
+                    "provider",
+                    "avatarUrl",
+                    "isSslCiphers",
+                    "isSslState",
+                    "isAdmin",
+                    "isVisitor",
+                    "token",
+                    "password",
+                    "expires"
+                )
+            )
+
+            for (account in accounts) {
+                if (account == null) continue
+                cursor.newRow().apply {
+                    add("id", account.id)
+                    add("login", account.login)
+                    add("portal", account.portal.url)
+                    add("serverVersion", account.portal.version.serverVersion)
+                    add("scheme", account.portal.scheme.value)
+                    add("name", account.name)
+                    add("provider", account.socialProvider)
+                    add("avatarUrl", account.avatarUrl)
+                    add("isSslCiphers", account.portal.settings.isSslCiphers)
+                    add("isSslState", account.portal.settings.isSslState)
+                    add("isAdmin", account.isAdmin)
+                    add("isVisitor", account.isVisitor)
+                    add("expires", "-1")
+                    add(
+                        "token",
+                        CryptUtils.encryptAES128(accountManager.getToken(account.accountName), account.id)
+                    )
+                    add(
+                        "password",
+                        CryptUtils.encryptAES128(accountManager.getPassword(account.accountName), account.id)
+                    )
+                }
+            }
+            cursor.also { it.setNotificationUri(context.contentResolver, uri) }
+        }
+    }
+
+    private fun getAccountWithTokenAndPassword(values: ContentValues?): CloudAccountWithTokenAndPassword {
+        return OldCloudAccount(
+            id = values?.getAsString("id").orEmpty(),
             login = values?.getAsString("login"),
             portal = values?.getAsString("portal"),
-            serverVersion = values?.getAsString("serverVersion") ?: "",
+            serverVersion = values?.getAsString("serverVersion").orEmpty(),
             scheme = values?.getAsString("scheme"),
             name = values?.getAsString("name"),
             provider = values?.getAsString("provider"),
@@ -206,20 +219,19 @@ class AccountContentProvider : ContentProvider() {
             isOneDrive = false,
             isDropbox = false,
             isAdmin = values?.getAsBoolean("isAdmin") ?: false,
-            isVisitor = values?.getAsBoolean("isVisitor") ?: false
-        ).apply {
-            token = values?.getAsString("token") ?: ""
-            password = values?.getAsString("password") ?: ""
-            expires = values?.getAsString("expires") ?: ""
-        }
+            isVisitor = values?.getAsBoolean("isVisitor") ?: false,
+            token = values?.getAsString("token").orEmpty(),
+            password = values?.getAsString("password").orEmpty(),
+            expires = values?.getAsString("expires").orEmpty()
+        ).toCloudAccountWithTokenAndPassword()
     }
 
-    private fun getAccount(extras: Bundle): CloudAccount {
-        return CloudAccount(
-            id = extras.getString("id") ?: "",
+    private fun getAccountWithTokenAndPassword(extras: Bundle): CloudAccountWithTokenAndPassword {
+        return OldCloudAccount(
+            id = extras.getString("id").orEmpty(),
             login = extras.getString("login"),
             portal = extras.getString("portal"),
-            serverVersion = extras.getString("serverVersion") ?: "",
+            serverVersion = extras.getString("serverVersion").orEmpty(),
             scheme = extras.getString("scheme"),
             name = extras.getString("name"),
             provider = extras.getString("provider"),
@@ -231,11 +243,10 @@ class AccountContentProvider : ContentProvider() {
             isOneDrive = false,
             isDropbox = false,
             isAdmin = extras.getBoolean("isAdmin", false),
-            isVisitor = extras.getBoolean("isVisitor", false)
-        ).apply {
-            token = extras.getString("token") ?: ""
-            password = extras.getString("password") ?: ""
-            expires = extras.getString("expires") ?: ""
-        }
+            isVisitor = extras.getBoolean("isVisitor", false),
+            token = extras.getString("token").orEmpty(),
+            password = extras.getString("password").orEmpty(),
+            expires = extras.getString("expires").orEmpty()
+        ).toCloudAccountWithTokenAndPassword()
     }
 }

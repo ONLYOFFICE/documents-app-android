@@ -40,14 +40,10 @@ class ShareAddItemViewHolder(
         with(binding) {
             when (item) {
                 is UserUi -> {
-                    if (mode != BaseAdapter.Mode.COMMON) {
+                    if (mode != BaseAdapter.Mode.COMMON && firstLetterVisible) {
                         val letter = getLetter(item, previousItem as? UserUi)
-                        if (letter != null) {
-                            shareAddItemLetter.text = letter.toString()
-                        } else {
-                            shareAddItemLetter.isInvisible = true
-                        }
-                        shareAddItemLetter.isVisible = firstLetterVisible
+                        shareAddItemLetter.isInvisible = letter == null
+                        letter?.let { shareAddItemLetter.text = letter.toString() }
                     } else {
                         shareAddItemLetter.isVisible = false
                     }

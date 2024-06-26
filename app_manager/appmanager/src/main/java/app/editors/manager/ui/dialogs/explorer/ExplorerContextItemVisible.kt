@@ -1,7 +1,9 @@
 package app.editors.manager.ui.dialogs.explorer
 
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import lib.toolkit.base.managers.utils.StringUtils
 
 
@@ -22,6 +24,7 @@ interface ExplorerContextItemVisible {
             ExplorerContextItem.ShareDelete -> shareDelete
             ExplorerContextItem.Upload -> upload
             ExplorerContextItem.CreateRoom -> createRoom
+            ExplorerContextItem.Reconnect -> reconnect
             is ExplorerContextItem.Edit -> edit
             is ExplorerContextItem.ExternalLink -> externalLink
             is ExplorerContextItem.Restore -> restore
@@ -43,6 +46,9 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.download: Boolean
         get() = !section.isLocal
+
+    private val ExplorerContextState.reconnect: Boolean
+        get() = item is CloudFolder && item.providerItem
 
     private val ExplorerContextState.edit: Boolean
         get() = if (item is CloudFile && isExtensionEditable(item.fileExst)) {
@@ -93,7 +99,11 @@ interface ExplorerContextItemVisible {
         get() = section != ApiContract.Section.Trash && !isFolder
 
     private val ExplorerContextState.share: Boolean
-        get() = isShareVisible(access, section)
+        get() = if (provider is PortalProvider.Cloud.DocSpace) {
+            section == ApiContract.Section.User && item is CloudFile
+        } else {
+            isShareVisible(access, section)
+        }
 
     private val ExplorerContextState.shareDelete: Boolean
         get() = section == ApiContract.Section.Share

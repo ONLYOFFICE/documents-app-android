@@ -2,29 +2,37 @@ package app.editors.manager.viewModels.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import app.documents.core.network.login.LoginResponse
-import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.login.models.response.ResponseAllSettings
-import app.documents.core.network.login.models.response.ResponseCapabilities
-import app.documents.core.network.login.models.response.ResponseSettings
+import androidx.lifecycle.viewModelScope
+import app.documents.core.login.CloudLoginRepository
+import app.documents.core.login.PortalResult
+import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.PortalSettings
+import app.documents.core.model.cloud.Scheme
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.viewModels.base.BaseLoginViewModel
-import io.reactivex.disposables.Disposable
-import java.util.*
+import app.editors.manager.viewModels.base.BaseViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.utils.StringUtils
+import java.util.TreeSet
 
 sealed class EnterprisePortalState {
-    object Progress : EnterprisePortalState()
-    class Success(val portal: String, val providers: Array<String>, val isHttp: Boolean) : EnterprisePortalState()
-    class Error(val message: String? = null) : EnterprisePortalState()
+    data object Progress : EnterprisePortalState()
+    data class Success(val isHttp: Boolean) : EnterprisePortalState()
+    data class Error(val message: Int? = null) : EnterprisePortalState()
 }
 
-class EnterprisePortalViewModel : BaseLoginViewModel() {
+class EnterprisePortalViewModel : BaseViewModel() {
 
     companion object {
         val TAG: String = EnterprisePortalViewModel::class.java.simpleName
+
         @Suppress("KotlinConstantConditions")
         private val BANNED_ADDRESSES: Set<String> = object : TreeSet<String>() {
             init {
@@ -36,50 +44,82 @@ class EnterprisePortalViewModel : BaseLoginViewModel() {
         private const val TAG_SSH = "/#ssloff"
     }
 
+    private val loginRepository: CloudLoginRepository
+        get() = App.getApp().loginComponent.cloudLoginRepository
+
     private val _portalStateLiveData = MutableLiveData<EnterprisePortalState>()
     val portalStateLiveData: LiveData<EnterprisePortalState> = _portalStateLiveData
 
-    private var disposable: Disposable? = null
+    val portals: StateFlow<Array<String>> = loginRepository.getSavedPortals()
+        .map { it.toTypedArray() }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyArray())
 
-    override fun onCleared() {
-        super.onCleared()
-        disposable?.dispose()
-    }
+    private var job: Job? = null
 
     fun cancel() {
-        disposable?.dispose()
+        job?.cancel()
         _portalStateLiveData.value = EnterprisePortalState.Error(null)
     }
 
     fun checkPortal(portal: String) {
-        networkSettings.setDefault()
-
         val builder = StringBuilder()
+        var sslState = true
 
         if (checkBannedAddress(portal)) {
-            _portalStateLiveData.value =
-                EnterprisePortalState.Error(resourcesProvider.getString(R.string.errors_client_host_not_found))
+            _portalStateLiveData.value = EnterprisePortalState.Error(R.string.errors_client_host_not_found)
             return
         }
 
         if (portal.endsWith(TAG_SSH)) {
-            networkSettings.setSslState(false)
-            builder.append(getPortal(portal.replace(TAG_SSH, "")) ?: "")
+            sslState = false
+            builder.append(portal.replace(TAG_SSH, ""))
         } else {
-            builder.append(getPortal(portal))
+            builder.append(portal)
         }
 
         if (builder.isEmpty()) {
-            _portalStateLiveData.value =
-                EnterprisePortalState.Error(resourcesProvider.getString(R.string.login_enterprise_edit_error_hint))
+            _portalStateLiveData.value = EnterprisePortalState.Error(R.string.login_enterprise_edit_error_hint)
             return
         }
 
-        _portalStateLiveData.value =
-            EnterprisePortalState.Progress
-        networkSettings.setBaseUrl(builder.toString())
-        portalCapabilities()
+        _portalStateLiveData.value = EnterprisePortalState.Progress
 
+        job = viewModelScope.launch {
+            tryCheckPortal(StringUtils.getUrlHost(portal), Scheme.Https, sslState)
+        }
+    }
+
+    private suspend fun tryCheckPortal(url: String, scheme: Scheme, sslState: Boolean) {
+        App.getApp().refreshLoginComponent(
+            CloudPortal(
+                url = url,
+                scheme = scheme,
+                settings = PortalSettings(isSslState = sslState)
+            )
+        )
+
+        loginRepository.checkPortal(url, scheme)
+            .collect { result ->
+                when (result) {
+                    is PortalResult.Error -> onError(url, result.exception)
+                    is PortalResult.ShouldUseHttp -> tryCheckPortal(url, Scheme.Http, sslState)
+                    is PortalResult.Success -> onSuccess(result.cloudPortal)
+                }
+            }
+    }
+
+    private fun onSuccess(portal: CloudPortal) {
+        App.getApp().refreshLoginComponent(portal)
+        _portalStateLiveData.value = EnterprisePortalState.Success(portal.scheme == Scheme.Http)
+    }
+
+    private fun onError(portal: String, exception: Throwable) {
+        FirebaseUtils.addAnalyticsCheckPortal(
+            portal,
+            FirebaseUtils.AnalyticsKeys.FAILED,
+            "Error: " + exception.message
+        )
+        _portalStateLiveData.value = EnterprisePortalState.Error(R.string.errors_sign_in_splash_error)
     }
 
     private fun checkBannedAddress(portal: String): Boolean {
@@ -90,61 +130,4 @@ class EnterprisePortalViewModel : BaseLoginViewModel() {
         }
         return false
     }
-
-    private fun portalCapabilities() {
-        val service = App.getApp().coreComponent.loginService
-        disposable = service.capabilities()
-            .subscribe({ response ->
-                if (response is LoginResponse.Success) {
-                    if (response.response is ResponseCapabilities) {
-                        val capability =
-                            (response.response as ResponseCapabilities).response
-                        setSettings(capability)
-                        if (networkSettings.getScheme() == ApiContract.SCHEME_HTTPS) {
-                            _portalStateLiveData.value = EnterprisePortalState.Success(
-                                networkSettings.getPortal(),
-                                capability.providers.toTypedArray(),
-                                false
-                            )
-                        } else {
-                            _portalStateLiveData.value = EnterprisePortalState.Success(
-                                networkSettings.getPortal(),
-                                capability.providers.toTypedArray(),
-                                true
-                            )
-                        }
-                    } else if (response.response is ResponseSettings) {
-                        networkSettings.documentServerVersion =
-                            (response.response as ResponseSettings).response.documentServer ?: ""
-                        networkSettings.serverVersion =
-                            (response.response as ResponseSettings).response.communityServer ?: ""
-                    } else if (response.response is ResponseAllSettings) {
-                        networkSettings.isDocSpace =
-                            (response.response as ResponseAllSettings).response.docSpace
-                    }
-                } else {
-                    fetchError((response as LoginResponse.Error).error)
-                }
-            }) { throwable: Throwable -> checkError(throwable) }
-    }
-
-    private fun setSettings(capabilities: app.documents.core.network.login.models.Capabilities) {
-        networkSettings.ldap = capabilities.ldapEnabled
-        networkSettings.ssoUrl = capabilities.ssoUrl
-        networkSettings.ssoLabel = capabilities.ssoLabel
-    }
-
-    private fun checkError(throwable: Throwable) {
-        if (isConfigConnection(throwable)) {
-            portalCapabilities()
-        } else {
-            FirebaseUtils.addAnalyticsCheckPortal(
-                networkSettings.getPortal(),
-                FirebaseUtils.AnalyticsKeys.FAILED,
-                "Error: " + throwable.message
-            )
-            fetchError(throwable)
-        }
-    }
-
 }

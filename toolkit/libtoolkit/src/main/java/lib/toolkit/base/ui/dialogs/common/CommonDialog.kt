@@ -10,7 +10,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import lib.toolkit.base.R
 import lib.toolkit.base.ui.dialogs.base.BaseDialog
-import lib.toolkit.base.ui.dialogs.common.holders.*
+import lib.toolkit.base.ui.dialogs.common.holders.CustomHolder
+import lib.toolkit.base.ui.dialogs.common.holders.EditLineHolder
+import lib.toolkit.base.ui.dialogs.common.holders.EditMultilineHolder
+import lib.toolkit.base.ui.dialogs.common.holders.InfoHolder
+import lib.toolkit.base.ui.dialogs.common.holders.ProgressHolder
+import lib.toolkit.base.ui.dialogs.common.holders.QuestionHolder
+import lib.toolkit.base.ui.dialogs.common.holders.WaitingHolder
 
 class CommonDialog : BaseDialog() {
 
@@ -65,7 +71,6 @@ class CommonDialog : BaseDialog() {
         Dialogs.CUSTOM to CustomHolder(this)
     )
 
-    private var frManager: FragmentManager? = null
     private var onClickListener: OnClickListener? = null
     private var dialogType: Dialogs = Dialogs.NONE
 
@@ -76,6 +81,11 @@ class CommonDialog : BaseDialog() {
         } else {
             throw ClassCastException(activity.toString() + " must implement OnClickListener")
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        onClickListener = null
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -153,16 +163,9 @@ class CommonDialog : BaseDialog() {
         }
     }
 
-    fun show(type: Dialogs) {
-        frManager?.let {
-            dialogType = type
-            show(it, TAG)
-        }
-    }
-
-    fun setFragmentManager(fragmentManager: FragmentManager): CommonDialog {
-        frManager = fragmentManager
-        return this
+    fun show(fragmentManager: FragmentManager, type: Dialogs) {
+        dialogType = type
+        show(fragmentManager, TAG)
     }
 
     fun waiting(): WaitingHolder.Builder {

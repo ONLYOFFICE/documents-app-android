@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
@@ -16,8 +16,6 @@ import app.editors.manager.mvp.views.main.DocsWebDavView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
-import app.editors.manager.ui.popup.MainPopupItem
-import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -25,7 +23,7 @@ import moxy.presenter.InjectPresenter
 
 open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButtonFragment {
 
-    protected var provider: WebDavService.Providers? = null
+    protected var provider: WebdavProvider? = null
 
     @InjectPresenter
     lateinit var webDavPresenter: DocsWebDavPresenter
@@ -42,7 +40,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            provider = it.getSerializableExt(KEY_PROVIDER, WebDavService.Providers::class.java)
+            provider = it.getSerializableExt(KEY_PROVIDER, WebdavProvider::class.java)
         }
     }
 
@@ -103,14 +101,6 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         }
     }
 
-    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
-        super.showMainActionPopup(MainPopupItem.SortBy.Size)
-    }
-
-    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        super.showSelectActionPopup(SelectPopupItem.Operation.Restore)
-    }
-
     override fun onListEnd() {}
 
     override fun onActionBarTitle(title: String) {
@@ -168,7 +158,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
 
         const val KEY_PROVIDER = "KEY_PROVIDER"
 
-        fun newInstance(provider: WebDavService.Providers): DocsWebDavFragment {
+        fun newInstance(provider: WebdavProvider): DocsWebDavFragment {
             return DocsWebDavFragment().apply {
                 arguments = Bundle(1).apply {
                     putSerializable(KEY_PROVIDER, provider)

@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
@@ -65,7 +66,6 @@
         android:name="app.editors.manager.app.App"
         android:allowBackup="true"
         android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|uiMode|keyboard|keyboardHidden|navigation"
-        android:extractNativeLibs="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name_full"
         android:largeHeap="true"
@@ -96,10 +96,9 @@
             android:name="app.editors.manager.ui.activities.main.MainActivity"
             android:exported="true"
             android:filterTouchesWhenObscured="true"
-            android:finishOnTaskLaunch="true"
-            android:launchMode="standard"
+            android:clearTaskOnLaunch="true"
             android:supportsPictureInPicture="true"
-            android:theme="@style/NoActionBarTheme"
+            android:theme="@style/MainActivityTheme"
             android:windowSoftInputMode="adjustResize|adjustPan|stateAlwaysHidden">
             <!--            <intent-filter android:label="@string/upload_to_portal">-->
             <!--                <action android:name="android.intent.action.SEND" />-->
@@ -138,6 +137,14 @@
                     android:host="openfile"
                     android:scheme="oodocuments" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcut" />
         </activity>
         <activity
             android:name="app.editors.manager.ui.activities.main.ShareActivity"
@@ -204,27 +211,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
         </activity>
-        <activity
-            android:name="app.editors.manager.ui.activities.main.AboutActivity"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:theme="@style/NoActionBarTheme"
-            android:windowSoftInputMode="adjustPan|stateHidden">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="app.editors.manager.ui.activities.main.MainActivity" />
-        </activity>
 
         <activity
+            android:theme="@style/PasscodeActivityTheme"
             android:name="app.editors.manager.ui.activities.main.PasscodeActivity"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan|stateHidden"
-            tools:ignore="LockedOrientationActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="app.editors.manager.ui.activities.main.MainActivity" />
+            android:screenOrientation="fullSensor">
         </activity>
 
         <activity
@@ -258,10 +249,7 @@
             android:name="app.editors.manager.ui.activities.main.FilterActivity"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden" />
-        <activity
-            android:name="app.editors.manager.ui.activities.main.AppLocalePickerActivity"
-            android:theme="@style/NoActionBarTheme"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
+
         <activity
             android:name="app.editors.manager.ui.activities.main.AppLocaleConfirmationActivity"
             android:theme="@style/NoActionBarTheme"
@@ -304,7 +292,7 @@
         </provider>
 
         <provider
-            android:name="app.editors.manager.managers.tools.AccountContentProvider"
+            android:name=".managers.tools.AccountContentProvider"
             android:authorities="com.onlyoffice.accounts"
             android:enabled="true"
             android:exported="true" />

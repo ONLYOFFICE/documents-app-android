@@ -7,21 +7,21 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -30,6 +30,9 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.tools.ActionMenuAdapter
+import app.editors.manager.managers.tools.ActionMenuItem
+import app.editors.manager.managers.tools.ActionMenuItemsFactory
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
@@ -49,11 +52,6 @@ import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextState
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
-import app.editors.manager.ui.popup.MainPopup
-import app.editors.manager.ui.popup.MainPopupItem
-import app.editors.manager.ui.popup.SelectPopup
-import app.editors.manager.ui.popup.SelectPopupItem
-import app.editors.manager.ui.views.custom.CommonSearchView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.CameraPicker
@@ -62,7 +60,6 @@ import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
-import lib.toolkit.base.managers.utils.RequestPermission
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
@@ -76,11 +73,13 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.OnCommonDialogClose
 import lib.toolkit.base.ui.dialogs.common.holders.WaitingHolder
+import lib.toolkit.base.ui.popup.ActionBarMenu
+import lib.toolkit.base.ui.views.search.CommonSearchView
 import java.io.File
 
 abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnItemClickListener,
     OnItemContextListener, BaseAdapter.OnItemLongClickListener, ExplorerContextBottomDialog.OnClickListener,
-    ActionBottomDialog.OnClickListener, SearchView.OnQueryTextListener, DialogButtonOnClick, LifecycleObserver {
+    ActionBottomDialog.OnClickListener, DialogButtonOnClick, LifecycleObserver {
 
 
     companion object {
@@ -103,11 +102,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     protected var deleteItem: MenuItem? = null
     protected var restoreItem: MenuItem? = null
     protected var filterItem: MenuItem? = null
-    protected var searchView: SearchView? = null
-    protected var searchCloseButton: ImageView? = null
     protected var explorerAdapter: ExplorerAdapter? = null
 
-    var contextBottomDialog: ExplorerContextBottomDialog? = null
+    protected var searchView: CommonSearchView? = null
+
     var actionBottomDialog: ActionBottomDialog? = null
     var moveCopyDialog: MoveCopyDialog? = null
 
@@ -119,7 +117,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     private val lifecycleEventObserver = LifecycleEventObserver { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
-            contextBottomDialog?.onClickListener = this
             actionBottomDialog?.onClickListener = this
         }
     }
@@ -128,7 +125,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         presenter.removeSendingFile()
     }
 
-    private val downloadActivityResult = registerForActivityResult(CreateDocument()) {uri ->
+    private val downloadActivityResult = registerForActivityResult(CreateDocument()) { uri ->
         uri?.let { presenter.download(uri) }
     }
 
@@ -149,7 +146,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         moveCopyDialog = null
     }
 
-    protected fun showOperationActivity(operation: OperationsState.OperationType, explorer: Explorer, callback: (result: ActivityResult) -> Unit) {
+    protected fun showOperationActivity(
+        operation: OperationsState.OperationType,
+        explorer: Explorer,
+        callback: (result: ActivityResult) -> Unit
+    ) {
         LaunchActivityForResult(
             requireActivity().activityResultRegistry,
             callback,
@@ -163,7 +164,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             when (requestCode) {
                 REQUEST_DOCS,
                 REQUEST_SHEETS,
-                REQUEST_PRESENTATION -> removeCommonDialog()
+                REQUEST_PRESENTATION,
+                -> removeCommonDialog()
             }
         }
     }
@@ -172,7 +174,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (isActivePage) {
@@ -195,6 +197,19 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     it.clipData?.getItemAt(0)?.uri?.let { uri -> presenter.uploadToMy(uri) }
                     requireActivity().intent = null
                 }
+            }
+        }
+    }
+
+    private var isFirstResume = true
+
+    override fun onResume() {
+        super.onResume()
+        if (isFirstResume) {
+            isFirstResume = false
+        } else {
+            view?.post {
+                presenter.updateViewsState()
             }
         }
     }
@@ -236,23 +251,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     /*
      * Views callbacks
      * */
-    override fun onQueryTextSubmit(query: String): Boolean {
-        presenter.filter(query, true)
-        searchView?.onActionViewCollapsed()
-        return false
-    }
-
-    override fun onQueryTextChange(newText: String): Boolean {
-        val isEmpty = newText.isEmpty()
-        if (isEmpty) {
-            searchCloseButton?.alpha = 0.5f
-        } else {
-            searchCloseButton?.alpha = 1.0f
-        }
-        searchCloseButton?.isEnabled = !isEmpty
-        presenter.filterWait(newText)
-        return false
-    }
 
     override fun onItemContextClick(position: Int) {
         val item = explorerAdapter?.getItem(position) as? Item
@@ -264,7 +262,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     item = item,
                     userId = requireContext().accountOnline?.id
                 ),
-                sectionType = getSection().type,
+                sectionType = if (presenter.isRecentViaLinkSection()) {
+                    ApiContract.SectionType.CLOUD_RECENT
+                } else {
+                    getSection().type
+                },
+                provider = context?.accountOnline?.portal?.provider ?: PortalProvider.default,
                 isSearching = presenter.isFilteringMode,
                 isRoot = presenter.isRoot
             )
@@ -337,7 +340,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 }
             }
             StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH,
-            StringUtils.Extension.VIDEO, StringUtils.Extension.HTML -> {
+            StringUtils.Extension.VIDEO, StringUtils.Extension.HTML,
+            -> {
                 onSnackBar(getString(R.string.download_manager_complete))
             }
             else -> {
@@ -361,10 +365,15 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 suffix = presenter.itemExtension
             )
             is ExplorerContextItem.Edit -> presenter.getFileInfo()
-            is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
+            is ExplorerContextItem.Delete -> {
+                if (presenter.isRecentViaLinkSection()) {
+                    presenter.deleteItems()
+                } else {
+                    showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
+                }
+            }
             else -> {}
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
@@ -485,7 +494,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         resetIndicators()
         hideDialog()
         message?.let {
-//            TODO add webdav exception
+            //            TODO add webdav exception
             if (it == "HTTP 503 Service Unavailable") {
                 setAccessDenied()
                 presenter.clearStack()
@@ -574,22 +583,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             if (isFilter) {
                 setViewsModalState(true)
                 // Set previous text in search field
-                if (searchView?.query.toString().isEmpty()) {
-                    searchView?.setQuery(value, false)
-                }
-
-                // Set close button visibility
-                searchCloseButton?.let {
-                    val isEmpty = value?.isEmpty() ?: false
-                    it.isEnabled = !isEmpty
-                }
+                searchView?.query = value
             } else {
-                searchView?.let {
-                    it.setQuery("", false)
-                    if (!it.isIconified) {
-                        it.isIconified = true
-                    }
-                }
+                searchView?.collapse()
             }
         }
     }
@@ -606,7 +602,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             }
             menu?.let {
                 onCreateOptionsMenu(it, requireActivity().menuInflater)
-//                it.findItem(R.id.toolbar_selection_select_all)?.isVisible = !presenter.isSelectedAll
+                //                it.findItem(R.id.toolbar_selection_select_all)?.isVisible = !presenter.isSelectedAll
             }
         }
     }
@@ -624,7 +620,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     mainItem = menu.findItem(R.id.toolbar_item_main)
                     filterItem = menu.findItem(R.id.toolbar_item_filter)
                     searchItem = menu.findItem(R.id.toolbar_item_search)
-                    searchView = initSearchView(searchItem?.actionView as? SearchView)
+                    searchView = initSearchView(checkNotNull(searchItem?.actionView as? SearchView))
                     presenter.initMenuSearch()
                     presenter.initMenuState()
                 }
@@ -632,16 +628,14 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    private fun initSearchView(searchView: SearchView?): SearchView {
+    private fun initSearchView(actionView: SearchView): CommonSearchView {
         return CommonSearchView(
-            searchView = searchView,
-            isIconified = !presenter.isFilteringMode,
-            queryTextListener = this@DocsBaseFragment,
-            searchClickListener = { presenter.setFiltering(true) },
-            closeClickListener = { if (!isSearchViewClear) onBackPressed() }
-        ).also {
-            searchCloseButton = it.closeButton
-        }.build()
+            coroutineScope = lifecycleScope,
+            searchView = actionView,
+            isExpanded = presenter.isFilteringMode,
+            onQuery = presenter::filter,
+            onExpand = { presenter.setFiltering(true) },
+        )
     }
 
     override fun onStateMenuSelection() {
@@ -724,6 +718,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {
+        hideDialog()
         showMediaActivity(explorer, isWebDAv) {
             // Stub
         }
@@ -742,7 +737,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onCreateDownloadFile(name: String) {
-       downloadActivityResult.launch(name)
+        downloadActivityResult.launch(name)
     }
 
     override fun onScrollToPosition(position: Int) {
@@ -898,18 +893,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     /*
-     * Clear SearchView
-     * */
-    private val isSearchViewClear: Boolean
-        private get() {
-            if (searchView?.query?.isNotEmpty() == true) {
-                searchView?.setQuery("", true)
-                return true
-            }
-            return false
-        }
-
-    /*
      * On pager scroll callback
      * */
     open fun onScrollPage() {
@@ -920,7 +903,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * Menu methods
      * */
     protected open fun setMenuMainEnabled(isEnabled: Boolean) {
-        mainItem?.isVisible = isEnabled
+        mainItem?.isVisible = isEnabled || ApiContract.SectionType.isRoom(presenter.getSectionType())
     }
 
     fun setMenuSearchEnabled(isEnabled: Boolean) {
@@ -1108,16 +1091,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun checkNotificationPermission(function: () -> Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            RequestPermission(requireActivity().activityResultRegistry, {
-                function()
-            }, Manifest.permission.POST_NOTIFICATIONS).request()
-        } else {
-            function()
-        }
-    }
-
     protected fun showEditors(uri: Uri?, type: EditorsType, info: String? = null, viewMode: Boolean = true) {
         try {
             val intent = Intent().apply {
@@ -1131,6 +1104,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             when (type) {
                 EditorsType.DOCS, EditorsType.PDF -> {
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
+                    if (type == EditorsType.PDF) {
+                        intent.putExtra(EditorsContract.KEY_PDF, true)
+                    }
                     startActivityForResult(intent, REQUEST_DOCS)
                 }
                 EditorsType.CELLS -> {
@@ -1141,10 +1117,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
                     startActivityForResult(intent, REQUEST_PRESENTATION)
                 }
-//                EditorsType.PDF -> {
-//                    intent.setClassName(requireContext(), EditorsContract.PDF)
-//                    startActivity(intent)
-//                }
+                //                EditorsType.PDF -> {
+                //                    intent.setClassName(requireContext(), EditorsContract.PDF)
+                //                    startActivity(intent)
+                //                }
             }
         } catch (e: ActivityNotFoundException) {
             e.printStackTrace()
@@ -1161,17 +1137,17 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
         when (type) {
-            EditorsType.DOCS -> {
+            EditorsType.DOCS, EditorsType.PDF -> {
                 intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
+                if (type == EditorsType.PDF) {
+                    intent.extras?.putBoolean("pdf", true)
+                }
             }
             EditorsType.CELLS -> {
                 intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS)
             }
             EditorsType.PRESENTATION -> {
                 intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
-            }
-            EditorsType.PDF -> {
-                intent.setClassName(requireContext(), EditorsContract.PDF)
             }
         }
         return intent
@@ -1187,66 +1163,46 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun showActionBarMenu() {
-        if (presenter.isSelectionMode) {
-            showSelectActionPopup()
-        } else {
-            showMainActionPopup()
-        }
-    }
-
-    protected open fun showMainActionPopup(vararg excluded: MainPopupItem) {
-        MainPopup(
+    protected open fun showActionBarMenu() {
+        ActionBarMenu(
             context = requireContext(),
-            section = presenter.getSectionType(),
-            clickListener = mainActionBarClickListener,
-            sortBy = presenter.preferenceTool.sortBy.orEmpty(),
-            isAsc = isAsc,
-            excluded = excluded.toList()
+            adapter = ActionMenuAdapter(actionMenuClickListener),
+            items = ActionMenuItemsFactory.getDocsItems(
+                section = presenter.getSectionType(),
+                selected = presenter.isSelectionMode,
+                allSelected = presenter.isSelectedAll,
+                sortBy = presenter.preferenceTool.sortBy,
+                asc = presenter.preferenceTool.sortOrder.equals(
+                    ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                    ignoreCase = true
+                )
+            )
         ).show(requireActivity().window.decorView)
     }
-
-    protected open fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        SelectPopup(
-            context = requireContext(),
-            section = presenter.getSectionType(),
-            clickListener = selectActionBarClickListener,
-            excluded = excluded.toMutableList().apply {
-                if (presenter.isSelectedAll) add(SelectPopupItem.SelectAll)
-            }
-        ).show(requireActivity().window.decorView)
-    }
-
-    val isAsc: Boolean
-        get() = presenter.preferenceTool.sortOrder.equals(
-            ApiContract.Parameters.VAL_SORT_ORDER_ASC,
-            ignoreCase = true
-        )
 
     protected open fun getSection(): ApiContract.Section = ApiContract.Section.getSection(presenter.getSectionType())
 
-    protected open val mainActionBarClickListener: (MainPopupItem) -> Unit = { item ->
+    protected open val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
-            MainPopupItem.Select -> presenter.setSelection(true)
-            MainPopupItem.SelectAll -> presenter.setSelectionAll()
-            is MainPopupItem.SortBy -> presenter.sortBy(item)
-            else -> { }
-        }
-    }
-
-    protected open val selectActionBarClickListener: (SelectPopupItem) -> Unit = { item ->
-        when (item) {
-            SelectPopupItem.Deselect -> presenter.deselectAll()
-            SelectPopupItem.Download -> presenter.createDownloadFile()
-            SelectPopupItem.SelectAll -> presenter.selectAll()
-            is SelectPopupItem.Operation -> presenter.moveCopySelected(item.value)
+            is ActionMenuItem.Sort -> presenter.sortBy(item.sortValue)
+            is ActionMenuItem.Operation -> presenter.moveCopySelected(item.value)
+            ActionMenuItem.Select -> presenter.setSelection(true)
+            ActionMenuItem.SelectAll -> presenter.setSelectionAll()
+            ActionMenuItem.Deselect -> presenter.deselectAll()
+            ActionMenuItem.Download -> presenter.createDownloadFile()
+            ActionMenuItem.SelectAll -> presenter.selectAll()
+            ActionMenuItem.EmptyTrash -> {
+                showDeleteDialog(
+                    count = -1,
+                    tag = DocsBasePresenter.TAG_DIALOG_BATCH_EMPTY
+                )
+            }
+            else -> Unit
         }
     }
 
     protected fun showExplorerContextBottomDialog(state: ExplorerContextState) {
         ExplorerContextBottomDialog.newInstance(state).also { dialog ->
-            dialog.onClickListener = this
-            contextBottomDialog = dialog
             dialog.show(parentFragmentManager, ExplorerContextBottomDialog.TAG)
         }
     }

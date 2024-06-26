@@ -218,7 +218,6 @@
     <string name="navigation_drawer_menu_common">Wspólne dokumenty</string>
     <string name="navigation_drawer_menu_help">Pomoc</string>
     <string name="navigation_drawer_menu_logout">Wyloguj się</string>
-    <string name="navigation_drawer_menu_my">Moje dokumenty</string>
     <string name="navigation_drawer_menu_projects">Projekty</string>
     <string name="navigation_drawer_menu_shared">Udostępnione mi</string>
     <string name="navigation_drawer_menu_trash">Kosz</string>
@@ -249,10 +248,6 @@
     <string name="operation_snackbar_return">WRÓĆ</string>
     <string name="operation_snackbar_send_link">WYŚLIJ LINK</string>
     <string name="operation_title">Wybierz folder</string>
-    <string name="permission_account_read_description">Opis praw zapisu dla konta</string>
-    <string name="permission_account_read_label">Oznaczenie praw zapisu dla konta</string>
-    <string name="permission_account_write_description">Opis praw zapisu dla konta</string>
-    <string name="permission_account_write_label">Oznaczenie praw zapisu dla konta</string>
     <string name="placeholder_access_denied">Odmowa dostępu</string>
     <string name="placeholder_connection">Błąd połączenia</string>
     <string name="placeholder_empty">Pusty folder</string>
@@ -498,9 +493,6 @@
     <string name="errors_webdav_username_password">Nieprawidłowa nazwa użytkownika lub hasło</string>
     <string name="errors_webdav_server">Nieprawidłowy serwer</string>
     <string name="toolbar_menu_sort_tags">Znaczniki</string>
-    <string name="main_pager_docs_my">Moje dokumenty</string>
-    <string name="main_pager_docs_virtual_room">Moje pokoje</string>
-    <string name="main_pager_docs_archive_room">Moje archiwa</string>
     <string name="share_invite_user">Zaproś użytkowników</string>
     <string name="storage_web_dav_settings_server">Serwer</string>
     <string name="storage_web_dav_settings_required">Wymagane</string>
@@ -616,7 +608,7 @@
     <string name="rooms_info_access_desc">Ten pokój jest dostępny dla każdego, kto ma link. Użytkownicy zewnętrzni będą mieli uprawnienie tylko do odczytu dla wszystkich plików.</string>
     <string name="rooms_info_general_link">Link główny</string>
     <string name="rooms_info_additional_link">Link dodatkowy</string>
-    <string name="rooms_info_additional_links">"Linki dodatkowe (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"Linki dodatkowe (%1d/%2d)"</string>
     <string name="rooms_info_create_link">Utwórz i skopiuj</string>
     <string name="rooms_info_create_link_complete">Link został pomyślnie utworzony i skopiowany do schowka</string>
     <string name="rooms_info_delete_link">Usuń link</string>

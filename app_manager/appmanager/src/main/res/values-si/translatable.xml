@@ -5,9 +5,6 @@
     <string name="errors_webdav_username_password">පරිශ්‍රීලක නාමය හෝ මුරපදය වැරදිය</string>
     <string name="errors_webdav_server">වැරදි සේවාදායකයකි</string>
     <string name="toolbar_menu_sort_tags">අනන්‍යන</string>
-    <string name="main_pager_docs_my">මාගේ ලේඛන</string>
-    <string name="main_pager_docs_virtual_room">මාගේ කාමර</string>
-    <string name="main_pager_docs_archive_room">මාගේ සංරක්‍ෂිත</string>
     <string name="share_invite_user">පරිශ්‍රීලකයින්ට ආරාධනා</string>
     <string name="storage_web_dav_settings_server">සේවාදායකය</string>
     <string name="storage_web_dav_settings_required">වුවමනාය</string>
@@ -88,7 +85,7 @@
     <string name="rooms_info_access_desc">මෙම කාමරයේ සබැඳිය සතු ඕනෑම අයෙකුට විවෘතයි. බාහිර පරිශ්‍රීලකයින්ට සියලුම ගොනු දැකීමට පමණක් අවසර ඇත.</string>
     <string name="rooms_info_general_link">සාමාන්‍ය සබැඳිය</string>
     <string name="rooms_info_additional_link">අතිරේක සබැඳිය</string>
-    <string name="rooms_info_additional_links">"අතිරේක සබැඳි (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"අතිරේක සබැඳි (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">සාදා පිටපත් කරන්න</string>
     <string name="rooms_info_create_link_complete">සබැඳිය සෑදී පසුරුපුවරුවට පිටපත් විය</string>
     <string name="rooms_info_delete_link">සබැඳිය මකන්න</string>

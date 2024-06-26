@@ -32,7 +32,7 @@ class DownloadWork(
         get() = AccountUtils.getToken(
             applicationContext,
             Account(
-                applicationContext.accountOnline?.getAccountName(),
+                applicationContext.accountOnline?.accountName,
                 applicationContext.getString(lib.toolkit.base.R.string.account_type)
             )
         )

@@ -8,6 +8,8 @@ enum class FilterType(override val chipTitle: Int, val filterVal: String) : Chip
     Folders(R.string.list_headers_folder, ApiContract.Parameters.VAL_FILTER_BY_FOLDERS),
     Documents(R.string.filter_type_documents, ApiContract.Parameters.VAL_FILTER_BY_DOCUMENTS),
     Presentations(R.string.filter_type_presentations, ApiContract.Parameters.VAL_FILTER_BY_PRESENTATIONS),
+    FormTemplates(R.string.filter_type_form_templates, ApiContract.Parameters.VAL_FILTER_BY_FORM_TEMPLATES),
+    Forms(R.string.filter_type_forms, ApiContract.Parameters.VAL_FILTER_BY_FORMS),
     Spreadsheets(R.string.filter_type_spreadsheets, ApiContract.Parameters.VAL_FILTER_BY_SPREADSHEETS),
     Images(R.string.filter_type_images, ApiContract.Parameters.VAL_FILTER_BY_IMAGES),
     Media(R.string.filter_type_media, ApiContract.Parameters.VAL_FILTER_BY_MEDIA),
@@ -16,11 +18,25 @@ enum class FilterType(override val chipTitle: Int, val filterVal: String) : Chip
     None(-1, ApiContract.Parameters.VAL_FILTER_BY_NONE);
 
     override val withOption: Boolean = false
-    override var option: Any? = null
+    override var option: String? = null
 
     companion object {
 
-        val allTypes: List<FilterType>
+        val types: List<FilterType>
             get() = listOf(Folders, Documents, Presentations, Spreadsheets, Images, Media, Archives, All)
+
+        val typesWithForms: List<FilterType>
+            get() = listOf(
+                Folders,
+                Documents,
+                Presentations,
+                Spreadsheets,
+                FormTemplates,
+                Forms,
+                Images,
+                Media,
+                Archives,
+                All
+            )
     }
 }

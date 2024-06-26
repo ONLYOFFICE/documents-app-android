@@ -34,7 +34,7 @@ sealed class ExplorerContextItem(
     }
 
     object Share : ExplorerContextItem(
-        icon = R.drawable.ic_list_context_share,
+        icon = lib.toolkit.base.R.drawable.ic_list_context_share,
         title = R.string.list_context_share
     ), ExplorerContextBlockOrder.Common
 
@@ -57,9 +57,14 @@ sealed class ExplorerContextItem(
         title = R.string.list_context_info
     ), ExplorerContextBlockOrder.Common
 
+    object Reconnect : ExplorerContextItem(
+        icon = R.drawable.ic_refresh,
+        title = R.string.room_storage_reconnect
+    ), ExplorerContextBlockOrder.Common
+
     object AddUsers : ExplorerContextItem(
         icon = R.drawable.ic_add_users,
-        title = R.string.list_context_add_users
+        title = R.string.share_invite_user
     ), ExplorerContextBlockOrder.Common
 
 
@@ -155,7 +160,7 @@ sealed class ExplorerContextItem(
 
             private fun getTitle(state: ExplorerContextState): Int = with(state) {
                 when {
-                    isStorageFolder -> R.string.list_context_delete_storage
+                    isStorageFolder && !section.isRoom -> R.string.list_context_delete_storage
                     section == ApiContract.Section.Recent -> R.string.list_context_delete_recent
                     section.isRoom && !section.isArchive && isRoot -> R.string.list_context_leave_room
                     else -> R.string.list_context_delete

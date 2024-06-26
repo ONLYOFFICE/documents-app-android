@@ -8,7 +8,7 @@ enum class RoomFilterAuthor(val title: Int, override val withOption: Boolean = f
     OtherUsers(R.string.rooms_filter_author_other_users, true);
 
     override val chipTitle: Int = title
-    override var option: Any? = null
+    override var option: String? = null
 
     companion object {
 

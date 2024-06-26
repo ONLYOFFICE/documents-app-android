@@ -1,10 +1,11 @@
 package app.editors.manager.mvp.presenters.login
 
-import app.documents.core.network.login.models.Token
-import app.documents.core.network.login.models.request.RequestSignIn
-import app.documents.core.storage.account.CloudAccount
+import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.network.common.Result
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.login.EnterpriseSSOView
+import kotlinx.coroutines.launch
+import moxy.presenterScope
 
 class EnterpriseSSOPresenter : BaseLoginPresenter<EnterpriseSSOView>() {
 
@@ -17,8 +18,15 @@ class EnterpriseSSOPresenter : BaseLoginPresenter<EnterpriseSSOView>() {
     }
 
     fun signInWithSSO(token: String) {
-        val requestSignIn = RequestSignIn(accessToken = token)
-        getUserInfo(requestSignIn, Token(token = token))
+        signInJob = presenterScope.launch {
+            loginRepository.signInWithSSO(token)
+                .collect { result ->
+                    when (result) {
+                        is Result.Success -> onAccountCreateSuccess(result.result)
+                        is Result.Error -> fetchError(result.exception)
+                    }
+                }
+        }
     }
 
     override fun onAccountCreateSuccess(account: CloudAccount) {

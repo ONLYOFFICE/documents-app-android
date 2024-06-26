@@ -20,8 +20,7 @@ import retrofit2.HttpException
 
 data class RoomInfoState(
     val isLoading: Boolean = true,
-    val generalLink: ExternalLink? = null,
-    val additionalLinks: List<ExternalLink> = emptyList(),
+    val sharedLinks: List<ExternalLink> = emptyList(),
     val shareList: List<Share> = emptyList()
 )
 
@@ -46,19 +45,9 @@ class RoomInfoViewModel(private val roomProvider: RoomProvider, private val room
     fun fetchRoomInfo() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                var generalLink: ExternalLink? = null
-                val additionalLinks = mutableListOf<ExternalLink>()
-                roomProvider.getExternalLinks(roomId).forEach { link ->
-                    if (link.sharedTo.primary) {
-                        generalLink = link
-                    } else {
-                        additionalLinks.add(link)
-                    }
-                }
                 _state.value = RoomInfoState(
                     isLoading = false,
-                    generalLink = generalLink,
-                    additionalLinks = additionalLinks,
+                    sharedLinks = roomProvider.getRoomSharedLinks(roomId),
                     shareList = roomProvider.getRoomUsers(roomId)
                 )
             } catch (httpException: HttpException) {
@@ -72,20 +61,6 @@ class RoomInfoViewModel(private val roomProvider: RoomProvider, private val room
         operationJob = viewModelScope.launch {
             try {
                 roomProvider.setRoomUserAccess(roomId, userId, access)
-                fetchRoomInfo()
-                _effect.tryEmit(RoomInfoEffect.CloseDialog)
-            } catch (httpException: HttpException) {
-                onError(httpException)
-            }
-        }
-    }
-
-    fun createGeneralLink() {
-        _effect.tryEmit(RoomInfoEffect.ShowOperationDialog)
-        operationJob = viewModelScope.launch {
-            try {
-                val url = roomProvider.createGeneralLink(roomId)
-                _effect.tryEmit(RoomInfoEffect.Create(url))
                 fetchRoomInfo()
                 _effect.tryEmit(RoomInfoEffect.CloseDialog)
             } catch (httpException: HttpException) {

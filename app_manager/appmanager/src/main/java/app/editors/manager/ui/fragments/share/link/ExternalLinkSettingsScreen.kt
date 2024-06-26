@@ -101,6 +101,7 @@ fun ExternalLinkSettingsScreen(
 
     MainScreen(
         link = state.link,
+        isCreate = isCreate,
         roomType = roomType,
         onBackListener = onBackListener,
         onDoneClick = if (isCreate) viewModel::createLink else viewModel::save,
@@ -133,6 +134,7 @@ fun ExternalLinkSettingsScreen(
 @Composable
 private fun MainScreen(
     link: ExternalLinkSharedTo,
+    isCreate: Boolean,
     roomType: Int?,
     onBackListener: () -> Unit,
     onDoneClick: () -> Unit,
@@ -148,14 +150,14 @@ private fun MainScreen(
             useTablePaddings = false,
             topBar = {
                 AppTopBar(
-                    title = if (link.primary)
-                        R.string.rooms_info_general_link else
-                        R.string.rooms_info_additional_link,
+                    title = if (isCreate)
+                        R.string.rooms_info_create_link_title else
+                        R.string.rooms_info_edit_link,
                     backListener = onBackListener,
                     actions = {
                         AppTextButton(
                             enabled = link.title.isNotEmpty(),
-                            title = lib.editors.gbase.R.string.common_done,
+                            title = lib.toolkit.base.R.string.common_done,
                             onClick = onDoneClick
                         )
                     }
@@ -164,8 +166,9 @@ private fun MainScreen(
         ) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 val context = LocalContext.current
-                val title = remember { mutableStateOf<String?>(link.title) }
-                val password = remember { mutableStateOf(link.password) }
+                val title = remember { mutableStateOf(link.title) }
+                val password = remember { mutableStateOf(link.password.orEmpty()) }
+                val passwordEnabled = remember { mutableStateOf(!link.password.isNullOrEmpty()) }
                 var denyDownload by remember { mutableStateOf(link.denyDownload) }
                 var expirationString by remember { mutableStateOf(link.expirationDate) }
                 var expirationDate by remember { mutableStateOf(TimeUtils.parseDate(expirationString)) }
@@ -180,7 +183,7 @@ private fun MainScreen(
 
                 LaunchedEffect(title.value) {
                     delay(500)
-                    updateViewState { copy(title = title.value.orEmpty()) }
+                    updateViewState { copy(title = title.value) }
                 }
 
                 LaunchedEffect(password.value) {
@@ -190,17 +193,19 @@ private fun MainScreen(
 
                 AppHeaderItem(title = R.string.rooms_info_link_name)
                 AppTextFieldListItem(
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     state = title,
                     hint = stringResource(id = lib.toolkit.base.R.string.text_hint_required)
                 )
                 AppHeaderItem(title = R.string.context_protection_title)
                 AppSwitchItem(
                     title = R.string.rooms_info_password_access,
-                    checked = password.value != null,
-                    onCheck = { checked -> password.value = if (checked) "" else null }
+                    checked = passwordEnabled.value,
+                    onCheck = { checked -> passwordEnabled.value = checked; password.value = "" }
                 )
-                AnimatedVisibilityVerticalFade(visible = password.value != null) {
+                AnimatedVisibilityVerticalFade(visible = passwordEnabled.value) {
                     AppTextFieldListItem(
+                        modifier = Modifier.padding(horizontal = 16.dp),
                         state = password,
                         hint = stringResource(id = R.string.login_enterprise_password_hint),
                         isPassword = true
@@ -264,14 +269,16 @@ private fun MainScreen(
                         }
                     }
                 }
-                AppTextButton(
-                    modifier = Modifier.padding(start = 8.dp),
-                    title = if (link.primary && roomType == ApiContract.RoomType.PUBLIC_ROOM)
-                        R.string.rooms_info_revoke_link else
-                        R.string.rooms_info_delete_link,
-                    textColor = MaterialTheme.colors.error,
-                    onClick = onDeleteOrRevokeLink
-                )
+                if (!isCreate) {
+                    AppTextButton(
+                        modifier = Modifier.padding(start = 8.dp),
+                        title = if (link.primary && roomType == ApiContract.RoomType.PUBLIC_ROOM)
+                            R.string.rooms_info_revoke_link else
+                            R.string.rooms_info_delete_link,
+                        textColor = MaterialTheme.colors.error,
+                        onClick = onDeleteOrRevokeLink
+                    )
+                }
             }
         }
     }
@@ -293,5 +300,5 @@ private fun Preview() {
         expirationDate = "2023-12-06T14:00:00.0000000+03:00",
     )
 
-    MainScreen(link, ApiContract.RoomType.CUSTOM_ROOM, {}, {}, {}) {}
+    MainScreen(link, true, ApiContract.RoomType.CUSTOM_ROOM, {}, {}, {}) {}
 }

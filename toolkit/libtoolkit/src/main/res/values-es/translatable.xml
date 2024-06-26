@@ -1,14 +1,29 @@
 <resources>
-  <string name="chooser_email_client">Seleccionar cliente de correo…</string>
-  <string name="about_email_subject">ONLYOFFICE Documents Android Feedback</string>
-  <string name="about_feedback">Feedback y soporte</string>
-  <string name="text_hint_required">Necesaria</string>
-  <string name="export_send_copy">Enviar una copia</string>
-  <string name="dialogs_edit_forbidden_symbols">No utilice estos símbolos\u0020</string>
-  <string name="dialogs_edit_forbidden_name">Nombre no válido</string>
-  <string name="sizes_bytes">bytes</string>
-  <string name="sizes_kilobytes">KB</string>
-  <string name="sizes_megabytes">MB</string>
-  <string name="sizes_gigabytes">GB</string>
-  <string name="sizes_terabytes">TB</string>
+    <string name="chooser_email_client">Seleccionar cliente de correo…</string>
+    <string name="about_email_subject">ONLYOFFICE Documents Android Feedback</string>
+    <string name="about_feedback">Feedback y soporte</string>
+    <string name="text_hint_required">Necesaria</string>
+    <string name="export_send_copy">Enviar una copia</string>
+    <string name="dialogs_edit_forbidden_symbols">No utilice estos símbolos\u0020</string>
+    <string name="dialogs_edit_forbidden_name">Nombre no válido</string>
+    <string name="sizes_bytes">bytes</string>
+    <string name="sizes_kilobytes">KB</string>
+    <string name="sizes_megabytes">MB</string>
+    <string name="sizes_gigabytes">GB</string>
+    <string name="sizes_terabytes">TB</string>
+    <string name="common_accept">Aceptar</string>
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_done">Listo</string>
+    <string name="common_next">Siguiente</string>
+    <string name="common_ok">OK</string>
+    <string name="common_previous">Anterior</string>
+    <plurals name="days">
+        <item quantity="one">día</item>
+        <item quantity="other">días</item>
+    </plurals>
+
+    <plurals name="hours">
+        <item quantity="one">hora</item>
+        <item quantity="other">horas</item>
+    </plurals>
 </resources>

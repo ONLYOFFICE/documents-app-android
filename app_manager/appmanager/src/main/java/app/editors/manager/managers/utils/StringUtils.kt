@@ -5,7 +5,7 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
-import app.editors.manager.ui.popup.MainPopupItem
+import app.editors.manager.managers.tools.ActionMenuItem
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 
@@ -37,10 +37,10 @@ internal object StringUtils {
 
         return if (folder.isRoom) {
             val roomType = context.getString(RoomUtils.getRoomInfo(folder.roomType).title)
-            when (MainPopupItem.SortBy.getByValue(sortBy)) {
-                MainPopupItem.SortBy.Date -> arrayOf(date, roomType, owner)
-                MainPopupItem.SortBy.Author -> arrayOf(owner, roomType, date)
-                MainPopupItem.SortBy.Type -> arrayOf(roomType, owner, date)
+            when (sortBy) {
+                ActionMenuItem.Date.sortValue -> arrayOf(date, roomType, owner)
+                ActionMenuItem.Author.sortValue -> arrayOf(owner, roomType, date)
+                ActionMenuItem.Type.sortValue -> arrayOf(roomType, owner, date)
                 else -> arrayOf(roomType, owner, date)
             }
         } else arrayOf(owner, date)
@@ -57,10 +57,10 @@ internal object StringUtils {
         val owner = getItemOwner(context, file, userId).takeUnless { isSectionMy }
         val size = StringUtils.getFormattedSize(context, file.pureContentLength)
 
-        return when (MainPopupItem.SortBy.getByValue(sortBy)) {
-            MainPopupItem.SortBy.Date -> arrayOf(date, owner, size)
-            MainPopupItem.SortBy.Author -> arrayOf(owner, date, size)
-            MainPopupItem.SortBy.Size -> arrayOf(size, owner, date)
+        return when (sortBy) {
+            ActionMenuItem.Date.sortValue -> arrayOf(date, owner, size)
+            ActionMenuItem.Author.sortValue -> arrayOf(owner, date, size)
+            ActionMenuItem.Size.sortValue -> arrayOf(size, owner, date)
             else -> arrayOf(owner, date, size)
         }
     }

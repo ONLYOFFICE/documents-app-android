@@ -2,9 +2,9 @@ package app.documents.core.providers
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import app.documents.core.manager.ManagerRepository
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
-import app.documents.core.network.login.LoginService
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -14,6 +14,7 @@ import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestBatchBase
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestDeleteRecent
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
@@ -26,7 +27,6 @@ import app.documents.core.network.manager.models.response.ResponseFile
 import app.documents.core.network.manager.models.response.ResponseFolder
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.room.RoomService
-import app.documents.core.storage.preference.NetworkSettings
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -35,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.MultipartBody
@@ -54,19 +55,18 @@ data class OpenDocumentResult(
 class CloudFileProvider @Inject constructor(
     private val managerService: ManagerService,
     private val roomService: RoomService,
-    private val loginService: LoginService,
-    private val networkSettings: NetworkSettings
+    private val managerRepository: ManagerRepository
 ) : BaseFileProvider, CacheFileHelper {
 
     companion object {
         private const val KEY_RESPONSE = "response"
-        private const val KEY_URL = "url"
         private const val STATIC_DOC_URL = "/web-apps/apps/api/documents/api.js"
     }
 
     interface RoomCallback {
         fun isRoomRoot(id: String?): Boolean
         fun isArchive(): Boolean
+        fun isRecent(): Boolean
     }
 
     var roomCallback: RoomCallback? = null
@@ -74,6 +74,7 @@ class CloudFileProvider @Inject constructor(
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return when {
             roomCallback?.isRoomRoot(id) == true -> getRooms(filter, roomCallback!!::isArchive)
+            roomCallback?.isRecent() == true -> getRecentViaLink(filter.orEmpty()).toObservable()
             else -> managerService.getItemById(id.orEmpty(), filter)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -242,19 +243,10 @@ class CloudFileProvider @Inject constructor(
         isMove: Boolean,
         isOverwrite: Boolean
     ): Observable<List<Operation>> {
-        val filesId: MutableList<String> = ArrayList()
-        val foldersId: MutableList<String> = ArrayList()
-        for (item in items) {
-            if (item is CloudFile) {
-                filesId.add(item.id)
-            } else if (item is CloudFolder) {
-                foldersId.add(item.id)
-            }
-        }
         val batchOperation =
             RequestBatchOperation()
-        batchOperation.fileIds = filesId
-        batchOperation.folderIds = foldersId
+        batchOperation.fileIds = items.filterIsInstance<CloudFile>().map { it.id }
+        batchOperation.folderIds = items.filterIsInstance<CloudFolder>().map { it.id }
         batchOperation.isDeleteAfter = false
         batchOperation.destFolderId = to.id
         batchOperation.conflictResolveType = conflict
@@ -394,12 +386,7 @@ class CloudFileProvider @Inject constructor(
 
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     fun opeEdit(cloudFile: CloudFile): Single<String?> {
-        return loginService.getSettings().map {
-            if (it.isSuccessful) {
-                networkSettings.documentServerVersion = it.body()?.response?.documentServer
-                    ?: networkSettings.documentServerVersion
-            }
-        }
+        return Single.fromCallable { runBlocking { managerRepository.updateDocumentServerVersion() } }
             .flatMap { managerService.openFile(cloudFile.id, cloudFile.version) }
             .map { response ->
                 val json = JSONObject(managerService.getDocService().blockingGet().body()?.string())
@@ -410,7 +397,10 @@ class CloudFileProvider @Inject constructor(
                     json.getString(KEY_RESPONSE)
                         .replace(STATIC_DOC_URL, "")
                 }
-                return@map JSONObject(response.body()?.string()).getJSONObject(KEY_RESPONSE).put(KEY_URL, docService)
+                return@map JSONObject(response.body()?.string()).getJSONObject(KEY_RESPONSE)
+                    .put("url", docService)
+                    .put("size", cloudFile.pureContentLength)
+                    .put("updated", cloudFile.updated.time)
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).map { response ->
@@ -467,5 +457,19 @@ class CloudFileProvider @Inject constructor(
             .apply { inputStream?.use { stream -> stream.read(this, 0, size) } }
             .decodeToString()
             .contains("/ONLYOFFICEFORM")
+    }
+
+    fun getRecentViaLink(filter: Map<String, String> = mapOf()): Single<Explorer> {
+        val params = filter.plus("searchArea" to "3")
+        return managerService.getRecentViaLink(params)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { it.response }
+    }
+
+    fun deleteRecent(fileIds: List<String>): Single<Response<ResponseBody>> {
+        return managerService.deleteRecent(RequestDeleteRecent(fileIds))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 }

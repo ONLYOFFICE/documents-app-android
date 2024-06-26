@@ -119,7 +119,7 @@ object Compose {
     const val versionMaterial = "1.5.4"
     const val versionCompiler = "1.5.6"
     const val composeMaterial3 = "1.1.2"
-    private const val navigationVersion = "2.7.5"
+    private const val navigationVersion = "2.7.7"
 
     const val ui = "androidx.compose.ui:ui:$version"
     const val material = "androidx.compose.material:material:$versionMaterial"
@@ -142,6 +142,8 @@ object Libs {
     const val facebookLogin = "com.facebook.android:facebook-login:16.2.0"
     const val pageIndicator = "com.github.romandanylyk:PageIndicatorView:v.1.0.3"
     const val glide = "com.github.bumptech.glide:glide:4.16.0"
+    const val glideKsp = "com.github.bumptech.glide:ksp:4.12.0"
+    const val glideOkHttpIntegration = "com.github.bumptech.glide:okhttp3-integration:4.0.0"
     const val glideCompose = "com.github.bumptech.glide:compose:1.0.0-beta01"
     const val photoView = "com.github.chrisbanes:PhotoView:2.3.0"
     const val androidWork = "androidx.work:work-runtime:2.9.0"

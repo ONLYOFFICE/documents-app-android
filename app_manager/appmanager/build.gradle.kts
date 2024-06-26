@@ -64,14 +64,11 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 533
-        versionName = "8.0.1"
+        versionCode = 551
+        versionName = "8.1.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
-        ndk {
-            abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))  //comment to armv7
-        }
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -149,11 +146,21 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
 
             signingConfig = signingConfigs.getByName("onlyoffice")
+            ndk {
+                abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+            }
         }
 
         debug {
             isMinifyEnabled = false
             extra["enableCrashlytics"] = false
+            ndk {
+                if (System.getProperty("os.arch") == "aarch64") {
+                    abiFilters.add("arm64-v8a")
+                } else {
+                    abiFilters.addAll(arrayOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+                }
+            }
         }
 
         applicationVariants.all {
@@ -219,22 +226,22 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
         jniLibs.useLegacyPackaging = true
-        arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DJVUFILE")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DOCTRENDERER")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_GRAPHICS")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_HTMLFILE")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_HTMLRENDERER")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_PDF_FILE")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_UNICODECONVERTER")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_X2T")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_XPSFILE")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_FB2FILE")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_EPUBFILE")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL_NETWORK")}.so")
-            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DOCX_RENDERER")}.so")
-        }
+//        arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DJVUFILE")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DOCTRENDERER")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_GRAPHICS")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_HTMLFILE")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_HTMLRENDERER")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_PDF_FILE")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_UNICODECONVERTER")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_X2T")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_XPSFILE")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_FB2FILE")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_EPUBFILE")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL_NETWORK")}.so")
+//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DOCX_RENDERER")}.so")
+//        }
     }
     composeOptions {
         kotlinCompilerExtensionVersion = Compose.versionCompiler
@@ -244,6 +251,9 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":core"))
+    implementation(project(":core:model"))
+    implementation(project(":core:database"))
+    implementation(project(":core:network"))
     implementation(project(":libcompose"))
     implementation(project(":libtoolkit"))
     "managerImplementation"(project(":libx2t"))

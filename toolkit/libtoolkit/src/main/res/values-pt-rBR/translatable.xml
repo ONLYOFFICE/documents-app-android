@@ -1,14 +1,29 @@
-<resources>
-  <string name="chooser_email_client">Escolha o cliente de e-mail…</string>
-  <string name="about_email_subject">Feedback do ONLYOFFICE Documents Android</string>
-  <string name="about_feedback">Feedback e suporte</string>
-  <string name="text_hint_required">Necessário</string>
-  <string name="export_send_copy">Envie uma cópia</string>
-  <string name="dialogs_edit_forbidden_symbols">Não use esses símbolos\u0020</string>
-  <string name="dialogs_edit_forbidden_name">Nome inválido</string>
-  <string name="sizes_bytes">bytes</string>
-  <string name="sizes_kilobytes">KB</string>
-  <string name="sizes_megabytes">MB</string>
-  <string name="sizes_gigabytes">GB</string>
-  <string name="sizes_terabytes">TB</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="chooser_email_client">Escolha o cliente de e-mail…</string>
+    <string name="about_email_subject">Feedback do ONLYOFFICE Documents Android</string>
+    <string name="about_feedback">Feedback e suporte</string>
+    <string name="text_hint_required">Necessário</string>
+    <string name="export_send_copy">Envie uma cópia</string>
+    <string name="dialogs_edit_forbidden_symbols">Não use esses símbolos\u0020</string>
+    <string name="dialogs_edit_forbidden_name">Nome inválido</string>
+    <string name="sizes_bytes">bytes</string>
+    <string name="sizes_kilobytes">KB</string>
+    <string name="sizes_megabytes">MB</string>
+    <string name="sizes_gigabytes">GB</string>
+    <string name="sizes_terabytes">TB</string>
+    <string name="common_accept">Aceitar</string>
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_done">Concluído</string>
+    <string name="common_next">Seguinte</string>
+    <string name="common_ok">OK</string>
+    <string name="common_previous">Anterior</string>
+    <plurals name="days">
+        <item quantity="one" tools:ignore="ImpliedQuantity">dia</item>
+        <item quantity="other">dias</item>
+    </plurals>
+
+    <plurals name="hours">
+        <item quantity="one" tools:ignore="ImpliedQuantity">hora</item>
+        <item quantity="other">horas</item>
+    </plurals>
 </resources>

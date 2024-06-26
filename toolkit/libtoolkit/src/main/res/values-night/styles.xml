@@ -3,7 +3,21 @@
 
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
         <item name="android:navigationBarColor">@color/colorBackground</item>
+    </style>
+
+    <style name="MainActivityTheme" parent="AppBaseTheme">
+        <item name="android:navigationBarColor">@color/colorBottomBar</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
+    <style name="Theme.Common.BottomSheetDialog" parent="Theme.MaterialComponents.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:navigationBarColor">@color/colorSurface</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="bottomSheetStyle">@style/Widget.Common.BottomSheetDialog</item>
     </style>
 
     <!-- ======================================================================================= -->

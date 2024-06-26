@@ -16,10 +16,10 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.storage.recent.Recent
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
@@ -32,7 +32,6 @@ import app.editors.manager.ui.adapters.RecentAdapter
 import app.editors.manager.ui.adapters.holders.factory.RecentHolderFactory
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextState
-import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -54,7 +53,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     private var activity: IMainActivity? = null
     private var adapter: RecentAdapter? = null
-    private var filterValue: CharSequence? = null
     private var clearItem: MenuItem? = null
 
     private val recentListener: (recent: Recent) -> Unit = { recent ->
@@ -68,7 +66,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                 fileExst = recent.name.split(".").let { if (it.size > 1) it[it.size - 1] else "" }
             },
             sectionType = ApiContract.Section.Recent.type,
-            headerInfo = "${if (recent.isLocal) getString(R.string.this_device) else recent.source}" +
+            headerInfo = (recent.source ?: getString(R.string.this_device)) +
                     getString(R.string.placeholder_point) +
                     TimeUtils.formatDate(Date(recent.date))
         )
@@ -113,21 +111,9 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (savedInstanceState?.containsKey(KEY_FILTER) == true) {
-            filterValue = savedInstanceState.getCharSequence(KEY_FILTER)
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putCharSequence(KEY_FILTER, searchView?.query)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter.setSectionType(ApiContract.SectionType.CLOUD_RECENT)
+        presenter.setSectionType(ApiContract.SectionType.LOCAL_RECENT)
         init()
     }
 
@@ -137,18 +123,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         mainItem?.isVisible = true
         clearItem?.let { item ->
             UiUtils.setMenuItemTint(requireContext(), item, lib.toolkit.base.R.color.colorPrimary)
-        }
-    }
-
-    override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
-        super.onStateUpdateFilter(isFilter, value)
-        if (isFilter) {
-            activity?.setAppBarStates(false)
-            searchView?.setQuery(filterValue, true)
-            filterValue = ""
-        } else {
-            activity?.setAppBarStates(false)
-            activity?.showNavigationButton(false)
         }
     }
 
@@ -258,16 +232,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    override fun onQueryTextChange(newText: String): Boolean {
-        searchCloseButton?.isEnabled = newText.isNotEmpty()
-        presenter.searchRecent(newText)
-        return false
-    }
-
-    override fun onQueryTextSubmit(query: String): Boolean {
-        return false
-    }
-
     override fun onDeleteItem(position: Int) {
         adapter?.let { recentAdapter ->
             recentAdapter.removeItem(position)
@@ -281,7 +245,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             is ExplorerContextItem.Delete -> presenter.deleteRecent()
             else -> super.onContextButtonClick(contextItem)
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun onRender(state: RecentState) {
@@ -304,6 +267,11 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     private fun setEmpty() {
         setMenuVisibility(false)
         placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.EMPTY)
+    }
+
+    override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
+        super.onStateUpdateFilter(isFilter, value)
+        activity?.showNavigationButton(isFilter)
     }
 
     override fun onOpenFile(state: OpenState) {
@@ -331,14 +299,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                 }
             }
         }
-    }
-
-    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
-        super.showMainActionPopup(
-            MainPopupItem.SortBy.Author,
-            MainPopupItem.Select,
-            MainPopupItem.SelectAll
-        )
     }
 
     override val isWebDav: Boolean
@@ -394,7 +354,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             return DocsRecentFragment()
         }
 
-        private const val KEY_FILTER = "KEY_FILTER"
     }
 
 }

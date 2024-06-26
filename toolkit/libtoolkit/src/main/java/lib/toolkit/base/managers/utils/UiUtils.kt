@@ -8,7 +8,15 @@ import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
+import android.graphics.Paint
+import android.graphics.Point
+import android.graphics.PointF
+import android.graphics.PorterDuff
+import android.graphics.Rect
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.hardware.display.DisplayManager
 import android.os.Build
@@ -16,8 +24,22 @@ import android.text.Html
 import android.text.TextUtils
 import android.util.DisplayMetrics
 import android.util.TypedValue
-import android.view.*
-import android.widget.*
+import android.view.Display
+import android.view.Gravity
+import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import android.view.Window
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
@@ -28,6 +50,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -40,7 +63,9 @@ import lib.toolkit.base.R
 import java.lang.ref.WeakReference
 import java.nio.IntBuffer
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
+import java.util.TimeZone
+import java.util.TreeMap
 import kotlin.math.abs
 import kotlin.math.ceil
 
@@ -638,6 +663,7 @@ object UiUtils {
     fun showEditDialog(
         context: Context,
         title: String,
+        hint: String? = null,
         value: String? = null,
         description: String? = null,
         acceptListener: (value: String) -> Unit,
@@ -656,6 +682,9 @@ object UiUtils {
         val text = EditText(context)
         text.setText(value)
         text.setSelection(value?.length ?: 0)
+        text.hint = hint
+        text.isSingleLine = true
+        text.maxLines = 1
         text.layoutParams = params
         text.focusable = View.FOCUSABLE
         container.addView(text)
@@ -699,7 +728,7 @@ object UiUtils {
                 "#%06X",
                 0xFFFFFF and ContextCompat.getColor(context, R.color.colorError)
             )
-        }'>$acceptTitle</font>"
+        }'>${acceptTitle?.capitalize()}</font>"
 
         MaterialAlertDialogBuilder(context, R.style.App_Dialog_Alert)
             .setTitle(title)
@@ -741,19 +770,37 @@ object UiUtils {
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun getDateDialog(listener: (time: String) -> Unit): MaterialDatePicker<Long> {
-        return MaterialDatePicker.Builder.datePicker().build().apply {
-            val dateFormat = SimpleDateFormat(("yyyy-MM-dd'T'HH:mm:ssZ")).apply {
-                timeZone = TimeZone.getTimeZone("UTC")
-            }
+    fun showDateDialog(
+        activity: FragmentActivity,
+        inputMode: Int = MaterialDatePicker.INPUT_MODE_CALENDAR,
+        onCancel: (() -> Unit)? = null,
+        onPositive: (time: String) -> Unit
+    ) {
+        MaterialDatePicker.Builder
+            .datePicker()
+            .setInputMode(inputMode)
+            .build().apply {
+                val dateFormat = SimpleDateFormat(("yyyy-MM-dd'T'HH:mm:ssZ")).apply {
+                    timeZone = TimeZone.getTimeZone("UTC")
+                }
 
-            addOnPositiveButtonClickListener { time -> listener.invoke(dateFormat.format(time)) }
-        }
+                addOnPositiveButtonClickListener { time -> onPositive.invoke(dateFormat.format(time)) }
+                addOnDismissListener { onCancel?.invoke() }
+                show(activity.supportFragmentManager, null)
+            }
     }
 
     private fun EditText.requireNotEmpty(disableButton: Button) {
         disableButton.isEnabled = text.trim().isNotEmpty()
         doAfterTextChanged { disableButton.isEnabled = text.trim().isNotEmpty() }
+    }
+
+    fun getPrimaryColor(context: Context): Int {
+        val typedValue = TypedValue()
+        val array = context.obtainStyledAttributes(typedValue.data, intArrayOf(android.R.attr.colorPrimary))
+        val color = array.getColor(0, 0)
+        array.recycle()
+        return color
     }
 
 }

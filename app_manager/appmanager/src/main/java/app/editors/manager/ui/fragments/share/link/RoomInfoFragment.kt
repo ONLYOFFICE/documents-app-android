@@ -7,14 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.ComponentDialog
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -23,13 +18,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -41,14 +38,15 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.network.share.models.Share
-import app.documents.core.network.share.models.ShareGroup
+import app.documents.core.network.share.models.ShareType
 import app.documents.core.network.share.models.SharedTo
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
-import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
+import app.editors.manager.ui.fragments.share.InviteUsersScreen
+import app.editors.manager.viewModels.link.RoomAccessViewModel
 import app.editors.manager.viewModels.link.RoomInfoEffect
 import app.editors.manager.viewModels.link.RoomInfoState
 import app.editors.manager.viewModels.link.RoomInfoViewModel
@@ -57,12 +55,14 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.compose.ui.rememberWaitingDialog
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.TopAppBarAction
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
+import lib.toolkit.base.managers.utils.openSendTextActivity
 import lib.toolkit.base.managers.utils.putArgs
 
 class RoomInfoFragment : BaseDialogFragment() {
@@ -70,7 +70,6 @@ class RoomInfoFragment : BaseDialogFragment() {
     companion object {
 
         private const val KEY_ROOM = "key_room"
-        internal const val MAX_ADDITIONAL_LINKS_COUNT = 5
         val TAG: String = RoomInfoFragment::class.java.simpleName
 
         fun newInstance(room: CloudFolder): RoomInfoFragment =
@@ -79,7 +78,7 @@ class RoomInfoFragment : BaseDialogFragment() {
     }
 
     enum class RoomInfoScreens {
-        RoomInfo, UserAccess, LinkSettings
+        RoomInfo, UserAccess, GroupAccess, LinkSettings, InviteUsers
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -99,9 +98,9 @@ class RoomInfoFragment : BaseDialogFragment() {
             ManagerTheme {
                 val keyboardController = LocalSoftwareKeyboardController.current
                 val portal = remember { requireContext().accountOnline?.portal }
-                val room = remember { arguments?.getSerializableExt<CloudFolder>(KEY_ROOM) }
-                val canEditRoom = room?.security?.editRoom == true
-                val viewModel = viewModel { RoomInfoViewModel(requireContext().roomProvider, room?.id.orEmpty()) }
+                val room = remember { checkNotNull(arguments?.getSerializableExt<CloudFolder>(KEY_ROOM)) }
+                val canEditRoom = room.security.editRoom
+                val viewModel = viewModel { RoomInfoViewModel(requireContext().roomProvider, room.id) }
                 val navController = rememberNavController().also {
                     it.addOnDestinationChangedListener { _, destination, _ ->
                         if (destination.route == RoomInfoScreens.RoomInfo.name) {
@@ -110,10 +109,6 @@ class RoomInfoFragment : BaseDialogFragment() {
                     }
                 }
                 val state by viewModel.state.collectAsState()
-                val shareActivityResult = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.StartActivityForResult(),
-                    onResult = { viewModel.fetchRoomInfo() }
-                )
                 val waitingDialog = rememberWaitingDialog(
                     title = R.string.dialogs_wait_title,
                     onCancel = viewModel::cancelOperation
@@ -147,28 +142,28 @@ class RoomInfoFragment : BaseDialogFragment() {
                             RoomInfoScreen(
                                 state = state,
                                 canEditRoom = canEditRoom,
-                                roomType = room?.roomType,
-                                roomTitle = room?.title,
-                                portal = portal,
+                                roomType = room.roomType,
+                                roomTitle = room.title,
+                                portal = portal?.url.orEmpty(),
                                 onBackClick = this@RoomInfoFragment::onBackPressed,
-                                onAddUsers = {
-                                    ShareActivity.launchForResult(
-                                        launcher = shareActivityResult,
-                                        fragment = this@RoomInfoFragment,
-                                        item = room,
-                                        isInfo = false
-                                    )
-                                },
+                                onAddUsers = { navController.navigate(RoomInfoScreens.InviteUsers.name) },
                                 onSetUserAccess = { userId, access, ownerOrAdmin ->
                                     navController.navigate(
                                         RoomInfoScreens.UserAccess.name +
                                                 "?userId=$userId" +
                                                 "&access=$access" +
+                                                "&removable=true" +
                                                 "&ownerOrAdmin=$ownerOrAdmin"
                                     )
                                 },
-                                onGeneralLinkCreate = viewModel::createGeneralLink,
-                                onAdditionalLinkCreate = {
+                                onSetGroupAccess = { groupId, access ->
+                                    navController.navigate(
+                                        RoomInfoScreens.GroupAccess.name +
+                                                "?groupId=$groupId" +
+                                                "&access=$access"
+                                    )
+                                },
+                                onSharedLinkCreate = {
                                     navController.navigate("${RoomInfoScreens.LinkSettings.name}?create=true")
                                 },
                                 onLinkClick = { link ->
@@ -206,48 +201,119 @@ class RoomInfoFragment : BaseDialogFragment() {
                             ExternalLinkSettingsScreen(
                                 link = backStackEntry.arguments?.getString("link")?.let(Json::decodeFromString),
                                 isCreate = backStackEntry.arguments?.getBoolean("create") == true,
-                                roomId = room?.id,
-                                roomType = room?.roomType,
-                                onBackListener = navController::popBackStack
+                                roomId = room.id,
+                                roomType = room.roomType,
+                                onBackListener = navController::popBackStackWhenResumed
                             )
                         }
                         composable(
                             route = "${RoomInfoScreens.UserAccess.name}?" +
                                     "userId={userId}&" +
                                     "access={access}&" +
+                                    "removable={removable}&" +
                                     "ownerOrAdmin={ownerOrAdmin}",
                             arguments = listOf(
                                 navArgument("userId") { type = NavType.StringType },
                                 navArgument("access") { type = NavType.IntType },
+                                navArgument("removable") { type = NavType.BoolType },
                                 navArgument("ownerOrAdmin") { type = NavType.BoolType }
                             )
                         ) { backStackEntry ->
-                            val userId = backStackEntry.arguments?.getString("userId").orEmpty()
-                            val roomId = room?.id.orEmpty()
-                            UserAccessScreen(
-                                navController = navController,
-                                roomId = roomId,
-                                roomType = room?.roomType,
-                                userId = userId,
-                                currentAccess = backStackEntry.arguments?.getInt("access"),
+                            RoomAccessScreen(
+                                roomType = room.roomType,
+                                currentAccess = backStackEntry.arguments?.getInt("access") ?: -1,
                                 ownerOrAdmin = backStackEntry.arguments?.getBoolean("ownerOrAdmin") == true,
-                            ) { newAccess ->
-                                viewModel.setUserAccess(roomId, userId, newAccess)
+                                portal = remember { requireContext().accountOnline?.portalUrl.orEmpty() },
+                                isRemove = backStackEntry.arguments?.getBoolean("removable") == true,
+                                onBack = navController::popBackStackWhenResumed,
+                                onChangeAccess = { newAccess ->
+                                    viewModel.setUserAccess(
+                                        room.id,
+                                        backStackEntry.arguments?.getString("userId").orEmpty(),
+                                        newAccess
+                                    )
+                                }
+                            )
+                        }
+                        composable(
+                            route = "${RoomInfoScreens.GroupAccess.name}?" +
+                                    "groupId={groupId}&" +
+                                    "access={access}",
+                            arguments = listOf(
+                                navArgument("groupId") { type = NavType.StringType },
+                                navArgument("access") { type = NavType.IntType }
+                            )
+                        ) { backStackEntry ->
+                            val lifecycleOwner = LocalLifecycleOwner.current
+                            val groupId = remember { backStackEntry.arguments?.getString("groupId").orEmpty() }
+                            val roomAccessViewModel = viewModel {
+                                RoomAccessViewModel(
+                                    roomProvider = requireContext().roomProvider,
+                                    roomId = room.id,
+                                    groupId = groupId
+                                )
                             }
+                            val users = roomAccessViewModel.users.collectAsState()
+
+                            LaunchedEffect(Unit) {
+                                lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                                    roomAccessViewModel.fetchUsers()
+                                }
+                            }
+
+                            RoomAccessScreen(
+                                roomType = room.roomType,
+                                currentAccess = backStackEntry.arguments?.getInt("access") ?: -1,
+                                ownerOrAdmin = false,
+                                portal = remember { requireContext().accountOnline?.portalUrl.orEmpty() },
+                                isRemove = true,
+                                users = users.value,
+                                onBack = navController::popBackStackWhenResumed,
+                                onChangeAccess = { newAccess ->
+                                    viewModel.setUserAccess(
+                                        room.id,
+                                        groupId,
+                                        newAccess
+                                    )
+                                },
+                                onUserClick = { userId, access, ownerOrAdmin ->
+                                    navController.navigate(
+                                        RoomInfoScreens.UserAccess.name +
+                                                "?userId=$userId" +
+                                                "&access=$access" +
+                                                "&removable=false" +
+                                                "&ownerOrAdmin=$ownerOrAdmin"
+                                    )
+                                }
+                            )
+                        }
+
+                        composable(RoomInfoScreens.InviteUsers.name) {
+                            InviteUsersScreen(
+                                roomType = room.roomType,
+                                roomId = room.id,
+                                roomProvider = requireContext().roomProvider,
+                                onSnackBar = { UiUtils.getSnackBar(requireView()).setText(it).show() },
+                                onCopyLink = { link ->
+                                    KeyboardUtils.setDataToClipboard(requireContext(), link)
+                                    UiUtils.getSnackBar(requireView())
+                                        .setText(R.string.rooms_info_copy_link_to_clipboard).show()
+                                },
+                                onShareLink = { link ->
+                                    requireContext().openSendTextActivity(
+                                        getString(R.string.toolbar_menu_main_share),
+                                        link
+                                    )
+                                },
+                                onBack = {
+                                    navController.popBackStackWhenResumed()
+                                    viewModel.fetchRoomInfo()
+                                }
+                            )
                         }
                     }
                 }
             }
-        }
-    }
-
-    @Composable
-    private fun LoadingPlaceholder() {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
         }
     }
 
@@ -259,11 +325,11 @@ class RoomInfoFragment : BaseDialogFragment() {
         roomTitle: String?,
         portal: String?,
         onSetUserAccess: (userId: String, access: Int, ownerOrAdmin: Boolean) -> Unit,
+        onSetGroupAccess: (groupId: String, access: Int) -> Unit,
         onAddUsers: () -> Unit,
         onBackClick: () -> Unit,
         onLinkClick: (ExternalLink) -> Unit,
-        onGeneralLinkCreate: () -> Unit,
-        onAdditionalLinkCreate: () -> Unit
+        onSharedLinkCreate: () -> Unit
     ) {
         BackHandler(onBack = onBackClick)
 
@@ -300,31 +366,35 @@ class RoomInfoFragment : BaseDialogFragment() {
                     val groupedShareList = Share.groupByAccess(state.shareList)
                     if (ApiContract.RoomType.hasExternalLink(roomType)) {
                         ExternalLinkBlock(
-                            generalLink = state.generalLink,
-                            additionalLinks = state.additionalLinks,
+                            sharedLinks = state.sharedLinks,
                             canEditRoom = canEditRoom,
                             onLinkClick = onLinkClick,
-                            onGeneralLinkCreate = onGeneralLinkCreate,
-                            onAdditionalLinkCreate = onAdditionalLinkCreate,
+                            onSharedLinkCreate = onSharedLinkCreate,
                             onCopyLinkClick = { url -> copyLinkToClipboard(requireView(), url, false) }
                         )
                     }
                     ShareUsersList(
-                        title = R.string.rooms_info_admin_title,
                         portal = portal,
-                        shareList = groupedShareList[ShareGroup.Admin],
+                        shareList = groupedShareList.getOrElse(ShareType.Admin, ::emptyList),
+                        type = ShareType.Admin,
                         onClick = onSetUserAccess
                     )
                     ShareUsersList(
-                        title = R.string.rooms_info_users_title,
                         portal = portal,
-                        shareList = groupedShareList[ShareGroup.User],
+                        shareList = groupedShareList.getOrElse(ShareType.Group, ::emptyList),
+                        type = ShareType.Group,
+                        onClick = { id, access, _ -> onSetGroupAccess.invoke(id, access) }
+                    )
+                    ShareUsersList(
+                        portal = portal,
+                        shareList = groupedShareList.getOrElse(ShareType.User, ::emptyList),
+                        type = ShareType.User,
                         onClick = onSetUserAccess
                     )
                     ShareUsersList(
-                        title = R.string.rooms_info_expected_title,
                         portal = portal,
-                        shareList = groupedShareList[ShareGroup.Expected],
+                        shareList = groupedShareList.getOrElse(ShareType.Expected, ::emptyList),
+                        type = ShareType.Expected,
                         onClick = onSetUserAccess
                     )
                 }
@@ -371,14 +441,14 @@ class RoomInfoFragment : BaseDialogFragment() {
                 portal = "",
                 state = RoomInfoState(
                     isLoading = false,
-                    generalLink = link,
-                    additionalLinks = listOf(
-                        link.copy(sharedTo = link.sharedTo.copy(title = "Additional link 1", expirationDate = "123")),
-                        link.copy(sharedTo = link.sharedTo.copy(title = "Additional link 2", password = "123")),
-                        link.copy(sharedTo = link.sharedTo.copy(title = "Additional link 3", isExpired = true)),
+                    sharedLinks = listOf(
+                        link.copy(sharedTo = link.sharedTo.copy(title = "Shared link 1", expirationDate = "123")),
+                        link.copy(sharedTo = link.sharedTo.copy(title = "Shared link 2", password = "123")),
+                        link.copy(sharedTo = link.sharedTo.copy(title = "Shared link 3", isExpired = true)),
                     ),
                     shareList = listOf(
                         Share(access = "1", sharedTo = SharedTo(displayName = "User 1"), isOwner = true),
+                        Share(access = "5", sharedTo = SharedTo(name = "Group 2"), subjectType = 2),
                         Share(access = "9", sharedTo = SharedTo(displayName = "User 2")),
                         Share(access = "11", sharedTo = SharedTo(displayName = "User 3")),
                         Share(access = "10", sharedTo = SharedTo(displayName = "User 4")),
@@ -388,9 +458,9 @@ class RoomInfoFragment : BaseDialogFragment() {
                 onBackClick = {},
                 onAddUsers = {},
                 onSetUserAccess = { _, _, _ -> },
-                onGeneralLinkCreate = {},
-                onAdditionalLinkCreate = {},
-                onLinkClick = {}
+                onSharedLinkCreate = {},
+                onLinkClick = {},
+                onSetGroupAccess = { _, _ -> }
             )
         }
     }

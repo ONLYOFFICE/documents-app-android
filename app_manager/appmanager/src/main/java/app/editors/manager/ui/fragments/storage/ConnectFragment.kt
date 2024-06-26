@@ -6,13 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.models.Storage
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.databinding.FragmentStorageConnectBinding
-import app.editors.manager.managers.tools.PreferenceTool
-import app.documents.core.network.common.models.Storage
-import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.views.storage.ConnectView
 import app.editors.manager.ui.activities.main.MainActivity
@@ -20,15 +19,11 @@ import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
-import javax.inject.Inject
 
 class ConnectFragment : BaseAppFragment(), ConnectView {
 
     @InjectPresenter
     lateinit var connectPresenter: ConnectPresenter
-
-    @Inject
-    lateinit var preferenceTool: PreferenceTool
 
     private var storageActivity: StorageActivity? = null
     private var storage: Storage? = null
@@ -106,48 +101,21 @@ class ConnectFragment : BaseAppFragment(), ConnectView {
     }
 
     private fun initViews() {
-        viewBinding?.let {
-            var title: String = getString(R.string.storage_connect_title) + " "
-            when (storage!!.name) {
-                ApiContract.Storage.BOXNET -> {
-                    it.storageConnectTitleEdit.setText(R.string.storage_select_box)
-                    title += getString(R.string.storage_select_box)
-                }
-                ApiContract.Storage.DROPBOX -> {
-                    it.storageConnectTitleEdit.setText(R.string.storage_select_drop_box)
-                    title += getString(R.string.storage_select_drop_box)
-                }
-                ApiContract.Storage.SHAREPOINT -> {
-                    it.storageConnectTitleEdit.setText(R.string.storage_select_share_point)
-                    title += getString(R.string.storage_select_share_point)
-                }
-                ApiContract.Storage.GOOGLEDRIVE -> {
-                    it.storageConnectTitleEdit.setText(R.string.storage_select_google_drive)
-                    title += getString(R.string.storage_select_google_drive)
-                }
-                ApiContract.Storage.ONEDRIVE -> {
-                    it.storageConnectTitleEdit.setText(R.string.storage_select_one_drive)
-                    title += getString(R.string.storage_select_one_drive)
-                }
-                ApiContract.Storage.YANDEX -> {
-                    it.storageConnectTitleEdit.setText(R.string.storage_select_yandex)
-                    title += getString(R.string.storage_select_yandex)
-                }
-                ApiContract.Storage.WEBDAV -> {
-                    it.storageConnectTitleEdit.setText(R.string.storage_select_web_dav)
-                    title += getString(R.string.storage_select_web_dav)
-                }
-            }
-            setActionBarTitle(title)
-        }
+        val storageName = StorageUtils.getStorageTitle(storage?.name)?.let(::getString)
+        viewBinding?.storageConnectTitleEdit?.setText(storageName)
+        setActionBarTitle(getString(R.string.storage_connect_title) + " " + storageName)
     }
 
     private fun onSaveClick() {
         val storageTitle = viewBinding?.storageConnectTitleEdit?.text.toString()
         if (storageTitle.isNotEmpty()) {
             showWaitingDialog(getString(R.string.dialogs_wait_title_storage))
-            connectPresenter.connectService(token, storage?.name,
-                storageTitle, !storageActivity?.isMySection!!)
+            connectPresenter.connectService(
+                token = token,
+                providerKey = storage?.name,
+                title = storageTitle,
+                isCorporate = !storageActivity?.isMySection!!
+            )
         } else {
             showSnackBar(R.string.storage_connect_empty_title)
         }

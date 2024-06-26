@@ -1,14 +1,13 @@
 package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
+import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.network.manager.models.response.ResponseCloudTree
-import app.documents.core.storage.account.CloudAccount
-import app.documents.core.storage.preference.NetworkSettings
 import app.editors.manager.BuildConfig
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.app.api
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
@@ -19,18 +18,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.CryptUtils
-import lib.toolkit.base.managers.utils.JsonUtils
 import moxy.InjectViewState
 import moxy.presenterScope
-import java.util.Collections
-import javax.inject.Inject
 
 @InjectViewState
-class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainPagerView>() {
-
-    @Inject
-    lateinit var networkSetting: NetworkSettings
+class MainPagerPresenter : BasePresenter<MainPagerView>() {
 
     init {
         App.getApp().appComponent.inject(this)
@@ -39,6 +33,7 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     private var disposable: Disposable? = null
 
     private val api: ManagerService = context.api
+    private val account = context.accountOnline
 
     override fun onDestroy() {
         super.onDestroy()
@@ -48,91 +43,75 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     fun getState(fileData: Uri? = null) {
         presenterScope.launch(Dispatchers.IO) {
             val sections = getPortalModules()
-            val data = if (networkSetting.isDocSpace) {
+            val data = if (context.accountOnline.isDocSpace) {
                 sections.filter { it.current.rootFolderType != ApiContract.SectionType.CLOUD_FAVORITES }
             } else {
                 sections
             }
-            accountJson?.let { checkFileData(Json.decodeFromString(accountJson), fileData) }
+            checkFileData(fileData)
             withContext(Dispatchers.Main) {
                 viewState.onFinishRequest()
-                viewState.onRender(accountJson!!, data)
+                viewState.onRender(data)
             }
         }
     }
 
     private suspend fun getPortalModules(): List<Explorer> {
         try {
-            val response = if (preferenceTool.modules.isNotEmpty()) {
-                JsonUtils.jsonToObject(preferenceTool.modules, ResponseCloudTree::class.java)
-            } else {
-                api.getRootFolder(
-                    mapOf(ApiContract.Modules.FILTER_TYPE_HEADER to ApiContract.Modules.FILTER_TYPE_VALUE),
-                    mapOf(
-                        ApiContract.Modules.FLAG_SUBFOLDERS to false,
-                        ApiContract.Modules.FLAG_TRASH to false,
-                        ApiContract.Modules.FLAG_ADDFOLDERS to false
-                    )
+            val response = api.getRootFolder(
+                mapOf(ApiContract.Modules.FILTER_TYPE_HEADER to ApiContract.Modules.FILTER_TYPE_VALUE),
+                mapOf(
+                    ApiContract.Modules.FLAG_SUBFOLDERS to false,
+                    ApiContract.Modules.FLAG_TRASH to false,
+                    ApiContract.Modules.FLAG_ADDFOLDERS to false
                 )
-            }
+            )
+            return withContext(Dispatchers.Default) {
+                val folderTypes = response.response.map { explorer -> explorer.current.rootFolderType }
+                preferenceTool.setFavoritesEnable(folderTypes.contains(ApiContract.SectionType.CLOUD_FAVORITES))
+                preferenceTool.isProjectDisable = !folderTypes.contains(ApiContract.SectionType.CLOUD_PROJECTS)
 
-            preferenceTool.modules = JsonUtils.objectToJson(response)
-
-            val folderTypes = response.response.map { explorer -> explorer.current.rootFolderType }
-            preferenceTool.setFavoritesEnable(folderTypes.contains(ApiContract.SectionType.CLOUD_FAVORITES))
-            preferenceTool.isProjectDisable = !folderTypes.contains(ApiContract.SectionType.CLOUD_PROJECTS)
-
-            return response.response.apply {
-                if (contains(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_USER })) {
-                    Collections.swap(
-                        this,
-                        indexOf(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_USER }),
-                        0
-                    )
-                }
-                // Trash section
-                if (contains(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_TRASH })) {
-                    Collections.swap(
-                        this,
-                        indexOf(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }),
-                        lastIndex
-                    )
-                }
-
-                //Rooms sections
-                if (contains(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM })) {
-                    val position = if (contains(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_USER })) {
-                        1
-                    } else {
-                        0
-                    }
-                    Collections.swap(
-                        this,
-                        indexOf(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }),
-                        position
-                    )
-                }
-                if (contains(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM })) {
-                    val position =
-                        if (contains(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_TRASH })) {
-                            lastIndex - 1
-                        } else {
-                            lastIndex
-                        }
-                    Collections.swap(
-                        this,
-                        indexOf(find { it.current.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }),
-                        position
-                    )
-                }
+                return@withContext sortSections(response.response)
             }
         } catch (error: Throwable) {
-            fetchError(error)
+            withContext(Dispatchers.Main) {
+                fetchError(error)
+            }
             return emptyList()
         }
     }
 
-    private suspend fun checkFileData(account: CloudAccount, fileData: Uri?) {
+    private fun sortSections(response: List<Explorer>): List<Explorer> {
+        val sortedList = mutableListOf<Explorer>()
+
+        response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_USER }?.let {
+            sortedList.add(it)
+        }
+        response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM }?.let {
+            sortedList.add(it)
+        }
+        response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_SHARE }?.let {
+            sortedList.add(it)
+        }
+        response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_FAVORITES }?.let {
+            sortedList.add(it)
+        }
+        response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_COMMON }?.let {
+            sortedList.add(it)
+        }
+        response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_PROJECTS }?.let {
+            sortedList.add(it)
+        }
+        response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM }?.let {
+            sortedList.add(it)
+        }
+        response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_TRASH }?.let {
+            sortedList.add(it)
+        }
+        return sortedList.toList()
+    }
+
+    private suspend fun checkFileData(fileData: Uri?) {
         if ((fileData?.scheme?.equals(BuildConfig.PUSH_SCHEME) == true && fileData.host.equals("openfile")) || preferenceTool.fileData.isNotEmpty()) {
             if (fileData?.queryParameterNames?.contains("push") == true) {
                 viewState.setFileData(fileData.getQueryParameter("data") ?: "")
@@ -145,10 +124,10 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
             }
             preferenceTool.fileData = ""
             if (dataModel.getPortalWithoutScheme()?.equals(
-                    account.portal,
+                    account?.portal?.url,
                     ignoreCase = true
                 ) == true && dataModel.email?.equals(
-                    account.login,
+                    account?.login,
                     ignoreCase = true
                 ) == true
             ) {
@@ -165,8 +144,10 @@ class MainPagerPresenter(private val accountJson: String?) : BasePresenter<MainP
     }
 
     private suspend fun checkAccountLogin(data: OpenDataModel): Boolean {
-        val account = accountDao.getAccountByLogin(data.email?.lowercase() ?: "")
-        return account?.token != null && account.token.isNotEmpty()
+        val account = cloudDataSource.getAccountByLogin(data.email?.lowercase() ?: "")
+        if (account == null) return true
+        val token = AccountUtils.getToken(context, account.accountName)
+        return !token.isNullOrEmpty()
     }
 
     fun onRemoveFileData() {

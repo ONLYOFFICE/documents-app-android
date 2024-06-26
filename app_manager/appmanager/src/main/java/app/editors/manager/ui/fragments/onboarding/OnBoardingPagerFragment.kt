@@ -58,7 +58,7 @@ class OnBoardingPagerFragment : BaseAppFragment() {
     private fun finishWithOkCode() {
         requireActivity().setResult(Activity.RESULT_OK)
         requireActivity().finish()
-        MainActivity.show(requireContext(), null)
+        MainActivity.show(requireContext())
     }
 
     private fun init() {

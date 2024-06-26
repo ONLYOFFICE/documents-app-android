@@ -22,7 +22,7 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.B
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.ui.views.custom.SingleChoiceChipGroupView
+import app.editors.manager.ui.views.custom.ChipGroupView
 import lib.toolkit.base.managers.utils.FragmentUtils
 
 abstract class BaseFilterFragment : BaseAppFragment(), FilterView {
@@ -33,7 +33,7 @@ abstract class BaseFilterFragment : BaseAppFragment(), FilterView {
     }
 
     private var viewBinding: FragmentFilterBinding? = null
-    private var chipGroups: Array<out SingleChoiceChipGroupView>? = null
+    private var chipGroups: List<ChipGroupView>? = null
 
     protected var activity: IFilterActivity? = null
     protected val dialog: IBaseDialogFragment? get() = getDialogFragment()
@@ -159,7 +159,7 @@ abstract class BaseFilterFragment : BaseAppFragment(), FilterView {
             fragmentManager,
             FilterAuthorFragment.newInstance(selectedId, isGroups, isRoom),
             R.id.frame_container,
-            FilterAuthorFragment.TAG
+            FilterAuthorFragment.TAG,
         )
         setFragmentResultListener(FilterAuthorFragment.REQUEST_KEY_AUTHOR) { _, bundle ->
             onResultListener.invoke(bundle)
@@ -167,13 +167,11 @@ abstract class BaseFilterFragment : BaseAppFragment(), FilterView {
         }
     }
 
-    protected fun addChipGroups(vararg chipGroups: SingleChoiceChipGroupView?) {
+    protected fun addChipGroups(vararg chipGroups: ChipGroupView?) {
         chipGroups.filterNotNull()
-            .also { this.chipGroups = it.toTypedArray() }
+            .also { this.chipGroups = it }
             .reversed()
-            .forEach { chipGroup ->
-                linearLayout?.addView(chipGroup, 0)
-            }
+            .forEach { chipGroup -> linearLayout?.addView(chipGroup, 0) }
     }
 
     abstract fun initViews()

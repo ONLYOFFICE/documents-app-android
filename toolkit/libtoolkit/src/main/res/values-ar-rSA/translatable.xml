@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_title" translatable="false">ONLYOFFICE</string>
+    <string name="dialogs_edit_forbidden_symbols">لا تستخدم هذه الرموز\u0020</string>
+    <string name="dialogs_edit_forbidden_name">اسم غير صالح</string>
+
+    <!-- File/Folder info -->
+    <string name="sizes_bytes">بايت</string>
+    <string name="sizes_kilobytes">كيلو بايت</string>
+    <string name="sizes_megabytes">ميغابايت</string>
+    <string name="sizes_gigabytes">غيغابايت</string>
+    <string name="sizes_terabytes">تيرابايت</string>
+
+    <!--  Feedback  -->
+    <string name="chooser_email_client">اختر عميل البريد الإلكتروني…</string>
+    <string name="about_email_subject">ملفات ONLYOFFICE للحصول على تعليقات Android</string>
+    <string name="about_feedback">ردود الفعل والدعم</string>
+    <string name="text_hint_required">مطلوب</string>
+
+    <string name="export_send_copy">أرسل نسخة</string>
+
+    <string name="common_accept">قبول</string>
+    <string name="common_cancel">إلغاء الأمر</string>
+    <string name="common_next">التالي</string>
+    <string name="common_previous">السابق</string>
+    <string name="common_done">تم</string>
+    <string name="common_ok">موافق</string>
+    <plurals name="days" tools:ignore="MissingQuantity">
+        <item quantity="one">يوم</item>
+        <item quantity="other">أيام</item>
+    </plurals>
+
+    <plurals name="hours" tools:ignore="MissingQuantity">
+        <item quantity="one">ساعة</item>
+        <item quantity="other">ساعات</item>
+    </plurals>
+</resources>

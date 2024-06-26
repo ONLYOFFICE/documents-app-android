@@ -4,10 +4,10 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.storage.account.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.presenters.storages.BaseStorageDocsPresenter
@@ -17,8 +17,6 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
-import app.editors.manager.ui.popup.MainPopupItem
-import app.editors.manager.ui.popup.SelectPopupItem
 import lib.toolkit.base.managers.utils.FolderChooser
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -109,7 +107,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
             is ExplorerContextItem.ExternalLink -> presenter.externalLink
             else -> super.onContextButtonClick(contextItem)
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun onOpenLocalFile(file: CloudFile) {
@@ -159,13 +156,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         }
     }
 
-    override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
-        super.onStateMenuDefault(sortBy, isAsc)
-        searchCloseButton?.setOnClickListener {
-            onBackPressed()
-        }
-    }
-
     override fun onFileWebView(file: CloudFile) {
         activity?.showWebViewer(file)
     }
@@ -190,14 +180,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     override val presenter: BaseStorageDocsPresenter<out BaseStorageDocsView>
         get() = getDocsPresenter()
-
-    override fun showMainActionPopup(vararg excluded: MainPopupItem) {
-        super.showMainActionPopup(MainPopupItem.SortBy.Type, MainPopupItem.SortBy.Author)
-    }
-
-    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        super.showSelectActionPopup(SelectPopupItem.Operation.Restore)
-    }
 
     override fun onFileUploadPermission() {
         showMultipleFilePickerActivity { uris ->

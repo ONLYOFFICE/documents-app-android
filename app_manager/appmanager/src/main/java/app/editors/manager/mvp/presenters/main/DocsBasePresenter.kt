@@ -13,6 +13,8 @@ import android.util.Log
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import app.documents.core.database.datasource.CloudDataSource
+import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -24,33 +26,31 @@ import app.documents.core.network.manager.models.explorer.UploadFile
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.providers.BaseFileProvider
+import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.ProviderError.Companion.throwInterruptException
 import app.documents.core.providers.WebDavFileProvider
-import app.documents.core.storage.account.AccountDao
-import app.documents.core.storage.preference.NetworkSettings
-import app.documents.core.storage.recent.RecentDao
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
+import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.managers.utils.FirebaseUtils.addAnalyticsCreateEntity
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.RoomFilterType
+import app.editors.manager.mvp.models.filter.joinToString
 import app.editors.manager.mvp.models.list.Header
+import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
-import app.editors.manager.ui.popup.MainPopup
-import app.editors.manager.ui.popup.MainPopupItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.gson.Gson
 import io.reactivex.Observable
@@ -73,7 +73,6 @@ import java.io.File
 import java.net.UnknownHostException
 import java.util.Date
 import java.util.TreeMap
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
 
@@ -91,13 +90,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     lateinit var operationsState: OperationsState
 
     @Inject
-    lateinit var accountDao: AccountDao
+    lateinit var cloudDataSource: CloudDataSource
 
     @Inject
-    lateinit var networkSettings: NetworkSettings
-
-    @Inject
-    lateinit var recentDao: RecentDao
+    lateinit var recentDataSource: RecentDataSource
 
     /**
      * Handler for some common job
@@ -115,7 +111,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     private var placeholderViewType: PlaceholderViews.Type = PlaceholderViews.Type.NONE
     protected var destFolderId: String? = null
     protected var operationStack: ExplorerStackMap? = null
-    private var isSubmitted = false
     private var uploadUri: Uri? = null
     private var sendingFile: File? = null
 
@@ -140,8 +135,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     private var itemClickedPosition = 0
     protected var isContextClick = false
+
     var itemClicked: Item? = null
         protected set
+
+    var roomClicked: CloudFolder? = null
+        private set
 
     /**
      * Headers date
@@ -172,7 +171,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     protected var uploadDisposable: Disposable? = null
     protected var downloadDisposable: Disposable? = null
     private var sendDisposable: Disposable? = null
-    private var filterRun: Runnable? = null
     private var isTerminate = false
     private var isAccessDenied = false
 
@@ -212,7 +210,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     open fun refresh(): Boolean {
-//        setPlaceholderType(PlaceholderViews.Type.LOAD)
+        //        setPlaceholderType(PlaceholderViews.Type.LOAD)
         modelExplorerStack.currentId?.let { id ->
             fileProvider?.let { provider ->
                 disposable.add(
@@ -234,12 +232,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         return false
     }
 
-    open fun sortBy(type: MainPopupItem.SortBy): Boolean {
-        val isRepeatedTap = MainPopup.getSortPopupItem(preferenceTool.sortBy) == type
-        preferenceTool.sortBy = type.value
-        if (isRepeatedTap) {
-            reverseSortOrder()
-        }
+    open fun sortBy(sortValue: String): Boolean {
+        val isRepeatedTap = preferenceTool.sortBy == sortValue
+        preferenceTool.sortBy = sortValue
+        if (isRepeatedTap) reverseSortOrder()
         return refresh()
     }
 
@@ -251,14 +247,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-    open fun filter(value: String, isSubmitted: Boolean): Boolean {
+    open fun filter(value: String) {
         if (isFilteringMode) {
-            this.isSubmitted = isSubmitted
             modelExplorerStack.currentId?.let { id ->
                 filteringValue = value
                 fileProvider?.let { provider ->
                     provider.getFiles(id, getArgs(value).putFilters())
-                        .debounce(FILTERING_DELAY, TimeUnit.MILLISECONDS)
                         .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
                         .subscribe({ explorer ->
                             modelExplorerStack.setFilter(explorer)
@@ -266,23 +260,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                                 if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.SEARCH else
                                     PlaceholderViews.Type.NONE
                             )
-                            updateViewsState()
                             viewState.onDocsFilter(getListWithHeaders(modelExplorerStack.last(), true))
                         }, this::fetchError)
                 }
-            }
-        }
-        return false
-    }
-
-    fun filterWait(value: String) {
-        if (!isSubmitted) {
-            filterRun?.let { runnable ->
-                handler.removeCallbacks(runnable)
-            }
-
-            filterRun = Runnable { filter(value, false) }.apply {
-                handler.postDelayed(this, FILTERING_DELAY)
             }
         }
     }
@@ -292,9 +272,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * */
 
     fun createFolder(title: String?) {
-        preferenceTool.portal?.let {
-            addAnalyticsCreateEntity(it, false, null)
-        }
+        //        preferenceTool.portal?.let {
+        //            addAnalyticsCreateEntity(it, false, null)
+        //        }
 
         modelExplorerStack.currentId?.let { id ->
             val requestCreate = RequestCreate().apply {
@@ -368,6 +348,26 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
         showDialogProgress(true, TAG_DIALOG_CANCEL_BATCH_OPERATIONS)
         fileProvider?.let { provider ->
+
+            if (isRecentViaLinkSection()) {
+                batchDisposable = (fileProvider as? CloudFileProvider)
+                    ?.deleteRecent(items.map { it.id })
+                    ?.subscribe({
+                        viewState.onDialogProgress(100, 100)
+                        if (modelExplorerStack.countSelectedItems > 0) {
+                            modelExplorerStack.removeSelected()
+                            getBackStack()
+                        } else if (itemClicked != null) {
+                            modelExplorerStack.removeItemById(itemClicked?.id)
+                        }
+                        resetDatesHeaders()
+                        setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                        viewState.onDialogClose()
+                        viewState.onDeleteBatch(getListWithHeaders(modelExplorerStack.last(), true))
+                    }, ::fetchError)
+                return
+            }
+
             batchDisposable = provider.delete(items, null)
                 .switchMap { status }
                 .subscribe({ progress ->
@@ -398,6 +398,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     open fun delete(): Boolean {
         if (modelExplorerStack.countSelectedItems > 0) {
+            if (isRecentViaLinkSection()) {
+                deleteItems()
+                return true
+            }
+
             for (item in modelExplorerStack.selectedFiles) {
                 isFileDeleteProtected(item)?.let { observable ->
                     disposable.add(
@@ -612,18 +617,16 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     open fun download(downloadTo: Uri) {
-        viewState.checkNotificationPermission {
-            if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
-                viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
-            } else if (modelExplorerStack.countSelectedItems > 0) {
-                downloadSelected(downloadTo)
-            } else {
-                itemClicked?.let { item ->
+        if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
+            viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
+        } else if (modelExplorerStack.countSelectedItems > 0) {
+            downloadSelected(downloadTo)
+        } else {
+            itemClicked?.let { item ->
 
-                    when (item) {
-                        is CloudFolder -> bulkDownload(null, listOf(item), downloadTo)
-                        is CloudFile -> startDownloadWork(downloadTo, item.id, item.viewUrl, null)
-                    }
+                when (item) {
+                    is CloudFolder -> bulkDownload(null, listOf(item), downloadTo)
+                    is CloudFile -> startDownloadWork(downloadTo, item.id, item.viewUrl, null)
                 }
             }
         }
@@ -815,6 +818,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                     if (filter.roomType != RoomFilterType.None) {
                         put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filter.roomType.filterVal.toString())
                     }
+                    if (filter.provider != null) {
+                        put(ApiContract.Parameters.ARG_FILTER_BY_PROVIDER_ROOM, filter.provider?.filterValue.orEmpty())
+                    }
+                    if (filter.tags.isNotEmpty()) {
+                        put(ApiContract.Parameters.ARG_FILTER_BY_TAG_ROOM, filter.tags.joinToString())
+                    }
                     put(ApiContract.Parameters.ARG_FILTER_BY_SUBJECT_ID, filter.author.id)
                 } else {
                     put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
@@ -872,27 +881,27 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-//    fun moveContext() {
-//        modelExplorerStack.last()?.clone()?.let { explorer ->
-//            viewState.onBatchMove(getBatchExplorer(explorer))
-//        }
-//    }
-//
-//    open fun copySelected() {
-//        if (modelExplorerStack.countSelectedItems > 0) {
-//            modelExplorerStack.clone()?.let { clonedStack ->
-//                clonedStack.removeUnselected()
-//                viewState.onBatchCopy(clonedStack.explorer)
-//            }
-//        }
-//        viewState.onError(context.getString(R.string.operation_empty_lists_data))
-//    }
-//
-//    fun copyContext() {
-//        modelExplorerStack.last()?.clone()?.let { explorer ->
-//            viewState.onBatchCopy(getBatchExplorer(explorer))
-//        }
-//    }
+    //    fun moveContext() {
+    //        modelExplorerStack.last()?.clone()?.let { explorer ->
+    //            viewState.onBatchMove(getBatchExplorer(explorer))
+    //        }
+    //    }
+    //
+    //    open fun copySelected() {
+    //        if (modelExplorerStack.countSelectedItems > 0) {
+    //            modelExplorerStack.clone()?.let { clonedStack ->
+    //                clonedStack.removeUnselected()
+    //                viewState.onBatchCopy(clonedStack.explorer)
+    //            }
+    //        }
+    //        viewState.onError(context.getString(R.string.operation_empty_lists_data))
+    //    }
+    //
+    //    fun copyContext() {
+    //        modelExplorerStack.last()?.clone()?.let { explorer ->
+    //            viewState.onBatchCopy(getBatchExplorer(explorer))
+    //        }
+    //    }
 
     private fun getBatchExplorer(explorer: Explorer): Explorer {
         return explorer.also {
@@ -1024,11 +1033,25 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             }
         }
 
-        if (isFilteringMode) {
-            setPlaceholderType(if (entityList.isEmpty()) PlaceholderViews.Type.SEARCH else PlaceholderViews.Type.NONE)
+        val placeholderType = if (entityList.isEmpty()) {
+            if (isFilteringMode) {
+                PlaceholderViews.Type.SEARCH
+            } else {
+                if (ApiContract.SectionType.isRoom(currentSectionType) && isRoot) {
+                    if (itemClicked?.security?.editRoom == true) {
+                        PlaceholderViews.Type.NO_ROOMS
+                    } else {
+                        PlaceholderViews.Type.VISITOR_NO_ROOMS
+                    }
+                } else {
+                    PlaceholderViews.Type.EMPTY
+                }
+            }
         } else {
-            setPlaceholderType(if (entityList.isEmpty()) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+            PlaceholderViews.Type.NONE
         }
+
+        setPlaceholderType(placeholderType)
 
         return entityList
     }
@@ -1066,7 +1089,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     fun initMenuState() {
-        viewState.onStateMenuEnabled(!modelExplorerStack.isListEmpty)
+        viewState.onStateMenuEnabled(
+            !modelExplorerStack.isListEmpty ||
+                    ApiContract.SectionType.isRoom(currentSectionType)
+        )
     }
 
     open fun getBackStack(): Boolean {
@@ -1077,6 +1103,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 updateViewsState()
                 return true
             }
+
             isFilteringMode -> {
                 setFiltering(false)
                 if (modelExplorerStack.isStackFilter) {
@@ -1085,6 +1112,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 updateViewsState()
                 return true
             }
+
             else -> {
                 popBackStack()
                 updateViewsState()
@@ -1099,6 +1127,16 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
             viewState.onDocsGet(entities)
             viewState.onScrollToPosition(modelExplorerStack.listPosition)
+        }
+    }
+
+    fun popToRoot() {
+        modelExplorerStack.popToRoot()?.let {
+            val entities = getListWithHeaders(modelExplorerStack.last(), true)
+            setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+            viewState.onDocsGet(entities)
+            viewState.onScrollToPosition(modelExplorerStack.listPosition)
+            updateViewsState()
         }
     }
 
@@ -1123,7 +1161,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * */
 
     fun setFiltering(isFiltering: Boolean) {
-        isSubmitted = false
         if (isFilteringMode != isFiltering) {
             isFilteringMode = isFiltering
             if (!isFiltering) {
@@ -1172,7 +1209,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     fun onClickEvent(item: Item?, position: Int, isContext: Boolean = false) {
         itemClickedPosition = position
-        itemClicked = modelExplorerStack.getItemById(item)
+        itemClicked = if (item is RecentViaLink) item else modelExplorerStack.getItemById(item)
+        if (item is CloudFolder && item.isRoom) roomClicked = item
         isContextClick = isContext
     }
 
@@ -1421,7 +1459,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 throwable.response()?.let { response ->
                     onErrorHandle(response.errorBody(), response.code())
                     if (response.code() == 412) {
-                        viewState.onError(context.getString(R.string.operation_move_file_existing, throwable.suppressed[0].message))
+                        viewState.onError(
+                            context.getString(
+                                R.string.operation_move_file_existing,
+                                throwable.suppressed[0].message
+                            )
+                        )
                     } else if (response.code() >= ApiContract.HttpCodes.CLIENT_ERROR && response.code() < ApiContract.HttpCodes.SERVER_ERROR) {
                         if (!isRoot) {
                             modelExplorerStack.previous()
@@ -1452,7 +1495,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         } catch (e: Exception) {
             // No need handle
         }
-
         // Get Json error message
         responseMessage?.let {
             StringUtils.getJsonObject(responseMessage)?.let { jsonObject ->
@@ -1478,18 +1520,28 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             when (responseCode) {
                 ApiContract.HttpCodes.CLIENT_UNAUTHORIZED -> viewState.onError(context.getString(R.string.errors_client_unauthorized))
                 ApiContract.HttpCodes.CLIENT_FORBIDDEN -> {
-                    if (errorMessage?.contains(ApiContract.Errors.DISK_SPACE_QUOTA) == true) {
-                        viewState.onError(errorMessage)
-                    } else {
-                        viewState.onError(context.getString(R.string.errors_client_forbidden))
+                    when {
+                        errorMessage?.contains(ApiContract.Errors.DISK_SPACE_QUOTA) == true -> {
+                            viewState.onError(errorMessage)
+                        }
+                        errorMessage?.contains(ApiContract.Errors.STORAGE_NOT_AVAILABLE) == true -> {
+                            viewState.onError(context.getString(R.string.room_storage_not_availabale))
+                            setPlaceholderType(PlaceholderViews.Type.NONE)
+                        }
+                        else -> {
+                            viewState.onError(context.getString(R.string.errors_client_forbidden))
+                        }
                     }
                 }
+
                 ApiContract.HttpCodes.CLIENT_NOT_FOUND -> {
                     viewState.onError(context.getString(R.string.errors_client_host_not_found))
                 }
+
                 ApiContract.HttpCodes.CLIENT_PAYMENT_REQUIRED -> {
                     viewState.onError(context.getString(R.string.errors_client_payment_required))
                 }
+
                 else -> viewState.onError(context.getString(R.string.errors_client_error) + responseCode)
             }
         } else if (responseCode >= ApiContract.HttpCodes.SERVER_ERROR) {
@@ -1501,19 +1553,19 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             }
         } // Delete this block -- END --
 
-//        // Uncomment this block, after added translation to server
-//        // Callback error
-//        if (errorMessage == null) {
-//            if (responseCode >= Api.HttpCodes.REDIRECTION && responseCode < Api.HttpCodes.CLIENT_ERROR) {
-//                getViewState().onError(mContext.getString(R.string.errors_redirect_error) + responseCode);
-//            } else if (responseCode >= Api.HttpCodes.CLIENT_ERROR && responseCode < Api.HttpCodes.SERVER_ERROR) {
-//                getViewState().onError(mContext.getString(R.string.errors_client_error) + responseCode);
-//            } else if (responseCode >= Api.HttpCodes.SERVER_ERROR) {
-//                getViewState().onError(mContext.getString(R.string.errors_server_error) + responseCode);
-//            }
-//        } else {
-//            getViewState().onError(errorMessage);
-//        }
+        //        // Uncomment this block, after added translation to server
+        //        // Callback error
+        //        if (errorMessage == null) {
+        //            if (responseCode >= Api.HttpCodes.REDIRECTION && responseCode < Api.HttpCodes.CLIENT_ERROR) {
+        //                getViewState().onError(mContext.getString(R.string.errors_redirect_error) + responseCode);
+        //            } else if (responseCode >= Api.HttpCodes.CLIENT_ERROR && responseCode < Api.HttpCodes.SERVER_ERROR) {
+        //                getViewState().onError(mContext.getString(R.string.errors_client_error) + responseCode);
+        //            } else if (responseCode >= Api.HttpCodes.SERVER_ERROR) {
+        //                getViewState().onError(mContext.getString(R.string.errors_server_error) + responseCode);
+        //            }
+        //        } else {
+        //            getViewState().onError(errorMessage);
+        //        }
     }
 
     /**
@@ -1526,9 +1578,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             is UnknownHostException -> {
                 viewState.onError(context.getString(R.string.errors_unknown_host_error))
             }
+
             is SSLHandshakeException -> {
                 viewState.onError(context.getString(R.string.errors_ssl_error))
             }
+
             else -> {
                 throwable?.let {
                     addCrash(BasePresenter::class.java.simpleName + " - method - onFailureHandle()")
@@ -1597,7 +1651,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         (itemClicked as? CloudFile)?.let { cloudFile ->
             fileProvider?.let { fileProvider ->
                 context.accountOnline?.let { account ->
-                    sendDisposable = fileProvider.getCachedFile(context, cloudFile, account.getAccountName())
+                    sendDisposable = fileProvider.getCachedFile(context, cloudFile, account.accountName)
                         .doOnSubscribe { viewState.onDialogDownloadWaiting() }
                         .doOnError { viewState.onError(context.getString(R.string.errors_create_local_file)) }
                         .doOnSuccess { file ->
@@ -1630,9 +1684,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 result(false)
                 return@getSdk
             }
-            val webSdk = version?.replace(".", "") ?: networkSettings.documentServerVersion.replace(".", "")
+            val webSdk = version?.replace(".", "") ?: context.accountOnline
+                ?.portal?.version?.documentServerVersion?.replace(".", "")
 
-            if (webSdk.isEmpty()) {
+            if (webSdk.isNullOrEmpty()) {
                 result(false)
                 return@getSdk
             }
@@ -1656,6 +1711,39 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
+    protected fun downloadTempFile(cloudFile: CloudFile, edit: Boolean) {
+        disposable.add(
+            context.cloudFileProvider
+                .getCachedFile(context, cloudFile, context.accountOnline?.accountName.orEmpty())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ file -> openFileFromPortal(file, cloudFile.id, edit) }, ::fetchError)
+        )
+    }
+
+    private fun openFileFromPortal(file: File, fileId: String, edit: Boolean) {
+        viewState.onDialogClose()
+        viewState.onOpenLocalFile(CloudFile().apply {
+            id = fileId
+            webUrl = Uri.fromFile(file).toString()
+            fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
+            title = file.name
+            viewUrl = file.absolutePath
+        })
+    }
+
+    fun isRecentViaLinkSection(): Boolean {
+        return modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_RECENT
+    }
+
+    fun isListEmpty(): Boolean {
+        return modelExplorerStack.isListEmpty
+    }
+
+    fun isRoomFolder(): Boolean {
+        return modelExplorerStack.last()?.current?.id == roomClicked?.id
+    }
+    
     abstract fun getNextList()
 
     abstract fun getFileInfo()
@@ -1666,7 +1754,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     abstract fun onActionClick()
 
-    protected abstract fun updateViewsState()
+    abstract fun updateViewsState()
 
     companion object {
 
@@ -1705,6 +1793,5 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
          * */
 
         private const val ITEMS_PER_PAGE = 25
-        private const val FILTERING_DELAY = 500L
     }
 }

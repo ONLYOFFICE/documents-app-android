@@ -3,7 +3,6 @@ package app.editors.manager.managers.utils
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.share.models.Share
 import app.editors.manager.R
 
 
@@ -46,12 +45,52 @@ object RoomUtils {
         ApiContract.ShareCode.FILL_FORMS -> R.string.share_access_room_form_filler
         ApiContract.ShareCode.REVIEW -> R.string.share_access_room_reviewer
         ApiContract.ShareCode.COMMENT -> R.string.share_access_room_commentator
+        ApiContract.ShareCode.RESTRICT -> R.string.share_popup_access_deny_access
         ApiContract.ShareCode.NONE -> R.string.share_popup_access_deny_remove
         else -> R.string.share_access_room_viewer
     }
 
-    fun getAccessTitleOrOwner(share: Share): Int =
-        if (share.isOwner) R.string.share_access_room_owner else getAccessTitle(share.intAccess)
+    fun getAccessOptions(roomType: Int, isRemove: Boolean, isAdmin: Boolean = false): List<Int> {
+        if (isAdmin) {
+            return listOfNotNull(
+                ApiContract.ShareCode.ROOM_ADMIN,
+                ApiContract.ShareCode.NONE.takeIf { isRemove }
+            )
+        }
+
+        return when (roomType) {
+            ApiContract.RoomType.PUBLIC_ROOM -> {
+                mutableListOf(
+                    ApiContract.ShareCode.ROOM_ADMIN,
+                    ApiContract.ShareCode.POWER_USER
+                )
+            }
+            ApiContract.RoomType.COLLABORATION_ROOM -> {
+                mutableListOf(
+                    ApiContract.ShareCode.ROOM_ADMIN,
+                    ApiContract.ShareCode.POWER_USER,
+                    ApiContract.ShareCode.EDITOR,
+                    ApiContract.ShareCode.READ
+                )
+            }
+            ApiContract.RoomType.CUSTOM_ROOM -> {
+                mutableListOf(
+                    ApiContract.ShareCode.ROOM_ADMIN,
+                    ApiContract.ShareCode.POWER_USER,
+                    ApiContract.ShareCode.EDITOR,
+                    ApiContract.ShareCode.FILL_FORMS,
+                    ApiContract.ShareCode.REVIEW,
+                    ApiContract.ShareCode.COMMENT,
+                    ApiContract.ShareCode.READ
+                )
+            }
+            else -> mutableListOf()
+        }.apply { if (isRemove) add(ApiContract.ShareCode.NONE) }
+    }
+
+    fun getAccessTitleOrOwner(isOwner: Boolean, access: Int): Int =
+        if (isOwner) R.string.share_access_room_owner else getAccessTitle(access)
+
     fun getRoomInitials(title: String): String? {
         return try {
             val words = title.split(" ")

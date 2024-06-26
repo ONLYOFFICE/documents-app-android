@@ -5,12 +5,12 @@ import android.view.View
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.editors.manager.R
+import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
-import app.editors.manager.ui.popup.MainPopupItem
-import app.editors.manager.ui.popup.SelectPopupItem
+import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
@@ -61,10 +61,9 @@ class DocsTrashFragment : DocsCloudFragment() {
                     cloudPresenter.moveCopyOperation(OperationsState.OperationType.RESTORE)
                 }
             }
-
+            is ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             else -> super.onContextButtonClick(contextItem)
         }
-        contextBottomDialog?.dismiss()
     }
 
     override fun onDeleteBatch(list: List<Entity>) {
@@ -86,15 +85,11 @@ class DocsTrashFragment : DocsCloudFragment() {
             } else {
                 getString(R.string.dialogs_question_delete_all_title)
             },
-            description = if (isArchive) {
-                resources.getQuantityString(R.plurals.dialogs_question_message_to_trash, count)
-            } else {
-                resources.getQuantityString(R.plurals.dialogs_question_message_delete, count)
-            },
+            description = resources.getQuantityString(R.plurals.dialogs_question_message_delete, count),
             acceptTitle = getString(R.string.dialogs_question_accept_delete),
             cancelTitle = getString(R.string.dialogs_common_cancel_button),
             acceptErrorTint = true,
-            acceptListener =  {
+            acceptListener = {
                 if (isResumed && isArchive) {
                     cloudPresenter.deleteRoom()
                 } else if (isResumed && section == ApiContract.SectionType.CLOUD_TRASH) {
@@ -120,29 +115,27 @@ class DocsTrashFragment : DocsCloudFragment() {
         } else super.getFilters()
     }
 
-    override val mainActionBarClickListener: (MainPopupItem) -> Unit = { item ->
-        if (item == MainPopupItem.EmptyTrash) {
-            showDeleteDialog(
-                count = -1,
-                tag = DocsBasePresenter.TAG_DIALOG_BATCH_EMPTY
-            )
-        } else super.mainActionBarClickListener(item)
-    }
-
-    override val selectActionBarClickListener: (SelectPopupItem) -> Unit = { item ->
+    override val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
-            SelectPopupItem.Operation.Restore -> showRestoreDialog()
-            SelectPopupItem.Operation.Delete -> presenter.delete()
-            else -> super.selectActionBarClickListener(item)
+            ActionMenuItem.Restore -> {
+                if (isArchive) {
+                    showRestoreDialog()
+                } else {
+                    cloudPresenter.moveCopySelected(OperationsState.OperationType.RESTORE)
+                }
+            }
+
+            ActionMenuItem.Delete -> presenter.delete()
+            else -> super.actionMenuClickListener(item)
         }
     }
 
-    override fun showSelectActionPopup(vararg excluded: SelectPopupItem) {
-        super.showSelectActionPopup(
-            SelectPopupItem.Operation.Move,
-            SelectPopupItem.Operation.Copy,
-            SelectPopupItem.Download
-        )
+    override fun onPlaceholder(type: PlaceholderViews.Type) {
+        if (type == PlaceholderViews.Type.EMPTY) {
+            super.onPlaceholder(if (isArchive) PlaceholderViews.Type.EMPTY_ARCHIVE else PlaceholderViews.Type.EMPTY_TRASH)
+        } else {
+            super.onPlaceholder(type)
+        }
     }
 
     private fun showRestoreDialog() {
@@ -158,10 +151,9 @@ class DocsTrashFragment : DocsCloudFragment() {
 
     companion object {
 
-        fun newInstance(stringAccount: String, section: Int, rootPath: String): DocsCloudFragment {
+        fun newInstance(section: Int, rootPath: String): DocsCloudFragment {
             return DocsTrashFragment().apply {
-                arguments = Bundle(3).apply {
-                    putString(KEY_ACCOUNT, stringAccount)
+                arguments = Bundle(2).apply {
                     putString(KEY_PATH, rootPath)
                     putInt(KEY_SECTION, section)
                 }

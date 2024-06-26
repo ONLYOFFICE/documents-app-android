@@ -11,7 +11,7 @@ import app.editors.manager.ui.adapters.base.BaseAdapter
 import lib.toolkit.base.managers.extensions.inflate
 
 class ExplorerContextAdapter(
-    private val onClickListener: ExplorerContextBottomDialog.OnClickListener?
+    private val onClickListener: (ExplorerContextItem) -> Unit,
 ) : BaseAdapter<ExplorerContextItem>() {
 
     companion object {
@@ -31,7 +31,7 @@ class ExplorerContextAdapter(
         when (holder) {
             is ExplorerContextHeaderViewHolder -> if (item is ExplorerContextItem.Header) holder.bind(item)
             is ExplorerContextItemViewHolder -> {
-                holder.itemView.setOnClickListener { onClickListener?.onContextButtonClick(itemList[position]) }
+                holder.itemView.setOnClickListener { onClickListener.invoke(itemList[position]) }
                 holder.bind(item)
             }
         }

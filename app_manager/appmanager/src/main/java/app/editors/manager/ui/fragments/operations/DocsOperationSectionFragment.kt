@@ -4,15 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import app.documents.core.network.common.contracts.ApiContract
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import app.documents.core.model.cloud.isDocSpace
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.appComponent
+import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.FragmentOperationSectionBinding
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.ui.fragments.main.DocsCloudFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,12 +22,8 @@ class DocsOperationSectionFragment : BaseAppFragment() {
     companion object {
         val TAG: String = DocsOperationSectionFragment::class.java.simpleName
 
-        fun newInstance(account: String): DocsOperationSectionFragment {
-            return DocsOperationSectionFragment().apply {
-                arguments = Bundle(1).apply {
-                    putString(DocsCloudFragment.KEY_ACCOUNT, account)
-                }
-            }
+        fun newInstance(): DocsOperationSectionFragment {
+            return DocsOperationSectionFragment()
         }
     }
 
@@ -38,7 +34,7 @@ class DocsOperationSectionFragment : BaseAppFragment() {
             R.id.operation_sections_my ->  ApiContract.SectionType.CLOUD_USER
             R.id.operation_sections_share ->  ApiContract.SectionType.CLOUD_SHARE
             R.id.operation_sections_common ->  {
-                if (context?.appComponent?.networkSettings?.isDocSpace == true) {
+                if (context?.accountOnline.isDocSpace) {
                     ApiContract.SectionType.CLOUD_VIRTUAL_ROOM
                 } else {
                     ApiContract.SectionType.CLOUD_COMMON
@@ -79,7 +75,7 @@ class DocsOperationSectionFragment : BaseAppFragment() {
     }
 
     private fun checkRoom() {
-        if (context?.appComponent?.networkSettings?.isDocSpace == true) {
+        if (context?.accountOnline.isDocSpace) {
             viewBinding?.operationSectionsProjects?.isVisible = false
             viewBinding?.operationSectionsShare?.isVisible = false
             viewBinding?.sectionIcon?.setImageResource(R.drawable.ic_type_folder)
@@ -89,7 +85,7 @@ class DocsOperationSectionFragment : BaseAppFragment() {
 
     private fun checkVisitor() {
         lifecycleScope.launch {
-            App.getApp().appComponent.accountsDao.getAccountOnline()?.let {
+            App.getApp().appComponent.accountOnline?.let {
                 withContext(Dispatchers.Main) {
                     viewBinding?.operationSectionsMy?.visibility = if (it.isVisitor) View.GONE else View.VISIBLE
                 }
