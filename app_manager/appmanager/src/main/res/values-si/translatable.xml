@@ -85,7 +85,7 @@
     <string name="rooms_info_access_desc">මෙම කාමරයේ සබැඳිය සතු ඕනෑම අයෙකුට විවෘතයි. බාහිර පරිශ්‍රීලකයින්ට සියලුම ගොනු දැකීමට පමණක් අවසර ඇත.</string>
     <string name="rooms_info_general_link">සාමාන්‍ය සබැඳිය</string>
     <string name="rooms_info_additional_link">අතිරේක සබැඳිය</string>
-    <string name="rooms_info_additional_links">"අතිරේක සබැඳි (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"අතිරේක සබැඳි (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">සාදා පිටපත් කරන්න</string>
     <string name="rooms_info_create_link_complete">සබැඳිය සෑදී පසුරුපුවරුවට පිටපත් විය</string>
     <string name="rooms_info_delete_link">සබැඳිය මකන්න</string>

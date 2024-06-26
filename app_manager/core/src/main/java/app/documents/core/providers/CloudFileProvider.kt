@@ -243,19 +243,10 @@ class CloudFileProvider @Inject constructor(
         isMove: Boolean,
         isOverwrite: Boolean
     ): Observable<List<Operation>> {
-        val filesId: MutableList<String> = ArrayList()
-        val foldersId: MutableList<String> = ArrayList()
-        for (item in items) {
-            if (item is CloudFile) {
-                filesId.add(item.id)
-            } else if (item is CloudFolder) {
-                foldersId.add(item.id)
-            }
-        }
         val batchOperation =
             RequestBatchOperation()
-        batchOperation.fileIds = filesId
-        batchOperation.folderIds = foldersId
+        batchOperation.fileIds = items.filterIsInstance<CloudFile>().map { it.id }
+        batchOperation.folderIds = items.filterIsInstance<CloudFolder>().map { it.id }
         batchOperation.isDeleteAfter = false
         batchOperation.destFolderId = to.id
         batchOperation.conflictResolveType = conflict

@@ -4,10 +4,6 @@
 
     <!-- ======================================================================================= -->
     <!-- Permissions -->
-    <string name="permission_account_write_label">Štítek oprávnění účtu k zápisu</string>
-    <string name="permission_account_write_description">Popis oprávnění účtu k zápisu</string>
-    <string name="permission_account_read_label">Štítek oprávnění účtu k zápisu</string>
-    <string name="permission_account_read_description">Popis oprávnění účtu k zápisu</string>
 
     <!-- ======================================================================================= -->
     <!-- Versions -->
@@ -763,7 +759,7 @@
     <string name="rooms_info_access_desc">Tato místnost je dostupná komukoli s odkazem. Externí uživatelé budou mít pro všechny soubory oprávnění pouze k prohlížení.</string>
     <string name="rooms_info_general_link">Obecný odkaz</string>
     <string name="rooms_info_additional_link">Doplňkový odkaz</string>
-    <string name="rooms_info_additional_links">"Další odkazy (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"Další odkazy (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Vytvořit a zkopírovat</string>
     <string name="rooms_info_create_link_complete">Odkaz úspěšně vytvořen a zkopírován do schránky</string>
     <string name="rooms_info_delete_link">Odstranit odkaz</string>
@@ -802,4 +798,66 @@
     <string name="conversion_dialog_open_in_view_mode">Otevřete v režimu prohlížení</string>
     <string name="conversion_dialog_convert_to">Převést do formátu %1s</string>
     <string name="conversion_dialog_converting_to">Převod do formátu %1s</string>
+    <string name="main_pager_docs_my">Moje dokumenty</string>
+    <string name="main_pager_docs_virtual_room">Místnosti</string>
+    <string name="main_pager_docs_archive_room">Archiv</string>
+    <string name="errors_sign_in_ldap_checkbox">Přihlášení jako uživatel LDAP</string>
+    <string name="placeholder_empty_folder">Zatím zde nejsou žádné dokumenty</string>
+    <string name="placeholder_empty_trash_desc">Všechny smazané soubory jsou přesunuty do \'Koš\'. Obnovte omylem smazané soubory nebo je trvale odstraňte. Soubory v \'Koš\' jsou automaticky odstraněny po 30 dnech. Upozorňujeme, že soubory smazané z \'Koš\' již nelze obnovit</string>
+    <string name="placeholder_no_users_found">Nebyli nalezeni žádní uživatelé</string>
+    <string name="placeholder_no_users_found_desc">Vašemu hledání neodpovídají žádní uživatelé. Upravte prosím parametry vyhledávání nebo vymažte vyhledávací pole, abyste mohli zobrazit úplný seznam uživatelů</string>
+    <string name="placeholder_no_members_found">Nebyli nalezeni žádní členové</string>
+    <string name="placeholder_no_members_found_desc">Nové členy týmu můžete přidat ručně nebo je pozvat prostřednictvím odkazu</string>
+    <string name="placeholder_no_rooms">Vítejte v DocSpace!</string>
+    <string name="placeholder_no_rooms_desc">Vytvořte prosím první místnost</string>
+    <string name="placeholder_no_rooms_visitor_desc">Zde se zobrazí místnosti, které s vámi sdílíte</string>
+    <string name="placeholder_empty_archive">Zatím zde nejsou žádné archivované místnosti</string>
+    <string name="placeholder_empty_archive_desc">Nepoužívané místnosti můžete kdykoli archivovat a obnovit je ve svém DocSpace nebo je trvale odstranit. Tyto místnosti se zobrazí zde</string>
+    <string name="placeholder_no_search_result">Žádný výsledek vyhledávání</string>
+    <string name="placeholder_no_search_result_desc">Nebyly nalezeny žádné výsledky odpovídající vašemu hledání. Zkuste prosím jinou frázi</string>
+    <string name="placeholder_empty_room_visitor_desc">Soubory a složky nahrané správci se zobrazí zde</string>
+    <string name="placeholder_empty_recent_via_link_desc">Zde naleznete seznam nedávno otevřených souborů sdílených s vámi prostřednictvím externího odkazu</string>
+    <string name="placeholder_payment_required">Předplatné pro firmy vypršelo</string>
+    <string name="placeholder_payment_required_desc">Platnost vašeho aktuálního tarifního plánu "Business" vypršela. Obnovte prosím své předplatné v nastavení účtu, abyste mohli používat svůj DocSpace. V případě jakýchkoli dotazů se obraťte na podporu</string>
+    <string name="placeholder_payment_required_button">Obnovení tarifu Business</string>
+    <string name="filter_type_form_templates">Šablony formulářů</string>
+    <string name="filter_type_forms">Formuláře</string>
+    <string name="room_placeholder_created_room_title">Vytvořená místnost!</string>
+    <string name="room_placeholder_created_room_subtitle">Vytvořte si nové složky pro uspořádání svých souborů.</string>
+    <string name="room_recent_via_link">Přístupné přes odkaz</string>
+    <string name="room_manage_room">Správa místnosti</string>
+    <string name="rooms_info_edit_link">Upravit odkaz</string>
+    <string name="rooms_info_create_link_title">Vytvořit odkaz</string>
+    <string name="rooms_info_groups_title">Skupiny (%1d)</string>
+    <string name="rooms_share_shared_links">Sdílené odkazy</string>
+    <string name="rooms_share_shared_link_title">Sdílený odkaz</string>
+    <string name="rooms_share_shared_desc">Zajistěte přístup k dokumentu a nastavte úrovně oprávnění.</string>
+    <string name="rooms_share_lifetime_hours_12">12 hodin</string>
+    <string name="rooms_share_lifetime_days_1">1 den</string>
+    <string name="rooms_share_lifetime_days_7">7 dní</string>
+    <string name="rooms_share_lifetime_unlimited">Neomezeně</string>
+    <string name="rooms_share_lifetime_custom">Vlastní</string>
+    <string name="rooms_share_shared_to_docsspace_users">Pouze pro uživatele DoсSpace</string>
+    <string name="rooms_share_shared_to_anyone">Kdokoli s odkazem</string>
+    <string name="rooms_share_expires_after">Platnost vyprší po %s</string>
+    <string name="rooms_share_valid_unlimited">Odkaz je platný pro neomezený počet</string>
+    <string name="rooms_share_access_rights">Přístupová práva</string>
+    <string name="rooms_share_regenerate_link">Znovu vygenerovat odkaz</string>
+    <string name="rooms_share_general_header">Obecné</string>
+    <string name="rooms_share_link_life_time">Životnost odkazu</string>
+    <string name="invite_new_members">Noví členové</string>
+    <string name="invite_new_groups">Nové skupiny</string>
+    <string name="invite_add_manually">Přidat ručně</string>
+    <string name="invite_choose_from_list">Výběr ze seznamu</string>
+    <string name="invite_already_invited">Pozvánka</string>
+    <string name="share_access_room_type">Typ přístupu</string>
+    <string name="share_access_room_group_desc">Přístupová práva pro všechny uživatele ve skupině</string>
+    <string name="room_create_thirdparty_storage_title">Úložiště třetí strany</string>
+    <string name="room_create_thirdparty_storage">Úložiště</string>
+    <string name="room_create_thirdparty_location">Umístění</string>
+    <string name="room_create_thirdparty_location_root">Kořenové úložiště</string>
+    <string name="room_create_thirdparty_new_folder">Vytvoření nové složky</string>
+    <string name="room_create_thirdparty_desc">Použijte služby třetích stran jako úložiště dat pro tuto místnost. V připojeném úložišti bude vytvořena nová složka pro ukládání dat této místnosti.</string>
+    <string name="room_storage_reconnect">Znovu připojte úložiště</string>
+    <string name="room_storage_not_availabale">Obsah složky třetí strany není k dispozici. Zkuste účet znovu připojit.</string>
 </resources>

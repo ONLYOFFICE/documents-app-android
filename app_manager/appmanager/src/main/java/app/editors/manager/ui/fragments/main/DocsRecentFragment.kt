@@ -113,7 +113,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter.setSectionType(ApiContract.SectionType.CLOUD_RECENT)
+        presenter.setSectionType(ApiContract.SectionType.LOCAL_RECENT)
         init()
     }
 

@@ -261,6 +261,8 @@ object ApiContract {
         const val DROPBOX = 111
         const val ONEDRIVE = 112
 
+        const val LOCAL_RECENT = 200
+
         fun isRoom(type: Int): Boolean = type == 14
         fun isArchive(type: String): Boolean = isArchive(type.toInt())
         fun isArchive(type: Int): Boolean = type == CLOUD_ARCHIVE_ROOM
