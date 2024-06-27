@@ -171,6 +171,9 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
         val folder = File(folderId)
         return Observable.just(uri).map { file ->
             val docFile = DocumentFile.fromSingleUri(context, file)
+            if (folder.listFiles()?.firstOrNull { it.name == docFile?.name } != null) {
+                throw throwExistException()
+            }
             return@map if (FileUtils.copyFile(context, file, "${folder.path}/${docFile?.name}")) 1 else 0
         }
     }
