@@ -67,6 +67,9 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
     }
 
     override fun getProvider() {
+        if (preferenceTool.sortBy != ApiContract.Parameters.VAL_SORT_BY_TITLE) {
+            preferenceTool.sortBy = ApiContract.Parameters.VAL_SORT_BY_TITLE
+        }
         fileProvider?.let {
             getItemsById("")
         } ?: run {

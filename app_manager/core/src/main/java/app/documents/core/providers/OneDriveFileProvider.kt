@@ -50,21 +50,17 @@ class OneDriveFileProvider(
     private val api: OneDriveProvider get() = helper.api
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
-        return Observable.fromCallable {
-            if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) == null || filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isEmpty() == true) {
-                if (id?.isEmpty() == true) {
-                    api.getFiles(OneDriveUtils.getSortBy(filter)).blockingGet()
-                } else {
-                    id?.let {
-                        api.getChildren(it, OneDriveUtils.getSortBy(filter))
-                            .blockingGet()
-                    }
-                }
+        val filterValue = filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE)
+        return if (filterValue.isNullOrEmpty()) {
+            if (id.isNullOrEmpty()) {
+                api.getFiles(OneDriveUtils.getSortBy(filter))
             } else {
-                api.filter(filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!, OneDriveUtils.getSortBy(filter))
-                    .blockingGet()
+                api.getChildren(id, OneDriveUtils.getSortBy(filter))
             }
+        } else {
+            api.filter(filterValue, OneDriveUtils.getSortBy(filter))
         }
+            .toObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
