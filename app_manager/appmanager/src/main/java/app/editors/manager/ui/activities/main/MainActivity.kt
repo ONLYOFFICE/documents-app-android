@@ -40,9 +40,9 @@ import app.editors.manager.ui.fragments.main.OnlyOfficeCloudFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
+import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.google.android.play.core.tasks.Task
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.encodeToString
