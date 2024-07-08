@@ -277,7 +277,9 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             .subscribe(
                 {},
                 { throwable ->
-                    deleteImportFailedFile(uri)
+                    if (throwable.message?.contains(ProviderError.FILE_EXIST) != true) {
+                        deleteImportFailedFile(uri)
+                    }
                     viewState.onError(throwable.message)
                 }
             ) {
