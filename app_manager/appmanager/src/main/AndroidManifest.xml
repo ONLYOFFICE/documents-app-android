@@ -75,7 +75,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        tools:ignore="UnusedAttribute">
         <activity
             android:name="app.editors.manager.ui.activities.login.PortalsActivity"
             android:configChanges="orientation|screenSize"

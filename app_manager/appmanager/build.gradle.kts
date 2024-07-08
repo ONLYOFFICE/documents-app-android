@@ -78,18 +78,6 @@ android {
         manifestPlaceholders["facebookId"] = keystoreProperties["FACEBOOK_APP_ID"] as String? ?: ""
         manifestPlaceholders["dropboxKey"] = keystoreProperties["DROP_BOX_COM_CLIENT_ID"] as? String ?: ""
 
-        flavorDimensions += "version"
-        productFlavors {
-            register("manager") {
-                dimension = "version"
-                buildConfigField("boolean", "isManager", "true")
-            }
-            register("managerWithoutEditors") {
-                dimension = "version"
-                buildConfigField("boolean", "isManager", "false")
-            }
-        }
-
         buildConfigField("boolean", "IS_BETA", "false")
         buildConfigField("String", "RELEASE_ID", "\"" + appId + "\"")
         buildConfigField("String", "APP_NAME", "\"" + appName + "\"")
@@ -256,15 +244,15 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":libcompose"))
     implementation(project(":libtoolkit"))
-    "managerImplementation"(project(":libx2t"))
-    "managerImplementation"(project(":libeditors"))
-    "managerImplementation"(project(":libslides"))
-    "managerImplementation"(project(":libdocs"))
-    "managerImplementation"(project(":libcells"))
-    "managerImplementation"(project(":libgeditors"))
-    "managerImplementation"(project(":libgslides"))
-    "managerImplementation"(project(":libgdocs"))
-    "managerImplementation"(project(":libgcells"))
+    implementation(project(":libx2t"))
+    implementation(project(":libeditors"))
+    implementation(project(":libslides"))
+    implementation(project(":libdocs"))
+    implementation(project(":libcells"))
+    implementation(project(":libgeditors"))
+    implementation(project(":libgslides"))
+    implementation(project(":libgdocs"))
+    implementation(project(":libgcells"))
 
     // Google libs
     implementation(Firebase.firebaseCore)
