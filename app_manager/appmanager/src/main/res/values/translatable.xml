@@ -215,6 +215,8 @@
     <string name="dialogs_question_rate_first_info">Do you enjoy using ONLYOFFICE Documents?</string>
     <string name="dialogs_question_rate_second_info">Would you mind rating the app on Google Play?</string>
     <string name="dialogs_question_delete_all_title">Delete all items?</string>
+    <string name="dialogs_question_delete_all_fonts">Delete all fonts?</string>
+    <string name="dialogs_question_delete_font">Delete this font?</string>
 
     <plurals name="dialogs_question_message_delete">
         <item quantity="one">It will be irretrievably deleted.\nThis action is irreversible.</item>
@@ -391,6 +393,7 @@
     <string name="placeholder_payment_required">Business subscription expired</string>
     <string name="placeholder_payment_required_desc">Your current tariff plan "Business" expired. Please renew your subscription in the account settings to be able to use your DocSpace. If you have any questions, please contact support</string>
     <string name="placeholder_payment_required_button">Renew Business plan</string>
+    <string name="placeholder_no_fonts">No fonts</string>
 
     <!-- Time marks-->
     <string name="list_headers_folder">Folders</string>
