@@ -15,9 +15,8 @@ import app.editors.manager.databinding.ActivityPortalsBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.main.OnBoardingActivity
-import app.editors.manager.ui.fragments.login.PortalsPagerFragment
+import app.editors.manager.ui.fragments.login.EnterprisePortalFragment
 import app.editors.manager.ui.fragments.main.CloudsFragment
-import com.google.android.material.tabs.TabLayout
 import lib.toolkit.base.managers.utils.AccountUtils
 import javax.inject.Inject
 
@@ -28,7 +27,6 @@ class PortalsActivity : BaseAppActivity(), View.OnClickListener {
 
         const val TAG_ACTION_MESSAGE = "TAG_ACTION_MESSAGE"
         const val TAG_MESSAGE = "TAG_MESSAGE"
-        const val TAG_PORTAL = "TAG_PORTAL"
         const val KEY_PORTALS = "KEY_PORTALS"
 
         @JvmStatic
@@ -37,12 +35,6 @@ class PortalsActivity : BaseAppActivity(), View.OnClickListener {
                 Intent(context, PortalsActivity::class.java),
                 REQUEST_ACTIVITY_PORTAL
             )
-        }
-
-        fun showPortals(context: Activity) {
-            val intent = Intent(context, PortalsActivity::class.java)
-            intent.putExtra(KEY_PORTALS, true)
-            context.startActivityForResult(intent, REQUEST_ACTIVITY_PORTAL)
         }
 
         fun showPortals(fragment: Fragment) {
@@ -72,14 +64,12 @@ class PortalsActivity : BaseAppActivity(), View.OnClickListener {
     private var socialFragment: Fragment? = null
 
     private var viewBinding: ActivityPortalsBinding? = null
-    var tabLayout: TabLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         App.getApp().appComponent.inject(this)
         App.getApp().refreshLoginComponent(null)
         viewBinding = ActivityPortalsBinding.inflate(layoutInflater)
-        tabLayout = viewBinding?.tabLayout
         setContentView(viewBinding?.root)
 
         init(savedInstanceState)
@@ -120,36 +110,32 @@ class PortalsActivity : BaseAppActivity(), View.OnClickListener {
         }
     }
 
-    private fun initPortals() {
-        supportActionBar?.setTitle(R.string.fragment_clouds_title)
-        viewBinding?.tabContainer?.visibility = View.GONE
-        showFragment(
-            CloudsFragment.newInstance(true),
-            null
-        )
-    }
-
     private fun getMessage(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
-            val intent = intent
-            if (intent != null) {
-                if (intent.hasExtra(TAG_MESSAGE)) {
-                    val message = intent.getStringExtra(TAG_MESSAGE)
-                    if (message != null && message.isNotEmpty()) {
-                        if (intent.hasExtra(TAG_ACTION_MESSAGE)) {
-                            showSnackBar(message, intent.getStringExtra(TAG_ACTION_MESSAGE), this)
-                        } else {
-                            showSnackBar(message)
-                        }
+            if (intent.hasExtra(TAG_MESSAGE)) {
+                val message = intent.getStringExtra(TAG_MESSAGE)
+                if (!message.isNullOrEmpty()) {
+                    if (intent.hasExtra(TAG_ACTION_MESSAGE)) {
+                        showSnackBar(message, intent.getStringExtra(TAG_ACTION_MESSAGE), this)
+                    } else {
+                        showSnackBar(message)
                     }
                 }
             }
         }
     }
 
+    private fun initPortals() {
+        supportActionBar?.setTitle(R.string.fragment_clouds_title)
+        showFragment(
+            CloudsFragment.newInstance(true),
+            null
+        )
+    }
+
     private fun showActivities(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
-            showFragment(PortalsPagerFragment.newInstance(), null)
+            showFragment(EnterprisePortalFragment.newInstance(), null)
         }
         if (!preferenceTool.onBoarding) {
             OnBoardingActivity.show(this)
