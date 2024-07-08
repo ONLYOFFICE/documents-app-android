@@ -14,6 +14,7 @@ import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.viewModels.base.BaseViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -98,14 +99,21 @@ class EnterprisePortalViewModel : BaseViewModel() {
             )
         )
 
-        loginRepository.checkPortal(url, scheme)
-            .collect { result ->
-                when (result) {
-                    is PortalResult.Error -> onError(url, result.exception)
-                    is PortalResult.ShouldUseHttp -> tryCheckPortal(url, Scheme.Http, sslState)
-                    is PortalResult.Success -> onSuccess(result.cloudPortal)
+        try {
+            loginRepository.checkPortal(url, scheme)
+                .collect { result ->
+                    when (result) {
+                        is PortalResult.Error -> onError(url, result.exception)
+                        is PortalResult.ShouldUseHttp -> tryCheckPortal(url, Scheme.Http, sslState)
+                        is PortalResult.Success -> onSuccess(result.cloudPortal)
+                    }
                 }
-            }
+        } catch (error: IllegalArgumentException) {
+            delay(500)
+            _portalStateLiveData.value = EnterprisePortalState.Error(R.string.login_enterprise_edit_error_hint)
+            return
+        }
+
     }
 
     private fun onSuccess(portal: CloudPortal) {

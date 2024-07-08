@@ -3,7 +3,6 @@ package app.documents.core.providers
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import androidx.documentfile.provider.DocumentFile
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.*
@@ -171,6 +170,9 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
         val folder = File(folderId)
         return Observable.just(uri).map { file ->
             val docFile = DocumentFile.fromSingleUri(context, file)
+            if (folder.listFiles()?.firstOrNull { it.name == docFile?.name } != null) {
+                throw throwExistException()
+            }
             return@map if (FileUtils.copyFile(context, file, "${folder.path}/${docFile?.name}")) 1 else 0
         }
     }
@@ -229,7 +231,7 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
     @Throws(IOException::class)
     private fun getFilterExplorer(explorer: Explorer, value: String?): Observable<Explorer> {
         return if (value?.isNotEmpty() == true) {
-            Observable.just(search(value, explorer.current?.id.orEmpty()))
+            Observable.just(search(value, explorer.current.id))
         } else {
             Observable.just(explorer)
         }
@@ -239,21 +241,13 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
         val files: MutableList<File?> = mutableListOf()
         val resultExplorer = Explorer()
         var tempExplorer: Explorer?
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Files.walk(Paths.get(id)).use { walkStream ->
-                walkStream.filter { item -> item.name.contains(value.toString(), true) }
-                    .forEach { item ->
-                        files.add(item.toFile())
-                        tempExplorer = getExplorer(files, File(id))
-                        resultExplorer.add(tempExplorer!!)
-                    }
-            }
-        } else {
-            File(id).listFiles()?.filter { file -> file.name.contains(value.toString(), true) }?.forEach { file ->
-                files.add(file)
-                tempExplorer = getExplorer(files, file)
-                resultExplorer.add(tempExplorer!!)
-            }
+        Files.walk(Paths.get(id)).use { walkStream ->
+            walkStream.filter { item -> item.name.contains(value.toString(), true) }
+                .forEach { item ->
+                    files.add(item.toFile())
+                    tempExplorer = getExplorer(files, File(id))
+                    resultExplorer.add(tempExplorer!!)
+                }
         }
 
         if (resultExplorer.count == 0) {

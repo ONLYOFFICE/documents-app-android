@@ -5,7 +5,7 @@ class ProviderError(message: String?) : Exception(message) {
     companion object {
         const val FORBIDDEN = "Forbidden symbol"
         const val INTERRUPT = "Interrupt"
-        const val FILE_EXIST = "Exist"
+        const val FILE_EXIST = "File exist"
         const val UNSUPPORTED_PATH = "Unsupported path"
         const val ERROR_CREATE_LOCAL = "Error create"
 

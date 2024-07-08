@@ -134,6 +134,7 @@ class EnterprisePortalFragment : BaseAppFragment(),
                     }
                 }
                 is EnterprisePortalState.Error -> {
+                    hideDialog()
                     if (state.message == R.string.login_enterprise_edit_error_hint) {
                         onPortalSyntax(getString(state.message))
                     } else if (state.message != null) {

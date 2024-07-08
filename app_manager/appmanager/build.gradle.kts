@@ -64,8 +64,8 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = AppDependency.MIN_SDK_VERSION
         targetSdk = AppDependency.TARGET_SDK_VERSION
-        versionCode = 551
-        versionName = "8.1.0"
+        versionCode = 554
+        versionName = "8.1.1"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
@@ -259,7 +259,7 @@ dependencies {
     implementation(Firebase.firebaseConfig)
     implementation(Firebase.firebaseCrashlytics)
     implementation(Firebase.firebaseMessaging)
-    implementation(Google.playCore)
+    implementation(Google.playReview)
     implementation(Google.playServiceAuth)
     implementation(Google.material)
     implementation(Google.gson)
