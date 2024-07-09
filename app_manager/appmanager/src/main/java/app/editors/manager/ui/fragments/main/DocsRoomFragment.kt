@@ -5,13 +5,9 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.forEach
 import androidx.fragment.app.setFragmentResultListener
-import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.Security
 import app.editors.manager.R
-import app.editors.manager.managers.tools.ActionMenuAdapter
 import app.editors.manager.managers.tools.ActionMenuItem
-import app.editors.manager.managers.tools.ActionMenuItemsFactory
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
@@ -21,7 +17,6 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.setFragmentResultListener
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
-import lib.toolkit.base.ui.popup.ActionBarMenu
 
 class DocsRoomFragment : DocsCloudFragment() {
     private val isRoom get() = cloudPresenter.isCurrentRoom && cloudPresenter.isRoot
@@ -66,27 +61,6 @@ class DocsRoomFragment : DocsCloudFragment() {
             }
             setAccountEnable(false)
         } else super.onStateMenuSelection()
-    }
-
-    override fun showActionBarMenu() {
-        ActionBarMenu(
-            context = requireContext(),
-            adapter = ActionMenuAdapter(actionMenuClickListener),
-            items = ActionMenuItemsFactory.getRoomItems(
-                section = presenter.getSectionType(),
-                root = presenter.isRoot,
-                selected = presenter.isSelectionMode,
-                allSelected = presenter.isSelectedAll,
-                sortBy = presenter.preferenceTool.sortBy,
-                empty = presenter.isListEmpty(),
-                currentRoom = presenter.isRoomFolder(),
-                security = presenter.roomClicked?.security ?: Security(),
-                asc = presenter.preferenceTool.sortOrder.equals(
-                    ApiContract.Parameters.VAL_SORT_ORDER_ASC,
-                    ignoreCase = true
-                )
-            )
-        ).show(requireActivity().window.decorView)
     }
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {

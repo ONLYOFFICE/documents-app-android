@@ -27,6 +27,7 @@ import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Security
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
@@ -1164,20 +1165,40 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     protected open fun showActionBarMenu() {
+        val section = presenter.getSectionType()
+        val isRoom = ApiContract.SectionType.isRoom(section) || ApiContract.SectionType.isArchive(section)
+
         ActionBarMenu(
             context = requireContext(),
             adapter = ActionMenuAdapter(actionMenuClickListener),
-            items = ActionMenuItemsFactory.getDocsItems(
-                provider = requireNotNull(context?.accountOnline?.portal?.provider),
-                section = presenter.getSectionType(),
-                selected = presenter.isSelectionMode,
-                allSelected = presenter.isSelectedAll,
-                sortBy = presenter.preferenceTool.sortBy,
-                asc = presenter.preferenceTool.sortOrder.equals(
-                    ApiContract.Parameters.VAL_SORT_ORDER_ASC,
-                    ignoreCase = true
+            items = if (isRoom) {
+                ActionMenuItemsFactory.getRoomItems(
+                    section = presenter.getSectionType(),
+                    root = presenter.isRoot,
+                    selected = presenter.isSelectionMode,
+                    allSelected = presenter.isSelectedAll,
+                    sortBy = presenter.preferenceTool.sortBy,
+                    empty = presenter.isListEmpty(),
+                    currentRoom = presenter.isRoomFolder(),
+                    security = presenter.roomClicked?.security ?: Security(),
+                    asc = presenter.preferenceTool.sortOrder.equals(
+                        ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                        ignoreCase = true
+                    )
                 )
-            )
+            } else {
+                ActionMenuItemsFactory.getDocsItems(
+                    provider = requireNotNull(context?.accountOnline?.portal?.provider),
+                    section = presenter.getSectionType(),
+                    selected = presenter.isSelectionMode,
+                    allSelected = presenter.isSelectedAll,
+                    sortBy = presenter.preferenceTool.sortBy,
+                    asc = presenter.preferenceTool.sortOrder.equals(
+                        ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                        ignoreCase = true
+                    )
+                )
+            }
         ).show(requireActivity().window.decorView)
     }
 
