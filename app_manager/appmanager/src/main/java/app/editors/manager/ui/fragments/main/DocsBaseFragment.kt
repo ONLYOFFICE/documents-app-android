@@ -893,6 +893,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         presenter.interruptFileSending()
     }
 
+    override fun onSetGridView(isGrid: Boolean) {
+        // TODO:  
+    }
+
     /*
      * On pager scroll callback
      * */
@@ -1208,6 +1212,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         when (item) {
             is ActionMenuItem.Sort -> presenter.sortBy(item.sortValue)
             is ActionMenuItem.Operation -> presenter.moveCopySelected(item.value)
+            ActionMenuItem.GridView -> presenter.setGridView(true)
+            ActionMenuItem.ListView -> presenter.setGridView(false)
             ActionMenuItem.Select -> presenter.setSelection(true)
             ActionMenuItem.SelectAll -> presenter.setSelectionAll()
             ActionMenuItem.Deselect -> presenter.deselectAll()

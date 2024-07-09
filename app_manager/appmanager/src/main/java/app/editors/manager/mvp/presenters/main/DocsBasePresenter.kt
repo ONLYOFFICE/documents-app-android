@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Handler
@@ -78,7 +79,8 @@ import javax.net.ssl.SSLHandshakeException
 
 
 @InjectViewState
-abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
+abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Inject
     lateinit var context: Context
@@ -189,8 +191,22 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     val currentFolder: Current?
         get() = modelExplorerStack.last()?.current
 
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        when (key) {
+            PreferenceTool.KEY_IS_GRID_VIEW -> {
+                viewState.onSetGridView(preferenceTool.isGridView)
+            }
+        }
+    }
+
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        preferenceTool.registerChangeListener(this)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        preferenceTool.unregisterChangeListener(this)
         disposable.clear()
         disposable.dispose()
         fileProvider = null
@@ -1743,7 +1759,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     fun isRoomFolder(): Boolean {
         return modelExplorerStack.last()?.current?.id == roomClicked?.id
     }
-    
+
+    fun setGridView(isGrid: Boolean) {
+        preferenceTool.isGridView = isGrid
+    }
+
     abstract fun getNextList()
 
     abstract fun getFileInfo()
