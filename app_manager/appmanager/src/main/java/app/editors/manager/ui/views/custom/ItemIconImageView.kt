@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.util.AttributeSet
+import android.util.TypedValue.COMPLEX_UNIT_SP
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
@@ -20,6 +21,8 @@ import app.editors.manager.managers.utils.ManagerUiUtils.setFolderIcon
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.list.RecentViaLink
+import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.shape.CornerFamily
 
 class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
 
@@ -39,7 +42,7 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
                 AppCompatResources.getDrawable(context, R.drawable.drawable_list_image_select_foreground) else null
         }
 
-    private val imageView: ImageView get() = binding.image
+    private val imageView: ShapeableImageView get() = binding.image
 
     private val textView: TextView get() = binding.text
 
@@ -56,7 +59,20 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
         }
     }
 
-    fun setItem(item: Item, isRoot: Boolean = false) {
+    fun setItem(item: Item, isRoot: Boolean = false, isGrid: Boolean = false) {
+        if (isGrid) {
+            imageView.shapeAppearanceModel = imageView.shapeAppearanceModel.toBuilder()
+                .setAllCorners(CornerFamily.ROUNDED, 0f)
+                .build()
+            imageView.scaleType = ImageView.ScaleType.FIT_CENTER
+            binding.text.setTextSize(COMPLEX_UNIT_SP, 28f)
+            binding.badge.layoutParams = binding.badge.layoutParams.apply {
+                val size = context.resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.badge_grid_size)
+                width = size
+                height = size
+            }
+        }
+
         when (item) {
             is CloudFile -> setCloudFile(item)
             is CloudFolder -> setCloudFolder(item, isRoot)

@@ -19,6 +19,9 @@ import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
 import app.editors.manager.ui.adapters.holders.FileViewHolder
 import app.editors.manager.ui.adapters.holders.FolderViewHolder
 import app.editors.manager.ui.adapters.holders.FooterViewHolder
+import app.editors.manager.ui.adapters.holders.GridFileViewHolder
+import app.editors.manager.ui.adapters.holders.GridFolderViewHolder
+import app.editors.manager.ui.adapters.holders.GridFooterViewHolder
 import app.editors.manager.ui.adapters.holders.HeaderViewHolder
 import app.editors.manager.ui.adapters.holders.RecentViaLinkViewHolder
 import app.editors.manager.ui.adapters.holders.UploadFileViewHolder
@@ -26,7 +29,7 @@ import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import lib.toolkit.base.ui.adapters.factory.inflate
 import javax.inject.Inject
 
-class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<Entity>() {
+class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView: Boolean) : BaseAdapter<Entity>() {
 
     @Inject
     lateinit var context: Context
@@ -51,6 +54,8 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
             field = isFoldersMode
             notifyDataSetChanged()
         }
+    
+    var isGridView: Boolean = initialGridView
 
     private val footer: Footer = Footer()
 
@@ -58,8 +63,7 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
         getApp().appComponent.inject(this)
     }
 
-    override fun onCreateViewHolder(view: ViewGroup, type: Int):
-            BaseViewHolderExplorer<*> {
+    override fun onCreateViewHolder(view: ViewGroup, type: Int): BaseViewHolderExplorer<*> {
         return factory.createViewHolder(view.inflate(type), type, this)
     }
 
@@ -92,11 +96,11 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
 
     override fun getItemViewType(position: Int): Int {
         return if (position == itemCount - 1) {
-            FooterViewHolder.LAYOUT
+            if (isGridView) GridFooterViewHolder.LAYOUT else FooterViewHolder.LAYOUT
         } else {
             when (itemList[position]) {
-                is CloudFile -> FileViewHolder.LAYOUT
-                is CloudFolder -> FolderViewHolder.LAYOUT
+                is CloudFile -> if (isGridView) GridFileViewHolder.LAYOUT else FileViewHolder.LAYOUT
+                is CloudFolder -> if (isGridView) GridFolderViewHolder.LAYOUT else FolderViewHolder.LAYOUT
                 is UploadFile -> UploadFileViewHolder.LAYOUT
                 is Header -> HeaderViewHolder.LAYOUT
                 RecentViaLink -> RecentViaLinkViewHolder.LAYOUT

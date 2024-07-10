@@ -78,6 +78,7 @@
     <dimen name="image_padding_icon">8dp</dimen>
     <dimen name="image_default_size">24dp</dimen>
     <dimen name="image_social_size">48dp</dimen>
+    <dimen name="badge_grid_size">20dp</dimen>
 
     <!-- Line separator for lists, menus and etc -->
     <dimen name="line_separator_height">1dp</dimen>

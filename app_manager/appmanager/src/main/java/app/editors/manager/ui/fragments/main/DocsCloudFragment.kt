@@ -11,6 +11,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.os.bundleOf
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResult
+import androidx.recyclerview.widget.LinearLayoutManager
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
@@ -80,7 +81,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             when (requestCode) {
                 BaseActivity.REQUEST_ACTIVITY_STORAGE -> {
                     val folder = data?.getSerializable(StorageActivity.TAG_RESULT, CloudFolder::class.java)
-                    cloudPresenter.addFolderAndOpen(folder, linearLayoutManager?.findFirstVisibleItemPosition() ?: -1)
+                    val layoutManager = this@DocsCloudFragment.layoutManager
+                    if (layoutManager is LinearLayoutManager) {
+                        cloudPresenter.addFolderAndOpen(folder, layoutManager.findFirstVisibleItemPosition())
+                    }
                 }
 
                 BaseActivity.REQUEST_ACTIVITY_SHARE -> {

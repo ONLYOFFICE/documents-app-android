@@ -28,7 +28,7 @@
         android:layout_marginEnd="@dimen/default_margin_medium"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/list_explorer_file_info"
-        app:layout_constraintEnd_toStartOf="@+id/list_explorer_file_favorite"
+        app:layout_constraintEnd_toStartOf="@+id/favorite"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/view_icon_selectable_layout"
@@ -37,7 +37,7 @@
         tools:text="File name" />
 
     <ImageView
-        android:id="@+id/list_explorer_file_favorite"
+        android:id="@+id/listExplorerFileFavorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/default_margin_medium"

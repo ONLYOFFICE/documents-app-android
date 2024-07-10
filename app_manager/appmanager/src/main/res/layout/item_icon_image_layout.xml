@@ -2,9 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="40dp"
-    android:layout_height="40dp"
-    android:layout_margin="4dp">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/image"
@@ -20,8 +19,8 @@
 
     <TextView
         android:id="@+id/text"
-        android:layout_width="@dimen/image_size"
-        android:layout_height="@dimen/image_size"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@drawable/drawable_shape_circle"
         android:fontFamily="sans-serif-medium"
         android:gravity="center"
@@ -41,6 +40,7 @@
         android:layout_width="18dp"
         android:layout_height="18dp"
         android:background="@color/colorBackground"
+        android:src="@drawable/ic_public_room_badge"
         android:visibility="gone"
         app:contentPadding="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
