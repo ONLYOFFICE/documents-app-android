@@ -102,7 +102,6 @@ object ActionMenuItemsFactory {
         sortBy: String?,
     ) = mutableListOf<ActionMenuItem>().apply {
         if (!selected) {
-
             add(
                 ActionMenuItem.View.get(
                     listOf(
@@ -128,20 +127,15 @@ object ActionMenuItemsFactory {
                     )
                 )
             }
-            add(ActionMenuItem.Divider)
 
             // empty trash
             if (section == SectionType.CLOUD_TRASH) {
-                add(ActionMenuItem.EmptyTrash)
                 add(ActionMenuItem.Divider)
+                add(ActionMenuItem.EmptyTrash)
             }
         } else if (section == SectionType.CLOUD_TRASH) {
             // trash action block
             add(ActionMenuItem.Restore)
-            add(ActionMenuItem.Delete)
-        } else if (section == SectionType.CLOUD_ARCHIVE_ROOM) {
-            // archive action block
-            add(ActionMenuItem.Download)
             add(ActionMenuItem.Delete)
         } else {
             // common action block
@@ -151,18 +145,18 @@ object ActionMenuItemsFactory {
             add(ActionMenuItem.Delete)
         }
         // select block
-        if (section != SectionType.LOCAL_RECENT) addAll(getSelectItems(selected, allSelected, false))
+        if (section != SectionType.LOCAL_RECENT) addAll(getSelectItems(selected, allSelected))
     }
 
     private fun getSelectItems(selected: Boolean, allSelected: Boolean, divider: Boolean = true) =
         mutableListOf<ActionMenuItem>().apply {
+            if (divider) add(ActionMenuItem.Divider)
             if (!selected) {
                 add(ActionMenuItem.Select)
             } else {
                 add(ActionMenuItem.Deselect)
             }
             if (!allSelected) add(ActionMenuItem.SelectAll)
-            if (divider) add(ActionMenuItem.Divider)
         }
 
     private fun getRoomRootItems(
@@ -193,15 +187,13 @@ object ActionMenuItemsFactory {
                     ).map { it.get(asc, sortBy) }
                 )
             )
-            add(ActionMenuItem.Divider)
         } else if (section == SectionType.CLOUD_ARCHIVE_ROOM) {
             // archive action block
             add(ActionMenuItem.Restore)
             add(ActionMenuItem.Delete)
-            add(ActionMenuItem.Divider)
         }
         // select block
-        addAll(getSelectItems(selected, allSelected, false))
+        addAll(getSelectItems(selected, allSelected, !selected || section == SectionType.CLOUD_ARCHIVE_ROOM))
     }
 
     private fun getRoomFolderItems(
@@ -213,7 +205,6 @@ object ActionMenuItemsFactory {
         currentRoom: Boolean,
         security: Security,
     ) = mutableListOf<ActionMenuItem>().apply {
-        val showCopyLink = !currentRoom && !selected
         if (!selected) {
             add(
                 ActionMenuItem.ManageRoom.get(
@@ -229,9 +220,21 @@ object ActionMenuItemsFactory {
                     )
                 )
             )
+            if (!currentRoom) {
+                add(ActionMenuItem.Divider)
+                add(ActionMenuItem.CopyLink(false))
+            }
         }
         if (!empty) {
             if (!selected) {
+                add(
+                    ActionMenuItem.View.get(
+                        listOf(
+                            ActionMenuItem.ListView,
+                            ActionMenuItem.GridView,
+                        )
+                    )
+                )
                 add(
                     ActionMenuItem.SortBy.get(
                         listOf(
@@ -243,28 +246,14 @@ object ActionMenuItemsFactory {
                         ).map { it.get(asc, sortBy) }
                     )
                 )
-                add(
-                    ActionMenuItem.View.get(
-                        listOf(
-                            ActionMenuItem.ListView,
-                            ActionMenuItem.GridView,
-                        )
-                    )
-                )
-                add(ActionMenuItem.Divider)
             }
-            addAll(getSelectItems(selected, allSelected, false))
             if (selected) {
-                add(ActionMenuItem.Divider)
                 add(ActionMenuItem.Download)
                 add(ActionMenuItem.Move)
                 add(ActionMenuItem.Copy)
                 add(ActionMenuItem.Delete)
             }
-        }
-        if (showCopyLink) {
-            add(ActionMenuItem.Divider)
-            add(ActionMenuItem.CopyLink(false))
+            addAll(getSelectItems(selected, allSelected))
         }
     }
 }
