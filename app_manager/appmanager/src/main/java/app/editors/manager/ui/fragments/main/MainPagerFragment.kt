@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import app.documents.core.model.cloud.isDocSpace
@@ -191,8 +192,9 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         if (!isVisible) return
         isVisibleRoot = isRoot
         activity?.setAppBarStates(isVisibleRoot)
-        viewBinding?.mainViewPager?.post {
-            viewBinding?.appBarTabs?.isVisible = isVisibleRoot
+        viewBinding?.let { binding ->
+            binding.appBarTabs.isVisible = isVisibleRoot
+            binding.mainViewPager.updatePadding(bottom = if (isVisibleRoot) binding.appBarTabs.height else 0)
         }
     }
 
@@ -293,7 +295,6 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         }
         viewBinding?.appBarTabs?.setupWithViewPager(viewBinding?.mainViewPager, true)
         setToolbarState(true)
-
         if (isRestore) {
             viewBinding?.mainViewPager?.currentItem = selectedPage
         } else {
