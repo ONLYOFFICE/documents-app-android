@@ -4,15 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.Animation.AnimationListener
+import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import app.editors.manager.R
 import app.editors.manager.databinding.FragmentListBinding
 import app.editors.manager.ui.adapters.holders.RecentViaLinkViewHolder
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.recyclers.LoadingScroll
 import lib.toolkit.base.ui.recycler.WrapLinearLayoutManager
+
 
 abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshListener {
 
@@ -22,6 +27,10 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
     protected var fragmentListBinding: FragmentListBinding? = null
     protected var isGridView: Boolean = false
     protected var layoutManager: LayoutManager? = null
+
+    private val layoutAnimation by lazy {
+        AnimationUtils.loadLayoutAnimation(context, R.anim.recycler_grid_view_animation)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,13 +77,32 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
     protected open fun onListEnd() {}
 
     protected open fun switchGridView(isGrid: Boolean) {
-        if (isGrid) {
-            val spanCount = getSpanCount()
-            val layoutManager = GridLayoutManager(requireContext(), spanCount)
-            layoutManager.spanSizeLookup = getSpanSizeLookup()
-            recyclerView?.layoutManager = layoutManager
-        } else {
-            recyclerView?.layoutManager = WrapLinearLayoutManager(requireContext())
+        recyclerView?.let { view ->
+            setLayoutAnimation(view)
+            if (isGrid) {
+                val spanCount = getSpanCount()
+                val layoutManager = GridLayoutManager(requireContext(), spanCount)
+                layoutManager.spanSizeLookup = getSpanSizeLookup()
+                view.layoutManager = layoutManager
+            } else {
+                view.layoutManager = WrapLinearLayoutManager(requireContext())
+            }
+        }
+    }
+
+    private fun setLayoutAnimation(recyclerView: RecyclerView) {
+        recyclerView.setLayoutAnimation(layoutAnimation)
+        recyclerView.scheduleLayoutAnimation()
+        recyclerView.layoutAnimationListener = object : AnimationListener {
+
+            override fun onAnimationStart(animation: Animation?) {}
+
+            override fun onAnimationRepeat(animation: Animation?) {}
+
+            override fun onAnimationEnd(animation: Animation?) {
+                recyclerView.layoutAnimation = null
+                recyclerView.layoutAnimationListener = null
+            }
         }
     }
 
