@@ -137,7 +137,11 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             activity.showActionButton(false)
             activity.showAccount(false)
         }
-        adapter = RecentAdapter(requireContext(), RecentHolderFactory(recentListener, contextListener))
+        adapter = RecentAdapter(
+            requireContext(),
+            presenter.preferenceTool.isGridView,
+            RecentHolderFactory(recentListener, contextListener)
+        )
         recyclerView?.let {
             it.adapter = adapter
             it.setPadding(
@@ -204,6 +208,11 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.SEARCH)
             updateMenu(false)
         }
+    }
+
+    override fun onSetGridView(isGrid: Boolean) {
+        adapter?.isGrid = isGrid
+        super.onSetGridView(isGrid)
     }
 
     private fun updateMenu(isEnable: Boolean) {

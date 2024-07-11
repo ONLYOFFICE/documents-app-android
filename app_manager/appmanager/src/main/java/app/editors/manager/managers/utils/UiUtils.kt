@@ -16,6 +16,8 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import com.bumptech.glide.Glide
+import com.google.android.material.imageview.ShapeableImageView
+import com.google.android.material.shape.CornerFamily
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
 
@@ -124,14 +126,28 @@ object ManagerUiUtils {
         }
     }
 
-    fun ImageView.setFileIcon(ext: String) {
+    fun ImageView.setFileIcon(ext: String, isGrid: Boolean = false) {
+        if (isGrid && this is ShapeableImageView) {
+            shapeAppearanceModel = shapeAppearanceModel.toBuilder()
+                .setAllCorners(CornerFamily.ROUNDED, 0f)
+                .build()
+            scaleType = ImageView.ScaleType.FIT_CENTER
+        }
         setImageResource(getFileIcon(ext))
         imageAlpha = 255
     }
 
-    fun ImageView.setFolderIcon(folder: CloudFolder, isRoot: Boolean) {
+    fun ImageView.setFolderIcon(folder: CloudFolder, isRoot: Boolean, isGrid: Boolean = false) {
         val icon = getFolderIcon(folder, isRoot)
         val logo = folder.logo?.large
+
+        if (isGrid && this is ShapeableImageView) {
+            shapeAppearanceModel = shapeAppearanceModel.toBuilder()
+                .setAllCorners(CornerFamily.ROUNDED, 0f)
+                .build()
+            scaleType = ImageView.ScaleType.FIT_CENTER
+        }
+
         if (!logo.isNullOrEmpty()) {
             setRoomLogo(logo, icon)
         } else {

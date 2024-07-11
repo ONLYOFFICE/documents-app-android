@@ -2,8 +2,9 @@ package app.editors.manager.ui.adapters.holders.factory
 
 import android.view.View
 import app.documents.core.model.cloud.Recent
-import app.editors.manager.R
-import app.editors.manager.ui.adapters.holders.RecentHeaderViewHolder
+import app.editors.manager.ui.adapters.holders.FileViewHolder
+import app.editors.manager.ui.adapters.holders.GridFileViewHolder
+import app.editors.manager.ui.adapters.holders.GridRecentViewHolder
 import app.editors.manager.ui.adapters.holders.RecentViewHolder
 import lib.toolkit.base.ui.adapters.factory.HolderFactory
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
@@ -16,8 +17,8 @@ class RecentHolderFactory(
     override fun createViewHolder(view: View, type: Int): BaseViewHolder<*> {
 
         return when (type) {
-            R.layout.list_explorer_files -> RecentViewHolder(view, itemListener, contextListener)
-            lib.toolkit.base.R.layout.list_item_header -> RecentHeaderViewHolder(view)
+            GridFileViewHolder.LAYOUT -> GridRecentViewHolder(view, itemListener, contextListener)
+            FileViewHolder.LAYOUT -> RecentViewHolder(view, itemListener, contextListener)
             else -> throw RuntimeException("Need holder")
         }
     }

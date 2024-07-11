@@ -9,11 +9,21 @@ import app.editors.manager.mvp.models.ui.RecentUI
 import app.editors.manager.mvp.models.ui.toRecentUI
 import app.editors.manager.ui.adapters.base.BaseViewTypeAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.RecentDiffUtilsCallback
+import app.editors.manager.ui.adapters.holders.FileViewHolder
+import app.editors.manager.ui.adapters.holders.GridFileViewHolder
 import app.editors.manager.ui.adapters.holders.factory.RecentHolderFactory
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.ui.adapters.holder.ViewType
 
-class RecentAdapter(private val context: Context, factory: RecentHolderFactory) : BaseViewTypeAdapter<ViewType>(factory) {
+class RecentAdapter(
+    private val context: Context,
+    var isGrid: Boolean,
+    factory: RecentHolderFactory,
+) : BaseViewTypeAdapter<ViewType>(factory) {
+
+    override fun getItemViewType(position: Int): Int {
+        return if (isGrid) GridFileViewHolder.LAYOUT else FileViewHolder.LAYOUT
+    }
 
     fun setRecent(list: List<Recent>, sortByUpdated: Boolean) {
         if (sortByUpdated) {
@@ -29,7 +39,7 @@ class RecentAdapter(private val context: Context, factory: RecentHolderFactory) 
     }
 
     fun isEmpty(): Boolean {
-        return itemsList.filterIsInstance(RecentUI::class.java).isNullOrEmpty()
+        return itemsList.filterIsInstance<RecentUI>().isEmpty()
     }
 
     private fun getListWithHeaders(list: List<Recent>): MutableList<ViewType> {
