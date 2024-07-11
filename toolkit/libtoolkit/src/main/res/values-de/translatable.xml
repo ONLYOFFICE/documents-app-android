@@ -27,4 +27,5 @@
         <item quantity="one">Stunde</item>
         <item quantity="other">Stunden</item>
     </plurals>
+    <string name="settings_fonts_title">Schriftarten</string>
 </resources>

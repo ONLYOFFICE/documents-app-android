@@ -34,4 +34,5 @@
         <item quantity="one">ساعة</item>
         <item quantity="other">ساعات</item>
     </plurals>
+    <string name="settings_fonts_title">خطوط</string>
 </resources>

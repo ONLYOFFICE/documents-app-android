@@ -17,4 +17,5 @@
   <string name="common_next">Dalej</string>
   <string name="common_ok">OK</string>
   <string name="common_previous">Wróć</string>
+  <string name="settings_fonts_title">Czcionki</string>
 </resources>

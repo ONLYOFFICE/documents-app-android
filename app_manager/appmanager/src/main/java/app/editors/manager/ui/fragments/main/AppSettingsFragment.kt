@@ -304,7 +304,7 @@ class AppSettingsFragment : BaseFragment() {
                 Screen.Passcode.route -> R.string.app_settings_passcode
                 Screen.LocalePicker.route -> R.string.settings_language
                 Screen.About.route -> R.string.about_title
-                Screen.Fonts.route -> lib.editors.gbase.R.string.settings_fonts_title
+                Screen.Fonts.route -> lib.toolkit.base.R.string.settings_fonts_title
                 else -> R.string.settings_item_title
             }
 
@@ -370,7 +370,7 @@ class AppSettingsFragment : BaseFragment() {
                     )
                 }
                 AppArrowItem(
-                    title = lib.editors.gbase.R.string.settings_fonts_title,
+                    title = lib.toolkit.base.R.string.settings_fonts_title,
                     dividerVisible = false,
                     onClick = onFontsClick,
                     option = settingsState.fonts.size.toString()
