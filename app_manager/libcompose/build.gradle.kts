@@ -9,10 +9,10 @@ plugins {
 android {
 
     namespace = "lib.compose.ui"
-    compileSdk = AppDependency.COMPILE_SDK_VERSION
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = AppDependency.MIN_SDK_VERSION
+        minSdk = libs.versions.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -42,19 +42,20 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = Compose.versionCompiler
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 }
 
 dependencies {
     implementation(project(":libtoolkit"))
 
-    implementation(Kotlin.kotlinCore)
+    implementation(libs.kotlin.core)
 
-    implementation(Compose.ui)
-    implementation(Compose.material)
-    implementation(Compose.preview)
-    implementation(AndroidX.composeActivity)
-    implementation(Compose.navigation)
-    debugImplementation(Compose.tooling)
+    implementation(libs.compose.activity)
+
+    implementation(libs.compose.ui)
+    implementation(libs.compose.material)
+    implementation(libs.compose.uiToolingPreview)
+    implementation(libs.compose.navigation)
+    debugImplementation(libs.compose.uiTooling)
 }
