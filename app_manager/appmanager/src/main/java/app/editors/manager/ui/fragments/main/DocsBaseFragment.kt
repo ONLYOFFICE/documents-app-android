@@ -21,7 +21,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.GridLayoutManager
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
@@ -67,7 +66,6 @@ import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getHelpUrl
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
-import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSendFileIntent
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.BaseAdapter.OnItemContextListener
@@ -77,7 +75,6 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.OnCommonDialogClose
 import lib.toolkit.base.ui.dialogs.common.holders.WaitingHolder
 import lib.toolkit.base.ui.popup.ActionBarMenu
-import lib.toolkit.base.ui.recycler.WrapLinearLayoutManager
 import lib.toolkit.base.ui.views.search.CommonSearchView
 import java.io.File
 
@@ -899,12 +896,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onSetGridView(isGrid: Boolean) {
         explorerAdapter?.isGridView = isGrid
-        if (isGrid) {
-            val isLandscape = UiUtils.isLandscape(requireContext())
-            recyclerView?.layoutManager = GridLayoutManager(requireContext(), if (isLandscape) 5 else 3)
-        } else {
-            recyclerView?.layoutManager = WrapLinearLayoutManager(requireContext())
-        }
+        switchGridView(isGrid)
     }
 
     /*
