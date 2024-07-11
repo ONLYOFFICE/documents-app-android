@@ -61,10 +61,13 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
 
     fun setItem(item: Item, isRoot: Boolean = false, isGrid: Boolean = false) {
         if (isGrid) {
-            imageView.shapeAppearanceModel = imageView.shapeAppearanceModel.toBuilder()
-                .setAllCorners(CornerFamily.ROUNDED, 0f)
-                .build()
-            imageView.scaleType = ImageView.ScaleType.FIT_CENTER
+            if (item !is CloudFolder || !item.isRoom) {
+                imageView.shapeAppearanceModel = imageView.shapeAppearanceModel.toBuilder()
+                    .setAllCorners(CornerFamily.ROUNDED, 0f)
+                    .build()
+                imageView.scaleType = ImageView.ScaleType.FIT_CENTER
+            }
+
             binding.text.setTextSize(COMPLEX_UNIT_SP, 28f)
             binding.badge.layoutParams = binding.badge.layoutParams.apply {
                 val size = context.resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.badge_grid_size)
