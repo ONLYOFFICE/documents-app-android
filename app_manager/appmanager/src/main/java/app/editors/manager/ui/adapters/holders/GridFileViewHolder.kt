@@ -20,7 +20,7 @@ class GridFileViewHolder(view: View, adapter: ExplorerAdapter) :
     init {
         with(binding.root) {
             setOnClickListener { adapter.mOnItemClickListener?.onItemClick(view, layoutPosition) }
-            setOnLongClickListener { adapter.mOnItemLongClickListener?.onItemLongClick(view, layoutPosition); false }
+            setOnLongClickListener { adapter.mOnItemContextListener?.onItemContextClick(layoutPosition); false }
         }
     }
 
