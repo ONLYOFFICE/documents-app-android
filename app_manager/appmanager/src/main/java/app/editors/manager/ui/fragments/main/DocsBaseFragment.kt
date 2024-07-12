@@ -1187,6 +1187,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     empty = presenter.isListEmpty(),
                     currentRoom = presenter.isRoomFolder(),
                     security = presenter.roomClicked?.security ?: Security(),
+                    isGridView = presenter.preferenceTool.isGridView,
                     asc = presenter.preferenceTool.sortOrder.equals(
                         ApiContract.Parameters.VAL_SORT_ORDER_ASC,
                         ignoreCase = true
@@ -1199,6 +1200,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     selected = presenter.isSelectionMode,
                     allSelected = presenter.isSelectedAll,
                     sortBy = presenter.preferenceTool.sortBy,
+                    isGridView = presenter.preferenceTool.isGridView,
                     asc = presenter.preferenceTool.sortOrder.equals(
                         ApiContract.Parameters.VAL_SORT_ORDER_ASC,
                         ignoreCase = true
@@ -1214,8 +1216,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         when (item) {
             is ActionMenuItem.Sort -> presenter.sortBy(item.sortValue)
             is ActionMenuItem.Operation -> presenter.moveCopySelected(item.value)
-            ActionMenuItem.GridView -> presenter.setGridView(true)
-            ActionMenuItem.ListView -> presenter.setGridView(false)
+            is ActionMenuItem.GridView -> presenter.setGridView(true)
+            is ActionMenuItem.ListView -> presenter.setGridView(false)
             ActionMenuItem.Select -> presenter.setSelection(true)
             ActionMenuItem.SelectAll -> presenter.setSelectionAll()
             ActionMenuItem.Deselect -> presenter.deselectAll()

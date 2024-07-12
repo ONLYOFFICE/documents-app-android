@@ -23,6 +23,8 @@ sealed class ActionMenuItem(override val title: Int) : IActionMenuItem {
         }
     }
 
+    sealed class RadioButton(title: Int, open val checked: Boolean = false) : ActionMenuItem(title = title)
+
     sealed class Sort(
         title: Int,
         val sortValue: String,
@@ -56,8 +58,8 @@ sealed class ActionMenuItem(override val title: Int) : IActionMenuItem {
     data object SortBy : Arrow(R.string.toolbar_menu_sort_by)
     data object View : Arrow(R.string.toolbar_menu_view)
 
-    data object ListView : None(R.string.toolbar_menu_view_list)
-    data object GridView : None(R.string.toolbar_menu_view_grid)
+    data class ListView(override val checked: Boolean) : RadioButton(R.string.toolbar_menu_view_list)
+    data class GridView(override val checked: Boolean) : RadioButton(R.string.toolbar_menu_view_grid)
 
     data object Move : Operation(R.string.toolbar_menu_main_move, OperationsState.OperationType.MOVE)
     data object Copy : Operation(R.string.toolbar_menu_main_copy, OperationsState.OperationType.COPY)
@@ -85,11 +87,12 @@ object ActionMenuItemsFactory {
         asc: Boolean,
         security: Security,
         sortBy: String?,
+        isGridView: Boolean
     ): List<ActionMenuItem> {
         return if (root) {
-            getRoomRootItems(section, selected, allSelected, asc, sortBy)
+            getRoomRootItems(section, selected, allSelected, asc, sortBy, isGridView)
         } else {
-            getRoomFolderItems(selected, empty, allSelected, asc, sortBy, currentRoom, security)
+            getRoomFolderItems(selected, empty, allSelected, asc, sortBy, currentRoom, security, isGridView)
         }
     }
 
@@ -100,13 +103,14 @@ object ActionMenuItemsFactory {
         allSelected: Boolean,
         asc: Boolean,
         sortBy: String?,
+        isGridView: Boolean
     ) = mutableListOf<ActionMenuItem>().apply {
         if (!selected) {
             add(
                 ActionMenuItem.View.get(
                     listOf(
-                        ActionMenuItem.ListView,
-                        ActionMenuItem.GridView,
+                        ActionMenuItem.ListView(!isGridView),
+                        ActionMenuItem.GridView(isGridView),
                     )
                 )
             )
@@ -165,14 +169,15 @@ object ActionMenuItemsFactory {
         allSelected: Boolean,
         asc: Boolean,
         sortBy: String?,
+        isGridView: Boolean
     ) = mutableListOf<ActionMenuItem>().apply {
         // top block
         if (!selected) {
             add(
                 ActionMenuItem.View.get(
                     listOf(
-                        ActionMenuItem.ListView,
-                        ActionMenuItem.GridView,
+                        ActionMenuItem.ListView(!isGridView),
+                        ActionMenuItem.GridView(isGridView),
                     )
                 )
             )
@@ -204,6 +209,7 @@ object ActionMenuItemsFactory {
         sortBy: String?,
         currentRoom: Boolean,
         security: Security,
+        isGridView: Boolean
     ) = mutableListOf<ActionMenuItem>().apply {
         if (!selected) {
             add(
@@ -230,8 +236,8 @@ object ActionMenuItemsFactory {
                 add(
                     ActionMenuItem.View.get(
                         listOf(
-                            ActionMenuItem.ListView,
-                            ActionMenuItem.GridView,
+                            ActionMenuItem.ListView(isGridView),
+                            ActionMenuItem.GridView(!isGridView),
                         )
                     )
                 )
