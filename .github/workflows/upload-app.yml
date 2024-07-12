@@ -31,7 +31,7 @@ jobs:
 
           if [ ! -z "$apk_url" ]; then
               curl -o onlyoffice-documents.apk -L "$apk_url"
-              aws s3 cp onlyoffice-documents.apk  ${{ secrets.AWS_BUCKET_URL }}/install/mobile/android/
+              aws s3 cp onlyoffice-documents.apk  ${{ secrets.AWS_BUCKET_URL }}/install/mobile/android/ --acl public-read
               echo "apk_uploaded=true" >> $GITHUB_OUTPUT
           else
               echo "Error: APK file not found in the release assets. Skipping upload to AWS S3."
