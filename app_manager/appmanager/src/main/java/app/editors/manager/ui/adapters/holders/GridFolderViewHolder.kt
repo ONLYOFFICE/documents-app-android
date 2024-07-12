@@ -1,9 +1,10 @@
 package app.editors.manager.ui.adapters.holders
 
+import android.content.res.ColorStateList
 import android.view.View
 import android.widget.TableLayout
 import android.widget.TableLayout.LayoutParams.WRAP_CONTENT
-import androidx.core.view.isVisible
+import androidx.core.widget.TextViewCompat
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerGridFolderBinding
@@ -42,7 +43,16 @@ class GridFolderViewHolder(view: View, adapter: ExplorerAdapter) :
                 isSectionMy = adapter.isSectionMy
             )
             icon.setItem(element, adapter.isRoot, true)
-            iconPin.isVisible = element.pinned
+            title.setCompoundDrawablesWithIntrinsicBounds(
+                0,
+                0,
+                if (element.pinned) R.drawable.ic_pin_to_top else 0,
+                0
+            )
+            TextViewCompat.setCompoundDrawableTintList(
+                title,
+                ColorStateList.valueOf(root.context.getColor(lib.toolkit.base.R.color.colorTextSecondary))
+            )
         }
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -14,35 +15,18 @@
         android:layout_height="60dp"
         android:layout_marginTop="8dp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title"
+        style="@style/Widget.Common.TextView"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/title"
-            style="@style/Widget.Common.TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="2"
-            android:textAlignment="center"
-            tools:text="New Document New Document New Document" />
-
-        <ImageView
-            android:id="@+id/iconPin"
-            style="@style/Widget.Common.ImageView.Secondary"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:layout_marginStart="4dp"
-            android:src="@drawable/ic_pin_to_top"
-            android:visibility="gone"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible" />
-
-    </LinearLayout>
+        android:drawablePadding="4dp"
+        android:drawableTint="@color/colorTextSecondary"
+        android:maxLines="2"
+        android:textAlignment="center"
+        app:drawableEndCompat="@drawable/ic_pin_to_top"
+        tools:text="New folder" />
 
     <TextView
         android:id="@+id/subtitle"

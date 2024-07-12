@@ -3,7 +3,6 @@ package app.editors.manager.ui.adapters.holders
 import android.view.View
 import android.widget.TableLayout
 import android.widget.TableLayout.LayoutParams.WRAP_CONTENT
-import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerGridFileBinding
@@ -43,7 +42,12 @@ class GridFileViewHolder(view: View, adapter: ExplorerAdapter) :
                 isSectionMy = adapter.isSectionMy
             )
             icon.setItem(element, adapter.isRoot, true)
-            favorite.isVisible = element.favorite
+            title.setCompoundDrawablesWithIntrinsicBounds(
+                0,
+                0,
+                if (element.favorite) R.drawable.ic_favorites_fill else 0,
+                0
+            )
         }
     }
 }
