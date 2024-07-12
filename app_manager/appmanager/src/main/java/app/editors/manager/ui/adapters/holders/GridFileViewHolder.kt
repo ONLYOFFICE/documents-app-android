@@ -1,8 +1,6 @@
 package app.editors.manager.ui.adapters.holders
 
 import android.view.View
-import android.widget.TableLayout
-import android.widget.TableLayout.LayoutParams.WRAP_CONTENT
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerGridFileBinding
@@ -28,12 +26,13 @@ class GridFileViewHolder(view: View, adapter: ExplorerAdapter) :
 
     override fun bind(element: CloudFile) {
         with(binding) {
-            title.post {
-                if (title.lineCount > 1) {
-                    title.layoutParams = TableLayout.LayoutParams(0, WRAP_CONTENT, 1f)
-                }
-            }
             title.text = element.title
+            title.setCompoundDrawablesWithIntrinsicBounds(
+                0,
+                0,
+                if (element.favorite) R.drawable.ic_favorites_fill else 0,
+                0
+            )
             subtitle.text = StringUtils.getCloudItemInfo(
                 context = root.context,
                 item = element,
@@ -41,13 +40,8 @@ class GridFileViewHolder(view: View, adapter: ExplorerAdapter) :
                 sortBy = adapter.preferenceTool.sortBy,
                 isSectionMy = adapter.isSectionMy
             )
-            icon.setItem(element, adapter.isRoot, true)
-            title.setCompoundDrawablesWithIntrinsicBounds(
-                0,
-                0,
-                if (element.favorite) R.drawable.ic_favorites_fill else 0,
-                0
-            )
+            icon.setItem(element, adapter.isRoot, true, element.isSelected)
+            icon.alpha = if (adapter.isSelectMode && !element.isSelected) .4f else 1f
         }
     }
 }

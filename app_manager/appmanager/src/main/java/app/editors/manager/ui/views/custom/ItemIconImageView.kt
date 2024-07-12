@@ -57,7 +57,7 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
         }
     }
 
-    fun setItem(item: Item, isRoot: Boolean = false, isGrid: Boolean = false) {
+    fun setItem(item: Item, isRoot: Boolean = false, isGrid: Boolean = false, gridSelected: Boolean = false) {
         if (isGrid) {
             binding.text.setTextSize(COMPLEX_UNIT_SP, 28f)
             binding.badge.layoutParams = binding.badge.layoutParams.apply {
@@ -67,8 +67,8 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
             }
         }
         when (item) {
-            is CloudFile -> imageView.setFileIcon(item.fileExst, isGrid)
-            is CloudFolder -> setCloudFolder(item, isRoot, isGrid)
+            is CloudFile -> setCloudFile(item, isGrid, gridSelected)
+            is CloudFolder -> setCloudFolder(item, isRoot, isGrid, gridSelected)
             RecentViaLink -> setRecent()
             else -> throw IllegalArgumentException(
                 "Item must be ${CloudFile::class.simpleName}" +
@@ -77,15 +77,31 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
         }
     }
 
+    private fun setCloudFile(item: CloudFile, isGrid: Boolean, gridSelected: Boolean) {
+        imageView.setFileIcon(item.fileExst, isGrid)
+        if (gridSelected) {
+            binding.badge.setImageResource(R.drawable.ic_check_circle)
+            binding.badge.isVisible = true
+        } else {
+            binding.badge.isVisible = false
+        }
+    }
+
     private fun setRecent() {
         imageView.setImageResource(R.drawable.ic_type_archive)
     }
 
-    fun setIconFromExtension(extension: String, isGrid: Boolean = false) {
+    fun setIconFromExtension(extension: String, isGrid: Boolean = false, gridSelected: Boolean = false) {
         imageView.setFileIcon(extension, isGrid)
+        if (gridSelected) {
+            binding.badge.setImageResource(R.drawable.ic_check_circle)
+            binding.badge.isVisible = true
+        } else {
+            binding.badge.isVisible = false
+        }
     }
 
-    private fun setCloudFolder(folder: CloudFolder, isRoot: Boolean, isGrid: Boolean) {
+    private fun setCloudFolder(folder: CloudFolder, isRoot: Boolean, isGrid: Boolean, gridSelected: Boolean) {
         val initials = RoomUtils.getRoomInitials(folder.title)
         if (folder.isRoom) {
             if (!folder.logo?.large.isNullOrEmpty()) {
@@ -106,6 +122,9 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
             if (folder.providerItem && folder.providerKey.isNotEmpty()) {
                 binding.badge.setImageResource(StorageUtils.getStorageIcon(folder.providerKey))
                 binding.badge.isVisible = true
+            } else if (gridSelected) {
+                binding.badge.setImageResource(R.drawable.ic_check_circle)
+                binding.badge.isVisible = true
             } else if (folder.roomType == ApiContract.RoomType.PUBLIC_ROOM) {
                 binding.badge.setImageResource(R.drawable.ic_public_room_badge)
                 binding.badge.isVisible = true
@@ -113,7 +132,12 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
                 binding.badge.isVisible = false
             }
         } else {
-            binding.badge.isVisible = false
+            if (gridSelected) {
+                binding.badge.setImageResource(R.drawable.ic_check_circle)
+                binding.badge.isVisible = true
+            } else {
+                binding.badge.isVisible = false
+            }
             textView.isVisible = false
             imageView.isVisible = true
             imageView.setFolderIcon(folder, isRoot, isGrid)

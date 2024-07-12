@@ -2,8 +2,6 @@ package app.editors.manager.ui.adapters.holders
 
 import android.content.res.ColorStateList
 import android.view.View
-import android.widget.TableLayout
-import android.widget.TableLayout.LayoutParams.WRAP_CONTENT
 import androidx.core.widget.TextViewCompat
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
@@ -29,20 +27,7 @@ class GridFolderViewHolder(view: View, adapter: ExplorerAdapter) :
 
     override fun bind(element: CloudFolder) {
         with(binding) {
-            title.post {
-                if (title.lineCount > 1) {
-                    title.layoutParams = TableLayout.LayoutParams(0, WRAP_CONTENT, 1f)
-                }
-            }
             title.text = element.title
-            subtitle.text = StringUtils.getCloudItemInfo(
-                context = adapter.context,
-                item = element,
-                userId = adapter.accountId,
-                sortBy = adapter.preferenceTool.sortBy,
-                isSectionMy = adapter.isSectionMy
-            )
-            icon.setItem(element, adapter.isRoot, true)
             title.setCompoundDrawablesWithIntrinsicBounds(
                 0,
                 0,
@@ -53,6 +38,15 @@ class GridFolderViewHolder(view: View, adapter: ExplorerAdapter) :
                 title,
                 ColorStateList.valueOf(root.context.getColor(lib.toolkit.base.R.color.colorTextSecondary))
             )
+            subtitle.text = StringUtils.getCloudItemInfo(
+                context = adapter.context,
+                item = element,
+                userId = adapter.accountId,
+                sortBy = adapter.preferenceTool.sortBy,
+                isSectionMy = adapter.isSectionMy
+            )
+            icon.setItem(element, adapter.isRoot, true, element.isSelected)
+            icon.alpha = if (adapter.isSelectMode && !element.isSelected) .4f else 1f
         }
     }
 }

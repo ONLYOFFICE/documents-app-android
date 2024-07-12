@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/selectableItemBackground"
     android:gravity="center_horizontal"
     android:orientation="vertical"
@@ -18,13 +18,13 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
         style="@style/Widget.Common.TextView"
-        app:drawableEndCompat="@drawable/ic_favorites_fill"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:drawablePadding="4dp"
         android:maxLines="2"
         android:textAlignment="center"
+        app:drawableEndCompat="@drawable/ic_favorites_fill"
         tools:text="New file" />
 
     <TextView
