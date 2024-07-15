@@ -648,7 +648,7 @@
     <string name="conversion_dialog_converting_to">Conversione in %1s</string>
     <string name="main_pager_docs_my">I miei documenti</string>
     <string name="main_pager_docs_virtual_room">Stanze</string>
-    <string name="main_pager_docs_archive_room">AArchivio</string>
+    <string name="main_pager_docs_archive_room">Archivio</string>
     <string name="errors_sign_in_ldap_checkbox">Accedi come utente LDAP</string>
     <string name="placeholder_empty_folder">Nessun documento qui ancora</string>
     <string name="placeholder_empty_trash_desc">Tutti i file eliminati vengono spostati nel \'Cestino\'. Ripristina i file eliminati per errore o eliminali definitivamente. I file nel \'Cestino\' vengono automaticamente eliminati dopo 30 giorni. Tieni presente che i file eliminati dal \'Cestino\' non possono più essere ripristinati</string>
