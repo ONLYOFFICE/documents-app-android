@@ -344,7 +344,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun onUploadError(path: String?, info: String?, file: String?) {
-        viewState.onDeleteUploadFile(file)
         viewState.onSnackBar(info)
     }
 
@@ -358,7 +357,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (modelExplorerStack.currentId == file?.folderId) {
             addFile(file)
         }
-        viewState.onDeleteUploadFile(id)
         viewState.onSnackBar(info)
     }
 
@@ -367,18 +365,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
-        if (folderId != null && id != null && modelExplorerStack.currentId == folderId) {
-            viewState.onUploadFileProgress(progress, id)
-        }
+        // Nothing
     }
 
     override fun onUploadCanceled(path: String?, info: String?, id: String?) {
         viewState.onSnackBar(info)
-        viewState.onDeleteUploadFile(id)
-        if (UploadWork.getUploadFiles(modelExplorerStack.currentId)?.isEmpty() == true) {
-            viewState.onRemoveUploadHead()
-            getListWithHeaders(modelExplorerStack.last(), true)
-        }
     }
 
     override fun onUploadRepeat(path: String?, info: String?) {

@@ -846,29 +846,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onUploadFileProgress(progress: Int, id: String) {
-        val uploadFile = explorerAdapter?.getUploadFileById(id)
-        uploadFile?.let { file ->
-            file.progress = progress
-            explorerAdapter?.updateItem(file)
-        }
-    }
-
-    override fun onDeleteUploadFile(id: String) {
-        explorerAdapter?.removeUploadItemById(id)
-    }
-
-    override fun onRemoveUploadHead() {
-        explorerAdapter?.removeHeader(getApp().getString(R.string.upload_manager_progress_title))
-    }
-
-    override fun onAddUploadsFile(uploadFiles: List<Entity>) {
-        onRemoveUploadHead()
-        explorerAdapter?.addItemsAtTop(uploadFiles)
-        explorerAdapter?.addItemAtTop(Header(getString(R.string.upload_manager_progress_title)))
-        recyclerView?.scrollToPosition(0)
-    }
-
     override fun continueClick(tag: String?, action: String?) {
         var operationType = ApiContract.Operation.OVERWRITE
         tag?.let {

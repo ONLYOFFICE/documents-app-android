@@ -24,7 +24,6 @@ import app.editors.manager.ui.adapters.holders.GridFolderViewHolder
 import app.editors.manager.ui.adapters.holders.GridFooterViewHolder
 import app.editors.manager.ui.adapters.holders.HeaderViewHolder
 import app.editors.manager.ui.adapters.holders.RecentViaLinkViewHolder
-import app.editors.manager.ui.adapters.holders.UploadFileViewHolder
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import lib.toolkit.base.ui.adapters.factory.inflate
 import javax.inject.Inject
@@ -67,6 +66,7 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
         return factory.createViewHolder(view.inflate(type), type, this)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is FooterViewHolder) {
             holder.bind(footer)
@@ -79,14 +79,6 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<*>) {
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
-        } else {
-            if (holder is UploadFileViewHolder) {
-                payloads[0]?.let { payload ->
-                    if (payload is UploadFile) {
-                        holder.updateProgress(payload)
-                    }
-                }
-            }
         }
     }
 
@@ -101,7 +93,6 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
             when (itemList[position]) {
                 is CloudFile -> if (isGridView) GridFileViewHolder.LAYOUT else FileViewHolder.LAYOUT
                 is CloudFolder -> if (isGridView) GridFolderViewHolder.LAYOUT else FolderViewHolder.LAYOUT
-                is UploadFile -> UploadFileViewHolder.LAYOUT
                 is Header -> HeaderViewHolder.LAYOUT
                 RecentViaLink -> RecentViaLinkViewHolder.LAYOUT
                 else -> 0
@@ -120,28 +111,6 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
     fun isLoading(isShow: Boolean) {
         isFooter = isShow
         notifyItemChanged(itemCount - 1)
-    }
-
-    fun getUploadFileById(id: String): UploadFile? {
-        mList?.let { list ->
-            for (file in list) {
-                if (file is UploadFile && file.id == id)
-                    return file
-            }
-        }
-        return null
-    }
-
-    fun removeUploadItemById(id: String) {
-        mList?.let { list ->
-            for (file in list) {
-                if (file is UploadFile && file.id == id) {
-                    mList.remove(file)
-                    notifyItemRemoved(mList.indexOf(file))
-                    break
-                }
-            }
-        }
     }
 
     fun checkHeaders() {

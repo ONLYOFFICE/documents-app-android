@@ -758,8 +758,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
             if (modelExplorerStack.last()?.itemsCount == 0) {
                 refresh()
-            } else {
-                viewState.onAddUploadsFile(uploadFiles)
             }
         }
     }
@@ -943,17 +941,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     protected fun getListWithHeaders(explorer: Explorer?, isResetHeaders: Boolean): List<Entity> {
         if (explorer == null) return emptyList()
-        val entities = mutableListOf<Entity>()
-
-        UploadWork.getUploadFiles(modelExplorerStack.currentId)?.let { uploadFiles ->
-            if (uploadFiles.size != 0) {
-                entities.addAll(uploadFiles)
-            }
-        }
-
-        entities.addAll(explorer.folders)
-        entities.addAll(explorer.files)
-
+        val entities = explorer.folders + explorer.files
         val placeholderType = if (entities.isEmpty()) {
             if (isFilteringMode) {
                 PlaceholderViews.Type.SEARCH

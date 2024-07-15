@@ -225,7 +225,6 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
     ) {
         info?.let { viewState.onSnackBar(it) }
         refresh()
-        viewState.onDeleteUploadFile(id)
     }
 
     override fun onActionClick() {
@@ -233,22 +232,15 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
     }
 
     override fun onUploadAndOpen(path: String?, title: String?, file: CloudFile?, id: String?) {
-        TODO("Not yet implemented")
+        // Nothing
     }
 
     override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
-        if (folderId != null && id != null && modelExplorerStack.currentId == folderId) {
-            viewState.onUploadFileProgress(progress, id)
-        }
+        // Nothing
     }
 
     override fun onUploadCanceled(path: String?, info: String?, id: String?) {
         info?.let { viewState.onSnackBar(it) }
-        viewState.onDeleteUploadFile(id)
-        if (app.editors.manager.managers.works.UploadWork.getUploadFiles(modelExplorerStack.currentId)?.isEmpty() == true) {
-            viewState.onRemoveUploadHead()
-            getListWithHeaders(modelExplorerStack.last(), true)
-        }
     }
 
     override fun onUploadRepeat(path: String?, info: String?) {

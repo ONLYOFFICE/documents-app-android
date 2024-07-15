@@ -154,28 +154,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onUploadFileProgress(progress: Int, id: String) {
-        explorerAdapter?.getUploadFileById(id).let { uploadFile ->
-            uploadFile?.progress = progress
-            explorerAdapter?.updateItem(uploadFile)
-        }
-    }
-
-    override fun onDeleteUploadFile(id: String) {
-        explorerAdapter?.removeUploadItemById(id)
-    }
-
-    override fun onRemoveUploadHead() {
-        explorerAdapter?.removeHeader(getApp().getString(R.string.upload_manager_progress_title))
-    }
-
-    override fun onAddUploadsFile(uploadFiles: List<Entity>) {
-        onRemoveUploadHead()
-        explorerAdapter?.addItemsAtTop(uploadFiles)
-        explorerAdapter?.addItemAtTop(Header(getString(R.string.upload_manager_progress_title)))
-        recyclerView?.scrollToPosition(0)
-    }
-
     override fun showMoveCopyDialog(names: ArrayList<String>, action: String, title: String) {
         moveCopyDialog = MoveCopyDialog.newInstance(names, action, title)
         moveCopyDialog?.dialogButtonOnClick = this
