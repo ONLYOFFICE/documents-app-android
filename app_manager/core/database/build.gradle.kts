@@ -2,15 +2,15 @@ plugins {
     kotlin("android")
     id("com.android.library")
     id("kotlinx-serialization")
-    id("com.google.devtools.ksp") version Kotlin.kspVersion
+    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
     namespace = "app.documents.core.database"
-    compileSdk = AppDependency.COMPILE_SDK_VERSION
+    compileSdk =libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = AppDependency.MIN_SDK_VERSION
+        minSdk = libs.versions.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -34,12 +34,12 @@ android {
 dependencies {
     implementation(project(":core:model"))
 
-    implementation(Dagger.dagger)
-    ksp(Dagger.daggerCompiler)
+    implementation(libs.dagger)
+    ksp(libs.dagger.compiler)
 
-    implementation(Kotlin.kotlinSerialization)
-    
-    implementation(Room.roomRuntime)
-    implementation(Room.roomKtx)
-    ksp(Room.roomCompiler)
+    implementation(libs.kotlin.serialization.json)
+
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
 }

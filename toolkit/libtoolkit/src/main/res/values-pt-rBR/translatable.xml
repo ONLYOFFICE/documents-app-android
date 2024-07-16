@@ -26,4 +26,6 @@
         <item quantity="one" tools:ignore="ImpliedQuantity">hora</item>
         <item quantity="other">horas</item>
     </plurals>
+    <string name="settings_fonts_title">Fontes</string>
+
 </resources>
