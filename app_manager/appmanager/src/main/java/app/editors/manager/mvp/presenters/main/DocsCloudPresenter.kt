@@ -401,20 +401,26 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun onEditContextClick() {
-        val file = itemClicked
-        if (file is CloudFile) {
-            if (LocalContentTools.isOpenFormat(file.clearExt)) {
-                viewState.onConversionQuestion()
-                return
+        when (val item = itemClicked) {
+            is CloudFile -> {
+                if (LocalContentTools.isOpenFormat(item.clearExt)) {
+                    viewState.onConversionQuestion()
+                    return
+                }
+                item.isReadOnly = false
+                var url = item.webUrl
+                if (url.contains(ApiContract.Parameters.ARG_ACTION) && url.contains(ApiContract.Parameters.VAL_ACTION_VIEW)) {
+                    url = url.substring(0, url.indexOf('&'))
+                    item.webUrl = url
+                }
+                addRecent(item)
+                onFileClickAction(item, true)
             }
-            file.isReadOnly = false
-            var url = file.webUrl
-            if (url.contains(ApiContract.Parameters.ARG_ACTION) && url.contains(ApiContract.Parameters.VAL_ACTION_VIEW)) {
-                url = url.substring(0, url.indexOf('&'))
-                file.webUrl = url
+            is CloudFolder -> {
+                if (item.isRoom) {
+                    editRoom()
+                }
             }
-            addRecent(file)
-            onFileClickAction(file, true)
         }
     }
 
