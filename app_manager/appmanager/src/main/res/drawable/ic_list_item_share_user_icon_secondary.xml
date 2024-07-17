@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bitmap
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/ic_list_item_share_user_icon"
+    android:tint="@color/colorTextTertiary"/>
