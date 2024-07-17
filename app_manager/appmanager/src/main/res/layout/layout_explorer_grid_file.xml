@@ -1,40 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:id="@+id/cardRootLayout"
+    style="@style/GridItemLayout.Card">
 
-    <app.editors.manager.ui.views.custom.ItemIconImageView
-        android:id="@+id/icon"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="8dp" />
+    <androidx.constraintlayout.widget.ConstraintLayout style="@style/GridItemLayout.ConstraintLayout">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/title"
-        style="@style/Widget.Common.TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:drawablePadding="4dp"
-        android:maxLines="2"
-        android:textAlignment="center"
-        app:drawableEndCompat="@drawable/ic_favorites_fill"
-        tools:text="New file" />
+        <ImageView
+            android:id="@+id/image"
+            style="@style/GridItemLayout.Image"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_document_column" />
 
-    <TextView
-        android:id="@+id/subtitle"
-        style="@style/Widget.Common.TextView.Micro.Secondary"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:maxLines="2"
-        android:textAlignment="center"
-        tools:text="21 апр 2024" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/badgeNewCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/colorSecondary"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="4dp"
+            app:layout_constraintBottom_toTopOf="@id/image"
+            app:layout_constraintEnd_toStartOf="@id/image"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@id/favorite"
+            app:layout_constraintTop_toTopOf="parent">
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/badgeNew"
+                style="@style/Widget.Common.TextView.Micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorSecondary"
+                android:includeFontPadding="false"
+                android:paddingHorizontal="3dp"
+                android:paddingVertical="1dp"
+                android:textColor="@color/colorOnSecondary"
+                tools:text="new" />
+
+        </androidx.cardview.widget.CardView>
+
+        <ImageView
+            android:id="@+id/favorite"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_favorites_fill"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/image"
+            app:layout_constraintTop_toBottomOf="@id/badgeNewCard"
+            app:layout_goneMarginBottom="4dp"
+            app:tint="@color/colorPrimary" />
+
+        <ImageView
+            android:id="@+id/selectIcon"
+            style="@style/GridItemLayout.SelectIcon"
+            app:layout_constraintBottom_toBottomOf="@id/badgeNewCard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/badgeNewCard"
+            tools:ignore="ContentDescription" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/badge"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:background="@color/colorBackground"
+            android:src="@drawable/ic_public_room_badge"
+            android:visibility="gone"
+            app:contentPadding="2dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/title"
+            style="@style/GridItemLayout.Title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/image"
+            tools:text="New file.docx" />
+
+        <TextView
+            android:id="@+id/subtitle"
+            style="@style/GridItemLayout.Subtitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:text="21 апр 2024" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

@@ -9,8 +9,8 @@ import app.editors.manager.mvp.models.ui.RecentUI
 import app.editors.manager.mvp.models.ui.toRecentUI
 import app.editors.manager.ui.adapters.base.BaseViewTypeAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.RecentDiffUtilsCallback
-import app.editors.manager.ui.adapters.holders.FileViewHolder
-import app.editors.manager.ui.adapters.holders.GridFileViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListFileViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.GridFileViewHolder
 import app.editors.manager.ui.adapters.holders.factory.RecentHolderFactory
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.ui.adapters.holder.ViewType
@@ -22,7 +22,7 @@ class RecentAdapter(
 ) : BaseViewTypeAdapter<ViewType>(factory) {
 
     override fun getItemViewType(position: Int): Int {
-        return if (isGrid) GridFileViewHolder.LAYOUT else FileViewHolder.LAYOUT
+        return if (isGrid) GridFileViewHolder.LAYOUT else ListFileViewHolder.LAYOUT
     }
 
     fun setRecent(list: List<Recent>, sortByUpdated: Boolean) {

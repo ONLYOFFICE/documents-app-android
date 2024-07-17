@@ -1,0 +1,47 @@
+package app.editors.manager.ui.adapters.holders.explorer
+
+import android.graphics.Bitmap
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.drawToBitmap
+import androidx.core.view.isVisible
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.editors.manager.R
+import app.editors.manager.databinding.LayoutExplorerListFileBinding
+import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.ui.adapters.ExplorerAdapter
+
+class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
+    ListBaseViewHolder<CloudFile>(itemView, adapter) {
+
+    private val binding = LayoutExplorerListFileBinding.bind(itemView)
+
+    override val rootLayout: ConstraintLayout
+        get() = binding.constraintRootLayout
+
+    override val title: TextView
+        get() = binding.title
+
+    override val subtitle: TextView
+        get() = binding.subtitle
+
+    override val contextButton: Button
+        get() = binding.contextButton
+
+    override fun getCachedIcon(): View {
+        return binding.image
+    }
+
+    override fun bind(element: CloudFile) {
+        super.bind(element)
+        binding.favorite.isVisible = element.favorite
+        binding.image.setImageResource(ManagerUiUtils.getFileIcon(element.fileExst))
+    }
+
+    companion object {
+
+        val LAYOUT: Int = R.layout.layout_explorer_list_file
+    }
+}

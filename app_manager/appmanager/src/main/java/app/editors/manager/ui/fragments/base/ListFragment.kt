@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentListBinding
-import app.editors.manager.ui.adapters.holders.RecentViaLinkViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.RecentViaLinkViewHolder
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.recyclers.LoadingScroll
 import lib.toolkit.base.ui.recycler.WrapLinearLayoutManager

@@ -68,7 +68,8 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             sectionType = ApiContract.Section.Recent.type,
             headerInfo = (recent.source ?: getString(R.string.this_device)) +
                     getString(R.string.placeholder_point) +
-                    TimeUtils.formatDate(Date(recent.date))
+                    TimeUtils.formatDate(Date(recent.date)),
+            headerIcon = null
         )
         presenter.onContextClick(recent, position)
         showExplorerContextBottomDialog(state)

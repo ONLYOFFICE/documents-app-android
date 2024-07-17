@@ -7,7 +7,6 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.UploadFile
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.PreferenceTool
@@ -16,14 +15,15 @@ import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
-import app.editors.manager.ui.adapters.holders.FileViewHolder
-import app.editors.manager.ui.adapters.holders.FolderViewHolder
-import app.editors.manager.ui.adapters.holders.FooterViewHolder
-import app.editors.manager.ui.adapters.holders.GridFileViewHolder
-import app.editors.manager.ui.adapters.holders.GridFolderViewHolder
-import app.editors.manager.ui.adapters.holders.GridFooterViewHolder
-import app.editors.manager.ui.adapters.holders.HeaderViewHolder
-import app.editors.manager.ui.adapters.holders.RecentViaLinkViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListFileViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListFolderViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListFooterViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.GridFileViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.GridFolderViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.GridFooterViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.GridRoomViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListRoomViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.RecentViaLinkViewHolder
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import lib.toolkit.base.ui.adapters.factory.inflate
 import javax.inject.Inject
@@ -53,7 +53,7 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
             field = isFoldersMode
             notifyDataSetChanged()
         }
-    
+
     var isGridView: Boolean = initialGridView
 
     private val footer: Footer = Footer()
@@ -68,7 +68,7 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
 
     @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is FooterViewHolder) {
+        if (holder is ListFooterViewHolder) {
             holder.bind(footer)
         } else {
             setFileFavoriteStatus(position)
@@ -88,14 +88,29 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
 
     override fun getItemViewType(position: Int): Int {
         return if (position == itemCount - 1) {
-            if (isGridView) GridFooterViewHolder.LAYOUT else FooterViewHolder.LAYOUT
+            if (isGridView) GridFooterViewHolder.LAYOUT else ListFooterViewHolder.LAYOUT
         } else {
-            when (itemList[position]) {
-                is CloudFile -> if (isGridView) GridFileViewHolder.LAYOUT else FileViewHolder.LAYOUT
-                is CloudFolder -> if (isGridView) GridFolderViewHolder.LAYOUT else FolderViewHolder.LAYOUT
-                is Header -> HeaderViewHolder.LAYOUT
+            when (val item = itemList[position]) {
+                is CloudFile -> if (isGridView) GridFileViewHolder.LAYOUT else ListFileViewHolder.LAYOUT
+                is CloudFolder -> getFolderLayout(item)
                 RecentViaLink -> RecentViaLinkViewHolder.LAYOUT
                 else -> 0
+            }
+        }
+    }
+
+    private fun getFolderLayout(item: CloudFolder): Int {
+        return if (isGridView) {
+            if (item.isRoom) {
+                GridRoomViewHolder.LAYOUT
+            } else {
+                GridFolderViewHolder.LAYOUT
+            }
+        } else {
+            if (item.isRoom) {
+                ListRoomViewHolder.LAYOUT
+            } else {
+                ListFolderViewHolder.LAYOUT
             }
         }
     }

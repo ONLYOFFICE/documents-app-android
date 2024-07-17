@@ -5,16 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height">
 
-    <app.editors.manager.ui.views.custom.ItemIconImageView
+    <ImageView
         android:id="@+id/icon"
-        android:layout_width="@dimen/image_size"
-        android:layout_height="@dimen/image_size"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="@dimen/default_margin_medium"
+        android:layout_width="@dimen/item_one_line_height"
+        android:layout_height="@dimen/item_one_line_height"
+        android:layout_marginStart="@dimen/default_margin_large"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/title"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/title"
@@ -34,6 +35,7 @@
         style="@style/Widget.Common.TextView.Small.Secondary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_margin_small"
         app:layout_constraintBottom_toBottomOf="@id/icon"
         app:layout_constraintEnd_toEndOf="@id/title"
         app:layout_constraintStart_toStartOf="@id/title"

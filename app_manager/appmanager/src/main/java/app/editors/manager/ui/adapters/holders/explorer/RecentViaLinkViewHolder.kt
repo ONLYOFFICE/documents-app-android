@@ -1,9 +1,10 @@
-package app.editors.manager.ui.adapters.holders
+package app.editors.manager.ui.adapters.holders.explorer
 
 import android.view.View
 import app.editors.manager.R
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.ui.adapters.ExplorerAdapter
+import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
 
 
 class RecentViaLinkViewHolder(private val view: View, adapter: ExplorerAdapter) :
@@ -23,7 +24,9 @@ class RecentViaLinkViewHolder(private val view: View, adapter: ExplorerAdapter) 
         }
     }
 
+    override fun getCachedIcon(): View? = null
+
     companion object {
-        val LAYOUT: Int = R.layout.list_explorer_recent
+        val LAYOUT: Int = R.layout.layout_explorer_recent
     }
 }

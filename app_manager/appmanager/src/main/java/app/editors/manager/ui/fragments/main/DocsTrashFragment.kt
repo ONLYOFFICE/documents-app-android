@@ -27,7 +27,7 @@ class DocsTrashFragment : DocsCloudFragment() {
         if (presenter.isSelectionMode) {
             super.onItemClick(view, position)
         } else {
-            onItemContextClick(position)
+            onItemContextClick(position, null)
         }
     }
 

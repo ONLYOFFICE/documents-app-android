@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/list_explorer_folder_layout"
+    android:id="@+id/constraintRootLayout"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_two_line_height"
     android:clickable="true"
@@ -10,57 +10,61 @@
     android:foreground="?attr/selectableItemBackground"
     android:paddingBottom="@dimen/line_separator_height">
 
-    <app.editors.manager.ui.views.custom.ItemIconImageView
-        android:id="@+id/view_icon_selectable_layout"
-        android:layout_width="@dimen/image_size"
-        android:layout_height="@dimen/image_size"
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="@dimen/item_one_line_height"
+        android:layout_height="@dimen/item_one_line_height"
         android:layout_marginStart="@dimen/screen_margin_large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/list_explorer_folder_name"
+        android:id="@+id/title"
         style="@style/Widget.Common.TextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/list_explorer_folder_info"
-        app:layout_constraintEnd_toStartOf="@+id/list_explorer_room_pin"
-        app:layout_constraintStart_toEndOf="@+id/view_icon_selectable_layout"
+        android:layout_marginEnd="@dimen/default_margin_medium"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@+id/subtitle"
+        app:layout_constraintEnd_toStartOf="@id/favorite"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/image"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        tools:text="Folder name" />
+        tools:text="File nameFile nameFile nameFile nameFile nameFile nameFile name" />
 
     <ImageView
-        android:id="@+id/list_explorer_room_pin"
-        style="@style/Widget.Common.ImageView.Secondary"
+        android:id="@+id/favorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/default_margin_medium"
-        android:src="@drawable/ic_pin_to_top"
-        android:visibility="visible"
+        android:src="@drawable/ic_favorites_fill"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toBottomOf="@+id/list_explorer_folder_name"
-        app:layout_constraintEnd_toStartOf="@+id/list_explorer_folder_context"
-        app:layout_constraintTop_toTopOf="@+id/list_explorer_folder_name"
+        app:layout_constraintBottom_toBottomOf="@+id/title"
+        app:layout_constraintEnd_toStartOf="@+id/contextButton"
+        app:layout_constraintTop_toTopOf="@+id/title"
+        app:tint="@color/colorPrimary"
         tools:ignore="ContentDescription" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/list_explorer_folder_info"
+        android:id="@+id/subtitle"
         style="@style/Widget.Common.TextView.Small.Secondary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="@dimen/default_margin_medium"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/list_explorer_folder_name"
-        app:layout_constraintStart_toStartOf="@+id/list_explorer_folder_name"
-        app:layout_constraintTop_toBottomOf="@+id/list_explorer_folder_name"
-        tools:text="Folder date" />
+        app:layout_constraintEnd_toStartOf="@id/contextButton"
+        app:layout_constraintStart_toStartOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        tools:text="Date updated" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/list_explorer_folder_context"
+        android:id="@+id/contextButton"
         style="@style/Widget.Common.Button.IconButton.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -68,15 +72,20 @@
         app:icon="@drawable/ic_list_context_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <include
         layout="@layout/view_line_separator"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_gravity="bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/list_explorer_folder_name" />
+        app:layout_constraintStart_toStartOf="@id/title" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
