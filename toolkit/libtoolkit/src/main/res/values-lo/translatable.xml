@@ -18,4 +18,13 @@
     <string name="common_previous">ກ່ອນໜ້າ</string>
     <string name="common_done">ສຳເລັດ</string>
     <string name="common_ok">ໂອເຄ</string>
+
+    <plurals name="days">
+        <item quantity="other">ມື້</item>
+    </plurals>
+
+    <plurals name="hours">
+        <item quantity="other">ຊົ່ວໂມງ</item>
+    </plurals>
+
 </resources>
