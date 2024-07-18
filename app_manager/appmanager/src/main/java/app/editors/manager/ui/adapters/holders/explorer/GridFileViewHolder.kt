@@ -1,11 +1,9 @@
 package app.editors.manager.ui.adapters.holders.explorer
 
-import android.graphics.Bitmap
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.view.drawToBitmap
 import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
@@ -43,6 +41,8 @@ class GridFileViewHolder(view: View, adapter: ExplorerAdapter) :
     override fun bind(element: CloudFile) {
         super.bind(element)
         binding.image.setImageResource(ManagerUiUtils.getFileIcon(element.fileExst))
-        binding.favorite.isVisible = element.favorite
+        binding.favorite.isVisible = element.isFavorite
+        binding.badgeNewCard.isVisible = element.isNew
+        binding.editing.isVisible = element.isEditing
     }
 }

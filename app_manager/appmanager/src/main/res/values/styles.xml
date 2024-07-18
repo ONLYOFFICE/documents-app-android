@@ -56,17 +56,17 @@
     <style name="GridItemLayout.Title" parent="Widget.Common.TextView">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">4dp</item>
-        <item name="android:maxLines">2</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:maxLines">1</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="GridItemLayout.Subtitle" parent="Widget.Common.TextView.Micro.Secondary">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">4dp</item>
-        <item name="android:maxLines">2</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:maxLines">1</item>
         <item name="android:textAlignment">center</item>
     </style>
 

@@ -36,8 +36,10 @@ class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
 
     override fun bind(element: CloudFile) {
         super.bind(element)
-        binding.favorite.isVisible = element.favorite
         binding.image.setImageResource(ManagerUiUtils.getFileIcon(element.fileExst))
+        binding.favorite.isVisible = element.isFavorite
+        binding.badgeNewCard.isVisible = element.isNew
+        binding.editing.isVisible = element.isEditing
     }
 
     companion object {

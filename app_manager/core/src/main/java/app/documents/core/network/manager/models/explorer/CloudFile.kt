@@ -1,5 +1,6 @@
 package app.documents.core.network.manager.models.explorer
 
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
@@ -90,6 +91,15 @@ open class CloudFile : Item() {
 
     val clearExt: String
         get() = fileExst.replace(".", "")
+
+    val isFavorite: Boolean
+        get() = (fileStatus.toInt() and ApiContract.FileStatus.FAVORITE) != 0
+
+    val isNew: Boolean
+        get() = (fileStatus.toInt() and ApiContract.FileStatus.IS_NEW) != 0
+
+    val isEditing: Boolean
+        get() = (fileStatus.toInt() and ApiContract.FileStatus.IS_EDITING) != 0
 
     override fun clone(): CloudFile {
         return super.clone() as CloudFile

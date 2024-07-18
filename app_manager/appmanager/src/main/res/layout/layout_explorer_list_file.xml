@@ -29,7 +29,7 @@
         android:layout_marginEnd="@dimen/default_margin_medium"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/subtitle"
-        app:layout_constraintEnd_toStartOf="@id/favorite"
+        app:layout_constraintEnd_toStartOf="@id/statusLayout"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/image"
@@ -37,18 +37,64 @@
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="File nameFile nameFile nameFile nameFile nameFile nameFile name" />
 
-    <ImageView
-        android:id="@+id/favorite"
+    <LinearLayout
+        android:id="@+id/statusLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/default_margin_medium"
-        android:src="@drawable/ic_favorites_fill"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@+id/title"
         app:layout_constraintEnd_toStartOf="@+id/contextButton"
-        app:layout_constraintTop_toTopOf="@+id/title"
-        app:tint="@color/colorPrimary"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toTopOf="@+id/title">
+
+        <ImageView
+            android:id="@+id/favorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/default_margin_medium"
+            android:src="@drawable/ic_favorites_fill"
+            app:tint="@color/colorPrimary"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/editing"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_fab_edit_mode"
+            app:layout_constraintEnd_toStartOf="@id/image"
+            app:layout_constraintTop_toBottomOf="@id/favorite"
+            android:layout_marginEnd="@dimen/default_margin_medium"
+            app:tint="@color/colorPrimary" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/badgeNewCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/colorSecondary"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="4dp"
+            app:layout_constraintBottom_toTopOf="@id/image"
+            android:layout_marginEnd="@dimen/default_margin_medium"
+            app:layout_constraintEnd_toStartOf="@id/image"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@id/statusLayout"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/badgeNew"
+                style="@style/Widget.Common.TextView.Micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorSecondary"
+                android:includeFontPadding="false"
+                android:paddingHorizontal="3dp"
+                android:paddingVertical="1dp"
+                android:text="new"
+                android:textColor="@color/colorOnSecondary" />
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/subtitle"

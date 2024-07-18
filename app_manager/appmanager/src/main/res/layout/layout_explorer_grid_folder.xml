@@ -117,6 +117,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:text="21 апр 2024" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

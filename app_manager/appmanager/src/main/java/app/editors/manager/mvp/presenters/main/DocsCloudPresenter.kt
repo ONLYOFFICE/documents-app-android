@@ -13,6 +13,7 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.isFavorite
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDeleteShare
 import app.documents.core.network.manager.models.request.RequestFavorites
@@ -465,14 +466,17 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         val requestFavorites = RequestFavorites()
         requestFavorites.fileIds = listOf(itemClicked?.id!!)
         (fileProvider as CloudFileProvider).let { provider ->
-            val isAdd = itemClicked?.favorite?.not() == true
+            val isAdd = !itemClicked.isFavorite
 
             disposable.add(provider.addToFavorites(requestFavorites, isAdd)
                 .subscribe({
-                    (itemClicked as? CloudFile)?.fileStatus = if (isAdd) {
-                        ApiContract.FileStatus.FAVORITE.toString()
+                    val fileStatus = (itemClicked as? CloudFile)?.fileStatus?.toInt() ?: 0
+                    if (isAdd) {
+                        (itemClicked as? CloudFile)?.fileStatus =
+                            (fileStatus + ApiContract.FileStatus.FAVORITE).toString()
                     } else {
-                        ApiContract.FileStatus.NONE.toString()
+                        (itemClicked as? CloudFile)?.fileStatus =
+                            (fileStatus - ApiContract.FileStatus.FAVORITE).toString()
                     }
                     viewState.onUpdateFavoriteItem()
                     viewState.onSnackBar(
@@ -720,7 +724,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = itemClicked?.shared == true
 
     private val isClickedItemFavorite: Boolean
-        get() = itemClicked?.favorite == true
+        get() = itemClicked.isFavorite
 
     private val isItemOwner: Boolean
         get() = StringUtils.equals(itemClicked?.createdBy?.id, account.id)

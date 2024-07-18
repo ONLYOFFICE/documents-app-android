@@ -71,7 +71,6 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
         if (holder is ListFooterViewHolder) {
             holder.bind(footer)
         } else {
-            setFileFavoriteStatus(position)
             (holder as BaseViewHolderExplorer<Entity>).bind(mList[position])
         }
     }
@@ -112,14 +111,6 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
             } else {
                 ListFolderViewHolder.LAYOUT
             }
-        }
-    }
-
-    private fun setFileFavoriteStatus(position: Int) {
-        val file = mList[position]
-        if (file is CloudFile && file.fileStatus.isNotEmpty()) {
-            val favoriteMask = file.fileStatus.toInt() and ApiContract.FileStatus.FAVORITE
-            file.favorite = favoriteMask != 0
         }
     }
 

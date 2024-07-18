@@ -3,6 +3,7 @@ package app.editors.manager.viewModels.main
 import androidx.lifecycle.ViewModel
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.isFavorite
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
@@ -80,7 +81,7 @@ class ExplorerContextViewModel : ViewModel() {
                 },
                 ExplorerContextItem.CreateRoom.takeIf { state.provider == PortalProvider.Cloud.DocSpace },
                 ExplorerContextItem.ExternalLink(state),
-                ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.favorite),
+                ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.isFavorite),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Location,
                 ExplorerContextItem.Move,
