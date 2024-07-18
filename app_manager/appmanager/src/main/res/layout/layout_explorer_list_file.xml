@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@+id/title"
-        app:layout_constraintEnd_toStartOf="@+id/contextButton"
+        app:layout_constraintEnd_toStartOf="@+id/contextButtonLayout"
         app:layout_constraintTop_toTopOf="@+id/title">
 
         <ImageView
@@ -59,22 +59,22 @@
             android:id="@+id/editing"
             android:layout_width="16dp"
             android:layout_height="16dp"
+            android:layout_marginEnd="@dimen/default_margin_medium"
             android:importantForAccessibility="no"
             android:src="@drawable/ic_fab_edit_mode"
             app:layout_constraintEnd_toStartOf="@id/image"
             app:layout_constraintTop_toBottomOf="@id/favorite"
-            android:layout_marginEnd="@dimen/default_margin_medium"
             app:tint="@color/colorPrimary" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/badgeNewCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/default_margin_medium"
             app:cardBackgroundColor="@color/colorSecondary"
             app:cardCornerRadius="4dp"
             app:cardElevation="4dp"
             app:layout_constraintBottom_toTopOf="@id/image"
-            android:layout_marginEnd="@dimen/default_margin_medium"
             app:layout_constraintEnd_toStartOf="@id/image"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="@id/statusLayout"
@@ -104,22 +104,42 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="@dimen/default_margin_medium"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/contextButton"
+        app:layout_constraintEnd_toStartOf="@id/contextButtonLayout"
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@+id/title"
         tools:text="Date updated" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/contextButton"
-        style="@style/Widget.Common.Button.IconButton.Secondary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <FrameLayout
+        android:id="@+id/contextButtonLayout"
+        android:layout_width="@dimen/item_one_line_height"
+        android:layout_height="@dimen/item_one_line_height"
         android:layout_marginEnd="@dimen/default_margin_medium"
+        android:animateLayoutChanges="true"
         app:icon="@drawable/ic_list_context_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/contextButton"
+            style="@style/Widget.Common.Button.IconButton.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_list_context_button"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/selectIcon"
+            style="@style/ExplorerItemLayout.SelectIcon"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_select_not_checked"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/badgeNewCard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/badgeNewCard"
+            tools:ignore="ContentDescription" />
+
+    </FrameLayout>
 
     <include
         layout="@layout/view_line_separator"

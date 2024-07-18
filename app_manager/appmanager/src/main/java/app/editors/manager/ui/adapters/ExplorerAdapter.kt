@@ -3,7 +3,6 @@ package app.editors.manager.ui.adapters
 import android.content.Context
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -15,13 +14,13 @@ import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
-import app.editors.manager.ui.adapters.holders.explorer.ListFileViewHolder
-import app.editors.manager.ui.adapters.holders.explorer.ListFolderViewHolder
-import app.editors.manager.ui.adapters.holders.explorer.ListFooterViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.GridFileViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.GridFolderViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.GridFooterViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.GridRoomViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListFileViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListFolderViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListFooterViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.ListRoomViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.RecentViaLinkViewHolder
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
@@ -78,6 +77,7 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<*>) {
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
+            return
         }
     }
 

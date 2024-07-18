@@ -80,7 +80,7 @@
 
         <ImageView
             android:id="@+id/selectIcon"
-            style="@style/GridItemLayout.SelectIcon"
+            style="@style/ExplorerItemLayout.SelectIcon"
             app:layout_constraintBottom_toBottomOf="@id/badgeNewCard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/badgeNewCard"

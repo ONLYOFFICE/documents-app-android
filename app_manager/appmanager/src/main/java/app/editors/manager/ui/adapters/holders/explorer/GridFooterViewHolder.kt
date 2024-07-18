@@ -1,6 +1,7 @@
 package app.editors.manager.ui.adapters.holders.explorer
 
 import android.view.View
+import android.widget.ImageView
 import app.editors.manager.R
 import app.editors.manager.mvp.models.list.Footer
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -15,6 +16,8 @@ class GridFooterViewHolder(parent: View, adapter: ExplorerAdapter) :
     }
 
     override fun getCachedIcon(): View? = null
+
+    override val selectIcon: ImageView? = null
 
     override fun bind(element: Footer) {
         // Nothing

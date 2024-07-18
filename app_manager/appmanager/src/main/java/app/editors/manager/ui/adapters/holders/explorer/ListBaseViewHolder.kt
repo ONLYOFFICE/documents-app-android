@@ -1,10 +1,10 @@
 package app.editors.manager.ui.adapters.holders.explorer
 
-import android.graphics.Bitmap
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.managers.utils.StringUtils
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -15,14 +15,9 @@ abstract class ListBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
 
     abstract val rootLayout: ConstraintLayout
 
-    //    abstract val selectIcon: ImageView
     abstract val title: TextView
     abstract val subtitle: TextView
     abstract val contextButton: Button
-
-    //    private val colorSelected: Int by lazy {
-//        view.context.getColor(lib.toolkit.base.R.color.colorOutline)
-//    }
 
     override fun bind(element: T) {
         initListeners()
@@ -31,15 +26,9 @@ abstract class ListBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
         subtitle.text = getSubtitleText(element)
     }
 
-    private fun initSelecting(isSelected: Boolean) {
-//        selectIcon.isVisible = adapter.isSelectMode
-//        if (isSelected) {
-//            rootLayout.setCardBackgroundColor(colorSelected)
-//            selectIcon.setImageResource(R.drawable.ic_select_checked)
-//        } else {
-//            rootLayout.setCardBackgroundColor(null)
-//            selectIcon.setImageResource(R.drawable.ic_select_not_checked)
-//        }
+    override fun initSelecting(isSelected: Boolean) {
+        super.initSelecting(isSelected)
+        contextButton.isVisible = !adapter.isSelectMode
     }
 
     private fun initListeners() {

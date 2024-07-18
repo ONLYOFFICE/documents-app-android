@@ -1,6 +1,7 @@
 package app.editors.manager.ui.adapters.holders.explorer
 
 import android.view.View
+import android.widget.ImageView
 import app.editors.manager.R
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.ui.adapters.ExplorerAdapter
@@ -23,6 +24,8 @@ class RecentViaLinkViewHolder(private val view: View, adapter: ExplorerAdapter) 
             height = if (adapter.isSelectMode || adapter.isFoldersMode) 0 else initHeight
         }
     }
+
+    override val selectIcon: ImageView? = null
 
     override fun getCachedIcon(): View? = null
 

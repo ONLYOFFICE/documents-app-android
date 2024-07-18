@@ -1,11 +1,9 @@
 package app.editors.manager.ui.adapters.holders.explorer
 
-import android.graphics.Bitmap
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.view.drawToBitmap
 import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
@@ -27,9 +25,6 @@ class GridRoomViewHolder(view: View, adapter: ExplorerAdapter) :
     override val rootLayout: CardView
         get() = binding.cardRootLayout
 
-    override val selectIcon: ImageView
-        get() = binding.selectIcon
-
     override val title: TextView
         get() = binding.title
 
@@ -48,4 +43,8 @@ class GridRoomViewHolder(view: View, adapter: ExplorerAdapter) :
     override fun getCachedIcon(): View {
         return binding.cardImageLayout
     }
+
+    override val selectIcon: ImageView
+        get() = binding.selectIcon
+
 }

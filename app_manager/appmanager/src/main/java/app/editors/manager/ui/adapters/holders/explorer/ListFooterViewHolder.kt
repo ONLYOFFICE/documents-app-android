@@ -1,6 +1,7 @@
 package app.editors.manager.ui.adapters.holders.explorer
 
 import android.view.View
+import android.widget.ImageView
 import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerListFooterBinding
@@ -18,6 +19,9 @@ class ListFooterViewHolder(parent: View, adapter: ExplorerAdapter)
     }
 
     override fun getCachedIcon(): View? = null
+
+    override val selectIcon: ImageView?
+        get() = null
 
     companion object {
 

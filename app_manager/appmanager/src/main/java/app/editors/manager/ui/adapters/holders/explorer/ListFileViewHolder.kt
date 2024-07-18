@@ -1,11 +1,10 @@
 package app.editors.manager.ui.adapters.holders.explorer
 
-import android.graphics.Bitmap
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.drawToBitmap
 import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
@@ -29,6 +28,9 @@ class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
 
     override val contextButton: Button
         get() = binding.contextButton
+
+    override val selectIcon: ImageView
+        get() = binding.selectIcon
 
     override fun getCachedIcon(): View {
         return binding.image

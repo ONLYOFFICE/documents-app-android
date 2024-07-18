@@ -9,7 +9,7 @@
 
         <ImageView
             android:id="@+id/selectIcon"
-            style="@style/GridItemLayout.SelectIcon"
+            style="@style/ExplorerItemLayout.SelectIcon"
             app:layout_constraintBottom_toBottomOf="@id/iconPinned"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/iconPinned"
