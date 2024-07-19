@@ -70,4 +70,12 @@
         <item name="android:importantForAccessibility">no</item>
     </style>
 
+    <style name="ExplorerItemLayout.RoomBadge" parent="AppTheme">
+        <item name="android:background">@color/colorBackground</item>
+        <item name="android:translationX">@dimen/default_margin_medium</item>
+        <item name="android:translationY">@dimen/default_margin_medium</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Full</item>
+        <item name="contentPadding">@dimen/default_margin_micro</item>
+    </style>
+
 </resources>

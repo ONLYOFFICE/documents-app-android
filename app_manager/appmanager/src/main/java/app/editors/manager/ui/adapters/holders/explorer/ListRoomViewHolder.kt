@@ -34,13 +34,10 @@ class ListRoomViewHolder(view: View, adapter: ExplorerAdapter) :
 
     override fun bind(element: CloudFolder) {
         super.bind(element)
-        binding.iconPinned.isVisible = element.pinned
-        binding.cardImageLayout.setRoomIcon(
-            room = element,
-            image = binding.cardImage,
-            text = binding.cardText,
-            badge = binding.badge
-        )
+        with(binding) {
+            iconPinned.isVisible = element.pinned
+            cardImageLayout.setRoomIcon(element, cardImage, cardText, badge, adapter.isGridView)
+        }
     }
 
     override fun getCachedIcon(): View {

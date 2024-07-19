@@ -59,16 +59,12 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/badge"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:background="@color/colorBackground"
-        android:scaleType="centerCrop"
-        android:translationX="6dp"
-        android:translationY="6dp"
+        style="@style/ExplorerItemLayout.RoomBadge"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         app:layout_constraintBottom_toBottomOf="@id/cardImageLayout"
         app:layout_constraintEnd_toEndOf="@id/cardImageLayout"
-        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
-        tools:src="@drawable/ic_storage_dropbox" />
+        tools:src="@drawable/ic_public_room_badge" />
 
     <ImageView
         android:id="@+id/iconPinned"

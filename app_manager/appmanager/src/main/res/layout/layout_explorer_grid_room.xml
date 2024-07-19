@@ -17,15 +17,11 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/badge"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:background="@color/colorBackground"
-            android:scaleType="centerCrop"
-            android:translationX="6dp"
-            android:translationY="6dp"
+            style="@style/ExplorerItemLayout.RoomBadge"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             app:layout_constraintBottom_toBottomOf="@id/cardImageLayout"
             app:layout_constraintEnd_toEndOf="@id/cardImageLayout"
-            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Full"
             tools:src="@drawable/ic_storage_dropbox" />
 
         <androidx.cardview.widget.CardView
@@ -87,10 +83,10 @@
         <TextView
             android:id="@+id/subtitle"
             style="@style/GridItemLayout.Subtitle"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintBottom_toBottomOf="parent"
             tools:text="Room type" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

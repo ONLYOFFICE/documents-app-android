@@ -125,7 +125,8 @@ object ManagerUiUtils {
         room: CloudFolder,
         image: ImageView,
         text: TextView,
-        badge: ShapeableImageView
+        badge: ShapeableImageView,
+        isGrid: Boolean
     ) {
         val logo = room.logo?.large
 
@@ -154,7 +155,13 @@ object ManagerUiUtils {
             badge.setImageResource(StorageUtils.getStorageIcon(room.providerKey))
             badge.isVisible = true
         } else if (room.roomType == ApiContract.RoomType.PUBLIC_ROOM) {
-            badge.setImageResource(R.drawable.ic_public_room_big)
+            badge.setImageResource(
+                if (isGrid) {
+                    R.drawable.ic_public_room_big
+                } else {
+                    R.drawable.ic_public_room_badge
+                }
+            )
             badge.isVisible = true
         } else {
             badge.isVisible = false
