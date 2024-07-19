@@ -144,7 +144,7 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
     ): Observable<List<Operation>>? = null
 
     override fun fileInfo(item: Item?): Observable<CloudFile> {
-        (item as CloudFile?)?.fileStatus = java.lang.String.valueOf(ApiContract.FileStatus.NONE)
+        (item as CloudFile?)?.fileStatus = ApiContract.FileStatus.NONE
         return Observable.just(item)
     }
 

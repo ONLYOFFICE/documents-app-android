@@ -440,13 +440,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                 fileProvider?.let { provider ->
                     disposable.add(
                         getFileInfo(provider, itemClicked as CloudFile).subscribe({ response ->
-                            if (response.fileStatus.isNotEmpty()) {
-                                val statusMask = response.fileStatus.toInt() and ApiContract.FileStatus.IS_EDITING
-                                if (statusMask != 0) {
-                                    onFileDeleteProtected()
-                                } else {
-                                    deleteItems()
-                                }
+                            if (response.isEditing) {
+                                onFileDeleteProtected()
                             } else {
                                 deleteItems()
                             }
@@ -474,10 +469,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                     response.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap { file: CloudFile ->
-                            val fileStatus = if (file.fileStatus.isEmpty())
-                                ApiContract.FileStatus.NONE else file.fileStatus.toInt()
-                            val statusMask = fileStatus and ApiContract.FileStatus.IS_EDITING
-                            if (statusMask != 0) {
+                            if (file.isEditing) {
                                 Observable.just(true)
                             } else {
                                 Observable.just(false)

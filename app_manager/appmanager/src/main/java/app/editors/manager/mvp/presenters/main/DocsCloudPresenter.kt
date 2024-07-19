@@ -33,7 +33,6 @@ import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListene
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.models.OpenDataModel
@@ -466,27 +465,26 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         val requestFavorites = RequestFavorites()
         requestFavorites.fileIds = listOf(itemClicked?.id!!)
         (fileProvider as CloudFileProvider).let { provider ->
-            val isAdd = !itemClicked.isFavorite
-
-            disposable.add(provider.addToFavorites(requestFavorites, isAdd)
-                .subscribe({
-                    val fileStatus = (itemClicked as? CloudFile)?.fileStatus?.toInt() ?: 0
-                    if (isAdd) {
-                        (itemClicked as? CloudFile)?.fileStatus =
-                            (fileStatus + ApiContract.FileStatus.FAVORITE).toString()
-                    } else {
-                        (itemClicked as? CloudFile)?.fileStatus =
-                            (fileStatus - ApiContract.FileStatus.FAVORITE).toString()
-                    }
-                    viewState.onUpdateFavoriteItem()
-                    viewState.onSnackBar(
+            val item = itemClicked
+            if (item != null && item is CloudFile) {
+                val isAdd = !item.isFavorite
+                disposable.add(provider.addToFavorites(requestFavorites, isAdd)
+                    .subscribe({
                         if (isAdd) {
-                            context.getString(R.string.operation_add_to_favorites)
+                            item.fileStatus += ApiContract.FileStatus.FAVORITE
                         } else {
-                            context.getString(R.string.operation_remove_from_favorites)
+                            item.fileStatus -= ApiContract.FileStatus.FAVORITE
                         }
-                    )
-                }) { throwable: Throwable -> fetchError(throwable) })
+                        viewState.onUpdateFavoriteItem()
+                        viewState.onSnackBar(
+                            if (isAdd) {
+                                context.getString(R.string.operation_add_to_favorites)
+                            } else {
+                                context.getString(R.string.operation_remove_from_favorites)
+                            }
+                        )
+                    }) { throwable: Throwable -> fetchError(throwable) })
+            }
         }
     }
 
