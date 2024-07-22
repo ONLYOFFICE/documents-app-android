@@ -22,7 +22,7 @@ class GridRecentViewHolder(
 
     override fun bind(item: ViewType) {
         if (item is RecentUI) {
-            val icon = getFileThumbnail(getExtensionFromPath(item.name.lowercase(Locale.ROOT)))
+            val icon = getFileThumbnail(getExtensionFromPath(item.name.lowercase(Locale.ROOT)), true)
             with(binding) {
                 title.text = item.name
                 subtitle.text = item.source ?: view.context.getString(R.string.this_device)

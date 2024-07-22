@@ -38,7 +38,8 @@ class ListRecentViewHolder(
                 }
                 image.setImageResource(
                     ManagerUiUtils.getFileThumbnail(
-                        getExtensionFromPath(item.name.lowercase(Locale.ROOT))
+                        getExtensionFromPath(item.name.lowercase(Locale.ROOT)),
+                        false
                     )
                 )
             }

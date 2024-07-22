@@ -92,27 +92,30 @@ object ManagerUiUtils {
         }
     }
 
-    fun getItemThumbnail(item: Item): Int {
+    fun getItemThumbnail(item: Item, isGrid: Boolean): Int {
         return if (item is CloudFile) {
-            getFileThumbnail(StringUtils.getExtensionFromPath(item.title))
+            getFileThumbnail(StringUtils.getExtensionFromPath(item.title), isGrid)
         } else -1
     }
 
-    fun getFileThumbnail(ext: String): Int {
+    fun getFileThumbnail(ext: String, isGrid: Boolean): Int {
         return when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC -> R.drawable.ic_thumbnail_small_document
-            StringUtils.Extension.SHEET -> R.drawable.ic_thumbnail_small_spreadsheet
-            StringUtils.Extension.PRESENTATION -> R.drawable.ic_thumbnail_small_presentation
+            StringUtils.Extension.DOC -> if (!isGrid) R.drawable.ic_thumbnail_small_document else R.drawable.ic_thumbnail_large_document
+            StringUtils.Extension.SHEET -> if (!isGrid) R.drawable.ic_thumbnail_small_spreadsheet else R.drawable.ic_thumbnail_large_spreadsheet
+            StringUtils.Extension.PRESENTATION -> if (!isGrid) R.drawable.ic_thumbnail_small_presentation else R.drawable.ic_thumbnail_large_presentation
             StringUtils.Extension.IMAGE,
-            StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_thumbnail_small_picture
+            StringUtils.Extension.IMAGE_GIF -> if (!isGrid) R.drawable.ic_thumbnail_small_picture else R.drawable.ic_thumbnail_large_picture
+
             StringUtils.Extension.HTML,
             StringUtils.Extension.EBOOK,
-            StringUtils.Extension.PDF -> R.drawable.ic_thumbnail_small_pdf
+            StringUtils.Extension.PDF -> if (!isGrid) R.drawable.ic_thumbnail_small_pdf else R.drawable.ic_thumbnail_large_pdf
+
             StringUtils.Extension.VIDEO_SUPPORT,
-            StringUtils.Extension.VIDEO -> R.drawable.ic_thumbnail_small_video
-            StringUtils.Extension.ARCH -> R.drawable.ic_thumbnail_small_archive
-            StringUtils.Extension.FORM -> R.drawable.ic_thumbnail_small_docxf_oform
-            else -> R.drawable.ic_thumbnail_small_other
+            StringUtils.Extension.VIDEO -> if (!isGrid) R.drawable.ic_thumbnail_small_video else R.drawable.ic_thumbnail_large_video
+
+            StringUtils.Extension.ARCH -> if (!isGrid) R.drawable.ic_thumbnail_small_archive else R.drawable.ic_thumbnail_large_archive
+            StringUtils.Extension.FORM -> if (!isGrid) R.drawable.ic_thumbnail_small_docxf_oform else R.drawable.ic_thumbnail_large_docxf_oform
+            else -> R.drawable.ic_thumbnail_large_other
         }
     }
 

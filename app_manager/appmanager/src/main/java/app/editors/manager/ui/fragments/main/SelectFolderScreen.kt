@@ -134,7 +134,7 @@ private fun MainScreen(
             ) {
                 Image(
                     modifier = Modifier.padding(16.dp),
-                    imageVector = ImageVector.vectorResource(ManagerUiUtils.getItemThumbnail(it)),
+                    imageVector = ImageVector.vectorResource(ManagerUiUtils.getItemThumbnail(it, false)),
                     contentDescription = null
                 )
                 Column {

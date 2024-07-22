@@ -40,7 +40,7 @@ class GridFileViewHolder(view: View, adapter: ExplorerAdapter) :
 
     override fun bind(element: CloudFile) {
         super.bind(element)
-        binding.image.setImageResource(ManagerUiUtils.getFileThumbnail(element.fileExst))
+        binding.image.setImageResource(ManagerUiUtils.getFileThumbnail(element.fileExst, true))
         binding.favorite.isVisible = element.isFavorite
         binding.badgeNewCard.isVisible = element.isNew
         binding.editing.isVisible = element.isEditing
