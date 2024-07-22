@@ -225,13 +225,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun getFileInfo() {
         val item = itemClicked
-        if (item != null) {
+        if (item != null && item is CloudFile) {
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.fileInfo(item)
                         .doOnSubscribe { showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE) }
-                        .doOnError(::fetchError)
-                        .subscribe(::onFileClickAction)
+                        .subscribe(::onFileClickAction) { onFileClickAction(item) }
                 )
             }
         }
