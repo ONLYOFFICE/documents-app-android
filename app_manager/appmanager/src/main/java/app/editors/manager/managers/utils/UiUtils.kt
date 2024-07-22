@@ -21,6 +21,7 @@ import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
+import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
 
 object ManagerUiUtils {
@@ -98,27 +99,24 @@ object ManagerUiUtils {
     }
 
     fun getFileIcon(ext: String): Int {
-        return R.drawable.ic_document_column
-        // todo
-//        return when (StringUtils.getExtension(ext)) {
-//            StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
-//            StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet
-//            StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
-//            StringUtils.Extension.IMAGE,
-//            StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_type_image
-//            StringUtils.Extension.HTML,
-//            StringUtils.Extension.EBOOK,
-//            StringUtils.Extension.PDF -> R.drawable.ic_type_pdf
-//            StringUtils.Extension.VIDEO_SUPPORT,
-//            StringUtils.Extension.VIDEO -> R.drawable.ic_type_video
-//            StringUtils.Extension.ARCH -> R.drawable.ic_type_archive
-//            StringUtils.Extension.FORM -> {
-//                if (ext == ".${LocalContentTools.OFORM_EXTENSION}") R.drawable.ic_format_oform
-//                else R.drawable.ic_format_docxf
-//            }
-//
-//            else -> R.drawable.ic_type_file
-//        }
+        return when (StringUtils.getExtension(ext)) {
+            StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
+            StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet
+            StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
+            StringUtils.Extension.IMAGE,
+            StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_type_image
+            StringUtils.Extension.HTML,
+            StringUtils.Extension.EBOOK,
+            StringUtils.Extension.PDF -> R.drawable.ic_type_pdf
+            StringUtils.Extension.VIDEO_SUPPORT,
+            StringUtils.Extension.VIDEO -> R.drawable.ic_type_video
+            StringUtils.Extension.ARCH -> R.drawable.ic_type_archive
+            StringUtils.Extension.FORM -> {
+                if (ext == ".${LocalContentTools.OFORM_EXTENSION}") R.drawable.ic_type_oform
+                else R.drawable.ic_type_docxf
+            }
+            else -> R.drawable.ic_type_file
+        }
     }
 
     fun CardView.setRoomIcon(
