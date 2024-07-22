@@ -4,7 +4,7 @@ import android.view.View
 import app.documents.core.model.cloud.Recent
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerGridFileBinding
-import app.editors.manager.managers.utils.ManagerUiUtils.getFileIcon
+import app.editors.manager.managers.utils.ManagerUiUtils.getFileThumbnail
 import app.editors.manager.mvp.models.ui.RecentUI
 import app.editors.manager.mvp.models.ui.toRecent
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
@@ -22,7 +22,7 @@ class GridRecentViewHolder(
 
     override fun bind(item: ViewType) {
         if (item is RecentUI) {
-            val icon = getFileIcon(getExtensionFromPath(item.name.lowercase(Locale.ROOT)))
+            val icon = getFileThumbnail(getExtensionFromPath(item.name.lowercase(Locale.ROOT)))
             with(binding) {
                 title.text = item.name
                 subtitle.text = item.source ?: view.context.getString(R.string.this_device)

@@ -236,8 +236,8 @@ object ActionMenuItemsFactory {
                 add(
                     ActionMenuItem.View.get(
                         listOf(
-                            ActionMenuItem.ListView(isGridView),
-                            ActionMenuItem.GridView(!isGridView),
+                            ActionMenuItem.ListView(!isGridView),
+                            ActionMenuItem.GridView(isGridView),
                         )
                     )
                 )

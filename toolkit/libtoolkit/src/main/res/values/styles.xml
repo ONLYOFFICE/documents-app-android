@@ -295,6 +295,14 @@
         <item name="android:layout_marginEnd">@dimen/default_margin_large</item>
     </style>
 
+    <style name="Widget.Common.ImageView.ActionBottomMenu" parent="Widget.Common.ImageView">
+        <item name="android:layout_width">@dimen/image_default_size</item>
+        <item name="android:layout_height">@dimen/image_default_size</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginStart">@dimen/default_margin_large</item>
+        <item name="android:layout_marginEnd">@dimen/default_margin_large</item>
+    </style>
+
     <style name="Widget.Common.BottomSheetDialog" parent="AppTheme">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Common.BottomSheetDialog</item>
     </style>

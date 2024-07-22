@@ -37,7 +37,7 @@ class ListRecentViewHolder(
                     contextListener?.invoke(item.toRecent(), absoluteAdapterPosition)
                 }
                 image.setImageResource(
-                    ManagerUiUtils.getFileIcon(
+                    ManagerUiUtils.getFileThumbnail(
                         getExtensionFromPath(item.name.lowercase(Locale.ROOT))
                     )
                 )

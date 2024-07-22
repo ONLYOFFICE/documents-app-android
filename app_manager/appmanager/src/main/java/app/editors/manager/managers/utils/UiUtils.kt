@@ -92,10 +92,28 @@ object ManagerUiUtils {
         }
     }
 
-    fun getIcon(item: Item): Int {
+    fun getItemThumbnail(item: Item): Int {
         return if (item is CloudFile) {
-            getFileIcon(StringUtils.getExtensionFromPath(item.title))
+            getFileThumbnail(StringUtils.getExtensionFromPath(item.title))
         } else -1
+    }
+
+    fun getFileThumbnail(ext: String): Int {
+        return when (StringUtils.getExtension(ext)) {
+            StringUtils.Extension.DOC -> R.drawable.ic_thumbnail_small_document
+            StringUtils.Extension.SHEET -> R.drawable.ic_thumbnail_small_spreadsheet
+            StringUtils.Extension.PRESENTATION -> R.drawable.ic_thumbnail_small_presentation
+            StringUtils.Extension.IMAGE,
+            StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_thumbnail_small_picture
+            StringUtils.Extension.HTML,
+            StringUtils.Extension.EBOOK,
+            StringUtils.Extension.PDF -> R.drawable.ic_thumbnail_small_pdf
+            StringUtils.Extension.VIDEO_SUPPORT,
+            StringUtils.Extension.VIDEO -> R.drawable.ic_thumbnail_small_video
+            StringUtils.Extension.ARCH -> R.drawable.ic_thumbnail_small_archive
+            StringUtils.Extension.FORM -> R.drawable.ic_thumbnail_small_docxf_oform
+            else -> R.drawable.ic_thumbnail_small_other
+        }
     }
 
     fun getFileIcon(ext: String): Int {
@@ -105,16 +123,20 @@ object ManagerUiUtils {
             StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
             StringUtils.Extension.IMAGE,
             StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_type_image
+
             StringUtils.Extension.HTML,
             StringUtils.Extension.EBOOK,
             StringUtils.Extension.PDF -> R.drawable.ic_type_pdf
+
             StringUtils.Extension.VIDEO_SUPPORT,
             StringUtils.Extension.VIDEO -> R.drawable.ic_type_video
+
             StringUtils.Extension.ARCH -> R.drawable.ic_type_archive
             StringUtils.Extension.FORM -> {
                 if (ext == ".${LocalContentTools.OFORM_EXTENSION}") R.drawable.ic_type_oform
                 else R.drawable.ic_type_docxf
             }
+
             else -> R.drawable.ic_type_file
         }
     }
@@ -170,6 +192,7 @@ object ManagerUiUtils {
         return when (accessCode) {
             ApiContract.ShareCode.NONE,
             ApiContract.ShareCode.RESTRICT -> R.drawable.ic_access_deny
+
             ApiContract.ShareCode.REVIEW -> R.drawable.ic_access_review
             ApiContract.ShareCode.READ -> R.drawable.ic_access_read
             ApiContract.ShareCode.ROOM_ADMIN -> R.drawable.ic_room_admin
