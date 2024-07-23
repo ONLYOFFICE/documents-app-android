@@ -15,6 +15,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
@@ -97,6 +98,12 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(savedInstanceState)
+        if (App.getApp().showPersonalPortalMigration &&
+            context?.accountOnline?.isPersonal() == true
+        ) {
+            activity?.showPersonalMigrationFragment()
+            App.getApp().showPersonalPortalMigration = false
+        }
     }
 
     private var isFirstResume = true

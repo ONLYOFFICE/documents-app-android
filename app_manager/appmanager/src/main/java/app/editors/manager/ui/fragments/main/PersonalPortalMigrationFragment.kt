@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -25,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.editors.manager.R
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
-import app.editors.manager.ui.fragments.share.InviteUsersFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppButton
@@ -37,7 +38,7 @@ class PersonalPortalMigrationFragment : BaseDialogFragment() {
 
     companion object {
 
-        fun newInstance(): InviteUsersFragment = InviteUsersFragment()
+        fun newInstance(): PersonalPortalMigrationFragment = PersonalPortalMigrationFragment()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,21 +62,21 @@ class PersonalPortalMigrationFragment : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (view as ComposeView).setContent {
             ManagerTheme {
-                MigrationScreen()
+                MigrationScreen(::dismiss)
             }
         }
     }
 }
 
 @Composable
-private fun MigrationScreen() {
+private fun MigrationScreen(onClose: () -> Unit) {
     AppScaffold(
         topBar = {
             TopAppBar(
                 backgroundColor = MaterialTheme.colors.background,
                 elevation = 0.dp,
                 actions = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = onClose) {
                         Icon(
                             imageVector = ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_close),
                             contentDescription = null
@@ -87,11 +88,16 @@ private fun MigrationScreen() {
         }
     ) {
         NestedColumn(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 16.dp)
+                .width(IntrinsicSize.Min),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                modifier = Modifier.padding(bottom = 24.dp),
+                modifier = Modifier
+                    .padding(bottom = 24.dp)
+                    .width(IntrinsicSize.Max),
                 imageVector = ImageVector.vectorResource(id = R.drawable.image_personal_to_docspace),
                 contentDescription = null
             )
@@ -128,10 +134,11 @@ private fun MigrationScreen() {
 
 @Composable
 @Preview
+@Preview(device = "spec:width=1280dp,height=800dp,dpi=240,orientation=portrait")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 private fun MigrationScreenPreview() {
     ManagerTheme {
-        MigrationScreen()
+        MigrationScreen {}
     }
 }
 

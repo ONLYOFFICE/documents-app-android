@@ -37,6 +37,7 @@ import app.editors.manager.ui.fragments.main.DocsRecentFragment
 import app.editors.manager.ui.fragments.main.DocsWebDavFragment
 import app.editors.manager.ui.fragments.main.MainPagerFragment
 import app.editors.manager.ui.fragments.main.OnlyOfficeCloudFragment
+import app.editors.manager.ui.fragments.main.PersonalPortalMigrationFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
@@ -72,6 +73,7 @@ interface IMainActivity {
     fun showAccountsActivity(isSwitch: Boolean = false)
     fun showWebViewer(file: CloudFile, isEditMode: Boolean = false, callback: (() -> Unit)? = null)
     fun onLogOut()
+    fun showPersonalMigrationFragment()
 }
 
 
@@ -632,6 +634,10 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         setAppBarMode(isVisible)
         showAccount(isVisible)
         showNavigationButton(!isVisible)
+    }
+
+    override fun showPersonalMigrationFragment() {
+        PersonalPortalMigrationFragment.newInstance().show(supportFragmentManager, "")
     }
 
     private fun isNotification(): Boolean =
