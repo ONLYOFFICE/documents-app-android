@@ -20,11 +20,17 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.CryptUtils
+import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import moxy.presenterScope
 
 @InjectViewState
 class MainPagerPresenter : BasePresenter<MainPagerView>() {
+
+    companion object {
+
+        const val PERSONAL_DUE_DATE = "31 08 2024"
+    }
 
     init {
         App.getApp().appComponent.inject(this)
@@ -41,6 +47,12 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
     }
 
     fun getState(fileData: Uri? = null) {
+
+        if (account?.isPersonal() == true && TimeUtils.isDateAfter(PERSONAL_DUE_DATE)) {
+            viewState.onPersonalPortalEnd()
+            return
+        }
+
         presenterScope.launch(Dispatchers.IO) {
             val sections = getPortalModules()
             val data = if (context.accountOnline.isDocSpace) {

@@ -1,10 +1,6 @@
-package app.editors.manager.ui.fragments.main
+package app.editors.manager.ui.compose.personal
 
 import android.content.res.Configuration
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -20,77 +16,47 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.editors.manager.R
-import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
+import app.editors.manager.ui.activities.login.SignInActivity
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppButton
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.NestedColumn
-import lib.toolkit.base.managers.utils.UiUtils
 
-class PersonalPortalMigrationFragment : BaseDialogFragment() {
-
-    companion object {
-
-        fun newInstance(): PersonalPortalMigrationFragment = PersonalPortalMigrationFragment()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (!UiUtils.isTablet(requireContext())) {
-            setStyle(
-                STYLE_NORMAL,
-                R.style.FullScreenDialog
-            )
-        }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return ComposeView(requireContext())
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        (view as ComposeView).setContent {
-            ManagerTheme {
-                MigrationScreen(::dismiss)
-            }
-        }
-    }
-}
 
 @Composable
-private fun MigrationScreen(onClose: () -> Unit) {
+fun PersonalMigrationScreen(onClose: (() -> Unit)? = null) {
+    val context = LocalContext.current
     AppScaffold(
         topBar = {
-            TopAppBar(
-                backgroundColor = MaterialTheme.colors.background,
-                elevation = 0.dp,
-                actions = {
-                    IconButton(onClick = onClose) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_close),
-                            contentDescription = null
-                        )
-                    }
-                },
-                title = {}
-            )
+            onClose?.let {
+                TopAppBar(
+                    backgroundColor = MaterialTheme.colors.background,
+                    elevation = 0.dp,
+                    actions = {
+
+                        IconButton(onClick = onClose) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_close),
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    title = {}
+                )
+            }
         }
     ) {
         NestedColumn(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(horizontal = 16.dp)
+                .padding(all = 16.dp)
                 .width(IntrinsicSize.Min),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -125,20 +91,21 @@ private fun MigrationScreen(onClose: () -> Unit) {
                 color = MaterialTheme.colors.colorTextSecondary,
                 textAlign = TextAlign.Center
             )
-            AppButton(title = "Create a free account") {
-
-            }
+            AppButton(
+                title = "Create a free account",
+                onClick = { SignInActivity.showPortalCreate(context) }
+            )
         }
     }
 }
 
 @Composable
 @Preview
+@Preview(device = "spec:parent=pixel_5,orientation=landscape")
 @Preview(device = "spec:width=1280dp,height=800dp,dpi=240,orientation=portrait")
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 private fun MigrationScreenPreview() {
     ManagerTheme {
-        MigrationScreen {}
+        PersonalMigrationScreen()
     }
 }
-

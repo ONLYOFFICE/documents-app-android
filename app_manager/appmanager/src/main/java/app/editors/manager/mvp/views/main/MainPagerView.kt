@@ -14,4 +14,5 @@ interface MainPagerView : BaseView {
     fun onFinishRequest()
     fun setFileData(fileData: String)
     fun onSwitchAccount(data: OpenDataModel, isToken: Boolean = false)
+    fun onPersonalPortalEnd()
 }

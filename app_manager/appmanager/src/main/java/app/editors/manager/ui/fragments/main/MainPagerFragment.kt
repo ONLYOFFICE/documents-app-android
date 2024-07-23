@@ -339,6 +339,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         )
     }
 
+    override fun onPersonalPortalEnd() {
+        placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.PERSONAL_PORTAL_END)
+    }
+
     fun isRoot(): Boolean {
         return if (activeFragment != null && activeFragment is DocsCloudFragment) {
             (activeFragment as DocsCloudFragment).isRoot
