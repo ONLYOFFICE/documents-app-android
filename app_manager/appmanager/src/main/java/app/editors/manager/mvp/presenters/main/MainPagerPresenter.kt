@@ -29,7 +29,7 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
 
     companion object {
 
-        const val PERSONAL_DUE_DATE = "31 08 2024"
+        const val PERSONAL_DUE_DATE = "01 09 2024"
     }
 
     init {
