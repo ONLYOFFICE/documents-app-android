@@ -6,9 +6,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -20,10 +21,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.editors.manager.R
 import app.editors.manager.ui.activities.login.SignInActivity
 import lib.compose.ui.theme.ManagerTheme
@@ -71,7 +77,7 @@ fun PersonalMigrationScreen(onClose: (() -> Unit)? = null) {
                 ) {
                     TextBlock()
                     AppButton(
-                        title = "Create a free account",
+                        title = stringResource(id = R.string.personal_portal_end_button),
                         onClick = { SignInActivity.showPortalCreate(context) }
                     )
                 }
@@ -88,7 +94,7 @@ fun PersonalMigrationScreen(onClose: (() -> Unit)? = null) {
                 TextBlock()
                 AppButton(
                     modifier = Modifier.padding(top = 32.dp),
-                    title = "Create a free account",
+                    title = stringResource(id = R.string.personal_portal_end_button),
                     onClick = { SignInActivity.showPortalCreate(context) }
                 )
             }
@@ -116,20 +122,31 @@ private fun TextBlock(modifier: Modifier = Modifier) {
                 .padding(horizontal = 32.dp)
                 .padding(bottom = 24.dp)
         ) {
-            Image(
-                modifier = Modifier.size(26.dp),
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_storage_onlyoffice),
-                contentDescription = null
+
+            val annotatedString = buildAnnotatedString {
+                appendInlineContent(id = "logo")
+                append(" ")
+                append(stringResource(id = R.string.personal_portal_end_title))
+            }
+            val inlineContentMap = mapOf(
+                "logo" to InlineTextContent(
+                    Placeholder(24.sp, 24.sp, PlaceholderVerticalAlign.TextCenter)
+                ) {
+                    Image(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_storage_onlyoffice),
+                        contentDescription = null
+                    )
+                }
             )
             Text(
-                text = "ONLYOFFICE Personal \nis wrapping up",
+                text = annotatedString,
+                inlineContent = inlineContentMap,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.h6
             )
         }
         Text(
-            text = "ONLYOFFICE Personal will be discontinued on September 1st, 2024. \n" +
-                    "We recommend you move to the free ONLYOFFICE DocSpace Cloud. ",
+            text = stringResource(id = R.string.personal_portal_end_text),
             style = MaterialTheme.typography.subtitle1,
             color = MaterialTheme.colors.colorTextSecondary,
             textAlign = TextAlign.Center

@@ -708,4 +708,8 @@
     <string name="room_create_thirdparty_desc">Utilizza servizi di terze parti come archivio dati per questa stanza. Una nuova cartella per archiviare i dati di questa stanza verrà creata nell\'archivio connesso</string>
     <string name="room_storage_reconnect">Ricollega lo spazio di archiviazione</string>
     <string name="room_storage_not_availabale">Il contenuto della cartella di terze parti non è disponibile. Prova a ricollegare l\'account.</string>
+    <string name="personal_portal_end_button">Crea un account gratuito</string>
+    <string name="personal_portal_end_title">ONLYOFFICE Personal sta per concludersi</string>
+    <string name="personal_portal_end_text">Tieni presente: ONLYOFFICE Personal verrà interrotto il 1° settembre 2024.\n
+        Ti consigliamo di passare alla versione gratuita di ONLYOFFICE DocSpace Cloud.</string>
 </resources>
