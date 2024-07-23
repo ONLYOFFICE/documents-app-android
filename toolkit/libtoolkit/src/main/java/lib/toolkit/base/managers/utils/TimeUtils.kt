@@ -1,6 +1,7 @@
 package lib.toolkit.base.managers.utils
 
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.format.DateFormat
 import androidx.appcompat.app.AppCompatActivity
@@ -211,4 +212,8 @@ object TimeUtils {
         return context.resources.configuration.locales.get(0);
     }
 
+    @SuppressLint("SimpleDateFormat")
+    fun isDateAfter(date: String): Boolean {
+        return Date().after(SimpleDateFormat("dd MM yyyy").parse(date))
+    }
 }

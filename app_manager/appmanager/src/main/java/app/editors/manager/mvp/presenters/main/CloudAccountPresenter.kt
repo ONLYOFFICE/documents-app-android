@@ -152,7 +152,10 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     private fun onCheckLoginCollect(result: CheckLoginResult, account: CloudAccount) {
         viewState.onHideDialog()
         when (result) {
-            is CheckLoginResult.Success -> viewState.onSuccessLogin()
+            is CheckLoginResult.Success -> {
+                App.getApp().showPersonalPortalMigration = true
+                viewState.onSuccessLogin()
+            }
             is CheckLoginResult.Error -> checkError(result.exception, account)
             is CheckLoginResult.NeedLogin -> showLoginFragment(account)
             CheckLoginResult.AlreadyUse -> onAlreadyUse()
