@@ -103,7 +103,6 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             context?.accountOnline?.isPersonal() == true
         ) {
             activity?.showPersonalMigrationFragment()
-            App.getApp().showPersonalPortalMigration = false
         }
     }
 

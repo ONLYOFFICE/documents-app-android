@@ -43,6 +43,7 @@ import lib.toolkit.base.managers.utils.UiUtils
 @Composable
 fun PersonalMigrationScreen(onClose: (() -> Unit)? = null) {
     AppScaffold(
+        useTablePaddings = false,
         topBar = {
             onClose?.let {
                 TopAppBar(

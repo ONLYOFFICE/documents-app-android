@@ -1,11 +1,13 @@
 package app.editors.manager.ui.compose.personal
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.managers.utils.UiUtils
@@ -41,5 +43,10 @@ class PersonalPortalMigrationFragment : BaseDialogFragment() {
                 PersonalMigrationScreen(::dismiss)
             }
         }
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        App.getApp().showPersonalPortalMigration = false
     }
 }
