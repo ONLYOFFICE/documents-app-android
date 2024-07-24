@@ -30,14 +30,28 @@
             tools:ignore="ContentDescription" />
 
         <ImageView
-            android:id="@+id/overlayImage"
+            android:id="@+id/storageImage"
             android:layout_width="@dimen/image_default_size"
             android:layout_height="@dimen/image_default_size"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/image"
             app:layout_constraintEnd_toEndOf="@id/image"
             app:layout_constraintStart_toStartOf="@id/image"
             app:layout_constraintTop_toTopOf="@id/image"
-            app:layout_constraintVertical_bias=".7"
+            app:layout_constraintVertical_bias=".65"
+            tools:ignore="ContentDescription"
+            tools:src="@drawable/ic_storage_dropbox_logo" />
+
+        <ImageView
+            android:id="@+id/overlayImage"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginEnd="2dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/image"
+            app:layout_constraintEnd_toEndOf="@id/image"
+            app:layout_constraintTop_toTopOf="@id/image"
+            app:layout_constraintVertical_bias=".65"
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_list_item_share_user_icon_secondary" />
 

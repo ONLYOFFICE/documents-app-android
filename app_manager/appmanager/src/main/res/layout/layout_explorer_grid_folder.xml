@@ -27,18 +27,32 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription" />
 
+
+            <ImageView
+                android:id="@+id/storageImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/image"
+                app:layout_constraintEnd_toEndOf="@id/image"
+                app:layout_constraintStart_toStartOf="@id/image"
+                app:layout_constraintTop_toTopOf="@id/image"
+                app:layout_constraintVertical_bias=".65"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/ic_storage_dropbox_logo" />
+
             <ImageView
                 android:id="@+id/overlayImage"
-                android:layout_width="@dimen/image_size"
-                android:layout_height="@dimen/image_size"
-                android:layout_gravity="center"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintVertical_bias=".7"
-                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="4dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/image"
+                app:layout_constraintEnd_toEndOf="@id/image"
+                app:layout_constraintTop_toTopOf="@id/image"
+                app:layout_constraintVertical_bias=".65"
                 tools:ignore="ContentDescription"
-                tools:src="@drawable/ic_storage_dropbox" />
+                tools:src="@drawable/ic_list_item_share_user_icon_secondary" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -114,10 +128,10 @@
         <TextView
             android:id="@+id/subtitle"
             style="@style/GridItemLayout.Subtitle"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
-            app:layout_constraintBottom_toBottomOf="parent"
             tools:text="21 апр 2024" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

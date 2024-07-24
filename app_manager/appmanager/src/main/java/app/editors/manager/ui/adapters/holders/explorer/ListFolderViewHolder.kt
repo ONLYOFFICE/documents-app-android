@@ -5,11 +5,9 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerListFolderBinding
-import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.ui.adapters.ExplorerAdapter
 
 class ListFolderViewHolder(view: View, adapter: ExplorerAdapter) :
@@ -34,15 +32,7 @@ class ListFolderViewHolder(view: View, adapter: ExplorerAdapter) :
 
     override fun bind(element: CloudFolder) {
         super.bind(element)
-        if (element.providerItem && element.providerKey.isNotEmpty() && adapter.isRoot) {
-            binding.overlayImage.isVisible = true
-            binding.overlayImage.setImageResource(StorageUtils.getStorageIcon(element.providerKey))
-        } else if (element.shared) {
-            binding.overlayImage.isVisible = true
-            binding.overlayImage.setImageResource(R.drawable.ic_list_item_share_user_icon_secondary)
-        } else {
-            binding.overlayImage.isVisible = false
-        }
+        bindFolderImage(element, binding.overlayImage, binding.storageImage)
     }
 
     override fun getCachedIcon(): View {
