@@ -317,6 +317,7 @@ object ApiContract {
     }
 
     object RoomType {
+        const val FILL_FORMS_ROOM = 1
         const val COLLABORATION_ROOM = 2
         const val CUSTOM_ROOM = 5
         const val PUBLIC_ROOM = 6

@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludePlaceholdersTextBinding
+import app.editors.manager.ui.compose.personal.PersonalMigrationScreen
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.ActivityIndicatorView
 import lib.compose.ui.views.AppButton
@@ -18,7 +19,7 @@ class PlaceholderViews(val view: View?) {
         NONE, CONNECTION, EMPTY, EMPTY_ROOM, VISITOR_EMPTY_ROOM, SEARCH, SHARE, ACCESS,
         SUBFOLDER, USERS, GROUPS, COMMON, MEDIA, LOAD, LOAD_GROUPS, LOAD_USERS,
         OTHER_ACCOUNTS, EMPTY_TRASH, EMPTY_ARCHIVE, NO_ROOMS, VISITOR_NO_ROOMS,
-        EMPTY_RECENT_VIA_LINK, PAYMENT_REQUIRED
+        EMPTY_RECENT_VIA_LINK, PAYMENT_REQUIRED, PERSONAL_PORTAL_END
     }
 
     interface OnClickListener {
@@ -62,6 +63,18 @@ class PlaceholderViews(val view: View?) {
                     setContent {
                         ManagerTheme {
                             PlaceholderView(type = type, onClick = onClick)
+                        }
+                    }
+                }
+                return
+            }
+            Type.PERSONAL_PORTAL_END -> {
+                setVisibility(true)
+                with(binding.composeView) {
+                    isVisible = true
+                    setContent {
+                        ManagerTheme {
+                            PersonalMigrationScreen()
                         }
                     }
                 }

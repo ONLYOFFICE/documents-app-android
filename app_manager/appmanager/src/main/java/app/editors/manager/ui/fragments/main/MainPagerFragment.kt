@@ -15,6 +15,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
@@ -50,6 +51,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         private const val TAG_SCROLL = "TAG_SCROLL"
         private const val TAG_TITLES = "TAG_TITLES"
         private const val TAG_TYPE = "TAG_TYPE"
+        private const val TAG_PERSONAL_END = "TAG_PERSONAL_END"
         private const val OFFSCREEN_COUNT = 5
 
         fun newInstance(): MainPagerFragment {
@@ -97,6 +99,11 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init(savedInstanceState)
+        if (App.getApp().showPersonalPortalMigration &&
+            context?.accountOnline?.isPersonal() == true
+        ) {
+            activity?.showPersonalMigrationFragment()
+        }
     }
 
     private var isFirstResume = true
@@ -116,6 +123,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(TAG_VISIBLE, isVisibleRoot)
         outState.putBoolean(TAG_SCROLL, isScroll)
+        outState.putBoolean(
+            TAG_PERSONAL_END,
+            placeholderViews?.type == PlaceholderViews.Type.PERSONAL_PORTAL_END
+        )
         outState.putInt(TAG_SELECTED_PAGE, selectedPage)
         outState.putStringArrayList(TAG_TITLES, tabTile)
         outState.putIntegerArrayList(TAG_TYPE, type)
@@ -129,10 +140,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     private fun init(savedInstanceState: Bundle?) {
+        placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.root)
         if (savedInstanceState != null) {
             restoreStates(savedInstanceState)
         } else {
-            placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.root)
             placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD)
             checkBundle()
         }
@@ -159,7 +170,11 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         if (savedInstanceState.containsKey(TAG_SELECTED_PAGE)) {
             selectedPage = savedInstanceState.getInt(TAG_SELECTED_PAGE)
         }
-
+        if (savedInstanceState.containsKey(TAG_PERSONAL_END)) {
+            if (savedInstanceState.getBoolean(TAG_PERSONAL_END)) {
+                placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.PERSONAL_PORTAL_END)
+            }
+        }
         if (savedInstanceState.containsKey(TAG_TITLES) && savedInstanceState.containsKey(TAG_TYPE)) {
             tabTile = savedInstanceState.getStringArrayList(TAG_TITLES)
             type = savedInstanceState.getIntegerArrayList(TAG_TYPE)
@@ -330,6 +345,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             },
             acceptTitle = getString(R.string.switch_account_open_project_file)
         )
+    }
+
+    override fun onPersonalPortalEnd() {
+        placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.PERSONAL_PORTAL_END)
     }
 
     fun isRoot(): Boolean {

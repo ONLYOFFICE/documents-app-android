@@ -735,4 +735,9 @@
     <string name="room_create_thirdparty_desc">Используйте сторонние сервисы в качестве хранилища для этой комнаты. В таком хранилище будет создана новая папка для хранения данных этой комнаты</string>
     <string name="room_storage_reconnect">Подключиться к хранилищу еще раз</string>
     <string name="room_storage_not_availabale">Содержимое сторонней папки недоступно. Войдите в учетную запись еще раз.</string>
+    <string name="personal_portal_end_button">Создать бесплатный аккаунт</string>
+    <string name="personal_portal_end_title">ONLYOFFICE Personal завершает работу</string>
+    <string name="personal_portal_end_text">Пожалуйста, обратите внимание: поддержка ONLYOFFICE Personal прекращается 1 сентября 2024 года.\n
+    Рекомендуем перейти на бесплатный ONLYOFFICE DocSpace Cloud.</string>
+
 </resources>

@@ -16,8 +16,8 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDeleteShare
 import app.documents.core.network.manager.models.request.RequestFavorites
-import app.documents.core.network.share.models.request.Invitation
 import app.documents.core.network.share.models.request.RequestRoomShare
+import app.documents.core.network.share.models.request.UserIdInvitation
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
@@ -25,6 +25,7 @@ import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.api
 import app.editors.manager.app.cloudFileProvider
+import app.editors.manager.app.roomApi
 import app.editors.manager.app.roomProvider
 import app.editors.manager.app.shareApi
 import app.editors.manager.managers.receivers.DownloadReceiver
@@ -224,13 +225,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun getFileInfo() {
         val item = itemClicked
-        if (item != null) {
+        if (item != null && item is CloudFile) {
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.fileInfo(item)
                         .doOnSubscribe { showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE) }
-                        .doOnError(::fetchError)
-                        .subscribe(::onFileClickAction)
+                        .subscribe(::onFileClickAction) { onFileClickAction(item) }
                 )
             }
         }
@@ -401,20 +401,26 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun onEditContextClick() {
-        val file = itemClicked
-        if (file is CloudFile) {
-            if (LocalContentTools.isOpenFormat(file.clearExt)) {
-                viewState.onConversionQuestion()
-                return
+        when (val item = itemClicked) {
+            is CloudFile -> {
+                if (LocalContentTools.isOpenFormat(item.clearExt)) {
+                    viewState.onConversionQuestion()
+                    return
+                }
+                item.isReadOnly = false
+                var url = item.webUrl
+                if (url.contains(ApiContract.Parameters.ARG_ACTION) && url.contains(ApiContract.Parameters.VAL_ACTION_VIEW)) {
+                    url = url.substring(0, url.indexOf('&'))
+                    item.webUrl = url
+                }
+                addRecent(item)
+                onFileClickAction(item, true)
             }
-            file.isReadOnly = false
-            var url = file.webUrl
-            if (url.contains(ApiContract.Parameters.ARG_ACTION) && url.contains(ApiContract.Parameters.VAL_ACTION_VIEW)) {
-                url = url.substring(0, url.indexOf('&'))
-                file.webUrl = url
+            is CloudFolder -> {
+                if (item.isRoom) {
+                    editRoom()
+                }
             }
-            addRecent(file)
-            onFileClickAction(file, true)
         }
     }
 
@@ -935,25 +941,28 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun leaveRoom() {
         if (!isItemOwner) {
             showDialogWaiting(null)
-            presenterScope.launch {
-                request(
-                    func = {
-                        context.shareApi.shareRoom(
-                            roomClicked?.id ?: "", RequestRoomShare(
-                                invitations = listOf(Invitation(id = account.id, access = ApiContract.Access.None.code))
+            presenterScope.launch(Dispatchers.IO) {
+                try {
+                    context.roomApi.shareRoom(
+                        id = roomClicked?.id ?: "",
+                        body = RequestRoomShare(
+                            invitations = listOf(
+                                UserIdInvitation(
+                                    id = account.id,
+                                    access = ApiContract.Access.None.code
+                                )
                             )
                         )
-                    },
-                    onSuccess = {
+                    )
+                    withContext(Dispatchers.Main) {
                         viewState.onDialogClose()
                         viewState.onSnackBar(context.getString(R.string.leave_room_message))
                         refresh()
-                    },
-                    onError = {
-                        viewState.onDialogClose()
-                        fetchError(it)
                     }
-                )
+                } catch (e: Exception) {
+                    viewState.onDialogClose()
+                    fetchError(e)
+                }
             }
         } else {
             viewState.showSetOwnerFragment(roomClicked ?: error("room can not be null"))
