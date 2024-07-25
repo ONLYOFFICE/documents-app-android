@@ -14,7 +14,7 @@ plugins {
     id("kotlinx-serialization")
     kotlin("android")
     kotlin("kapt")
-    id("com.google.devtools.ksp") version Kotlin.kspVersion
+    alias(libs.plugins.kotlin.ksp)
 }
 
 // Onlyoffice
@@ -58,12 +58,12 @@ fun getKeystore(filePath: String): Properties {
 android {
 
     namespace = "app.editors.manager"
-    compileSdk = AppDependency.COMPILE_SDK_VERSION
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         manifestPlaceholders += mapOf()
-        minSdk = AppDependency.MIN_SDK_VERSION
-        targetSdk = AppDependency.TARGET_SDK_VERSION
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 564
         versionName = "8.1.1"
         multiDexEnabled = true
@@ -77,18 +77,6 @@ android {
 
         manifestPlaceholders["facebookId"] = keystoreProperties["FACEBOOK_APP_ID"] as String? ?: ""
         manifestPlaceholders["dropboxKey"] = keystoreProperties["DROP_BOX_COM_CLIENT_ID"] as? String ?: ""
-
-        flavorDimensions += "version"
-        productFlavors {
-            register("manager") {
-                dimension = "version"
-                buildConfigField("boolean", "isManager", "true")
-            }
-            register("managerWithoutEditors") {
-                dimension = "version"
-                buildConfigField("boolean", "isManager", "false")
-            }
-        }
 
         buildConfigField("boolean", "IS_BETA", "false")
         buildConfigField("String", "RELEASE_ID", "\"" + appId + "\"")
@@ -226,25 +214,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
         jniLibs.useLegacyPackaging = true
-//        arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DJVUFILE")}.so")
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DOCTRENDERER")}.so")
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_GRAPHICS")}.so")
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_HTMLFILE")}.so")
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_HTMLRENDERER")}.so")
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL")}.so")
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_PDF_FILE")}.so")
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_UNICODECONVERTER")}.so")
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_X2T")}.so")
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_XPSFILE")}.so")
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_FB2FILE")}.so")
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_EPUBFILE")}.so")
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL_NETWORK")}.so")
-//            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_DOCX_RENDERER")}.so")
-//        }
+        arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
+            jniLibs.pickFirsts.add("lib/$abi/libc++_shared.so")
+        }
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Compose.versionCompiler
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 }
 
@@ -256,102 +231,104 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":libcompose"))
     implementation(project(":libtoolkit"))
-    "managerImplementation"(project(":libx2t"))
-    "managerImplementation"(project(":libeditors"))
-    "managerImplementation"(project(":libslides"))
-    "managerImplementation"(project(":libdocs"))
-    "managerImplementation"(project(":libcells"))
-    "managerImplementation"(project(":libgeditors"))
-    "managerImplementation"(project(":libgslides"))
-    "managerImplementation"(project(":libgdocs"))
-    "managerImplementation"(project(":libgcells"))
+    implementation(project(":libx2t"))
+    implementation(project(":libeditors"))
+    implementation(project(":libslides"))
+    implementation(project(":libdocs"))
+    implementation(project(":libcells"))
+    implementation(project(":libgeditors"))
+    implementation(project(":libgslides"))
+    implementation(project(":libgdocs"))
+    implementation(project(":libgcells"))
+
+    // Firebase
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.core)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.config)
 
     // Google libs
-    implementation(Firebase.firebaseCore)
-    implementation(Firebase.firebaseConfig)
-    implementation(Firebase.firebaseCrashlytics)
-    implementation(Firebase.firebaseMessaging)
-    implementation(Google.playReview)
-    implementation(Google.playServiceAuth)
-    implementation(Google.material)
-    implementation(Google.gson)
-    implementation(Google.safetynet)
+    implementation(libs.google.playReview)
+    implementation(libs.google.playServiceAuth)
+    implementation(libs.google.material)
+    implementation(libs.google.gson)
+    implementation(libs.google.safetynet)
 
     // Androidx
-    implementation(AndroidX.appCompat)
-    implementation(AndroidX.biometric)
-    implementation(AndroidX.fragmentKtx)
+    implementation(libs.appcompat)
+    implementation(libs.biometric)
+    implementation(libs.fragmentKtx)
 
     // RecyclerView
-    implementation(AndroidX.recyclerView)
-    implementation(AndroidX.recyclerViewSelection)
+    implementation(libs.recyclerView)
+    implementation(libs.recyclerViewSelection)
 
-    implementation(AndroidX.cardView)
-    implementation(AndroidX.constraint)
+    implementation(libs.cardView)
+    implementation(libs.constraint)
 
     // Dagger
-    implementation(Dagger.dagger)
-    ksp(Dagger.daggerCompiler)
+    implementation(libs.dagger)
+    ksp(libs.dagger.compiler)
 
     // Retrofit
-    implementation(Retrofit.retrofit)
-    implementation(Retrofit.retrofitGson)
-    implementation(Retrofit.retrofitXml)
-    implementation(Retrofit.retrofitRx)
-    implementation(Retrofit.retrofitKotlinSerialization)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.retrofit.xml)
+    implementation(libs.retrofit.rx)
+    implementation(libs.retrofit.kotlin.serialization)
 
     // Moxy
-    implementation(Moxy.moxyAndroid)
-    implementation(Moxy.moxyMaterial)
-    implementation(Moxy.moxyKtx)
-    kapt(Moxy.moxyCompiler)
+    implementation(libs.moxy)
+    implementation(libs.moxy.material)
+    implementation(libs.moxy.ktx)
+    kapt(libs.moxy.compiler)
 
     // Kotlin
-    implementation(Kotlin.kotlinCore)
-    implementation(Kotlin.coroutineCore)
-    implementation(Kotlin.coroutineAndroid)
-    implementation(Kotlin.kotlinSerialization)
+    implementation(libs.kotlin.core)
+    implementation(libs.kotlin.coroutines)
+    implementation(libs.kotlin.coroutines.android)
+    implementation(libs.kotlin.serialization.json)
 
     // RX
-    implementation(Rx.androidRx)
-    implementation(Rx.rxRelay)
+    implementation(libs.rx.java)
+    implementation(libs.rx.relay)
 
     // Room
-    implementation(Room.roomRuntime)
-    implementation(Room.roomKtx)
-    ksp(Room.roomCompiler)
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
 
     // Other
-    implementation(Libs.phoneNumber)
-    implementation(Libs.facebookLogin)
-    implementation(Libs.pageIndicator)
-    implementation(Libs.glide)
-    implementation(Libs.glideCompose)
-    implementation(Libs.photoView)
-    implementation(Libs.androidWork)
+    implementation(libs.phoneNumber)
+    implementation(libs.facebookLogin)
+    implementation(libs.pageIndicator)
+    implementation(libs.glide)
+    implementation(libs.glideCompose)
+    implementation(libs.photoView)
+    implementation(libs.androidWorkManager)
 
     //TODO add to base module
-    implementation(Lifecycle.viewModel)
-    implementation(Lifecycle.liveData)
-    implementation(Lifecycle.runtime)
+    implementation(libs.lifecycle.viewmodel)
+    implementation(libs.lifecycle.livedata)
+    implementation(libs.lifecycle.runtime)
 
     //Compose
-    implementation(Compose.ui)
-    implementation(Compose.material)
-    implementation(Compose.preview)
-    debugImplementation(Compose.tooling)
-    implementation(Compose.navigation)
-    implementation(AndroidX.composeActivity)
-    implementation(Compose.liveData)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.material)
+    implementation(libs.compose.uiToolingPreview)
+    implementation(libs.compose.navigation)
+    implementation(libs.compose.activity)
+    implementation(libs.compose.livedata)
+    debugImplementation(libs.compose.uiTooling)
 
     //Jackson
-    implementation(Jackson.core)
-    implementation(Jackson.annotations)
-    implementation(Jackson.databind)
+    implementation(libs.jackson)
+    implementation(libs.jackson.annotations)
+    implementation(libs.jackson.databind)
 
     // For compose preview
-    debugApi("androidx.customview:customview:1.2.0-alpha02")
-    debugApi("androidx.customview:customview-poolingcontainer:1.0.0")
+    debugApi(libs.customview)
+    debugApi(libs.customview.poolingcontainer)
 }
 
 apply(plugin = "com.google.gms.google-services")

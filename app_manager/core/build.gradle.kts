@@ -6,17 +6,17 @@ plugins {
     id("kotlinx-serialization")
     kotlin("android")
     kotlin("kapt")
-    id("com.google.devtools.ksp") version Kotlin.kspVersion
+    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
 
     namespace = "app.documents.core"
 
-    compileSdk = AppDependency.COMPILE_SDK_VERSION
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = AppDependency.MIN_SDK_VERSION
+        minSdk = libs.versions.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -76,50 +76,52 @@ dependencies {
     implementation(project(":core:database"))
 
     // Kotlin
-    implementation(Kotlin.kotlinCore)
-    implementation(Kotlin.kotlinSerialization)
-    implementation(Kotlin.coroutineCore)
-    implementation(Kotlin.coroutineAndroid)
+    implementation(libs.kotlin.core)
+    implementation(libs.kotlin.coroutines)
+    implementation(libs.kotlin.coroutines.android)
+    implementation(libs.kotlin.serialization.json)
 
     // Androidx
-    implementation(AndroidX.ktx)
-    implementation(AndroidX.appCompat)
-    implementation(Lifecycle.runtime)
+    implementation(libs.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.lifecycle.runtime)
+
+    // Firebase
+    implementation(libs.firebase.messaging)
 
     // Google
-    implementation(Google.material)
-    implementation(Firebase.firebaseMessaging)
+    implementation(libs.google.material)
 
     // Dagger
-    implementation(Dagger.dagger)
-    ksp(Dagger.daggerCompiler)
+    implementation(libs.dagger)
+    ksp(libs.dagger.compiler)
 
     // Koin
-    implementation(Koin.koinAndroid)
+    implementation(libs.koin.android)
 
     // Retrofit
-    implementation(Retrofit.retrofit)
-    implementation(Retrofit.retrofitRx)
-    implementation(Retrofit.retrofitKotlinSerialization)
-    implementation(Retrofit.retrofitXml)
-    implementation(Retrofit.retrofitGson)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.retrofit.xml)
+    implementation(libs.retrofit.rx)
+    implementation(libs.retrofit.kotlin.serialization)
 
     // Dropbox
-    implementation(Libs.dropboxSdk)
+    implementation(libs.dropboxSdk)
 
     // Rx
-    implementation(Rx.androidRx)
-    implementation(Rx.rxRelay)
+    implementation(libs.rx.java)
+    implementation(libs.rx.relay)
 
     // Room
-    implementation(Room.roomRuntime)
-    implementation(Room.roomKtx)
-    ksp(Room.roomCompiler)
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
 
     //noinspection KaptUsageInsteadOfKsp
     kapt("com.github.bumptech.glide:compiler:4.12.0")
-    implementation(Libs.glide)
-    implementation(Libs.glideOkHttpIntegration) { exclude("glide-parent") }
+    implementation(libs.glide)
+    implementation(libs.glideOkhttp) { exclude("glide-parent") }
 
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")

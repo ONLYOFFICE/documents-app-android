@@ -105,21 +105,29 @@ object ActionMenuItemsFactory {
             }
 
             // sort block
-            addAll(
-                listOfNotNull(
-                    ActionMenuItem.Title,
-                    ActionMenuItem.Type,
-                    ActionMenuItem.Size,
-                    ActionMenuItem.Author.takeIf { section != SectionType.DEVICE_DOCUMENTS },
-                    ActionMenuItem.Date
-                ).map { it.get(asc, sortBy) }
-            )
+            if (section == SectionType.ONEDRIVE) {
+                add(ActionMenuItem.Title.get(asc, sortBy))
+            } else {
+                addAll(
+                    listOfNotNull(
+                        ActionMenuItem.Title,
+                        ActionMenuItem.Type,
+                        ActionMenuItem.Size,
+                        ActionMenuItem.Author.takeIf { section != SectionType.DEVICE_DOCUMENTS },
+                        ActionMenuItem.Date
+                    ).map { it.get(asc, sortBy) }
+                )
+            }
         } else if (section == SectionType.CLOUD_TRASH) {
             // trash action block
             add(ActionMenuItem.Restore)
             add(ActionMenuItem.Delete)
+        } else if (section == SectionType.CLOUD_ARCHIVE_ROOM) {
+            // archive action block
+            add(ActionMenuItem.Download)
+            add(ActionMenuItem.Delete)
         } else {
-            // action block
+            // common action block
             if (section != SectionType.DEVICE_DOCUMENTS) add(ActionMenuItem.Download)
             add(ActionMenuItem.Move)
             add(ActionMenuItem.Copy)

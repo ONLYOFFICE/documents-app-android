@@ -5,14 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import app.editors.manager.R
+import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
 import lib.toolkit.base.managers.tools.ResourcesProvider
-import javax.inject.Inject
 
 class RemoteUrlViewModel: ViewModel() {
-
-    @Inject
-    protected lateinit var resourcesProvider: ResourcesProvider
+    private val resourcesProvider: ResourcesProvider
+        get() = App.getApp().appComponent.resourcesProvider
 
     val remoteUrls: LiveData<Spanned?> = getUrls().map {
         it?.let { urls ->

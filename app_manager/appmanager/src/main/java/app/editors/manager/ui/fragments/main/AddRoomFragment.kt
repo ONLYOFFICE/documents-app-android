@@ -271,7 +271,7 @@ class AddRoomFragment : BaseFragment() {
                         val userListViewModel = UserListViewModel(
                             roomId = room?.id.orEmpty(),
                             roomType = roomType,
-                            roomOwnerId = room?.createdBy?.id.orEmpty(),
+                            roomOwnerId = roomState.value.owner.id,
                             mode = UserListMode.ChangeOwner,
                             shareService = requireContext().shareApi,
                             roomProvider = requireContext().roomProvider,
@@ -608,7 +608,7 @@ private fun ChooseImageBottomView(
     val cameraPermission =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                photoLauncher.launch(photo)
+                photo?.let { photoLauncher.launch(it) }
             }
         }
 

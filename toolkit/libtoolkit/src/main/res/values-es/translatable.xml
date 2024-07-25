@@ -26,4 +26,5 @@
         <item quantity="one">hora</item>
         <item quantity="other">horas</item>
     </plurals>
+    <string name="settings_fonts_title">Fuentes</string>
 </resources>

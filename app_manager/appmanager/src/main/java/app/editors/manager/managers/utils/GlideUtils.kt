@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
 import okhttp3.Credentials
+import java.net.URI
 
 
 object GlideUtils {
@@ -34,7 +35,8 @@ object GlideUtils {
 
     fun getCorrectLoad(url: String?, token: String): Any {
         return GlideUrl(
-            url, LazyHeaders.Builder()
+            URI(url).normalize().toString(), // remove duplicated slashes
+            LazyHeaders.Builder()
                 .addHeader(ApiContract.HEADER_AUTHORIZATION, token)
                 .build()
         )

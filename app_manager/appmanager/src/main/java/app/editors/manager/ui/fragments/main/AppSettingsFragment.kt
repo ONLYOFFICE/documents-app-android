@@ -5,12 +5,18 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -24,6 +30,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -34,6 +41,7 @@ import app.editors.manager.ui.activities.main.AboutScreen
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.compose.locale.AppLocalePickerScreen
 import app.editors.manager.ui.compose.passcode.PasscodeMainScreen
+import app.editors.manager.viewModels.main.AppSettingsEffect
 import app.editors.manager.viewModels.main.AppSettingsState
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import app.editors.manager.viewModels.main.AppSettingsViewModelFactory
@@ -41,21 +49,28 @@ import app.editors.manager.viewModels.main.PasscodeViewModel
 import app.editors.manager.viewModels.main.PasscodeViewModelFactory
 import kotlinx.coroutines.flow.collectLatest
 import lib.compose.ui.theme.ManagerTheme
-import lib.compose.ui.theme.Previews
+import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppHeaderItem
+import lib.compose.ui.views.AppListItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppSelectItem
 import lib.compose.ui.views.AppSwitchItem
+import lib.compose.ui.views.PlaceholderView
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
+import lib.toolkit.base.managers.utils.FontPicker
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.capitalize
+import lib.toolkit.base.managers.utils.suspendLaunchAfterResume
+import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.fragments.base.BaseFragment
+import java.io.File
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 private data class ClearCacheMessage(
     val title: String?,
@@ -68,17 +83,25 @@ private sealed class Screen(val route: String) {
     data object Passcode : Screen("passcode")
     data object LocalePicker : Screen("locale")
     data object About : Screen("about")
+    data object Fonts : Screen("fonts")
 }
 
 class AppSettingsFragment : BaseFragment() {
 
     companion object {
         val TAG: String = AppSettingsFragment::class.java.simpleName
+        private const val DIALOG_CANCEL_TAG = "DIALOG_CANCEL_TAG"
+
         fun newInstance(): AppSettingsFragment = AppSettingsFragment()
     }
 
     @Inject
     lateinit var preferenceTool: PreferenceTool
+
+    private var addMenuItem: MenuItem? = null
+    private var clearMenuItem: MenuItem? = null
+
+    private var navController: NavHostController by Delegates.notNull()
 
     private val viewModel by viewModels<AppSettingsViewModel> {
         AppSettingsViewModelFactory(
@@ -107,14 +130,88 @@ class AppSettingsFragment : BaseFragment() {
         App.getApp().appComponent.inject(this)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_settings_fonts, menu)
+        clearMenuItem = menu.findItem(R.id.clear_fonts)
+        addMenuItem = menu.findItem(R.id.add_font)
+        clearMenuItem?.let { UiUtils.setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary) }
+        addMenuItem?.let { UiUtils.setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary) }
+
+        suspendLaunchAfterResume {
+            navController.currentBackStackEntryFlow.collect { entry ->
+                if (entry.destination.route == Screen.Fonts.route) {
+                    clearMenuItem?.isVisible = viewModel.settingsState.value.fonts.isNotEmpty()
+                    addMenuItem?.isVisible = true
+                } else {
+                    clearMenuItem?.isVisible = false
+                    addMenuItem?.isVisible = false
+                }
+            }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.clear_fonts -> {
+                UiUtils.showQuestionDialog(
+                    context = requireContext(),
+                    title = getString(R.string.dialogs_question_delete_all_fonts),
+                    description = resources.getQuantityString(R.plurals.dialogs_question_message_delete, 2),
+                    acceptListener = viewModel::clearFonts
+                )
+            }
+            R.id.add_font -> {
+                FontPicker(
+                    activityResultRegistry = requireActivity().activityResultRegistry,
+                    callback = viewModel::addFont
+                ).pickFonts()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext())
     }
 
+    override fun onCancelClick(dialogs: CommonDialog.Dialogs?, tag: String?) {
+        when (tag) {
+            DIALOG_CANCEL_TAG -> {
+                viewModel.cancelJob()
+                hideDialog()
+            }
+            else -> super.onCancelClick(dialogs, tag)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (view as ComposeView).setContent {
-            val navController = rememberNavController()
             val settingsState by viewModel.settingsState.collectAsState()
+            navController = rememberNavController()
+
+            LaunchedEffect(Unit) {
+                viewModel.effect.collect {
+                    when (it) {
+                        is AppSettingsEffect.Error -> showSnackBar(it.message)
+                        is AppSettingsEffect.Progress -> updateProgressDialog(100, it.value)
+                        AppSettingsEffect.HideDialog -> hideDialog()
+                        AppSettingsEffect.ShowDialog -> {
+                            showProgressDialog(
+                                title = getString(R.string.dialogs_wait_title),
+                                isHideButton = false,
+                                cancelTitle = getString(R.string.dialogs_common_cancel_button),
+                                tag = DIALOG_CANCEL_TAG
+                            )
+                        }
+                    }
+                }
+            }
 
             LaunchedEffect(Unit) {
                 viewModel.message.collectLatest { message ->
@@ -135,13 +232,14 @@ class AppSettingsFragment : BaseFragment() {
                             SettingsScreen(
                                 context = requireContext(),
                                 settingsState = settingsState,
-                                onThemeClick = { navController.navigate(Screen.Theme.route) },
                                 onWifiState = viewModel::setWifiState,
                                 onAnalytics = viewModel::setAnalytic,
+                                onCacheClear = viewModel::clearCache,
+                                onThemeClick = { navController.navigate(Screen.Theme.route) },
                                 onPasscodeClick = { navController.navigate(Screen.Passcode.route) },
                                 onLocaleClick = { navController.navigate(Screen.LocalePicker.route) },
                                 onAboutClick = { navController.navigate(Screen.About.route) },
-                                onCacheClear = { viewModel.clearCache() }
+                                onFontsClick = { navController.navigate(Screen.Fonts.route) }
                             )
                         }
                         composable(Screen.Theme.route) {
@@ -173,6 +271,26 @@ class AppSettingsFragment : BaseFragment() {
                                 onShowBrowser = { url -> showUrlInBrowser(getString(url)) }
                             )
                         }
+                        composable(Screen.Fonts.route) {
+                            LaunchedEffect(settingsState.fonts.size) {
+                                clearMenuItem?.isVisible = settingsState.fonts.isNotEmpty()
+                            }
+
+                            FontsScreen(
+                                fonts = settingsState.fonts,
+                                onBack = navController::popBackStackWhenResumed
+                            ) { font ->
+                                UiUtils.showQuestionDialog(
+                                    context = requireContext(),
+                                    title = getString(R.string.dialogs_question_delete_font),
+                                    description = resources.getQuantityString(
+                                        R.plurals.dialogs_question_message_delete,
+                                        1
+                                    ),
+                                    acceptListener = { viewModel.deleteFont(font) }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -186,6 +304,7 @@ class AppSettingsFragment : BaseFragment() {
                 Screen.Passcode.route -> R.string.app_settings_passcode
                 Screen.LocalePicker.route -> R.string.settings_language
                 Screen.About.route -> R.string.about_title
+                Screen.Fonts.route -> lib.toolkit.base.R.string.settings_fonts_title
                 else -> R.string.settings_item_title
             }
 
@@ -206,7 +325,8 @@ class AppSettingsFragment : BaseFragment() {
         onAboutClick: () -> Unit,
         onWifiState: (Boolean) -> Unit,
         onAnalytics: (Boolean) -> Unit,
-        onCacheClear: () -> Unit
+        onCacheClear: () -> Unit,
+        onFontsClick: () -> Unit
     ) {
         Surface(color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -249,6 +369,12 @@ class AppSettingsFragment : BaseFragment() {
                         acceptListener = onCacheClear
                     )
                 }
+                AppArrowItem(
+                    title = lib.toolkit.base.R.string.settings_fonts_title,
+                    dividerVisible = false,
+                    onClick = onFontsClick,
+                    option = settingsState.fonts.size.toString()
+                )
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     with(requireContext().getSystemService(LocaleManager::class.java)) {
                         val currentAppLocale = applicationLocales.get(0) ?: systemLocales.get(0)
@@ -333,7 +459,7 @@ class AppSettingsFragment : BaseFragment() {
         else -> null
     }
 
-    @Previews.All
+    //    @Previews.All
     @Composable
     private fun Preview() {
         ManagerTheme {
@@ -352,8 +478,34 @@ class AppSettingsFragment : BaseFragment() {
                 onPasscodeClick = {},
                 onLocaleClick = {},
                 onAboutClick = {},
-                onCacheClear = {}
+                onCacheClear = {},
+                onFontsClick = {}
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun FontsScreen(fonts: List<File>, onBack: () -> Unit, onFontClick: (File) -> Unit = {}) {
+    AppScaffold {
+        if (fonts.isEmpty()) {
+            PlaceholderView(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
+                title = stringResource(id = R.string.placeholder_no_fonts),
+                subtitle = ""
+            )
+        } else {
+            LazyColumn {
+                items(items = fonts, key = { it.name }) { font ->
+                    AppListItem(
+                        modifier = Modifier.animateItemPlacement(),
+                        title = font.nameWithoutExtension,
+                        dividerVisible = false,
+                        onClick = { onFontClick.invoke(font) }
+                    )
+                }
+            }
         }
     }
 }

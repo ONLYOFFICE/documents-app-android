@@ -17,7 +17,8 @@
   <string name="common_next">Dalej</string>
   <string name="common_ok">OK</string>
   <string name="common_previous">Wróć</string>
-
+  <string name="settings_fonts_title">Czcionki</string>
+  
   <plurals name="days">
     <item quantity="one">dzień</item>
     <item quantity="few">dni</item>

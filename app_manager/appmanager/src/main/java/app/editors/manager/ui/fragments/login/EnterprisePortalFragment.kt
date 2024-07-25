@@ -1,6 +1,5 @@
 package app.editors.manager.ui.fragments.login
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
@@ -12,7 +11,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
-import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentLoginEnterprisePortalBinding
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -42,12 +40,6 @@ class EnterprisePortalFragment : BaseAppFragment(),
     private val urlsViewModel: RemoteUrlViewModel by viewModels()
 
     private var viewBinding: FragmentLoginEnterprisePortalBinding? = null
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        requireContext().appComponent.inject(viewModel)
-        requireContext().appComponent.inject(urlsViewModel)
-    }
 
     override fun onBackPressed(): Boolean {
         hideKeyboard()

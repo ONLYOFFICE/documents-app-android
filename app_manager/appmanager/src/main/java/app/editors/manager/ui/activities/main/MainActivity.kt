@@ -121,9 +121,9 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     @SuppressLint("MissingSuperCall")
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        intent?.action?.let { action ->
+        intent.action?.let { action ->
             if (action == DownloadReceiver.DOWNLOAD_ACTION_CANCELED) {
                 intent.extras?.let { extras ->
                     WorkManager.getInstance(this)
@@ -141,7 +141,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
 
         if (isNotification()) {
-            intent?.extras?.getString(URL_KEY)?.let {
+            intent.extras?.getString(URL_KEY)?.let {
                 showBrowser(it)
             }
             return
