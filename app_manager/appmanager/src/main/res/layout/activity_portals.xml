@@ -28,20 +28,6 @@
             app:contentInsetStartWithNavigation="0dp"
             app:title="@string/login_pager_title" />
 
-        <FrameLayout
-            android:id="@+id/tab_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tab_layout"
-                style="@style/Widget.Common.TabLayout.Fixed"
-                android:layout_width="match_parent"
-                android:background="@color/colorTransparent" />
-        </FrameLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
 

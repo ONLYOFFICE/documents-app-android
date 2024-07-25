@@ -28,7 +28,7 @@ data class CloudPortal(
                 url.contains("$PERSONAL_SUBDOMAIN$DEFAULT_HOST_INFO")
 
     val urlWithScheme: String
-        get() = "${scheme.value}$url".let { if (!it.endsWith("/")) "$it/" else it }
+        get() = "${scheme.value}$url".let { if (!it.endsWith("/") && provider != PortalProvider.Cloud.DocSpace) "$it/" else it }
 }
 
 val CloudPortal?.isDocSpace: Boolean

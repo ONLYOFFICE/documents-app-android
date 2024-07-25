@@ -84,6 +84,13 @@ object RoomUtils {
                     ApiContract.ShareCode.READ
                 )
             }
+            ApiContract.RoomType.FILL_FORMS_ROOM -> {
+                mutableListOf(
+                    ApiContract.ShareCode.ROOM_ADMIN,
+                    ApiContract.ShareCode.POWER_USER,
+                    ApiContract.ShareCode.FILL_FORMS,
+                )
+            }
             else -> mutableListOf()
         }.apply { if (isRemove) add(ApiContract.ShareCode.NONE) }
     }

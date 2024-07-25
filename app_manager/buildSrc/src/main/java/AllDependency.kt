@@ -65,14 +65,14 @@ object Kotlin {
 
 object Google {
     private const val playServicesAuthVersion = "21.0.0"
-    private const val playCoreVersion = "1.10.3"
+    private const val playReviewVersion = "2.0.1"
     private const val materialVersion = "1.11.0"
     private const val gsonVersion = "2.10.1"
     private const val safetynetVersion = "18.0.1"
 
 
     const val playServiceAuth = "com.google.android.gms:play-services-auth:$playServicesAuthVersion"
-    const val playCore = "com.google.android.play:core:$playCoreVersion"
+    const val playReview = "com.google.android.play:review:$playReviewVersion"
     const val material = "com.google.android.material:material:$materialVersion"
     const val gson = "com.google.code.gson:gson:$gsonVersion"
     const val safetynet = "com.google.android.gms:play-services-safetynet:$safetynetVersion"

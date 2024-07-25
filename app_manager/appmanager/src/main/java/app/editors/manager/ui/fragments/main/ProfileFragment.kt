@@ -106,7 +106,7 @@ private fun ProfileScreen(
     onLogOut: () -> Unit,
     onSignIn: () -> Unit
 ) {
-    AppScaffold {
+    AppScaffold(useTablePaddings = false) {
         NestedColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
             RowItem(
                 icon = R.drawable.ic_list_item_share_user_icon,
