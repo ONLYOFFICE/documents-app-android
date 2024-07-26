@@ -158,6 +158,12 @@ class App : Application() {
             .build()
     }
 
+    fun refreshStorageComponents() {
+        _dropboxComponent?.let { refreshDropboxInstance() }
+        _oneDriveComponent?.let { refreshOneDriveInstance() }
+        _googleDriveComponent?.let { refreshGoogleDriveInstance() }
+    }
+
     private fun checkDeXEnabled(): Boolean {
         val enabled: Boolean
         val config: Configuration = resources.configuration

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import app.documents.core.login.StorageLoginRepository
 import app.documents.core.network.common.Result
+import app.editors.manager.app.App
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,7 +47,10 @@ class StorageLoginViewModel(private val repository: StorageLoginRepository) : Vi
                 .collect { result ->
                     when (result) {
                         is Result.Error -> _state.value = StorageLoginState.Error(result.exception)
-                        is Result.Success -> _state.value = StorageLoginState.Success
+                        is Result.Success -> {
+                            App.getApp().refreshStorageComponents()
+                            _state.value = StorageLoginState.Success
+                        }
                     }
                 }
         }

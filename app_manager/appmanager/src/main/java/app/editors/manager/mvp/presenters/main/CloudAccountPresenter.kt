@@ -154,6 +154,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         when (result) {
             is CheckLoginResult.Success -> {
                 App.getApp().showPersonalPortalMigration = true
+                App.getApp().refreshStorageComponents()
                 viewState.onSuccessLogin()
             }
             is CheckLoginResult.Error -> checkError(result.exception, account)
