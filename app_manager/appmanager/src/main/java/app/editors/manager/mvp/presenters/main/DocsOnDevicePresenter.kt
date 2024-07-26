@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -21,8 +22,10 @@ import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.localFileProvider
 import app.editors.manager.app.webDavFileProvider
+import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.views.main.DocsOnDeviceView
+import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment.Companion.KEY_UPLOAD
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -35,6 +38,9 @@ import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
 import moxy.presenterScope
 import java.io.File
+import app.editors.manager.managers.works.dropbox.UploadWork as DropboxUploadWork
+import app.editors.manager.managers.works.googledrive.UploadWork as GoogleDriveUploadWork
+import app.editors.manager.managers.works.onedrive.UploadWork as OnedriveUploadWork
 
 @InjectViewState
 class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
@@ -167,27 +173,43 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     override fun uploadToMy(uri: Uri) {
         context.accountOnline?.let { account ->
-            if (webDavFileProvider == null) {
-                when {
-                    preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context) -> {
-                        viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
-                    }
-                    ContentResolverUtils.getSize(context, uri) > FileUtils.STRICT_SIZE -> {
-                        viewState.onSnackBar(context.getString(R.string.upload_manager_error_file_size))
-                    }
-                    else -> {
-                        if (!account.isWebDav) {
-                            val workData = Data.Builder()
-                                .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
-                                .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
-                                .putString(UploadWork.TAG_FOLDER_ID, null)
-                                .build()
-                            startUpload(workData)
-                        }
-                    }
+
+            if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
+                viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
+                return
+            }
+
+            if (ContentResolverUtils.getSize(context, uri) > FileUtils.STRICT_SIZE) {
+                viewState.onSnackBar(context.getString(R.string.upload_manager_error_file_size))
+                return
+            }
+
+            when (val provider = account.portal.provider) {
+                is PortalProvider.Webdav -> uploadWebDav(provider.path, listOf(uri))
+                is PortalProvider.Cloud -> {
+                    val workData = Data.Builder()
+                        .putString(UploadWork.TAG_UPLOAD_FILES, uri.toString())
+                        .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD_MY)
+                        .putString(UploadWork.TAG_FOLDER_ID, null)
+                        .build()
+                    startUpload(workData)
                 }
-            } else {
-                uploadWebDav((account.portal.provider as? PortalProvider.Webdav)?.path.orEmpty(), listOf(uri))
+                is PortalProvider.Storage -> {
+                    val worker = when (provider) {
+                        PortalProvider.Dropbox -> DropboxUploadWork::class.java
+                        PortalProvider.GoogleDrive -> GoogleDriveUploadWork::class.java
+                        PortalProvider.Onedrive -> OnedriveUploadWork::class.java
+                    }
+                    val data = Data.Builder()
+                        .putString(BaseStorageUploadWork.TAG_FOLDER_ID, provider.rootFolderId)
+                        .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uri.toString())
+                        .putString(BaseStorageUploadWork.KEY_TAG, KEY_UPLOAD)
+                        .build()
+                    val request = OneTimeWorkRequest.Builder(worker)
+                        .setInputData(data)
+                        .build()
+                    startUpload(request)
+                }
             }
         }
     }

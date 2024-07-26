@@ -328,7 +328,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
 
-    protected fun loadSuccess(explorer: Explorer?) {
+    protected open fun loadSuccess(explorer: Explorer?) {
         modelExplorerStack.addStack(explorer)
         updateViewsState()
         setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
@@ -757,6 +757,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 .build()
             downloadManager.enqueue(request)
         }
+    }
+
+    protected fun startUpload(request: OneTimeWorkRequest) {
+        downloadManager.enqueue(request)
     }
 
     private fun setSize(uri: Uri): String {

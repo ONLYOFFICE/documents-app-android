@@ -4,10 +4,12 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.WorkManager
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.editors.manager.R
@@ -254,6 +256,14 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
     override fun onUploadRepeat(path: String?, info: String?) {
         viewState.onDialogClose()
         info?.let { viewState.onSnackBar(it) }
+    }
+
+    override fun loadSuccess(explorer: Explorer?) {
+        super.loadSuccess(explorer)
+        val provider = context.accountOnline?.portal?.provider
+        if (provider is PortalProvider.Storage && provider.rootFolderId.isEmpty()) {
+            provider.rootFolderId = explorer?.current?.id.orEmpty()
+        }
     }
 
     private fun showDownloadFolderActivity(uri: Uri?) {
