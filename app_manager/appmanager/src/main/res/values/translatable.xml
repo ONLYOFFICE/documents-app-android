@@ -896,8 +896,7 @@
     <string name="conversion_dialog_converting_to">Converting to %1s</string>
 
     <string name="personal_portal_end_button">Create a free account</string>
-    <string name="personal_portal_end_title">ONLYOFFICE Personal is wrapping up</string>
-    <string name="personal_portal_end_text">ONLYOFFICE Personal will be discontinued on September 1st, 2024.\n
-We recommend you move to the free ONLYOFFICE DocSpace Cloud.</string>
+    <string name="personal_portal_end_title">ONLYOFFICE Personal is wrapping up</string>
+    <string name="personal_portal_end_text">ONLYOFFICE Personal will be discontinued on September 1st, 2024.\nWe recommend you move to the free ONLYOFFICE DocSpace Cloud.</string>
 
 </resources>
