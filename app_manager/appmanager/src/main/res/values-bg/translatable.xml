@@ -707,4 +707,7 @@
     <string name="room_create_thirdparty_desc">Използвайте услугите на трети страни като хранилище на данни за тази стая. В свързаното хранилище ще бъде създадена нова папка за съхраняване на данните от тази стая</string>
     <string name="room_storage_reconnect">Свържи отново съхраняването</string>
     <string name="room_storage_not_availabale">Съдържанието на папката на трета страна не е налично. Опитайте да свържете отново профила.</string>
+    <string name="personal_portal_end_button">Създайте безплатен профил</string>
+    <string name="personal_portal_end_title">ONLYOFFICE Personal приключва работа</string>
+    <string name="personal_portal_end_text">ONLYOFFICE Personal ще бъде спрян на 1-ви септември 2024 г.\nПрепоръчваме да се преместите в безплатния ONLYOFFICE DocSpace облак.</string>
 </resources>

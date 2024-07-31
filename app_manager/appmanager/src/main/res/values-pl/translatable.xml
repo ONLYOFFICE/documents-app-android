@@ -711,4 +711,7 @@ Aplikacja korzysta teraz z języka angielskiego, ponieważ zmieniono język syst
     <string name="room_create_thirdparty_desc">Użyj usług podmiotów trzecich jako pamięci dla tego pokoju. Nowy katalog do przechowywania danych z tego pokoju zostanie utworzony w podłączonej pamięci</string>
     <string name="room_storage_reconnect">Podłącz pamięć ponownie</string>
     <string name="room_storage_not_availabale">Zawartość katalogu podmiotu trzeciego jest niedostępna. Spróbuj ponownie nawiązać połączenie z kontem.</string>
+    <string name="personal_portal_end_button">Utwórz darmowe konto</string>
+    <string name="personal_portal_end_title">Wycofanie ONLYOFFICE Personal</string>
+    <string name="personal_portal_end_text">Opcja ONLYOFFICE Personal zostanie wycofana z użytku 1 września 2024 roku.\nZalecamy przeniesienie się do darmowej chmury ONLYOFFICE DocSpace Cloud.</string>
 </resources>
