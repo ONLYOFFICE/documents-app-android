@@ -2,7 +2,7 @@ name: Upload Release Files to AWS S3
 
 on:
   release:
-    types: [released]
+    types: [released, edited, created]
 
 jobs:
   upload-release:
