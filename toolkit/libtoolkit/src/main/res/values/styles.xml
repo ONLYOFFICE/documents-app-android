@@ -38,9 +38,8 @@
     </style>
 
     <style name="MainActivityTheme" parent="AppBaseTheme">
-        <item name="android:navigationBarColor">@color/colorBottomBar</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 
     <style name="WebViewerActivityStyle" parent="AppTheme">
@@ -266,8 +265,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
     </style>
 
-    <style name="Widget.Common.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
-        <item name="android:background">@color/colorBottomBar</item>
+    <style name="Widget.Common.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/colorSurface</item>
     </style>
 
     <style name="Widget.Common.Toolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
