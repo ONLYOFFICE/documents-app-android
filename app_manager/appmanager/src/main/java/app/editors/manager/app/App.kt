@@ -62,6 +62,8 @@ class App : Application() {
 
     var needPasscodeToUnlock: Boolean = false
 
+    var showPersonalPortalMigration: Boolean = true
+
     var isAnalyticEnable = true
         set(value) {
             field = value

@@ -711,4 +711,8 @@
     <string name="room_create_thirdparty_desc">Verwenden Sie Drittanbieterdienste als Datenspeicher für diesen Raum. Ein neuer Ordner zum Speichern der Daten dieses Raums wird im verbundenen Speicher erstellt</string>
     <string name="room_storage_reconnect">Speicher neu verbinden</string>
     <string name="room_storage_not_availabale">Der Inhalt des Drittanbieterordners ist nicht verfügbar. Versuchen Sie, das Konto erneut zu verbinden.</string>
+    <string name="personal_portal_end_button">Kostenloses Konto erstellen</string>
+    <string name="personal_portal_end_title">ONLYOFFICE Personal schließt ab</string>
+    <string name="personal_portal_end_text">Bitte beachten Sie: ONLYOFFICE Personal wird am 1. September 2024 auslaufen.\n
+Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</string>
 </resources>

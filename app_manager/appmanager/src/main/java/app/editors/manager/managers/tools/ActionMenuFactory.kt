@@ -1,6 +1,5 @@
 package app.editors.manager.managers.tools
 
-import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract.Parameters
 import app.documents.core.network.common.contracts.ApiContract.SectionType
 import app.documents.core.network.manager.models.explorer.Security
@@ -97,7 +96,6 @@ object ActionMenuItemsFactory {
     }
 
     fun getDocsItems(
-        provider: PortalProvider,
         section: Int,
         selected: Boolean,
         allSelected: Boolean,
@@ -116,7 +114,7 @@ object ActionMenuItemsFactory {
             )
 
             // sort block
-            if (provider == PortalProvider.Onedrive) {
+            if (section == SectionType.ONEDRIVE) {
                 add(ActionMenuItem.Title.get(asc, sortBy))
             } else {
                 add(

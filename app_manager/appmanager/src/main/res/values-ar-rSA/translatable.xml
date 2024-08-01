@@ -891,4 +891,7 @@
     <string name="room_create_thirdparty_desc">استخدم خدمات الطرف الثالث كمخزن للبيانات لهذه الغرفة. سيتم إنشاء مجلد جديد لتخزين بيانات هذه الغرفة في وحدة التخزين المرتبطة</string>
     <string name="room_storage_reconnect">إعادة توصيل وحدة التخزين</string>
     <string name="room_storage_not_availabale">محتوى مجلد الطرف الثالث غير متوفر. حاول إعادة ربط الحساب.</string>
+    <string name="personal_portal_end_button">أنشئ حسابًا مجانيًا</string>
+    <string name="personal_portal_end_title">يتم إنهاء خدمة ONLYOFFICE Personal</string>
+    <string name="personal_portal_end_text">سيتم إيقاف خدمة ONLYOFFICE Personal في الأول من سبتمبر 2024\n.نوصي بالانتقال إلى خدمة ONLYOFFICE DocSpace Cloud المجانية.</string>
 </resources>

@@ -772,4 +772,7 @@
     <string name="room_create_thirdparty_desc">为此房间的数据存储使用第三方服务。将在已连接的存储空间中创建一个用于存储此房间数据的新文件夹。</string>
     <string name="room_storage_reconnect">重新连接存储</string>
     <string name="room_storage_not_availabale">第三方文件夹的内容不可用。尝试重新连接帐户。</string>
+    <string name="personal_portal_end_button">创建免费账户</string>
+    <string name="personal_portal_end_title">我们将停用 ONLYOFFICE Personal</string>
+    <string name="personal_portal_end_text">请注意：我们将于2024年9月1日停止使用 ONLYOFFICE Personal，并强烈建议您改用 ONLYOFFICE 协作空间云端版。</string>
 </resources>

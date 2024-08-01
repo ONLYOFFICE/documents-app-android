@@ -713,4 +713,8 @@
     <string name="room_create_thirdparty_desc">Utilisez des services tiers pour stocker les données de cette salle. Un nouveau dossier pour le stockage des données de cette salle sera créé dans l\'espace de stockage connecté.</string>
     <string name="room_storage_reconnect">Reconnecter le stockage</string>
     <string name="room_storage_not_availabale">Le contenu des dossiers de tiers n\'est pas disponible. Essayez de reconnecter le compte.</string>
+    <string name="personal_portal_end_button">Créer un compte gratuit</string>
+    <string name="personal_portal_end_title">ONLYOFFICE Personal se termine</string>
+    <string name="personal_portal_end_text">Veuillez noter: ONLYOFFICE Personal sera arrêté le 1er septembre 2024.\n
+Nous vous recommandons de passer au service gratuit ONLYOFFICE DocSpace Cloud.</string>
 </resources>
