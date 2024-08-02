@@ -40,6 +40,7 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
     var isRoot: Boolean = false
     var isFooter: Boolean = false
     var isSectionMy: Boolean = false
+    var isTrash: Boolean = false
 
     var isSelectMode = false
         set(isSelectMode) {

@@ -23,14 +23,6 @@ class DocsTrashFragment : DocsCloudFragment() {
         initViews()
     }
 
-    override fun onItemClick(view: View, position: Int) {
-        if (presenter.isSelectionMode) {
-            super.onItemClick(view, position)
-        } else {
-            onItemContextClick(position, null)
-        }
-    }
-
     override fun setMenuMainEnabled(isEnabled: Boolean) {
         super.setMenuMainEnabled(isEnabled)
         searchItem?.isVisible = isEnabled
@@ -49,6 +41,7 @@ class DocsTrashFragment : DocsCloudFragment() {
             )
             cloudPresenter.checkBackStack()
         }
+        explorerAdapter?.isTrash = true
     }
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {

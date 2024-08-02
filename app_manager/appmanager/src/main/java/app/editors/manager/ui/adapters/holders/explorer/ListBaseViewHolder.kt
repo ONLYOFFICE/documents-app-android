@@ -36,7 +36,13 @@ abstract class ListBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
             adapter.mOnItemContextListener?.onItemContextClick(layoutPosition, icon)
         }
         with(rootLayout) {
-            setOnClickListener { adapter.mOnItemClickListener?.onItemClick(this, layoutPosition) }
+            setOnClickListener {
+                if (adapter.isTrash && !adapter.isSelectMode) {
+                    adapter.mOnItemContextListener?.onItemContextClick(layoutPosition, icon)
+                } else {
+                    adapter.mOnItemClickListener?.onItemClick(this, layoutPosition)
+                }
+            }
             setOnLongClickListener { view ->
                 adapter.mOnItemLongClickListener?.onItemLongClick(view, layoutPosition)
                 return@setOnLongClickListener false

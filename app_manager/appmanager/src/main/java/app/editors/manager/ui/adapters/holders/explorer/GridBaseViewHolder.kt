@@ -37,7 +37,13 @@ abstract class GridBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
 
     private fun initListeners() {
         with(rootLayout) {
-            setOnClickListener { adapter.mOnItemClickListener?.onItemClick(this, layoutPosition) }
+            setOnClickListener {
+                if (adapter.isTrash && !adapter.isSelectMode) {
+                    adapter.mOnItemContextListener?.onItemContextClick(layoutPosition, icon)
+                } else {
+                    adapter.mOnItemClickListener?.onItemClick(this, layoutPosition)
+                }
+            }
             setOnLongClickListener {
                 adapter.mOnItemContextListener?.onItemContextClick(layoutPosition, icon)
                 return@setOnLongClickListener false
