@@ -209,7 +209,11 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         activity?.setAppBarStates(isVisibleRoot)
         viewBinding?.let { binding ->
             binding.appBarTabs.isVisible = isVisibleRoot
-            binding.mainViewPager.updatePadding(bottom = if (isVisibleRoot) binding.appBarTabs.height else 0)
+            if (!isTablet) {
+                binding.mainViewPager.updatePadding(
+                    bottom = if (isVisibleRoot) binding.appBarTabs.height else 0
+                )
+            }
         }
     }
 

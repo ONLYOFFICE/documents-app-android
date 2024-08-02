@@ -30,12 +30,10 @@ import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.Security
 import app.editors.manager.R
-import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.ActionMenuAdapter
 import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.managers.tools.ActionMenuItemsFactory
-import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseViewExt
@@ -1174,7 +1172,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 )
             } else {
                 ActionMenuItemsFactory.getDocsItems(
-                    provider = requireNotNull(context?.accountOnline?.portal?.provider),
                     section = presenter.getSectionType(),
                     selected = presenter.isSelectionMode,
                     allSelected = presenter.isSelectedAll,

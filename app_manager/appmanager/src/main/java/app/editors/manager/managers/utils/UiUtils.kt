@@ -115,7 +115,7 @@ object ManagerUiUtils {
 
             StringUtils.Extension.ARCH -> if (!isGrid) R.drawable.ic_thumbnail_small_archive else R.drawable.ic_thumbnail_large_archive
             StringUtils.Extension.FORM -> if (!isGrid) R.drawable.ic_thumbnail_small_docxf_oform else R.drawable.ic_thumbnail_large_docxf_oform
-            else -> R.drawable.ic_thumbnail_large_other
+            else -> if (!isGrid) R.drawable.ic_thumbnail_small_other else R.drawable.ic_thumbnail_large_other
         }
     }
 
