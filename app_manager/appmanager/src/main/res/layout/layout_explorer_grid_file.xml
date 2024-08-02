@@ -41,6 +41,7 @@
                 android:paddingHorizontal="3dp"
                 android:paddingVertical="1dp"
                 android:text="new"
+                android:visibility="gone"
                 android:textColor="@color/colorOnSecondary" />
 
         </androidx.cardview.widget.CardView>
@@ -61,6 +62,7 @@
                 android:layout_height="16dp"
                 android:layout_marginBottom="4dp"
                 android:importantForAccessibility="no"
+                android:visibility="gone"
                 android:src="@drawable/ic_favorites_fill"
                 app:layout_constraintVertical_chainStyle="packed"
                 app:tint="@color/colorPrimary" />
@@ -71,6 +73,7 @@
                 android:layout_height="16dp"
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_fab_edit_mode"
+                android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@id/image"
                 app:layout_constraintTop_toBottomOf="@id/favorite"
                 app:tint="@color/colorPrimary" />

@@ -1,5 +1,7 @@
 package app.editors.manager.ui.adapters.holders.explorer
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.view.View
 import androidx.core.view.isVisible
 import app.documents.core.model.cloud.Recent
@@ -16,7 +18,7 @@ import java.util.Locale
 class ListRecentViewHolder(
     view: View,
     private val itemListener: ((recent: Recent) -> Unit)? = null,
-    private val contextListener: ((recent: Recent, position: Int) -> Unit)? = null
+    private val contextListener: ((recent: Recent, position: Int, thumbnail: Bitmap) -> Unit)? = null
 ) : BaseViewHolder<ViewType>(view) {
 
     private val viewBinding = LayoutExplorerListFileBinding.bind(view)
@@ -34,7 +36,14 @@ class ListRecentViewHolder(
                     itemListener?.invoke(item.toRecent())
                 }
                 contextButton.setOnClickListener {
-                    contextListener?.invoke(item.toRecent(), absoluteAdapterPosition)
+                    val bitmap = Bitmap.createBitmap(
+                        image.measuredWidth,
+                        image.measuredHeight,
+                        Bitmap.Config.ARGB_8888
+                    )
+                    val canvas = Canvas(bitmap)
+                    image.draw(canvas)
+                    contextListener?.invoke(item.toRecent(), absoluteAdapterPosition, bitmap)
                 }
                 image.setImageResource(
                     ManagerUiUtils.getFileThumbnail(

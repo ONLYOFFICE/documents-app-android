@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -59,7 +60,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         Debounce.perform(1000L) { presenter.fileClick(recent) }
     }
 
-    private val contextListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
+    private val contextListener: (recent: Recent, position: Int, thumbnail: Bitmap) -> Unit = { recent, position, thumbnail ->
         val state = ExplorerContextState(
             item = CloudFile().apply {
                 title = recent.name
@@ -69,7 +70,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             headerInfo = (recent.source ?: getString(R.string.this_device)) +
                     getString(R.string.placeholder_point) +
                     TimeUtils.formatDate(Date(recent.date)),
-            headerIcon = null
+            headerIcon = thumbnail
         )
         presenter.onContextClick(recent, position)
         showExplorerContextBottomDialog(state)

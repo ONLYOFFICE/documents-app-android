@@ -1,17 +1,18 @@
 package app.editors.manager.ui.adapters.holders.factory
 
+import android.graphics.Bitmap
 import android.view.View
 import app.documents.core.model.cloud.Recent
-import app.editors.manager.ui.adapters.holders.explorer.ListFileViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.GridFileViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.GridRecentViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListFileViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.ListRecentViewHolder
 import lib.toolkit.base.ui.adapters.factory.HolderFactory
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
 
 class RecentHolderFactory(
     private val itemListener: ((recent: Recent) -> Unit)?,
-    private val contextListener: ((recent: Recent, position: Int) -> Unit)?
+    private val contextListener: ((recent: Recent, position: Int, thumbnail: Bitmap) -> Unit)?
 ) : HolderFactory() {
 
     override fun createViewHolder(view: View, type: Int): BaseViewHolder<*> {

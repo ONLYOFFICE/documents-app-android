@@ -53,6 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/default_margin_medium"
             android:src="@drawable/ic_favorites_fill"
+            android:visibility="gone"
             app:tint="@color/colorPrimary"
             tools:ignore="ContentDescription" />
 
@@ -61,6 +62,7 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginEnd="@dimen/default_margin_medium"
+            android:visibility="gone"
             android:importantForAccessibility="no"
             android:src="@drawable/ic_fab_edit_mode"
             app:layout_constraintEnd_toStartOf="@id/image"
@@ -73,6 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/default_margin_medium"
             app:cardBackgroundColor="@color/colorSecondary"
+            android:visibility="gone"
             app:cardCornerRadius="4dp"
             app:cardElevation="4dp"
             app:layout_constraintBottom_toTopOf="@id/image"
@@ -87,6 +90,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/colorSecondary"
+                android:visibility="gone"
                 android:includeFontPadding="false"
                 android:paddingHorizontal="3dp"
                 android:paddingVertical="1dp"
