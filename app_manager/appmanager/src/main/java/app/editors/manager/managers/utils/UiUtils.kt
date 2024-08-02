@@ -169,7 +169,8 @@ object ManagerUiUtils {
         if (!logo.isNullOrEmpty()) {
             text.isVisible = false
             image.isVisible = true
-            image.setRoomLogo(logo, ::setInitials)
+            image.setRoomLogo(logo, isGrid, ::setInitials)
+            setCardBackgroundColor(context.getColor(lib.toolkit.base.R.color.colorTransparent))
         } else {
             setInitials()
         }

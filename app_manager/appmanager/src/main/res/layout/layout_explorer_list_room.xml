@@ -17,7 +17,7 @@
         android:layout_marginStart="@dimen/default_margin_large"
         android:translationZ="-2dp"
         app:cardBackgroundColor="@color/colorPrimary"
-        app:cardCornerRadius="8dp"
+        app:cardCornerRadius="@dimen/default_corner_radius_medium"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -30,7 +30,7 @@
             android:layout_height="80dp"
             android:translationZ="-2dp"
             app:cardBackgroundColor="@color/colorPrimary"
-            app:cardCornerRadius="18dp"
+            app:cardCornerRadius="@dimen/grid_card_view_corner_radius"
             app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
