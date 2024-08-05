@@ -43,6 +43,10 @@
         <item name="android:windowLightNavigationBar">false</item>
     </style>
 
+    <style name="OperationActivityTheme" parent="AppBaseTheme">
+        <item name="android:navigationBarColor">@color/colorSurface</item>
+    </style>
+
     <style name="WebViewerActivityStyle" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

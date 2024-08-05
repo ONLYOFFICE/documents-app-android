@@ -82,7 +82,6 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()
         setActionBarTitle(getString(R.string.operation_title))
-        swipeRefreshLayout?.isRefreshing = true
         getDocs()
     }
 
@@ -136,7 +135,7 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
 
     companion object {
         val TAG: String = DocsCloudOperationFragment::class.java.simpleName
-        private const val TAG_OPERATION_SECTION_TYPE = "TAG_OPERATION_SECTION_TYPE"
+        private const val TAG_OPERATION_SECTION_TYPE = "section"
 
         fun newInstance(sectionType: Int): DocsCloudOperationFragment =
             DocsCloudOperationFragment().apply {

@@ -277,8 +277,14 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onItemClick(view: View, position: Int) {
+        val item = explorerAdapter?.getItem(position) as Item
+
+        if (item is CloudFile && presenter.isFoldersMode) {
+            return
+        }
+
         if (!isFastClick || explorerAdapter?.isSelectMode == true) {
-            presenter.onItemClick(explorerAdapter?.getItem(position) as Item, position)
+            presenter.onItemClick(item, position)
         }
     }
 

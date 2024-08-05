@@ -49,6 +49,7 @@ class PlaceholderViews(val view: View?) {
 
     fun setTemplatePlaceholder(type: Type, onClick: () -> Unit = {}) {
         this.type = type
+        binding.composeView.isVisible = false
         val title = when (type) {
             Type.NONE -> {
                 setVisibility(false)

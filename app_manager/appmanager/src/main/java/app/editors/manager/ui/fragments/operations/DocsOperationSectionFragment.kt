@@ -78,7 +78,7 @@ class DocsOperationSectionFragment : BaseAppFragment() {
         if (context?.accountOnline.isDocSpace) {
             viewBinding?.operationSectionsProjects?.isVisible = false
             viewBinding?.operationSectionsShare?.isVisible = false
-            viewBinding?.sectionIcon?.setImageResource(R.drawable.ic_type_folder)
+            viewBinding?.sectionIcon?.setImageResource(R.drawable.ic_section_rooms)
             viewBinding?.sectionName?.text = getString(R.string.main_pager_docs_virtual_room)
         }
     }

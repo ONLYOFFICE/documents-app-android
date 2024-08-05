@@ -958,7 +958,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
 
         // Set files headers
-        if (explorer.files.isNotEmpty() && !isFoldersMode) {
+        if (explorer.files.isNotEmpty()) {
             val sortBy = preferenceTool.sortBy
             val sortOrder = preferenceTool.sortOrder
             val fileList = explorer.files

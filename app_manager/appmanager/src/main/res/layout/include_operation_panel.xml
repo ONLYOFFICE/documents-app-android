@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/default_bottom_panel_height"
+    card_view:cardBackgroundColor="@color/colorSurface"
     card_view:cardElevation="@dimen/default_bottom_panel_elevation">
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"

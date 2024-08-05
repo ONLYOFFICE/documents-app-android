@@ -14,10 +14,6 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
     private var viewBinding = ListExplorerFolderBinding.bind(view)
 
     init {
-        viewBinding.listExplorerFolderLayout.setOnClickListener { v: View? ->
-            adapter.mOnItemClickListener?.onItemClick(v, layoutPosition)
-        }
-
         viewBinding.listExplorerFolderLayout.setOnLongClickListener { v: View? ->
             adapter.mOnItemLongClickListener?.onItemLongClick(v, layoutPosition)
             false
@@ -46,6 +42,16 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
             viewIconSelectableLayout.setItem(folder, adapter.isRoot)
             viewIconSelectableLayout.selectMode = adapter.isSelectMode
             viewIconSelectableLayout.itemSelected = folder.isSelected
+
+            if (adapter.isFoldersMode && folder.type in arrayOf(25, 26)) {
+                listExplorerFolderLayout.alpha = .6f
+                listExplorerFolderLayout.setOnClickListener(null)
+            } else {
+                listExplorerFolderLayout.alpha = 1f
+                listExplorerFolderLayout.setOnClickListener { v: View? ->
+                    adapter.mOnItemClickListener?.onItemClick(v, layoutPosition)
+                }
+            }
         }
     }
 

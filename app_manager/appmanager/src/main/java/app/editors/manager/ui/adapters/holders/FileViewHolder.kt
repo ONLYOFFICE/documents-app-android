@@ -39,12 +39,18 @@ class FileViewHolder(itemView: View, adapter: ExplorerAdapter) :
                 isSectionMy = adapter.isSectionMy
             )
 
-            listExplorerFileContext.isVisible = !adapter.isSelectMode
+            listExplorerFileContext.isVisible = !adapter.isSelectMode && !adapter.isFoldersMode
             listExplorerFileFavorite.isVisible = file.favorite
 
             viewIconSelectableLayout.setItem(file)
             viewIconSelectableLayout.selectMode = adapter.isSelectMode
             viewIconSelectableLayout.itemSelected = file.isSelected
+
+            if (adapter.isFoldersMode) {
+                root.alpha = .6f
+                root.isClickable = false
+                root.isFocusable = false
+            }
         }
     }
 
