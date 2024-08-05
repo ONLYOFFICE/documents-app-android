@@ -322,7 +322,7 @@ object ApiContract {
         const val CUSTOM_ROOM = 5
         const val PUBLIC_ROOM = 6
 
-        fun hasExternalLink(roomType: Int?): Boolean = arrayOf(CUSTOM_ROOM, PUBLIC_ROOM).contains(roomType)
+        fun hasExternalLink(roomType: Int?): Boolean = roomType != CUSTOM_ROOM
     }
 
     object SectionPath {
