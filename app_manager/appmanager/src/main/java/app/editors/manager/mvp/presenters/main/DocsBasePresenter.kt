@@ -1376,9 +1376,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     protected fun setPlaceholderType(placeholderType: PlaceholderViews.Type) {
         this.placeholderViewType = placeholderType
-        if (isFoldersMode && placeholderType == PlaceholderViews.Type.EMPTY) {
-            this.placeholderViewType = PlaceholderViews.Type.SUBFOLDER
-        }
         viewState.onPlaceholder(this.placeholderViewType)
     }
 

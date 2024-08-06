@@ -14,6 +14,7 @@ import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityOperationBinding
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
+import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.fragments.operations.DocsCloudOperationFragment
 import app.editors.manager.ui.fragments.operations.DocsDropboxOperationFragment
@@ -124,6 +125,9 @@ class OperationActivity : BaseAppActivity(){
             setResult(RESULT_CANCELED)
             finish()
         }
+        viewBinding?.operationPanel?.operationCreateFolderButton?.setOnClickListener {
+            showCreateFolderDialog()
+        }
     }
 
     private fun initButton(actionOperationType: OperationType?) {
@@ -136,8 +140,22 @@ class OperationActivity : BaseAppActivity(){
         }
     }
 
+    private fun showCreateFolderDialog() {
+        showEditDialog(
+            title = getString(R.string.dialogs_edit_create_folder),
+            bottomTitle = null,
+            value = getString(R.string.dialogs_edit_create_folder),
+            editHint = getString(R.string.dialogs_edit_hint),
+            acceptTitle = getString(R.string.dialogs_edit_accept_create),
+            cancelTitle = getString(R.string.dialogs_common_cancel_button),
+            error = null,
+            tag = DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER,
+        )
+    }
+
     fun setEnabledActionButton(isEnabled: Boolean) {
         viewBinding?.operationPanel?.operationActionButton?.isEnabled = isEnabled
+        viewBinding?.operationPanel?.operationCreateFolderButton?.isEnabled = isEnabled
     }
 
     fun setOnActionClickListener(onActionClickListener: OnActionClickListener?) {

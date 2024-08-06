@@ -9,17 +9,32 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="@dimen/default_margin_medium">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/operation_create_folder_button"
+            style="@style/Widget.Common.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/screen_margin_large"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:enabled="false"
+            android:text="@string/dialogs_edit_create_folder"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/operation_cancel_button"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/operation_cancel_button"
             style="@style/Widget.Common.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="@dimen/default_margin_medium"
             android:clickable="true"
-            android:paddingLeft="@dimen/screen_margin_large"
-            android:paddingRight="@dimen/screen_margin_large"
             android:text="@string/operation_panel_cancel_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/operation_action_button"
@@ -33,8 +48,6 @@
             android:layout_marginEnd="8dp"
             android:clickable="true"
             android:enabled="false"
-            android:paddingLeft="@dimen/screen_margin_large"
-            android:paddingRight="@dimen/screen_margin_large"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
