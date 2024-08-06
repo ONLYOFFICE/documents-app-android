@@ -124,6 +124,7 @@ object ActionMenuItemsFactory {
             add(ActionMenuItem.Delete)
         } else if (section == SectionType.CLOUD_ARCHIVE_ROOM) {
             // archive action block
+            add(ActionMenuItem.Restore)
             add(ActionMenuItem.Download)
             add(ActionMenuItem.Delete)
         } else {

@@ -59,6 +59,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Job
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
@@ -167,6 +168,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * */
 
     protected var disposable = CompositeDisposable()
+    protected var requestJob: Job? = null
     protected var batchDisposable: Disposable? = null
     protected var uploadDisposable: Disposable? = null
     protected var downloadDisposable: Disposable? = null
@@ -840,10 +842,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     private fun cancelGetRequests() {
         disposable.clear()
+        requestJob?.cancel()
     }
 
     fun cancelSingleOperationsRequests() {
         disposable.clear()
+        requestJob?.cancel()
     }
 
     fun resetDatesHeaders() {

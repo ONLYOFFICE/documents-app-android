@@ -44,6 +44,7 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -774,34 +775,57 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onDownloadActivity(uri)
     }
 
-    fun archiveRoom(isArchive: Boolean = true) {
-        roomProvider?.let {
-            disposable.add(
-                if (isSelectionMode) {
-                    Observable.fromArray(modelExplorerStack.selectedFolders).flatMapIterable { room ->
-                        room.map { item -> item.id }
-                    }.flatMap { id -> it.archiveRoom(id, isArchive) }
-                        .doOnSubscribe { viewState.onSwipeEnable(true) }
-                        .lastElement()
-                        .subscribe({ response ->
-                            if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
-                                viewState.onArchiveRoom(isArchive, modelExplorerStack.selectedFolders.size)
-                                viewState.onSwipeEnable(false)
-                                setSelection(false)
-                                refresh()
-                            }
-                        }, ::fetchError)
+    fun archiveRooms(isArchive: Boolean) {
+        viewState.onDialogProgress(
+            context.getString(R.string.dialogs_wait_title),
+            true,
+            TAG_DIALOG_CANCEL_SINGLE_OPERATIONS
+        )
+        viewState.onDialogProgress(100, 0)
+        requestJob = presenterScope.launch(Dispatchers.IO) {
+            try {
+                val provider = requireNotNull(roomProvider)
+                val message = if (isSelectionMode) {
+                    val selected = modelExplorerStack.selectedFolders.map(CloudFolder::id)
+                    selected.forEachIndexed { index, id ->
+                        provider.archiveRoom(id, isArchive)
+                        withContext(Dispatchers.Main) {
+                            val progress = 100 / (selected.size / (index + 1).toFloat())
+                            viewState.onDialogProgress(100, progress.toInt())
+                        }
+                    }
+                    if (isArchive) {
+                        context.getString(R.string.context_rooms_archive_message)
+                    } else {
+                        context.resources.getQuantityString(R.plurals.context_rooms_unarchive_message, selected.size)
+                    }
                 } else {
-                    it.archiveRoom(roomClicked?.id ?: "", isArchive = isArchive)
-                        .doOnSubscribe { viewState.onSwipeEnable(true) }
-                        .subscribe({ response ->
-                            if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
-                                viewState.onArchiveRoom(isArchive)
-                                viewState.onSwipeEnable(false)
-                            }
-                        }, ::fetchError)
+                    provider.archiveRoom(roomClicked?.id.orEmpty(), isArchive = isArchive)
+                    if (isArchive) {
+                        context.getString(R.string.context_room_archive_message)
+                    } else {
+                        context.resources.getQuantityString(R.plurals.context_rooms_unarchive_message, 1)
+                    }
                 }
-            )
+
+                withContext(Dispatchers.Main) {
+                    if (isSelectionMode) {
+                        deselectAll()
+                        setSelection(false)
+                    }
+                    viewState.onDialogProgress(100, 100)
+                    viewState.onSnackBar(message)
+                    refresh()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    if (e !is CancellationException) {
+                        fetchError(e)
+                    }
+                }
+            } finally {
+                viewState.onDialogClose()
+            }
         }
     }
 
@@ -820,25 +844,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun copyLinkFromContextMenu() {
         val item = itemClicked
-        when  {
+        when {
             (item as? CloudFolder)?.isRoom == true -> copyRoomLink()
             item is CloudFolder -> saveLink(getInternalLink(item))
             else -> saveExternalLinkToClipboard()
-        }
-    }
-
-    fun archiveSelectedRooms() {
-        roomProvider?.let { provider ->
-            disposable.add(
-                Observable
-                    .zip(modelExplorerStack.selectedFoldersIds.map(provider::archiveRoom)) {}
-                    .doOnSubscribe { viewState.onSwipeEnable(true) }
-                    .subscribe {
-                        viewState.onArchiveSelectedRooms(modelExplorerStack.selectedFolders)
-                        viewState.onSwipeEnable(false)
-                        deselectAll()
-                    }
-            )
         }
     }
 
