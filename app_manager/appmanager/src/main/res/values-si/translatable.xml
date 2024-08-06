@@ -124,4 +124,7 @@
     <string name="conversion_dialog_open_in_view_mode">බලන ප්‍රකාරයෙන් අරින්න</string>
     <string name="conversion_dialog_convert_to">%1s වෙත හරවන්න</string>
     <string name="conversion_dialog_converting_to">%1s වෙත හැරවෙමින්</string>
+    <string name="personal_portal_end_button">ගිණුමක්  නොමිලේ සාදන්න</string>
+    <string name="personal_portal_end_title">ONLYOFFICE Personal අවසන් වෙමින් පවතී</string>
+    <string name="personal_portal_end_text">ONLYOFFICE Personal 2024 සැප්තැම්බර් 1 වැනි දින නවත්වනු ඇත.\nඅපි ඔබට නොමිලේ ලබා දෙන ONLYOFFICE DocSpace Cloud වෙත යාම නිර්දේශ කරනවා.</string>
 </resources>

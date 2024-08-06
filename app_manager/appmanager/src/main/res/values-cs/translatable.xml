@@ -860,4 +860,7 @@
     <string name="room_create_thirdparty_desc">Použijte služby třetích stran jako úložiště dat pro tuto místnost. V připojeném úložišti bude vytvořena nová složka pro ukládání dat této místnosti.</string>
     <string name="room_storage_reconnect">Znovu připojte úložiště</string>
     <string name="room_storage_not_availabale">Obsah složky třetí strany není k dispozici. Zkuste účet znovu připojit.</string>
+    <string name="personal_portal_end_button">Založte si účet zdarma</string>
+    <string name="personal_portal_end_title">ONLYOFFICE Personal končí</string>
+    <string name="personal_portal_end_text">Služba ONLYOFFICE Personal bude ukončena 1. září 2024.\nDoporučujeme vám přejít na bezplatnou službu ONLYOFFICE DocSpace.</string>
 </resources>

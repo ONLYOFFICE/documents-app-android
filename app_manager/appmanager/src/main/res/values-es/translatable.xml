@@ -714,4 +714,7 @@
     <string name="room_create_thirdparty_desc">Utilice servicios de terceros como almacenamiento de datos para esta sala. Se creará una nueva carpeta para almacenar los datos de esta sala en el almacenamiento conectado</string>
     <string name="room_storage_reconnect">Volver a conectar el almacenamiento</string>
     <string name="room_storage_not_availabale">El contenido de la carpeta de terceros no está disponible. Intente volver a conectar la cuenta.</string>
+    <string name="personal_portal_end_button">Cree una cuenta gratis</string>
+    <string name="personal_portal_end_title">ONLYOFFICE Personal dejará de funcionar</string>
+    <string name="personal_portal_end_text">ONLYOFFICE Personal se descontinuará el 1 de septiembre de 2024.\nLe recomendamos que pase al servicio gratuito ONLYOFFICE DocSpace Cloud.</string>
 </resources>
