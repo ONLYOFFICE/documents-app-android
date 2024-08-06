@@ -233,6 +233,9 @@
         <item quantity="other">Delete %1$d items?</item>
     </plurals>
 
+    <string name="dialogs_warning_only_pdf_form_title">Warning</string>
+    <string name="dialogs_warning_only_pdf_form_message">The file cannot be moved to this room. Please try to move the ONLYOFFICE PDF form.</string>
+
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">Rename</string>
     <string name="dialogs_edit_hint">Enter title</string>

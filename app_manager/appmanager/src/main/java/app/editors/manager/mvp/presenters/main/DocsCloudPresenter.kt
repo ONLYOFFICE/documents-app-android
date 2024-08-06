@@ -152,20 +152,52 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun copy(): Boolean {
+        if (!checkFillFormsRoom()) {
+            return false
+        }
+
         if (super.copy()) {
             checkMoveCopyFiles(MoveCopyDialog.ACTION_COPY)
             return true
         }
+
         return false
     }
 
     override fun move(): Boolean {
+        if (!checkFillFormsRoom()) {
+            return false
+        }
+
         return if (super.move()) {
             checkMoveCopyFiles(MoveCopyDialog.ACTION_MOVE)
             true
         } else {
             false
         }
+    }
+
+    private fun checkFillFormsRoom(): Boolean {
+        val explorer = operationStack?.explorer ?: return false
+        if (roomClicked?.roomType == ApiContract.RoomType.FILL_FORMS_ROOM) {
+            if (explorer.folders.isNotEmpty()) {
+                viewState.onDialogWarning(
+                    context.getString(R.string.dialogs_warning_only_pdf_form_title),
+                    context.getString(R.string.dialogs_warning_only_pdf_form_message),
+                    null
+                )
+                return false
+            }
+            if (explorer.files.any { !StringUtils.isPdf(it.fileExst) }) {
+                viewState.onDialogWarning(
+                    context.getString(R.string.dialogs_warning_only_pdf_form_title),
+                    context.getString(R.string.dialogs_warning_only_pdf_form_message),
+                    null
+                )
+                return false
+            }
+        }
+        return true
     }
 
     override fun getNextList() {

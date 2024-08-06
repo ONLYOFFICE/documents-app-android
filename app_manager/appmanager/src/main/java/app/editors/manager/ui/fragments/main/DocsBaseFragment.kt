@@ -792,6 +792,16 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
+    override fun onDialogWarning(title: String, message: String, tag: String?) {
+        if (isActivePage) {
+            getInfoDialog(
+                title = title,
+                info = message,
+                cancelTitle = getString(lib.toolkit.base.R.string.common_ok)
+            )?.show(requireActivity().supportFragmentManager)
+        }
+    }
+
     override fun onDialogProgress(title: String?, isHideButtons: Boolean, tag: String?) {
         if (isActivePage) {
             showProgressDialog(

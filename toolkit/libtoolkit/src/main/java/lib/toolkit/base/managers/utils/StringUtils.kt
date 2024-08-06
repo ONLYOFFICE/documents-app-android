@@ -114,6 +114,10 @@ object StringUtils {
         }
     }
 
+    fun isPdf(extension: String): Boolean {
+        return getExtension(extension) == Extension.PDF
+    }
+
     @JvmStatic
     fun isCreateUserName(name: String): Boolean {
         return !name.matches(PATTERN_CREATE_PORTAL.toRegex())
