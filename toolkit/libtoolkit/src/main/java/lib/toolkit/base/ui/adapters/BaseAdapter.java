@@ -1,5 +1,7 @@
 package lib.toolkit.base.ui.adapters;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,7 +32,7 @@ public abstract class BaseAdapter extends RecyclerView.Adapter {
     }
 
     public interface OnItemContextListener {
-        void onItemContextClick(int position);
+        void onItemContextClick(int position, Bitmap icon);
     }
 
     public OnItemClickListener mOnItemClickListener;

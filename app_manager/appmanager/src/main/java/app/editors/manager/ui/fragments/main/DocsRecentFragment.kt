@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -59,7 +60,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         Debounce.perform(1000L) { presenter.fileClick(recent) }
     }
 
-    private val contextListener: (recent: Recent, position: Int) -> Unit = { recent, position ->
+    private val contextListener: (recent: Recent, position: Int, thumbnail: Bitmap) -> Unit = { recent, position, thumbnail ->
         val state = ExplorerContextState(
             item = CloudFile().apply {
                 title = recent.name
@@ -68,7 +69,8 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             sectionType = ApiContract.Section.Recent.type,
             headerInfo = (recent.source ?: getString(R.string.this_device)) +
                     getString(R.string.placeholder_point) +
-                    TimeUtils.formatDate(Date(recent.date))
+                    TimeUtils.formatDate(Date(recent.date)),
+            headerIcon = thumbnail
         )
         presenter.onContextClick(recent, position)
         showExplorerContextBottomDialog(state)
@@ -137,7 +139,11 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             activity.showActionButton(false)
             activity.showAccount(false)
         }
-        adapter = RecentAdapter(requireContext(), RecentHolderFactory(recentListener, contextListener))
+        adapter = RecentAdapter(
+            requireContext(),
+            presenter.preferenceTool.isGridView,
+            RecentHolderFactory(recentListener, contextListener)
+        )
         recyclerView?.let {
             it.adapter = adapter
             it.setPadding(
@@ -204,6 +210,11 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.SEARCH)
             updateMenu(false)
         }
+    }
+
+    override fun onSetGridView(isGrid: Boolean) {
+        adapter?.isGrid = isGrid
+        super.onSetGridView(isGrid)
     }
 
     private fun updateMenu(isEnable: Boolean) {

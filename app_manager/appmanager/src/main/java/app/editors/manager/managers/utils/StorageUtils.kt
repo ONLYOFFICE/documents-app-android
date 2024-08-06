@@ -11,6 +11,7 @@ import java.util.TreeMap
 sealed class Storage(
     val providerKey: String?,
     val icon: Int,
+    val iconLarge: Int,
     val title: Int,
     val filterValue: String
 ) {
@@ -32,6 +33,7 @@ sealed class Storage(
     data object Box : Storage(
         providerKey = ApiContract.Storage.BOXNET,
         icon = R.drawable.ic_storage_box,
+        iconLarge = R.drawable.ic_storage_box_logo,
         title = R.string.storage_select_box,
         filterValue = "Box"
     )
@@ -40,6 +42,7 @@ sealed class Storage(
     data object Dropbox : Storage(
         providerKey = ApiContract.Storage.DROPBOX,
         icon = R.drawable.ic_storage_dropbox,
+        iconLarge = R.drawable.ic_storage_dropbox_logo,
         title = R.string.storage_select_drop_box,
         filterValue = "DropBox"
     )
@@ -48,6 +51,7 @@ sealed class Storage(
     data object GoogleDrive : Storage(
         providerKey = ApiContract.Storage.GOOGLEDRIVE,
         icon = R.drawable.ic_storage_google,
+        iconLarge = R.drawable.ic_storage_googledrive_logo,
         title = R.string.storage_select_google_drive,
         filterValue = "GoogleDrive"
     )
@@ -56,6 +60,7 @@ sealed class Storage(
     data object OneDrive : Storage(
         providerKey = ApiContract.Storage.ONEDRIVE,
         icon = R.drawable.ic_storage_onedrive,
+        iconLarge = R.drawable.ic_storage_onedrive_logo,
         title = R.string.storage_select_one_drive,
         filterValue = "OneDrive"
     )
@@ -64,6 +69,7 @@ sealed class Storage(
     data object SharePoint : Storage(
         providerKey = ApiContract.Storage.SHAREPOINT,
         icon = R.drawable.ic_storage_sharepoint,
+        iconLarge = R.drawable.ic_storage_sharepoint_logo,
         title = R.string.storage_select_share_point,
         filterValue = "SharePoint"
     )
@@ -72,6 +78,7 @@ sealed class Storage(
     data object Yandex : Storage(
         providerKey = ApiContract.Storage.YANDEX,
         icon = R.drawable.ic_storage_yandex,
+        iconLarge = R.drawable.ic_storage_yandex_disk_logo,
         title = R.string.storage_select_yandex,
         filterValue = "Yandex"
     )
@@ -80,6 +87,7 @@ sealed class Storage(
     data object OwnCloud : Storage(
         providerKey = ApiContract.Storage.OWNCLOUD,
         icon = R.drawable.ic_storage_owncloud,
+        iconLarge = R.drawable.ic_storage_owncloud_logo,
         title = R.string.storage_select_own_cloud,
         filterValue = "OwnCloud"
     )
@@ -88,6 +96,7 @@ sealed class Storage(
     data object Nextcloud : Storage(
         providerKey = ApiContract.Storage.NEXTCLOUD,
         icon = R.drawable.ic_storage_nextcloud,
+        iconLarge = R.drawable.ic_storage_nextcloud_logo,
         title = R.string.storage_select_next_cloud,
         filterValue = "NextCloud"
     )
@@ -96,6 +105,7 @@ sealed class Storage(
     data object KDrive : Storage(
         providerKey = ApiContract.Storage.KDRIVE,
         icon = R.drawable.ic_storage_kdrive,
+        iconLarge = R.drawable.ic_storage_kdrive_logo,
         title = R.string.storage_select_kdrive,
         filterValue = "kDrive"
     )
@@ -104,6 +114,7 @@ sealed class Storage(
     data object WebDav : Storage(
         providerKey = ApiContract.Storage.WEBDAV,
         icon = R.drawable.ic_storage_webdav,
+        iconLarge = R.drawable.ic_storage_webdav_text_logo,
         title = R.string.storage_select_web_dav,
         filterValue = "WebDav"
     )
@@ -150,6 +161,10 @@ object StorageUtils {
 
     fun getStorageIcon(providerKey: String?): Int {
         return Storage.get(providerKey)?.icon ?: R.drawable.ic_type_folder
+    }
+
+    fun getStorageIconLarge(providerKey: String?): Int? {
+        return Storage.get(providerKey)?.iconLarge
     }
 
     fun getStorageFilterValue(providerKey: String?): String {

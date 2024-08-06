@@ -1,5 +1,6 @@
 package app.documents.core.network.manager.models.explorer
 
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
@@ -28,7 +29,7 @@ open class CloudFile : Item() {
 
     @SerializedName("fileStatus")
     @Expose
-    var fileStatus = ""
+    var fileStatus = 0
 
     @SerializedName("viewUrl")
     @Expose
@@ -73,23 +74,21 @@ open class CloudFile : Item() {
     val nextVersion: Int
         get() = ++version
 
-    fun setFile(file: CloudFile) {
-        setItem(file)
-        folderId = file.folderId
-        version = file.version
-        versionGroup = file.versionGroup
-        contentLength = file.contentLength
-        pureContentLength = file.pureContentLength
-        fileStatus = file.fileStatus
-        viewUrl = file.viewUrl
-        webUrl = file.webUrl
-        fileType = file.fileType
-        fileExst = file.fileExst
-        comment = file.comment
-    }
-
     val clearExt: String
         get() = fileExst.replace(".", "")
+
+    val isFavorite: Boolean
+        get() = (fileStatus and ApiContract.FileStatus.FAVORITE) != 0
+
+    val isNew: Boolean
+        get() = (fileStatus and ApiContract.FileStatus.IS_NEW) != 0
+
+    val isEditing: Boolean
+        get() = (fileStatus and ApiContract.FileStatus.IS_EDITING) != 0
+
+    private fun String.toIntOrZero(): Int {
+        return if (isNotEmpty()) toInt() else 0
+    }
 
     override fun clone(): CloudFile {
         return super.clone() as CloudFile

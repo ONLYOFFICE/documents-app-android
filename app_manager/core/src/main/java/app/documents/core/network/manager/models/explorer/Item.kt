@@ -56,10 +56,6 @@ open class Item : ItemProperties(), Serializable {
     @Expose
     var security = Security()
 
-    @SerializedName("favorite")
-    @Expose
-    var favorite = false
-
     @SerializedName("canShare")
     @Expose
     var isCanShare = false
@@ -93,7 +89,6 @@ open class Item : ItemProperties(), Serializable {
         createdBy = item.createdBy
         created = item.created
         providerItem = item.providerItem
-        favorite = item.favorite
     }
 
     class SortCreateDate(isSortAsc: Boolean) : BaseResponse.AbstractSort<Item>(isSortAsc) {
@@ -120,3 +115,6 @@ open class Item : ItemProperties(), Serializable {
         }
     }
 }
+
+val Item?.isFavorite: Boolean
+    get() = (this as? CloudFile)?.isFavorite == true

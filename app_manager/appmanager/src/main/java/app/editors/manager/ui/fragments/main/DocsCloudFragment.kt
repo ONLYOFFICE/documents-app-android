@@ -11,6 +11,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.os.bundleOf
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResult
+import androidx.recyclerview.widget.LinearLayoutManager
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
@@ -80,7 +81,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             when (requestCode) {
                 BaseActivity.REQUEST_ACTIVITY_STORAGE -> {
                     val folder = data?.getSerializable(StorageActivity.TAG_RESULT, CloudFolder::class.java)
-                    cloudPresenter.addFolderAndOpen(folder, linearLayoutManager?.findFirstVisibleItemPosition() ?: -1)
+                    val layoutManager = this@DocsCloudFragment.layoutManager
+                    if (layoutManager is LinearLayoutManager) {
+                        cloudPresenter.addFolderAndOpen(folder, layoutManager.findFirstVisibleItemPosition())
+                    }
                 }
 
                 BaseActivity.REQUEST_ACTIVITY_SHARE -> {
@@ -148,28 +152,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             R.id.toolbar_item_filter -> showFilter()
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onUploadFileProgress(progress: Int, id: String) {
-        explorerAdapter?.getUploadFileById(id).let { uploadFile ->
-            uploadFile?.progress = progress
-            explorerAdapter?.updateItem(uploadFile)
-        }
-    }
-
-    override fun onDeleteUploadFile(id: String) {
-        explorerAdapter?.removeUploadItemById(id)
-    }
-
-    override fun onRemoveUploadHead() {
-        explorerAdapter?.removeHeader(getApp().getString(R.string.upload_manager_progress_title))
-    }
-
-    override fun onAddUploadsFile(uploadFiles: List<Entity>) {
-        onRemoveUploadHead()
-        explorerAdapter?.addItemsAtTop(uploadFiles)
-        explorerAdapter?.addItemAtTop(Header(getString(R.string.upload_manager_progress_title)))
-        recyclerView?.scrollToPosition(0)
     }
 
     override fun showMoveCopyDialog(names: ArrayList<String>, action: String, title: String) {

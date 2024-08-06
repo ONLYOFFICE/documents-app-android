@@ -13,6 +13,7 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.isFavorite
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDeleteShare
 import app.documents.core.network.manager.models.request.RequestFavorites
@@ -33,7 +34,6 @@ import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListene
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
-import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.models.OpenDataModel
@@ -345,7 +345,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun onUploadError(path: String?, info: String?, file: String?) {
-        viewState.onDeleteUploadFile(file)
         viewState.onSnackBar(info)
     }
 
@@ -359,7 +358,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (modelExplorerStack.currentId == file?.folderId) {
             addFile(file)
         }
-        viewState.onDeleteUploadFile(id)
         viewState.onSnackBar(info)
     }
 
@@ -368,18 +366,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
-        if (folderId != null && id != null && modelExplorerStack.currentId == folderId) {
-            viewState.onUploadFileProgress(progress, id)
-        }
+        // Nothing
     }
 
     override fun onUploadCanceled(path: String?, info: String?, id: String?) {
         viewState.onSnackBar(info)
-        viewState.onDeleteUploadFile(id)
-        if (UploadWork.getUploadFiles(modelExplorerStack.currentId)?.isEmpty() == true) {
-            viewState.onRemoveUploadHead()
-            getListWithHeaders(modelExplorerStack.last(), true)
-        }
     }
 
     override fun onUploadRepeat(path: String?, info: String?) {
@@ -481,24 +472,26 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         val requestFavorites = RequestFavorites()
         requestFavorites.fileIds = listOf(itemClicked?.id!!)
         (fileProvider as CloudFileProvider).let { provider ->
-            val isAdd = itemClicked?.favorite?.not() == true
-
-            disposable.add(provider.addToFavorites(requestFavorites, isAdd)
-                .subscribe({
-                    (itemClicked as? CloudFile)?.fileStatus = if (isAdd) {
-                        ApiContract.FileStatus.FAVORITE.toString()
-                    } else {
-                        ApiContract.FileStatus.NONE.toString()
-                    }
-                    viewState.onUpdateFavoriteItem()
-                    viewState.onSnackBar(
+            val item = itemClicked
+            if (item != null && item is CloudFile) {
+                val isAdd = !item.isFavorite
+                disposable.add(provider.addToFavorites(requestFavorites, isAdd)
+                    .subscribe({
                         if (isAdd) {
-                            context.getString(R.string.operation_add_to_favorites)
+                            item.fileStatus += ApiContract.FileStatus.FAVORITE
                         } else {
-                            context.getString(R.string.operation_remove_from_favorites)
+                            item.fileStatus -= ApiContract.FileStatus.FAVORITE
                         }
-                    )
-                }) { throwable: Throwable -> fetchError(throwable) })
+                        viewState.onUpdateFavoriteItem()
+                        viewState.onSnackBar(
+                            if (isAdd) {
+                                context.getString(R.string.operation_add_to_favorites)
+                            } else {
+                                context.getString(R.string.operation_remove_from_favorites)
+                            }
+                        )
+                    }) { throwable: Throwable -> fetchError(throwable) })
+            }
         }
     }
 
@@ -736,7 +729,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = itemClicked?.shared == true
 
     private val isClickedItemFavorite: Boolean
-        get() = itemClicked?.favorite == true
+        get() = itemClicked.isFavorite
 
     private val isItemOwner: Boolean
         get() = StringUtils.equals(itemClicked?.createdBy?.id, account.id)

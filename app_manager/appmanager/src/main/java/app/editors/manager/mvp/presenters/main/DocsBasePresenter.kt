@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Handler
@@ -44,7 +45,6 @@ import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.models.filter.joinToString
-import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
@@ -79,7 +79,8 @@ import javax.net.ssl.SSLHandshakeException
 
 
 @InjectViewState
-abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
+abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Inject
     lateinit var context: Context
@@ -191,8 +192,22 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     val currentFolder: Current?
         get() = modelExplorerStack.last()?.current
 
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        when (key) {
+            PreferenceTool.KEY_IS_GRID_VIEW -> {
+                viewState.onSetGridView(preferenceTool.isGridView)
+            }
+        }
+    }
+
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        preferenceTool.registerChangeListener(this)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        preferenceTool.unregisterChangeListener(this)
         disposable.clear()
         disposable.dispose()
         fileProvider = null
@@ -427,13 +442,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 fileProvider?.let { provider ->
                     disposable.add(
                         getFileInfo(provider, itemClicked as CloudFile).subscribe({ response ->
-                            if (response.fileStatus.isNotEmpty()) {
-                                val statusMask = response.fileStatus.toInt() and ApiContract.FileStatus.IS_EDITING
-                                if (statusMask != 0) {
-                                    onFileDeleteProtected()
-                                } else {
-                                    deleteItems()
-                                }
+                            if (response.isEditing) {
+                                onFileDeleteProtected()
                             } else {
                                 deleteItems()
                             }
@@ -461,10 +471,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                     response.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap { file: CloudFile ->
-                            val fileStatus = if (file.fileStatus.isEmpty())
-                                ApiContract.FileStatus.NONE else file.fileStatus.toInt()
-                            val statusMask = fileStatus and ApiContract.FileStatus.IS_EDITING
-                            if (statusMask != 0) {
+                            if (file.isEditing) {
                                 Observable.just(true)
                             } else {
                                 Observable.just(false)
@@ -745,8 +752,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
             if (modelExplorerStack.last()?.itemsCount == 0) {
                 refresh()
-            } else {
-                viewState.onAddUploadsFile(uploadFiles)
             }
         }
     }
@@ -932,112 +937,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     protected fun getListWithHeaders(explorer: Explorer?, isResetHeaders: Boolean): List<Entity> {
         if (explorer == null) return emptyList()
-        val entityList: MutableList<Entity> = mutableListOf()
-
-        // Reset headers, when new list
-        if (isResetHeaders) {
-            resetDatesHeaders()
-        }
-
-        UploadWork.getUploadFiles(modelExplorerStack.currentId)?.let { uploadFiles ->
-            if (uploadFiles.size != 0) {
-                entityList.add(Header(context.getString(R.string.upload_manager_progress_title)))
-                entityList.addAll(uploadFiles)
-            }
-        }
-
-        // Set folders headers
-        if (explorer.folders.isNotEmpty()) {
-            if (!isFolderHeader) {
-                isFolderHeader = true
-
-                val header = if (isRoot && currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM) {
-                    Header(context.getString(R.string.list_rooms_title))
-                } else {
-                    Header(context.getString(R.string.list_headers_folder))
-                }
-                entityList.add(header)
-            }
-            entityList.addAll(explorer.folders)
-        }
-
-        // Set files headers
-        if (explorer.files.isNotEmpty() && !isFoldersMode) {
-            val sortBy = preferenceTool.sortBy
-            val sortOrder = preferenceTool.sortOrder
-            val fileList = explorer.files
-
-            if (ApiContract.Parameters.VAL_SORT_BY_UPDATED == sortBy) { // For date sort add times headers
-                val todayMs = TimeUtils.todayMs
-                val yesterdayMs = TimeUtils.yesterdayMs
-                val weekMs = TimeUtils.weekMs
-                val monthMs = TimeUtils.monthMs
-                val yearMs = TimeUtils.yearMs
-                var itemMs: Long
-
-                // Set time headers
-                fileList.sortWith { o1: CloudFile, o2: CloudFile -> o1.updated.compareTo(o2.updated) }
-
-                if (sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_DESC) {
-                    fileList.reverse()
-                }
-
-                for (item in fileList) {
-                    itemMs = item.updated.time
-
-                    // Check created property
-                    if (item.isJustCreated) {
-                        if (!isCreatedHeader) {
-                            isCreatedHeader = true
-                            entityList.add(Header(context.getString(R.string.list_headers_created)))
-                        }
-                    } else {
-
-                        // Check time intervals
-                        if (itemMs >= todayMs) {
-                            if (!isTodayHeader) {
-                                isTodayHeader = true
-                                entityList.add(Header(context.getString(R.string.list_headers_today)))
-                            }
-                        } else if (itemMs in (yesterdayMs + 1) until todayMs) {
-                            if (!isYesterdayHeader) {
-                                isYesterdayHeader = true
-                                entityList.add(Header(context.getString(R.string.list_headers_yesterday)))
-                            }
-                        } else if (itemMs in (weekMs + 1) until yesterdayMs) {
-                            if (!isWeekHeader) {
-                                isWeekHeader = true
-                                entityList.add(Header(context.getString(R.string.list_headers_week)))
-                            }
-                        } else if (itemMs in (monthMs + 1) until weekMs) {
-                            if (!isMonthHeader) {
-                                isMonthHeader = true
-                                entityList.add(Header(context.getString(R.string.list_headers_month)))
-                            }
-                        } else if (itemMs in (yearMs + 1) until monthMs) {
-                            if (!isYearHeader) {
-                                isYearHeader = true
-                                entityList.add(Header(context.getString(R.string.list_headers_year)))
-                            }
-                        } else if (itemMs < yearMs) {
-                            if (!isMoreYearHeader) {
-                                isMoreYearHeader = true
-                                entityList.add(Header(context.getString(R.string.list_headers_more_year)))
-                            }
-                        }
-                    }
-                    entityList.add(item)
-                }
-            } else {
-                if (!isFileHeader) {
-                    isFileHeader = true
-                    entityList.add(Header(context.getString(R.string.list_headers_files)))
-                }
-                entityList.addAll(fileList)
-            }
-        }
-
-        val placeholderType = if (entityList.isEmpty()) {
+        val entities = explorer.folders + explorer.files
+        val placeholderType = if (entities.isEmpty()) {
             if (isFilteringMode) {
                 PlaceholderViews.Type.SEARCH
             } else {
@@ -1057,7 +958,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
         setPlaceholderType(placeholderType)
 
-        return entityList
+        return entities
     }
 
     /**
@@ -1747,7 +1648,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     fun isRoomFolder(): Boolean {
         return modelExplorerStack.last()?.current?.id == roomClicked?.id
     }
-    
+
+    fun setGridView(isGrid: Boolean) {
+        preferenceTool.isGridView = isGrid
+    }
+
     abstract fun getNextList()
 
     abstract fun getFileInfo()

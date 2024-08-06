@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
@@ -27,13 +28,12 @@ import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Security
 import app.editors.manager.R
-import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.ActionMenuAdapter
 import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.managers.tools.ActionMenuItemsFactory
-import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.views.base.BaseViewExt
@@ -132,6 +132,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(lifecycleEventObserver)
+        isGridView = presenter.preferenceTool.isGridView
         setHasOptionsMenu(true)
     }
 
@@ -252,10 +253,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * Views callbacks
      * */
 
-    override fun onItemContextClick(position: Int) {
+    override fun onItemContextClick(position: Int, icon: Bitmap?) {
         val item = explorerAdapter?.getItem(position) as? Item
         if (item != null && !isFastClick) {
             val state = ExplorerContextState(
+                headerIcon = icon,
                 item = item,
                 headerInfo = app.editors.manager.managers.utils.StringUtils.getCloudItemInfo(
                     context = requireContext(),
@@ -844,29 +846,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onUploadFileProgress(progress: Int, id: String) {
-        val uploadFile = explorerAdapter?.getUploadFileById(id)
-        uploadFile?.let { file ->
-            file.progress = progress
-            explorerAdapter?.updateItem(file)
-        }
-    }
-
-    override fun onDeleteUploadFile(id: String) {
-        explorerAdapter?.removeUploadItemById(id)
-    }
-
-    override fun onRemoveUploadHead() {
-        explorerAdapter?.removeHeader(getApp().getString(R.string.upload_manager_progress_title))
-    }
-
-    override fun onAddUploadsFile(uploadFiles: List<Entity>) {
-        onRemoveUploadHead()
-        explorerAdapter?.addItemsAtTop(uploadFiles)
-        explorerAdapter?.addItemAtTop(Header(getString(R.string.upload_manager_progress_title)))
-        recyclerView?.scrollToPosition(0)
-    }
-
     override fun continueClick(tag: String?, action: String?) {
         var operationType = ApiContract.Operation.OVERWRITE
         tag?.let {
@@ -892,6 +871,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         presenter.interruptFileSending()
     }
 
+    override fun onSetGridView(isGrid: Boolean) {
+        explorerAdapter?.isGridView = isGrid
+        switchGridView(isGrid)
+    }
+
     /*
      * On pager scroll callback
      * */
@@ -915,7 +899,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * */
     private fun init() {
         setDialogs()
-        explorerAdapter = ExplorerAdapter(TypeFactoryExplorer.factory).apply {
+        explorerAdapter = ExplorerAdapter(TypeFactoryExplorer.factory, presenter.preferenceTool.isGridView).apply {
             setOnItemContextListener(this@DocsBaseFragment)
             setOnItemClickListener(this@DocsBaseFragment)
             setOnItemLongClickListener(this@DocsBaseFragment)
@@ -1164,19 +1148,41 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     protected open fun showActionBarMenu() {
+        val section = presenter.getSectionType()
+        val isRoom = ApiContract.SectionType.isRoom(section) || ApiContract.SectionType.isArchive(section)
+
         ActionBarMenu(
             context = requireContext(),
             adapter = ActionMenuAdapter(actionMenuClickListener),
-            items = ActionMenuItemsFactory.getDocsItems(
-                section = presenter.getSectionType(),
-                selected = presenter.isSelectionMode,
-                allSelected = presenter.isSelectedAll,
-                sortBy = presenter.preferenceTool.sortBy,
-                asc = presenter.preferenceTool.sortOrder.equals(
-                    ApiContract.Parameters.VAL_SORT_ORDER_ASC,
-                    ignoreCase = true
+            items = if (isRoom) {
+                ActionMenuItemsFactory.getRoomItems(
+                    section = presenter.getSectionType(),
+                    root = presenter.isRoot,
+                    selected = presenter.isSelectionMode,
+                    allSelected = presenter.isSelectedAll,
+                    sortBy = presenter.preferenceTool.sortBy,
+                    empty = presenter.isListEmpty(),
+                    currentRoom = presenter.isRoomFolder(),
+                    security = presenter.roomClicked?.security ?: Security(),
+                    isGridView = presenter.preferenceTool.isGridView,
+                    asc = presenter.preferenceTool.sortOrder.equals(
+                        ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                        ignoreCase = true
+                    )
                 )
-            )
+            } else {
+                ActionMenuItemsFactory.getDocsItems(
+                    section = presenter.getSectionType(),
+                    selected = presenter.isSelectionMode,
+                    allSelected = presenter.isSelectedAll,
+                    sortBy = presenter.preferenceTool.sortBy,
+                    isGridView = presenter.preferenceTool.isGridView,
+                    asc = presenter.preferenceTool.sortOrder.equals(
+                        ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                        ignoreCase = true
+                    )
+                )
+            }
         ).show(requireActivity().window.decorView)
     }
 
@@ -1186,6 +1192,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         when (item) {
             is ActionMenuItem.Sort -> presenter.sortBy(item.sortValue)
             is ActionMenuItem.Operation -> presenter.moveCopySelected(item.value)
+            is ActionMenuItem.GridView -> presenter.setGridView(true)
+            is ActionMenuItem.ListView -> presenter.setGridView(false)
             ActionMenuItem.Select -> presenter.setSelection(true)
             ActionMenuItem.SelectAll -> presenter.setSelectionAll()
             ActionMenuItem.Deselect -> presenter.deselectAll()

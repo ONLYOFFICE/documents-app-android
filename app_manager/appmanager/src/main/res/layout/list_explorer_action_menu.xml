@@ -25,10 +25,8 @@
                 style="@style/ContextListItemLayout">
 
                 <ImageView
-                    style="@style/Widget.Common.ImageView.Context"
-                    android:alpha="1.0"
+                    style="@style/Widget.Common.ImageView.ActionBottomMenu"
                     app:srcCompat="@drawable/ic_type_text_document"
-                    app:tint="@color/colorDocTint"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -36,6 +34,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/list_action_doc" />
+
             </LinearLayout>
 
             <LinearLayout
@@ -43,10 +42,8 @@
                 style="@style/ContextListItemLayout">
 
                 <ImageView
-                    style="@style/Widget.Common.ImageView.Context"
-                    android:alpha="1.0"
+                    style="@style/Widget.Common.ImageView.ActionBottomMenu"
                     app:srcCompat="@drawable/ic_type_spreadsheet"
-                    app:tint="@color/colorSheetTint"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -61,10 +58,8 @@
                 style="@style/ContextListItemLayout">
 
                 <ImageView
-                    style="@style/Widget.Common.ImageView.Context"
-                    android:alpha="1.0"
+                    style="@style/Widget.Common.ImageView.ActionBottomMenu"
                     app:srcCompat="@drawable/ic_type_presentation"
-                    app:tint="@color/colorPresentationTint"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -80,7 +75,6 @@
 
                 <ImageView
                     style="@style/Widget.Common.ImageView.Context"
-                    android:tint="@color/colorOnSurface"
                     app:srcCompat="@drawable/ic_type_folder" />
 
                 <androidx.appcompat.widget.AppCompatTextView
