@@ -140,7 +140,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             activity.showAccount(false)
         }
         adapter = RecentAdapter(
-            requireContext(),
             presenter.preferenceTool.isGridView,
             RecentHolderFactory(recentListener, contextListener)
         )
@@ -202,7 +201,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun updateFiles(files: List<Recent>, sortByUpdated: Boolean) {
         if (files.isNotEmpty()) {
-            adapter?.setRecent(files, sortByUpdated)
+            adapter?.setRecent(files)
             recyclerView?.scrollToPosition(0)
             placeholderViews?.setVisibility(false)
             updateMenu(true)
