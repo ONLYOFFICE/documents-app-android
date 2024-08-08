@@ -61,7 +61,7 @@ fun ChipsTextField(
     var typeValue by remember { mutableStateOf("") }
     var error by remember { mutableStateOf(false) }
 
-    BackHandler {
+    BackHandler(typing) {
         if (typing) {
             typing = false
             if (typeValue.isNotEmpty()) {

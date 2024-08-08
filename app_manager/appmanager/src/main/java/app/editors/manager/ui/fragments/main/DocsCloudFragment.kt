@@ -32,15 +32,15 @@ import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.activities.main.FilterActivity
 import app.editors.manager.ui.activities.main.IMainActivity
-import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
-import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
+import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
+import app.editors.manager.ui.fragments.share.ShareFragment
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -88,9 +88,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 }
 
                 BaseActivity.REQUEST_ACTIVITY_SHARE -> {
-                    if (data?.hasExtra(ShareActivity.TAG_RESULT) == true) {
-                        cloudPresenter.setItemsShared(data.getBooleanExtra(ShareActivity.TAG_RESULT, false))
-                    }
+                    cloudPresenter.refresh()
                 }
 
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
@@ -219,7 +217,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         if (requireContext().accountOnline.isDocSpace) {
             ShareSettingsFragment.show(requireActivity(), cloudPresenter.itemClicked?.id)
         } else {
-            showShareActivity(cloudPresenter.itemClicked)
+            ShareFragment.show(
+                requireActivity(),
+                presenter.itemClicked?.id.orEmpty(),
+                presenter.itemClicked is CloudFolder
+            )
         }
     }
 
@@ -418,8 +420,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 openRoom(id = args.getString("id"))
             }
         }
-        AddRoomDialog.newInstance(type, cloudFolder, isCopy)
-            .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
+        AddRoomFragment.show(requireActivity().supportFragmentManager, type, cloudFolder, isCopy)
     }
 
     protected open fun getFilters(): Boolean {
@@ -488,7 +489,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun showSetOwnerFragment(cloudFolder: CloudFolder) {
         hideDialog()
-        ShareActivity.show(fragment = this, item = cloudFolder, isInfo = false, leave = true)
+        SetRoomOwnerFragment.show(cloudFolder, requireActivity(), presenter::refresh)
     }
 
     protected fun showRoomInfoFragment() {

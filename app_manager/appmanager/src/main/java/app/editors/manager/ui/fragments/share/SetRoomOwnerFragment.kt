@@ -4,36 +4,46 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
-import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
 import app.editors.manager.app.shareApi
 import app.editors.manager.ui.activities.main.ShareActivity
-import app.editors.manager.ui.fragments.base.BaseAppFragment
+import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
+import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.UserListMode
-import app.editors.manager.viewModels.main.UserListViewModel
 import com.google.android.material.appbar.AppBarLayout
 import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
-import lib.toolkit.base.ui.activities.base.BaseActivity
+import lib.toolkit.base.managers.utils.putArgs
 
-class UsersFragment : BaseAppFragment() {
+class SetRoomOwnerFragment : BaseDialogFragment() {
 
     companion object {
-        val TAG: String = UsersFragment::class.java.simpleName
+        val TAG: String = SetRoomOwnerFragment::class.java.simpleName
+        private const val ROOM_ID_KEY = "room_key"
+        private const val ROOM_CREATED_BY_ID_KEY = "room_created_by_id_key"
+        private const val SET_OWNER_REQUEST_KEY = "set_owner_request_key"
 
-        fun newInstance(item: Item?): UsersFragment {
-            return UsersFragment().apply {
-                arguments = Bundle(1).apply {
-                    putSerializable(ShareActivity.TAG_SHARE_ITEM, item)
-                }
-            }
+        fun newInstance(room: CloudFolder?): SetRoomOwnerFragment {
+            return SetRoomOwnerFragment().putArgs(
+                ROOM_ID_KEY to room?.id,
+                ROOM_CREATED_BY_ID_KEY to room?.createdBy?.id
+            )
+        }
+
+        fun show(room: CloudFolder?, activity: FragmentActivity, onClose: () -> Unit) {
+            activity.supportFragmentManager.setFragmentResultListener(
+                SET_OWNER_REQUEST_KEY,
+                activity
+            ) { _, _ -> onClose() }
+            newInstance(room).show(activity.supportFragmentManager, null)
         }
     }
 
@@ -48,12 +58,11 @@ class UsersFragment : BaseAppFragment() {
 
         (view as ComposeView).setContent {
             ManagerTheme {
-                val room = remember { checkNotNull(arguments?.getSerializableExt<Item>(ShareActivity.TAG_SHARE_ITEM)) }
                 val viewModel = viewModel {
-                    UserListViewModel(
+                    RoomUserListViewModel(
                         mode = UserListMode.ChangeOwner,
-                        roomId = room.id,
-                        roomOwnerId = room.createdBy.id,
+                        roomId = checkNotNull(arguments?.getSerializableExt<String>(ROOM_ID_KEY)),
+                        roomOwnerId = checkNotNull(arguments?.getSerializableExt<String>(ROOM_CREATED_BY_ID_KEY)),
                         shareService = requireContext().shareApi,
                         roomProvider = requireContext().roomProvider,
                         resourcesProvider = requireContext().appComponent.resourcesProvider,
@@ -65,10 +74,12 @@ class UsersFragment : BaseAppFragment() {
                     title = R.string.room_set_owner_title,
                     disableInvited = false,
                     onClick = { userId -> viewModel.setOwner(userId, leave = true) },
-                    onBack = requireActivity()::finish,
+                    onBack = ::onBackPressed,
                     onSuccess = {
-                        requireActivity().setResult(BaseActivity.REQUEST_ACTIVITY_REFRESH)
-                        requireActivity().finish()
+                        requireActivity()
+                            .supportFragmentManager
+                            .setFragmentResult(SET_OWNER_REQUEST_KEY, Bundle.EMPTY)
+                        onBackPressed()
                     },
                     onSnackBar = { UiUtils.getSnackBar(requireActivity()).setText(it).show() },
                 )

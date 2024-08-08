@@ -6,11 +6,9 @@ import android.view.MenuInflater
 import androidx.activity.result.ActivityResult
 import androidx.fragment.app.Fragment
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.main.MediaActivity
-import app.editors.manager.ui.activities.main.ShareActivity.Companion.show
 import app.editors.manager.ui.activities.main.StorageActivity.Companion.show
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
 import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
@@ -77,10 +75,6 @@ abstract class BaseAppFragment : BaseFragment() {
             callback = callback,
             intent = MediaActivity.getIntent(requireContext(), explorer, isWebDAv)
         ).show()
-    }
-
-    protected fun showShareActivity(item: Item?) {
-        show(this, item)
     }
 
     protected fun showStorageActivity(

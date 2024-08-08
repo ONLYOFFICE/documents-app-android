@@ -62,9 +62,13 @@ sealed class SharedLinkLifeTime(val title: Int) {
 }
 
 @Composable
-fun SharedLinkLifeTimeScreen(onBack: () -> Unit, onSetLifeTime: (SharedLinkLifeTime) -> Unit) {
+fun SharedLinkLifeTimeScreen(
+    useTabletPadding: Boolean = false,
+    onBack: () -> Unit,
+    onSetLifeTime: (SharedLinkLifeTime) -> Unit
+) {
     AppScaffold(
-        useTablePaddings = false,
+        useTablePaddings = useTabletPadding,
         topBar = {
             AppTopBar(title = R.string.rooms_share_link_life_time, backListener = onBack)
         }
@@ -106,6 +110,6 @@ fun getLifeTimeString(item: SharedLinkLifeTime): String {
 @Composable
 private fun SharedLinkLifeTimeScreenPreview() {
     ManagerTheme {
-        SharedLinkLifeTimeScreen({}) {}
+        SharedLinkLifeTimeScreen(false, {}) {}
     }
 }

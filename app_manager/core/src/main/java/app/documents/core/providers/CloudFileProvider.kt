@@ -401,6 +401,7 @@ class CloudFileProvider @Inject constructor(
                     .put("url", docService)
                     .put("size", cloudFile.pureContentLength)
                     .put("updated", cloudFile.updated.time)
+                    .put("fileId", cloudFile.id)
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).map { response ->
