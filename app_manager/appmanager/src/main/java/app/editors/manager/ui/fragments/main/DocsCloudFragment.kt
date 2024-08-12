@@ -11,16 +11,17 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.os.bundleOf
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.list.RecentViaLink
@@ -34,6 +35,7 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
+import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
@@ -43,10 +45,12 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.R
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import app.editors.manager.viewModels.main.CopyItems
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.DialogUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
+import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.managers.utils.getSerializable
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
@@ -215,7 +219,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         when (contextItem) {
             ExplorerContextItem.Share -> showShareFragment()
             ExplorerContextItem.Location -> cloudPresenter.openLocation()
-            ExplorerContextItem.CreateRoom -> cloudPresenter.createRoomFromFolder()
+            ExplorerContextItem.CreateRoom -> showAddRoomBottomDialog()
             ExplorerContextItem.ShareDelete -> showQuestionDialog(
                 title = getString(R.string.dialogs_question_share_remove),
                 string = "${cloudPresenter.itemClicked?.title}",
@@ -230,6 +234,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
             else -> super.onContextButtonClick(contextItem)
+        }
+    }
+
+    override val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
+        when (item) {
+            ActionMenuItem.CreateRoom -> showAddRoomBottomDialog()
+            else -> super.actionMenuClickListener(item)
         }
     }
 
@@ -452,24 +463,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    override fun onCreateRoom(type: Int, item: Item, isCopy: Boolean) {
-        showAddRoomFragment(type, item, isCopy)
-    }
-
-    protected fun showAddRoomFragment(type: Int, cloudFolder: Item? = null, isCopy: Boolean = false) {
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            AddRoomFragment.TAG_RESULT, this
-        ) { _, args ->
-            if (cloudFolder != null && !isCopy) {
-                onRefresh()
-            } else {
-                openRoom(id = args.getString("id"))
-            }
-        }
-        AddRoomDialog.newInstance(type, cloudFolder, isCopy)
-            .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
-    }
-
     protected open fun getFilters(): Boolean {
         val filter = presenter.preferenceTool.filter
         return filter.type != FilterType.None || filter.author.id.isNotEmpty() || filter.excludeSubfolder
@@ -539,9 +532,43 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         ShareActivity.show(fragment = this, item = cloudFolder, isInfo = false, leave = true)
     }
 
+    override fun showAddRoomFragment(type: Int, copyItems: CopyItems?) {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            AddRoomFragment.TAG_RESULT, this
+        ) { _, args ->
+            if (args.contains("id")) {
+                openRoom(id = args.getString("id"))
+            } else {
+                onRefresh()
+            }
+        }
+        AddRoomDialog.newInstance(type, null, copyItems)
+            .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
+    }
+
+    override fun showEditRoomFragment(room: CloudFolder) {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            AddRoomFragment.TAG_RESULT, this
+        ) { _, _ ->
+            onRefresh()
+        }
+        AddRoomDialog.newInstance(-1, room, null)
+            .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
+    }
+
     protected fun showRoomInfoFragment() {
         RoomInfoFragment.newInstance(presenter.roomClicked ?: error("room can not be null"))
             .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
+    }
+
+    protected fun showAddRoomBottomDialog() {
+        setFragmentResultListener(AddRoomBottomDialog.KEY_REQUEST_TYPE) { _, bundle ->
+            onActionDialogClose()
+            if (bundle.contains(AddRoomBottomDialog.KEY_RESULT_TYPE)) {
+                cloudPresenter.createRoom(bundle.getInt(AddRoomBottomDialog.KEY_RESULT_TYPE))
+            }
+        }
+        AddRoomBottomDialog().show(parentFragmentManager, AddRoomBottomDialog.TAG)
     }
 
     val isRoot: Boolean

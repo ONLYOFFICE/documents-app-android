@@ -41,6 +41,7 @@ import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import app.editors.manager.viewModels.main.CopyItems
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -180,15 +181,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private fun checkFillFormsRoom(): Boolean {
         val explorer = operationStack?.explorer ?: return false
         if (roomClicked?.roomType == ApiContract.RoomType.FILL_FORMS_ROOM) {
-            if (explorer.folders.isNotEmpty()) {
-                viewState.onDialogWarning(
-                    context.getString(R.string.dialogs_warning_only_pdf_form_title),
-                    context.getString(R.string.dialogs_warning_only_pdf_form_message),
-                    null
-                )
-                return false
-            }
-            if (explorer.files.any { !StringUtils.isPdf(it.fileExst) }) {
+            if (explorer.folders.isNotEmpty() || explorer.files.any { !it.isPdfForm }) {
                 viewState.onDialogWarning(
                     context.getString(R.string.dialogs_warning_only_pdf_form_title),
                     context.getString(R.string.dialogs_warning_only_pdf_form_message),
@@ -448,11 +441,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 addRecent(item)
                 onFileClickAction(item, true)
             }
-            is CloudFolder -> {
-                if (item.isRoom) {
-                    editRoom()
-                }
-            }
+            is CloudFolder -> editRoom()
         }
     }
 
@@ -837,11 +826,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun editRoom() {
-        val room = roomClicked ?: error("room can not be null")
-        viewState.onCreateRoom(room.roomType, room)
-    }
-
     fun copyLinkFromActionMenu(isRoom: Boolean) {
         if (isRoom) {
             copyRoomLink()
@@ -893,12 +877,44 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun createRoomFromFolder() {
-        itemClicked?.let {
-            viewState.onCreateRoom(item = it, isCopy = true)
+    fun createRoom(roomType: Int) {
+        val files = modelExplorerStack.selectedFiles.toMutableList()
+        val folders = modelExplorerStack.selectedFolders.toMutableList()
+        val clickedItem = itemClicked
+
+        deselectAll()
+        if (files.isEmpty() && folders.isEmpty() && clickedItem != null) {
+            if (clickedItem is CloudFolder) {
+                folders.add(clickedItem)
+            } else if (clickedItem is CloudFile) {
+                files.add(clickedItem)
+            }
         }
+
+        if (roomType == ApiContract.RoomType.FILL_FORMS_ROOM) {
+            if (folders.isNotEmpty() || files.any { !it.isPdfForm }) {
+                viewState.onDialogWarning(
+                    context.getString(R.string.dialogs_warning_only_pdf_form_title),
+                    context.getString(R.string.dialogs_warning_only_pdf_form_message),
+                    null
+                )
+                return
+            }
+        }
+
+        viewState.showAddRoomFragment(
+            copyItems = CopyItems(
+                folderIds = folders.map(CloudFolder::id),
+                fileIds = files.map(CloudFile::id)
+            )
+        )
     }
 
+    fun editRoom() {
+        roomClicked?.let { room ->
+            viewState.showEditRoomFragment(room)
+        }
+    }
 
     fun deleteRoom() {
         if (isSelectionMode && modelExplorerStack.countSelectedItems > 0) {

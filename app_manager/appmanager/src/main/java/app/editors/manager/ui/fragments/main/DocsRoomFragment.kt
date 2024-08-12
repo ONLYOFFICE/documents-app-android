@@ -9,17 +9,16 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Security
 import app.editors.manager.R
+import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.ActionMenuAdapter
 import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.managers.tools.ActionMenuItemsFactory
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.activities.main.ShareActivity
-import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.share.InviteUsersFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.managers.utils.setFragmentResultListener
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.popup.ActionBarMenu
 
@@ -38,13 +37,7 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
         if (isRoom) {
-            setFragmentResultListener { bundle ->
-                onActionDialogClose()
-                if (bundle?.getInt("type") != -1) {
-                    showAddRoomFragment(bundle?.getInt("type") ?: 2)
-                }
-            }
-            AddRoomBottomDialog().show(parentFragmentManager, AddRoomBottomDialog.TAG)
+            showAddRoomBottomDialog()
         } else {
             super.onActionDialog(isThirdParty, isDocs)
         }
@@ -74,6 +67,7 @@ class DocsRoomFragment : DocsCloudFragment() {
             adapter = ActionMenuAdapter(actionMenuClickListener),
             items = ActionMenuItemsFactory.getRoomItems(
                 section = presenter.getSectionType(),
+                provider = context?.accountOnline?.portal?.provider,
                 root = presenter.isRoot,
                 selected = presenter.isSelectionMode,
                 allSelected = presenter.isSelectedAll,

@@ -1185,6 +1185,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             adapter = ActionMenuAdapter(actionMenuClickListener),
             items = ActionMenuItemsFactory.getDocsItems(
                 section = presenter.getSectionType(),
+                provider = context?.accountOnline?.portal?.provider,
                 selected = presenter.isSelectionMode,
                 allSelected = presenter.isSelectedAll,
                 sortBy = presenter.preferenceTool.sortBy,

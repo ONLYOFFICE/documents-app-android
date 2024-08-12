@@ -2,7 +2,6 @@ package app.editors.manager.ui.dialogs
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.DialogInterface
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import androidx.annotation.DrawableRes
@@ -35,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
@@ -47,6 +47,9 @@ import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 class AddRoomBottomDialog : BaseBottomDialog() {
 
     companion object {
+        const val KEY_RESULT_TYPE = "key_result_type"
+        const val KEY_REQUEST_TYPE = "key_request_type"
+
         val TAG: String = AddRoomBottomDialog::class.java.simpleName
     }
 
@@ -61,18 +64,13 @@ class AddRoomBottomDialog : BaseBottomDialog() {
         init(dialog)
     }
 
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-        setFragmentResult("result", Bundle(1).apply { putInt("type", -1) })
-    }
-
     private fun init(dialog: Dialog) {
         dialog.setContentView(ComposeView(requireContext()).apply {
             setContent {
                 ManagerTheme {
                     Surface(shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)) {
                         AddRoomBottomDialogContent { type ->
-                            setFragmentResult("result", Bundle(1).apply { putInt("type", type) })
+                            setFragmentResult(KEY_REQUEST_TYPE, bundleOf(KEY_RESULT_TYPE to type))
                             dismiss()
                         }
                     }

@@ -86,6 +86,7 @@ import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.viewModels.main.AddRoomData
 import app.editors.manager.viewModels.main.AddRoomViewModel
+import app.editors.manager.viewModels.main.CopyItems
 import app.editors.manager.viewModels.main.StorageState
 import app.editors.manager.viewModels.main.UserListMode
 import app.editors.manager.viewModels.main.UserListViewModel
@@ -131,23 +132,27 @@ class AddRoomFragment : BaseFragment() {
 
         const val TAG_ROOM_TYPE = "room_type"
         const val TAG_ROOM_INFO = "room_info"
-        const val TAG_COPY = "files_copy"
+        const val TAG_COPY_ITEMS = "files_copy"
         const val TAG_RESULT = "add_room_result"
 
         val TAG: String = AddRoomFragment::class.java.simpleName
 
-        fun newInstance(roomType: Int, room: Item?, isCopy: Boolean = false) =
-            AddRoomFragment().putArgs(TAG_ROOM_TYPE to roomType, TAG_ROOM_INFO to room, TAG_COPY to isCopy)
+        fun newInstance(roomType: Int, room: Item?, items: CopyItems?) =
+            AddRoomFragment().putArgs(
+                TAG_ROOM_TYPE to roomType,
+                TAG_ROOM_INFO to room,
+                TAG_COPY_ITEMS to items
+            )
 
         fun show(
             fragmentManager: FragmentManager,
             roomType: Int,
             roomInfo: Item? = null,
-            isCopy: Boolean = false,
+            items: CopyItems? = null,
         ) {
             FragmentUtils.showFragment(
                 fragmentManager = fragmentManager,
-                fragment = newInstance(roomType, roomInfo, isCopy),
+                fragment = newInstance(roomType, roomInfo, items),
                 frameId = android.R.id.content,
                 tag = TAG,
                 isAdd = true
@@ -157,8 +162,11 @@ class AddRoomFragment : BaseFragment() {
 
     private lateinit var navController: NavHostController
 
-    private val isEdit: Boolean
-        get() = arguments?.getSerializableExt<Item>(TAG_ROOM_INFO) != null && arguments?.getBoolean(TAG_COPY) == false
+    private val copyItems: CopyItems? by lazy { arguments?.getSerializableExt(TAG_COPY_ITEMS) }
+
+    private val roomData: CloudFolder? by lazy { arguments?.getSerializableExt(TAG_ROOM_INFO) }
+
+    private val isEdit: Boolean get() = roomData != null
 
     override fun onBackPressed(): Boolean {
         if (!navController.popBackStack()) {
@@ -190,7 +198,7 @@ class AddRoomFragment : BaseFragment() {
                     context = requireActivity().application,
                     roomProvider = requireContext().roomProvider,
                     roomInfo = room,
-                    isCopy = arguments?.getBoolean(TAG_COPY) ?: false
+                    copyItems = copyItems
                 )
             }
             val roomState = viewModel.roomState.collectAsState()
@@ -516,8 +524,6 @@ fun ThirdPartyBlock(
                     } else {
                         state.location ?: stringResource(id = R.string.room_create_thirdparty_location_root)
                     },
-                    enabled = !isEdit,
-                    arrowVisible = !isEdit,
                     onClick = { onLocationClick.invoke(state.id) }
                 )
                 AppSwitchItem(

@@ -3,6 +3,8 @@ package app.documents.core.network.room
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Operation
+import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.manager.models.response.ResponseExplorer
 import app.documents.core.network.room.models.RequestAddTags
@@ -318,4 +320,17 @@ interface RoomService {
         @Path("groupId") groupId: String,
     ): app.documents.core.network.BaseResponse<List<GroupShare>>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/copy")
+    suspend fun copy(@Body body: RequestBatchOperation): app.documents.core.network.BaseResponse<List<Operation>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/fileops")
+    suspend fun status(): app.documents.core.network.BaseResponse<List<Operation>>
 }

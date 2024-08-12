@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.ui.fragments.main.AddRoomFragment
+import app.editors.manager.viewModels.main.CopyItems
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
@@ -18,11 +19,11 @@ class AddRoomDialog : BaseDialogFragment() {
 
         val TAG: String = AddRoomDialog::class.java.simpleName
 
-        fun newInstance(roomType: Int, room: Item? = null, isCopy: Boolean = false): AddRoomDialog {
+        fun newInstance(roomType: Int, room: Item? = null, copyItems: CopyItems?): AddRoomDialog {
             return AddRoomDialog().putArgs(
                 AddRoomFragment.TAG_ROOM_TYPE to roomType,
                 AddRoomFragment.TAG_ROOM_INFO to room,
-                AddRoomFragment.TAG_COPY to isCopy
+                AddRoomFragment.TAG_COPY_ITEMS to copyItems
             )
         }
     }
@@ -51,10 +52,10 @@ class AddRoomDialog : BaseDialogFragment() {
     }
 
     private fun getInstance(): Fragment {
-        return AddRoomFragment().putArgs(
-            AddRoomFragment.TAG_ROOM_TYPE to arguments?.getInt(AddRoomFragment.TAG_ROOM_TYPE),
-            AddRoomFragment.TAG_ROOM_INFO to arguments?.getSerializableExt(AddRoomFragment.TAG_ROOM_INFO),
-            AddRoomFragment.TAG_COPY to arguments?.getBoolean(AddRoomFragment.TAG_COPY)
+        return AddRoomFragment.newInstance(
+            arguments?.getInt(AddRoomFragment.TAG_ROOM_TYPE) ?: -1,
+            arguments?.getSerializableExt(AddRoomFragment.TAG_ROOM_INFO),
+            arguments?.getSerializableExt(AddRoomFragment.TAG_COPY_ITEMS)
         )
     }
 }

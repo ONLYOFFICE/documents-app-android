@@ -1,5 +1,6 @@
 package app.editors.manager.managers.tools
 
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract.Parameters
 import app.documents.core.network.common.contracts.ApiContract.SectionType
 import app.documents.core.network.manager.models.explorer.Security
@@ -48,6 +49,7 @@ sealed class ActionMenuItem(override val title: Int) : IActionMenuItem {
     data object Info : None(R.string.list_context_info)
     data object EditRoom : None(R.string.list_context_edit_room)
     data object Invite : None(R.string.share_invite_user)
+    data object CreateRoom : None(R.string.dialog_create_room)
     data object LeaveRoom : None(R.string.leave_room_title)
     data class CopyLink(val isRoom: Boolean) : None(R.string.rooms_info_copy_link)
 
@@ -72,6 +74,7 @@ object ActionMenuItemsFactory {
 
     fun getRoomItems(
         section: Int,
+        provider: PortalProvider?,
         root: Boolean,
         empty: Boolean,
         currentRoom: Boolean,
@@ -84,12 +87,13 @@ object ActionMenuItemsFactory {
         return if (root) {
             getRoomRootItems(section, selected, allSelected, asc, sortBy)
         } else {
-            getRoomFolderItems(selected, empty, allSelected, asc, sortBy, currentRoom, security)
+            getRoomFolderItems(selected, provider, empty, allSelected, asc, sortBy, currentRoom, security)
         }
     }
 
     fun getDocsItems(
         section: Int,
+        provider: PortalProvider?,
         selected: Boolean,
         allSelected: Boolean,
         asc: Boolean,
@@ -129,6 +133,7 @@ object ActionMenuItemsFactory {
         } else {
             // common action block
             if (section != SectionType.DEVICE_DOCUMENTS) add(ActionMenuItem.Download)
+            if (provider == PortalProvider.Cloud.DocSpace) add(ActionMenuItem.CreateRoom)
             add(ActionMenuItem.Move)
             add(ActionMenuItem.Copy)
             add(ActionMenuItem.Delete)
@@ -175,6 +180,7 @@ object ActionMenuItemsFactory {
 
     private fun getRoomFolderItems(
         selected: Boolean,
+        provider: PortalProvider?,
         empty: Boolean,
         allSelected: Boolean,
         asc: Boolean,
@@ -217,6 +223,7 @@ object ActionMenuItemsFactory {
             addAll(getSelectItems(selected, allSelected, false))
             if (selected) {
                 add(ActionMenuItem.Divider)
+                if (provider == PortalProvider.Cloud.DocSpace) add(ActionMenuItem.CreateRoom)
                 add(ActionMenuItem.Download)
                 add(ActionMenuItem.Move)
                 add(ActionMenuItem.Copy)
