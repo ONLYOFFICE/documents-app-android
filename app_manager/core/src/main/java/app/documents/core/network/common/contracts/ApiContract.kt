@@ -325,6 +325,11 @@ object ApiContract {
         fun hasExternalLink(roomType: Int?): Boolean = roomType != CUSTOM_ROOM
     }
 
+    object FolderType {
+        const val IN_PROGRESS = 26
+        const val COMPLETE = 25
+    }
+
     object SectionPath {
         const val MY = "@my"
         const val COMMON = "@common"

@@ -10,6 +10,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.contracts.ApiContract.RoomType
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
@@ -101,7 +102,7 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
             if (folder.providerItem && folder.providerKey.isNotEmpty()) {
                 binding.badge.setImageResource(StorageUtils.getStorageIcon(folder.providerKey))
                 binding.badge.isVisible = true
-            } else if (folder.roomType == ApiContract.RoomType.PUBLIC_ROOM) {
+            } else if (folder.roomType in arrayOf(RoomType.PUBLIC_ROOM, RoomType.FILL_FORMS_ROOM)) {
                 binding.badge.setImageResource(R.drawable.ic_public_room_badge)
                 binding.badge.isVisible = true
             } else {
@@ -111,7 +112,11 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
             binding.badge.isVisible = false
             textView.isVisible = false
             imageView.isVisible = true
-            imageView.setFolderIcon(folder, isRoot)
+            when (folder.type) {
+                ApiContract.FolderType.COMPLETE -> imageView.setImageResource(R.drawable.ic_folder_complete)
+                ApiContract.FolderType.IN_PROGRESS -> imageView.setImageResource(R.drawable.ic_folder_in_progress)
+                else -> imageView.setFolderIcon(folder, isRoot)
+            }
         }
     }
 }
