@@ -132,8 +132,8 @@ object ActionMenuItemsFactory {
             add(ActionMenuItem.Delete)
         } else {
             // common action block
-            if (section != SectionType.DEVICE_DOCUMENTS) add(ActionMenuItem.Download)
             if (provider == PortalProvider.Cloud.DocSpace) add(ActionMenuItem.CreateRoom)
+            if (section != SectionType.DEVICE_DOCUMENTS) add(ActionMenuItem.Download)
             add(ActionMenuItem.Move)
             add(ActionMenuItem.Copy)
             add(ActionMenuItem.Delete)

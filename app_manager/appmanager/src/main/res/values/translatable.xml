@@ -751,6 +751,8 @@
     <string name="rooms_add_public_room_des">Invite users via shared links to view documents without registration. You can also embed this room into any web interface.</string>
     <string name="rooms_add_custom">Custom room</string>
     <string name="rooms_add_custom_des">Apply your own settings to use this room for any custom purpose</string>
+    <string name="rooms_add_fill_forms">Form filling room</string>
+    <string name="rooms_add_fill_forms_des">Upload PDF forms into the room. Invite users to fill out a PDF form. Review completed forms and analyze data automatically collected in a spreadsheet.</string>
     <string name="rooms_choose_room">Choose room type</string>
     <string name="room_name_hint">Room name</string>
     <string name="room_add_tag_hint">Add tags</string>

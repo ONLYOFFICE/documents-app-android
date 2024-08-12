@@ -903,6 +903,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
 
         viewState.showAddRoomFragment(
+            type = roomType,
             copyItems = CopyItems(
                 folderIds = folders.map(CloudFolder::id),
                 fileIds = files.map(CloudFile::id)

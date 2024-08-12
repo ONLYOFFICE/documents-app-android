@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,9 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
-import app.documents.core.network.common.contracts.ApiContract
-import app.editors.manager.R
-import lib.compose.ui.addIf
+import app.editors.manager.managers.utils.RoomUtils
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextTertiary
 import lib.compose.ui.views.AppDivider
@@ -82,9 +78,8 @@ class AddRoomBottomDialog : BaseBottomDialog() {
 
 }
 
-//TODO Set room type constants
 @Composable
-private fun AddRoomBottomDialogContent(itemClick: (type: Int) -> Unit) {
+private fun AddRoomBottomDialogContent(onClick: (type: Int) -> Unit) {
     Column(
         modifier = Modifier
             .background(color = MaterialTheme.colors.surface)
@@ -100,45 +95,24 @@ private fun AddRoomBottomDialogContent(itemClick: (type: Int) -> Unit) {
                 .padding(4.dp)
                 .fillMaxWidth()
         )
-        AddRoomItem(
-            icon = R.drawable.ic_collaboration_room,
-            title = R.string.rooms_add_collaboration,
-            description = R.string.rooms_add_collaboration_des
-        ) {
-            itemClick(2)
-        }
-        AddRoomItem(
-            icon = R.drawable.ic_public_room,
-            title = R.string.rooms_add_public_room,
-            description = R.string.rooms_add_public_room_des
-        ) {
-            itemClick(6)
-        }
-        AddRoomItem(
-            icon = R.drawable.ic_custom_room,
-            title = R.string.rooms_add_custom,
-            description = R.string.rooms_add_custom_des
-        ) {
-            itemClick(ApiContract.RoomType.CUSTOM_ROOM)
+        for (type in RoomUtils.roomTypes) {
+            AddRoomItem(roomType = type, onClick = onClick)
         }
     }
 }
 
 @Composable
 fun AddRoomItem(
-    @DrawableRes icon: Int,
-    @StringRes title: Int,
-    @StringRes description: Int,
-    isSelect: Boolean? = null,
-    isClickable: Boolean = true,
-    itemClick: () -> Unit
+    roomType: Int,
+    selected: Boolean? = null,
+    clickable: Boolean = true,
+    onClick: (Int) -> Unit
 ) {
+    val info = RoomUtils.getRoomInfo(roomType)
     Box(
         modifier = Modifier
             .wrapContentHeight()
-            .addIf(isClickable) {
-                clickable { itemClick() }
-            }
+            .clickable(enabled = clickable) { onClick(roomType) }
     ) {
         Row(
             modifier = Modifier
@@ -150,7 +124,7 @@ fun AddRoomItem(
                 modifier = Modifier
                     .padding(start = 16.dp)
                     .size(40.dp),
-                imageVector = ImageVector.vectorResource(id = icon),
+                imageVector = ImageVector.vectorResource(id = info.icon),
                 contentDescription = null
             )
             Column(
@@ -160,19 +134,19 @@ fun AddRoomItem(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = stringResource(id = title),
+                    text = stringResource(id = info.title),
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier
                         .align(Alignment.Start)
                 )
                 Text(
-                    text = stringResource(id = description),
+                    text = stringResource(id = info.description),
                     style = MaterialTheme.typography.caption,
                     modifier = Modifier.align(Alignment.Start)
                 )
             }
-            if (isSelect != null) {
-                if (isSelect) {
+            if (selected != null) {
+                if (selected) {
                     Icon(
                         modifier = Modifier.padding(end = 16.dp),
                         imageVector = ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_done),
@@ -181,7 +155,7 @@ fun AddRoomItem(
                     )
                 }
             } else {
-                if (isClickable) {
+                if (clickable) {
                     Icon(
                         modifier = Modifier.padding(end = 16.dp),
                         imageVector = ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_arrow_right),

@@ -334,7 +334,6 @@ private fun MainScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val tags = remember(roomState.tags::toMutableStateList)
     val name = remember { mutableStateOf(roomState.name) }
-    val roomInfo = RoomUtils.getRoomInfo(roomState.type)
 
     if (viewState is ViewState.Success) {
         if (viewState.id != null) {
@@ -389,10 +388,8 @@ private fun MainScreen(
                     Spacer(modifier = Modifier.height(4.dp))
                 }
                 AddRoomItem(
-                    isClickable = !isEdit,
-                    icon = roomInfo.icon,
-                    title = roomInfo.title,
-                    description = roomInfo.description
+                    roomType = roomState.type,
+                    clickable = !isEdit
                 ) {
                     saveData(name.value, tags)
                     navController.navigate("${Navigation.Select.route}/${roomState.type}")
@@ -541,7 +538,7 @@ fun ThirdPartyBlock(
 }
 
 @Composable
-private fun SelectRoomScreen(type: Int, navController: NavHostController) {
+private fun SelectRoomScreen(currentType: Int, navController: NavHostController) {
     AppScaffold(topBar = {
         AppTopBar(
             title = stringResource(id = R.string.rooms_choose_room),
@@ -549,39 +546,12 @@ private fun SelectRoomScreen(type: Int, navController: NavHostController) {
         )
     }, useTablePaddings = false) {
         Column {
-            AddRoomItem(
-                icon = R.drawable.ic_collaboration_room,
-                title = R.string.rooms_add_collaboration,
-                description = R.string.rooms_add_collaboration_des,
-                isSelect = type == 2
-            ) {
-                navController.navigate("${Navigation.Main.route}/2") {
-                    popUpTo(navController.graph.id) {
-                        inclusive = true
-                    }
-                }
-            }
-            AddRoomItem(
-                icon = R.drawable.ic_public_room,
-                title = R.string.rooms_add_public_room,
-                description = R.string.rooms_add_public_room_des,
-                isSelect = type == 6
-            ) {
-                navController.navigate("${Navigation.Main.route}/6") {
-                    popUpTo(navController.graph.id) {
-                        inclusive = true
-                    }
-                }
-            }
-            AddRoomItem(
-                icon = R.drawable.ic_custom_room,
-                title = R.string.rooms_add_custom,
-                description = R.string.rooms_add_custom_des,
-                isSelect = type == 5
-            ) {
-                navController.navigate("${Navigation.Main.route}/5") {
-                    popUpTo(navController.graph.id) {
-                        inclusive = true
+            for (type in RoomUtils.roomTypes) {
+                AddRoomItem(roomType = type, selected = currentType == type) { newType ->
+                    navController.navigate("${Navigation.Main.route}/$newType") {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
                     }
                 }
             }
