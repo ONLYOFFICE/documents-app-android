@@ -1517,13 +1517,26 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             when (responseCode) {
                 ApiContract.HttpCodes.CLIENT_UNAUTHORIZED -> viewState.onError(context.getString(R.string.errors_client_unauthorized))
                 ApiContract.HttpCodes.CLIENT_FORBIDDEN -> {
+                    val message = errorMessage
+                    if (message == null) {
+                        viewState.onError(context.getString(R.string.errors_client_forbidden))
+                        return
+                    }
+
                     when {
-                        errorMessage?.contains(ApiContract.Errors.DISK_SPACE_QUOTA) == true -> {
+                        ApiContract.Errors.DISK_SPACE_QUOTA in message -> {
                             viewState.onError(errorMessage)
                         }
-                        errorMessage?.contains(ApiContract.Errors.STORAGE_NOT_AVAILABLE) == true -> {
+                        ApiContract.Errors.STORAGE_NOT_AVAILABLE in message -> {
                             viewState.onError(context.getString(R.string.room_storage_not_availabale))
                             setPlaceholderType(PlaceholderViews.Type.NONE)
+                        }
+                        ApiContract.Errors.PINNED_ROOM_LIMIT in message -> {
+                            viewState.onDialogWarning(
+                                context.getString(R.string.dialogs_warning_title),
+                                context.getString(R.string.dialogs_warning_pinned_room_limit),
+                                null
+                            )
                         }
                         else -> {
                             viewState.onError(context.getString(R.string.errors_client_forbidden))

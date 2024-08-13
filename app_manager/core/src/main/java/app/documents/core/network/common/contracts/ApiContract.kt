@@ -88,6 +88,7 @@ object ApiContract {
         const val EXCEED_FILE_SIZE_100 = "Exceeds the maximum file size (100MB)"
         const val EXCEED_FILE_SIZE_25 = "Exceeds the maximum file size (25MB)"
         const val STORAGE_NOT_AVAILABLE = "The content of third party folder are not available. Try to reconnect the account"
+        const val PINNED_ROOM_LIMIT = "You can't pin a room"
     }
     object ShareType {
         const val NONE = "None"

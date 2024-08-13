@@ -65,16 +65,11 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
     fun pinRoom(id: String, isPin: Boolean = true): Observable<BaseResponse> {
         return if (isPin) {
             roomService.pinRoom(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { it.body() }
         } else {
             roomService.unpinRoom(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { it.body() }
-        }
-
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .flatMap { if (it.isSuccessful) Observable.just(it.body()) else throw HttpException(it) }
     }
 
     suspend fun renameRoom(id: String, newTitle: String): Boolean {

@@ -183,7 +183,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (roomClicked?.roomType == ApiContract.RoomType.FILL_FORMS_ROOM) {
             if (explorer.folders.isNotEmpty() || explorer.files.any { !it.isPdfForm }) {
                 viewState.onDialogWarning(
-                    context.getString(R.string.dialogs_warning_only_pdf_form_title),
+                    context.getString(R.string.dialogs_warning_title),
                     context.getString(R.string.dialogs_warning_only_pdf_form_message),
                     null
                 )
@@ -894,8 +894,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (roomType == ApiContract.RoomType.FILL_FORMS_ROOM) {
             if (folders.isNotEmpty() || files.any { !it.isPdfForm }) {
                 viewState.onDialogWarning(
-                    context.getString(R.string.dialogs_warning_only_pdf_form_title),
-                    context.getString(R.string.dialogs_warning_only_pdf_form_message),
+                    context.getString(R.string.dialogs_warning_title),
+                    context.getString(R.string.dialogs_warning_fill_forms_room_create),
                     null
                 )
                 return
