@@ -46,7 +46,7 @@ object TimeUtils {
     val DEFAULT_GMT_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DEFAULT).also { it.timeZone = TimeZone.getTimeZone("gmt") }
     private val OUTPUT_TIME_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_TIME)
     private val OUTPUT_DATE_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DATE)
-    private val OUTPUT_DATE_TIME_OFFSET_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DATE_TIME_OFFSET)
+    private val OUTPUT_DATE_TIME_OFFSET_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DATE_TIME_OFFSET, Locale.getDefault())
 
 
     /*
@@ -139,8 +139,12 @@ object TimeUtils {
     }
 
     fun parseDate(string: String?): Date? {
-        val time = OUTPUT_DATE_TIME_OFFSET_FORMAT.parse(string ?: return null)?.time
-        return if (time != null) Date(time) else null
+        try {
+            val time = OUTPUT_DATE_TIME_OFFSET_FORMAT.parse(string ?: return null)?.time
+            return if (time != null) Date(time) else null
+        } catch (error: ParseException) {
+            return null
+        }
     }
 
     fun getDateTimeLeft(context: Context, date: String): String? {
