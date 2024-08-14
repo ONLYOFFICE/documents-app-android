@@ -264,8 +264,9 @@ class DocumentsPicker(
             callback.invoke(it)
         }
 
-    fun show() {
-        choseDocuments.launch(arrayOf("*/*"))
+    fun show(extension: String? = null) {
+        val mimeType = extension?.let(StringUtils::getMimeTypeFromExtension) ?: "*/*"
+        choseDocuments.launch(arrayOf(mimeType))
     }
 }
 

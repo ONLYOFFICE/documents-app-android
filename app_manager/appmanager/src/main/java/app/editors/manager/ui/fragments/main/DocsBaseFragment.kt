@@ -735,8 +735,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         presenter.createDownloadFile()
     }
 
-    override fun onFileUploadPermission() {
-        showMultipleFilePickerActivity { uris ->
+    override fun onFileUploadPermission(extension: String?) {
+        showMultipleFilePickerActivity(extension) { uris ->
             if (!uris.isNullOrEmpty()) {
                 presenter.upload(null, uris)
             }

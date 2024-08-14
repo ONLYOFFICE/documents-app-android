@@ -1289,8 +1289,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         }
     }
 
-    fun uploadPermission() {
-        viewState.onFileUploadPermission()
+    fun uploadPermission(extension: String? = null) {
+        viewState.onFileUploadPermission(extension)
     }
 
     fun showFileChooserFragment() {

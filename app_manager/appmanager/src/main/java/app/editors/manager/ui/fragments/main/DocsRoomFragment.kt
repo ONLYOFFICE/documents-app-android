@@ -47,7 +47,7 @@ class DocsRoomFragment : DocsCloudFragment() {
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
         when (buttons) {
             ActionBottomDialog.Buttons.UPLOAD -> presenter.showFileChooserFragment()
-            ActionBottomDialog.Buttons.IMPORT -> presenter.uploadPermission()
+            ActionBottomDialog.Buttons.IMPORT -> presenter.uploadPermission(".pdf")
             else -> super.onActionButtonClick(buttons)
         }
     }

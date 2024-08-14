@@ -93,7 +93,7 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onFileDownloadPermission();
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onFileUploadPermission();
+    void onFileUploadPermission(@Nullable String extension);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onScrollToPosition(int position);
     @StateStrategyType(OneExecutionStateStrategy.class)

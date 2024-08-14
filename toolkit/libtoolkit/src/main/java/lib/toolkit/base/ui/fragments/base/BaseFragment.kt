@@ -479,9 +479,9 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     @SuppressLint("MissingPermission")
-    protected fun showMultipleFilePickerActivity(callback: (uris: List<Uri>?) -> Unit) {
+    protected fun showMultipleFilePickerActivity(extension: String? = null, callback: (uris: List<Uri>?) -> Unit) {
         DocumentsPicker(requireActivity().activityResultRegistry, callback = callback)
-            .show()
+            .show(extension)
     }
 
     protected fun showFileShareActivity(uri: Uri) {
