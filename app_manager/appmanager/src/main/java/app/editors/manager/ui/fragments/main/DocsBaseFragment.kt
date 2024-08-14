@@ -710,8 +710,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         explorerAdapter?.notifyItemChanged(position)
     }
 
-    override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
+    override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean, roomType: Int?) {
         actionBottomDialog?.let { dialog ->
+            dialog.roomType = roomType
             dialog.onClickListener = this
             dialog.isThirdParty = isThirdParty
             dialog.isDocs = isDocs

@@ -85,7 +85,7 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onItemSelected(int position, String countSelected);
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onActionDialog(boolean isThirdParty, boolean isShowDocs);
+    void onActionDialog(boolean isThirdParty, boolean isShowDocs, Integer roomType);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDownloadActivity(Uri uri);
     @StateStrategyType(OneExecutionStateStrategy.class)

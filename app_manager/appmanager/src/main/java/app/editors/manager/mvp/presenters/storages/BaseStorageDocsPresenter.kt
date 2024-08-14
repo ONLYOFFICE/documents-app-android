@@ -229,7 +229,7 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
     }
 
     override fun onActionClick() {
-        viewState.onActionDialog(false, true)
+        viewState.onActionDialog(false, true, null)
     }
 
     override fun onUploadAndOpen(path: String?, title: String?, file: CloudFile?, id: String?) {

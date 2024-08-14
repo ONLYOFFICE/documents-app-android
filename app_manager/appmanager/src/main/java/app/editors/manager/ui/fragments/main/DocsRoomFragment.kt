@@ -15,6 +15,7 @@ import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.managers.tools.ActionMenuItemsFactory
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.activities.main.ShareActivity
+import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.share.InviteUsersFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -35,11 +36,19 @@ class DocsRoomFragment : DocsCloudFragment() {
         }
     }
 
-    override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
+    override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean, roomType: Int?) {
         if (isRoom) {
             showAddRoomBottomDialog()
         } else {
-            super.onActionDialog(isThirdParty, isDocs)
+            super.onActionDialog(isThirdParty, isDocs, roomType)
+        }
+    }
+
+    override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
+        when (buttons) {
+            ActionBottomDialog.Buttons.UPLOAD -> presenter.showFileChooserFragment()
+            ActionBottomDialog.Buttons.IMPORT -> presenter.uploadPermission()
+            else -> super.onActionButtonClick(buttons)
         }
     }
 

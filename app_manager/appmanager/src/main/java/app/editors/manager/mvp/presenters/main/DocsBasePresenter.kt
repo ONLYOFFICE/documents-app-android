@@ -1293,6 +1293,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         viewState.onFileUploadPermission()
     }
 
+    fun showFileChooserFragment() {
+
+    }
+
     val itemTitle: String
         get() = itemClicked?.let { item ->
             StringUtils.getNameWithoutExtension(item.title)

@@ -906,4 +906,7 @@
     <string name="personal_portal_end_title">ONLYOFFICE Personal is wrapping up</string>
     <string name="personal_portal_end_text">ONLYOFFICE Personal will be discontinued on September 1st, 2024.\nWe recommend you move to the free ONLYOFFICE DocSpace Cloud.</string>
 
+    <string name="rooms_upload_pdf_from_docspace">Upload PDF Form from DocSpace</string>
+    <string name="rooms_upload_pdf_from_device">Upload PDF Form from device</string>
+
 </resources>
