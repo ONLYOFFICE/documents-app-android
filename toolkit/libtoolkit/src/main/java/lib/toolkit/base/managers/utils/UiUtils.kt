@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -911,4 +912,15 @@ class SlidesLinearLayoutManager(context: Context, orientation: Int, reverseLayou
         linearSmoothScroller.targetPosition = position
         startSmoothScroll(linearSmoothScroller)
     }
+}
+
+fun View.getParentActivity(): Activity? {
+    var context = this.context
+    while (context is ContextWrapper) {
+        if (context is Activity) {
+            return context
+        }
+        context = context.baseContext
+    }
+    return null
 }
