@@ -66,7 +66,6 @@ platform :android do
       task: 'bundle',
       build_type: 'Release',
       project_dir: 'app_manager/',
-      flavor: 'manager'
     )
 
     # Submit to Play Market
@@ -180,7 +179,6 @@ platform :android do
       task: 'bundle',
       build_type: 'Release',
       project_dir: 'app_manager/',
-      flavor: 'manager'
     )
 
     # Submit to Play Market
@@ -216,7 +214,6 @@ platform :android do
       task: 'assemble',
       build_type: 'Release',
       project_dir: 'app_manager/',
-      flavor: 'manager'
     )
 
   end
