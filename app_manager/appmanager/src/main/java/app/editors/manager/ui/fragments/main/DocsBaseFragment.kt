@@ -36,6 +36,7 @@ import app.editors.manager.managers.tools.ActionMenuItemsFactory
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.ui.activities.main.IMainActivity
@@ -155,6 +156,18 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             requireActivity().activityResultRegistry,
             callback,
             OperationActivity.getIntent(requireContext(), operation, explorer)
+        ).show()
+    }
+
+    protected fun showCloudFilePickerActivity(
+        explorer: Explorer,
+        destFolderId: String,
+        callback: (result: ActivityResult) -> Unit
+    ) {
+        LaunchActivityForResult(
+            requireActivity().activityResultRegistry,
+            callback,
+            OperationActivity.getCloudFilePickerActivity(requireContext(), explorer, destFolderId)
         ).show()
     }
 
@@ -279,7 +292,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onItemClick(view: View, position: Int) {
         val item = explorerAdapter?.getItem(position) as Item
 
-        if (item is CloudFile && presenter.isFoldersMode) {
+        if (item is CloudFile && presenter.pickerMode == PickerMode.Folders) {
             return
         }
 
@@ -692,6 +705,15 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 showSnackBar(R.string.operation_complete_message)
             }
             onRefresh()
+        }
+    }
+
+    override fun onPickCloudFile(destFolderId: String) {
+        showCloudFilePickerActivity(Explorer(), destFolderId) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                showSnackBar(R.string.operation_complete_message)
+            }
+            view?.postDelayed(::onRefresh, 500)
         }
     }
 

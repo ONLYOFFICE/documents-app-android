@@ -76,6 +76,30 @@ import java.util.TreeMap
 import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
 
+sealed class PickerMode {
+
+    data object None : PickerMode()
+
+    data object Folders : PickerMode()
+
+    sealed class Files(
+        open val selectedIds: MutableList<String> = mutableListOf(),
+        open val destFolderId: String
+    ) : PickerMode() {
+
+        data class PDFForm(override val destFolderId: String) : Files(destFolderId = destFolderId)
+
+        data class Any(override val destFolderId: String) : Files(destFolderId = destFolderId)
+
+        fun selectId(id: String) {
+            if (id in selectedIds) {
+                selectedIds.remove(id)
+            } else {
+                selectedIds.add(id)
+            }
+        }
+    }
+}
 
 @InjectViewState
 abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
@@ -118,11 +142,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * Modes
      * */
 
-    var isFoldersMode = false
+    var pickerMode: PickerMode = PickerMode.None
+
     var isTrashMode = false
-    var isFilteringMode = false
-        protected set
+
     var isSelectionMode = false
+
+    var isFilteringMode = false
         protected set
 
     /**
@@ -1098,7 +1124,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     open fun getBackStack(): Boolean {
         cancelGetRequests()
         when {
-            isSelectionMode -> {
+            isSelectionMode && pickerMode !is PickerMode.Files -> {
                 setSelection(false)
                 updateViewsState()
                 return true
@@ -1294,7 +1320,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     fun showFileChooserFragment() {
-
+        viewState.onPickCloudFile(currentFolder?.id)
     }
 
     val itemTitle: String
@@ -1757,7 +1783,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     fun isRoomFolder(): Boolean {
         return modelExplorerStack.last()?.current?.id == roomClicked?.id
     }
-    
+
     abstract fun getNextList()
 
     abstract fun getFileInfo()

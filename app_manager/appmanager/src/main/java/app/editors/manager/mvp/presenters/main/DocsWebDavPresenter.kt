@@ -170,7 +170,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             viewState.onStateActionButton(true)
             viewState.onActionBarTitle(currentTitle)
         } else {
-            if (isFoldersMode) {
+            if (pickerMode == PickerMode.Folders) {
                 viewState.onActionBarTitle(context.getString(R.string.operation_title))
                 viewState.onStateActionButton(false)
             } else {

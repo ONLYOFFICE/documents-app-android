@@ -9,10 +9,12 @@ import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.OperationActivity.OnActionClickListener
 import app.editors.manager.ui.fragments.main.DocsCloudFragment
 import lib.toolkit.base.managers.utils.getSerializable
+import lib.toolkit.base.managers.utils.putArgs
 
 class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
 
@@ -45,13 +47,13 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
 
     override fun onItemClick(view: View, position: Int) {
         super.onItemClick(view, position)
-        operationActivity?.setEnabledActionButton(false)
+        setEnabledActionButton(false)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         operationActivity?.setOnActionClickListener(null)
-        operationActivity?.setEnabledActionButton(false)
+        setEnabledActionButton(false)
     }
 
 
@@ -61,15 +63,15 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
 
     override fun onError(message: String?) {
         super.onError(message)
-        operationActivity?.setEnabledActionButton(false)
+        setEnabledActionButton(false)
     }
 
     override fun onDocsGet(list: List<Entity>?) {
         super.onDocsGet(list)
         if (sectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM && presenter.isRoot) {
-            operationActivity?.setEnabledActionButton(false)
+            setEnabledActionButton(false)
         } else {
-            operationActivity?.setEnabledActionButton(true)
+            setEnabledActionButton(true)
         }
     }
 
@@ -81,7 +83,9 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
 
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()
-        setActionBarTitle(getString(R.string.operation_title))
+        if (presenter.pickerMode == PickerMode.Folders) {
+            setActionBarTitle(getString(R.string.operation_title))
+        }
         getDocs()
     }
 
@@ -90,6 +94,7 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
             OperationsState.OperationType.COPY -> cloudPresenter.copy()
             OperationsState.OperationType.MOVE -> cloudPresenter.tryMove()
             OperationsState.OperationType.RESTORE -> cloudPresenter.tryMove()
+            OperationsState.OperationType.PICK_PDF_FORM -> cloudPresenter.copyFilesToCurrent()
             else -> {}
         }
     }
@@ -107,7 +112,7 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
             sectionType = it.getInt(TAG_OPERATION_SECTION_TYPE)
             operationType = requireActivity().intent
                 .getSerializable(OperationActivity.TAG_OPERATION_TYPE, OperationsState.OperationType::class.java)
-            savedInstanceState ?: run {
+            if (savedInstanceState == null) {
                 requireActivity().intent
                     .getSerializable(OperationActivity.TAG_OPERATION_EXPLORER, Explorer::class.java).let { explorer ->
                         cloudPresenter.setOperationExplorer(explorer)
@@ -117,13 +122,13 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
     }
 
     private fun initViews() {
-        operationActivity?.setEnabledActionButton(false)
-        explorerAdapter?.isFoldersMode = true
+        setPickerMode()
+        setEnabledActionButton(false)
         recyclerView?.setPadding(0, 0, 0, 0)
     }
 
     private fun getDocs() {
-        cloudPresenter.isFoldersMode = true
+        setPickerMode()
         when (sectionType) {
             ApiContract.SectionType.CLOUD_USER -> cloudPresenter.getItemsById(ApiContract.SectionPath.MY)
             ApiContract.SectionType.CLOUD_SHARE -> cloudPresenter.getItemsById(ApiContract.SectionPath.SHARED)
@@ -133,16 +138,35 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
         }
     }
 
+    private fun setPickerMode() {
+        if (operationType == OperationsState.OperationType.PICK_PDF_FORM) {
+            cloudPresenter.isSelectionMode = true
+            cloudPresenter.pickerMode =
+                PickerMode.Files.PDFForm(destFolderId = arguments?.getString(TAG_DEST_FOLDER_ID).orEmpty())
+        } else {
+            cloudPresenter.pickerMode = PickerMode.Folders
+        }
+        explorerAdapter?.pickerMode = cloudPresenter.pickerMode
+    }
+    
+    private fun setEnabledActionButton(enabled: Boolean) {
+        if (presenter.pickerMode is PickerMode.Files) {
+            val mode = presenter.pickerMode as PickerMode.Files
+            operationActivity?.setEnabledActionButton(mode.selectedIds.isNotEmpty())
+        } else {
+            operationActivity?.setEnabledActionButton(enabled)
+        }
+    }
+
     companion object {
         val TAG: String = DocsCloudOperationFragment::class.java.simpleName
         private const val TAG_OPERATION_SECTION_TYPE = "section"
+        private const val TAG_DEST_FOLDER_ID = "dest_folder_id"
 
-        fun newInstance(sectionType: Int): DocsCloudOperationFragment =
-            DocsCloudOperationFragment().apply {
-                arguments = Bundle(1).apply {
-                    putInt(TAG_OPERATION_SECTION_TYPE, sectionType)
-                }
-            }
-
+        fun newInstance(sectionType: Int, destFolderId: String): DocsCloudOperationFragment =
+            DocsCloudOperationFragment().putArgs(
+                TAG_OPERATION_SECTION_TYPE to sectionType,
+                TAG_DEST_FOLDER_ID to destFolderId
+            )
     }
 }

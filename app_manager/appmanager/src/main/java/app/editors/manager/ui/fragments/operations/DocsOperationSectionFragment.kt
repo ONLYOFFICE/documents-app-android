@@ -16,14 +16,18 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import lib.toolkit.base.managers.utils.putArgs
 
 class DocsOperationSectionFragment : BaseAppFragment() {
 
     companion object {
         val TAG: String = DocsOperationSectionFragment::class.java.simpleName
+        private const val TAG_DEST_FOLDER_ID = "dest_folder_id"
 
-        fun newInstance(): DocsOperationSectionFragment {
-            return DocsOperationSectionFragment()
+        fun newInstance(destFolderId: String): DocsOperationSectionFragment {
+            return DocsOperationSectionFragment().putArgs(
+                TAG_DEST_FOLDER_ID to destFolderId
+            )
         }
     }
 
@@ -45,7 +49,7 @@ class DocsOperationSectionFragment : BaseAppFragment() {
         }
 
         showFragment(
-            DocsCloudOperationFragment.newInstance(sectionType),
+            DocsCloudOperationFragment.newInstance(sectionType, arguments?.getString(TAG_DEST_FOLDER_ID).orEmpty()),
             DocsCloudOperationFragment.TAG, false
         )
     }

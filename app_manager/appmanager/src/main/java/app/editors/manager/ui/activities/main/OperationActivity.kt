@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.model.cloud.WebdavProvider
@@ -28,7 +29,7 @@ import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.getSerializable
 import javax.inject.Inject
 
-class OperationActivity : BaseAppActivity(){
+class OperationActivity : BaseAppActivity() {
 
     interface OnActionClickListener {
         fun onActionClick()
@@ -40,11 +41,20 @@ class OperationActivity : BaseAppActivity(){
         const val TAG_OPERATION_TYPE = "TAG_OPERATION_OPERATION_TYPE"
         const val TAG_OPERATION_EXPLORER = "TAG_OPERATION_EXPLORER"
         const val TAG_IS_WEB_DAV = "TAG_IS_WEB_DAV"
+        const val TAG_DEST_FOLDER_ID = "dest_folder_id"
 
-        fun getIntent(context: Context, operation: OperationType, explorer: Explorer) = Intent(context, OperationActivity::class.java).apply {
-            putExtra(TAG_OPERATION_TYPE, operation)
-            putExtra(TAG_OPERATION_EXPLORER, explorer)
-        }
+        fun getIntent(context: Context, operation: OperationType, explorer: Explorer) =
+            Intent(context, OperationActivity::class.java).apply {
+                putExtra(TAG_OPERATION_TYPE, operation)
+                putExtra(TAG_OPERATION_EXPLORER, explorer)
+            }
+
+        fun getCloudFilePickerActivity(context: Context, explorer: Explorer, destFolderId: String) =
+            Intent(context, OperationActivity::class.java).apply {
+                putExtra(TAG_OPERATION_TYPE, OperationType.PICK_PDF_FORM)
+                putExtra(TAG_OPERATION_EXPLORER, explorer)
+                putExtra(TAG_DEST_FOLDER_ID, destFolderId)
+            }
     }
 
     @Inject
@@ -90,7 +100,7 @@ class OperationActivity : BaseAppActivity(){
     }
 
     private fun initState() {
-       lifecycleScope.launch {
+        lifecycleScope.launch {
             accountOnline?.let { account ->
                 withContext(Dispatchers.Main) {
                     if (account.isWebDav) {
@@ -99,17 +109,24 @@ class OperationActivity : BaseAppActivity(){
                                 WebdavProvider.valueOf(account.portal.provider)
                             ), null
                         )
-                    } else if(account.isOneDrive) {
+                    } else if (account.isOneDrive) {
                         showFragment(DocsOneDriveOperationFragment.newInstance(), null)
-                    } else if(account.isDropbox) {
+                    } else if (account.isDropbox) {
                         showFragment(DocsDropboxOperationFragment.newInstance(), null)
-                    } else if(account.isGoogleDrive) {
+                    } else if (account.isGoogleDrive) {
                         showFragment(DocsGoogleDriveOperationFragment.newInstance(), null)
                     } else {
                         if (account.isPersonal()) {
-                            showFragment(DocsCloudOperationFragment.newInstance(ApiContract.SectionType.CLOUD_USER), null)
+                            showFragment(
+                                DocsCloudOperationFragment.newInstance(ApiContract.SectionType.CLOUD_USER, ""),
+                                null
+                            )
                         } else {
-                            showFragment(DocsOperationSectionFragment.newInstance(), null)
+                            showFragment(
+                                DocsOperationSectionFragment.newInstance(
+                                    intent.getStringExtra(TAG_DEST_FOLDER_ID).orEmpty()
+                                ), null
+                            )
                         }
                     }
                 }
@@ -135,8 +152,11 @@ class OperationActivity : BaseAppActivity(){
             OperationType.COPY -> viewBinding?.operationPanel?.operationActionButton?.setText(R.string.operation_panel_copy_button)
             OperationType.MOVE -> viewBinding?.operationPanel?.operationActionButton?.setText(R.string.operation_panel_move_button)
             OperationType.RESTORE -> viewBinding?.operationPanel?.operationActionButton?.setText(R.string.operation_panel_restore_button)
-            else -> {
+            OperationType.PICK_PDF_FORM -> {
+                viewBinding?.operationPanel?.operationActionButton?.setText(lib.toolkit.base.R.string.common_ok)
+                viewBinding?.operationPanel?.operationCreateFolderButton?.isVisible = false
             }
+            else -> Unit
         }
     }
 

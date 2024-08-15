@@ -14,6 +14,7 @@ import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.list.Footer
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.list.RecentViaLink
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
 import app.editors.manager.ui.adapters.holders.FileViewHolder
@@ -46,9 +47,9 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
             notifyDataSetChanged()
         }
 
-    var isFoldersMode = false
-        set(isFoldersMode) {
-            field = isFoldersMode
+    var pickerMode: PickerMode = PickerMode.None
+        set(mode) {
+            field = mode
             notifyDataSetChanged()
         }
 

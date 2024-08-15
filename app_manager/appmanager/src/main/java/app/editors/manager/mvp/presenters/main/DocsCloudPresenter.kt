@@ -13,6 +13,7 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDeleteShare
 import app.documents.core.network.manager.models.request.RequestFavorites
@@ -122,8 +123,22 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         onClickEvent(item, position)
         itemClicked?.let { itemClicked ->
             if (isSelectionMode) {
-                val isChecked = !itemClicked.isSelected
-                modelExplorerStack.setSelectById(item, isChecked)
+                val pickerMode = this.pickerMode
+                if (pickerMode is PickerMode.Files) {
+                    if (itemClicked is CloudFolder) {
+                        openFolder(itemClicked.id, position)
+                    } else if (itemClicked is CloudFile) {
+                        if (itemClicked.isPdfForm) pickerMode.selectId(itemClicked.id)
+                        modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
+                        viewState.onStateUpdateSelection(true)
+                        viewState.onItemSelected(
+                            position,
+                            pickerMode.selectedIds.size.toString()
+                        )
+                    }
+                    return
+                }
+                modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
                 if (!isSelectedItemsEmpty) {
                     viewState.onStateUpdateSelection(true)
                     viewState.onItemSelected(
@@ -157,7 +172,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             return false
         }
 
-        if (super.copy()) {
+        if (pickerMode is PickerMode.Files || super.copy()) {
             checkMoveCopyFiles(MoveCopyDialog.ACTION_COPY)
             return true
         }
@@ -175,6 +190,18 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             true
         } else {
             false
+        }
+    }
+
+    fun copyFilesToCurrent() {
+        (fileProvider as? CloudFileProvider)?.let { provider ->
+            val pickerMode = this.pickerMode
+            if (pickerMode is PickerMode.Files) {
+                val request = RequestBatchOperation(destFolderId = pickerMode.destFolderId).apply {
+                    fileIds = pickerMode.selectedIds
+                }
+                disposable.add(provider.copyFiles(request).subscribe({ onBatchOperations() }, ::fetchError))
+            }
         }
     }
 
@@ -279,7 +306,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     override fun updateViewsState() {
         if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
-            viewState.onActionBarTitle(modelExplorerStack.countSelectedItems.toString())
+            if (pickerMode is PickerMode.Files) {
+                viewState.onActionBarTitle((pickerMode as PickerMode.Files).selectedIds.size.toString())
+            } else {
+                viewState.onActionBarTitle(modelExplorerStack.countSelectedItems.toString())
+            }
             viewState.onStateAdapterRoot(modelExplorerStack.isNavigationRoot)
             viewState.onStateActionButton(false)
         } else if (isFilteringMode) {
@@ -304,7 +335,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     viewState.onActionBarTitle("")
                 }
 
-                isFoldersMode -> {
+                pickerMode == PickerMode.Folders -> {
                     viewState.onActionBarTitle(context.getString(R.string.operation_title))
                     viewState.onStateActionButton(false)
                 }
@@ -327,7 +358,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onActionDialog(
             isRoot && (isUserSection || isCommonSection && isAdmin),
             !isVisitor,
-            modelExplorerStack.last()?.current?.roomType
+            roomClicked?.roomType
         )
     }
 
@@ -582,12 +613,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     private fun checkMoveCopyFiles(action: String) {
-        val filesIds = operationStack?.selectedFilesIds
+        val filesIds = (pickerMode as? PickerMode.Files)?.selectedIds ?: operationStack?.selectedFilesIds
         val foldersIds = operationStack?.selectedFoldersIds
 
         api?.let { api ->
             disposable.add(api.checkFiles(
-                destFolderId ?: "",
+                (pickerMode as? PickerMode.Files)?.destFolderId ?: destFolderId ?: "",
                 foldersIds,
                 filesIds
             )
@@ -1101,5 +1132,4 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             "rooms/shared/${folder.id}/filter?folder=${folder.id}"
         }
     }
-
 }

@@ -9,6 +9,7 @@ import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.OperationActivity.OnActionClickListener
 import app.editors.manager.ui.fragments.main.DocsWebDavFragment
@@ -114,12 +115,12 @@ class DocsWebDavOperationFragment : DocsWebDavFragment(), OnActionClickListener 
 
     private fun initViews() {
         operationActivity?.setEnabledActionButton(false)
-        explorerAdapter?.isFoldersMode = true
+        explorerAdapter?.pickerMode = PickerMode.Folders
         swipeRefreshLayout?.setPadding(0, 0, 0, 0)
     }
 
     private fun getDocs() {
-        webDavPresenter.isFoldersMode = true
+        webDavPresenter.pickerMode = PickerMode.Folders
         webDavPresenter.getProvider()
     }
 

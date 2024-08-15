@@ -4,17 +4,18 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import app.editors.manager.R
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.mvp.presenters.storages.BaseStorageDocsPresenter
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
-import app.editors.manager.ui.fragments.operations.DocsDropboxOperationFragment
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
+import app.editors.manager.ui.fragments.operations.DocsDropboxOperationFragment
 
 abstract class BaseStorageOperationsFragment: DocsBaseFragment(), OperationActivity.OnActionClickListener,
     BaseStorageDocsView {
@@ -135,7 +136,7 @@ abstract class BaseStorageOperationsFragment: DocsBaseFragment(), OperationActiv
 
     private fun initViews() {
         operationActivity?.setEnabledActionButton(false)
-        explorerAdapter?.isFoldersMode = true
+        explorerAdapter?.pickerMode = PickerMode.Folders
         recyclerView?.setPadding(0, 0, 0, 0)
     }
 

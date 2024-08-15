@@ -3,6 +3,7 @@ package app.editors.manager.ui.adapters.holders
 import android.view.View
 import app.editors.manager.R
 import app.editors.manager.mvp.models.list.RecentViaLink
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.ExplorerAdapter
 
 
@@ -19,7 +20,7 @@ class RecentViaLinkViewHolder(private val view: View, adapter: ExplorerAdapter) 
 
     override fun bind(element: RecentViaLink) {
         view.layoutParams = view.layoutParams.apply {
-            height = if (adapter.isSelectMode || adapter.isFoldersMode) 0 else initHeight
+            height = if (adapter.isSelectMode || adapter.pickerMode != PickerMode.None) 0 else initHeight
         }
     }
 

@@ -74,6 +74,8 @@ public interface DocsBaseView extends BaseViewExt {
     void onRename(Item item, int position);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onBatchMoveCopy(@NonNull OperationsState.OperationType operation, @NonNull Explorer explorer);
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onPickCloudFile(String destFolderId);
 
     /*
      * On click
