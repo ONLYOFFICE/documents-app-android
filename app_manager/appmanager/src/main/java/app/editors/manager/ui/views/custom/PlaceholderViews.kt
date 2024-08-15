@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.isVisible
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludePlaceholdersTextBinding
 import app.editors.manager.ui.compose.personal.PersonalMigrationScreen
@@ -16,7 +17,7 @@ import lib.compose.ui.views.PlaceholderView
 class PlaceholderViews(val view: View?) {
 
     enum class Type {
-        NONE, CONNECTION, EMPTY, EMPTY_ROOM, VISITOR_EMPTY_ROOM, SEARCH, SHARE, ACCESS,
+        NONE, CONNECTION, EMPTY, EMPTY_ROOM, EMPTY_FORM_FILLING_ROOM, VISITOR_EMPTY_ROOM, SEARCH, SHARE, ACCESS,
         SUBFOLDER, USERS, GROUPS, COMMON, MEDIA, LOAD, LOAD_GROUPS, LOAD_USERS,
         OTHER_ACCOUNTS, EMPTY_TRASH, EMPTY_ARCHIVE, NO_ROOMS, VISITOR_NO_ROOMS,
         EMPTY_RECENT_VIA_LINK, PAYMENT_REQUIRED, PERSONAL_PORTAL_END
@@ -57,7 +58,7 @@ class PlaceholderViews(val view: View?) {
             }
             Type.EMPTY, Type.LOAD, Type.EMPTY_ROOM, Type.SEARCH, Type.EMPTY_TRASH,
             Type.EMPTY_ARCHIVE, Type.VISITOR_EMPTY_ROOM, Type.NO_ROOMS, Type.VISITOR_NO_ROOMS,
-            Type.EMPTY_RECENT_VIA_LINK, Type.PAYMENT_REQUIRED -> {
+            Type.EMPTY_RECENT_VIA_LINK, Type.PAYMENT_REQUIRED, Type.EMPTY_FORM_FILLING_ROOM-> {
                 setVisibility(true)
                 with(binding.composeView) {
                     isVisible = true
@@ -97,8 +98,13 @@ class PlaceholderViews(val view: View?) {
         setVisibility(true)
     }
 
-    fun setEmptyRoomPlaceholder(canEdit: Boolean) {
-        setTemplatePlaceholder(if (!canEdit) Type.VISITOR_EMPTY_ROOM else Type.EMPTY_ROOM)
+    fun setEmptyRoomPlaceholder(canEdit: Boolean, roomType: Int) {
+        val placeholder = when {
+            !canEdit -> Type.VISITOR_EMPTY_ROOM
+            roomType == ApiContract.RoomType.FILL_FORMS_ROOM -> Type.EMPTY_FORM_FILLING_ROOM
+            else -> Type.EMPTY_ROOM
+        }
+        setTemplatePlaceholder(placeholder)
     }
 
     @Composable
@@ -126,6 +132,11 @@ class PlaceholderViews(val view: View?) {
                         image = lib.toolkit.base.R.drawable.placeholder_empty_folder
                         title = R.string.room_placeholder_created_room_title
                         subtitle = R.string.room_placeholder_created_room_subtitle
+                    }
+                    Type.EMPTY_FORM_FILLING_ROOM -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_empty_folder
+                        title = R.string.room_placeholder_created_filling_form_room_title
+                        subtitle = R.string.room_placeholder_created_filling_form_room_subtitle
                     }
                     Type.SEARCH -> {
                         image = lib.toolkit.base.R.drawable.placeholder_no_search_result

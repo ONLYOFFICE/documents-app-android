@@ -771,6 +771,8 @@
     <string name="room_search_not_found_desc">The list of users previously invited to DocSpace or separate rooms will appear here.</string>
     <string name="room_placeholder_created_room_title">Room created!</string>
     <string name="room_placeholder_created_room_subtitle">Create new folders to organize your files.</string>
+    <string name="room_placeholder_created_filling_form_room_title">Welcome to the Form filling room</string>
+    <string name="room_placeholder_created_filling_form_room_subtitle">Upload a ready PDF form or create new folders to organize your files</string>
     <string name="room_recent_via_link">Accessible via link</string>
     <string name="room_manage_room">Manage room</string>
 

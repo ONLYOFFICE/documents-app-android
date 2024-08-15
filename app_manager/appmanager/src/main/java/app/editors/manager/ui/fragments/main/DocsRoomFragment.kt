@@ -144,9 +144,9 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {
-        val isRoom = (presenter.currentFolder?.roomType ?: -1) > -1
-        if (type == PlaceholderViews.Type.EMPTY && isRoom) {
-            placeholderViews?.setEmptyRoomPlaceholder(presenter.itemClicked?.security?.editRoom == true)
+        val roomType = presenter.currentFolder?.roomType
+        if (type == PlaceholderViews.Type.EMPTY && roomType != null) {
+            placeholderViews?.setEmptyRoomPlaceholder(presenter.itemClicked?.security?.editRoom == true, roomType)
         } else {
             super.onPlaceholder(type)
         }
