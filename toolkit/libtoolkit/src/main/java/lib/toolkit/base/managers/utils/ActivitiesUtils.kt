@@ -401,6 +401,11 @@ inline fun <reified T : Serializable> Bundle.getSerializableExt(key: String): T?
 }
 
 
+fun Bundle.getIntExt(key: String): Int? {
+    val value = getInt(key, Int.MIN_VALUE)
+    return if (value == Int.MIN_VALUE) null else value
+}
+
 fun <T : Parcelable> Intent.getParcelable(key: String, clazz: Class<T>): T {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
         this.getParcelableExtra(key, clazz)!!

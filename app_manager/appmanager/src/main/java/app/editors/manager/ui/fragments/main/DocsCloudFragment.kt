@@ -552,7 +552,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         ) { _, _ ->
             onRefresh()
         }
-        AddRoomDialog.newInstance(-1, room, null)
+        AddRoomDialog.newInstance(null, room, null)
             .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
     }
 

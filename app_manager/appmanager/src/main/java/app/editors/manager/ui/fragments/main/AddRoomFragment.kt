@@ -61,7 +61,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -110,10 +109,10 @@ import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
-import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.capitalize
+import lib.toolkit.base.managers.utils.getIntExt
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
 import lib.toolkit.base.ui.fragments.base.BaseFragment
@@ -137,27 +136,12 @@ class AddRoomFragment : BaseFragment() {
 
         val TAG: String = AddRoomFragment::class.java.simpleName
 
-        fun newInstance(roomType: Int, room: Item?, items: CopyItems?) =
+        fun newInstance(roomType: Int?, room: Item?, items: CopyItems?) =
             AddRoomFragment().putArgs(
                 TAG_ROOM_TYPE to roomType,
                 TAG_ROOM_INFO to room,
                 TAG_COPY_ITEMS to items
             )
-
-        fun show(
-            fragmentManager: FragmentManager,
-            roomType: Int,
-            roomInfo: Item? = null,
-            items: CopyItems? = null,
-        ) {
-            FragmentUtils.showFragment(
-                fragmentManager = fragmentManager,
-                fragment = newInstance(roomType, roomInfo, items),
-                frameId = android.R.id.content,
-                tag = TAG,
-                isAdd = true
-            )
-        }
     }
 
     private lateinit var navController: NavHostController
@@ -191,8 +175,8 @@ class AddRoomFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (view as ComposeView).setContent {
             navController = rememberNavController()
-            val roomType = remember { arguments?.getInt(TAG_ROOM_TYPE) }
             val room = remember { arguments?.getSerializableExt<Item>(TAG_ROOM_INFO) }
+            val roomType = remember { arguments?.getIntExt(TAG_ROOM_TYPE) ?: (room as? CloudFolder)?.roomType }
             val viewModel = viewModel {
                 AddRoomViewModel(
                     context = requireActivity().application,
