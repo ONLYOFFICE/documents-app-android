@@ -6,38 +6,27 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import app.editors.manager.managers.utils.RoomUtils
 import lib.compose.ui.theme.ManagerTheme
-import lib.compose.ui.theme.colorTextTertiary
-import lib.compose.ui.views.AppDivider
+import lib.compose.ui.views.AppMultilineArrowItem
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 
 class AddRoomBottomDialog : BaseBottomDialog() {
@@ -109,65 +98,12 @@ fun AddRoomItem(
     onClick: (Int) -> Unit
 ) {
     val info = RoomUtils.getRoomInfo(roomType)
-    Box(
-        modifier = Modifier
-            .wrapContentHeight()
-            .clickable(enabled = clickable) { onClick(roomType) }
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-                .widthIn(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                modifier = Modifier
-                    .padding(start = 16.dp)
-                    .size(40.dp),
-                imageVector = ImageVector.vectorResource(id = info.icon),
-                contentDescription = null
-            )
-            Column(
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp)
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = stringResource(id = info.title),
-                    style = MaterialTheme.typography.body1,
-                    modifier = Modifier
-                        .align(Alignment.Start)
-                )
-                Text(
-                    text = stringResource(id = info.description),
-                    style = MaterialTheme.typography.caption,
-                    modifier = Modifier.align(Alignment.Start)
-                )
-            }
-            if (selected != null) {
-                if (selected) {
-                    Icon(
-                        modifier = Modifier.padding(end = 16.dp),
-                        imageVector = ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_done),
-                        tint = MaterialTheme.colors.primary,
-                        contentDescription = null
-                    )
-                }
-            } else {
-                if (clickable) {
-                    Icon(
-                        modifier = Modifier.padding(end = 16.dp),
-                        imageVector = ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_arrow_right),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.colorTextTertiary
-                    )
-                }
-            }
-        }
-        AppDivider(startIndent = 64.dp + 8.dp, modifier = Modifier.align(Alignment.BottomStart))
-    }
-
+    AppMultilineArrowItem(
+        icon = info.icon,
+        title = stringResource(id = info.title),
+        description = stringResource(id = info.description),
+        onClick = { onClick.invoke(roomType) }
+    )
 }
 
 @Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = false)

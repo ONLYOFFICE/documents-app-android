@@ -42,4 +42,6 @@ interface DocsCloudView : DocsBaseView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showSetOwnerFragment(cloudFolder: CloudFolder)
 
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showFillFormChooserFragment()
 }

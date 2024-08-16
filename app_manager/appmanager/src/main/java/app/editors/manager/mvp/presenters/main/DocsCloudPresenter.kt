@@ -281,7 +281,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.fileInfo(item)
-                        .doOnSubscribe { showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE) }
                         .subscribe(::onFileClickAction) { onFileClickAction(item) }
                 )
             }
@@ -653,6 +652,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     private fun onFileClickAction(cloudFile: CloudFile, isEdit: Boolean = false) {
+        if (cloudFile.isPdfForm && isUserSection) {
+            viewState.showFillFormChooserFragment()
+            return
+        }
+
+        showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE)
         val extension = cloudFile.fileExst
         when (StringUtils.getExtension(extension)) {
             StringUtils.Extension.DOC,
