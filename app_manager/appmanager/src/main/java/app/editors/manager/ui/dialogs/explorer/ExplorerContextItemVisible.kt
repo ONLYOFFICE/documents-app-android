@@ -51,17 +51,20 @@ interface ExplorerContextItemVisible {
         get() = item is CloudFolder && item.providerItem
 
     private val ExplorerContextState.edit: Boolean
-        get() = if (item is CloudFile && isExtensionEditable(item.fileExst)) {
-            when (section) {
-                ApiContract.Section.Recent,
-                ApiContract.Section.User,
-                ApiContract.Section.Device -> true
+        get() {
+            val item = this.item
+            return if (item is CloudFile && (isExtensionEditable(item.fileExst) || item.isPdfForm)) {
+                when (section) {
+                    ApiContract.Section.Recent,
+                    ApiContract.Section.User,
+                    ApiContract.Section.Device -> true
 
-                ApiContract.Section.Trash,
-                ApiContract.Section.Room.Archive -> false
-                else -> access != ApiContract.Access.Read || item.security.editAccess
-            }
-        } else section.isRoom && isRoot && item.security.editRoom
+                    ApiContract.Section.Trash,
+                    ApiContract.Section.Room.Archive -> false
+                    else -> access != ApiContract.Access.Read || item.security.editAccess
+                }
+            } else section.isRoom && isRoot && item.security.editRoom
+        }
 
     private val ExplorerContextState.move: Boolean
         get() = if (!section.isRoom) {

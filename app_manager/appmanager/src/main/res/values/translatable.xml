@@ -340,6 +340,7 @@
     <string name="list_context_leave_room">Leave the room</string>
     <string name="list_context_copy_general_link">Copy general link</string>
     <string name="list_context_edit_room">Edit room</string>
+    <string name="list_context_fill">Fill</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">Spreadsheet</string>
