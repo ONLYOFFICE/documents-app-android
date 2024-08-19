@@ -43,7 +43,7 @@
         <item name="android:windowLightNavigationBar">false</item>
     </style>
 
-    <style name="OperationActivityTheme" parent="AppBaseTheme">
+    <style name="OperationActivityTheme" parent="AppTheme">
         <item name="android:navigationBarColor">@color/colorSurface</item>
     </style>
 
