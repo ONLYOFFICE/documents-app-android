@@ -2,25 +2,34 @@ package app.editors.manager.ui.fragments.operations
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.contracts.ApiContract.Access
 import app.documents.core.network.manager.models.base.Entity
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
-import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.activities.main.OperationActivity.OnActionClickListener
+import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.fragments.main.DocsCloudFragment
+import app.editors.manager.viewModels.main.CopyItems
 import lib.toolkit.base.managers.utils.getSerializable
 import lib.toolkit.base.managers.utils.putArgs
 
 class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
 
     private var operationActivity: OperationActivity? = null
-    private var operationType: OperationsState.OperationType? = null
+    private var operationType: OperationType? = null
     private var sectionType = 0
+    private var showFolderAfterFinish: Boolean = false
+
+    private val isRoomsRoot: Boolean
+        get() = sectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM && presenter.isRoot
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -67,23 +76,86 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
     }
 
     override fun onDocsGet(list: List<Entity>?) {
-        super.onDocsGet(list)
-        if (sectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM && presenter.isRoot) {
-            setEnabledActionButton(false)
+        super.onDocsGet(list?.filterNotFillFormRooms())
+        setEnabledOperationButtons()
+        setCreateFolderClickListener()
+    }
+
+    override fun onDocsRefresh(list: List<Entity>?) {
+        super.onDocsRefresh(list?.filterNotFillFormRooms())
+    }
+
+    override fun onDocsNext(list: List<Entity>?) {
+        super.onDocsNext(list?.filterNotFillFormRooms())
+    }
+
+    private fun setCreateFolderClickListener() {
+        if (isRoomsRoot) {
+            operationActivity?.setCreateFolderClickListener {
+                AddRoomDialog.show(
+                    activity = requireActivity(),
+                    type = ApiContract.RoomType.FILL_FORMS_ROOM,
+                    copyItems = CopyItems(fileIds = listOf())
+                ) { bundle ->
+                    bundle.getString("id")?.let { folderId ->
+                        presenter.setDestFolder(folderId)
+                        presenter.openFolder(folderId, 0)
+                    }
+                }
+            }
         } else {
-            setEnabledActionButton(true)
+            operationActivity?.setCreateFolderClickListener(null)
+        }
+    }
+
+    private fun setEnabledOperationButtons() {
+        val current = presenter.currentFolder
+        if (current != null) {
+            val security = current.security
+            if (security != null) {
+                setEnabledActionButton(security.editAccess || security.editRoom)
+                operationActivity?.setEnabledCreateFolderButton(security.create, isRoomsRoot)
+            } else {
+                val editable = current.access in arrayOf(Access.ReadWrite.type, Access.RoomAdmin.type)
+                setEnabledActionButton(editable)
+                operationActivity?.setEnabledCreateFolderButton(editable, isRoomsRoot)
+            }
+        }
+    }
+
+    private fun List<Entity>.filterNotFillFormRooms(): List<Entity> {
+        if (operationType != OperationType.COPY_TO_FILL_FORM_ROOM) return this
+        return filter { item ->
+            if (item is CloudFolder) {
+                if (item.isRoom) {
+                    item.roomType == ApiContract.RoomType.FILL_FORMS_ROOM
+                } else {
+                    true
+                }
+            } else {
+                true
+            }
         }
     }
 
     override fun onDocsBatchOperation() {
         super.onDocsBatchOperation()
-        requireActivity().setResult(Activity.RESULT_OK)
+        if (showFolderAfterFinish) {
+            requireActivity().setResult(
+                RESULT_OPEN_FOLDER,
+                Intent().putExtra(RESULT_KEY_OPEN_FOLDER, presenter.destFolderId)
+            )
+        } else {
+            requireActivity().setResult(Activity.RESULT_OK)
+        }
         requireActivity().finish()
     }
 
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()
-        if (presenter.pickerMode == PickerMode.Folders) {
+        if (presenter.pickerMode == PickerMode.Folders &&
+            operationType != OperationType.COPY_TO_FILL_FORM_ROOM
+        ) {
             setActionBarTitle(getString(R.string.operation_title))
         }
         getDocs()
@@ -91,10 +163,11 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
 
     override fun onActionClick() {
         when (operationType) {
-            OperationsState.OperationType.COPY -> cloudPresenter.copy()
-            OperationsState.OperationType.MOVE -> cloudPresenter.tryMove()
-            OperationsState.OperationType.RESTORE -> cloudPresenter.tryMove()
-            OperationsState.OperationType.PICK_PDF_FORM -> cloudPresenter.copyFilesToCurrent()
+            OperationType.COPY_TO_FILL_FORM_ROOM,
+            OperationType.COPY -> cloudPresenter.copy()
+            OperationType.MOVE -> cloudPresenter.tryMove()
+            OperationType.RESTORE -> cloudPresenter.tryMove()
+            OperationType.PICK_PDF_FORM -> cloudPresenter.copyFilesToCurrent()
             else -> {}
         }
     }
@@ -105,13 +178,14 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
         getArgs(savedInstanceState)
         initViews()
         cloudPresenter.checkBackStack()
+        showFolderAfterFinish = operationType == OperationType.COPY_TO_FILL_FORM_ROOM
     }
 
     private fun getArgs(savedInstanceState: Bundle?) {
         arguments?.let {
             sectionType = it.getInt(TAG_OPERATION_SECTION_TYPE)
             operationType = requireActivity().intent
-                .getSerializable(OperationActivity.TAG_OPERATION_TYPE, OperationsState.OperationType::class.java)
+                .getSerializable(OperationActivity.TAG_OPERATION_TYPE, OperationType::class.java)
             if (savedInstanceState == null) {
                 requireActivity().intent
                     .getSerializable(OperationActivity.TAG_OPERATION_EXPLORER, Explorer::class.java).let { explorer ->
@@ -139,7 +213,7 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
     }
 
     private fun setPickerMode() {
-        if (operationType == OperationsState.OperationType.PICK_PDF_FORM) {
+        if (operationType == OperationType.PICK_PDF_FORM) {
             cloudPresenter.isSelectionMode = true
             cloudPresenter.pickerMode =
                 PickerMode.Files.PDFForm(destFolderId = arguments?.getString(TAG_DEST_FOLDER_ID).orEmpty())
@@ -148,7 +222,7 @@ class DocsCloudOperationFragment : DocsCloudFragment(), OnActionClickListener {
         }
         explorerAdapter?.pickerMode = cloudPresenter.pickerMode
     }
-    
+
     private fun setEnabledActionButton(enabled: Boolean) {
         if (presenter.pickerMode is PickerMode.Files) {
             val mode = presenter.pickerMode as PickerMode.Files

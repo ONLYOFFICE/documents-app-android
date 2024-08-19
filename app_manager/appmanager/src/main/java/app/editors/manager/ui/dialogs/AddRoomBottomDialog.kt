@@ -100,6 +100,8 @@ fun AddRoomItem(
     val info = RoomUtils.getRoomInfo(roomType)
     AppMultilineArrowItem(
         icon = info.icon,
+        selected = selected,
+        clickable = clickable,
         title = stringResource(id = info.title),
         description = stringResource(id = info.description),
         onClick = { onClick.invoke(roomType) }

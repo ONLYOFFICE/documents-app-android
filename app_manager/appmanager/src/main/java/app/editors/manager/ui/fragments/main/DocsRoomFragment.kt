@@ -18,12 +18,12 @@ import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.share.InviteUsersFragment
-import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.popup.ActionBarMenu
 
 class DocsRoomFragment : DocsCloudFragment() {
+
     private val isRoom get() = cloudPresenter.isCurrentRoom && cloudPresenter.isRoot
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -38,7 +38,7 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean, roomType: Int?) {
         if (isRoom) {
-            showAddRoomBottomDialog()
+            showAddRoomBottomDialog(false)
         } else {
             super.onActionDialog(isThirdParty, isDocs, roomType)
         }
@@ -141,15 +141,6 @@ class DocsRoomFragment : DocsCloudFragment() {
                     filter.tags.isNotEmpty() ||
                     filter.provider != null
         } else super.getFilters()
-    }
-
-    override fun onPlaceholder(type: PlaceholderViews.Type) {
-        val roomType = presenter.currentFolder?.roomType
-        if (type == PlaceholderViews.Type.EMPTY && roomType != null) {
-            placeholderViews?.setEmptyRoomPlaceholder(presenter.itemClicked?.security?.editRoom == true, roomType)
-        } else {
-            super.onPlaceholder(type)
-        }
     }
 
     private fun reconnectStorage() {

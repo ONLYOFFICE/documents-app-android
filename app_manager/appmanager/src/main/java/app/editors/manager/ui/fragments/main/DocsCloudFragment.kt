@@ -3,7 +3,6 @@ package app.editors.manager.ui.fragments.main
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
@@ -19,6 +18,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
@@ -26,7 +26,7 @@ import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.list.RecentViaLink
-import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
@@ -43,6 +43,7 @@ import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
+import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -232,7 +233,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
             is ExplorerContextItem.Edit -> cloudPresenter.onEditContextClick()
             is ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
-            is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
+            is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
             else -> super.onContextButtonClick(contextItem)
         }
@@ -409,11 +410,21 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {
-        if (type == PlaceholderViews.Type.EMPTY && presenter.isRecentViaLinkSection()) {
-            super.onPlaceholder(PlaceholderViews.Type.EMPTY_RECENT_VIA_LINK)
-        } else {
-            super.onPlaceholder(type)
-        }
+        val placeholder = if (type == PlaceholderViews.Type.EMPTY) {
+            val roomType = presenter.currentFolder?.roomType
+            when {
+                roomType != null -> {
+                    when {
+                        presenter.itemClicked?.security?.editRoom != true -> PlaceholderViews.Type.VISITOR_EMPTY_ROOM
+                        roomType == ApiContract.RoomType.FILL_FORMS_ROOM -> PlaceholderViews.Type.EMPTY_FORM_FILLING_ROOM
+                        else -> PlaceholderViews.Type.EMPTY_ROOM
+                    }
+                }
+                presenter.isRecentViaLinkSection() -> PlaceholderViews.Type.EMPTY_RECENT_VIA_LINK
+                else -> type
+            }
+        } else type
+        super.onPlaceholder(placeholder)
     }
 
     override fun onUpdateFavoriteItem() {
@@ -512,7 +523,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 .filterIsInstance<IMainPagerFragment>()
                 .first()
                 .setPagerPosition(ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
-                    setFragmentResult(KEY_ROOM_CREATED_REQUEST, bundleOf(DocsRoomFragment.KEY_RESULT_ROOM_ID to id))
+                    setFragmentResult(KEY_ROOM_CREATED_REQUEST, bundleOf(KEY_RESULT_ROOM_ID to id))
                 }
         } catch (_: NoSuchElementException) {
         }
@@ -534,33 +545,44 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun showAddRoomFragment(type: Int, copyItems: CopyItems?) {
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            AddRoomFragment.TAG_RESULT, this
-        ) { _, args ->
-            if (args.contains("id")) {
-                openRoom(id = args.getString("id"))
+        AddRoomDialog.show(
+            activity = requireActivity(),
+            type = type,
+            copyItems = copyItems
+        ) { bundle ->
+            if (bundle.contains("id")) {
+                openRoom(id = bundle.getString("id"))
             } else {
                 onRefresh()
             }
         }
-        AddRoomDialog.newInstance(type, null, copyItems)
-            .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
     }
 
     override fun showEditRoomFragment(room: CloudFolder) {
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            AddRoomFragment.TAG_RESULT, this
-        ) { _, _ ->
-            onRefresh()
-        }
-        AddRoomDialog.newInstance(null, room, null)
-            .show(requireActivity().supportFragmentManager, AddRoomDialog.TAG)
+        AddRoomDialog.show(activity = requireActivity(), room = room) { onRefresh() }
     }
 
     override fun showFillFormChooserFragment() {
-        FillFormChooserFragment.show(requireActivity(), {
-        }, {
-        })
+        FillFormChooserFragment.show(
+            activity = requireActivity(),
+            onFillForm = cloudPresenter::fillPdfForm,
+            onSelectRoom = { cloudPresenter.moveCopyOperation(OperationType.COPY_TO_FILL_FORM_ROOM) }
+        )
+    }
+
+    override fun onBatchMoveCopy(operation: OperationType, explorer: Explorer) {
+        showOperationActivity(operation, explorer) { result ->
+            if (result.resultCode == RESULT_OPEN_FOLDER) {
+                openRoom(result.data?.getStringExtra(RESULT_KEY_OPEN_FOLDER))
+                showSnackBar(R.string.operation_complete_message)
+                return@showOperationActivity
+            }
+
+            if (result.resultCode == Activity.RESULT_OK) {
+                showSnackBar(R.string.operation_complete_message)
+            }
+            onRefresh()
+        }
     }
 
     protected fun showRoomInfoFragment() {
@@ -568,11 +590,16 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
     }
 
-    protected fun showAddRoomBottomDialog() {
+    protected fun showAddRoomBottomDialog(copyFiles: Boolean = true) {
         setFragmentResultListener(AddRoomBottomDialog.KEY_REQUEST_TYPE) { _, bundle ->
             onActionDialogClose()
             if (bundle.contains(AddRoomBottomDialog.KEY_RESULT_TYPE)) {
-                cloudPresenter.createRoom(bundle.getInt(AddRoomBottomDialog.KEY_RESULT_TYPE))
+                val roomType = bundle.getInt(AddRoomBottomDialog.KEY_RESULT_TYPE)
+                if (copyFiles) {
+                    cloudPresenter.createRoom(roomType)
+                } else {
+                    showAddRoomFragment(roomType)
+                }
             }
         }
         AddRoomBottomDialog().show(parentFragmentManager, AddRoomBottomDialog.TAG)

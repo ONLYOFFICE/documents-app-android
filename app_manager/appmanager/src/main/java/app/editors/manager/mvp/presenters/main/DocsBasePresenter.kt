@@ -133,10 +133,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     protected var modelExplorerStack: ModelExplorerStack = ModelExplorerStack()
     protected var filteringValue: String = ""
     private var placeholderViewType: PlaceholderViews.Type = PlaceholderViews.Type.NONE
-    protected var destFolderId: String? = null
     protected var operationStack: ExplorerStackMap? = null
     private var uploadUri: Uri? = null
     private var sendingFile: File? = null
+
+    var destFolderId: String? = null
+        protected set
 
     /**
      * Modes
@@ -1782,6 +1784,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     fun isRoomFolder(): Boolean {
         return modelExplorerStack.last()?.current?.id == roomClicked?.id
+    }
+
+    fun setDestFolder(id: String) {
+        destFolderId = id
     }
 
     abstract fun getNextList()

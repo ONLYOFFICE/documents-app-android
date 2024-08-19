@@ -210,6 +210,7 @@ class AddRoomFragment : BaseFragment() {
 
                         MainScreen(
                             isEdit = isEdit,
+                            isRoomTypeEditable = !isEdit && copyItems == null,
                             navController = navController,
                             viewState = viewState.value,
                             roomState = roomState.value,
@@ -299,6 +300,7 @@ class AddRoomFragment : BaseFragment() {
 @Composable
 private fun MainScreen(
     isEdit: Boolean,
+    isRoomTypeEditable: Boolean,
     navController: NavHostController,
     viewState: ViewState,
     roomState: AddRoomData,
@@ -373,7 +375,7 @@ private fun MainScreen(
                 }
                 AddRoomItem(
                     roomType = roomState.type,
-                    clickable = !isEdit
+                    clickable = isRoomTypeEditable
                 ) {
                     saveData(name.value, tags)
                     navController.navigate("${Navigation.Select.route}/${roomState.type}")
@@ -667,6 +669,7 @@ private fun MainScreenPreview() {
     ManagerTheme {
         MainScreen(
             isEdit = true,
+            isRoomTypeEditable = false,
             navController = rememberNavController(),
             viewState = ViewState.None,
             roomState = AddRoomData(

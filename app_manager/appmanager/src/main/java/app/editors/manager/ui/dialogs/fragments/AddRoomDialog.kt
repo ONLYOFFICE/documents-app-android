@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.ui.fragments.main.AddRoomFragment
@@ -26,6 +28,20 @@ class AddRoomDialog : BaseDialogFragment() {
                 AddRoomFragment.TAG_ROOM_INFO to room,
                 AddRoomFragment.TAG_COPY_ITEMS to copyItems
             )
+        }
+
+        fun show(
+            activity: FragmentActivity,
+            type: Int? = null,
+            room: CloudFolder? = null,
+            copyItems: CopyItems? = null,
+            onResult: (Bundle) -> Unit
+        ) {
+            activity.supportFragmentManager.setFragmentResultListener(
+                AddRoomFragment.TAG_RESULT, activity
+            ) { _, bundle -> onResult(bundle) }
+            newInstance(type, room, copyItems)
+                .show(activity.supportFragmentManager, AddRoomDialog.TAG)
         }
     }
 

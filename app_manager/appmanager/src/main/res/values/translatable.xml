@@ -499,6 +499,7 @@
     <!-- ======================================================================================= -->
     <!-- Operations -->
     <string name="operation_title">Select folder</string>
+    <string name="operation_select_room_title">Select room</string>
     <string name="operation_choose_section">Choose section</string>
     <string name="operation_complete_message">Operation complete</string>
     <string name="operation_delete_impossible">Cannot delete file. File is opened on the portal.</string>

@@ -40,7 +40,6 @@ class OperationActivity : BaseAppActivity() {
 
         const val TAG_OPERATION_TYPE = "TAG_OPERATION_OPERATION_TYPE"
         const val TAG_OPERATION_EXPLORER = "TAG_OPERATION_EXPLORER"
-        const val TAG_IS_WEB_DAV = "TAG_IS_WEB_DAV"
         const val TAG_DEST_FOLDER_ID = "dest_folder_id"
 
         fun getIntent(context: Context, operation: OperationType, explorer: Explorer) =
@@ -121,6 +120,14 @@ class OperationActivity : BaseAppActivity() {
                                 DocsCloudOperationFragment.newInstance(ApiContract.SectionType.CLOUD_USER, ""),
                                 null
                             )
+                        } else if (operationType == OperationType.COPY_TO_FILL_FORM_ROOM) {
+                            showFragment(
+                                DocsCloudOperationFragment.newInstance(
+                                    ApiContract.SectionType.CLOUD_VIRTUAL_ROOM,
+                                    ""
+                                ),
+                                null
+                            )
                         } else {
                             showFragment(
                                 DocsOperationSectionFragment.newInstance(
@@ -142,13 +149,11 @@ class OperationActivity : BaseAppActivity() {
             setResult(RESULT_CANCELED)
             finish()
         }
-        viewBinding?.operationPanel?.operationCreateFolderButton?.setOnClickListener {
-            showCreateFolderDialog()
-        }
     }
 
     private fun initButton(actionOperationType: OperationType?) {
         when (actionOperationType) {
+            OperationType.COPY_TO_FILL_FORM_ROOM,
             OperationType.COPY -> viewBinding?.operationPanel?.operationActionButton?.setText(R.string.operation_panel_copy_button)
             OperationType.MOVE -> viewBinding?.operationPanel?.operationActionButton?.setText(R.string.operation_panel_move_button)
             OperationType.RESTORE -> viewBinding?.operationPanel?.operationActionButton?.setText(R.string.operation_panel_restore_button)
@@ -160,22 +165,34 @@ class OperationActivity : BaseAppActivity() {
         }
     }
 
-    private fun showCreateFolderDialog() {
-        showEditDialog(
-            title = getString(R.string.dialogs_edit_create_folder),
-            bottomTitle = null,
-            value = getString(R.string.dialogs_edit_create_folder),
-            editHint = getString(R.string.dialogs_edit_hint),
-            acceptTitle = getString(R.string.dialogs_edit_accept_create),
-            cancelTitle = getString(R.string.dialogs_common_cancel_button),
-            error = null,
-            tag = DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER,
-        )
-    }
-
     fun setEnabledActionButton(isEnabled: Boolean) {
         viewBinding?.operationPanel?.operationActionButton?.isEnabled = isEnabled
-        viewBinding?.operationPanel?.operationCreateFolderButton?.isEnabled = isEnabled
+    }
+
+    fun setEnabledCreateFolderButton(isEnabled: Boolean, isRoom: Boolean) {
+        viewBinding?.operationPanel?.operationCreateFolderButton?.let { button ->
+            button.isEnabled = isEnabled
+            if (isRoom) {
+                button.setText(R.string.dialog_create_room)
+            } else {
+                button.setText(R.string.dialogs_edit_create_folder)
+            }
+        }
+    }
+
+    fun setCreateFolderClickListener(onClick: (() -> Unit)? = null) {
+        viewBinding?.operationPanel?.operationCreateFolderButton?.setOnClickListener {
+            onClick?.invoke() ?: showEditDialog(
+                title = getString(R.string.dialogs_edit_create_folder),
+                bottomTitle = null,
+                value = getString(R.string.dialogs_edit_create_folder),
+                editHint = getString(R.string.dialogs_edit_hint),
+                acceptTitle = getString(R.string.dialogs_edit_accept_create),
+                cancelTitle = getString(R.string.dialogs_common_cancel_button),
+                error = null,
+                tag = DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER,
+            )
+        }
     }
 
     fun setOnActionClickListener(onActionClickListener: OnActionClickListener?) {

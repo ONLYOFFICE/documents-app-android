@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.isVisible
-import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludePlaceholdersTextBinding
 import app.editors.manager.ui.compose.personal.PersonalMigrationScreen
@@ -96,15 +95,6 @@ class PlaceholderViews(val view: View?) {
         }
         setTitle(title)
         setVisibility(true)
-    }
-
-    fun setEmptyRoomPlaceholder(canEdit: Boolean, roomType: Int) {
-        val placeholder = when {
-            !canEdit -> Type.VISITOR_EMPTY_ROOM
-            roomType == ApiContract.RoomType.FILL_FORMS_ROOM -> Type.EMPTY_FORM_FILLING_ROOM
-            else -> Type.EMPTY_ROOM
-        }
-        setTemplatePlaceholder(placeholder)
     }
 
     @Composable

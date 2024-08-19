@@ -92,6 +92,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         const val REQUEST_PDF = 10004
         const val REQUEST_DOWNLOAD = 10005
         const val REQUEST_STORAGE_ACCESS = 10006
+
+        const val RESULT_OPEN_FOLDER = 1000
+        const val RESULT_KEY_OPEN_FOLDER = "result_key_open_folder"
     }
 
     /*

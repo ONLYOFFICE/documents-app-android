@@ -11,7 +11,7 @@ import javax.inject.Inject
 class OperationsState @Inject constructor() {
 
     enum class OperationType {
-        NONE, MOVE, COPY, INSERT, RESTORE, DELETE, PICK_PDF_FORM
+        NONE, MOVE, COPY, INSERT, RESTORE, DELETE, PICK_PDF_FORM, COPY_TO_FILL_FORM_ROOM
     }
 
     class Operation(val operationType: OperationType, val explorer: Explorer)

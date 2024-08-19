@@ -335,7 +335,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
 
                 pickerMode == PickerMode.Folders -> {
-                    viewState.onActionBarTitle(context.getString(R.string.operation_title))
+                    if (isRoom && isRoot) {
+                        viewState.onActionBarTitle(context.getString(R.string.operation_select_room_title))
+                    } else {
+                        viewState.onActionBarTitle(context.getString(R.string.operation_title))
+                    }
                     viewState.onStateActionButton(false)
                 }
 
@@ -706,6 +710,20 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private fun resetFilters() {
         preferenceTool.filter = Filter()
         viewState.onStateUpdateFilterMenu()
+    }
+
+    fun fillPdfForm() {
+        showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE)
+        val item = itemClicked
+        if (item is CloudFile && item.isPdfForm) {
+            checkSdkVersion { result ->
+                if (result) {
+                    openDocumentServer(item, true)
+                } else {
+                    downloadTempFile(item, true)
+                }
+            }
+        }
     }
 
     fun openFile(data: String) {
