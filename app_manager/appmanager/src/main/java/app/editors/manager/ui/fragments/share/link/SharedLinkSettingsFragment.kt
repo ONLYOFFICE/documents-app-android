@@ -41,7 +41,12 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun SharedLinkSettingsScreen(viewModel: SharedLinkSettingsViewModel, onSnackBar: (String) -> Unit, onBack: () -> Unit) {
+fun SharedLinkSettingsScreen(
+    viewModel: SharedLinkSettingsViewModel,
+    useTabletPadding: Boolean = false,
+    onSnackBar: (String) -> Unit,
+    onBack: () -> Unit
+) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val state = viewModel.state.collectAsState()
@@ -69,6 +74,7 @@ fun SharedLinkSettingsScreen(viewModel: SharedLinkSettingsViewModel, onSnackBar:
             MainScreen(
                 loading = loading,
                 state = state,
+                useTabletPadding = useTabletPadding,
                 onSetInternal = viewModel::setInternal,
                 onDeleteLink = viewModel::delete,
                 onRegenerateLink = viewModel::regenerate,
@@ -79,6 +85,7 @@ fun SharedLinkSettingsScreen(viewModel: SharedLinkSettingsViewModel, onSnackBar:
         }
         composable(Route.AccessScreen.name) {
             ShareAccessScreen(
+                useTabletPadding = useTabletPadding,
                 currentAccess = state.value.access,
                 onBack = navController::popBackStackWhenResumed,
                 onSetUserAccess = viewModel::setAccess
@@ -86,6 +93,7 @@ fun SharedLinkSettingsScreen(viewModel: SharedLinkSettingsViewModel, onSnackBar:
         }
         composable(Route.LifeTimeScreen.name) {
             SharedLinkLifeTimeScreen(
+                useTabletPadding = useTabletPadding,
                 onBack = navController::popBackStackWhenResumed,
                 onSetLifeTime = viewModel::setLifeTime
             )
@@ -97,6 +105,7 @@ fun SharedLinkSettingsScreen(viewModel: SharedLinkSettingsViewModel, onSnackBar:
 private fun MainScreen(
     loading: State<Boolean>,
     state: State<ExternalLink>,
+    useTabletPadding: Boolean = false,
     onAccessClick: () -> Unit,
     onSetInternal: (Boolean) -> Unit,
     onDeleteLink: () -> Unit,
@@ -105,7 +114,7 @@ private fun MainScreen(
     onBack: () -> Unit
 ) {
     AppScaffold(
-        useTablePaddings = false,
+        useTablePaddings = useTabletPadding,
         topBar = {
             AppTopBar(
                 title = R.string.rooms_share_shared_link_title,
@@ -206,6 +215,7 @@ private fun ShareSettingsScreenPreview() {
 
     ManagerTheme {
         MainScreen(
+            useTabletPadding = false,
             loading = remember { mutableStateOf(false) },
             state = remember { mutableStateOf(link) },
             onSetInternal = {},

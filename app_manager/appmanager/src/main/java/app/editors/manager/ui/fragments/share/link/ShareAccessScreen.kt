@@ -17,13 +17,14 @@ import lib.compose.ui.views.AppTopBar
 @Composable
 fun ShareAccessScreen(
     currentAccess: Int?,
+    useTabletPadding: Boolean = false,
     onSetUserAccess: (newAccess: Int) -> Unit,
     onBack: () -> Unit
 ) {
     BackHandler(onBack = onBack)
 
     AppScaffold(
-        useTablePaddings = false,
+        useTablePaddings = useTabletPadding,
         topBar = {
             AppTopBar(title = R.string.share_choose_access_title, backListener = onBack)
         }
@@ -57,6 +58,7 @@ private fun getAccessList(): List<Int> = listOf(
 private fun Preview() {
     ManagerTheme {
         ShareAccessScreen(
+            useTabletPadding = false,
             currentAccess = 2,
             onSetUserAccess = {}
         ) {}

@@ -1,6 +1,6 @@
 package app.documents.core.network.share
 
-import app.documents.core.model.login.RoomGroup
+import app.documents.core.model.login.Group
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.room.models.ResponseRoomShare
@@ -155,7 +155,7 @@ interface ShareService {
     suspend fun getRoomGroups(
         @Path(value = "id") id: String,
         @QueryMap options: Map<String, String> = mapOf()
-    ): app.documents.core.network.BaseResponse<List<RoomGroup>>
+    ): app.documents.core.network.BaseResponse<List<Group>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

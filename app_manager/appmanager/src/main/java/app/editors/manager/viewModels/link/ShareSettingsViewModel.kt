@@ -26,7 +26,7 @@ sealed class ShareSettingsEffect {
     data class Error(val code: Int? = null) : ShareSettingsEffect()
 }
 
-class ShareSettingsViewModel(private val roomProvider: RoomProvider, private val fileId: String) : ViewModel() {
+class ShareSettingsViewModel(val roomProvider: RoomProvider, val fileId: String) : ViewModel() {
 
     private val _state: MutableStateFlow<ShareSettingsState> = MutableStateFlow(ShareSettingsState.Loading)
     val state: StateFlow<ShareSettingsState> = _state.asStateFlow()
