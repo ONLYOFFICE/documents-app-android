@@ -14,7 +14,6 @@ import lib.toolkit.base.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Instant
-import java.time.format.DateTimeParseException
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -141,9 +140,10 @@ object TimeUtils {
 
     fun parseDate(string: String?): Date? {
         try {
+           if (string == null) return null
             val time = Instant.parse(string).toEpochMilli()
             return Date(time)
-        } catch (error: DateTimeParseException) {
+        } catch (error: Throwable) {
             return null
         }
     }
