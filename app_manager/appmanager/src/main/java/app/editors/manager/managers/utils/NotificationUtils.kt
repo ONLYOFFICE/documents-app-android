@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.os.bundleOf
 import app.editors.manager.R
 import app.editors.manager.managers.receivers.DownloadReceiver
+import app.editors.manager.managers.receivers.RoomDuplicateReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.ui.activities.main.MainActivity
 import lib.toolkit.base.managers.utils.ActivitiesUtils.getDownloadsViewerIntent
@@ -24,6 +25,7 @@ class NotificationUtils(private val context: Context, private val serviceName: S
         private const val COMPLETE_GROUP = "COMPLETE_GROUP"
         private const val CANCEL_GROUP = "CANCEL_GROUP"
         private const val UPLOAD_GROUP = "UPLOAD_GROUP"
+        private const val DUPLICATE_ROOM_GROUP = "DUPLICATE_ROOM_GROUP"
     }
 
     private val notificationManager: NotificationManager by lazy {
@@ -98,6 +100,19 @@ class NotificationUtils(private val context: Context, private val serviceName: S
         notificationManager.notify(id, notification)
     }
 
+    fun showRoomDuplicateProgressNotification(id: Int, workerId: String, title: String, progress: Int) {
+        val notification = getRoomDuplicateNotificationBuilder(title)
+            .addAction(
+                R.drawable.drawable_ic_cancel_download_upload,
+                context.getString(R.string.room_duplicate_progress_hide_button),
+                getRoomDuplicateIntent(workerId)
+            )
+            .setProgress(100, progress, false)
+            .setSilent(true)
+            .build()
+        notificationManager.notify(id, notification)
+    }
+
     fun showErrorNotification(id: Int, title: String?) {
         val builder = getNotification(title, ERROR_GROUP, context.getString(R.string.download_manager_error))
         notificationManager.notify(id, builder.build())
@@ -108,12 +123,21 @@ class NotificationUtils(private val context: Context, private val serviceName: S
         notificationManager.notify(id, builder.build())
     }
 
+    fun showRoomDuplicateErrorNotification(id: Int, title: String?) {
+        val builder = getNotification(title, ERROR_GROUP, context.getString(R.string.room_duplicate_error))
+        notificationManager.notify(id, builder.build())
+    }
+
     fun showCompleteNotification(id: Int, title: String?, uri: Uri) {
         showDownloadedAction(id, title, uri)
     }
 
     fun showUploadCompleteNotification(id: Int, title: String?) {
         showUploadedAction(id, title)
+    }
+
+    fun showRoomDuplicateCompleteNotification(id: Int, title: String?) {
+        showRoomDuplicateAction(id, title)
     }
 
     fun showCanceledNotification(id: Int, title: String?) {
@@ -138,6 +162,9 @@ class NotificationUtils(private val context: Context, private val serviceName: S
 
     private fun getUploadNotificationBuilder(title: String): NotificationCompat.Builder =
         getNotificationBuilder(title, R.string.upload_manager_progress_title, UPLOAD_GROUP)
+
+    private fun getRoomDuplicateNotificationBuilder(title: String): NotificationCompat.Builder =
+        getNotificationBuilder(title, R.string.room_duplicate_progress_title, DUPLICATE_ROOM_GROUP)
 
     private fun getNotificationBuilder(
         title: String,
@@ -186,6 +213,20 @@ class NotificationUtils(private val context: Context, private val serviceName: S
         notificationManager.notify(id, builder.build())
     }
 
+    private fun showRoomDuplicateAction(id: Int, title: String?) {
+        val contentIntent = PendingIntent.getActivity(
+            context,
+            0,
+            Intent(context, MainActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        val builder = getNotification(title, null, context.getString(R.string.room_duplicate_complete))
+            .setGroupSummary(false)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setContentIntent(contentIntent)
+        notificationManager.notify(id, builder.build())
+    }
+
     private fun getDownloadIntent(id: String): PendingIntent = PendingIntent.getActivity(
         context,
         0,
@@ -206,4 +247,13 @@ class NotificationUtils(private val context: Context, private val serviceName: S
         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
     )
 
+    private fun getRoomDuplicateIntent(workerId: String): PendingIntent = PendingIntent.getActivity(
+        context,
+        0,
+        Intent(context, MainActivity::class.java).apply {
+            action = RoomDuplicateReceiver.ACTION_HIDE
+            putExtra(RoomDuplicateReceiver.KEY_NOTIFICATION_HIDE, workerId)
+        },
+        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+    )
 }

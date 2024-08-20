@@ -122,6 +122,11 @@ sealed class ExplorerContextItem(
         title = R.string.list_context_create_copy
     ), ExplorerContextBlockOrder.Operation
 
+    object Duplicate : ExplorerContextItem(
+        icon = R.drawable.ic_list_context_duplicate,
+        title = R.string.list_context_duplicate
+    ), ExplorerContextBlockOrder.Common
+
     object Upload : ExplorerContextItem(
         icon = R.drawable.ic_list_action_upload,
         title = R.string.list_context_upload_to_portal

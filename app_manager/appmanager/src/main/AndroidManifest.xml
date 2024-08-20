@@ -98,6 +98,7 @@
             android:exported="true"
             android:filterTouchesWhenObscured="true"
             android:clearTaskOnLaunch="true"
+            android:launchMode="singleTop"
             android:supportsPictureInPicture="true"
             android:theme="@style/MainActivityTheme"
             android:windowSoftInputMode="adjustResize|adjustPan|stateAlwaysHidden">

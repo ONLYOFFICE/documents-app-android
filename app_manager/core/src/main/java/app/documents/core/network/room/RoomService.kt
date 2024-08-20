@@ -333,4 +333,11 @@ interface RoomService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/fileops")
     suspend fun status(): app.documents.core.network.BaseResponse<List<Operation>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/duplicate")
+    suspend fun duplicate(@Body body: RequestBatchOperation): app.documents.core.network.BaseResponse<List<Operation>>
 }

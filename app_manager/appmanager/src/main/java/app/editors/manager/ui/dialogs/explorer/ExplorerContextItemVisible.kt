@@ -14,6 +14,7 @@ interface ExplorerContextItemVisible {
             ExplorerContextItem.AddUsers -> addUsers
             ExplorerContextItem.Archive -> archive
             ExplorerContextItem.Copy -> copy
+            ExplorerContextItem.Duplicate -> duplicate
             ExplorerContextItem.Download -> download
             ExplorerContextItem.Location -> location
             ExplorerContextItem.Move -> move
@@ -43,6 +44,9 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.copy: Boolean
         get() = if (section.isRoom) item.security.copy else section != ApiContract.Section.Trash
+
+    private val ExplorerContextState.duplicate: Boolean
+        get() = item.security.duplicate
 
     private val ExplorerContextState.download: Boolean
         get() = !section.isLocal

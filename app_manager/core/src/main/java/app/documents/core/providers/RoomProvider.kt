@@ -1,6 +1,8 @@
 package app.documents.core.providers
 
 import android.graphics.Bitmap
+import app.documents.core.network.common.Result
+import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -34,6 +36,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
@@ -314,5 +318,21 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             if (status.progress == 100 || status.finished || !status.error.isNullOrEmpty()) break
             delay(1000)
         }
+    }
+
+    suspend fun duplicate(roomId: String): Flow<Result<Int>> {
+        return flow {
+            val response = roomService.duplicate(RequestBatchOperation().apply { folderIds = listOf(roomId) })
+            for (operation in response.response) {
+                if (operation.finished) continue
+                while (true) {
+                    val status = roomService.status().response.find { it.id == operation.id }
+                    if (status == null || status.finished || status.progress >= 100) break
+                    emit(status.progress)
+                    delay(1000)
+                }
+            }
+            emit(100)
+        }.asResult()
     }
 }

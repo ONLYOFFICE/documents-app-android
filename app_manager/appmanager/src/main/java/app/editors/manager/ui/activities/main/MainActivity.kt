@@ -23,6 +23,7 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
 import app.editors.manager.managers.receivers.AppLocaleReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver
+import app.editors.manager.managers.receivers.RoomDuplicateReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
@@ -124,18 +125,14 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         intent.action?.let { action ->
-            if (action == DownloadReceiver.DOWNLOAD_ACTION_CANCELED) {
-                intent.extras?.let { extras ->
-                    WorkManager.getInstance(this)
-                        .cancelWorkById(UUID.fromString(extras.getString(DownloadReceiver.EXTRAS_KEY_ID)))
+            intent.extras?.let extras@ { extras ->
+                val key = when (action) {
+                    DownloadReceiver.DOWNLOAD_ACTION_CANCELED -> DownloadReceiver.EXTRAS_KEY_ID
+                    UploadReceiver.UPLOAD_ACTION_CANCELED -> UploadReceiver.EXTRAS_KEY_ID
+                    RoomDuplicateReceiver.ACTION_HIDE -> RoomDuplicateReceiver.KEY_NOTIFICATION_HIDE
+                    else -> return@extras
                 }
-                return
-            }
-            if (action == UploadReceiver.UPLOAD_ACTION_CANCELED) {
-                intent.extras?.let { extras ->
-                    WorkManager.getInstance(this)
-                        .cancelWorkById(UUID.fromString(extras.getString(UploadReceiver.EXTRAS_KEY_ID)))
-                }
+                WorkManager.getInstance(this).cancelWorkById(UUID.fromString(extras.getString(key)))
                 return
             }
         }

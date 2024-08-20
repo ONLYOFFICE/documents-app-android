@@ -325,6 +325,7 @@
     <string name="list_context_external_link">External access by link</string>
     <string name="list_context_move">Move</string>
     <string name="list_context_create_copy">Copy</string>
+    <string name="list_context_duplicate">Duplicate</string>
     <string name="list_context_create_download">Download</string>
     <string name="list_context_open_location">Open location</string>
     <string name="list_context_rename">Rename</string>
@@ -567,6 +568,11 @@
     <string name="upload_manager_notification_cancel_upload">Cancel upload</string>
     <string name="upload_manager_waiting_title">Waiting for upload</string>
     <string name="upload_error_wifi">You can upload only when Wi-Fi is enabled</string>
+
+    <string name="room_duplicate_progress_title">Duplicate in progress</string>
+    <string name="room_duplicate_complete">Duplicate complete</string>
+    <string name="room_duplicate_error">Duplicate error</string>
+    <string name="room_duplicate_progress_hide_button">Hide</string>
 
     <!-- ======================================================================================= -->
     <!-- Socials -->

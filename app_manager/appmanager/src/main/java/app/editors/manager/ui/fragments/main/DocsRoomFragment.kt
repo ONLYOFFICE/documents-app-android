@@ -94,6 +94,7 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
+            ExplorerContextItem.Duplicate -> cloudPresenter.duplicateRoom()
             ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             ExplorerContextItem.Reconnect -> reconnectStorage()
             ExplorerContextItem.Archive -> cloudPresenter.archiveRoom()

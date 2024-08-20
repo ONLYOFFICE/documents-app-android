@@ -104,7 +104,7 @@ object RoomUtils {
 
     fun getRoomInitials(title: String): String? {
         return try {
-            val words = title.split(" ")
+            val words = title.split(" ").filter { it.first().isLetterOrDigit() }
             when (words.size) {
                 1 -> title[0].toString()
                 2 -> "${words[0][0]}${words[1][0]}"

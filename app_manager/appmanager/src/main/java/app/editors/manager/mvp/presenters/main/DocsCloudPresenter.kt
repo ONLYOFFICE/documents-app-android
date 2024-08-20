@@ -3,6 +3,9 @@ package app.editors.manager.mvp.presenters.main
 import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.Recent
 import app.documents.core.model.cloud.isDocSpace
@@ -31,9 +34,11 @@ import app.editors.manager.app.roomProvider
 import app.editors.manager.app.shareApi
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListener
+import app.editors.manager.managers.receivers.RoomDuplicateReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
+import app.editors.manager.managers.works.RoomDuplicateWork
 import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.list.RecentViaLink
@@ -65,14 +70,15 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.util.UUID
 
 @InjectViewState
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
-    OnDownloadListener,
-    OnUploadListener {
+    OnDownloadListener, OnUploadListener, RoomDuplicateReceiver.Listener {
 
     private val downloadReceiver: DownloadReceiver = DownloadReceiver()
     private val uploadReceiver: UploadReceiver = UploadReceiver()
+    private var duplicateRoomReceiver: RoomDuplicateReceiver = RoomDuplicateReceiver()
 
     private var api: ManagerService? = null
     private var roomProvider: RoomProvider? = null
@@ -104,6 +110,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         super.onFirstViewAttach()
         downloadReceiver.setOnDownloadListener(this)
         uploadReceiver.setOnUploadListener(this)
+        duplicateRoomReceiver.setListener(this)
+        LocalBroadcastManager.getInstance(context)
+            .registerReceiver(duplicateRoomReceiver, RoomDuplicateReceiver.getFilters())
         LocalBroadcastManager.getInstance(context)
             .registerReceiver(uploadReceiver, uploadReceiver.filter)
         LocalBroadcastManager.getInstance(context)
@@ -115,7 +124,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         interruptConversion()
         downloadReceiver.setOnDownloadListener(null)
         uploadReceiver.setOnUploadListener(null)
+        duplicateRoomReceiver.setListener(null)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(duplicateRoomReceiver)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(downloadReceiver)
     }
 
@@ -406,6 +417,16 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     override fun onUploadError(path: String?, info: String?, file: String?) {
         viewState.onDeleteUploadFile(file)
         viewState.onSnackBar(info)
+    }
+
+    override fun onHideDuplicateNotification(workerId: String?) {
+        WorkManager
+            .getInstance(context)
+            .cancelWorkById(UUID.fromString(workerId))
+    }
+
+    override fun onDuplicateComplete() {
+        if (isRoom && isRoot) refresh()
     }
 
     override fun onUploadComplete(
@@ -1112,6 +1133,20 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             )
         }
 
+    }
+
+    fun duplicateRoom() {
+        val workData = Data.Builder()
+            .putString(RoomDuplicateWork.KEY_ROOM_ID, roomClicked?.id)
+            .putString(RoomDuplicateWork.KEY_ROOM_TITLE, roomClicked?.title)
+            .build()
+
+        val request = OneTimeWorkRequest.Builder(RoomDuplicateWork::class.java)
+            .addTag(RoomDuplicateWork.getTag(roomClicked?.id.hashCode(), roomClicked?.title))
+            .setInputData(workData)
+            .build()
+
+        WorkManager.getInstance(context).enqueue(request)
     }
 
     private fun openRecentViaLink() {
