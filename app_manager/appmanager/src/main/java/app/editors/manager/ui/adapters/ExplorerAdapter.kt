@@ -8,6 +8,7 @@ import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.UploadFile
+import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.PreferenceTool
@@ -137,6 +138,9 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
                     notifyItemRemoved(mList.indexOf(file))
                     break
                 }
+            }
+            if (list.none { it is UploadFile}) {
+                removeHeader(context.getString(R.string.upload_manager_progress_title))
             }
         }
     }

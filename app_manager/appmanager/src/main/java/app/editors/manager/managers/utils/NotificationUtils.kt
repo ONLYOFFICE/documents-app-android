@@ -118,8 +118,12 @@ class NotificationUtils(private val context: Context, private val serviceName: S
         notificationManager.notify(id, builder.build())
     }
 
-    fun showUploadErrorNotification(id: Int, title: String?) {
-        val builder = getNotification(title, ERROR_GROUP, context.getString(R.string.upload_manager_error))
+    fun showUploadErrorNotification(
+        id: Int,
+        title: String?,
+        message: Int = R.string.upload_manager_error
+    ) {
+        val builder = getNotification(title, ERROR_GROUP, context.getString(message))
         notificationManager.notify(id, builder.build())
     }
 

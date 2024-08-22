@@ -217,6 +217,8 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
         info?.let { viewState.onSnackBar(it) }
     }
 
+    override fun onUploadErrorDialog(title: String, message: String, file: String?) {}
+
     override fun onUploadComplete(
         path: String?,
         info: String?,

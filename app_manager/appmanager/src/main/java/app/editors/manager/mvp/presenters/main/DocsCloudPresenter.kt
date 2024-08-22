@@ -419,6 +419,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onSnackBar(info)
     }
 
+    override fun onUploadErrorDialog(title: String, message: String, file: String?) {
+        viewState.onDeleteUploadFile(file)
+        viewState.onDialogWarning(title, message, null)
+    }
+
     override fun onHideDuplicateNotification(workerId: String?) {
         WorkManager
             .getInstance(context)

@@ -89,6 +89,7 @@ object ApiContract {
         const val EXCEED_FILE_SIZE_25 = "Exceeds the maximum file size (25MB)"
         const val STORAGE_NOT_AVAILABLE = "The content of third party folder are not available. Try to reconnect the account"
         const val PINNED_ROOM_LIMIT = "You can't pin a room"
+        const val FILLING_FORM_ROOM_UPLOAD = "Please try to upload the ONLYOFFICE PDF form"
     }
     object ShareType {
         const val NONE = "None"
