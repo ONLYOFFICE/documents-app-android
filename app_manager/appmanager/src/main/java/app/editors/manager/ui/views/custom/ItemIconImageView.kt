@@ -82,8 +82,8 @@ class ItemIconImageView(context: Context, attrs: AttributeSet) : ConstraintLayou
     }
 
     private fun setCloudFolder(folder: CloudFolder, isRoot: Boolean) {
-        val initials = RoomUtils.getRoomInitials(folder.title)
         if (folder.isRoom) {
+            val initials = RoomUtils.getRoomInitials(folder.title)
             if (!folder.logo?.large.isNullOrEmpty()) {
                 textView.isVisible = false
                 imageView.isVisible = true

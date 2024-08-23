@@ -301,9 +301,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    override val isWebDav: Boolean
-        get() = false
-
     object Debounce {
         private var isClickable = true
 

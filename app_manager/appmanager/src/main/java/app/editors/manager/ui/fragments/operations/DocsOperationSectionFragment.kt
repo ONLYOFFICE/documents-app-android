@@ -8,30 +8,44 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.FragmentOperationSectionBinding
+import app.editors.manager.mvp.models.states.OperationsState.OperationType
+import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
 
 class DocsOperationSectionFragment : BaseAppFragment() {
 
     companion object {
-        val TAG: String = DocsOperationSectionFragment::class.java.simpleName
-        private const val TAG_DEST_FOLDER_ID = "dest_folder_id"
 
-        fun newInstance(destFolderId: String): DocsOperationSectionFragment {
-            return DocsOperationSectionFragment().putArgs(
-                TAG_DEST_FOLDER_ID to destFolderId
-            )
-        }
+        val TAG: String = DocsOperationSectionFragment::class.java.simpleName
+
+        fun newInstance(
+            destFolderId: String = "",
+            operationType: OperationType,
+            explorer: Explorer? = null
+        ): DocsOperationSectionFragment = DocsOperationSectionFragment().putArgs(
+            OperationDialogFragment.TAG_OPERATION_TYPE to operationType,
+            OperationDialogFragment.TAG_DEST_FOLDER_ID to destFolderId,
+            OperationDialogFragment.TAG_OPERATION_EXPLORER to explorer
+        )
     }
 
     private var viewBinding: FragmentOperationSectionBinding? = null
+
+    private val operationDialogFragment by lazy { parentFragment as? OperationDialogFragment }
+
+    private val explorer: Explorer? by lazy {
+        arguments?.getSerializableExt(OperationDialogFragment.TAG_OPERATION_EXPLORER)
+    }
 
     private val sectionClick: (id: Int) -> Unit = { id ->
         val sectionType = when (id) {
@@ -49,7 +63,12 @@ class DocsOperationSectionFragment : BaseAppFragment() {
         }
 
         showFragment(
-            DocsCloudOperationFragment.newInstance(sectionType, arguments?.getString(TAG_DEST_FOLDER_ID).orEmpty()),
+            DocsCloudOperationFragment.newInstance(
+                sectionType = sectionType,
+                destFolderId = arguments?.getString(OperationDialogFragment.TAG_DEST_FOLDER_ID).orEmpty(),
+                operationType = requireNotNull(arguments?.getSerializableExt(OperationDialogFragment.TAG_OPERATION_TYPE)),
+                explorer = explorer
+            ),
             DocsCloudOperationFragment.TAG, false
         )
     }
@@ -72,10 +91,9 @@ class DocsOperationSectionFragment : BaseAppFragment() {
     private fun init() {
         checkVisitor()
         setListeners()
-        setActionBarTitle(getString(R.string.operation_choose_section))
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeButtonEnabled(true)
         checkRoom()
+        operationDialogFragment?.setToolbarTitle(getString(R.string.operation_choose_section))
+        operationDialogFragment?.setCreateFolderVisible(false)
     }
 
     private fun checkRoom() {
@@ -103,6 +121,4 @@ class DocsOperationSectionFragment : BaseAppFragment() {
         viewBinding?.operationSectionsProjects?.setOnClickListener { sectionClick(it.id) }
         viewBinding?.operationSectionsShare?.setOnClickListener { sectionClick(it.id) }
     }
-
-
 }

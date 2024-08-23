@@ -383,9 +383,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     override val isActivePage: Boolean
         get() = isAdded
 
-    override val isWebDav: Boolean
-        get() = false
-
     companion object {
         val TAG: String = DocsOnDeviceFragment::class.java.simpleName
 

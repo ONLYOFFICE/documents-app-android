@@ -1,30 +1,26 @@
 package app.editors.manager.ui.fragments.operations
 
-import app.editors.manager.app.App
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
-import app.editors.manager.ui.fragments.base.BaseStorageOperationsFragment
+import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
+import lib.toolkit.base.managers.utils.putArgs
 import moxy.presenter.InjectPresenter
 
-class DocsOneDriveOperationFragment: BaseStorageOperationsFragment() {
+class DocsOneDriveOperationFragment : BaseStorageOperationsFragment() {
 
     companion object {
 
-        val TAG = DocsCloudOperationFragment::class.java.simpleName
-
-        fun newInstance(): DocsOneDriveOperationFragment = DocsOneDriveOperationFragment()
+        fun newInstance(
+            operationType: OperationType,
+            explorer: Explorer? = null
+        ): DocsOneDriveOperationFragment = DocsOneDriveOperationFragment().putArgs(
+            OperationDialogFragment.TAG_OPERATION_TYPE to operationType,
+            OperationDialogFragment.TAG_OPERATION_EXPLORER to explorer
+        )
     }
-
 
     @InjectPresenter
     override lateinit var presenter: DocsOneDrivePresenter
 
-    override fun getOperationsPresenter() = presenter
-
-    override fun onAuthorization() {
-        //stub
-    }
-
-    init {
-        App.getApp().appComponent.inject(this)
-    }
 }

@@ -37,10 +37,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     var activity: IMainActivity? = null
 
-
-    override val isWebDav: Boolean
-        get() = false
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {

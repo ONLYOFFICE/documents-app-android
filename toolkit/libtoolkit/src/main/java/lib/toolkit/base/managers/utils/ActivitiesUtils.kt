@@ -420,7 +420,7 @@ fun <T : Parcelable> Bundle.getParcelableExt(key: String, clazz: Class<T>): T {
         this.getParcelable<T>(key) as T
 }
 
-fun Bundle.contains(key: String): Boolean {
+operator fun Bundle.contains(key: String): Boolean {
     return try {
         this.containsKey(key)
     } catch (error: BadParcelableException) {

@@ -43,6 +43,7 @@ import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
+import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
@@ -360,9 +361,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override val presenter: DocsBasePresenter<out DocsBaseView>
         get() = cloudPresenter
 
-    override val isWebDav: Boolean
-        get() = false
-
     protected val section: Int
         get() = arguments?.getInt(KEY_SECTION) ?: ApiContract.SectionType.UNKNOWN
 
@@ -413,7 +411,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         val placeholder = if (type == PlaceholderViews.Type.EMPTY) {
             val roomType = presenter.currentFolder?.roomType
             when {
-                roomType != null -> {
+                roomType != null && roomType > 0 -> {
                     when {
                         presenter.itemClicked?.security?.editRoom != true -> PlaceholderViews.Type.VISITOR_EMPTY_ROOM
                         roomType == ApiContract.RoomType.FILL_FORMS_ROOM -> PlaceholderViews.Type.EMPTY_FORM_FILLING_ROOM
@@ -571,17 +569,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onBatchMoveCopy(operation: OperationType, explorer: Explorer) {
-        showOperationActivity(operation, explorer) { result ->
-            if (result.resultCode == RESULT_OPEN_FOLDER) {
-                openRoom(result.data?.getStringExtra(RESULT_KEY_OPEN_FOLDER))
+        OperationDialogFragment.show(requireActivity(), operation, explorer) { bundle ->
+            if (OperationDialogFragment.KEY_OPERATION_RESULT_COMPLETE in bundle) {
                 showSnackBar(R.string.operation_complete_message)
-                return@showOperationActivity
+                onRefresh()
+            } else if (OperationDialogFragment.KEY_OPERATION_RESULT_OPEN_FOLDER in bundle) {
+                openRoom(bundle.getString(OperationDialogFragment.KEY_OPERATION_RESULT_OPEN_FOLDER))
             }
-
-            if (result.resultCode == Activity.RESULT_OK) {
-                showSnackBar(R.string.operation_complete_message)
-            }
-            onRefresh()
         }
     }
 

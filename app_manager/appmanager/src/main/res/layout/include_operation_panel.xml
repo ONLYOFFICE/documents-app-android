@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/default_bottom_panel_height"
-    card_view:cardBackgroundColor="@color/colorSurface"
-    card_view:cardElevation="@dimen/default_bottom_panel_elevation">
+    android:background="@color/colorSurface"
+    android:elevation="8dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="@dimen/default_margin_medium">
@@ -22,6 +22,8 @@
             android:clickable="true"
             android:enabled="false"
             android:text="@string/dialogs_edit_create_folder"
+            android:visibility="gone"
+            tools:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/operation_cancel_button"
             app:layout_constraintHorizontal_bias="0"
@@ -54,5 +56,6 @@
             tools:text="Operation" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+
+</FrameLayout>
 

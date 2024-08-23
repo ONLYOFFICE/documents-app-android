@@ -13,7 +13,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
@@ -41,7 +40,7 @@ import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
-import app.editors.manager.ui.activities.main.OperationActivity
+import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.EntityDiffUtilsCallback
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
@@ -59,13 +58,13 @@ import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.CreateDocument
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.EditorsType
-import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getHelpUrl
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
+import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.managers.utils.getSendFileIntent
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.BaseAdapter.OnItemContextListener
@@ -92,9 +91,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         const val REQUEST_PDF = 10004
         const val REQUEST_DOWNLOAD = 10005
         const val REQUEST_STORAGE_ACCESS = 10006
-
-        const val RESULT_OPEN_FOLDER = 1000
-        const val RESULT_KEY_OPEN_FOLDER = "result_key_open_folder"
     }
 
     /*
@@ -117,7 +113,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     private var selectItem: MenuItem? = null
 
     protected abstract val presenter: DocsBasePresenter<out DocsBaseView>
-    protected abstract val isWebDav: Boolean?
 
     private val lifecycleEventObserver = LifecycleEventObserver { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
@@ -148,30 +143,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         super.onDestroyView()
         actionBottomDialog = null
         moveCopyDialog = null
-    }
-
-    protected fun showOperationActivity(
-        operation: OperationsState.OperationType,
-        explorer: Explorer,
-        callback: (result: ActivityResult) -> Unit
-    ) {
-        LaunchActivityForResult(
-            requireActivity().activityResultRegistry,
-            callback,
-            OperationActivity.getIntent(requireContext(), operation, explorer)
-        ).show()
-    }
-
-    protected fun showCloudFilePickerActivity(
-        explorer: Explorer,
-        destFolderId: String,
-        callback: (result: ActivityResult) -> Unit
-    ) {
-        LaunchActivityForResult(
-            requireActivity().activityResultRegistry,
-            callback,
-            OperationActivity.getCloudFilePickerActivity(requireContext(), explorer, destFolderId)
-        ).show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -703,20 +674,28 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onBatchMoveCopy(operation: OperationsState.OperationType, explorer: Explorer) {
-        showOperationActivity(operation, explorer) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
+        OperationDialogFragment.show(
+            activity = requireActivity(),
+            operation = operation,
+            explorer = explorer
+        ) { bundle ->
+            if (OperationDialogFragment.KEY_OPERATION_RESULT_COMPLETE in bundle) {
                 showSnackBar(R.string.operation_complete_message)
+                view?.postDelayed(::onRefresh, 500)
             }
-            onRefresh()
         }
     }
 
     override fun onPickCloudFile(destFolderId: String) {
-        showCloudFilePickerActivity(Explorer(), destFolderId) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
+        OperationDialogFragment.show(
+            activity = requireActivity(),
+            destFolderId = destFolderId,
+            explorer = Explorer()
+        ) { bundle ->
+            if (OperationDialogFragment.KEY_OPERATION_RESULT_COMPLETE in bundle) {
                 showSnackBar(R.string.operation_complete_message)
+                view?.postDelayed(::onRefresh, 500)
             }
-            view?.postDelayed(::onRefresh, 500)
         }
     }
 

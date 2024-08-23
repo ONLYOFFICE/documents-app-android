@@ -381,7 +381,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     /*
     * Action bar
     * */
-    protected fun setActionBarTitle(title: String?) {
+    protected open fun setActionBarTitle(title: String?) {
         if (title != null && isVisible) {
             toolbarTitle = title
             supportActionBar?.title = toolbarTitle
