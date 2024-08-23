@@ -11,6 +11,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.allowShare
 import app.documents.core.providers.DropboxFileProvider
 import app.documents.core.providers.GoogleDriveFileProvider
 import app.documents.core.providers.OneDriveFileProvider
@@ -143,7 +144,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                     fileProvider.fileInfo(CloudFile().apply {
                         id = recent.fileId
                     }).flatMap { cloudFile ->
-                        fileProvider.opeEdit(cloudFile).toObservable()
+                        fileProvider.opeEdit(cloudFile, cloudFile.allowShare && !account.isVisitor).toObservable()
                             .zipWith(Observable.fromCallable { cloudFile }) { info, file ->
                                 return@zipWith arrayOf(file, info)
                             }

@@ -106,3 +106,19 @@ open class CloudFile : Item() {
         }
     }
 }
+
+val CloudFile.allowShare: Boolean
+    get() = run {
+        if (isDenySharing) return@run false
+        if (intAccess in listOf(
+                ApiContract.ShareCode.RESTRICT,
+                ApiContract.ShareCode.VARIES,
+                ApiContract.ShareCode.REVIEW,
+                ApiContract.ShareCode.COMMENT,
+                ApiContract.ShareCode.FILL_FORMS
+            )
+        ) {
+            return false
+        }
+        return@run true
+    }

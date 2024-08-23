@@ -202,7 +202,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     provider.createFile(id, requestCreate).flatMap { cloudFile ->
                         addFile(cloudFile)
                         addRecent(cloudFile)
-                        (provider as CloudFileProvider).opeEdit(cloudFile)
+                        (provider as CloudFileProvider).opeEdit(cloudFile, isItemShareable)
                             .toObservable()
                             .zipWith(Observable.fromCallable { cloudFile }) { info, file ->
                                 return@zipWith arrayOf(file, info)
@@ -603,7 +603,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             StringUtils.Extension.PDF -> {
                 checkSdkVersion { result ->
                     if (result) {
-                        openDocumentServer(cloudFile, isEdit)
+                        openDocumentServer(cloudFile, isEdit, isItemShareable)
                     } else {
                         downloadTempFile(cloudFile, isEdit)
                     }
@@ -620,11 +620,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, extension)
     }
 
-    private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean) {
+    private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean, canShareable: Boolean) {
         with(fileProvider as CloudFileProvider) {
             val token = AccountUtils.getToken(context, account.accountName)
             disposable.add(
-                openDocument(cloudFile, token).subscribe({ result ->
+                openDocument(cloudFile, token, canShareable).subscribe({ result ->
                     viewState.onDialogClose()
                     if (result.isPdf) {
                         downloadTempFile(cloudFile, false)
@@ -748,7 +748,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
 
     private val isItemShareable: Boolean
-        get() = if (account.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+        get() = if (account.isDocSpace && (currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM || currentSectionType == ApiContract.SectionType.CLOUD_USER)) {
             itemClicked?.isCanShare == true
         } else {
             isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection

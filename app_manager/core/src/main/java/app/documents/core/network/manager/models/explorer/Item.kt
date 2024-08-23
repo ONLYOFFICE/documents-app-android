@@ -1,14 +1,13 @@
 package app.documents.core.network.manager.models.explorer
 
-import app.documents.core.network.common.contracts.ApiContract.ShareType.getCode
-import app.documents.core.network.manager.models.base.ItemProperties
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.contracts.ApiContract.ShareType.getCode
 import app.documents.core.network.common.models.BaseResponse
+import app.documents.core.network.manager.models.base.ItemProperties
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
-import java.lang.NumberFormatException
-import java.util.*
+import java.util.Date
 
 open class Item : ItemProperties(), Serializable {
 
@@ -54,7 +53,7 @@ open class Item : ItemProperties(), Serializable {
 
     @SerializedName("security")
     @Expose
-    var security = Security()
+    var security :Security? = null
 
     @SerializedName("canShare")
     @Expose

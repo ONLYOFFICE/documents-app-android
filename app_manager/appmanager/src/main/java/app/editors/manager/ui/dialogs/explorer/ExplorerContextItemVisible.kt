@@ -36,13 +36,13 @@ interface ExplorerContextItemVisible {
     }
 
     private val ExplorerContextState.addUsers: Boolean
-        get() = section != ApiContract.Section.Room.Archive && item.security.editAccess
+        get() = section != ApiContract.Section.Room.Archive && item.security?.editAccess == true
 
     private val ExplorerContextState.archive: Boolean
-        get() = item.security.moveTo && item.security.editRoom && section !is ApiContract.Section.Room.Archive
+        get() = item.security?.moveTo == true && item.security?.editRoom == true && section !is ApiContract.Section.Room.Archive
 
     private val ExplorerContextState.copy: Boolean
-        get() = if (section.isRoom) item.security.copy else section != ApiContract.Section.Trash
+        get() = if (section.isRoom) item.security?.copy == true else section != ApiContract.Section.Trash
 
     private val ExplorerContextState.download: Boolean
         get() = !section.isLocal
@@ -59,9 +59,9 @@ interface ExplorerContextItemVisible {
 
                 ApiContract.Section.Trash,
                 ApiContract.Section.Room.Archive -> false
-                else -> access != ApiContract.Access.Read || item.security.editAccess
+                else -> access != ApiContract.Access.Read || item.security?.editAccess == true
             }
-        } else section.isRoom && isRoot && item.security.editRoom
+        } else section.isRoom && isRoot && item.security?.editRoom == true
 
     private val ExplorerContextState.move: Boolean
         get() = if (!section.isRoom) {
@@ -69,7 +69,7 @@ interface ExplorerContextItemVisible {
                 ApiContract.Section.User,
                 ApiContract.Section.Device
             ) || section is ApiContract.Section.Storage
-        } else item.security.move
+        } else item.security?.move == true
 
     private val ExplorerContextState.externalLink: Boolean
         get() = when (section) {
@@ -83,12 +83,12 @@ interface ExplorerContextItemVisible {
                 ApiContract.Section.User,
                 ApiContract.Section.Device
             )
-        } else item.security.rename
+        } else item.security?.rename == true
 
     private val ExplorerContextState.restore: Boolean
         get() = when (section) {
             ApiContract.Section.Trash -> true
-            ApiContract.Section.Room.Archive -> item.security.move
+            ApiContract.Section.Room.Archive -> item.security?.move == true
             else -> false
         }
 
@@ -114,7 +114,7 @@ interface ExplorerContextItemVisible {
         get() = section == ApiContract.Section.Device && !isFolder
 
     private val ExplorerContextState.pin: Boolean
-        get() = item.security.pin
+        get() = item.security?.pin == true
 
     private val ExplorerContextState.delete: Boolean
         get() = when (section) {
@@ -122,12 +122,12 @@ interface ExplorerContextItemVisible {
             ApiContract.Section.Favorites,
             ApiContract.Section.Projects -> false
 
-            is ApiContract.Section.Room -> isRoot || item.security.delete
+            is ApiContract.Section.Room -> isRoot || item.security?.delete == true
             else -> true
         }
 
     private val ExplorerContextState.createRoom: Boolean
-        get() = item.security.create || item is CloudFile
+        get() = item.security?.create == true || item is CloudFile
 
     private val ExplorerContextState.location: Boolean
         get() = isSearching

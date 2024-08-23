@@ -13,7 +13,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -75,14 +74,13 @@ class RoomInfoFragment : ComposeDialogFragment() {
         RoomInfo, UserAccess, GroupAccess, LinkSettings, InviteUsers
     }
 
-    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     override fun Content() {
         ManagerTheme {
             val keyboardController = LocalSoftwareKeyboardController.current
             val portal = remember { requireContext().accountOnline?.portal }
             val room = remember { checkNotNull(arguments?.getSerializableExt<CloudFolder>(KEY_ROOM)) }
-            val canEditRoom = room.security.editRoom
+            val canEditRoom = room.security?.editRoom == true
             val viewModel = viewModel { RoomInfoViewModel(requireContext().roomProvider, room.id) }
             val navController = rememberNavController().also {
                 it.addOnDestinationChangedListener { _, destination, _ ->
