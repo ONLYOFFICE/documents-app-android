@@ -924,5 +924,11 @@
     <string name="rooms_fill_out_form_yourself_desc">Fill in the fields of the original form in the editor window.</string>
     <string name="rooms_share_and_collect">Share &amp; collect</string>
     <string name="rooms_share_and_collect_desc">Share your form and collect responses via a Form filling room.</string>
+    <string name="rooms_fill_form_complete_desc">The filled PDF form is saved and available to you in the Complete folder. To check the status, contact the form owner providing the assigned number.</string>
+    <string name="rooms_fill_form_complete_number_title">Form number</string>
+    <string name="rooms_fill_form_complete_owner_title">Form owner</string>
+    <string name="rooms_fill_form_complete_toolbar_title">Form completed successfully</string>
+    <string name="rooms_fill_form_complete_back_to_room">Back to room</string>
+    <string name="rooms_fill_form_complete_check_forms">Check ready forms</string>
 
 </resources>

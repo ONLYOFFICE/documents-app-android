@@ -36,5 +36,5 @@ data class User(
     val profileUrl: String = "",
     val mobilePhone: String = "",
     val shared: Boolean = false
-)
+) : java.io.Serializable
 
