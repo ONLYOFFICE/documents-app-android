@@ -902,4 +902,19 @@
     <string name="personal_portal_end_title">ONLYOFFICE Personal is wrapping up</string>
     <string name="personal_portal_end_text">ONLYOFFICE Personal will be discontinued on September 1st, 2024.\nWe recommend you move to the free ONLYOFFICE DocSpace Cloud.</string>
 
+    <string name="rooms_upload_pdf_from_docspace">Upload PDF Form from DocSpace</string>
+    <string name="rooms_upload_pdf_from_device">Upload PDF Form from device</string>
+
+    <string name="rooms_fill_in_as_title">Fill in as</string>
+    <string name="rooms_fill_out_form_yourself">Fill out the form yourself</string>
+    <string name="rooms_fill_out_form_yourself_desc">Fill in the fields of the original form in the editor window.</string>
+    <string name="rooms_share_and_collect">Share &amp; collect</string>
+    <string name="rooms_share_and_collect_desc">Share your form and collect responses via a Form filling room.</string>
+    <string name="rooms_fill_form_complete_desc">The filled PDF form is saved and available to you in the Complete folder. To check the status, contact the form owner providing the assigned number.</string>
+    <string name="rooms_fill_form_complete_number_title">Form number</string>
+    <string name="rooms_fill_form_complete_owner_title">Form owner</string>
+    <string name="rooms_fill_form_complete_toolbar_title">Form completed successfully</string>
+    <string name="rooms_fill_form_complete_back_to_room">Back to room</string>
+    <string name="rooms_fill_form_complete_check_forms">Check ready forms</string>
+
 </resources>
