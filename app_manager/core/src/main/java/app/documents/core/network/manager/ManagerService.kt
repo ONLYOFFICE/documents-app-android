@@ -26,6 +26,7 @@ import app.documents.core.network.manager.models.response.ResponseExplorer
 import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseFile
 import app.documents.core.network.manager.models.response.ResponseFiles
+import app.documents.core.network.manager.models.response.ResponseFillResult
 import app.documents.core.network.manager.models.response.ResponseFolder
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.manager.models.response.ResponsePortal
@@ -452,7 +453,7 @@ interface ManagerService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/${ApiContract.API_VERSION}/files/file/fillresult")
-    suspend fun getFillResult(@Query(value = "fillingSessionId") fillingSessionId: String): Single<Response<ResponseBody>>
+    suspend fun getFillResult(@Query(value = "fillingSessionId") fillingSessionId: String): ResponseFillResult
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
