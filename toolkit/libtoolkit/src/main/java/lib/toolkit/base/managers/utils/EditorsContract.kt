@@ -21,6 +21,7 @@ object EditorsContract {
     const val EXTRA_IS_MODIFIED = "EXTRA_IS_MODIFIED"
     const val EXTRA_IS_REFRESH = "EXTRA_IS_REFRESH"
     const val EXTRA_IS_SEND_FORM = "EXTRA_IS_SEND_FORM"
+    const val EXTRA_FILL_SESSION = "EXTRA_FILL_SESSION"
 
 }
 

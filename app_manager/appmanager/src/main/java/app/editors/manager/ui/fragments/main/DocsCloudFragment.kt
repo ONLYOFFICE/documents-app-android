@@ -23,7 +23,6 @@ import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
 import app.editors.manager.mvp.models.filter.FilterType
-import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
@@ -47,6 +46,7 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.DialogUtils
+import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.getSerializable
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -103,6 +103,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
                     if (data?.data != null) {
+                        if (data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)) {
+                            // showResultFragment
+                        }
                         if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
                             cloudPresenter.updateDocument(data.data!!)
                         }
