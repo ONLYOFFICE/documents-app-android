@@ -447,6 +447,12 @@ interface ManagerService {
         @Part part: MultipartBody.Part
     ): Single<Response<ResponseBody>>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/${ApiContract.API_VERSION}/files/file/fillresult")
+    suspend fun getFillResult(@Query(value = "fillingSessionId") fillingSessionId: String): Single<Response<ResponseBody>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
