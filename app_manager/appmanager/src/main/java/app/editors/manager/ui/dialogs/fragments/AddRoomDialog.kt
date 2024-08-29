@@ -4,14 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.ui.fragments.main.AddRoomFragment
-import app.editors.manager.viewModels.main.CopyItems
 import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.managers.utils.getIntExt
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
 
@@ -22,26 +18,12 @@ class AddRoomDialog : BaseDialogFragment() {
 
         val TAG: String = AddRoomDialog::class.java.simpleName
 
-        fun newInstance(roomType: Int?, room: Item? = null, copyItems: CopyItems?): AddRoomDialog {
+        fun newInstance(roomType: Int, room: Item? = null, isCopy: Boolean = false): AddRoomDialog {
             return AddRoomDialog().putArgs(
                 AddRoomFragment.TAG_ROOM_TYPE to roomType,
                 AddRoomFragment.TAG_ROOM_INFO to room,
-                AddRoomFragment.TAG_COPY_ITEMS to copyItems
+                AddRoomFragment.TAG_COPY to isCopy
             )
-        }
-
-        fun show(
-            activity: FragmentActivity,
-            type: Int? = null,
-            room: CloudFolder? = null,
-            copyItems: CopyItems? = null,
-            onResult: (Bundle) -> Unit
-        ) {
-            activity.supportFragmentManager.setFragmentResultListener(
-                AddRoomFragment.TAG_RESULT, activity
-            ) { _, bundle -> onResult(bundle) }
-            newInstance(type, room, copyItems)
-                .show(activity.supportFragmentManager, AddRoomDialog.TAG)
         }
     }
 
@@ -69,10 +51,10 @@ class AddRoomDialog : BaseDialogFragment() {
     }
 
     private fun getInstance(): Fragment {
-        return AddRoomFragment.newInstance(
-            arguments?.getIntExt(AddRoomFragment.TAG_ROOM_TYPE),
-            arguments?.getSerializableExt(AddRoomFragment.TAG_ROOM_INFO),
-            arguments?.getSerializableExt(AddRoomFragment.TAG_COPY_ITEMS)
+        return AddRoomFragment().putArgs(
+            AddRoomFragment.TAG_ROOM_TYPE to arguments?.getInt(AddRoomFragment.TAG_ROOM_TYPE),
+            AddRoomFragment.TAG_ROOM_INFO to arguments?.getSerializableExt(AddRoomFragment.TAG_ROOM_INFO),
+            AddRoomFragment.TAG_COPY to arguments?.getBoolean(AddRoomFragment.TAG_COPY)
         )
     }
 }

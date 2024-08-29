@@ -2,7 +2,7 @@ name: Upload Release Files to AWS S3
 
 on:
   release:
-    types: [created]
+    types: [released, edited, created]
 
 jobs:
   upload-release:
@@ -17,6 +17,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Download APK file and Upload on AWS S3
         id: upload-apk
@@ -30,7 +31,7 @@ jobs:
 
           if [ ! -z "$apk_url" ]; then
               curl -o onlyoffice-documents.apk -L "$apk_url"
-              aws s3 cp onlyoffice-documents.apk  ${{ secrets.AWS_BUCKET_URL }}/install/mobile/android/
+              aws s3 cp onlyoffice-documents.apk  ${{ secrets.AWS_BUCKET_URL }}/install/mobile/android/ --acl public-read
               echo "apk_uploaded=true" >> $GITHUB_OUTPUT
           else
               echo "Error: APK file not found in the release assets. Skipping upload to AWS S3."

@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class User(
-    val id: String = "",
+    override val id: String = "",
     val userName: String = "",
     val isVisitor: Boolean = false,
     val firstName: String = "",
@@ -35,6 +35,5 @@ data class User(
     val avatarSmall: String = "",
     val profileUrl: String = "",
     val mobilePhone: String = "",
-    val shared: Boolean = false
-) : java.io.Serializable
-
+    override val shared: Boolean = false
+) : Member

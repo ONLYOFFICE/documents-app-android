@@ -1,5 +1,7 @@
 package app.editors.manager.ui.dialogs.explorer
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -7,6 +9,7 @@ import app.documents.core.network.manager.models.explorer.Item
 import java.io.Serializable
 
 data class ExplorerContextState(
+    val headerIcon: Bitmap?,
     val item: Item,
     val sectionType: Int,
     val provider: PortalProvider = PortalProvider.Cloud.Workspace,

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardRootLayout"
+    style="@style/GridItemLayout.Card">
+
+    <androidx.constraintlayout.widget.ConstraintLayout style="@style/GridItemLayout.ConstraintLayout">
+
+        <ImageView
+            android:id="@+id/selectIcon"
+            style="@style/ExplorerItemLayout.SelectIcon"
+            app:layout_constraintBottom_toBottomOf="@id/iconPinned"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/iconPinned"
+            tools:ignore="ContentDescription" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/badge"
+            style="@style/ExplorerItemLayout.RoomBadge"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            app:layout_constraintBottom_toBottomOf="@id/cardImageLayout"
+            app:layout_constraintEnd_toEndOf="@id/cardImageLayout"
+            tools:src="@drawable/ic_storage_dropbox" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardImageLayout"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:translationZ="-2dp"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="@dimen/grid_card_view_corner_radius"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0">
+
+            <TextView
+                android:id="@+id/cardText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:maxLength="2"
+                android:textColor="@color/colorWhite"
+                android:textSize="28sp"
+                tools:text="PR" />
+
+            <ImageView
+                android:id="@+id/cardImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:ignore="ContentDescription" />
+
+        </androidx.cardview.widget.CardView>
+
+        <ImageView
+            android:id="@+id/iconPinned"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_grid_pinned"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/cardImageLayout"
+            app:layout_constraintEnd_toStartOf="@id/cardImageLayout"
+            app:layout_constraintStart_toStartOf="@id/cardImageLayout"
+            app:layout_constraintTop_toTopOf="@id/cardImageLayout"
+            app:tint="@color/colorTextSecondary"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/title"
+            style="@style/GridItemLayout.Title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardImageLayout"
+            tools:text="Room name" />
+
+        <TextView
+            android:id="@+id/subtitle"
+            style="@style/GridItemLayout.Subtitle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:text="Room type" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

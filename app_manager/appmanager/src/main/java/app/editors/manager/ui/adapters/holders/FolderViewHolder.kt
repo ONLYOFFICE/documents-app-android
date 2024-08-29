@@ -6,7 +6,6 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerFolderBinding
 import app.editors.manager.managers.utils.StringUtils
-import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.ExplorerAdapter
 
 class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
@@ -15,6 +14,10 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
     private var viewBinding = ListExplorerFolderBinding.bind(view)
 
     init {
+        viewBinding.listExplorerFolderLayout.setOnClickListener { v: View? ->
+            adapter.mOnItemClickListener?.onItemClick(v, layoutPosition)
+        }
+
         viewBinding.listExplorerFolderLayout.setOnLongClickListener { v: View? ->
             adapter.mOnItemLongClickListener?.onItemLongClick(v, layoutPosition)
             false
@@ -37,22 +40,12 @@ class FolderViewHolder(view: View, adapter: ExplorerAdapter) :
             )
 
             // Show/hide context button
-            listExplorerFolderContext.isVisible = !adapter.isSelectMode && adapter.pickerMode == PickerMode.None
+            listExplorerFolderContext.isVisible = !adapter.isSelectMode && !adapter.isFoldersMode
 
             listExplorerRoomPin.isVisible = folder.pinned
             viewIconSelectableLayout.setItem(folder, adapter.isRoot)
             viewIconSelectableLayout.selectMode = adapter.isSelectMode
             viewIconSelectableLayout.itemSelected = folder.isSelected
-
-            if (adapter.pickerMode == PickerMode.Folders && folder.type in arrayOf(25, 26)) {
-                listExplorerFolderLayout.alpha = .6f
-                listExplorerFolderLayout.setOnClickListener(null)
-            } else {
-                listExplorerFolderLayout.alpha = 1f
-                listExplorerFolderLayout.setOnClickListener { v: View? ->
-                    adapter.mOnItemClickListener?.onItemClick(v, layoutPosition)
-                }
-            }
         }
     }
 

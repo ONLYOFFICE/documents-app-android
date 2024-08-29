@@ -8,8 +8,9 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import lib.toolkit.base.R
 import lib.toolkit.base.databinding.ActionPopupItemListBinding
+import lib.toolkit.base.databinding.ActionPopupItemRadioButtonBinding
 import lib.toolkit.base.databinding.ActionPopupItemTopbarBinding
-import lib.toolkit.base.ui.adapters.factory.inflate
+import lib.toolkit.base.managers.extensions.inflate
 import lib.toolkit.base.ui.popup.IActionMenuAdapter
 
 class ActionMenuAdapter(
@@ -24,6 +25,7 @@ class ActionMenuAdapter(
         private const val POPUP_ITEM_ARROW = 2
         private const val POPUP_ITEM_TOP_BAR = 3
         private const val POPUP_ITEM_DIVIDER = 4
+        private const val POPUP_ITEM_RADIO_BUTTON = 5
     }
 
     private var items: MutableList<ActionMenuItem> = mutableListOf()
@@ -42,6 +44,7 @@ class ActionMenuAdapter(
             POPUP_ITEM_SORT -> PopupItemSortViewHolder(parent.inflate(R.layout.action_popup_item_list))
             POPUP_ITEM_ARROW -> PopupItemViewHolder(parent.inflate(R.layout.action_popup_item_arrow))
             POPUP_ITEM_DIVIDER -> PopupItemViewHolder(parent.inflate(R.layout.action_popup_item_divider))
+            POPUP_ITEM_RADIO_BUTTON -> PopupItemRadioButtonViewHolder(parent.inflate(R.layout.action_popup_item_radio_button))
             POPUP_ITEM_TOP_BAR -> PopupItemTopBarViewHolder(
                 view = parent.inflate(R.layout.action_popup_item_topbar),
                 onBack = { setItems(rootItems) }
@@ -78,6 +81,7 @@ class ActionMenuAdapter(
             is ActionMenuItem.Sort -> POPUP_ITEM_SORT
             is ActionMenuItem.TopBar -> POPUP_ITEM_TOP_BAR
             is ActionMenuItem.Divider -> POPUP_ITEM_DIVIDER
+            is ActionMenuItem.RadioButton -> POPUP_ITEM_RADIO_BUTTON
         }
     }
 
@@ -98,7 +102,7 @@ class ActionMenuAdapter(
         }
     }
 
-    class PopupItemTopBarViewHolder(
+    private class PopupItemTopBarViewHolder(
         private val view: View,
         private val onBack: () -> Unit,
     ) : PopupItemViewHolder(view) {
@@ -111,7 +115,7 @@ class ActionMenuAdapter(
         }
     }
 
-    class PopupItemSortViewHolder(private val view: View) : PopupItemViewHolder(view) {
+    private class PopupItemSortViewHolder(private val view: View) : PopupItemViewHolder(view) {
 
         override fun bind(item: ActionMenuItem) {
             if (item is ActionMenuItem.Sort) {
@@ -119,6 +123,22 @@ class ActionMenuAdapter(
                     title.text = view.context.getText(item.title)
                     order.isVisible = item.active
                     order.isSelected = item.asc
+                }
+            }
+        }
+    }
+
+    private inner class PopupItemRadioButtonViewHolder(private val view: View) : PopupItemViewHolder(view) {
+
+        override fun bind(item: ActionMenuItem) {
+            if (item is ActionMenuItem.RadioButton) {
+                with(ActionPopupItemRadioButtonBinding.bind(view)) {
+                    title.text = view.context.getText(item.title)
+                    radioButton.isChecked = item.checked
+                    radioButton.setOnCheckedChangeListener { _, _ ->
+                        onClick.invoke(item)
+                        onDismiss.invoke()
+                    }
                 }
             }
         }

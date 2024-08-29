@@ -23,6 +23,8 @@ sealed class ActionMenuItem(override val title: Int) : IActionMenuItem {
         }
     }
 
+    sealed class RadioButton(title: Int, open val checked: Boolean = false) : ActionMenuItem(title = title)
+
     sealed class Sort(
         title: Int,
         val sortValue: String,
@@ -55,6 +57,10 @@ sealed class ActionMenuItem(override val title: Int) : IActionMenuItem {
 
     data object ManageRoom : Arrow(R.string.room_manage_room)
     data object SortBy : Arrow(R.string.toolbar_menu_sort_by)
+    data object View : Arrow(R.string.toolbar_menu_view)
+
+    data class ListView(override val checked: Boolean) : RadioButton(R.string.toolbar_menu_view_list)
+    data class GridView(override val checked: Boolean) : RadioButton(R.string.toolbar_menu_view_grid)
 
     data object Move : Operation(R.string.toolbar_menu_main_move, OperationsState.OperationType.MOVE)
     data object Copy : Operation(R.string.toolbar_menu_main_copy, OperationsState.OperationType.COPY)
@@ -83,11 +89,12 @@ object ActionMenuItemsFactory {
         asc: Boolean,
         security: Security,
         sortBy: String?,
+        isGridView: Boolean
     ): List<ActionMenuItem> {
         return if (root) {
-            getRoomRootItems(section, selected, allSelected, asc, sortBy)
+            getRoomRootItems(section, selected, allSelected, asc, sortBy, isGridView)
         } else {
-            getRoomFolderItems(selected, provider, empty, allSelected, asc, sortBy, currentRoom, security)
+            getRoomFolderItems(selected, provider, empty, allSelected, asc, sortBy, currentRoom, security, isGridView)
         }
     }
 
@@ -98,29 +105,39 @@ object ActionMenuItemsFactory {
         allSelected: Boolean,
         asc: Boolean,
         sortBy: String?,
+        isGridView: Boolean
     ) = mutableListOf<ActionMenuItem>().apply {
-        // select block
-        if (section != SectionType.LOCAL_RECENT) addAll(getSelectItems(selected, allSelected))
         if (!selected) {
-            // empty trash
-            if (section == SectionType.CLOUD_TRASH) {
-                add(ActionMenuItem.EmptyTrash)
-                add(ActionMenuItem.Divider)
-            }
+            add(
+                ActionMenuItem.View.get(
+                    listOf(
+                        ActionMenuItem.ListView(!isGridView),
+                        ActionMenuItem.GridView(isGridView),
+                    )
+                )
+            )
 
             // sort block
             if (section == SectionType.ONEDRIVE) {
                 add(ActionMenuItem.Title.get(asc, sortBy))
             } else {
-                addAll(
-                    listOfNotNull(
-                        ActionMenuItem.Title,
-                        ActionMenuItem.Type,
-                        ActionMenuItem.Size,
-                        ActionMenuItem.Author.takeIf { section != SectionType.DEVICE_DOCUMENTS },
-                        ActionMenuItem.Date
-                    ).map { it.get(asc, sortBy) }
+                add(
+                    ActionMenuItem.SortBy.get(
+                        listOfNotNull(
+                            ActionMenuItem.Title,
+                            ActionMenuItem.Type,
+                            ActionMenuItem.Size,
+                            ActionMenuItem.Author.takeIf { section != SectionType.DEVICE_DOCUMENTS },
+                            ActionMenuItem.Date
+                        ).map { it.get(asc, sortBy) }
+                    )
                 )
+            }
+
+            // empty trash
+            if (section == SectionType.CLOUD_TRASH) {
+                add(ActionMenuItem.Divider)
+                add(ActionMenuItem.EmptyTrash)
             }
         } else if (section == SectionType.CLOUD_TRASH) {
             // trash action block
@@ -128,6 +145,7 @@ object ActionMenuItemsFactory {
             add(ActionMenuItem.Delete)
         } else if (section == SectionType.CLOUD_ARCHIVE_ROOM) {
             // archive action block
+            add(ActionMenuItem.Restore)
             add(ActionMenuItem.Download)
             add(ActionMenuItem.Delete)
         } else {
@@ -138,17 +156,19 @@ object ActionMenuItemsFactory {
             add(ActionMenuItem.Copy)
             add(ActionMenuItem.Delete)
         }
+        // select block
+        if (section != SectionType.LOCAL_RECENT) addAll(getSelectItems(selected, allSelected))
     }
 
     private fun getSelectItems(selected: Boolean, allSelected: Boolean, divider: Boolean = true) =
         mutableListOf<ActionMenuItem>().apply {
+            if (divider) add(ActionMenuItem.Divider)
             if (!selected) {
                 add(ActionMenuItem.Select)
             } else {
                 add(ActionMenuItem.Deselect)
             }
             if (!allSelected) add(ActionMenuItem.SelectAll)
-            if (divider) add(ActionMenuItem.Divider)
         }
 
     private fun getRoomRootItems(
@@ -157,25 +177,36 @@ object ActionMenuItemsFactory {
         allSelected: Boolean,
         asc: Boolean,
         sortBy: String?,
+        isGridView: Boolean
     ) = mutableListOf<ActionMenuItem>().apply {
-        // select block
-        addAll(getSelectItems(selected, allSelected, !selected || section == SectionType.CLOUD_ARCHIVE_ROOM))
-        // sort block
+        // top block
         if (!selected) {
-            addAll(
-                arrayOf(
-                    ActionMenuItem.Title,
-                    ActionMenuItem.RoomType,
-                    ActionMenuItem.RoomTags,
-                    ActionMenuItem.Author,
-                    ActionMenuItem.Date
-                ).map { it.get(asc, sortBy) }
+            add(
+                ActionMenuItem.View.get(
+                    listOf(
+                        ActionMenuItem.ListView(!isGridView),
+                        ActionMenuItem.GridView(isGridView),
+                    )
+                )
+            )
+            add(
+                ActionMenuItem.SortBy.get(
+                    listOf(
+                        ActionMenuItem.Title,
+                        ActionMenuItem.RoomType,
+                        ActionMenuItem.RoomTags,
+                        ActionMenuItem.Author,
+                        ActionMenuItem.Date
+                    ).map { it.get(asc, sortBy) }
+                )
             )
         } else if (section == SectionType.CLOUD_ARCHIVE_ROOM) {
             // archive action block
             add(ActionMenuItem.Restore)
             add(ActionMenuItem.Delete)
         }
+        // select block
+        addAll(getSelectItems(selected, allSelected, !selected || section == SectionType.CLOUD_ARCHIVE_ROOM))
     }
 
     private fun getRoomFolderItems(
@@ -187,8 +218,8 @@ object ActionMenuItemsFactory {
         sortBy: String?,
         currentRoom: Boolean,
         security: Security,
+        isGridView: Boolean
     ) = mutableListOf<ActionMenuItem>().apply {
-        val showCopyLink = !currentRoom && !selected
         if (!selected) {
             add(
                 ActionMenuItem.ManageRoom.get(
@@ -204,9 +235,21 @@ object ActionMenuItemsFactory {
                     )
                 )
             )
+            if (!currentRoom) {
+                add(ActionMenuItem.Divider)
+                add(ActionMenuItem.CopyLink(false))
+            }
         }
         if (!empty) {
             if (!selected) {
+                add(
+                    ActionMenuItem.View.get(
+                        listOf(
+                            ActionMenuItem.ListView(!isGridView),
+                            ActionMenuItem.GridView(isGridView),
+                        )
+                    )
+                )
                 add(
                     ActionMenuItem.SortBy.get(
                         listOf(
@@ -218,21 +261,15 @@ object ActionMenuItemsFactory {
                         ).map { it.get(asc, sortBy) }
                     )
                 )
-                add(ActionMenuItem.Divider)
             }
-            addAll(getSelectItems(selected, allSelected, false))
             if (selected) {
-                add(ActionMenuItem.Divider)
                 if (provider == PortalProvider.Cloud.DocSpace) add(ActionMenuItem.CreateRoom)
                 add(ActionMenuItem.Download)
                 add(ActionMenuItem.Move)
                 add(ActionMenuItem.Copy)
                 add(ActionMenuItem.Delete)
             }
-        }
-        if (showCopyLink) {
-            add(ActionMenuItem.Divider)
-            add(ActionMenuItem.CopyLink(false))
+            addAll(getSelectItems(selected, allSelected))
         }
     }
 }

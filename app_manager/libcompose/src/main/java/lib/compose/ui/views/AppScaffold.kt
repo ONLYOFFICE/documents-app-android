@@ -22,9 +22,11 @@ fun AppScaffold(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     useTablePaddings: Boolean = true,
     topBar: @Composable () -> Unit = {},
+    fab: @Composable () -> Unit = {},
     content: @Composable BoxScope.() -> Unit
 ) {
     Scaffold(
+        floatingActionButton = fab,
         modifier = modifier,
         topBar = topBar,
         scaffoldState = scaffoldState,

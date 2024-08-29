@@ -17,6 +17,7 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestBatchOperation
+import app.documents.core.network.manager.models.explorer.isFavorite
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDeleteShare
 import app.documents.core.network.manager.models.request.RequestFavorites
@@ -51,6 +52,7 @@ import app.editors.manager.viewModels.main.CopyItems
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -264,7 +266,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     provider.createFile(id, requestCreate).flatMap { cloudFile ->
                         addFile(cloudFile)
                         addRecent(cloudFile)
-                        (provider as CloudFileProvider).opeEdit(cloudFile)
+                        (provider as CloudFileProvider).opeEdit(cloudFile, isItemShareable)
                             .toObservable()
                             .zipWith(Observable.fromCallable { cloudFile }) { info, file ->
                                 return@zipWith arrayOf(file, info)
@@ -415,7 +417,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun onUploadError(path: String?, info: String?, file: String?) {
-        viewState.onDeleteUploadFile(file)
         viewState.onSnackBar(info)
     }
 
@@ -444,7 +445,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (modelExplorerStack.currentId == file?.folderId) {
             addFile(file)
         }
-        viewState.onDeleteUploadFile(id)
         viewState.onSnackBar(info)
     }
 
@@ -453,18 +453,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun onUploadFileProgress(progress: Int, id: String?, folderId: String?) {
-        if (folderId != null && id != null && modelExplorerStack.currentId == folderId) {
-            viewState.onUploadFileProgress(progress, id)
-        }
+        // Nothing
     }
 
     override fun onUploadCanceled(path: String?, info: String?, id: String?) {
         viewState.onSnackBar(info)
-        viewState.onDeleteUploadFile(id)
-        if (UploadWork.getUploadFiles(modelExplorerStack.currentId)?.isEmpty() == true) {
-            viewState.onRemoveUploadHead()
-            getListWithHeaders(modelExplorerStack.last(), true)
-        }
     }
 
     override fun onUploadRepeat(path: String?, info: String?) {
@@ -562,24 +555,26 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         val requestFavorites = RequestFavorites()
         requestFavorites.fileIds = listOf(itemClicked?.id!!)
         (fileProvider as CloudFileProvider).let { provider ->
-            val isAdd = itemClicked?.favorite?.not() == true
-
-            disposable.add(provider.addToFavorites(requestFavorites, isAdd)
-                .subscribe({
-                    (itemClicked as? CloudFile)?.fileStatus = if (isAdd) {
-                        ApiContract.FileStatus.FAVORITE.toString()
-                    } else {
-                        ApiContract.FileStatus.NONE.toString()
-                    }
-                    viewState.onUpdateFavoriteItem()
-                    viewState.onSnackBar(
+            val item = itemClicked
+            if (item != null && item is CloudFile) {
+                val isAdd = !item.isFavorite
+                disposable.add(provider.addToFavorites(requestFavorites, isAdd)
+                    .subscribe({
                         if (isAdd) {
-                            context.getString(R.string.operation_add_to_favorites)
+                            item.fileStatus += ApiContract.FileStatus.FAVORITE
                         } else {
-                            context.getString(R.string.operation_remove_from_favorites)
+                            item.fileStatus -= ApiContract.FileStatus.FAVORITE
                         }
-                    )
-                }) { throwable: Throwable -> fetchError(throwable) })
+                        viewState.onUpdateFavoriteItem()
+                        viewState.onSnackBar(
+                            if (isAdd) {
+                                context.getString(R.string.operation_add_to_favorites)
+                            } else {
+                                context.getString(R.string.operation_remove_from_favorites)
+                            }
+                        )
+                    }) { throwable: Throwable -> fetchError(throwable) })
+            }
         }
     }
 
@@ -697,7 +692,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             StringUtils.Extension.PDF -> {
                 checkSdkVersion { result ->
                     if (result) {
-                        openDocumentServer(cloudFile, isEdit)
+                        openDocumentServer(cloudFile, isEdit, isItemShareable)
                     } else {
                         downloadTempFile(cloudFile, isEdit)
                     }
@@ -714,11 +709,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, extension)
     }
 
-    private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean) {
+    private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean, canShareable: Boolean) {
         with(fileProvider as CloudFileProvider) {
             val token = AccountUtils.getToken(context, account.accountName)
             disposable.add(
-                openDocument(cloudFile, token).subscribe({ result ->
+                openDocument(cloudFile, token, canShareable).subscribe({ result ->
                     viewState.onDialogClose()
                     if (result.isPdf) {
                         downloadTempFile(cloudFile, false)
@@ -837,7 +832,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = itemClicked?.shared == true
 
     private val isClickedItemFavorite: Boolean
-        get() = itemClicked?.favorite == true
+        get() = itemClicked.isFavorite
 
     private val isItemOwner: Boolean
         get() = StringUtils.equals(itemClicked?.createdBy?.id, account.id)
@@ -856,7 +851,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
 
     private val isItemShareable: Boolean
-        get() = if (account.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
+        get() = if (account.isDocSpace && (currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM || currentSectionType == ApiContract.SectionType.CLOUD_USER)) {
             itemClicked?.isCanShare == true
         } else {
             isItemEditable && (!isCommonSection || isAdmin) && !isProjectsSection
@@ -876,34 +871,57 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onDownloadActivity(uri)
     }
 
-    fun archiveRoom(isArchive: Boolean = true) {
-        roomProvider?.let {
-            disposable.add(
-                if (isSelectionMode) {
-                    Observable.fromArray(modelExplorerStack.selectedFolders).flatMapIterable { room ->
-                        room.map { item -> item.id }
-                    }.flatMap { id -> it.archiveRoom(id, isArchive) }
-                        .doOnSubscribe { viewState.onSwipeEnable(true) }
-                        .lastElement()
-                        .subscribe({ response ->
-                            if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
-                                viewState.onArchiveRoom(isArchive, modelExplorerStack.selectedFolders.size)
-                                viewState.onSwipeEnable(false)
-                                setSelection(false)
-                                refresh()
-                            }
-                        }, ::fetchError)
+    fun archiveRooms(isArchive: Boolean) {
+        viewState.onDialogProgress(
+            context.getString(R.string.dialogs_wait_title),
+            true,
+            TAG_DIALOG_CANCEL_SINGLE_OPERATIONS
+        )
+        viewState.onDialogProgress(100, 0)
+        requestJob = presenterScope.launch(Dispatchers.IO) {
+            try {
+                val provider = requireNotNull(roomProvider)
+                val message = if (isSelectionMode) {
+                    val selected = modelExplorerStack.selectedFolders.map(CloudFolder::id)
+                    selected.forEachIndexed { index, id ->
+                        provider.archiveRoom(id, isArchive)
+                        withContext(Dispatchers.Main) {
+                            val progress = 100 / (selected.size / (index + 1).toFloat())
+                            viewState.onDialogProgress(100, progress.toInt())
+                        }
+                    }
+                    if (isArchive) {
+                        context.getString(R.string.context_rooms_archive_message)
+                    } else {
+                        context.resources.getQuantityString(R.plurals.context_rooms_unarchive_message, selected.size)
+                    }
                 } else {
-                    it.archiveRoom(roomClicked?.id ?: "", isArchive = isArchive)
-                        .doOnSubscribe { viewState.onSwipeEnable(true) }
-                        .subscribe({ response ->
-                            if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
-                                viewState.onArchiveRoom(isArchive)
-                                viewState.onSwipeEnable(false)
-                            }
-                        }, ::fetchError)
+                    provider.archiveRoom(roomClicked?.id.orEmpty(), isArchive = isArchive)
+                    if (isArchive) {
+                        context.getString(R.string.context_room_archive_message)
+                    } else {
+                        context.resources.getQuantityString(R.plurals.context_rooms_unarchive_message, 1)
+                    }
                 }
-            )
+
+                withContext(Dispatchers.Main) {
+                    if (isSelectionMode) {
+                        deselectAll()
+                        setSelection(false)
+                    }
+                    viewState.onDialogProgress(100, 100)
+                    viewState.onSnackBar(message)
+                    refresh()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    if (e !is CancellationException) {
+                        fetchError(e)
+                    }
+                }
+            } finally {
+                viewState.onDialogClose()
+            }
         }
     }
 
@@ -917,25 +935,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun copyLinkFromContextMenu() {
         val item = itemClicked
-        when  {
+        when {
             (item as? CloudFolder)?.isRoom == true -> copyRoomLink()
             item is CloudFolder -> saveLink(getInternalLink(item))
             else -> saveExternalLinkToClipboard()
-        }
-    }
-
-    fun archiveSelectedRooms() {
-        roomProvider?.let { provider ->
-            disposable.add(
-                Observable
-                    .zip(modelExplorerStack.selectedFoldersIds.map(provider::archiveRoom)) {}
-                    .doOnSubscribe { viewState.onSwipeEnable(true) }
-                    .subscribe {
-                        viewState.onArchiveSelectedRooms(modelExplorerStack.selectedFolders)
-                        viewState.onSwipeEnable(false)
-                        deselectAll()
-                    }
-            )
         }
     }
 

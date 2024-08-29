@@ -66,8 +66,6 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         const val PERMISSION_WRITE_STORAGE = 101
         const val PERMISSION_READ_STORAGE = 102
         const val PERMISSION_READ_WRITE_STORAGE = 103
-
-        const val EXTRA_IS_REFRESH = "EXTRA_IS_REFRESH"
     }
 
     val isTablet: Boolean

@@ -219,7 +219,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         onSnackBar(resources.getQuantityString(R.plurals.operation_delete_irretrievably, items.size))
         explorerAdapter?.let { adapter ->
             adapter.removeItems(items.toList())
-            adapter.checkHeaders()
+//            adapter.checkHeaders()
             setPlaceholder(adapter.itemList.isNullOrEmpty())
             onClearMenu()
         }

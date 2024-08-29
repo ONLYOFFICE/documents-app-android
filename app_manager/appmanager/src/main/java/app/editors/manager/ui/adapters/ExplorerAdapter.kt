@@ -3,7 +3,6 @@ package app.editors.manager.ui.adapters
 import android.content.Context
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -18,17 +17,20 @@ import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
-import app.editors.manager.ui.adapters.holders.FileViewHolder
-import app.editors.manager.ui.adapters.holders.FolderViewHolder
-import app.editors.manager.ui.adapters.holders.FooterViewHolder
-import app.editors.manager.ui.adapters.holders.HeaderViewHolder
-import app.editors.manager.ui.adapters.holders.RecentViaLinkViewHolder
-import app.editors.manager.ui.adapters.holders.UploadFileViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.GridFileViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.GridFolderViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.GridFooterViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.GridRoomViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListFileViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListFolderViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListFooterViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListRoomViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.RecentViaLinkViewHolder
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import lib.toolkit.base.ui.adapters.factory.inflate
 import javax.inject.Inject
 
-class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<Entity>() {
+class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView: Boolean) : BaseAdapter<Entity>() {
 
     @Inject
     lateinit var context: Context
@@ -41,6 +43,7 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
     var isRoot: Boolean = false
     var isFooter: Boolean = false
     var isSectionMy: Boolean = false
+    var isTrash: Boolean = false
 
     var isSelectMode = false
         set(isSelectMode) {
@@ -54,22 +57,23 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
             notifyDataSetChanged()
         }
 
+    var isGridView: Boolean = initialGridView
+
     private val footer: Footer = Footer()
 
     init {
         getApp().appComponent.inject(this)
     }
 
-    override fun onCreateViewHolder(view: ViewGroup, type: Int):
-            BaseViewHolderExplorer<*> {
+    override fun onCreateViewHolder(view: ViewGroup, type: Int): BaseViewHolderExplorer<*> {
         return factory.createViewHolder(view.inflate(type), type, this)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is FooterViewHolder) {
+        if (holder is ListFooterViewHolder) {
             holder.bind(footer)
         } else {
-            setFileFavoriteStatus(position)
             (holder as BaseViewHolderExplorer<Entity>).bind(mList[position])
         }
     }
@@ -77,14 +81,7 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<*>) {
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
-        } else {
-            if (holder is UploadFileViewHolder) {
-                payloads[0]?.let { payload ->
-                    if (payload is UploadFile) {
-                        holder.updateProgress(payload)
-                    }
-                }
-            }
+            return
         }
     }
 
@@ -94,55 +91,36 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer) : BaseAdapter<En
 
     override fun getItemViewType(position: Int): Int {
         return if (position == itemCount - 1) {
-            FooterViewHolder.LAYOUT
+            if (isGridView) GridFooterViewHolder.LAYOUT else ListFooterViewHolder.LAYOUT
         } else {
-            when (itemList[position]) {
-                is CloudFile -> FileViewHolder.LAYOUT
-                is CloudFolder -> FolderViewHolder.LAYOUT
-                is UploadFile -> UploadFileViewHolder.LAYOUT
-                is Header -> HeaderViewHolder.LAYOUT
+            when (val item = itemList[position]) {
+                is CloudFile -> if (isGridView) GridFileViewHolder.LAYOUT else ListFileViewHolder.LAYOUT
+                is CloudFolder -> getFolderLayout(item)
                 RecentViaLink -> RecentViaLinkViewHolder.LAYOUT
                 else -> 0
             }
         }
     }
 
-    private fun setFileFavoriteStatus(position: Int) {
-        val file = mList[position]
-        if (file is CloudFile && file.fileStatus.isNotEmpty()) {
-            val favoriteMask = file.fileStatus.toInt() and ApiContract.FileStatus.FAVORITE
-            file.favorite = favoriteMask != 0
+    private fun getFolderLayout(item: CloudFolder): Int {
+        return if (isGridView) {
+            if (item.isRoom) {
+                GridRoomViewHolder.LAYOUT
+            } else {
+                GridFolderViewHolder.LAYOUT
+            }
+        } else {
+            if (item.isRoom) {
+                ListRoomViewHolder.LAYOUT
+            } else {
+                ListFolderViewHolder.LAYOUT
+            }
         }
     }
 
     fun isLoading(isShow: Boolean) {
         isFooter = isShow
         notifyItemChanged(itemCount - 1)
-    }
-
-    fun getUploadFileById(id: String): UploadFile? {
-        mList?.let { list ->
-            for (file in list) {
-                if (file is UploadFile && file.id == id)
-                    return file
-            }
-        }
-        return null
-    }
-
-    fun removeUploadItemById(id: String) {
-        mList?.let { list ->
-            for (file in list) {
-                if (file is UploadFile && file.id == id) {
-                    mList.remove(file)
-                    notifyItemRemoved(mList.indexOf(file))
-                    break
-                }
-            }
-            if (list.none { it is UploadFile}) {
-                removeHeader(context.getString(R.string.upload_manager_progress_title))
-            }
-        }
     }
 
     fun checkHeaders() {

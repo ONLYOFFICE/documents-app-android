@@ -128,14 +128,6 @@ public interface DocsBaseView extends BaseViewExt {
     void onSnackBarWithAction(@NonNull String message, @NonNull String button, @NonNull View.OnClickListener action);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onUploadFileProgress(int progress, String id);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onRemoveUploadHead();
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDeleteUploadFile(String id);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onAddUploadsFile(List<? extends Entity> uploadFiles);
-    @StateStrategyType(OneExecutionStateStrategy.class)
     void onOpenLocalFile(CloudFile file);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onNoProvider();
@@ -157,4 +149,7 @@ public interface DocsBaseView extends BaseViewExt {
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onOpenDocumentServer(@Nullable CloudFile file, @Nullable String info, @NonNull boolean isEdit);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onSetGridView(boolean isGrid);
 }

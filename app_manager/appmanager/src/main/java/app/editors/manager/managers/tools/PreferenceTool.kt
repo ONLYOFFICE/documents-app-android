@@ -41,6 +41,7 @@ class PreferenceTool @Inject constructor(val context: Context) {
         private const val KEY_FILTER = "KEY_FILTER"
         private const val KEY_SYSTEM_LOCALE = "KEY_SYSTEM_LOCALE"
         private const val KEY_SKIP_LOCALE_CONFIRMATION = "KEY_SKIP_LOCALE_CONFIRMATION"
+        internal const val KEY_IS_GRID_VIEW = "KEY_IS_GRID_VIEW"
     }
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(TAG, Context.MODE_PRIVATE)
@@ -164,4 +165,18 @@ class PreferenceTool @Inject constructor(val context: Context) {
          set(value) {
              sharedPreferences.edit().putString("APP_VERSION", value).apply()
          }
+
+    var isGridView: Boolean
+        get() = sharedPreferences.getBoolean(KEY_IS_GRID_VIEW, false)
+        set(value) {
+            sharedPreferences.edit().putBoolean(KEY_IS_GRID_VIEW, value).apply()
+        }
+
+    fun registerChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    fun unregisterChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
+    }
 }

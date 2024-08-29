@@ -385,7 +385,7 @@ class CloudFileProvider @Inject constructor(
     }
 
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-    fun opeEdit(cloudFile: CloudFile): Single<String?> {
+    fun opeEdit(cloudFile: CloudFile, canShareable: Boolean? = null): Single<String?> {
         return Single.fromCallable { runBlocking { managerRepository.updateDocumentServerVersion() } }
             .flatMap { managerService.openFile(cloudFile.id, cloudFile.version) }
             .map { response ->
@@ -401,6 +401,8 @@ class CloudFileProvider @Inject constructor(
                     .put("url", docService)
                     .put("size", cloudFile.pureContentLength)
                     .put("updated", cloudFile.updated.time)
+                    .put("fileId", cloudFile.id)
+                    .put("canShareable", canShareable)
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).map { response ->
@@ -433,7 +435,7 @@ class CloudFileProvider @Inject constructor(
     }
 
     @SuppressLint("CheckResult")
-    fun openDocument(cloudFile: CloudFile, token: String?): Single<OpenDocumentResult> {
+    fun openDocument(cloudFile: CloudFile, token: String?, canShareable: Boolean): Single<OpenDocumentResult> {
         return Single.fromCallable { StringUtils.getExtension(cloudFile.fileExst) == StringUtils.Extension.PDF }
             .flatMap { isPdf ->
                 if (isPdf) {
@@ -441,13 +443,13 @@ class CloudFileProvider @Inject constructor(
                         .subscribeOn(Schedulers.io())
                         .flatMap { response ->
                             if (checkOformPdf(response.body()?.byteStream())) {
-                                opeEdit(cloudFile).map { info -> OpenDocumentResult(info = info) }
+                                opeEdit(cloudFile, canShareable).map { info -> OpenDocumentResult(info = info) }
                             } else {
                                 Single.just(OpenDocumentResult(isPdf = true))
                             }
                         }
                 } else {
-                    opeEdit(cloudFile).map { info -> OpenDocumentResult(info = info) }
+                    opeEdit(cloudFile, canShareable).map { info -> OpenDocumentResult(info = info) }
                 }
             }
     }

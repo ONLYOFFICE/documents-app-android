@@ -4,7 +4,6 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
-import app.editors.manager.managers.utils.ManagerUiUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 
 sealed class ExplorerContextItem(
@@ -15,7 +14,7 @@ sealed class ExplorerContextItem(
     fun get(state: ExplorerContextState): ExplorerContextItem? = takeIf { state.visible(this) }
 
     class Header(val state: ExplorerContextState) : ExplorerContextItem(
-        icon = ManagerUiUtils.getIcon(state.item),
+        icon = -1,
         title = -1
     ), ExplorerContextBlockOrder.Header {
         var info = state.headerInfo ?: TimeUtils.formatDate(state.item.updated)

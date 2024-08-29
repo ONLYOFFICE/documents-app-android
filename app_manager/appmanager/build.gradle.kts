@@ -64,8 +64,8 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 564
-        versionName = "8.1.2"
+        versionCode = 569
+        versionName = "8.2.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
@@ -333,4 +333,31 @@ dependencies {
 
 apply(plugin = "com.google.gms.google-services")
 
+//tasks.register("copySamples") {
+//    println("Copy samples")
+//
+//    val documentSamplesPath = "../../../document-templates/sample"
+//    val documentNewPath = "../../../document-templates/new"
+//
+//    val assetsSamplePath = projectDir.absolutePath + "/src/main/assets/samples"
+//    val assetsNewPath = projectDir.absolutePath + "/src/main/assets/templates"
+//
+//    if (!File(assetsSamplePath).exists()) {
+//        File(assetsSamplePath).mkdirs()
+//    }
+//
+//    if (!File(assetsNewPath).exists()) {
+//        File(assetsNewPath).mkdirs()
+//    }
+//
+//    copy {
+//        from(documentSamplesPath)
+//        into(assetsSamplePath)
+//    }
+//
+//    copy {
+//        from(documentNewPath)
+//        into(assetsNewPath)
+//    }
+//}
 

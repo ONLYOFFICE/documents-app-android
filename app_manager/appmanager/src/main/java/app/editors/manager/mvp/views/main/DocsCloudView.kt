@@ -1,7 +1,6 @@
 package app.editors.manager.mvp.views.main
 
 import androidx.annotation.StringRes
-import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.viewModels.main.CopyItems
@@ -17,12 +16,6 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onStateUpdateFilterMenu()
-
-    @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onArchiveRoom(isArchived: Boolean, count: Int = 1)
-
-    @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onArchiveSelectedRooms(rooms: List<Entity>)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onConversionQuestion()

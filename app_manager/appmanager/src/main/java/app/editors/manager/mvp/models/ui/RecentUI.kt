@@ -16,7 +16,7 @@ data class RecentUI(
 ) : ViewType {
 
     override val viewType: Int
-        get() = R.layout.list_explorer_files
+        get() = R.layout.layout_explorer_list_file
 }
 
 fun RecentUI.toRecent(): Recent {

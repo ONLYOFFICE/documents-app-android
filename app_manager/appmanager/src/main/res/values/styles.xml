@@ -21,4 +21,62 @@
         <item name="android:statusBarColor">@color/colorBackground</item>
     </style>
 
+    <style name="GridItemLayout.Card" parent="AppTheme">
+        <item name="cardElevation">0dp</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="GridItemLayout.ConstraintLayout" parent="AppTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:paddingHorizontal">4dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="GridItemLayout.Image" parent="AppTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">80dp</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <style name="GridItemLayout.Title" parent="Widget.Common.TextView">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="GridItemLayout.Subtitle" parent="Widget.Common.TextView.Micro.Secondary">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="ExplorerItemLayout.SelectIcon" parent="AppTheme">
+        <item name="android:layout_width">22dp</item>
+        <item name="android:layout_height">22dp</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <style name="ExplorerItemLayout.RoomBadge" parent="AppTheme">
+        <item name="android:background">@color/colorBackground</item>
+        <item name="android:translationX">@dimen/default_margin_medium</item>
+        <item name="android:translationY">@dimen/default_margin_medium</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Full</item>
+        <item name="contentPadding">@dimen/default_margin_micro</item>
+    </style>
+
 </resources>

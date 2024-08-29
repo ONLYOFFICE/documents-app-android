@@ -5,22 +5,19 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.forEach
 import androidx.fragment.app.setFragmentResultListener
-import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.Security
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.ActionMenuAdapter
 import app.editors.manager.managers.tools.ActionMenuItem
-import app.editors.manager.managers.tools.ActionMenuItemsFactory
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
+import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.share.InviteUsersFragment
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
-import lib.toolkit.base.ui.popup.ActionBarMenu
 
 class DocsRoomFragment : DocsCloudFragment() {
 
@@ -54,7 +51,7 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.toolbar_selection_archive -> cloudPresenter.archiveSelectedRooms()
+            R.id.toolbar_selection_archive -> cloudPresenter.archiveRooms(true)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -70,34 +67,12 @@ class DocsRoomFragment : DocsCloudFragment() {
         } else super.onStateMenuSelection()
     }
 
-    override fun showActionBarMenu() {
-        ActionBarMenu(
-            context = requireContext(),
-            adapter = ActionMenuAdapter(actionMenuClickListener),
-            items = ActionMenuItemsFactory.getRoomItems(
-                section = presenter.getSectionType(),
-                provider = context?.accountOnline?.portal?.provider,
-                root = presenter.isRoot,
-                selected = presenter.isSelectionMode,
-                allSelected = presenter.isSelectedAll,
-                sortBy = presenter.preferenceTool.sortBy,
-                empty = presenter.isListEmpty(),
-                currentRoom = presenter.isRoomFolder(),
-                security = presenter.roomClicked?.security ?: Security(),
-                asc = presenter.preferenceTool.sortOrder.equals(
-                    ApiContract.Parameters.VAL_SORT_ORDER_ASC,
-                    ignoreCase = true
-                )
-            )
-        ).show(requireActivity().window.decorView)
-    }
-
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
             ExplorerContextItem.Duplicate -> cloudPresenter.duplicateRoom()
             ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             ExplorerContextItem.Reconnect -> reconnectStorage()
-            ExplorerContextItem.Archive -> cloudPresenter.archiveRoom()
+            ExplorerContextItem.Archive -> cloudPresenter.archiveRooms(true)
             ExplorerContextItem.AddUsers -> showInviteUsersDialog()
             is ExplorerContextItem.ExternalLink -> cloudPresenter.copyLinkFromContextMenu()
             is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()
@@ -110,15 +85,11 @@ class DocsRoomFragment : DocsCloudFragment() {
         when (item) {
             ActionMenuItem.Archive -> {
                 cloudPresenter.popToRoot()
-                cloudPresenter.archiveRoom()
+                cloudPresenter.archiveRooms(true)
             }
             ActionMenuItem.Info -> showRoomInfoFragment()
             ActionMenuItem.EditRoom -> cloudPresenter.editRoom()
-            ActionMenuItem.Invite -> ShareActivity.show(
-                this,
-                presenter.roomClicked ?: error("room can not be null"),
-                false
-            )
+            ActionMenuItem.Invite -> showInviteUsersDialog()
             is ActionMenuItem.CopyLink -> cloudPresenter.copyLinkFromActionMenu(item.isRoom)
             ActionMenuItem.LeaveRoom -> cloudPresenter.checkRoomOwner()
             else -> super.actionMenuClickListener.invoke(item)
@@ -156,7 +127,7 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     private fun showInviteUsersDialog() {
-        (presenter.itemClicked as? CloudFolder)?.let { room ->
+        presenter.roomClicked?.let { room ->
             InviteUsersFragment.newInstance(room.id, room.roomType).show(parentFragmentManager, null)
         }
     }

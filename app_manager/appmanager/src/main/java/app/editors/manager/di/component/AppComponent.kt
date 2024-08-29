@@ -44,8 +44,6 @@ import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
-import app.editors.manager.mvp.presenters.share.AddPresenter
-import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.editors.manager.mvp.presenters.storages.DocsDropboxPresenter
@@ -184,12 +182,6 @@ interface AppComponent {
     * */
     fun inject(mediaVideoFragment: MediaVideoFragment?)
     fun inject(mediaImageFragment: MediaImageFragment?)
-
-    /*
-    * Share
-    * */
-    fun inject(settingsPresenter: SettingsPresenter?)
-    fun inject(addPresenter: AddPresenter?)
 
     /*
     * Storage

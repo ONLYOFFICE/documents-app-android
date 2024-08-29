@@ -17,10 +17,15 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -41,9 +46,15 @@ object GlideUtils {
         )
     }
 
-    fun getCorrectLoad(url: String?, token: String): Any {
+    fun getCorrectLoad(url: String?, token: String, portal: String? = null): Any {
+        if (url.isNullOrEmpty()) {
+            return Any()
+        }
+
+        val urlWithPortal = if (url.startsWith("http")) url else portal.orEmpty() + url
+
         return GlideUrl(
-            URI(url).normalize().toString(), // remove duplicated slashes
+            URI(urlWithPortal).normalize().toString(), // remove duplicated slashes
             LazyHeaders.Builder()
                 .addHeader(ApiContract.HEADER_AUTHORIZATION, token)
                 .build()
@@ -101,17 +112,41 @@ object GlideUtils {
             .into(this)
     }
 
-    fun ImageView.setRoomLogo(logo: String, placeholder: Int) {
+    fun ImageView.setRoomLogo(logo: String, isGrid: Boolean, onLoadError: () -> Unit) {
         context.accountOnline?.let { account ->
             val token = checkNotNull(AccountUtils.getToken(context, account.accountName))
             val url = getCorrectLoad(account.portal.scheme.value + account.portal.url + logo, token)
+
+            val cornerRadius = if (isGrid) {
+                context.resources.getDimension(lib.toolkit.base.R.dimen.grid_card_view_corner_radius)
+            } else {
+                context.resources.getDimension(lib.toolkit.base.R.dimen.default_corner_radius_medium)
+            }
+
             Glide.with(context)
                 .load(url)
-                .apply(
-                    RequestOptions()
-                        .timeout(30 * 1000)
-                        .error(placeholder)
-                )
+                .apply(RequestOptions().timeout(30 * 1000))
+                .transform(RoundedCorners(cornerRadius.toInt()))
+                .addListener(object : RequestListener<Drawable> {
+
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        onLoadError.invoke()
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        model: Any,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean = false
+                })
                 .into(this)
         }
     }
