@@ -59,6 +59,7 @@ class AddRoomViewModel(
     private val context: Application,
     private val roomProvider: RoomProvider,
     private val roomInfo: Item? = null,
+    private val roomType: Int? = null,
     private val copyItems: CopyItems? = null,
 ) : AndroidViewModel(application = context) {
 
@@ -81,6 +82,8 @@ class AddRoomViewModel(
                     location = null
                 ).takeIf { roomInfo.providerItem }
             )
+        } else if (roomType != null){
+            AddRoomData(roomType)
         } else {
             AddRoomData(2)
         }
@@ -92,10 +95,6 @@ class AddRoomViewModel(
 
     private val roomTags: Set<String> = (roomInfo as? CloudFolder)?.tags?.toSet().orEmpty()
     private var isDeleteLogo: Boolean = false
-
-    fun setType(roomType: Int) {
-        _roomState.value = _roomState.value.copy(type = roomType)
-    }
 
     fun setImageUri(imageUri: Uri?) {
         viewModelScope.launch {

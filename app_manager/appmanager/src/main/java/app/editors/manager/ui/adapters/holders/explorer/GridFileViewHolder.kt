@@ -22,6 +22,9 @@ class GridFileViewHolder(view: View, adapter: ExplorerAdapter) :
 
     private val binding: LayoutExplorerGridFileBinding = LayoutExplorerGridFileBinding.bind(view)
 
+    override val root: View
+        get() = binding.root
+
     override val rootLayout: CardView
         get() = binding.cardRootLayout
 

@@ -15,6 +15,9 @@ class GridFooterViewHolder(parent: View, adapter: ExplorerAdapter) :
         val LAYOUT: Int = R.layout.layout_explorer_list_footer
     }
 
+    override val root: View?
+        get() = null
+
     override fun getCachedIcon(): View? = null
 
     override val selectIcon: ImageView? = null

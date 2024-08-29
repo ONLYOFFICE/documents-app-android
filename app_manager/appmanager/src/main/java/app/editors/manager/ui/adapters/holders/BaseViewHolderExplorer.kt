@@ -6,17 +6,19 @@ import android.view.View
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.managers.utils.StorageUtils
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.ExplorerAdapter
 
 
-abstract class BaseViewHolderExplorer<T>(itemView: View, adapter: ExplorerAdapter) :
-    RecyclerView.ViewHolder(itemView) {
-
-    @JvmField
-    protected var adapter: ExplorerAdapter = adapter
+abstract class BaseViewHolderExplorer<T>(
+    itemView: View,
+    @JvmField protected var adapter: ExplorerAdapter
+) : RecyclerView.ViewHolder(itemView) {
 
     protected val icon: Bitmap
         get() {
@@ -37,16 +39,74 @@ abstract class BaseViewHolderExplorer<T>(itemView: View, adapter: ExplorerAdapte
 
     protected abstract val selectIcon: ImageView?
 
+    protected abstract val root: View?
+
     abstract fun bind(element: T)
 
     protected abstract fun getCachedIcon(): View?
 
-    protected open fun initSelecting(isSelected: Boolean) {
-        selectIcon?.isVisible = adapter.isSelectMode
-        if (isSelected) {
+    protected open fun initSelecting(element: T): Boolean {
+        val selectable = when (adapter.pickerMode) {
+            is PickerMode.Files.Any -> element is CloudFile
+            is PickerMode.Files.PDFForm -> element is CloudFile && element.isPdfForm
+            else -> adapter.isSelectMode
+        }
+
+        val selected = when (val adapter = adapter.pickerMode) {
+            is PickerMode.Files -> (element as? CloudFile)?.id in adapter.selectedIds
+            else -> (element as? Item)?.isSelected == true
+        }
+
+        selectIcon?.isVisible = selectable
+
+        if (selected) {
             selectIcon?.setImageResource(R.drawable.ic_select_checked)
         } else {
             selectIcon?.setImageResource(R.drawable.ic_select_not_checked)
+        }
+
+        return selected
+    }
+
+    protected fun setElementClickable(element: T) {
+        val pickerMode = adapter.pickerMode
+        if (pickerMode == PickerMode.None) {
+            return
+        }
+
+        val clickable = when (element) {
+            is CloudFile -> {
+                if (pickerMode is PickerMode.Files) {
+                    element.folderId != pickerMode.destFolderId
+                    if (pickerMode is PickerMode.Files.PDFForm) element.isPdfForm else false
+                } else {
+                    true
+                }
+            }
+
+            is CloudFolder -> {
+                element.type !in arrayOf(25, 26)
+            }
+
+            else -> true
+        }
+
+        if (clickable) {
+            root?.let { root ->
+                root.alpha = 1f
+                root.isClickable = true
+                root.isFocusable = true
+                root.setOnClickListener { view ->
+                    adapter.mOnItemClickListener?.onItemClick(view, layoutPosition)
+                }
+            }
+        } else {
+            root?.let { root ->
+                root.alpha = .6f
+                root.isClickable = false
+                root.isFocusable = false
+                root.setOnClickListener(null)
+            }
         }
     }
 
@@ -67,7 +127,17 @@ abstract class BaseViewHolderExplorer<T>(itemView: View, adapter: ExplorerAdapte
 
                 folder.shared -> {
                     overlayImage.isVisible = true
-                    overlayImage.setImageResource(R.drawable.ic_list_item_share_user_icon_secondary)
+                    overlayImage.setImageResource(R.drawable.ic_list_item_share_user_icon)
+                }
+
+                folder.type == 26 -> {
+                    overlayImage.isVisible = true
+                    overlayImage.setImageResource(R.drawable.ic_access_fill_form)
+                }
+
+                folder.type == 25 -> {
+                    overlayImage.isVisible = true
+                    overlayImage.setImageResource(R.drawable.ic_list_select_done_white)
                 }
 
                 else -> Unit

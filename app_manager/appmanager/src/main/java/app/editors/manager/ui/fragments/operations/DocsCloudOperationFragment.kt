@@ -12,8 +12,8 @@ import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.mvp.presenters.main.PickerMode
-import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
 import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
+import app.editors.manager.ui.fragments.main.AddRoomFragment
 import app.editors.manager.ui.fragments.main.DocsCloudFragment
 import app.editors.manager.viewModels.main.CopyItems
 import lib.toolkit.base.managers.utils.getIntExt
@@ -109,7 +109,7 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
     private fun setCreateFolderClickListener() {
         if (isRoomsRoot) {
             operationDialogFragment?.setCreateFolderClickListener {
-                AddRoomDialog.show(
+                AddRoomFragment.show(
                     activity = requireActivity(),
                     type = ApiContract.RoomType.FILL_FORMS_ROOM,
                     copyItems = CopyItems(fileIds = listOf())

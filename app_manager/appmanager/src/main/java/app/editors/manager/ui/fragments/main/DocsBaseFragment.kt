@@ -40,7 +40,6 @@ import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
-import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.EntityDiffUtilsCallback
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
@@ -50,6 +49,7 @@ import app.editors.manager.ui.dialogs.MoveCopyDialog.DialogButtonOnClick
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextState
+import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -1178,6 +1178,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             items = if (isRoom) {
                 ActionMenuItemsFactory.getRoomItems(
                     section = presenter.getSectionType(),
+                    provider = context?.accountOnline?.portal?.provider,
                     root = presenter.isRoot,
                     selected = presenter.isSelectionMode,
                     allSelected = presenter.isSelectedAll,
@@ -1194,6 +1195,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             } else {
                 ActionMenuItemsFactory.getDocsItems(
                     section = presenter.getSectionType(),
+                    provider = context?.accountOnline?.portal?.provider,
                     selected = presenter.isSelectionMode,
                     allSelected = presenter.isSelectedAll,
                     sortBy = presenter.preferenceTool.sortBy,

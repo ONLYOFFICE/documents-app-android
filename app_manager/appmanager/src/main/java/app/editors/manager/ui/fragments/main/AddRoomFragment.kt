@@ -57,7 +57,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentManager
+import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -74,6 +75,7 @@ import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
 import app.editors.manager.app.shareApi
 import app.editors.manager.managers.utils.GlideUtils
+import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.AddRoomItem
@@ -82,6 +84,7 @@ import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.viewModels.main.AddRoomData
 import app.editors.manager.viewModels.main.AddRoomViewModel
 import app.editors.manager.viewModels.main.CopyItems
+import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.StorageState
 import app.editors.manager.viewModels.main.UserListMode
 import app.editors.manager.viewModels.main.ViewState
@@ -127,7 +130,7 @@ class AddRoomFragment : ComposeDialogFragment() {
 
         val TAG: String = AddRoomFragment::class.java.simpleName
 
-        private fun newInstance(roomType: Int, room: Item?, items: CopyItems?) =
+        private fun newInstance(roomType: Int?, room: Item?, items: CopyItems?) =
             AddRoomFragment().putArgs(
                 TAG_ROOM_TYPE to roomType,
                 TAG_ROOM_INFO to room,
@@ -135,12 +138,17 @@ class AddRoomFragment : ComposeDialogFragment() {
             )
 
         fun show(
-            fragmentManager: FragmentManager,
-            roomType: Int,
-            roomInfo: Item? = null,
-            items: CopyItems?,
+            activity: FragmentActivity,
+            type: Int? = null,
+            room: CloudFolder? = null,
+            copyItems: CopyItems? = null,
+            onResult: (Bundle) -> Unit
         ) {
-            newInstance(roomType, roomInfo, items).show(fragmentManager, null)
+            activity.supportFragmentManager.setFragmentResultListener(
+                TAG_RESULT, activity
+            ) { _, bundle -> onResult(bundle) }
+            newInstance(type, room, copyItems)
+                .show(activity.supportFragmentManager, TAG)
         }
     }
 
@@ -154,13 +162,13 @@ class AddRoomFragment : ComposeDialogFragment() {
     override fun Content() {
         ManagerTheme {
             val navController = rememberNavController()
-            val roomType = remember { arguments?.getInt(TAG_ROOM_TYPE) }
             val room = remember { arguments?.getSerializableExt<Item>(TAG_ROOM_INFO) }
             val roomType = remember { arguments?.getIntExt(TAG_ROOM_TYPE) ?: (room as? CloudFolder)?.roomType }
             val viewModel = viewModel {
                 AddRoomViewModel(
                     context = requireActivity().application,
                     roomProvider = requireContext().roomProvider,
+                    roomType = roomType,
                     roomInfo = room,
                     copyItems = copyItems
                 )
@@ -215,12 +223,8 @@ class AddRoomFragment : ComposeDialogFragment() {
                 }
                 composable(Screens.Select.name) {
                     SelectRoomScreen(
-                        type = roomState.value.type,
-                        navController = navController,
-                        onChange = {
-                            viewModel.setType(it)
-                            navController.popBackStackWhenResumed()
-                        }
+                        currentType = roomState.value.type,
+                        navController = navController
                     )
                 }
                 composable(
@@ -506,7 +510,7 @@ private fun SelectRoomScreen(currentType: Int, navController: NavHostController)
         Column {
             for (type in RoomUtils.roomTypes) {
                 AddRoomItem(roomType = type, selected = currentType == type) { newType ->
-                    navController.navigate("${Navigation.Main.route}/$newType") {
+                    navController.navigate("${Screens.Main.name}/$newType") {
                         popUpTo(navController.graph.id) {
                             inclusive = true
                         }
@@ -667,7 +671,7 @@ private fun MainScreenPreview() {
 @Composable
 private fun SelectScreenPreview() {
     ManagerTheme {
-        SelectRoomScreen(2, navController = rememberNavController()) {}
+        SelectRoomScreen(2, navController = rememberNavController())
     }
 }
 

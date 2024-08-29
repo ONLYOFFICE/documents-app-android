@@ -15,6 +15,9 @@ class ListFolderViewHolder(view: View, adapter: ExplorerAdapter) :
 
     private val binding = LayoutExplorerListFolderBinding.bind(view)
 
+    override val root: View
+        get() = binding.root
+
     override val rootLayout: ConstraintLayout
         get() = binding.constraintRootLayout
 

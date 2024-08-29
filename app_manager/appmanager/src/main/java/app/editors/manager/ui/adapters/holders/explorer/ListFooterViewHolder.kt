@@ -14,6 +14,9 @@ class ListFooterViewHolder(parent: View, adapter: ExplorerAdapter)
 
     private val viewBinding = LayoutExplorerListFooterBinding.bind(parent)
 
+    override val root: View?
+        get() = null
+
     override fun bind(element: Footer) {
         viewBinding.listExplorerFooterLayout.isVisible = adapter.isFooter
     }

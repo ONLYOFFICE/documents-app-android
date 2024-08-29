@@ -21,14 +21,15 @@ abstract class ListBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
 
     override fun bind(element: T) {
         initListeners()
-        initSelecting(element.isSelected)
+        setElementClickable(element)
+        initSelecting(element)
         title.text = element.title
         subtitle.text = getSubtitleText(element)
     }
-
-    override fun initSelecting(isSelected: Boolean) {
-        super.initSelecting(isSelected)
+    override fun initSelecting(element: T): Boolean {
+        val isSelected = super.initSelecting(element)
         contextButton.isVisible = !adapter.isSelectMode
+        return isSelected
     }
 
     private fun initListeners() {

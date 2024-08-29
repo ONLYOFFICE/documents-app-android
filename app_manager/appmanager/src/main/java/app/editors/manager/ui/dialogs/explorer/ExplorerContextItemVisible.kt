@@ -46,7 +46,7 @@ interface ExplorerContextItemVisible {
         get() = if (section.isRoom) item.security?.copy == true else section != ApiContract.Section.Trash
 
     private val ExplorerContextState.duplicate: Boolean
-        get() = item.security.duplicate
+        get() = item.security?.duplicate == true
 
     private val ExplorerContextState.download: Boolean
         get() = !section.isLocal

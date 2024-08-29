@@ -27,7 +27,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription" />
 
-
             <ImageView
                 android:id="@+id/storageImage"
                 android:layout_width="40dp"
@@ -51,8 +50,9 @@
                 app:layout_constraintEnd_toEndOf="@id/image"
                 app:layout_constraintTop_toTopOf="@id/image"
                 app:layout_constraintVertical_bias=".65"
+                app:tint="@color/colorBlack60"
                 tools:ignore="ContentDescription"
-                tools:src="@drawable/ic_list_item_share_user_icon_secondary" />
+                tools:src="@drawable/ic_list_item_share_user_icon" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

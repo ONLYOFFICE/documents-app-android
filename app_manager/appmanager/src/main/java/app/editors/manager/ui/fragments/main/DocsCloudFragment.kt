@@ -11,8 +11,8 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.os.bundleOf
 import androidx.fragment.app.clearFragmentResultListener
 import androidx.fragment.app.setFragmentResult
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.fragment.app.setFragmentResultListener
+import androidx.recyclerview.widget.LinearLayoutManager
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
@@ -42,10 +42,10 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FormCompletedDialogFragment
-import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
-import app.editors.manager.ui.fragments.share.ShareFragment
 import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
+import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
+import app.editors.manager.ui.fragments.share.ShareFragment
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -502,7 +502,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun showAddRoomFragment(type: Int, copyItems: CopyItems?) {
-        AddRoomDialog.show(
+        AddRoomFragment.show(
             activity = requireActivity(),
             type = type,
             copyItems = copyItems
@@ -516,7 +516,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun showEditRoomFragment(room: CloudFolder) {
-        AddRoomDialog.show(activity = requireActivity(), room = room) { onRefresh() }
+        AddRoomFragment.show(activity = requireActivity(), room = room) { onRefresh() }
     }
 
     override fun showFillFormChooserFragment() {
