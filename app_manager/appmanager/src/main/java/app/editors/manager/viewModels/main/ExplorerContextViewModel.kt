@@ -40,6 +40,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.AddUsers,
                 ExplorerContextItem.ExternalLink(state),
+                ExplorerContextItem.Duplicate,
                 ExplorerContextItem.Download,
                 ExplorerContextItem.Archive,
                 ExplorerContextItem.Restore,

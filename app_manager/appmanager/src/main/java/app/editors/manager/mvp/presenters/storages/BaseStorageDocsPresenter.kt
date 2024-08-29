@@ -16,6 +16,7 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.launch
@@ -159,7 +160,7 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
             viewState.onStateActionButton(true)
             viewState.onActionBarTitle(currentTitle.ifEmpty { itemClicked?.title })
         } else {
-            if (isFoldersMode) {
+            if (pickerMode == PickerMode.Folders) {
                 viewState.onActionBarTitle(context.getString(R.string.operation_title))
                 viewState.onStateActionButton(false)
             } else {
@@ -216,6 +217,8 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
         info?.let { viewState.onSnackBar(it) }
     }
 
+    override fun onUploadErrorDialog(title: String, message: String, file: String?) {}
+
     override fun onUploadComplete(
         path: String?,
         info: String?,
@@ -228,7 +231,7 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
     }
 
     override fun onActionClick() {
-        viewState.onActionDialog(false, true)
+        viewState.onActionDialog(false, true, null)
     }
 
     override fun onUploadAndOpen(path: String?, title: String?, file: CloudFile?, id: String?) {

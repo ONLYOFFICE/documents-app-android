@@ -3,6 +3,9 @@ package app.editors.manager.mvp.presenters.main
 import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.Recent
 import app.documents.core.model.cloud.isDocSpace
@@ -14,6 +17,7 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.isFavorite
+import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDeleteShare
 import app.documents.core.network.manager.models.request.RequestFavorites
@@ -31,9 +35,11 @@ import app.editors.manager.app.roomProvider
 import app.editors.manager.app.shareApi
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListener
+import app.editors.manager.managers.receivers.RoomDuplicateReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
+import app.editors.manager.managers.works.RoomDuplicateWork
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.models.OpenDataModel
@@ -41,6 +47,7 @@ import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import app.editors.manager.viewModels.main.CopyItems
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -64,14 +71,15 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.util.UUID
 
 @InjectViewState
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
-    OnDownloadListener,
-    OnUploadListener {
+    OnDownloadListener, OnUploadListener, RoomDuplicateReceiver.Listener {
 
     private val downloadReceiver: DownloadReceiver = DownloadReceiver()
     private val uploadReceiver: UploadReceiver = UploadReceiver()
+    private var duplicateRoomReceiver: RoomDuplicateReceiver = RoomDuplicateReceiver()
 
     private var api: ManagerService? = null
     private var roomProvider: RoomProvider? = null
@@ -103,6 +111,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         super.onFirstViewAttach()
         downloadReceiver.setOnDownloadListener(this)
         uploadReceiver.setOnUploadListener(this)
+        duplicateRoomReceiver.setListener(this)
+        LocalBroadcastManager.getInstance(context)
+            .registerReceiver(duplicateRoomReceiver, RoomDuplicateReceiver.getFilters())
         LocalBroadcastManager.getInstance(context)
             .registerReceiver(uploadReceiver, uploadReceiver.filter)
         LocalBroadcastManager.getInstance(context)
@@ -114,7 +125,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         interruptConversion()
         downloadReceiver.setOnDownloadListener(null)
         uploadReceiver.setOnUploadListener(null)
+        duplicateRoomReceiver.setListener(null)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(duplicateRoomReceiver)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(downloadReceiver)
     }
 
@@ -122,8 +135,22 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         onClickEvent(item, position)
         itemClicked?.let { itemClicked ->
             if (isSelectionMode) {
-                val isChecked = !itemClicked.isSelected
-                modelExplorerStack.setSelectById(item, isChecked)
+                val pickerMode = this.pickerMode
+                if (pickerMode is PickerMode.Files) {
+                    if (itemClicked is CloudFolder) {
+                        openFolder(itemClicked.id, position)
+                    } else if (itemClicked is CloudFile) {
+                        if (itemClicked.isPdfForm) pickerMode.selectId(itemClicked.id)
+                        modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
+                        viewState.onStateUpdateSelection(true)
+                        viewState.onItemSelected(
+                            position,
+                            pickerMode.selectedIds.size.toString()
+                        )
+                    }
+                    return
+                }
+                modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
                 if (!isSelectedItemsEmpty) {
                     viewState.onStateUpdateSelection(true)
                     viewState.onItemSelected(
@@ -153,20 +180,56 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun copy(): Boolean {
-        if (super.copy()) {
+        if (!checkFillFormsRoom()) {
+            return false
+        }
+
+        if (pickerMode is PickerMode.Files || super.copy()) {
             checkMoveCopyFiles(MoveCopyDialog.ACTION_COPY)
             return true
         }
+
         return false
     }
 
     override fun move(): Boolean {
+        if (!checkFillFormsRoom()) {
+            return false
+        }
+
         return if (super.move()) {
             checkMoveCopyFiles(MoveCopyDialog.ACTION_MOVE)
             true
         } else {
             false
         }
+    }
+
+    fun copyFilesToCurrent() {
+        (fileProvider as? CloudFileProvider)?.let { provider ->
+            val pickerMode = this.pickerMode
+            if (pickerMode is PickerMode.Files) {
+                val request = RequestBatchOperation(destFolderId = pickerMode.destFolderId).apply {
+                    fileIds = pickerMode.selectedIds
+                }
+                disposable.add(provider.copyFiles(request).subscribe({ onBatchOperations() }, ::fetchError))
+            }
+        }
+    }
+
+    private fun checkFillFormsRoom(): Boolean {
+        val explorer = operationStack?.explorer ?: return false
+        if (roomClicked?.roomType == ApiContract.RoomType.FILL_FORMS_ROOM) {
+            if (explorer.folders.isNotEmpty() || explorer.files.any { !it.isPdfForm }) {
+                viewState.onDialogWarning(
+                    context.getString(R.string.dialogs_warning_title),
+                    context.getString(R.string.dialogs_warning_only_pdf_form_message),
+                    null
+                )
+                return false
+            }
+        }
+        return true
     }
 
     override fun getNextList() {
@@ -230,7 +293,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.fileInfo(item)
-                        .doOnSubscribe { showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE) }
                         .subscribe(::onFileClickAction) { onFileClickAction(item) }
                 )
             }
@@ -255,7 +317,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     override fun updateViewsState() {
         if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
-            viewState.onActionBarTitle(modelExplorerStack.countSelectedItems.toString())
+            if (pickerMode is PickerMode.Files) {
+                viewState.onActionBarTitle((pickerMode as PickerMode.Files).selectedIds.size.toString())
+            } else {
+                viewState.onActionBarTitle(modelExplorerStack.countSelectedItems.toString())
+            }
             viewState.onStateAdapterRoot(modelExplorerStack.isNavigationRoot)
             viewState.onStateActionButton(false)
         } else if (isFilteringMode) {
@@ -280,8 +346,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     viewState.onActionBarTitle("")
                 }
 
-                isFoldersMode -> {
-                    viewState.onActionBarTitle(context.getString(R.string.operation_title))
+                pickerMode == PickerMode.Folders -> {
+                    if (isRoom && isRoot) {
+                        viewState.onActionBarTitle(context.getString(R.string.operation_select_room_title))
+                    } else {
+                        viewState.onActionBarTitle(context.getString(R.string.operation_title))
+                    }
                     viewState.onStateActionButton(false)
                 }
 
@@ -302,7 +372,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     override fun onActionClick() {
         viewState.onActionDialog(
             isRoot && (isUserSection || isCommonSection && isAdmin),
-            !isVisitor
+            !isVisitor,
+            roomClicked?.roomType
         )
     }
 
@@ -346,6 +417,20 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun onUploadError(path: String?, info: String?, file: String?) {
         viewState.onSnackBar(info)
+    }
+
+    override fun onUploadErrorDialog(title: String, message: String, file: String?) {
+        viewState.onDialogWarning(title, message, null)
+    }
+
+    override fun onHideDuplicateNotification(workerId: String?) {
+        WorkManager
+            .getInstance(context)
+            .cancelWorkById(UUID.fromString(workerId))
+    }
+
+    override fun onDuplicateComplete() {
+        if (isRoom && isRoot) refresh()
     }
 
     override fun onUploadComplete(
@@ -408,11 +493,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 addRecent(item)
                 onFileClickAction(item, true)
             }
-            is CloudFolder -> {
-                if (item.isRoom) {
-                    editRoom()
-                }
-            }
+            is CloudFolder -> editRoom()
         }
     }
 
@@ -554,12 +635,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     private fun checkMoveCopyFiles(action: String) {
-        val filesIds = operationStack?.selectedFilesIds
+        val filesIds = (pickerMode as? PickerMode.Files)?.selectedIds ?: operationStack?.selectedFilesIds
         val foldersIds = operationStack?.selectedFoldersIds
 
         api?.let { api ->
             disposable.add(api.checkFiles(
-                destFolderId ?: "",
+                (pickerMode as? PickerMode.Files)?.destFolderId ?: destFolderId ?: "",
                 foldersIds,
                 filesIds
             )
@@ -594,6 +675,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     private fun onFileClickAction(cloudFile: CloudFile, isEdit: Boolean = false) {
+        if (cloudFile.isPdfForm && isUserSection) {
+            viewState.showFillFormChooserFragment()
+            return
+        }
+
+        showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE)
         val extension = cloudFile.fileExst
         when (StringUtils.getExtension(extension)) {
             StringUtils.Extension.DOC,
@@ -642,6 +729,20 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private fun resetFilters() {
         preferenceTool.filter = Filter()
         viewState.onStateUpdateFilterMenu()
+    }
+
+    fun fillPdfForm() {
+        showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE)
+        val item = itemClicked
+        if (item is CloudFile && item.isPdfForm) {
+            checkSdkVersion { result ->
+                if (result) {
+                    openDocumentServer(item, isEdit = true, canShareable = false)
+                } else {
+                    downloadTempFile(item, true)
+                }
+            }
+        }
     }
 
     fun openFile(data: String) {
@@ -822,11 +923,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun editRoom() {
-        val room = roomClicked ?: error("room can not be null")
-        viewState.onCreateRoom(room.roomType, room)
-    }
-
     fun copyLinkFromActionMenu(isRoom: Boolean) {
         if (isRoom) {
             copyRoomLink()
@@ -863,12 +959,45 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun createRoomFromFolder() {
-        itemClicked?.let {
-            viewState.onCreateRoom(item = it, isCopy = true)
+    fun createRoom(roomType: Int) {
+        val files = modelExplorerStack.selectedFiles.toMutableList()
+        val folders = modelExplorerStack.selectedFolders.toMutableList()
+        val clickedItem = itemClicked
+
+        deselectAll()
+        if (files.isEmpty() && folders.isEmpty() && clickedItem != null) {
+            if (clickedItem is CloudFolder) {
+                folders.add(clickedItem)
+            } else if (clickedItem is CloudFile) {
+                files.add(clickedItem)
+            }
         }
+
+        if (roomType == ApiContract.RoomType.FILL_FORMS_ROOM) {
+            if (folders.isNotEmpty() || files.any { !it.isPdfForm }) {
+                viewState.onDialogWarning(
+                    context.getString(R.string.dialogs_warning_title),
+                    context.getString(R.string.dialogs_warning_fill_forms_room_create),
+                    null
+                )
+                return
+            }
+        }
+
+        viewState.showAddRoomFragment(
+            type = roomType,
+            copyItems = CopyItems(
+                folderIds = folders.map(CloudFolder::id),
+                fileIds = files.map(CloudFile::id)
+            )
+        )
     }
 
+    fun editRoom() {
+        roomClicked?.let { room ->
+            viewState.showEditRoomFragment(room)
+        }
+    }
 
     fun deleteRoom() {
         if (isSelectionMode && modelExplorerStack.countSelectedItems > 0) {
@@ -1012,6 +1141,20 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     }
 
+    fun duplicateRoom() {
+        val workData = Data.Builder()
+            .putString(RoomDuplicateWork.KEY_ROOM_ID, roomClicked?.id)
+            .putString(RoomDuplicateWork.KEY_ROOM_TITLE, roomClicked?.title)
+            .build()
+
+        val request = OneTimeWorkRequest.Builder(RoomDuplicateWork::class.java)
+            .addTag(RoomDuplicateWork.getTag(roomClicked?.id.hashCode(), roomClicked?.title))
+            .setInputData(workData)
+            .build()
+
+        WorkManager.getInstance(context).enqueue(request)
+    }
+
     private fun openRecentViaLink() {
         setPlaceholderType(PlaceholderViews.Type.LOAD)
         (fileProvider as? CloudFileProvider)?.let { provider ->
@@ -1053,5 +1196,4 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             "rooms/shared/${folder.id}/filter?folder=${folder.id}"
         }
     }
-
 }

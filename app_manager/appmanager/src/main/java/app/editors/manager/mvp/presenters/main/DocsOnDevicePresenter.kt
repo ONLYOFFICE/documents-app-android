@@ -133,7 +133,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                     ?: context.getString(R.string.toolbar_menu_search_result)
             )
         } else {
-            if (isFoldersMode) {
+            if (pickerMode == PickerMode.Folders) {
                 viewState.onActionBarTitle(context.getString(R.string.operation_title))
                 viewState.onStateActionButton(false)
             } else {

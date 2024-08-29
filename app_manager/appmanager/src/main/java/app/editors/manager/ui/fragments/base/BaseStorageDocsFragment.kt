@@ -37,10 +37,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     var activity: IMainActivity? = null
 
-
-    override val isWebDav: Boolean
-        get() = false
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
@@ -181,13 +177,14 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     override val presenter: BaseStorageDocsPresenter<out BaseStorageDocsView>
         get() = getDocsPresenter()
 
-    override fun onFileUploadPermission() {
-        showMultipleFilePickerActivity { uris ->
+    override fun onFileUploadPermission(extension: String?) {
+        showMultipleFilePickerActivity(extension) { uris ->
             if (!uris.isNullOrEmpty()) {
                 presenter.upload(
                     null,
                     uris,
-                    KEY_UPLOAD)
+                    KEY_UPLOAD
+                )
             }
         }
     }

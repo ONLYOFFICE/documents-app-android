@@ -1,9 +1,13 @@
 package app.documents.core.providers
 
 import android.graphics.Bitmap
+import app.documents.core.network.common.Result
+import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Operation
+import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.room.models.RequestAddTags
 import app.documents.core.network.room.models.RequestArchive
@@ -31,6 +35,9 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
@@ -55,16 +62,11 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
     fun pinRoom(id: String, isPin: Boolean = true): Observable<BaseResponse> {
         return if (isPin) {
             roomService.pinRoom(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { it.body() }
         } else {
             roomService.unpinRoom(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { it.body() }
-        }
-
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .flatMap { if (it.isSuccessful) Observable.just(it.body()) else throw HttpException(it) }
     }
 
     suspend fun renameRoom(id: String, newTitle: String): Boolean {
@@ -287,5 +289,43 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
     suspend fun getExternalLink(roomId: String): String {
         return roomService.getExternalLink(roomId).response.sharedTo.shareLink
+    }
+
+    suspend fun copyItems(roomId: String, folderIds: List<String>, fileIds: List<String>) {
+        val request = RequestBatchOperation(destFolderId = roomId).apply {
+            this.folderIds = folderIds
+            this.fileIds = fileIds
+        }
+
+        roomService.copy(request)
+            .response
+            .forEach { operation -> waitOperationIsFinished(operation) }
+    }
+
+    private suspend fun waitOperationIsFinished(operation: Operation) {
+        while (true) {
+            val status = roomService.status()
+                .response
+                .find { it.id == operation.id } ?: break
+
+            if (status.progress == 100 || status.finished || !status.error.isNullOrEmpty()) break
+            delay(1000)
+        }
+    }
+
+    suspend fun duplicate(roomId: String): Flow<Result<Int>> {
+        return flow {
+            val response = roomService.duplicate(RequestBatchOperation().apply { folderIds = listOf(roomId) })
+            for (operation in response.response) {
+                if (operation.finished) continue
+                while (true) {
+                    val status = roomService.status().response.find { it.id == operation.id }
+                    if (status == null || status.finished || status.progress >= 100) break
+                    emit(status.progress)
+                    delay(1000)
+                }
+            }
+            emit(100)
+        }.asResult()
     }
 }

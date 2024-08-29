@@ -58,7 +58,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
-import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -83,6 +83,7 @@ import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.viewModels.main.AddRoomData
 import app.editors.manager.viewModels.main.AddRoomViewModel
+import app.editors.manager.viewModels.main.CopyItems
 import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.StorageState
 import app.editors.manager.viewModels.main.UserListMode
@@ -109,6 +110,7 @@ import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.capitalize
+import lib.toolkit.base.managers.utils.getIntExt
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
 import java.io.File
@@ -123,43 +125,52 @@ class AddRoomFragment : ComposeDialogFragment() {
 
         const val TAG_ROOM_TYPE = "room_type"
         const val TAG_ROOM_INFO = "room_info"
-        const val TAG_COPY = "files_copy"
+        const val TAG_COPY_ITEMS = "files_copy"
         const val TAG_RESULT = "add_room_result"
 
         val TAG: String = AddRoomFragment::class.java.simpleName
 
-        private fun newInstance(roomType: Int, room: Item?, isCopy: Boolean = false) =
+        private fun newInstance(roomType: Int?, room: Item?, items: CopyItems?) =
             AddRoomFragment().putArgs(
                 TAG_ROOM_TYPE to roomType,
                 TAG_ROOM_INFO to room,
-                TAG_COPY to isCopy
+                TAG_COPY_ITEMS to items
             )
 
         fun show(
-            fragmentManager: FragmentManager,
-            roomType: Int,
-            roomInfo: Item? = null,
-            isCopy: Boolean = false,
+            activity: FragmentActivity,
+            type: Int? = null,
+            room: CloudFolder? = null,
+            copyItems: CopyItems? = null,
+            onResult: (Bundle) -> Unit
         ) {
-            newInstance(roomType, roomInfo, isCopy).show(fragmentManager, null)
+            activity.supportFragmentManager.setFragmentResultListener(
+                TAG_RESULT, activity
+            ) { _, bundle -> onResult(bundle) }
+            newInstance(type, room, copyItems)
+                .show(activity.supportFragmentManager, TAG)
         }
     }
 
-    private val isEdit: Boolean
-        get() = arguments?.getSerializableExt<Item>(TAG_ROOM_INFO) != null && arguments?.getBoolean(TAG_COPY) == false
+    private val copyItems: CopyItems? by lazy { arguments?.getSerializableExt(TAG_COPY_ITEMS) }
+
+    private val roomData: CloudFolder? by lazy { arguments?.getSerializableExt(TAG_ROOM_INFO) }
+
+    private val isEdit: Boolean get() = roomData != null
 
     @Composable
     override fun Content() {
         ManagerTheme {
             val navController = rememberNavController()
-            val roomType = remember { arguments?.getInt(TAG_ROOM_TYPE) }
             val room = remember { arguments?.getSerializableExt<Item>(TAG_ROOM_INFO) }
+            val roomType = remember { arguments?.getIntExt(TAG_ROOM_TYPE) ?: (room as? CloudFolder)?.roomType }
             val viewModel = viewModel {
                 AddRoomViewModel(
                     context = requireActivity().application,
                     roomProvider = requireContext().roomProvider,
+                    roomType = roomType,
                     roomInfo = room,
-                    isCopy = arguments?.getBoolean(TAG_COPY) ?: false
+                    copyItems = copyItems
                 )
             }
             val roomState = viewModel.roomState.collectAsState()
@@ -177,6 +188,7 @@ class AddRoomFragment : ComposeDialogFragment() {
                 composable(Screens.Main.name) {
                     MainScreen(
                         isEdit = isEdit,
+                        isRoomTypeEditable = !isEdit && copyItems == null,
                         navController = navController,
                         viewState = viewState.value,
                         roomState = roomState.value,
@@ -211,12 +223,8 @@ class AddRoomFragment : ComposeDialogFragment() {
                 }
                 composable(Screens.Select.name) {
                     SelectRoomScreen(
-                        type = roomState.value.type,
-                        navController = navController,
-                        onChange = {
-                            viewModel.setType(it)
-                            navController.popBackStackWhenResumed()
-                        }
+                        currentType = roomState.value.type,
+                        navController = navController
                     )
                 }
                 composable(
@@ -268,6 +276,7 @@ class AddRoomFragment : ComposeDialogFragment() {
 @Composable
 private fun MainScreen(
     isEdit: Boolean,
+    isRoomTypeEditable: Boolean,
     navController: NavHostController,
     viewState: ViewState,
     roomState: AddRoomData,
@@ -287,7 +296,6 @@ private fun MainScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val tags = remember(roomState.tags::toMutableStateList)
     val name = remember { mutableStateOf(roomState.name) }
-    val roomInfo = RoomUtils.getRoomInfo(roomState.type)
 
     if (viewState is ViewState.Success) {
         if (viewState.id != null) {
@@ -342,10 +350,8 @@ private fun MainScreen(
                     Spacer(modifier = Modifier.height(4.dp))
                 }
                 AddRoomItem(
-                    isClickable = !isEdit,
-                    icon = roomInfo.icon,
-                    title = roomInfo.title,
-                    description = roomInfo.description
+                    roomType = roomState.type,
+                    clickable = isRoomTypeEditable
                 ) {
                     saveData(name.value, tags)
                     navController.navigate(Screens.Select.name)
@@ -494,7 +500,7 @@ fun ThirdPartyBlock(
 }
 
 @Composable
-private fun SelectRoomScreen(type: Int, navController: NavHostController, onChange: (Int) -> Unit) {
+private fun SelectRoomScreen(currentType: Int, navController: NavHostController) {
     AppScaffold(topBar = {
         AppTopBar(
             title = stringResource(id = R.string.rooms_choose_room),
@@ -502,27 +508,15 @@ private fun SelectRoomScreen(type: Int, navController: NavHostController, onChan
         )
     }, useTablePaddings = false) {
         Column {
-            AddRoomItem(
-                icon = R.drawable.ic_collaboration_room,
-                title = R.string.rooms_add_collaboration,
-                description = R.string.rooms_add_collaboration_des,
-                isSelect = type == ApiContract.RoomType.COLLABORATION_ROOM,
-                itemClick = { onChange.invoke(ApiContract.RoomType.COLLABORATION_ROOM) }
-            )
-            AddRoomItem(
-                icon = R.drawable.ic_public_room,
-                title = R.string.rooms_add_public_room,
-                description = R.string.rooms_add_public_room_des,
-                isSelect = type == ApiContract.RoomType.PUBLIC_ROOM,
-                itemClick = { onChange.invoke(ApiContract.RoomType.PUBLIC_ROOM) }
-            )
-            AddRoomItem(
-                icon = R.drawable.ic_custom_room,
-                title = R.string.rooms_add_custom,
-                description = R.string.rooms_add_custom_des,
-                isSelect = type == ApiContract.RoomType.CUSTOM_ROOM,
-                itemClick = { onChange.invoke(ApiContract.RoomType.CUSTOM_ROOM) }
-            )
+            for (type in RoomUtils.roomTypes) {
+                AddRoomItem(roomType = type, selected = currentType == type) { newType ->
+                    navController.navigate("${Screens.Main.name}/$newType") {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -651,6 +645,7 @@ private fun MainScreenPreview() {
     ManagerTheme {
         MainScreen(
             isEdit = true,
+            isRoomTypeEditable = false,
             navController = rememberNavController(),
             viewState = ViewState.None,
             roomState = AddRoomData(
@@ -676,7 +671,7 @@ private fun MainScreenPreview() {
 @Composable
 private fun SelectScreenPreview() {
     ManagerTheme {
-        SelectRoomScreen(2, navController = rememberNavController()) {}
+        SelectRoomScreen(2, navController = rememberNavController())
     }
 }
 

@@ -8,15 +8,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.PathPart
-import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.api
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -27,7 +24,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.compose.ui.views.ChipData
+import java.io.Serializable
 
+data class CopyItems(
+    val folderIds: List<String> = emptyList(),
+    val fileIds: List<String> = emptyList()
+) : Serializable
 
 data class StorageState(
     val id: String,
@@ -57,7 +59,8 @@ class AddRoomViewModel(
     private val context: Application,
     private val roomProvider: RoomProvider,
     private val roomInfo: Item? = null,
-    private val isCopy: Boolean = false,
+    private val roomType: Int? = null,
+    private val copyItems: CopyItems? = null,
 ) : AndroidViewModel(application = context) {
 
     private val _roomState: MutableStateFlow<AddRoomData> = MutableStateFlow(
@@ -79,6 +82,8 @@ class AddRoomViewModel(
                     location = null
                 ).takeIf { roomInfo.providerItem }
             )
+        } else if (roomType != null){
+            AddRoomData(roomType)
         } else {
             AddRoomData(2)
         }
@@ -90,10 +95,6 @@ class AddRoomViewModel(
 
     private val roomTags: Set<String> = (roomInfo as? CloudFolder)?.tags?.toSet().orEmpty()
     private var isDeleteLogo: Boolean = false
-
-    fun setType(roomType: Int) {
-        _roomState.value = _roomState.value.copy(type = roomType)
-    }
 
     fun setImageUri(imageUri: Uri?) {
         viewModelScope.launch {
@@ -162,9 +163,7 @@ class AddRoomViewModel(
                         roomProvider.deleteLogo(id)
                     }
 
-                    while (checkCopy(id)) {
-                        delay(100)
-                    }
+                    copyItems(id)
 
                     withContext(Dispatchers.Main) {
                         if (id.isNotEmpty()) {
@@ -223,23 +222,8 @@ class AddRoomViewModel(
         }
     }
 
-    private suspend fun checkCopy(id: String): Boolean {
-        if (roomInfo == null) return false
-        if (!isCopy) return false
-        //TODO check only the first operation???
-        context.api.copyCoroutines(RequestBatchOperation(destFolderId = id).apply {
-            folderIds = if (roomInfo is CloudFolder) listOf(roomInfo.id) else emptyList()
-            fileIds = if (roomInfo is CloudFile) listOf(roomInfo.id) else emptyList()
-        }).response.forEach { operation ->
-            if (operation.finished) return false
-            while (true) {
-                val op = context.api.statusCoroutines().response.find { it.id == operation.id } ?: break
-                if (op.progress == 100 || op.finished) break
-                delay(100)
-            }
-        }
-
-        return false
+    private suspend fun copyItems(roomId: String) {
+        copyItems?.let { items -> roomProvider.copyItems(roomId, items.folderIds, items.fileIds) }
     }
 
     fun saveData(name: String, tags: List<ChipData>) {

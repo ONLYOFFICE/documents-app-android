@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import app.editors.manager.R
 import app.editors.manager.mvp.models.list.RecentViaLink
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
 
@@ -13,6 +14,9 @@ class RecentViaLinkViewHolder(private val view: View, adapter: ExplorerAdapter) 
 
     private val initHeight = view.resources.getDimensionPixelSize(lib.toolkit.base.R.dimen.item_two_line_height)
 
+    override val root: View?
+        get() = null
+
     init {
         view.setOnClickListener {
             adapter.mOnItemClickListener?.onItemClick(view, layoutPosition)
@@ -21,7 +25,7 @@ class RecentViaLinkViewHolder(private val view: View, adapter: ExplorerAdapter) 
 
     override fun bind(element: RecentViaLink) {
         view.layoutParams = view.layoutParams.apply {
-            height = if (adapter.isSelectMode || adapter.isFoldersMode) 0 else initHeight
+            height = if (adapter.isSelectMode || adapter.pickerMode != PickerMode.None) 0 else initHeight
         }
     }
 

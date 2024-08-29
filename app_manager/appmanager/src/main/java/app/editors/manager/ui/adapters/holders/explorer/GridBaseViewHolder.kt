@@ -21,18 +21,20 @@ abstract class GridBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
 
     override fun bind(element: T) {
         initListeners()
-        initSelecting(element.isSelected)
+        initSelecting(element)
+        setElementClickable(element)
         title.text = element.title
         subtitle.text = getSubtitleText(element)
     }
 
-    override fun initSelecting(isSelected: Boolean) {
-        super.initSelecting(isSelected)
+    override fun initSelecting(element: T): Boolean {
+        val isSelected = super.initSelecting(element)
         if (isSelected) {
             rootLayout.setCardBackgroundColor(colorRootLayoutSelected)
         } else {
             rootLayout.setCardBackgroundColor(null)
         }
+        return isSelected
     }
 
     private fun initListeners() {

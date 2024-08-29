@@ -6,6 +6,6 @@ import moxy.viewstate.strategy.StateStrategyType
 
 @StateStrategyType(OneExecutionStateStrategy::class)
 interface DocsGoogleDriveView : BaseStorageDocsView {
-    fun onUpload(uploadUris: List<Uri>, folderId: String, fileId: String, tag: String)
-    fun onSignIn()
+    fun onUpload(uploadUris: List<Uri>, folderId: String, fileId: String, tag: String) {}
+    fun onSignIn() {}
 }

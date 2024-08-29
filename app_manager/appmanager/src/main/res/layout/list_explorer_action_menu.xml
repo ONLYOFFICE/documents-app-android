@@ -117,6 +117,7 @@
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/list_explorer_action_upload_text"
                     style="@style/Widget.Common.TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -133,6 +134,7 @@
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/list_explorer_action_import_text"
                     style="@style/Widget.Common.TextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

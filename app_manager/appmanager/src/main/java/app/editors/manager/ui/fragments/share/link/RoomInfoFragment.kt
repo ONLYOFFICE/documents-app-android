@@ -420,7 +420,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
         ManagerTheme {
             RoomInfoScreen(
                 roomTitle = "Room title",
-                roomType = ApiContract.RoomType.CUSTOM_ROOM,
+                roomType = ApiContract.RoomType.FILL_FORMS_ROOM,
                 canEditRoom = true,
                 portal = "",
                 state = RoomInfoState(

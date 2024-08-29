@@ -10,30 +10,34 @@ data class RoomInfo(@DrawableRes val icon: Int, @StringRes val title: Int, @Stri
 
 object RoomUtils {
 
+    val roomTypes: List<Int> = listOf(
+        ApiContract.RoomType.PUBLIC_ROOM,
+        ApiContract.RoomType.FILL_FORMS_ROOM,
+        ApiContract.RoomType.COLLABORATION_ROOM,
+        ApiContract.RoomType.CUSTOM_ROOM
+    )
+
     fun getRoomInfo(type: Int): RoomInfo {
         val icon = when (type) {
-            2 -> R.drawable.ic_collaboration_room
-            6 -> R.drawable.ic_public_room
-            5 -> R.drawable.ic_custom_room
-            else -> {
-                R.drawable.ic_collaboration_room
-            }
+            ApiContract.RoomType.COLLABORATION_ROOM -> R.drawable.ic_collaboration_room
+            ApiContract.RoomType.PUBLIC_ROOM -> R.drawable.ic_public_room
+            ApiContract.RoomType.CUSTOM_ROOM -> R.drawable.ic_custom_room
+            ApiContract.RoomType.FILL_FORMS_ROOM -> R.drawable.ic_fill_forms_room
+            else -> R.drawable.ic_collaboration_room
         }
         val title = when (type) {
-            2 -> R.string.rooms_add_collaboration
-            6 -> R.string.rooms_add_public_room
-            5 -> R.string.rooms_add_custom
-            else -> {
-                R.string.rooms_add_collaboration
-            }
+            ApiContract.RoomType.COLLABORATION_ROOM -> R.string.rooms_add_collaboration
+            ApiContract.RoomType.PUBLIC_ROOM -> R.string.rooms_add_public_room
+            ApiContract.RoomType.CUSTOM_ROOM -> R.string.rooms_add_custom
+            ApiContract.RoomType.FILL_FORMS_ROOM -> R.string.rooms_add_fill_forms
+            else -> R.string.rooms_add_collaboration
         }
         val des = when (type) {
-            2 -> R.string.rooms_add_collaboration_des
-            6 -> R.string.rooms_add_public_room_des
-            5 -> R.string.rooms_add_custom_des
-            else -> {
-                R.string.rooms_add_collaboration_des
-            }
+            ApiContract.RoomType.COLLABORATION_ROOM -> R.string.rooms_add_collaboration_des
+            ApiContract.RoomType.PUBLIC_ROOM -> R.string.rooms_add_public_room_des
+            ApiContract.RoomType.CUSTOM_ROOM -> R.string.rooms_add_custom_des
+            ApiContract.RoomType.FILL_FORMS_ROOM -> R.string.rooms_add_fill_forms_des
+            else -> R.string.rooms_add_collaboration_des
         }
         return RoomInfo(icon, title, des)
     }
@@ -101,7 +105,7 @@ object RoomUtils {
 
     fun getRoomInitials(title: String): String? {
         return try {
-            val words = title.split(" ")
+            val words = title.split(" ").filter { it.first().isLetterOrDigit() }
             when (words.size) {
                 1 -> title[0].toString()
                 2 -> "${words[0][0]}${words[1][0]}"

@@ -142,9 +142,6 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
     override val presenter: DocsBasePresenter<out DocsBaseView>
         get() = webDavPresenter
 
-    override val isWebDav: Boolean?
-        get() = true
-
     private fun loadFiles() {
         webDavPresenter.getProvider()
     }

@@ -6,12 +6,15 @@ import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.UploadFile
+import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.list.Footer
 import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.list.RecentViaLink
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
 import app.editors.manager.ui.adapters.holders.explorer.GridFileViewHolder
@@ -48,9 +51,9 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
             notifyDataSetChanged()
         }
 
-    var isFoldersMode = false
-        set(isFoldersMode) {
-            field = isFoldersMode
+    var pickerMode: PickerMode = PickerMode.None
+        set(mode) {
+            field = mode
             notifyDataSetChanged()
         }
 

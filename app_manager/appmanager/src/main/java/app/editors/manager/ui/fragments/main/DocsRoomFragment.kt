@@ -7,17 +7,20 @@ import androidx.core.view.forEach
 import androidx.fragment.app.setFragmentResultListener
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
+import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.tools.ActionMenuAdapter
 import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.RoomFilterType
+import app.editors.manager.ui.activities.main.ShareActivity
+import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.share.InviteUsersFragment
-import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.managers.utils.setFragmentResultListener
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 class DocsRoomFragment : DocsCloudFragment() {
+
     private val isRoom get() = cloudPresenter.isCurrentRoom && cloudPresenter.isRoot
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -30,17 +33,19 @@ class DocsRoomFragment : DocsCloudFragment() {
         }
     }
 
-    override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
+    override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean, roomType: Int?) {
         if (isRoom) {
-            setFragmentResultListener { bundle ->
-                onActionDialogClose()
-                if (bundle?.getInt("type") != -1) {
-                    showAddRoomFragment(bundle?.getInt("type") ?: 2)
-                }
-            }
-            AddRoomBottomDialog().show(parentFragmentManager, AddRoomBottomDialog.TAG)
+            showAddRoomBottomDialog(false)
         } else {
-            super.onActionDialog(isThirdParty, isDocs)
+            super.onActionDialog(isThirdParty, isDocs, roomType)
+        }
+    }
+
+    override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
+        when (buttons) {
+            ActionBottomDialog.Buttons.UPLOAD -> presenter.showFileChooserFragment()
+            ActionBottomDialog.Buttons.IMPORT -> presenter.uploadPermission(".pdf")
+            else -> super.onActionButtonClick(buttons)
         }
     }
 
@@ -64,6 +69,7 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
+            ExplorerContextItem.Duplicate -> cloudPresenter.duplicateRoom()
             ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             ExplorerContextItem.Reconnect -> reconnectStorage()
             ExplorerContextItem.Archive -> cloudPresenter.archiveRooms(true)
@@ -107,15 +113,6 @@ class DocsRoomFragment : DocsCloudFragment() {
                     filter.tags.isNotEmpty() ||
                     filter.provider != null
         } else super.getFilters()
-    }
-
-    override fun onPlaceholder(type: PlaceholderViews.Type) {
-        val isRoom = (presenter.currentFolder?.roomType ?: -1) > -1
-        if (type == PlaceholderViews.Type.EMPTY && isRoom) {
-            placeholderViews?.setEmptyRoomPlaceholder(presenter.itemClicked?.security?.editRoom == true)
-        } else {
-            super.onPlaceholder(type)
-        }
     }
 
     private fun reconnectStorage() {

@@ -14,6 +14,7 @@ interface ExplorerContextItemVisible {
             ExplorerContextItem.AddUsers -> addUsers
             ExplorerContextItem.Archive -> archive
             ExplorerContextItem.Copy -> copy
+            ExplorerContextItem.Duplicate -> duplicate
             ExplorerContextItem.Download -> download
             ExplorerContextItem.Location -> location
             ExplorerContextItem.Move -> move
@@ -44,6 +45,9 @@ interface ExplorerContextItemVisible {
     private val ExplorerContextState.copy: Boolean
         get() = if (section.isRoom) item.security?.copy == true else section != ApiContract.Section.Trash
 
+    private val ExplorerContextState.duplicate: Boolean
+        get() = item.security?.duplicate == true
+
     private val ExplorerContextState.download: Boolean
         get() = !section.isLocal
 
@@ -51,17 +55,20 @@ interface ExplorerContextItemVisible {
         get() = item is CloudFolder && item.providerItem
 
     private val ExplorerContextState.edit: Boolean
-        get() = if (item is CloudFile && isExtensionEditable(item.fileExst)) {
-            when (section) {
-                ApiContract.Section.Recent,
-                ApiContract.Section.User,
-                ApiContract.Section.Device -> true
+        get() {
+            val item = this.item
+            return if (item is CloudFile && (isExtensionEditable(item.fileExst) || item.isPdfForm)) {
+                when (section) {
+                    ApiContract.Section.Recent,
+                    ApiContract.Section.User,
+                    ApiContract.Section.Device -> true
 
                 ApiContract.Section.Trash,
                 ApiContract.Section.Room.Archive -> false
                 else -> access != ApiContract.Access.Read || item.security?.editAccess == true
             }
         } else section.isRoom && isRoot && item.security?.editRoom == true
+    }
 
     private val ExplorerContextState.move: Boolean
         get() = if (!section.isRoom) {

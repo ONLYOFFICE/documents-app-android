@@ -4,6 +4,8 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import lib.toolkit.base.managers.utils.StringUtils.Extension
+import lib.toolkit.base.managers.utils.StringUtils.getExtension
 
 open class CloudFile : Item() {
 
@@ -71,11 +73,18 @@ open class CloudFile : Item() {
     @Expose
     var encrypted = false
 
+    @SerializedName("isForm")
+    @Expose
+    val isForm: Boolean = false
+
     val nextVersion: Int
         get() = ++version
 
     val clearExt: String
         get() = fileExst.replace(".", "")
+
+    val isPdfForm: Boolean
+        get() = getExtension(fileExst) == Extension.PDF && isForm
 
     val isFavorite: Boolean
         get() = (fileStatus and ApiContract.FileStatus.FAVORITE) != 0

@@ -74,6 +74,8 @@ public interface DocsBaseView extends BaseViewExt {
     void onRename(Item item, int position);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onBatchMoveCopy(@NonNull OperationsState.OperationType operation, @NonNull Explorer explorer);
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onPickCloudFile(String destFolderId);
 
     /*
      * On click
@@ -85,7 +87,7 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onItemSelected(int position, String countSelected);
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onActionDialog(boolean isThirdParty, boolean isShowDocs);
+    void onActionDialog(boolean isThirdParty, boolean isShowDocs, Integer roomType);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDownloadActivity(Uri uri);
     @StateStrategyType(OneExecutionStateStrategy.class)
@@ -93,7 +95,7 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onFileDownloadPermission();
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onFileUploadPermission();
+    void onFileUploadPermission(@Nullable String extension);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onScrollToPosition(int position);
     @StateStrategyType(OneExecutionStateStrategy.class)
@@ -112,6 +114,8 @@ public interface DocsBaseView extends BaseViewExt {
     void onDialogDownloadWaiting();
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogQuestion(@Nullable String title, @Nullable String question, @Nullable String tag);
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onDialogWarning(String title, String question, @Nullable String tag);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogDelete(int count, boolean toTrash, String tag);
     @StateStrategyType(OneExecutionStateStrategy.class)

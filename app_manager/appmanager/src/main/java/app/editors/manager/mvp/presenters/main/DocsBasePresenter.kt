@@ -77,6 +77,30 @@ import java.util.TreeMap
 import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
 
+sealed class PickerMode {
+
+    data object None : PickerMode()
+
+    data object Folders : PickerMode()
+
+    sealed class Files(
+        open val selectedIds: MutableList<String> = mutableListOf(),
+        open val destFolderId: String
+    ) : PickerMode() {
+
+        data class PDFForm(override val destFolderId: String) : Files(destFolderId = destFolderId)
+
+        data class Any(override val destFolderId: String) : Files(destFolderId = destFolderId)
+
+        fun selectId(id: String) {
+            if (id in selectedIds) {
+                selectedIds.remove(id)
+            } else {
+                selectedIds.add(id)
+            }
+        }
+    }
+}
 
 @InjectViewState
 abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
@@ -111,20 +135,24 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
     protected var modelExplorerStack: ModelExplorerStack = ModelExplorerStack()
     protected var filteringValue: String = ""
     private var placeholderViewType: PlaceholderViews.Type = PlaceholderViews.Type.NONE
-    protected var destFolderId: String? = null
     protected var operationStack: ExplorerStackMap? = null
     private var uploadUri: Uri? = null
     private var sendingFile: File? = null
+
+    var destFolderId: String? = null
+        protected set
 
     /**
      * Modes
      * */
 
-    var isFoldersMode = false
+    var pickerMode: PickerMode = PickerMode.None
+
     var isTrashMode = false
-    var isFilteringMode = false
-        protected set
+
     var isSelectionMode = false
+
+    var isFilteringMode = false
         protected set
 
     /**
@@ -1003,7 +1031,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
     open fun getBackStack(): Boolean {
         cancelGetRequests()
         when {
-            isSelectionMode -> {
+            isSelectionMode && pickerMode !is PickerMode.Files -> {
                 setSelection(false)
                 updateViewsState()
                 return true
@@ -1194,8 +1222,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         }
     }
 
-    fun uploadPermission() {
-        viewState.onFileUploadPermission()
+    fun uploadPermission(extension: String? = null) {
+        viewState.onFileUploadPermission(extension)
+    }
+
+    fun showFileChooserFragment() {
+        viewState.onPickCloudFile(currentFolder?.id)
     }
 
     val itemTitle: String
@@ -1281,9 +1313,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     protected fun setPlaceholderType(placeholderType: PlaceholderViews.Type) {
         this.placeholderViewType = placeholderType
-        if (isFoldersMode && placeholderType == PlaceholderViews.Type.EMPTY) {
-            this.placeholderViewType = PlaceholderViews.Type.SUBFOLDER
-        }
         viewState.onPlaceholder(this.placeholderViewType)
     }
 
@@ -1425,13 +1454,26 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             when (responseCode) {
                 ApiContract.HttpCodes.CLIENT_UNAUTHORIZED -> viewState.onError(context.getString(R.string.errors_client_unauthorized))
                 ApiContract.HttpCodes.CLIENT_FORBIDDEN -> {
+                    val message = errorMessage
+                    if (message == null) {
+                        viewState.onError(context.getString(R.string.errors_client_forbidden))
+                        return
+                    }
+
                     when {
-                        errorMessage?.contains(ApiContract.Errors.DISK_SPACE_QUOTA) == true -> {
+                        ApiContract.Errors.DISK_SPACE_QUOTA in message -> {
                             viewState.onError(errorMessage)
                         }
-                        errorMessage?.contains(ApiContract.Errors.STORAGE_NOT_AVAILABLE) == true -> {
+                        ApiContract.Errors.STORAGE_NOT_AVAILABLE in message -> {
                             viewState.onError(context.getString(R.string.room_storage_not_availabale))
                             setPlaceholderType(PlaceholderViews.Type.NONE)
+                        }
+                        ApiContract.Errors.PINNED_ROOM_LIMIT in message -> {
+                            viewState.onDialogWarning(
+                                context.getString(R.string.dialogs_warning_title),
+                                context.getString(R.string.dialogs_warning_pinned_room_limit),
+                                null
+                            )
                         }
                         else -> {
                             viewState.onError(context.getString(R.string.errors_client_forbidden))
@@ -1648,6 +1690,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
     fun isRoomFolder(): Boolean {
         return modelExplorerStack.last()?.current?.id == roomClicked?.id
     }
+
+    fun setDestFolder(id: String) {
+        destFolderId = id
+    }
+
 
     fun setGridView(isGrid: Boolean) {
         preferenceTool.isGridView = isGrid

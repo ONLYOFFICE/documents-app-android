@@ -270,7 +270,7 @@ class CloudFileProvider @Inject constructor(
             }
     }
 
-    private fun copyFiles(body: RequestBatchOperation): Observable<List<Operation>> {
+    fun copyFiles(body: RequestBatchOperation): Observable<List<Operation>> {
         return managerService.copy(body)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

@@ -199,14 +199,6 @@ interface ManagerService {
     @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/copy")
     fun copy(@Body body: RequestBatchOperation): Observable<Response<ResponseOperation>>
 
-    // Need to room
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/copy")
-    suspend fun copyCoroutines(@Body body: RequestBatchOperation): ResponseOperation
-
     /*
      * Terminate all operations
      * */
@@ -226,14 +218,6 @@ interface ManagerService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/fileops")
     fun status(): Single<ResponseOperation>
-
-    // Need to room
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @GET("api/" + ApiContract.API_VERSION + "/files/fileops")
-    suspend fun statusCoroutines(): ResponseOperation
 
     /*
      * Rename folder

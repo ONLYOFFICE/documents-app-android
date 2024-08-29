@@ -20,6 +20,9 @@ class GridFolderViewHolder(view: View, adapter: ExplorerAdapter) :
     private val binding: LayoutExplorerGridFolderBinding =
         LayoutExplorerGridFolderBinding.bind(view)
 
+    override val root: View
+        get() = binding.root
+
     override val rootLayout: CardView
         get() = binding.cardRootLayout
 

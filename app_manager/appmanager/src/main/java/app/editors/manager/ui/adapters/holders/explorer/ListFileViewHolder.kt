@@ -17,6 +17,9 @@ class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
 
     private val binding = LayoutExplorerListFileBinding.bind(itemView)
 
+    override val root: View
+        get() = binding.root
+
     override val rootLayout: ConstraintLayout
         get() = binding.constraintRootLayout
 
