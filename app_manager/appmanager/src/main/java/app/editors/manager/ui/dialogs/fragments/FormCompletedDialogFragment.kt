@@ -25,7 +25,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,7 +48,6 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.app.api
 import app.editors.manager.managers.utils.GlideAvatarImage
-import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.StringUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -156,6 +154,7 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
                 }) {
                     when (response) {
                         is FormCompleteState.Error -> {
+                            //TODO add placeholder
                             UiUtils.getSnackBar(requireActivity()).setText(response.message).show()
                         }
 
