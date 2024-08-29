@@ -2,7 +2,6 @@ package app.editors.manager.ui.dialogs.fragments
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +32,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
@@ -64,13 +64,14 @@ import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.NestedColumn
 import lib.toolkit.base.managers.utils.ActivitiesUtils
+import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
 
 private sealed class FormCompleteState {
     data object Loading : FormCompleteState()
-    class Success(val result: FillResult) : FormCompleteState()
+    class Success(val fillResul: FillResult) : FormCompleteState()
     class Error(val message: String) : FormCompleteState()
 }
 
@@ -139,7 +140,10 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
         (view as? ComposeView)?.setContent {
 
             val viewModel = viewModel {
-                FormCompleteViewModel(requireContext().api, arguments?.getSerializableExt<String>(KEY_SESSION_ID) ?: "")
+                FormCompleteViewModel(
+                    managerService = requireContext().api,
+                    sessionId = arguments?.getSerializableExt<String>(KEY_SESSION_ID) ?: ""
+                )
             }
 
             val response = viewModel.roomState.collectAsState().value
@@ -150,7 +154,7 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
                 }) {
                     when (response) {
                         is FormCompleteState.Error -> {
-                            Log.d("TAG", "onViewCreated: ${response.message}")
+                            UiUtils.getSnackBar(requireActivity()).setText(response.message).show()
                         }
 
                         FormCompleteState.Loading -> {
@@ -159,20 +163,27 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
 
                         is FormCompleteState.Success -> {
                             FormCompletedScreen(
-                                response.result,
+                                response.fillResul,
                                 onSendEmailClick = {
                                     ActivitiesUtils.showEmail(
                                         context = requireContext(),
                                         chooseTitle = "",
-                                        to = response.result.manager.email ?: "",
+                                        to = response.fillResul.manager.email ?: "",
                                         subject = "",
                                         body = ""
+                                    )
+                                },
+                                onLinkClick = {
+                                    KeyboardUtils.setDataToClipboard(
+                                        requireContext(),
+                                        response.fillResul.completedForm.webUrl,
+                                        requireContext().getString(R.string.share_clipboard_external_link_label)
                                     )
                                 },
                                 onCheckReadyFormsClick = {
                                     setFragmentResult(
                                         requestKey = KEY_RESULT,
-                                        result = bundleOf("id" to response.result.completedForm.folderId)
+                                        result = bundleOf("id" to response.fillResul.completedForm.folderId)
                                     )
                                     dismiss()
                                 },
@@ -190,6 +201,7 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
 fun FormCompletedScreen(
     fillResult: FillResult,
     onSendEmailClick: () -> Unit,
+    onLinkClick: () -> Unit,
     onBackToRoomClick: () -> Unit,
     onCheckReadyFormsClick: () -> Unit
 ) {
@@ -219,7 +231,7 @@ fun FormCompletedScreen(
                 )
             },
             endButton = {
-                IconButton(onClick = {}) {
+                IconButton(onClick = onLinkClick) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_list_context_external_link),
                         contentDescription = null,
@@ -297,11 +309,13 @@ private fun RowItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
-                    Text(text = title)
+                    Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(
                         text = subtitle,
                         style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.colorTextSecondary
+                        color = MaterialTheme.colors.colorTextSecondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
                 endButton()
@@ -327,6 +341,7 @@ private fun FormCompletedScreenPreview() {
                     roomId = 123,
                     isRoomMember = true
                 ),
+                {},
                 {},
                 {},
                 {}
