@@ -38,6 +38,7 @@ import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.BUNDLE_KEY_REFRESH
 import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.REQUEST_KEY_REFRESH
+import app.editors.manager.ui.dialogs.fragments.FormCompletedDialogFragment
 import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
 import app.editors.manager.ui.fragments.share.ShareFragment
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
@@ -104,7 +105,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
                     if (data?.data != null) {
                         if (data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)) {
-                            // showResultFragment
+                            showFillResultFragment(data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION))
+                            return
                         }
                         if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
                             cloudPresenter.updateDocument(data.data!!)
@@ -498,6 +500,18 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     protected fun showRoomInfoFragment() {
         RoomInfoFragment.newInstance(presenter.roomClicked ?: error("room can not be null"))
             .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
+    }
+
+    private fun showFillResultFragment(stringExtra: String?) {
+        stringExtra?.let {
+            FormCompletedDialogFragment.show(parentFragmentManager, stringExtra)
+            parentFragmentManager.setFragmentResultListener(FormCompletedDialogFragment.KEY_RESULT, this) { _, data ->
+                if (data.getString("id")?.isNotEmpty() == true) {
+                    presenter.getItemsById(data.getString("id"))
+                }
+                parentFragmentManager.clearFragmentResult(FormCompletedDialogFragment.KEY_RESULT)
+            }
+        }
     }
 
     val isRoot: Boolean
