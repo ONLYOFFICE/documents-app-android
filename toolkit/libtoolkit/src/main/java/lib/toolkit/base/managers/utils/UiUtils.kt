@@ -924,3 +924,14 @@ fun View.getParentActivity(): Activity? {
     }
     return null
 }
+
+val View.viewVisibleRect: Rect
+    get() {
+        return Rect().apply {
+            getGlobalVisibleRect(this)
+        }
+    }
+
+fun View.isTouchInside(event: MotionEvent): Boolean {
+    return this.viewVisibleRect.contains(event.rawX.toInt(), event.rawY.toInt())
+}
