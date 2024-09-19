@@ -1080,11 +1080,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             }
 
             StringUtils.Extension.SHEET -> {
-                showEditors(null, EditorsType.CELLS, info)
+                showEditors(null, EditorsType.CELLS, info, false)
             }
 
             StringUtils.Extension.PRESENTATION -> {
-                showEditors(null, EditorsType.PRESENTATION, info)
+                showEditors(null, EditorsType.PRESENTATION, info, false)
             }
 
             StringUtils.Extension.PDF -> {
