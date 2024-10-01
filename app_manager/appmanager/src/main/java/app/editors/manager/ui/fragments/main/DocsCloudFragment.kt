@@ -44,6 +44,7 @@ import app.editors.manager.ui.dialogs.fragments.FilterDialogFragment.Companion.R
 import app.editors.manager.ui.dialogs.fragments.FormCompletedDialogFragment
 import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
+import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_TYPE
 import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
 import app.editors.manager.ui.fragments.share.ShareFragment
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
@@ -473,14 +474,14 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    private fun openRoom(id: String?) {
+    private fun openRoom(id: String?, type: Int? = null) {
         try {
             requireActivity().supportFragmentManager
                 .fragments
                 .filterIsInstance<IMainPagerFragment>()
                 .first()
                 .setPagerPosition(ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
-                    setFragmentResult(KEY_ROOM_CREATED_REQUEST, bundleOf(KEY_RESULT_ROOM_ID to id))
+                    setFragmentResult(KEY_ROOM_CREATED_REQUEST, bundleOf(KEY_RESULT_ROOM_ID to id, KEY_RESULT_ROOM_TYPE to type))
                 }
         } catch (_: NoSuchElementException) {
         }
@@ -508,7 +509,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             copyItems = copyItems
         ) { bundle ->
             if (bundle.contains("id")) {
-                openRoom(id = bundle.getString("id"))
+                openRoom(id = bundle.getString("id"), type = bundle.getInt("type"))
             } else {
                 onRefresh()
             }

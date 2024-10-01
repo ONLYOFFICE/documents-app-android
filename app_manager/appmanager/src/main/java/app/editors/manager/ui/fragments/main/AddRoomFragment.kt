@@ -208,7 +208,7 @@ class AddRoomFragment : ComposeDialogFragment() {
                         created = { id ->
                             requireActivity().supportFragmentManager.setFragmentResult(
                                 TAG_RESULT,
-                                bundleOf("id" to id)
+                                bundleOf("id" to id, "type" to roomState.value.type)
                             )
                             dismiss()
                         },

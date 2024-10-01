@@ -192,9 +192,9 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         }
     }
 
-    override fun openFolder(id: String?, position: Int) {
+    override fun openFolder(id: String?, position: Int, roomType: Int?) {
         setFiltering(false)
-        super.openFolder(id, position)
+        super.openFolder(id, position, roomType)
     }
 
     override fun sendCopy() {
