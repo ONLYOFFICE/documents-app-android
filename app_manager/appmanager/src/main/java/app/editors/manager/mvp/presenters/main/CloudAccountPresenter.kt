@@ -67,8 +67,10 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             }?.let { cloudAccount ->
                 checkLogin(cloudAccount)
             } ?: run {
+            preferenceTool.fileData = ""
             withContext(Dispatchers.Main) {
                 viewState.onRender(CloudAccountState.AccountLoadedState(cloudDataSource.getAccounts(), saveState))
+                viewState.onError(context.getString(R.string.errors_sign_in_account_not_found))
             }
         }
     }

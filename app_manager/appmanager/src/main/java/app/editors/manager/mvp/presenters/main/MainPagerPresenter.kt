@@ -123,7 +123,7 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
         return sortedList.toList()
     }
 
-    private suspend fun checkFileData(fileData: Uri?) {
+    suspend fun checkFileData(fileData: Uri?) {
         if ((fileData?.scheme?.equals(BuildConfig.PUSH_SCHEME) == true && fileData.host.equals("openfile")) || preferenceTool.fileData.isNotEmpty()) {
             if (fileData?.queryParameterNames?.contains("push") == true) {
                 viewState.setFileData(fileData.getQueryParameter("data") ?: "")
