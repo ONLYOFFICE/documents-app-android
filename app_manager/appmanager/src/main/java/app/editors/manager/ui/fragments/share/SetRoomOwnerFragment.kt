@@ -47,6 +47,16 @@ class SetRoomOwnerFragment : BaseDialogFragment() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (!UiUtils.isTablet(requireContext())) {
+            setStyle(
+                STYLE_NORMAL,
+                R.style.FullScreenDialog
+            )
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext())
     }
