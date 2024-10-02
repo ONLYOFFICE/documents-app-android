@@ -167,7 +167,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
                     onDialogAdded()
                 } else {
                     if (requireActivity().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-                        super.show(manager, tag)
+                        super.show(manager.beginTransaction().remove(dialog), tag)
                     }
                 }
             } catch (e: IllegalStateException) {
