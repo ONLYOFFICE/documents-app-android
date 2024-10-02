@@ -21,6 +21,7 @@ object FirebaseUtils {
     private const val KEY_PRIVACY_POLICY = "link_privacy_policy"
     private const val KEY_ALLOW_COAUTHORING = "allow_coauthoring"
     private const val KEY_SDK_FULLY = "check_sdk_fully"
+    private const val KEY_GOOGLE_DRIVE = "allow_google_drive"
     private const val TIME_FETCH: Long = 3600
 
     private var firebaseAnalytics: FirebaseAnalytics? = null
@@ -71,6 +72,19 @@ object FirebaseUtils {
                 }
             }
 
+        }
+    }
+
+    fun isGoogleDriveEnable(block: (isEnable: Boolean) -> Unit) {
+        if (getApp().isAnalyticEnable) {
+            getRemoteConfig()?.let { config ->
+                config.fetch(if (BuildConfig.DEBUG) 0 else TIME_FETCH).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        config.activate()
+                        block(config.getBoolean(KEY_GOOGLE_DRIVE))
+                    }
+                }
+            }
         }
     }
 

@@ -10,6 +10,7 @@ import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentChooseCloudsBinding
+import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -130,6 +131,10 @@ class CloudsFragment : BaseAppFragment() {
             R.string.storage_select_web_dav
         ) {
             WebDavLoginActivity.show(requireActivity(), WebdavProvider.WebDav, null)
+        }
+
+        FirebaseUtils.isGoogleDriveEnable {
+            viewBinding?.cloudsItemGoogleDrive?.isVisible = it
         }
     }
 
