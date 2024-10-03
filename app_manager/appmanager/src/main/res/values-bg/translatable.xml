@@ -229,10 +229,6 @@
     <string name="operation_snackbar_return">ВРЪЩАНЕ</string>
     <string name="operation_snackbar_send_link">ИЗПРАТИ ЛИНК</string>
     <string name="operation_title">Изберете папка</string>
-    <string name="permission_account_read_description">Описание на разрешението за запис в профила</string>
-    <string name="permission_account_read_label">Етикет за разрешение за писане на профил</string>
-    <string name="permission_account_write_description">Описание на разрешението за запис в профила</string>
-    <string name="permission_account_write_label">Етикет за разрешение за писане на профил</string>
     <string name="placeholder_access_denied">Отказан достъп</string>
     <string name="placeholder_connection">Грешка при свързването</string>
     <string name="placeholder_empty">Празна папка</string>
