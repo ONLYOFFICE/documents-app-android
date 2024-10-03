@@ -253,6 +253,7 @@ dependencies {
     implementation(libs.google.material)
     implementation(libs.google.gson)
     implementation(libs.google.safetynet)
+    implementation(libs.google.update)
 
     // Androidx
     implementation(libs.appcompat)
