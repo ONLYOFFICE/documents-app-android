@@ -43,7 +43,7 @@ object InAppUpdateUtils {
     }
 
     fun checkForUpdate(activity: Activity) {
-        if (!shouldCheckForUpdate(activity)) return
+        if (!shouldCheckForUpdate(activity) || !GoogleUtils.isGooglePlayServicesAvailable(activity)) return
 
         val appUpdateManager: AppUpdateManager = AppUpdateManagerFactory.create(activity)
         val appUpdateInfoTask: Task<AppUpdateInfo> = appUpdateManager.appUpdateInfo

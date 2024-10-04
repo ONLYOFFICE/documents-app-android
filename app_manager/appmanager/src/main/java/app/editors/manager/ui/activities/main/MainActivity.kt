@@ -24,6 +24,7 @@ import app.editors.manager.managers.receivers.AppLocaleReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.RoomDuplicateReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
+import app.editors.manager.managers.utils.InAppUpdateUtils
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter.Companion.PERSONAL_DUE_DATE
@@ -45,8 +46,10 @@ import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FragmentUtils
@@ -79,9 +82,8 @@ interface IMainActivity {
 }
 
 
-class MainActivity : BaseAppActivity(), MainActivityView,
-    BaseBottomDialog.OnBottomDialogCloseListener, CommonDialog.OnCommonDialogClose, IMainActivity,
-    View.OnClickListener {
+class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBottomDialogCloseListener,
+    CommonDialog.OnCommonDialogClose, IMainActivity, View.OnClickListener {
 
     companion object {
 
@@ -137,7 +139,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 }
             }
 
-            intent.extras?.let extras@ { extras ->
+            intent.extras?.let extras@{ extras ->
                 val key = when (action) {
                     DownloadReceiver.DOWNLOAD_ACTION_CANCELED -> DownloadReceiver.EXTRAS_KEY_ID
                     UploadReceiver.UPLOAD_ACTION_CANCELED -> UploadReceiver.EXTRAS_KEY_ID
@@ -159,6 +161,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        InAppUpdateUtils.handleActivityResult(requestCode, resultCode, this)  // Handle update result
         if (resultCode == RESULT_CANCELED) {
             when (requestCode) {
                 REQUEST_ACTIVITY_PORTAL -> {
@@ -216,13 +219,17 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             }
         }
 
-        App.getApp().appComponent
-            .recentDataSource.getRecentListFlow()
-            .flowWithLifecycle(lifecycle)
+        App.getApp().appComponent.recentDataSource.getRecentListFlow().flowWithLifecycle(lifecycle)
             .onEach { viewBinding.bottomNavigation.menu.getItem(0).isEnabled = it.isNotEmpty() }
             .launchIn(lifecycleScope)
 
         checkState(savedInstanceState)
+
+        lifecycleScope.launch {
+            delay(5000)
+            InAppUpdateUtils.checkForUpdate(this@MainActivity)
+        }
+
     }
 
     private fun initViews() {
