@@ -5,10 +5,6 @@
 
     <!-- ======================================================================================= -->
     <!-- Permissions -->
-    <string name="permission_account_write_label" translatable="false">علامة صلاحية الكتابة للحساب</string>
-    <string name="permission_account_write_description" translatable="false">وصف صلاحية الكتابة للحساب</string>
-    <string name="permission_account_read_label" translatable="false">علامة صلاحية الكتابة للحساب</string>
-    <string name="permission_account_read_description" translatable="false">وصف صلاحية الكتابة للحساب</string>
 
     <!-- ======================================================================================= -->
     <!-- Versions -->
@@ -456,7 +452,6 @@
     <string name="storage_web_dav_settings_login">تسجيل الدخول</string>
     <string name="storage_web_dav_settings_password">كلمة المرور</string>
     <string name="storage_web_dav_settings_title">عنوان الإدخال للخدمة</string>
-    <string name="storage_web_dav_settings_hint" tools:ignore="MissingTranslation">https://cloud.yourdomain.com</string>
     <string name="storage_web_dav_settings_server">الخادم</string>
     <string name="storage_web_dav_settings_required">مطلوب</string>
 

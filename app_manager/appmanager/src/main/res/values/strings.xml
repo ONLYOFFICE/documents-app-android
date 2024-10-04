@@ -19,7 +19,7 @@
     <string name="app_url_terms" translatable="false">
         https://help.onlyoffice.com/products/files/doceditor.aspx?fileid=5048471&amp;doc=bXJ6UmJacDVnVDMxV01oMHhrUlpwaGFBcXJUUUE3VHRuTGZrRUF5a1NKVT0_IjUwNDg0NzEi0
     </string>
-    <string name="app_url_help" translatable="true">https://helpcenter.onlyoffice.com/mobile-applications/documents/android/</string>
+    <string name="app_url_help" translatable="false">https://helpcenter.onlyoffice.com/mobile-applications/documents/android/</string>
 
     <string-array name="app_locales">
         <item>cs</item>

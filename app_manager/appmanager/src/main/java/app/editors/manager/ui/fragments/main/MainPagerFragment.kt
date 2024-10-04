@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -31,6 +32,7 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
 import app.editors.manager.ui.views.pager.ViewPagerAdapter.Container
+import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.clearIntent
 import moxy.presenter.InjectPresenter
@@ -115,8 +117,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             isFirstResume = false
         } else {
             viewBinding?.mainViewPager?.post {
-//                activity?.showAccount(true)
                 activeFragment?.onResume()
+            }
+            if (requireActivity().intent?.data != null) {
+                checkBundle(requireActivity().intent.data)
             }
         }
     }
@@ -151,12 +155,18 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     @Suppress("JSON_FORMAT_REDUNDANT")
-    private fun checkBundle() {
+    fun checkBundle(uri: Uri? = null) {
         val bundle = requireActivity().intent?.extras
-        var data = requireActivity().intent?.data
+        var data = uri ?: requireActivity().intent?.data
         if (bundle != null && bundle.containsKey("data")) {
             val model = bundle.getString("data")
             data = Uri.parse("${BuildConfig.PUSH_SCHEME}://openfile?data=${model}&push=true")
+        }
+        if (adapter != null && adapter?.fragmentList?.isNotEmpty() == true){
+            lifecycleScope.launch {
+                presenter.checkFileData(uri)
+            }
+            return
         }
         presenter.getState(data)
     }
@@ -334,7 +344,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                     requireActivity().intent.clearIntent()
                 }
             }
-        }, 500)
+        }, 250)
     }
 
     override fun onSwitchAccount(data: OpenDataModel, isToken: Boolean) {

@@ -1189,9 +1189,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         } ?: Explorer()
     }
 
-    open fun openFolder(id: String?, position: Int) {
+    open fun openFolder(id: String?, position: Int, roomType: Int? = null) {
         modelExplorerStack.listPosition = position
         viewState.onSwipeEnable(true)
+        roomType?.let { roomClicked = CloudFolder().apply {
+            this.id = id ?: ""
+            this.roomType = it
+        } }
         getItemsById(id)
     }
 

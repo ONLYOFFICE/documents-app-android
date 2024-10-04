@@ -248,8 +248,6 @@
     <string name="operation_snackbar_return">VOLTAR</string>
     <string name="operation_snackbar_send_link">ENVIAR LINK</string>
     <string name="operation_title">Selecionar a pasta</string>
-    <string name="permission_account_read_description">Descrição de permissão de gravação da conta</string>
-    <string name="permission_account_read_label">Etiqueta de permissão de gravação da conta</string>
     <string name="placeholder_access_denied">Acesso negado</string>
     <string name="placeholder_connection">Erro de conexão</string>
     <string name="placeholder_empty">Pasta vazia</string>

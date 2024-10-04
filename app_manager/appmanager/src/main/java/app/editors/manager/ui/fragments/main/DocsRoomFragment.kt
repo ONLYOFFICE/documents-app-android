@@ -7,13 +7,9 @@ import androidx.core.view.forEach
 import androidx.fragment.app.setFragmentResultListener
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
-import app.editors.manager.app.accountOnline
-import app.editors.manager.managers.tools.ActionMenuAdapter
 import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.RoomFilterType
-import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
-import app.editors.manager.ui.dialogs.AddRoomBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.share.InviteUsersFragment
 import lib.toolkit.base.managers.utils.UiUtils
@@ -27,8 +23,9 @@ class DocsRoomFragment : DocsCloudFragment() {
         super.onViewCreated(view, savedInstanceState)
         setFragmentResultListener(KEY_ROOM_CREATED_REQUEST) { _, bundle ->
             val roomId = bundle.getString(KEY_RESULT_ROOM_ID)
+            val roomType = bundle.getInt(KEY_RESULT_ROOM_TYPE)
             if (!roomId.isNullOrEmpty()) {
-                presenter.openFolder(roomId, 0)
+                presenter.openFolder(roomId, 0, roomType)
             }
         }
     }
@@ -136,6 +133,7 @@ class DocsRoomFragment : DocsCloudFragment() {
 
         val TAG: String = DocsRoomFragment::class.java.simpleName
         const val KEY_RESULT_ROOM_ID = "key_result_room_id"
+        const val KEY_RESULT_ROOM_TYPE = "key_result_room_type"
         const val TAG_LEAVE_ROOM = "tag_leave_room"
 
         fun newInstance(section: Int, rootPath: String): DocsCloudFragment {

@@ -491,7 +491,7 @@
     <string name="storage_web_dav_settings_login">Login</string>
     <string name="storage_web_dav_settings_password">Password</string>
     <string name="storage_web_dav_settings_title">Input title for service</string>
-    <string name="storage_web_dav_settings_hint" tools:ignore="MissingTranslation">https://cloud.yourdomain.com</string>
+    <string name="storage_web_dav_settings_hint" tools:ignore="MissingTranslation" translatable="false">https://cloud.yourdomain.com</string>
     <string name="storage_web_dav_settings_server">Server</string>
     <string name="storage_web_dav_settings_required">Required</string>
 
@@ -933,5 +933,5 @@
     <string name="rooms_fill_form_complete_toolbar_title">Form completed successfully</string>
     <string name="rooms_fill_form_complete_back_to_room">Back to room</string>
     <string name="rooms_fill_form_complete_check_forms">Check ready forms</string>
-
+    <string name="errors_sign_in_account_not_found">Account not found</string>
 </resources>

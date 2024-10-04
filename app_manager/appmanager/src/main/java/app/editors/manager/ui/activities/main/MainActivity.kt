@@ -13,7 +13,6 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
-import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -125,6 +124,19 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         intent.action?.let { action ->
+            if (action == Intent.ACTION_VIEW) {
+                intent.data?.let {
+                    val fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
+                    if (fragment is MainPagerFragment && fragment.isVisible) {
+                        setIntent(intent)
+                        fragment.checkBundle()
+                    } else {
+                        setIntent(intent)
+                        openFile()
+                    }
+                }
+            }
+
             intent.extras?.let extras@ { extras ->
                 val key = when (action) {
                     DownloadReceiver.DOWNLOAD_ACTION_CANCELED -> DownloadReceiver.EXTRAS_KEY_ID
@@ -142,31 +154,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 showBrowser(it)
             }
             return
-        }
-
-        var fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
-        if (fragment is MainPagerFragment) {
-            val fragments = fragment.getChildFragmentManager().fragments
-            //            for (fr in fragments) {
-            //                if (fr is DocsMyFragment) {
-            //                    fr.getArgs(intent)
-            //                }
-            //            }
-        }
-
-        fragment = supportFragmentManager.findFragmentByTag(DocsWebDavFragment.TAG)
-        if (fragment is DocsWebDavFragment) {
-            fragment.getArgs(intent)
-        }
-
-        fragment = supportFragmentManager.findFragmentByTag(DocsOnDeviceFragment.TAG)
-        if (fragment is DocsOnDeviceFragment) {
-            fragment.getArgs(intent)
-        }
-
-        fragment = supportFragmentManager.findFragmentByTag(DocsRecentFragment.TAG)
-        if (fragment is DocsRecentFragment) {
-            fragment.getArgs(intent)
         }
     }
 
@@ -333,7 +320,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
-    override fun openFile(account: CloudAccount, fileData: String) {
+    fun openFile() {
         viewBinding.bottomNavigation.setOnItemSelectedListener(null)
         viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
         showOnCloudFragment()

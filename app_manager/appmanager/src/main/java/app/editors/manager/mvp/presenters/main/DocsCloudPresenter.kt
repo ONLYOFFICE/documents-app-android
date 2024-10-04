@@ -471,10 +471,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         return backStackResult
     }
 
-    override fun openFolder(id: String?, position: Int) {
+    override fun openFolder(id: String?, position: Int, roomType: Int?) {
         setFiltering(false)
         resetFilters()
-        super.openFolder(id, position)
+        super.openFolder(id, position, roomType)
     }
 
     fun onEditContextClick() {

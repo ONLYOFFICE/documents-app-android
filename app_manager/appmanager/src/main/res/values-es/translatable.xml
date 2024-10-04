@@ -248,10 +248,6 @@
     <string name="operation_snackbar_return">VOLVER</string>
     <string name="operation_snackbar_send_link">ENVIAR ENLACE</string>
     <string name="operation_title">Seleccionar carpeta</string>
-    <string name="permission_account_read_description">Descripción del permiso de escritura de la cuenta</string>
-    <string name="permission_account_read_label">Etiqueta del permiso de escritura de la cuenta</string>
-    <string name="permission_account_write_description">Descripción del permiso de escritura de la cuenta</string>
-    <string name="permission_account_write_label">Etiqueta del permiso de escritura de la cuenta</string>
     <string name="placeholder_access_denied">Acceso denegado</string>
     <string name="placeholder_connection">Error de conexión</string>
     <string name="placeholder_empty">Vaciar carpeta</string>

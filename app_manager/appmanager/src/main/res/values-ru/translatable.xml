@@ -171,9 +171,7 @@
     <string name="login_create_portal_title">Создание корпоративного облачного офиса</string>
     <string name="login_create_signin_create_button">СОЗДАТЬ</string>
     <string name="login_create_signin_first_name_hint">Имя</string>
-    <string name="login_create_signin_info">
-        Нажав эту кнопку, вы соглашаетесь с условиями использования
-    </string>
+    <string name="login_create_signin_info">Нажав эту кнопку, вы соглашаетесь с условиями использования</string>
     <string name="login_create_signin_last_name_hint">Фамилия</string>
     <string name="login_create_signin_password">Пароль</string>
     <string name="login_create_signin_passwords_mismatch">Пароль не совпадает</string>
@@ -186,8 +184,7 @@
     <string name="login_enterprise_edit_hint">Адрес облачного офиса</string>
     <string name="login_enterprise_email_hint">Email</string>
     <string name="login_enterprise_forgot_password">Забыли пароль?</string>
-    <string name="login_enterprise_info">      Корпоративный облачный офис позволяет сохранять файлы в хранилище, делиться ими с коллегами и редактировать документы совместно в режиме реального времени
-    </string>
+    <string name="login_enterprise_info">Корпоративный облачный офис позволяет сохранять файлы в хранилище, делиться ими с коллегами и редактировать документы совместно в режиме реального времени</string>
     <string name="login_enterprise_password_hint">Пароль</string>
     <string name="login_enterprise_signin_button">ВОЙТИ</string>
     <string name="login_enterprise_single_sign_button">Single Sign-on</string>
@@ -198,8 +195,7 @@
     <string name="login_pager_title">Подключение к облаку ONLYOFFICE</string>
     <string name="login_personal_edit_email_hint">Email</string>
     <string name="login_personal_edit_password_hint">Пароль</string>
-    <string name="login_personal_info">        Подключитесь к персональному облаку, чтобы сохранять файлы в облачном хранилище
-    </string>
+    <string name="login_personal_info">Подключитесь к персональному облаку, чтобы сохранять файлы в облачном хранилище</string>
     <string name="login_personal_signin_button">ВОЙТИ</string>
     <string name="login_personal_signup_button">ЗАРЕГИСТРИРОВАТЬСЯ</string>
     <string name="login_personal_signup_dialog_info">Ссылка для подтверждения отправлена на адрес %1$s\nПерейдите по ссылке из письма, прежде чем продолжить</string>

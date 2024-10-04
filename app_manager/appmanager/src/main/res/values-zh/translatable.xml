@@ -4,10 +4,6 @@
     <string name="app_name_full">ONLYOFFICE Documents</string>
     <!-- ======================================================================================= -->
     <!-- Permissions -->
-    <string name="permission_account_write_label" translatable="false">账户写入权限标签</string>
-    <string name="permission_account_write_description" translatable="false">账户写入权限描述</string>
-    <string name="permission_account_read_label" translatable="false">账户写入权限标签</string>
-    <string name="permission_account_read_description" translatable="false">账户写入权限描述</string>
     <!-- ======================================================================================= -->
     <!-- Versions -->
     <string name="app_versions_title">版本3.0发布</string>
