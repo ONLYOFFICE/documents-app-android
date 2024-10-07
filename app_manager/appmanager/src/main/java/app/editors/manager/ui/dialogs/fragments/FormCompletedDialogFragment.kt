@@ -151,7 +151,7 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
             ManagerTheme {
                 AppScaffold(topBar = {
                     AppTopBar(title = R.string.rooms_fill_form_complete_toolbar_title)
-                }) {
+                }, useTablePaddings = false) {
                     when (response) {
                         is FormCompleteState.Error -> {
                             //TODO add placeholder
