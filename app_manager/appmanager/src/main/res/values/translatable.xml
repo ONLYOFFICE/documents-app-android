@@ -236,7 +236,7 @@
     <string name="dialogs_warning_title">Warning</string>
     <string name="dialogs_warning_only_pdf_form_message">The file cannot be moved to this room. Please try to move the ONLYOFFICE PDF form.</string>
     <string name="dialogs_warning_pinned_room_limit">You can’t pin more than 10 rooms to the top. Unpin some that are currently pinned.</string>
-    <string name="dialogs_warning_fill_forms_room_create">Сreation based on several files and folders is not available for this type of room. To create such a room, go to the Rooms section or use one of the PDF forms.</string>
+    <string name="dialogs_warning_fill_forms_room_create">Creation based on several files and folders is not available for this type of room. To create such a room, go to the Rooms section or use one of the PDF forms.</string>
 
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">Rename</string>
@@ -921,7 +921,6 @@
 
     <string name="rooms_upload_pdf_from_docspace">Upload PDF Form from DocSpace</string>
     <string name="rooms_upload_pdf_from_device">Upload PDF Form from device</string>
-
     <string name="rooms_fill_in_as_title">Fill in as</string>
     <string name="rooms_fill_out_form_yourself">Fill out the form yourself</string>
     <string name="rooms_fill_out_form_yourself_desc">Fill in the fields of the original form in the editor window.</string>
