@@ -88,7 +88,6 @@ class DocsRoomFragment : DocsCloudFragment() {
             ActionMenuItem.Info -> showRoomInfoFragment()
             ActionMenuItem.EditRoom -> cloudPresenter.editRoom()
             ActionMenuItem.Invite -> showInviteUsersDialog()
-            is ActionMenuItem.CopyLink -> cloudPresenter.copyLinkFromActionMenu(item.isRoom)
             ActionMenuItem.LeaveRoom -> cloudPresenter.checkRoomOwner()
             else -> super.actionMenuClickListener.invoke(item)
         }

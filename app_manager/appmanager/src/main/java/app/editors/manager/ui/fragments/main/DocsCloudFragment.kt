@@ -228,6 +228,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
+            is ActionMenuItem.CopyLink -> cloudPresenter.copyLinkFromActionMenu(item.isRoom)
+            ActionMenuItem.Info -> showRoomInfoFragment()
             ActionMenuItem.CreateRoom -> showAddRoomBottomDialog()
             else -> super.actionMenuClickListener(item)
         }

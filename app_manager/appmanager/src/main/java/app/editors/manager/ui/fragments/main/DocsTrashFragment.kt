@@ -41,7 +41,7 @@ class DocsTrashFragment : DocsCloudFragment() {
             )
             cloudPresenter.checkBackStack()
         }
-        explorerAdapter?.isTrash = true
+        explorerAdapter?.isTrash = !isArchive
     }
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
@@ -118,13 +118,13 @@ class DocsTrashFragment : DocsCloudFragment() {
                 }
             }
 
-            ActionMenuItem.Delete -> presenter.delete()
+            ActionMenuItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
             else -> super.actionMenuClickListener(item)
         }
     }
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {
-        if (type == PlaceholderViews.Type.EMPTY) {
+        if (type == PlaceholderViews.Type.EMPTY && isRoot) {
             super.onPlaceholder(if (isArchive) PlaceholderViews.Type.EMPTY_ARCHIVE else PlaceholderViews.Type.EMPTY_TRASH)
         } else {
             super.onPlaceholder(type)
