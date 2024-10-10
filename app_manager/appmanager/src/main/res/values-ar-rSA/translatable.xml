@@ -924,4 +924,5 @@
     <string name="rooms_fill_form_complete_back_to_room">العودة إلى الغرفة</string>
     <string name="rooms_fill_form_complete_check_forms">تحقق من النماذج الجاهزة</string>
     <string name="errors_sign_in_account_not_found">لم يتم العثور على الحساب</string>
+    <string name="list_action_delete_image">حذف الصورة</string>
 </resources>

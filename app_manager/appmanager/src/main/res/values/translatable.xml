@@ -357,6 +357,8 @@
     <string name="list_action_import">Import file</string>
     <string name="list_action_image_from_library">Picture from Library</string>
     <string name="list_action_delete_link">Delete link</string>
+    <string name="list_action_delete_image">Delete image</string>
+
     <!-- Dialog info -->
 
     <!-- Pager -->

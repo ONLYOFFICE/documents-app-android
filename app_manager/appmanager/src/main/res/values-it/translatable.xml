@@ -749,4 +749,5 @@
     <string name="rooms_fill_form_complete_back_to_room">Torna alla stanza</string>
     <string name="rooms_fill_form_complete_check_forms">Controlla i moduli pronti</string>
     <string name="errors_sign_in_account_not_found">Account non trovato</string>
+    <string name="list_action_delete_image">Elimina immagine</string>
 </resources>

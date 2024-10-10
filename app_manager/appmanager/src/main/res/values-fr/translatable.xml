@@ -754,4 +754,5 @@ Nous vous recommandons de passer au service gratuit ONLYOFFICE DocSpace Cloud.</
     <string name="rooms_fill_form_complete_back_to_room">Retour à la salle</string>
     <string name="rooms_fill_form_complete_check_forms">Vérifier les formulaires prêts</string>
     <string name="errors_sign_in_account_not_found">Compte non trouvé</string>
+    <string name="list_action_delete_image">Supprimer l\'image</string>
 </resources>

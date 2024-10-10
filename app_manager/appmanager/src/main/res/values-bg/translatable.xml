@@ -743,4 +743,5 @@
     <string name="rooms_fill_form_complete_back_to_room">Обратно към стая</string>
     <string name="rooms_fill_form_complete_check_forms">Провери готовите формуляри</string>
     <string name="errors_sign_in_account_not_found">Профилът не е открит</string>
+    <string name="list_action_delete_image">Изтрий изображение</string>
 </resources>

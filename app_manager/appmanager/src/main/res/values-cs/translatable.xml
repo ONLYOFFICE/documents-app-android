@@ -900,4 +900,5 @@
     <string name="rooms_fill_form_complete_back_to_room">Zpět do místnosti</string>
     <string name="rooms_fill_form_complete_check_forms">Kontrola připravených formulářů</string>
     <string name="errors_sign_in_account_not_found">Účet nebyl nalezen</string>
+    <string name="list_action_delete_image">Odstranit obrázek</string>
 </resources>

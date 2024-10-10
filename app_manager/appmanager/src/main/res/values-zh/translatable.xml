@@ -808,4 +808,5 @@
     <string name="rooms_fill_form_complete_back_to_room">返回房间</string>
     <string name="rooms_fill_form_complete_check_forms">查看已完成的表单</string>
     <string name="errors_sign_in_account_not_found">账户未找到</string>
+    <string name="list_action_delete_image">删除图像</string>
 </resources>

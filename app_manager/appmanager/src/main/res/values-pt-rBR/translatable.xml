@@ -750,4 +750,5 @@
     <string name="rooms_fill_form_complete_back_to_room">Voltar para a sala</string>
     <string name="rooms_fill_form_complete_check_forms">Verifique os formulários prontos</string>
     <string name="errors_sign_in_account_not_found">Conta não encontrada</string>
+    <string name="list_action_delete_image">Excluir imagem</string>
 </resources>

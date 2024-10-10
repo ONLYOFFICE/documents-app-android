@@ -599,7 +599,7 @@ private fun ChooseImageBottomView(
         imageUri?.let {
             Divider()
             AppArrowItem(
-                title = stringResource(id = R.string.list_action_delete_link),
+                title = stringResource(id = R.string.list_action_delete_image),
                 titleColor = MaterialTheme.colors.error,
                 startIcon = R.drawable.ic_trash,
                 startIconTint = MaterialTheme.colors.error,

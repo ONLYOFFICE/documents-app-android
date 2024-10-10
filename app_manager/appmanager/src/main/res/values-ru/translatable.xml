@@ -772,4 +772,5 @@
     <string name="rooms_fill_form_complete_back_to_room">Назад в комнату</string>
     <string name="rooms_fill_form_complete_check_forms">Проверить готовые формы</string>
     <string name="errors_sign_in_account_not_found">Аккаунт не найден</string>
+    <string name="list_action_delete_image">Удалить изображение</string>
 </resources>
