@@ -1,6 +1,7 @@
 package app.documents.core.providers
 
 import android.graphics.Bitmap
+import androidx.core.text.isDigitsOnly
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
@@ -8,6 +9,7 @@ import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestBatchOperation
+import app.documents.core.network.manager.models.request.RequestRoomNotifications
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.room.models.RequestAddTags
 import app.documents.core.network.room.models.RequestArchive
@@ -38,6 +40,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
@@ -327,5 +330,20 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             }
             emit(100)
         }.asResult()
+    }
+
+    fun muteRoomNotifications(roomId: String, muted: Boolean): Flow<Result<List<String>>> {
+        return flow<List<String>> {
+            if (!roomId.isDigitsOnly()) throw IllegalArgumentException()
+            val rooms = roomService.muteNotifications(
+                RequestRoomNotifications(
+                    roomsId = roomId.toInt(),
+                    mute = muted
+                )
+            ).response.disabledRooms
+            emit(rooms)
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
     }
 }

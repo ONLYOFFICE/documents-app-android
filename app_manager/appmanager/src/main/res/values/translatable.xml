@@ -329,6 +329,8 @@
     <string name="list_context_move">Move</string>
     <string name="list_context_create_copy">Copy</string>
     <string name="list_context_duplicate">Duplicate</string>
+    <string name="list_context_notification_enable">Enable notifications</string>
+    <string name="list_context_notification_disable">Disable notifications</string>
     <string name="list_context_create_download">Download</string>
     <string name="list_context_open_location">Open location</string>
     <string name="list_context_rename">Rename</string>
@@ -935,4 +937,6 @@
     <string name="rooms_fill_form_complete_back_to_room">Back to room</string>
     <string name="rooms_fill_form_complete_check_forms">Check ready forms</string>
     <string name="errors_sign_in_account_not_found">Account not found</string>
+    <string name="rooms_notifications_disabled">Room notifications disabled</string>
+    <string name="rooms_notifications_enabled">Room notifications enabled</string>
 </resources>

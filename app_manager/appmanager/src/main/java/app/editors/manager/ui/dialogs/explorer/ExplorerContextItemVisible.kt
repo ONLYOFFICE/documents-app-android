@@ -32,6 +32,7 @@ interface ExplorerContextItemVisible {
             is ExplorerContextItem.Header -> true
             is ExplorerContextItem.Pin -> pin
             is ExplorerContextItem.Delete -> delete
+            is ExplorerContextItem.Notifications -> notifications
             is ExplorerContextItem.Favorites -> favorites(contextItem.enabled)
         }
     }
@@ -47,6 +48,9 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.duplicate: Boolean
         get() = item.security?.duplicate == true
+
+    private val ExplorerContextState.notifications: Boolean
+        get() = section.isRoom && item is CloudFolder && item.isRoom
 
     private val ExplorerContextState.download: Boolean
         get() = !section.isLocal

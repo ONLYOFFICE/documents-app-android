@@ -9,6 +9,7 @@ import androidx.work.WorkManager
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.Recent
 import app.documents.core.model.cloud.isDocSpace
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
 import app.documents.core.network.manager.ManagerService
@@ -1194,6 +1195,31 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             "rooms/shared/filter?folder=${folder.id}"
         } else {
             "rooms/shared/${folder.id}/filter?folder=${folder.id}"
+        }
+    }
+
+    fun muteRoomNotifications(muted: Boolean) {
+        presenterScope.launch {
+            val roomId = roomClicked?.id.orEmpty()
+            roomProvider?.muteRoomNotifications(roomId, muted)?.collect { result ->
+                when (result) {
+                    is Result.Error -> withContext(Dispatchers.Main) {
+                        viewState.onError(context.getString(R.string.errors_unknown_error))
+                    }
+                    is Result.Success -> withContext(Dispatchers.Main) {
+                        roomClicked?.mute = roomId in result.result
+                        viewState.onSnackBar(
+                            context.getString(
+                                if (muted) {
+                                    R.string.rooms_notifications_disabled
+                                } else {
+                                    R.string.rooms_notifications_enabled
+                                }
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 }

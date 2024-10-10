@@ -3,6 +3,7 @@ package app.editors.manager.viewModels.main
 import androidx.lifecycle.ViewModel
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.isFavorite
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
@@ -40,6 +41,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.AddUsers,
                 ExplorerContextItem.ExternalLink(state),
+                ExplorerContextItem.Notifications((state.item as? CloudFolder)?.mute == true),
                 ExplorerContextItem.Duplicate,
                 ExplorerContextItem.Download,
                 ExplorerContextItem.Archive,
