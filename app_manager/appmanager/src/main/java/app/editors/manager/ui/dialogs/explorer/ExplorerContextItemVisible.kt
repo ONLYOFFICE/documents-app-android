@@ -67,12 +67,12 @@ interface ExplorerContextItemVisible {
                     ApiContract.Section.User,
                     ApiContract.Section.Device -> true
 
-                ApiContract.Section.Trash,
-                ApiContract.Section.Room.Archive -> false
-                else -> access != ApiContract.Access.Read || item.security?.editAccess == true
-            }
-        } else section.isRoom && isRoot && item.security?.editRoom == true
-    }
+                    ApiContract.Section.Trash,
+                    ApiContract.Section.Room.Archive -> false
+                    else -> access != ApiContract.Access.Read || item.security?.editAccess == true
+                }
+            } else section.isRoom && isRoot && item.security?.editRoom == true
+        }
 
     private val ExplorerContextState.move: Boolean
         get() = if (!section.isRoom) {
@@ -113,7 +113,10 @@ interface ExplorerContextItemVisible {
         get() = if (provider is PortalProvider.Cloud.DocSpace) {
             section == ApiContract.Section.User && item is CloudFile
         } else if (item is CloudFile) {
-            !item.isDenySharing && access in arrayOf(ApiContract.Access.ReadWrite, ApiContract.Access.None)
+            !item.isDenySharing && access in arrayOf(
+                ApiContract.Access.ReadWrite,
+                ApiContract.Access.None
+            )
         } else {
             isShareVisible(access, section)
         }
@@ -138,13 +141,19 @@ interface ExplorerContextItemVisible {
         }
 
     private val ExplorerContextState.createRoom: Boolean
-        get() = item.security?.create == true || item is CloudFile
+        get() {
+            if (section is ApiContract.Section.Room.Archive) return false
+            return item.security?.create == true || item is CloudFile
+        }
 
     private val ExplorerContextState.location: Boolean
         get() = isSearching
 
     private fun ExplorerContextState.favorites(enabled: Boolean): Boolean =
-        enabled && !isFolder && !listOf(ApiContract.Section.Trash, ApiContract.Section.Webdav).contains(section)
+        enabled && !isFolder && !listOf(
+            ApiContract.Section.Trash,
+            ApiContract.Section.Webdav
+        ).contains(section)
 
     private fun isExtensionEditable(ext: String): Boolean {
         return StringUtils.getExtension(ext) in listOf(
