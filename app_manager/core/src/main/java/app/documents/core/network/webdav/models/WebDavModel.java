@@ -130,7 +130,7 @@ public class WebDavModel {
         }
 
         public boolean isDir() {
-            return contentLength == null || "httpd/unix-directory".equals(contentType);
+            return contentLength == null || "httpd/unix-directory".equals(contentType) || href.endsWith("/");
         }
     }
 }
