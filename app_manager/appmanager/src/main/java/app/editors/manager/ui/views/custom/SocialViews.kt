@@ -1,11 +1,12 @@
 package app.editors.manager.ui.views.custom
 
 import android.accounts.Account
-import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.editors.manager.BuildConfig
 import app.editors.manager.databinding.IncludeSocialNetworksLayoutBinding
@@ -26,9 +27,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class SocialViews(
-    private val activity: Activity, view: View?,
+    private val activity: FragmentActivity, view: View?,
     private val facebookId: String?
 ) {
 
@@ -111,21 +114,23 @@ class SocialViews(
     }
 
     private fun getGoogleToken(completedTask: Task<GoogleSignInAccount>) {
-        onSocialNetworkCallbacks?.let { callbacks ->
-            try {
-                val account: GoogleSignInAccount = completedTask.getResult(ApiException::class.java)
-                account.account?.let { callbacks.onGoogleSuccess(it) }
-            } catch (e: ApiException) {
-                Log.e(TAG, "Status code: " + e.statusCode, e)
-                googleSignInClient?.signOut()
-                if (e.statusCode == SIGN_IN_CANCELLED) {
-                    callbacks.onGoogleCancelled()
-                } else {
+        activity.lifecycleScope.launch(Dispatchers.IO) {
+            onSocialNetworkCallbacks?.let { callbacks ->
+                try {
+                    val account: GoogleSignInAccount = completedTask.getResult(ApiException::class.java)
+                    account.account?.let { callbacks.onGoogleSuccess(it) }
+                } catch (e: ApiException) {
+                    Log.e(TAG, "Status code: " + e.statusCode, e)
+                    googleSignInClient?.signOut()
+                    if (e.statusCode == SIGN_IN_CANCELLED) {
+                        callbacks.onGoogleCancelled()
+                    } else {
+                        callbacks.onGoogleFailed()
+                    }
+                } catch (e: Exception) {
+                    googleSignInClient?.signOut()
                     callbacks.onGoogleFailed()
                 }
-            } catch (e: Exception) {
-                googleSignInClient?.signOut()
-                callbacks.onGoogleFailed()
             }
         }
     }

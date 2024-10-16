@@ -245,13 +245,22 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
                 setOnClickListener {
                     showWaitingDialog(getString(R.string.dialogs_wait_title))
                     val request = Json.decodeFromString<RequestSignIn>(
-                            arguments?.getString(AuthAppActivity.REQUEST_KEY).orEmpty()
-                        )
-                    presenter.signInWithEmail(
-                        request.userName,
-                        request.password,
-                        binding.authSecretKeyEditText.text.toString().replace(" ", "")
+                        arguments?.getString(AuthAppActivity.REQUEST_KEY).orEmpty()
                     )
+                    if (request.userName.isNotEmpty() && request.password.isNotEmpty()) {
+                        presenter.signInWithEmail(
+                            request.userName,
+                            request.password,
+                            binding.authSecretKeyEditText.text.toString().replace(" ", "")
+                        )
+                    }
+                    if (request.provider.isNotEmpty() && request.accessToken.isNotEmpty()) {
+                        presenter.signInWithProvider(
+                            request.accessToken,
+                            request.provider,
+                            binding.authSecretKeyEditText.text.toString().replace(" ", "")
+                        )
+                    }
                 }
             }
         }
