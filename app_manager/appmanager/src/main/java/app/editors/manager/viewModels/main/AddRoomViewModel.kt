@@ -18,8 +18,11 @@ import com.bumptech.glide.Glide
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -53,6 +56,11 @@ sealed class ViewState {
     data object Loading : ViewState()
     class Success(val id: String? = null) : ViewState()
     class Error(val message: String) : ViewState()
+}
+
+sealed class AddRoomEffect {
+
+    data class Error(val message: String) : AddRoomEffect()
 }
 
 class AddRoomViewModel(
@@ -92,6 +100,9 @@ class AddRoomViewModel(
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.None)
     val viewState: StateFlow<ViewState> = _viewState
+
+    private val _effect: MutableSharedFlow<AddRoomEffect> = MutableSharedFlow(1)
+    val effect: SharedFlow<AddRoomEffect> = _effect.asSharedFlow()
 
     private val roomTags: Set<String> = (roomInfo as? CloudFolder)?.tags?.toSet().orEmpty()
     private var isDeleteLogo: Boolean = false
@@ -156,7 +167,13 @@ class AddRoomViewModel(
                     roomProvider.addTags(id, tags)
 
                     if (id.isNotEmpty() && image != null) {
-                        roomProvider.setLogo(id, loadImage(image, false))
+                        roomProvider.setLogo(id, loadImage(image, false)) {
+                            _effect.tryEmit(
+                                AddRoomEffect.Error(
+                                    context.getString(R.string.rooms_error_logo_size_exceed)
+                                )
+                            )
+                        }
                     }
 
                     if (isDeleteLogo) {
@@ -203,8 +220,13 @@ class AddRoomViewModel(
                             roomProvider.deleteLogo(id)
                         }
                         roomState.value.imageUri is Uri -> {
-                            roomProvider.setLogo(id, loadImage(roomState.value.imageUri!!, false))
-
+                            roomProvider.setLogo(id, loadImage(roomState.value.imageUri!!, false)) {
+                                _effect.tryEmit(
+                                    AddRoomEffect.Error(
+                                        context.getString(R.string.rooms_error_logo_size_exceed)
+                                    )
+                                )
+                            }
                         }
                     }
 

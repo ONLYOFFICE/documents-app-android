@@ -47,7 +47,6 @@ import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import org.json.JSONObject
 import retrofit2.HttpException
 import java.util.UUID
 import javax.inject.Inject
@@ -232,7 +231,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             response.body()?.response?.members?.getOrNull(0) else throw HttpException(response)
     }
 
-    suspend fun setLogo(id: String, logo: Bitmap) {
+    suspend fun setLogo(id: String, logo: Bitmap, onLogoSizeLimitExceed: () -> Unit) {
         val logoId = UUID.randomUUID().toString()
         val uploadResponse = roomService.uploadLogo(
             MultipartBody.Part.createFormData(
@@ -241,18 +240,18 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 RequestBody.create(MediaType.get("image/*"), logo.toByteArray())
             )
         )
-        if (uploadResponse.isSuccessful) {
-            roomService.setLogo(
-                id,
-                RequestSetLogo(
-                    tmpFile = JSONObject(uploadResponse.body()?.string() ?: "").optJSONObject("response")
-                        ?.optString("data")
-                        ?: "",
-                    width = logo.width,
-                    height = logo.height
-                )
-            )
+        if (!uploadResponse.response.success) {
+            onLogoSizeLimitExceed()
+            return
         }
+        roomService.setLogo(
+            id,
+            RequestSetLogo(
+                tmpFile = uploadResponse.response.data,
+                width = logo.width,
+                height = logo.height
+            )
+        )
     }
 
     suspend fun setRoomOwner(id: String, userId: String): CloudFolder {

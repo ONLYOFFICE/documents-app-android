@@ -776,6 +776,7 @@
     <string name="rooms_error_name">Room name cannot be empty</string>
     <string name="rooms_error_create">Error create room</string>
     <string name="rooms_error_edit">Error edit room</string>
+    <string name="rooms_error_logo_size_exceed">The maximum image size is exceeded (1 MB)</string>
     <string name="leave_room_title">Leave the room</string>
     <string name="leave_room_owner_desc">You are the owner of this room. Before you leave the room, you must transfer the owner’s role to another user.</string>
     <string name="leave_room_desc">Do you really want to leave this room? You will be able to join it again via new invitation by a room admin.</string>

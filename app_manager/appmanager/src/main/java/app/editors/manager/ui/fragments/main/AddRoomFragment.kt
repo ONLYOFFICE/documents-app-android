@@ -82,6 +82,7 @@ import app.editors.manager.ui.dialogs.AddRoomItem
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.viewModels.main.AddRoomData
+import app.editors.manager.viewModels.main.AddRoomEffect
 import app.editors.manager.viewModels.main.AddRoomViewModel
 import app.editors.manager.viewModels.main.CopyItems
 import app.editors.manager.viewModels.main.RoomUserListViewModel
@@ -183,6 +184,18 @@ class AddRoomFragment : ComposeDialogFragment() {
                         }
                     }
                 }
+
+            LaunchedEffect(viewModel) {
+                viewModel.effect.collect { effect ->
+                    when (effect) {
+                        is AddRoomEffect.Error -> {
+                            UiUtils.getSnackBar(requireActivity())
+                                .setText(effect.message)
+                                .show()
+                        }
+                    }
+                }
+            }
 
             NavHost(navController = navController, startDestination = Screens.Main.name) {
                 composable(Screens.Main.name) {

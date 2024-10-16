@@ -23,6 +23,7 @@ import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.room.models.ResponseRoomShare
 import app.documents.core.network.room.models.ResponseTags
 import app.documents.core.network.room.models.ResponseUpdateExternalLink
+import app.documents.core.network.room.models.ResponseUploadLogo
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.request.RequestAddInviteLink
@@ -193,7 +194,7 @@ interface RoomService {
     @POST("api/" + ApiContract.API_VERSION + "/files/logos")
     suspend fun uploadLogo(
         @Part part: MultipartBody.Part,
-    ): Response<ResponseBody>
+    ): app.documents.core.network.BaseResponse<ResponseUploadLogo>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
