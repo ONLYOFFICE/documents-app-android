@@ -33,7 +33,11 @@ class EnterprisePortalFragment : BaseAppFragment(),
         private const val KEY_EMAIL = "KEY_EMAIL"
 
         @JvmStatic
-        fun newInstance() = EnterprisePortalFragment()
+        fun newInstance(portal: String? = null) = EnterprisePortalFragment().apply {
+            arguments = Bundle().apply {
+                putString("portal", portal)
+            }
+        }
     }
 
     private val viewModel: EnterprisePortalViewModel by viewModels()
@@ -162,6 +166,8 @@ class EnterprisePortalFragment : BaseAppFragment(),
                 }
             }
         }
+
+        viewBinding?.loginEnterprisePortalEdit?.setText(arguments?.getString("portal") ?: "")
     }
 
     private fun restoreValue(savedInstanceState: Bundle?) {

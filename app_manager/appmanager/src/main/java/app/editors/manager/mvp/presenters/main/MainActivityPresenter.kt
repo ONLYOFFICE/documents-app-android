@@ -176,10 +176,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         accountPreferences.onlineAccountId = null
     }
 
-    fun onRemoveFileData() {
-        preferenceTool.fileData = ""
-    }
-
     fun onRateOff() {
         preferenceTool.isRateOn = false
     }
