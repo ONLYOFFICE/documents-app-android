@@ -118,7 +118,8 @@ object ActionMenuItemsFactory {
             )
 
             // sort block
-            if (section == SectionType.ONEDRIVE) {
+            if (provider is PortalProvider.Storage) {
+                add(ActionMenuItem.Divider)
                 add(ActionMenuItem.Title.get(asc, sortBy))
             } else {
                 add(
