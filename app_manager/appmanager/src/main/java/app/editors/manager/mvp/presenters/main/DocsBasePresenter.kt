@@ -1295,7 +1295,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
     }
 
     val isRoot: Boolean
-        get() = modelExplorerStack.isRoot
+        get() = if (ApiContract.SectionType.isRoom(modelExplorerStack.rootFolderType)) {
+            modelExplorerStack.last()?.pathParts.orEmpty().size < 2
+        } else {
+            modelExplorerStack.isRoot
+        }
 
     private val isBackStackEmpty: Boolean
         get() = modelExplorerStack.isStackEmpty
