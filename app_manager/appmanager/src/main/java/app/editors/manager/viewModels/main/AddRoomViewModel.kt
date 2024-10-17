@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Size
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.model.login.User
@@ -127,14 +128,11 @@ class AddRoomViewModel(
     private suspend fun loadImage(imageUri: Any?, isCrop: Boolean = true): Bitmap {
         return viewModelScope.async(Dispatchers.IO) {
             val request = Glide.with(context).asBitmap()
-            request.apply {
-                load(imageUri)
-                if (isCrop) {
-                    request.circleCrop()
-                }
-            }
+            request.load(imageUri)
+            request.override(200)
+            request.encodeFormat(Bitmap.CompressFormat.JPEG)
+            if (isCrop) request.circleCrop()
             return@async request.submit().get()
-
         }.await()
     }
 
@@ -149,6 +147,18 @@ class AddRoomViewModel(
             _viewState.value = ViewState.Loading
             withContext(Dispatchers.IO) {
                 try {
+                    var imageUrl: String? = null
+                    var imageSize: Size? = null
+
+                    if (image != null) {
+                        try {
+                            val bitmap = loadImage(image, false)
+                            val response = roomProvider.uploadLogo(bitmap)
+                            imageUrl = response.data
+                            imageSize = Size(bitmap.width, bitmap.height)
+                        } catch (_: Exception) { }
+                    }
+
                     val id = with(roomState.value.storageState) {
                         if (this != null) {
                             roomProvider.createThirdPartyRoom(
@@ -166,18 +176,13 @@ class AddRoomViewModel(
 
                     roomProvider.addTags(id, tags)
 
-                    if (id.isNotEmpty() && image != null) {
-                        roomProvider.setLogo(id, loadImage(image, false)) {
-                            _effect.tryEmit(
-                                AddRoomEffect.Error(
-                                    context.getString(R.string.rooms_error_logo_size_exceed)
-                                )
-                            )
-                        }
-                    }
-
                     if (isDeleteLogo) {
                         roomProvider.deleteLogo(id)
+                    } else if (id.isNotEmpty() && image != null) {
+                        if (imageUrl == null || imageSize == null) {
+                            throw error(context.getString(R.string.rooms_error_logo_size_exceed))
+                        }
+                        roomProvider.setLogo(id, imageSize, imageUrl)
                     }
 
                     copyItems(id)
@@ -211,23 +216,30 @@ class AddRoomViewModel(
                 try {
                     val id = roomInfo?.id ?: ""
                     val isSuccess = roomProvider.renameRoom(id, name)
+                    val imageUri = roomState.value.imageUri
+
+                    var imageUrl: String? = null
+                    var imageSize: Size? = null
+
+                    if (imageUri != null) {
+                        try {
+                            val bitmap = loadImage(imageUri, false)
+                            val response = roomProvider.uploadLogo(bitmap)
+                            imageUrl = response.data
+                            imageSize = Size(bitmap.width, bitmap.height)
+                        } catch (_: Exception) { }
+                    }
 
                     roomProvider.deleteTags(id, (roomTags - tags.toSet()).toList())
                     roomProvider.addTags(id, tags - roomTags)
 
-                    when {
-                        isDeleteLogo -> {
-                            roomProvider.deleteLogo(id)
+                    if (isDeleteLogo) {
+                        roomProvider.deleteLogo(id)
+                    } else if (id.isNotEmpty() && imageUri != null) {
+                        if (imageUrl == null || imageSize == null) {
+                            throw error(context.getString(R.string.rooms_error_logo_size_exceed))
                         }
-                        roomState.value.imageUri is Uri -> {
-                            roomProvider.setLogo(id, loadImage(roomState.value.imageUri!!, false)) {
-                                _effect.tryEmit(
-                                    AddRoomEffect.Error(
-                                        context.getString(R.string.rooms_error_logo_size_exceed)
-                                    )
-                                )
-                            }
-                        }
+                        roomProvider.setLogo(id, imageSize, imageUrl)
                     }
 
                     if (isSuccess) {
