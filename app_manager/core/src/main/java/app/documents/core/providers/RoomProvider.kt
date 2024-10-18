@@ -1,6 +1,7 @@
 package app.documents.core.providers
 
 import android.graphics.Bitmap
+import android.util.Size
 import androidx.core.text.isDigitsOnly
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.asResult
@@ -21,6 +22,7 @@ import app.documents.core.network.room.models.RequestRenameRoom
 import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
+import app.documents.core.network.room.models.ResponseUploadLogo
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.Share
@@ -47,7 +49,6 @@ import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import org.json.JSONObject
 import retrofit2.HttpException
 import java.util.UUID
 import javax.inject.Inject
@@ -232,27 +233,27 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             response.body()?.response?.members?.getOrNull(0) else throw HttpException(response)
     }
 
-    suspend fun setLogo(id: String, logo: Bitmap) {
+    suspend fun uploadLogo(bitmap: Bitmap): ResponseUploadLogo {
         val logoId = UUID.randomUUID().toString()
         val uploadResponse = roomService.uploadLogo(
             MultipartBody.Part.createFormData(
                 logoId,
                 "$logoId.png",
-                RequestBody.create(MediaType.get("image/*"), logo.toByteArray())
+                RequestBody.create(MediaType.get("image/*"), bitmap.toByteArray())
             )
         )
-        if (uploadResponse.isSuccessful) {
-            roomService.setLogo(
-                id,
-                RequestSetLogo(
-                    tmpFile = JSONObject(uploadResponse.body()?.string() ?: "").optJSONObject("response")
-                        ?.optString("data")
-                        ?: "",
-                    width = logo.width,
-                    height = logo.height
-                )
+        return uploadResponse.response
+    }
+
+    suspend fun setLogo(id: String, size: Size, data: String) {
+        roomService.setLogo(
+            id,
+            RequestSetLogo(
+                tmpFile = data,
+                width = size.width,
+                height = size.height
             )
-        }
+        )
     }
 
     suspend fun setRoomOwner(id: String, userId: String): CloudFolder {
