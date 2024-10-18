@@ -23,7 +23,7 @@
             android:id="@+id/image"
             android:layout_width="@dimen/item_one_line_height"
             android:layout_height="@dimen/item_one_line_height"
-            android:src="@drawable/ic_folder_column"
+            android:src="@drawable/ic_folder_list"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
