@@ -159,6 +159,10 @@ class AddRoomViewModel(
                         } catch (_: Exception) { }
                     }
 
+                    if (image != null && (imageUrl == null || imageSize == null)) {
+                        throw error(context.getString(R.string.rooms_error_logo_size_exceed))
+                    }
+
                     val id = with(roomState.value.storageState) {
                         if (this != null) {
                             roomProvider.createThirdPartyRoom(
@@ -178,10 +182,7 @@ class AddRoomViewModel(
 
                     if (isDeleteLogo) {
                         roomProvider.deleteLogo(id)
-                    } else if (id.isNotEmpty() && image != null) {
-                        if (imageUrl == null || imageSize == null) {
-                            throw error(context.getString(R.string.rooms_error_logo_size_exceed))
-                        }
+                    } else if (id.isNotEmpty() && imageUrl != null && imageSize != null) {
                         roomProvider.setLogo(id, imageSize, imageUrl)
                     }
 
@@ -215,7 +216,6 @@ class AddRoomViewModel(
             withContext(Dispatchers.IO) {
                 try {
                     val id = roomInfo?.id ?: ""
-                    val isSuccess = roomProvider.renameRoom(id, name)
                     val imageUri = roomState.value.imageUri
 
                     var imageUrl: String? = null
@@ -230,15 +230,18 @@ class AddRoomViewModel(
                         } catch (_: Exception) { }
                     }
 
+                    if (imageUri != null && (imageUrl == null || imageSize == null)) {
+                        throw error(context.getString(R.string.rooms_error_logo_size_exceed))
+                    }
+
+                    val isSuccess = roomProvider.renameRoom(id, name)
+
                     roomProvider.deleteTags(id, (roomTags - tags.toSet()).toList())
                     roomProvider.addTags(id, tags - roomTags)
 
                     if (isDeleteLogo) {
                         roomProvider.deleteLogo(id)
-                    } else if (id.isNotEmpty() && imageUri != null) {
-                        if (imageUrl == null || imageSize == null) {
-                            throw error(context.getString(R.string.rooms_error_logo_size_exceed))
-                        }
+                    } else if (id.isNotEmpty() && imageUrl != null && imageSize != null) {
                         roomProvider.setLogo(id, imageSize, imageUrl)
                     }
 
