@@ -276,14 +276,19 @@ internal class CloudLoginRepositoryImpl(
     }
 
     private suspend fun unsubscribePush(account: CloudAccount) {
-        val token = accountRepository.getToken(account.accountName)
-        if (account.portal.provider.registerDeviceRequired && token != null) {
-            cloudLoginDataSource.subscribe(
-                portal = account.portal,
-                token = token,
-                deviceToken = getDeviceToken(),
-                isSubscribe = false
-            )
+        val token = account.unsubToken
+        if (account.portal.provider.registerDeviceRequired || token.isNotEmpty()) {
+            try {
+                val deviceToken = getDeviceToken()
+                cloudLoginDataSource.subscribe(
+                    portal = account.portal,
+                    token = token,
+                    deviceToken = deviceToken,
+                    isSubscribe = false
+                )
+            } catch (_: Exception) {
+                // Stub
+            }
         }
     }
 
@@ -295,9 +300,13 @@ internal class CloudLoginRepositoryImpl(
 
     private suspend fun subscribePush(cloudPortal: CloudPortal, accessToken: String) {
         if (cloudPortal.provider.registerDeviceRequired) {
-            val deviceToken = getDeviceToken()
-            cloudLoginDataSource.registerDevice(accessToken, deviceToken)
-            cloudLoginDataSource.subscribe(cloudPortal, accessToken, deviceToken, true)
+            try {
+                val deviceToken = getDeviceToken()
+                cloudLoginDataSource.registerDevice(accessToken, deviceToken)
+                cloudLoginDataSource.subscribe(cloudPortal, accessToken, deviceToken, true)
+            } catch (_: Exception) {
+                // Stub
+            }
         }
     }
 
