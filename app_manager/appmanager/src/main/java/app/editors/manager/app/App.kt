@@ -31,6 +31,7 @@ import app.editors.manager.di.component.DaggerOneDriveComponent
 import app.editors.manager.di.component.DropboxComponent
 import app.editors.manager.di.component.GoogleDriveComponent
 import app.editors.manager.di.component.OneDriveComponent
+import app.editors.manager.managers.utils.GoogleUtils
 import app.editors.manager.managers.utils.KeyStoreUtils
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -149,7 +150,7 @@ class App : Application() {
     fun refreshLoginComponent(portal: CloudPortal?) {
         _loginComponent = appComponent
             .loginComponent()
-            .create(portal)
+            .create(portal, GoogleUtils.isGooglePlayServicesAvailable(this))
     }
 
     fun refreshAppComponent(context: Context) {

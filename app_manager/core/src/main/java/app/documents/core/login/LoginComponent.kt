@@ -20,7 +20,9 @@ interface LoginComponent {
 
         fun create(
             @BindsInstance
-            cloudPortal: CloudPortal?
+            cloudPortal: CloudPortal?,
+            @BindsInstance
+            isGooglePlayServicesAvailable: Boolean
         ): LoginComponent
     }
 

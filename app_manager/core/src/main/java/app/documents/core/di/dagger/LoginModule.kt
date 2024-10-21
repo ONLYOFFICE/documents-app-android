@@ -30,12 +30,14 @@ class LoginModule {
     fun provideLoginRepository(
         cloudPortal: CloudPortal?,
         cloudLoginDataSource: CloudLoginDataSource,
-        accountRepository: AccountRepository
+        accountRepository: AccountRepository,
+        isGooglePlayServicesAvailable: Boolean
     ): CloudLoginRepository {
         return CloudLoginRepositoryImpl(
             cloudPortal,
             cloudLoginDataSource,
-            accountRepository
+            accountRepository,
+            isGooglePlayServicesAvailable
         )
     }
 
