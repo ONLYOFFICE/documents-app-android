@@ -2,6 +2,7 @@ package app.editors.manager.ui.dialogs
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import androidx.compose.foundation.Image
@@ -41,6 +42,11 @@ class AddRoomBottomDialog : BaseBottomDialog() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_FRAME, lib.toolkit.base.R.style.Theme_Common_BottomSheetDialog)
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        (requireActivity() as OnBottomDialogCloseListener).onBottomDialogClose()
     }
 
     @SuppressLint("RestrictedApi")
