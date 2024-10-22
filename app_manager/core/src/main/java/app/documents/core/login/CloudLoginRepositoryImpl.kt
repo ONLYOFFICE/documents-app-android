@@ -33,7 +33,8 @@ import java.net.ConnectException
 internal class CloudLoginRepositoryImpl(
     private val cloudPortal: CloudPortal?,
     private val cloudLoginDataSource: CloudLoginDataSource,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val isGooglePlayServicesAvailable: Boolean
 ) : CloudLoginRepository {
 
     private var savedAccessToken: String? = null
@@ -276,18 +277,20 @@ internal class CloudLoginRepositoryImpl(
     }
 
     private suspend fun unsubscribePush(account: CloudAccount) {
-        val token = account.unsubToken
-        if (account.portal.provider.registerDeviceRequired || token.isNotEmpty()) {
-            try {
-                val deviceToken = getDeviceToken()
-                cloudLoginDataSource.subscribe(
-                    portal = account.portal,
-                    token = token,
-                    deviceToken = deviceToken,
-                    isSubscribe = false
-                )
-            } catch (_: Exception) {
-                // Stub
+        if (isGooglePlayServicesAvailable) {
+            val token = account.unsubToken
+            if (account.portal.provider.registerDeviceRequired || token.isNotEmpty()) {
+                try {
+                    val deviceToken = getDeviceToken()
+                    cloudLoginDataSource.subscribe(
+                        portal = account.portal,
+                        token = token,
+                        deviceToken = deviceToken,
+                        isSubscribe = false
+                    )
+                } catch (_: Exception) {
+                    // Stub
+                }
             }
         }
     }
@@ -299,7 +302,7 @@ internal class CloudLoginRepositoryImpl(
     }
 
     private suspend fun subscribePush(cloudPortal: CloudPortal, accessToken: String) {
-        if (cloudPortal.provider.registerDeviceRequired) {
+        if (cloudPortal.provider.registerDeviceRequired && isGooglePlayServicesAvailable) {
             try {
                 val deviceToken = getDeviceToken()
                 cloudLoginDataSource.registerDevice(accessToken, deviceToken)
