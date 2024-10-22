@@ -226,7 +226,7 @@ fun FormCompletedScreen(
                 Image(
                     modifier = Modifier.size(24.dp),
                     imageVector = ImageVector.vectorResource(
-                        R.drawable.ic_type_pdf
+                        R.drawable.ic_type_pdf_row
                     ),
                     contentDescription = null
                 )

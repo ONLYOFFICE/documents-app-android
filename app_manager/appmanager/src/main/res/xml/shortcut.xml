@@ -3,7 +3,7 @@
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
         android:enabled="true"
-        android:icon="@drawable/ic_type_text_document"
+        android:icon="@drawable/ic_type_document_row"
         android:shortcutId="docs"
         android:shortcutShortLabel="@string/dialogs_edit_create_docs">
         <intent
@@ -19,7 +19,7 @@
 
     <shortcut
         android:enabled="true"
-        android:icon="@drawable/ic_type_spreadsheet"
+        android:icon="@drawable/ic_type_spreadsheet_row"
         android:shortcutId="cells"
         android:shortcutShortLabel="@string/dialogs_edit_create_sheet">
         <intent
@@ -35,7 +35,7 @@
 
     <shortcut
         android:enabled="true"
-        android:icon="@drawable/ic_type_presentation"
+        android:icon="@drawable/ic_type_presentation_row"
         android:shortcutId="slides"
         android:shortcutShortLabel="@string/dialogs_edit_create_presentation">
         <intent

@@ -21,7 +21,6 @@ import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
-import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.StringUtils
 
 object ManagerUiUtils {
@@ -100,47 +99,22 @@ object ManagerUiUtils {
 
     fun getFileThumbnail(ext: String, isGrid: Boolean): Int {
         return when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC -> if (!isGrid) R.drawable.ic_thumbnail_small_document else R.drawable.ic_thumbnail_large_document
-            StringUtils.Extension.SHEET -> if (!isGrid) R.drawable.ic_thumbnail_small_spreadsheet else R.drawable.ic_thumbnail_large_spreadsheet
-            StringUtils.Extension.PRESENTATION -> if (!isGrid) R.drawable.ic_thumbnail_small_presentation else R.drawable.ic_thumbnail_large_presentation
+            StringUtils.Extension.DOC -> if (!isGrid) R.drawable.ic_type_document_row else R.drawable.ic_type_document_column
+            StringUtils.Extension.SHEET -> if (!isGrid) R.drawable.ic_type_spreadsheet_row else R.drawable.ic_type_spreadsheet_column
+            StringUtils.Extension.PRESENTATION -> if (!isGrid) R.drawable.ic_type_presentation_row else R.drawable.ic_type_presentation_column
             StringUtils.Extension.IMAGE,
-            StringUtils.Extension.IMAGE_GIF -> if (!isGrid) R.drawable.ic_thumbnail_small_picture else R.drawable.ic_thumbnail_large_picture
+            StringUtils.Extension.IMAGE_GIF -> if (!isGrid) R.drawable.ic_type_picture_row else R.drawable.ic_type_picture_column
 
             StringUtils.Extension.HTML,
             StringUtils.Extension.EBOOK,
-            StringUtils.Extension.PDF -> if (!isGrid) R.drawable.ic_thumbnail_small_pdf else R.drawable.ic_thumbnail_large_pdf
+            StringUtils.Extension.PDF -> if (!isGrid) R.drawable.ic_type_pdf_row else R.drawable.ic_type_pdf_column
 
             StringUtils.Extension.VIDEO_SUPPORT,
-            StringUtils.Extension.VIDEO -> if (!isGrid) R.drawable.ic_thumbnail_small_video else R.drawable.ic_thumbnail_large_video
+            StringUtils.Extension.VIDEO -> if (!isGrid) R.drawable.ic_type_video_row else R.drawable.ic_type_video_column
 
-            StringUtils.Extension.ARCH -> if (!isGrid) R.drawable.ic_thumbnail_small_archive else R.drawable.ic_thumbnail_large_archive
-            StringUtils.Extension.FORM -> if (!isGrid) R.drawable.ic_thumbnail_small_docxf_oform else R.drawable.ic_thumbnail_large_docxf_oform
-            else -> if (!isGrid) R.drawable.ic_thumbnail_small_other else R.drawable.ic_thumbnail_large_other
-        }
-    }
-
-    fun getFileIcon(ext: String): Int {
-        return when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
-            StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet
-            StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
-            StringUtils.Extension.IMAGE,
-            StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_type_image
-
-            StringUtils.Extension.HTML,
-            StringUtils.Extension.EBOOK,
-            StringUtils.Extension.PDF -> R.drawable.ic_type_pdf
-
-            StringUtils.Extension.VIDEO_SUPPORT,
-            StringUtils.Extension.VIDEO -> R.drawable.ic_type_video
-
-            StringUtils.Extension.ARCH -> R.drawable.ic_type_archive
-            StringUtils.Extension.FORM -> {
-                if (ext == ".${LocalContentTools.OFORM_EXTENSION}") R.drawable.ic_type_oform
-                else R.drawable.ic_type_docxf
-            }
-
-            else -> R.drawable.ic_type_file
+            StringUtils.Extension.ARCH -> if (!isGrid) R.drawable.ic_type_archive_row else R.drawable.ic_type_archive_column
+            StringUtils.Extension.FORM -> if (!isGrid) R.drawable.ic_type_docxf_row else R.drawable.ic_type_docxf_column
+            else -> if (!isGrid) R.drawable.ic_type_other_row else R.drawable.ic_type_other_column
         }
     }
 
