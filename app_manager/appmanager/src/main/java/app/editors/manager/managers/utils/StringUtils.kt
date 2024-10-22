@@ -68,7 +68,7 @@ internal object StringUtils {
     private fun getItemOwner(context: Context, item: Item, userId: String?): String? {
         return when {
             userId.equals(item.createdBy.id, ignoreCase = true) -> context.getString(R.string.item_owner_self)
-            item.createdBy.displayName.isNotEmpty() -> item.createdBy.displayName
+            item.createdBy.displayName.isNotEmpty() -> item.createdBy.displayNameFromHtml
             else -> null
         }
     }
