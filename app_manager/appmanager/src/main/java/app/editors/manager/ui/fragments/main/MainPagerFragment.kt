@@ -276,7 +276,8 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                                 }
                             },
                             title = getTabTitle(folderType),
-                            sectionType = folderType
+                            sectionType = folderType,
+                            newCount = section.new
                         )
                     }
                 }
@@ -323,6 +324,8 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             viewBinding?.mainViewPager?.addOnPageChangeListener(it)
         }
         viewBinding?.appBarTabs?.setupWithViewPager(viewBinding?.mainViewPager, true)
+
+        setBadges(fragments.map { it.newCount })
         setToolbarState(true)
         if (isRestore) {
             viewBinding?.mainViewPager?.currentItem = selectedPage
@@ -397,6 +400,22 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             else -> ""
         }
 
+    private fun setBadges(newCount: List<Int>) {
+        newCount.forEachIndexed { index, count ->
+            if (count != 0)
+                viewBinding?.appBarTabs?.getTabAt(index)?.orCreateBadge?.let { badge ->
+                    badge.horizontalOffset = resources
+                            .getDimension(lib.toolkit.base.R.dimen.default_margin_medium)
+                            .toInt()
+                    badge.number = count
+                    badge.backgroundColor = requireContext()
+                        .getColor(lib.toolkit.base.R.color.colorSecondary)
+                    badge.badgeTextColor = requireContext()
+                        .getColor(lib.toolkit.base.R.color.colorOnSecondary)
+                }
+        }
+    }
+
     override fun setPagerPosition(
         sectionType: Int,
         onPageChanged: () -> Unit
@@ -418,7 +437,8 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     private data class MainPagerContainer(
         val fragment: Fragment,
         val title: String,
-        val sectionType: Int
+        val sectionType: Int,
+        val newCount: Int = 0
     ) : Container(fragment, title)
 
     private inner class AdapterForPages(

@@ -39,7 +39,9 @@ data class Explorer(
 
     var destFolderId: String = "",
 
-    var filterType: String = ""
+    var filterType: String = "",
+
+    var new: Int = 0
 ) : Serializable {
 
     val itemsCount: Int get() = folders.size + files.size

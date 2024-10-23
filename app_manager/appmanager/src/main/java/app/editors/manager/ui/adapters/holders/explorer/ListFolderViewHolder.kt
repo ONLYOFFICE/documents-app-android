@@ -5,6 +5,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerListFolderBinding
@@ -36,6 +37,10 @@ class ListFolderViewHolder(view: View, adapter: ExplorerAdapter) :
     override fun bind(element: CloudFolder) {
         super.bind(element)
         bindFolderImage(element, binding.overlayImage, binding.storageImage)
+        if (element.newCount > 0) {
+            binding.badgeNew.isVisible = true
+            binding.badgeNew.number = element.newCount
+        }
     }
 
     override fun getCachedIcon(): View {
