@@ -4,12 +4,11 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.view.isVisible
 import lib.toolkit.base.R
 
 class BadgeNewView : CardView {
 
-    var text: String? = null
+    var number: Int = 0
         set(value) {
             updateText(value)
             invalidate()
@@ -19,7 +18,6 @@ class BadgeNewView : CardView {
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         cardElevation = 0f
-        radius = resources.getDimension(R.dimen.material3_container_radius)
         inflate(context, app.editors.manager.R.layout.view_layout_badge_new, this)
         val typedArray = context.theme.obtainStyledAttributes(
             attrs,
@@ -28,20 +26,23 @@ class BadgeNewView : CardView {
             0
         )
         try {
-            val text = typedArray.getString(app.editors.manager.R.styleable.BadgeNewView_text)
-            updateText(text)
+            val number = typedArray.getInt(app.editors.manager.R.styleable.BadgeNewView_number, -1)
+            updateText(number)
         } finally {
             typedArray.recycle()
         }
     }
 
-    private fun updateText(text: String?) {
-        isVisible = !text.isNullOrEmpty()
-        findViewById<TextView>(app.editors.manager.R.id.badgeText).apply {
-            if (text != null) {
-                this.text = text
-                if (text.length == 1) layoutParams = layoutParams.apply { width = 0 }
-            }
+    private fun updateText(number: Int) {
+        val textView = findViewById<TextView>(app.editors.manager.R.id.badgeText)
+        if (number > 0) {
+            val text = number.toString()
+            textView.text = text
+            if (text.length == 1) textView.layoutParams = textView.layoutParams.apply { width = 0 }
+            radius = resources.getDimension(R.dimen.material3_container_radius)
+        } else {
+            textView.text = "new"
+            radius = resources.getDimension(R.dimen.default_corner_radius_small)
         }
     }
 }
