@@ -56,33 +56,15 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/badgeNewCard"
+        <app.editors.manager.ui.views.custom.BadgeNewView
+            android:id="@+id/badgeNew"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:cardBackgroundColor="@color/colorSecondary"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="4dp"
             app:layout_constraintBottom_toTopOf="@id/imageLayout"
-            app:layout_constraintEnd_toStartOf="@id/imageLayout"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toStartOf="@id/favorite"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/badgeNew"
-                style="@style/Widget.Common.TextView.Micro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorSecondary"
-                android:includeFontPadding="false"
-                android:paddingHorizontal="3dp"
-                android:paddingVertical="1dp"
-                android:textColor="@color/colorOnSecondary"
-                tools:text="new" />
-
-        </androidx.cardview.widget.CardView>
+            app:layout_constraintEnd_toEndOf="@id/imageLayout"
+            app:layout_constraintStart_toEndOf="@id/imageLayout"
+            app:layout_constraintTop_toTopOf="@id/imageLayout" />
 
         <ImageView
             android:id="@+id/favorite"
@@ -101,7 +83,7 @@
             style="@style/ExplorerItemLayout.SelectIcon"
             app:layout_constraintBottom_toBottomOf="@id/badgeNewCard"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/badgeNewCard"
+            app:layout_constraintTop_toTopOf="@id/badgeNew"
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_select_checked" />
 

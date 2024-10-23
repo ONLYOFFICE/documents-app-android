@@ -66,7 +66,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toTopOf="@+id/subtitle"
-        app:layout_constraintEnd_toStartOf="@+id/contextButtonLayout"
+        app:layout_constraintEnd_toStartOf="@+id/badgeNew"
         app:layout_constraintStart_toEndOf="@+id/imageLayout"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
@@ -78,11 +78,23 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:layout_marginEnd="@dimen/default_margin_medium"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/title"
+        app:layout_constraintEnd_toStartOf="@id/contextButtonLayout"
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@+id/title"
         tools:text="Folder date" />
+
+    <app.editors.manager.ui.views.custom.BadgeNewView
+        android:id="@+id/badgeNew"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/default_margin_medium"
+        android:visibility="gone"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="@+id/title"
+        app:layout_constraintEnd_toStartOf="@+id/contextButtonLayout"
+        app:layout_constraintTop_toTopOf="@+id/title" />
 
     <FrameLayout
         android:id="@+id/contextButtonLayout"

@@ -51,7 +51,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toTopOf="@+id/subtitle"
-        app:layout_constraintEnd_toStartOf="@+id/iconPinned"
+        app:layout_constraintEnd_toStartOf="@+id/badgeLayout"
         app:layout_constraintStart_toEndOf="@+id/cardImageLayout"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
@@ -66,18 +66,39 @@
         app:layout_constraintEnd_toEndOf="@id/cardImageLayout"
         tools:src="@drawable/ic_public_room_badge" />
 
-    <ImageView
-        android:id="@+id/iconPinned"
-        style="@style/Widget.Common.ImageView.Secondary"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="@dimen/default_margin_medium"
-        android:src="@drawable/ic_grid_pinned"
+    <LinearLayout
+        android:id="@+id/badgeLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@+id/title"
         app:layout_constraintEnd_toStartOf="@+id/contextButtonLayout"
-        app:layout_constraintTop_toTopOf="@+id/title"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toTopOf="@+id/title">
+
+        <app.editors.manager.ui.views.custom.BadgeNewView
+            android:id="@+id/badgeNew"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/default_margin_medium"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/image"
+            app:layout_constraintEnd_toStartOf="@id/image"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@id/statusLayout"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iconPinned"
+            style="@style/Widget.Common.ImageView.Secondary"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="@dimen/default_margin_medium"
+            android:src="@drawable/ic_grid_pinned"
+
+            tools:ignore="ContentDescription" />
+
+    </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/subtitle"

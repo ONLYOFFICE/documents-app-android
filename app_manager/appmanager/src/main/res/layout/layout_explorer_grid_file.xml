@@ -18,33 +18,16 @@
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_document_column" />
 
-        <androidx.cardview.widget.CardView
+        <app.editors.manager.ui.views.custom.BadgeNewView
             android:id="@+id/badgeNewCard"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/colorSecondary"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="4dp"
             app:layout_constraintBottom_toTopOf="@id/image"
             app:layout_constraintEnd_toStartOf="@id/image"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="@id/statusLayout"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/badgeNew"
-                style="@style/Widget.Common.TextView.Micro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorSecondary"
-                android:includeFontPadding="false"
-                android:paddingHorizontal="3dp"
-                android:paddingVertical="1dp"
-                android:text="new"
-                android:visibility="gone"
-                android:textColor="@color/colorOnSecondary" />
-
-        </androidx.cardview.widget.CardView>
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <LinearLayout
             android:id="@+id/statusLayout"

@@ -18,8 +18,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/ic_thumbnail_small_archive"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        tools:src="@drawable/ic_thumbnail_small_archive" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
@@ -62,42 +62,24 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginEnd="@dimen/default_margin_medium"
-            android:visibility="gone"
             android:importantForAccessibility="no"
             android:src="@drawable/ic_fab_edit_mode"
+            android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@id/image"
             app:layout_constraintTop_toBottomOf="@id/favorite"
             app:tint="@color/colorPrimary" />
 
-        <androidx.cardview.widget.CardView
+        <app.editors.manager.ui.views.custom.BadgeNewView
             android:id="@+id/badgeNewCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/default_margin_medium"
-            app:cardBackgroundColor="@color/colorSecondary"
             android:visibility="gone"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="4dp"
             app:layout_constraintBottom_toTopOf="@id/image"
             app:layout_constraintEnd_toStartOf="@id/image"
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="@id/statusLayout"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/badgeNew"
-                style="@style/Widget.Common.TextView.Micro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorSecondary"
-                android:visibility="gone"
-                android:includeFontPadding="false"
-                android:paddingHorizontal="3dp"
-                android:paddingVertical="1dp"
-                android:text="new"
-                android:textColor="@color/colorOnSecondary" />
-
-        </androidx.cardview.widget.CardView>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </LinearLayout>
 

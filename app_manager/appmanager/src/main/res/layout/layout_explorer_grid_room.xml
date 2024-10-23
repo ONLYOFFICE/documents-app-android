@@ -58,6 +58,16 @@
 
         </androidx.cardview.widget.CardView>
 
+        <app.editors.manager.ui.views.custom.BadgeNewView
+            android:id="@+id/badgeNew"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/cardImageLayout"
+            app:layout_constraintEnd_toEndOf="@id/cardImageLayout"
+            app:layout_constraintStart_toEndOf="@id/cardImageLayout"
+            app:layout_constraintTop_toTopOf="@id/cardImageLayout" />
+
         <ImageView
             android:id="@+id/iconPinned"
             android:layout_width="wrap_content"
