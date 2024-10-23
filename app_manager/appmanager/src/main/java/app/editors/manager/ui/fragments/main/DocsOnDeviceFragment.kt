@@ -101,6 +101,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         return true
     }
 
+    override fun onListEnd() { }
+
     override fun onSwipeRefresh(): Boolean {
         if (!super.onSwipeRefresh()) {
             presenter.getItemsById(LocalContentTools.getDir(requireContext()))
