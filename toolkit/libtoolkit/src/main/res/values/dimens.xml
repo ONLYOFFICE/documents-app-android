@@ -128,6 +128,7 @@
 
     <!-- Elevations -->
     <dimen name="elevation_height_micro">2dp</dimen>
+    <dimen name="elevation_height_medium">4dp</dimen>
     <dimen name="elevation_height_popup">8dp</dimen>
 
     <dimen name="design_bottom_navigation_text_size" tools:override="true">10sp</dimen>
