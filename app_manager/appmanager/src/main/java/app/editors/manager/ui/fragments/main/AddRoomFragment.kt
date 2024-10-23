@@ -198,7 +198,7 @@ class AddRoomFragment : ComposeDialogFragment() {
             }
 
             NavHost(navController = navController, startDestination = Screens.Main.name) {
-                composable(Screens.Main.name) {
+                composable(route = Screens.Main.name) {
                     MainScreen(
                         isEdit = isEdit,
                         isRoomTypeEditable = !isEdit && copyItems == null,
@@ -237,7 +237,8 @@ class AddRoomFragment : ComposeDialogFragment() {
                 composable(Screens.Select.name) {
                     SelectRoomScreen(
                         currentType = roomState.value.type,
-                        navController = navController
+                        navController = navController,
+                        viewModel = viewModel
                     )
                 }
                 composable(
@@ -513,7 +514,7 @@ fun ThirdPartyBlock(
 }
 
 @Composable
-private fun SelectRoomScreen(currentType: Int, navController: NavHostController) {
+private fun SelectRoomScreen(currentType: Int, navController: NavHostController, viewModel: AddRoomViewModel) {
     AppScaffold(topBar = {
         AppTopBar(
             title = stringResource(id = R.string.rooms_choose_room),
@@ -523,7 +524,8 @@ private fun SelectRoomScreen(currentType: Int, navController: NavHostController)
         Column {
             for (type in RoomUtils.roomTypes) {
                 AddRoomItem(roomType = type, selected = currentType == type) { newType ->
-                    navController.navigate("${Screens.Main.name}/$newType") {
+                    viewModel.setRoomType(newType)
+                    navController.navigate(Screens.Main.name) {
                         popUpTo(navController.graph.id) {
                             inclusive = true
                         }
@@ -684,7 +686,7 @@ private fun MainScreenPreview() {
 @Composable
 private fun SelectScreenPreview() {
     ManagerTheme {
-        SelectRoomScreen(2, navController = rememberNavController())
+        SelectRoomScreen(2, navController = rememberNavController(), viewModel = viewModel())
     }
 }
 

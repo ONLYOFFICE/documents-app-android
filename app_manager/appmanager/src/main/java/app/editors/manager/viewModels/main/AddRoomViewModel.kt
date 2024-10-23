@@ -317,4 +317,8 @@ class AddRoomViewModel(
     fun setOwner(user: User) {
         _roomState.update { it.copy(owner = user) }
     }
+
+    fun setRoomType(newType: Int) {
+        _roomState.update { it.copy(type = newType) }
+    }
 }
