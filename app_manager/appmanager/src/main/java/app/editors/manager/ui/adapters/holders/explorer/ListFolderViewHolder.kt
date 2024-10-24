@@ -37,10 +37,8 @@ class ListFolderViewHolder(view: View, adapter: ExplorerAdapter) :
     override fun bind(element: CloudFolder) {
         super.bind(element)
         bindFolderImage(element, binding.overlayImage, binding.storageImage)
-        if (element.newCount > 0) {
-            binding.badgeNew.isVisible = true
-            binding.badgeNew.number = element.newCount
-        }
+        binding.badgeNew.isVisible = element.newCount > 0
+        binding.badgeNew.number = element.newCount
     }
 
     override fun getCachedIcon(): View {

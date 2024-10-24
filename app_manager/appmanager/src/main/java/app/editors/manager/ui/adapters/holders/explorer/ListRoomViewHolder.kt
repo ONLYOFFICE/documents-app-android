@@ -40,10 +40,8 @@ class ListRoomViewHolder(view: View, adapter: ExplorerAdapter) :
         with(binding) {
             iconPinned.isVisible = element.pinned
             cardImageLayout.setRoomIcon(element, cardImage, cardText, badge, adapter.isGridView)
-            if (element.newCount > 0) {
-                badgeNew.isVisible = true
-                badgeNew.number = element.newCount
-            }
+            binding.badgeNew.isVisible = element.newCount > 0
+            binding.badgeNew.number = element.newCount
         }
     }
 

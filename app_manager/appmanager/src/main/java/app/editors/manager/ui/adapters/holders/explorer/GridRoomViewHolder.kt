@@ -40,10 +40,8 @@ class GridRoomViewHolder(view: View, adapter: ExplorerAdapter) :
             cardText.text = RoomUtils.getRoomInitials(element.title)
             iconPinned.isVisible = element.pinned
             cardImageLayout.setRoomIcon(element, cardImage, cardText, badge, adapter.isGridView)
-            if (element.newCount > 0) {
-                binding.badgeNew.isVisible = true
-                binding.badgeNew.number = element.newCount
-            }
+            binding.badgeNew.isVisible = element.newCount > 0
+            binding.badgeNew.number = element.newCount
         }
     }
 
