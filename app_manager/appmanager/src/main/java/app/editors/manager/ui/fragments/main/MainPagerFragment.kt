@@ -225,6 +225,9 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 )
             }
         }
+        if (isRoot) {
+            presenter.updateNewCount()
+        }
     }
 
     fun setExpandToolbar() {
@@ -402,17 +405,22 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     private fun setBadges(newCount: List<Int>) {
         newCount.forEachIndexed { index, count ->
-            if (count != 0)
-                viewBinding?.appBarTabs?.getTabAt(index)?.orCreateBadge?.let { badge ->
+            val tab = viewBinding?.appBarTabs?.getTabAt(index)
+            if (tab != null) {
+                if (count > 0) {
+                    val badge = tab.orCreateBadge
                     badge.horizontalOffset = resources
-                            .getDimension(lib.toolkit.base.R.dimen.default_margin_medium)
-                            .toInt()
+                        .getDimension(lib.toolkit.base.R.dimen.default_margin_medium)
+                        .toInt()
                     badge.number = count
                     badge.backgroundColor = requireContext()
                         .getColor(lib.toolkit.base.R.color.colorSecondary)
                     badge.badgeTextColor = requireContext()
                         .getColor(lib.toolkit.base.R.color.colorOnSecondary)
+                } else {
+                    tab.removeBadge()
                 }
+            }
         }
     }
 
@@ -429,6 +437,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 }
             }
         }
+    }
+
+    override fun onUpdateNewCount(count: List<Int>) {
+        setBadges(count)
     }
 
     /*

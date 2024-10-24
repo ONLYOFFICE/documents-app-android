@@ -68,7 +68,7 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
         }
     }
 
-    private suspend fun getPortalModules(): List<Explorer> {
+    suspend fun getPortalModules(): List<Explorer> {
         try {
             val response = api.getRootFolder(
                 mapOf(ApiContract.Modules.FILTER_TYPE_HEADER to ApiContract.Modules.FILTER_TYPE_VALUE),
@@ -164,5 +164,16 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
 
     fun onRemoveFileData() {
         preferenceTool.fileData = ""
+    }
+
+    fun updateNewCount() { // section to count
+        presenterScope.launch(Dispatchers.IO) {
+            val count = getPortalModules()
+                .map { explorer -> explorer.new }
+
+            withContext(Dispatchers.Main) {
+                viewState.onUpdateNewCount(count)
+            }
+        }
     }
 }

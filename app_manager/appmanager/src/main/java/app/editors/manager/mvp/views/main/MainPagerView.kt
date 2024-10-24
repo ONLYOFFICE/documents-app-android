@@ -15,4 +15,5 @@ interface MainPagerView : BaseView {
     fun setFileData(fileData: String)
     fun onSwitchAccount(data: OpenDataModel, isToken: Boolean = false)
     fun onPersonalPortalEnd()
+    fun onUpdateNewCount(count: List<Int>)
 }
