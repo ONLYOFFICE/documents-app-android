@@ -35,6 +35,7 @@
         layout="@layout/include_placeholders_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/default_bottom_panel_height"
         android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
