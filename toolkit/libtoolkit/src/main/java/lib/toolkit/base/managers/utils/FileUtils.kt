@@ -535,6 +535,15 @@ object FileUtils {
 
     }
 
+    fun isOformPdf(inputStream: InputStream?): Boolean {
+        return ByteArray(110)
+            .apply { inputStream.use { stream ->
+                stream?.read(this, 0, size)
+            } }
+            .decodeToString()
+            .contains("/ONLYOFFICEFORM")
+    }
+
     @JvmStatic
     fun getSize(file: File?): Long {
         return if (file != null && file.exists()) {
