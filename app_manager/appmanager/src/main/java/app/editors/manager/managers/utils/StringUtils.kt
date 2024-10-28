@@ -16,10 +16,11 @@ internal object StringUtils {
         item: Item,
         userId: String?,
         sortBy: String? = null,
-        isSectionMy: Boolean = false
+        isSectionMy: Boolean = false,
+        isGrid: Boolean = false
     ): String? {
         return when (item) {
-            is CloudFolder -> getFolderInfo(context, item, userId, sortBy, isSectionMy)
+            is CloudFolder -> getFolderInfo(context, item, userId, sortBy, isSectionMy, isGrid)
             is CloudFile -> getFileInfo(context, item, userId, sortBy, isSectionMy)
             else -> return null
         }.filterNotNull().joinToString(context.getString(R.string.placeholder_point))
@@ -30,13 +31,18 @@ internal object StringUtils {
         folder: CloudFolder,
         userId: String?,
         sortBy: String? = null,
-        isSectionMy: Boolean = false
+        isSectionMy: Boolean = false,
+        isGrid: Boolean = false
     ): Array<String?> {
         val date = TimeUtils.getWeekDate(folder.updated)
         val owner = getItemOwner(context, folder, userId).takeUnless { isSectionMy }
 
         return if (folder.isRoom) {
             val roomType = context.getString(RoomUtils.getRoomInfo(folder.roomType).title)
+            if (isGrid) {
+                return arrayOf(roomType)
+            }
+
             when (sortBy) {
                 ActionMenuItem.Date.sortValue -> arrayOf(date, roomType, owner)
                 ActionMenuItem.Author.sortValue -> arrayOf(owner, roomType, date)
