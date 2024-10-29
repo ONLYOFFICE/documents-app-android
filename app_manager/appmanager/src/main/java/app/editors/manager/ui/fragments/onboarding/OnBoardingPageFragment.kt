@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.onboarding
 
+import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -15,15 +16,6 @@ import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 
 class OnBoardingPageFragment : BaseAppFragment() {
-
-    @StringRes
-    private var headerResId = 0
-
-    @StringRes
-    private var infoResId = 0
-
-    @DrawableRes
-    private var imageResId = 0
 
     private var viewBinding: FragmentOnBoardingPageBinding? = null
 
@@ -46,27 +38,19 @@ class OnBoardingPageFragment : BaseAppFragment() {
         viewBinding = null
     }
 
+    @SuppressLint("SetTextI18n")
     private fun init() {
-        getArgs()
         viewBinding?.let {
             try {
-                it.onBoardingPageHeader.setText(headerResId)
-                it.onBoardingPageInfo.setText(infoResId)
-                it.onBoardingPageImage.setImageDrawable(AppCompatResources.getDrawable(requireContext(), imageResId))
+                it.onBoardingPageHeader.setText(arguments?.getInt(TAG_HEADER) ?: -1)
+                it.onBoardingPageInfo.setText(arguments?.getInt(TAG_INFO) ?: -1)
+                it.onBoardingPageImage.setImageDrawable(AppCompatResources.getDrawable(requireContext(), arguments?.getInt(TAG_IMAGE) ?: -1))
             } catch (error: Resources.NotFoundException) {
                 it.onBoardingPageHeader.text = "Not found"
                 it.onBoardingPageInfo.text = "Not found"
                 it.onBoardingPageImage.setImageDrawable(ColorDrawable(Color.GRAY))
                 FirebaseUtils.addCrash(error)
             }
-        }
-    }
-
-    private fun getArgs() {
-        arguments?.let { bundle ->
-            headerResId = bundle.getInt(TAG_HEADER)
-            infoResId = bundle.getInt(TAG_INFO)
-            imageResId = bundle.getInt(TAG_IMAGE)
         }
     }
 
