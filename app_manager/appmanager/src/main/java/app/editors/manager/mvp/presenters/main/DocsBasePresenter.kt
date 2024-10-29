@@ -1215,12 +1215,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     protected fun getIconContext(ext: String): Int {
         return when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
-            StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet
-            StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
-            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_type_image
-            StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.PDF -> R.drawable.ic_type_pdf
-            StringUtils.Extension.VIDEO_SUPPORT -> R.drawable.ic_type_video
+            StringUtils.Extension.DOC -> R.drawable.ic_type_document_row
+            StringUtils.Extension.SHEET -> R.drawable.ic_spreadsheet_secure_row
+            StringUtils.Extension.PRESENTATION -> R.drawable.ic_presentation_secure_row
+            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_type_picture_row
+            StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.PDF -> R.drawable.ic_type_pdf_row
+            StringUtils.Extension.VIDEO_SUPPORT -> R.drawable.ic_type_video_row
             StringUtils.Extension.UNKNOWN -> R.drawable.ic_type_file
             else -> R.drawable.ic_type_folder
         }
@@ -1295,7 +1295,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
     }
 
     val isRoot: Boolean
-        get() = modelExplorerStack.isRoot
+        get() = if (ApiContract.SectionType.isRoom(modelExplorerStack.rootFolderType)) {
+            modelExplorerStack.last()?.pathParts.orEmpty().size < 2
+        } else {
+            modelExplorerStack.isRoot
+        }
 
     private val isBackStackEmpty: Boolean
         get() = modelExplorerStack.isStackEmpty

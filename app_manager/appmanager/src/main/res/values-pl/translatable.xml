@@ -714,4 +714,5 @@ Aplikacja korzysta teraz z języka angielskiego, ponieważ zmieniono język syst
     <string name="personal_portal_end_button">Utwórz darmowe konto</string>
     <string name="personal_portal_end_title">Wycofanie ONLYOFFICE Personal</string>
     <string name="personal_portal_end_text">Opcja ONLYOFFICE Personal zostanie wycofana z użytku 1 września 2024 roku.\nZalecamy przeniesienie się do darmowej chmury ONLYOFFICE DocSpace Cloud.</string>
+    <string name="list_action_delete_image">Usuń obraz</string>
 </resources>

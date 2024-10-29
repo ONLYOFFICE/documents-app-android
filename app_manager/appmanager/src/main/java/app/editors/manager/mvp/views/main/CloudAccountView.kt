@@ -10,7 +10,7 @@ import moxy.viewstate.strategy.StateStrategyType
 interface CloudAccountView : BaseView {
     fun onRender(state: CloudAccountState)
     fun onWebDavLogin(account: String, provider: WebdavProvider)
-    fun onAccountLogin(portal: String, login: String)
+    fun onAccountLogin(portal: String?, login: String?)
     fun onOneDriveLogin()
     fun onDropboxLogin()
     fun onGoogleDriveLogin()

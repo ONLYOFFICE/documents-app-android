@@ -151,7 +151,7 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
             ManagerTheme {
                 AppScaffold(topBar = {
                     AppTopBar(title = R.string.rooms_fill_form_complete_toolbar_title)
-                }) {
+                }, useTablePaddings = false) {
                     when (response) {
                         is FormCompleteState.Error -> {
                             //TODO add placeholder
@@ -226,7 +226,7 @@ fun FormCompletedScreen(
                 Image(
                     modifier = Modifier.size(24.dp),
                     imageVector = ImageVector.vectorResource(
-                        R.drawable.ic_type_pdf
+                        R.drawable.ic_type_pdf_row
                     ),
                     contentDescription = null
                 )

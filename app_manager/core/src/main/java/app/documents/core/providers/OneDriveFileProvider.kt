@@ -50,15 +50,14 @@ class OneDriveFileProvider(
     private val api: OneDriveProvider get() = helper.api
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
-        val filterValue = filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE)
-        return if (filterValue.isNullOrEmpty()) {
-            if (id.isNullOrEmpty()) {
-                api.getFiles(OneDriveUtils.getSortBy(filter))
-            } else {
-                api.getChildren(id, OneDriveUtils.getSortBy(filter))
-            }
+        val searchValue = filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE)?.trim().orEmpty()
+        val mapWithSearchValue = OneDriveUtils.getSortBy(filter).plus(
+            "\$filter" to "startswith(name, '$searchValue')"
+        )
+        return if (id.isNullOrEmpty()) {
+            api.getFiles(mapWithSearchValue)
         } else {
-            api.filter(filterValue, OneDriveUtils.getSortBy(filter))
+            api.getChildren(id, mapWithSearchValue)
         }
             .toObservable()
             .subscribeOn(Schedulers.io())
@@ -116,14 +115,16 @@ class OneDriveFileProvider(
             explorer.files = files
             explorer.folders = folders
         } else {
-            val current = Current()
-
-            val context = response.context.split("/")
-
-            current.id = context[6].split("'")[1].replace("%21", "!")
-            current.filesCount = 0.toString()
-            current.foldersCount = 0.toString()
-            explorer.current = current
+            explorer.current = Current().apply {
+                id = runCatching {
+                    response.context
+                        .split("/")[6]
+                        .split("'")[1]
+                        .replace("%21", "!")
+                }.getOrElse { "" }
+                filesCount = "0"
+                foldersCount = "0"
+            }
         }
         return explorer
     }

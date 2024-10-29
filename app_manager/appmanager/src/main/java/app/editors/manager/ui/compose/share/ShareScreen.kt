@@ -225,7 +225,7 @@ fun ShareScreen(
                     UserListBottomContent(
                         nextButtonTitle = lib.toolkit.base.R.string.common_next,
                         count = count,
-                        access = accessListWithOutRestricted.last(),
+                        access = access,
                         accessList = accessListWithOutRestricted,
                         onAccess = userListViewModel::setAccess,
                         onDelete = userListViewModel::onDelete

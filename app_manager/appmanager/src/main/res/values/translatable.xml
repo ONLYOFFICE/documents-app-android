@@ -236,7 +236,7 @@
     <string name="dialogs_warning_title">Warning</string>
     <string name="dialogs_warning_only_pdf_form_message">The file cannot be moved to this room. Please try to move the ONLYOFFICE PDF form.</string>
     <string name="dialogs_warning_pinned_room_limit">You can’t pin more than 10 rooms to the top. Unpin some that are currently pinned.</string>
-    <string name="dialogs_warning_fill_forms_room_create">Сreation based on several files and folders is not available for this type of room. To create such a room, go to the Rooms section or use one of the PDF forms.</string>
+    <string name="dialogs_warning_fill_forms_room_create">Creation based on several files and folders is not available for this type of room. To create such a room, go to the Rooms section or use one of the PDF forms.</string>
 
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">Rename</string>
@@ -329,6 +329,8 @@
     <string name="list_context_move">Move</string>
     <string name="list_context_create_copy">Copy</string>
     <string name="list_context_duplicate">Duplicate</string>
+    <string name="list_context_notification_enable">Enable notifications</string>
+    <string name="list_context_notification_disable">Disable notifications</string>
     <string name="list_context_create_download">Download</string>
     <string name="list_context_open_location">Open location</string>
     <string name="list_context_rename">Rename</string>
@@ -357,6 +359,8 @@
     <string name="list_action_import">Import file</string>
     <string name="list_action_image_from_library">Picture from Library</string>
     <string name="list_action_delete_link">Delete link</string>
+    <string name="list_action_delete_image">Delete image</string>
+
     <!-- Dialog info -->
 
     <!-- Pager -->
@@ -772,6 +776,7 @@
     <string name="rooms_error_name">Room name cannot be empty</string>
     <string name="rooms_error_create">Error create room</string>
     <string name="rooms_error_edit">Error edit room</string>
+    <string name="rooms_error_logo_size_exceed">The maximum image size is exceeded (1 MB)</string>
     <string name="leave_room_title">Leave the room</string>
     <string name="leave_room_owner_desc">You are the owner of this room. Before you leave the room, you must transfer the owner’s role to another user.</string>
     <string name="leave_room_desc">Do you really want to leave this room? You will be able to join it again via new invitation by a room admin.</string>
@@ -921,7 +926,6 @@
 
     <string name="rooms_upload_pdf_from_docspace">Upload PDF Form from DocSpace</string>
     <string name="rooms_upload_pdf_from_device">Upload PDF Form from device</string>
-
     <string name="rooms_fill_in_as_title">Fill in as</string>
     <string name="rooms_fill_out_form_yourself">Fill out the form yourself</string>
     <string name="rooms_fill_out_form_yourself_desc">Fill in the fields of the original form in the editor window.</string>
@@ -934,4 +938,6 @@
     <string name="rooms_fill_form_complete_back_to_room">Back to room</string>
     <string name="rooms_fill_form_complete_check_forms">Check ready forms</string>
     <string name="errors_sign_in_account_not_found">Account not found</string>
+    <string name="rooms_notifications_disabled">Room notifications disabled</string>
+    <string name="rooms_notifications_enabled">Room notifications enabled</string>
 </resources>

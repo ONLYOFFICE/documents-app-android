@@ -9,6 +9,7 @@ import androidx.work.WorkManager
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.Recent
 import app.documents.core.model.cloud.isDocSpace
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
 import app.documents.core.network.manager.ManagerService
@@ -72,6 +73,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 @InjectViewState
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
@@ -158,7 +160,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         modelExplorerStack.countSelectedItems.toString()
                     )
                 }
-            } else if (!isTrashMode) {
+            } else if (isTrashMode && currentSectionType != ApiContract.SectionType.CLOUD_ARCHIVE_ROOM) {
+                viewState.onSnackBarWithAction(
+                    context.getString(R.string.trash_snackbar_move_text),
+                    context.getString(R.string.trash_snackbar_move_button)
+                ) { moveCopySelected(OperationsState.OperationType.RESTORE) }
+            } else {
                 if (itemClicked is CloudFolder) {
                     openFolder(itemClicked.id, position)
                 } else if (itemClicked is CloudFile) {
@@ -170,11 +177,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 } else if (itemClicked is RecentViaLink) {
                     openRecentViaLink()
                 }
-            } else {
-                viewState.onSnackBarWithAction(
-                    context.getString(R.string.trash_snackbar_move_text),
-                    context.getString(R.string.trash_snackbar_move_button)
-                ) { moveCopySelected(OperationsState.OperationType.RESTORE) }
             }
         }
     }
@@ -333,8 +335,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             // TODO check security...
-            if (isRoom && modelExplorerStack.last()?.current?.security?.create == true) {
-                viewState.onStateActionButton(true)
+            if (isRoom) {
+                viewState.onStateActionButton(modelExplorerStack.last()?.current?.security?.create == true)
             } else {
                 viewState.onStateActionButton(isContextEditable && !isRecentViaLinkSection())
             }
@@ -909,6 +911,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     }
                     viewState.onDialogProgress(100, 100)
                     viewState.onSnackBar(message)
+                    if (isTrashSection) { popToRoot() }
                     refresh()
                 }
             } catch (e: Exception) {
@@ -1015,14 +1018,16 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         } else if (itemClicked != null) {
             roomProvider?.let { provider ->
                 disposable.add(
-                    provider.deleteRoom(itemClicked?.id ?: "").subscribe({
-                        viewState.onDialogClose()
-                        viewState.onSnackBar(context.getString(R.string.room_delete_success))
-                        refresh()
-                    }) { fetchError(it) }
+                    provider.deleteRoom(itemClicked?.id ?: "")
+                        .doOnComplete { popToRoot() }
+                        .delay(1000, TimeUnit.MILLISECONDS)
+                        .subscribe({
+                            viewState.onDialogClose()
+                            viewState.onSnackBar(context.getString(R.string.room_delete_success))
+                            refresh()
+                        }, ::fetchError)
                 )
             }
-
         }
     }
 
@@ -1194,6 +1199,31 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             "rooms/shared/filter?folder=${folder.id}"
         } else {
             "rooms/shared/${folder.id}/filter?folder=${folder.id}"
+        }
+    }
+
+    fun muteRoomNotifications(muted: Boolean) {
+        presenterScope.launch {
+            val roomId = roomClicked?.id.orEmpty()
+            roomProvider?.muteRoomNotifications(roomId, muted)?.collect { result ->
+                when (result) {
+                    is Result.Error -> withContext(Dispatchers.Main) {
+                        viewState.onError(context.getString(R.string.errors_unknown_error))
+                    }
+                    is Result.Success -> withContext(Dispatchers.Main) {
+                        roomClicked?.mute = roomId in result.result
+                        viewState.onSnackBar(
+                            context.getString(
+                                if (muted) {
+                                    R.string.rooms_notifications_disabled
+                                } else {
+                                    R.string.rooms_notifications_enabled
+                                }
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 }

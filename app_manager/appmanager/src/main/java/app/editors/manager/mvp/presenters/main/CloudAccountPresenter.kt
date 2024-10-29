@@ -33,7 +33,6 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
     companion object {
         val TAG: String = CloudAccountPresenter::class.java.simpleName
 
-        const val KEY_SWITCH = "switch"
     }
 
     var contextAccount: CloudAccount? = null
@@ -43,20 +42,19 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         App.getApp().refreshLoginComponent(null)
     }
 
-    fun getAccounts(saveState: Bundle? = null, isSwitch: Boolean = false) {
+    fun getAccounts(saveState: Bundle? = null) {
         presenterScope.launch {
-            if (isSwitch) {
-                switchAccount(saveState)
-            } else {
-                val accounts = cloudDataSource.getAccounts()
-                withContext(Dispatchers.Main) {
-                    viewState.onRender(CloudAccountState.AccountLoadedState(accounts, saveState))
+            val accounts = cloudDataSource.getAccounts()
+            withContext(Dispatchers.Main) {
+                viewState.onRender(CloudAccountState.AccountLoadedState(accounts, saveState))
+                if (preferenceTool.fileData.isNotEmpty()) {
+                    switchAccount()
                 }
             }
         }
     }
 
-    private suspend fun switchAccount(saveState: Bundle? = null) {
+    private suspend fun switchAccount() {
         val data = Json.decodeFromString<OpenDataModel>(preferenceTool.fileData)
         cloudDataSource.getAccounts()
             .find { account ->
@@ -67,10 +65,9 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
             }?.let { cloudAccount ->
                 checkLogin(cloudAccount)
             } ?: run {
-            preferenceTool.fileData = ""
+//            preferenceTool.fileData = ""
             withContext(Dispatchers.Main) {
-                viewState.onRender(CloudAccountState.AccountLoadedState(cloudDataSource.getAccounts(), saveState))
-                viewState.onError(context.getString(R.string.errors_sign_in_account_not_found))
+                viewState.onAccountLogin(data.portal ?: "", null)
             }
         }
     }
@@ -158,6 +155,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 App.getApp().showPersonalPortalMigration = true
                 viewState.onSuccessLogin()
             }
+
             is CheckLoginResult.Error -> checkError(result.exception, account)
             is CheckLoginResult.NeedLogin -> showLoginFragment(account)
             CheckLoginResult.AlreadyUse -> onAlreadyUse()
@@ -177,6 +175,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 Json.encodeToString(account),
                 provider.provider
             )
+
             else -> viewState.onAccountLogin(account.portal.url, account.login)
         }
     }

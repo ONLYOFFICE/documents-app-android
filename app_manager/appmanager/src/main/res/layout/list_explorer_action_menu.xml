@@ -26,7 +26,7 @@
 
                 <ImageView
                     style="@style/Widget.Common.ImageView.ActionBottomMenu"
-                    app:srcCompat="@drawable/ic_type_text_document"
+                    app:srcCompat="@drawable/ic_type_document_row"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -43,7 +43,7 @@
 
                 <ImageView
                     style="@style/Widget.Common.ImageView.ActionBottomMenu"
-                    app:srcCompat="@drawable/ic_type_spreadsheet"
+                    app:srcCompat="@drawable/ic_type_spreadsheet_row"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -59,7 +59,7 @@
 
                 <ImageView
                     style="@style/Widget.Common.ImageView.ActionBottomMenu"
-                    app:srcCompat="@drawable/ic_type_presentation"
+                    app:srcCompat="@drawable/ic_type_presentation_row"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView

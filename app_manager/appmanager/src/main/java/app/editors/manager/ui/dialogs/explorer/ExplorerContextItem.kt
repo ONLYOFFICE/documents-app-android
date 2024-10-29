@@ -126,6 +126,27 @@ sealed class ExplorerContextItem(
         title = R.string.list_context_duplicate
     ), ExplorerContextBlockOrder.Common
 
+    class Notifications(val muted: Boolean) : ExplorerContextItem(
+        icon = getIcon(muted),
+        title = getTitle(muted)
+    ), ExplorerContextBlockOrder.Common {
+
+        companion object {
+
+            fun getTitle(muted: Boolean) = if (muted) {
+                R.string.list_context_notification_enable
+            } else {
+                R.string.list_context_notification_disable
+            }
+
+            fun getIcon(muted: Boolean) = if (muted) {
+                R.drawable.ic_notification_on
+            } else {
+                R.drawable.ic_notification_off
+            }
+        }
+    }
+
     object Upload : ExplorerContextItem(
         icon = R.drawable.ic_list_action_upload,
         title = R.string.list_context_upload_to_portal

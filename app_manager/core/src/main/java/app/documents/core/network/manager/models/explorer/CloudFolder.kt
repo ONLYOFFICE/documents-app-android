@@ -56,6 +56,10 @@ open class CloudFolder : Item(), Serializable {
     @Expose
     val type: Int? = null
 
+    @SerializedName("mute")
+    @Expose
+    var mute: Boolean = false
+
     fun setFolder(folder: CloudFolder) {
         setItem(folder)
         parentId = folder.parentId

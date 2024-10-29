@@ -398,7 +398,6 @@
     <string name="share_popup_access_deny_remove">إزالة المستخدم</string>
     <string name="share_popup_access_fill_forms">ملء النماذج</string>
     <string name="share_popup_access_comment">تعليق</string>
-    <string name="share_popup_access_custom_filter">تصفية مخصصة</string>
 
     <string name="share_snackbar_remove_user">تتم إزالة المستخدم</string>
 
@@ -800,7 +799,6 @@
     <string name="app_settings_main_help">مساعدة</string>
     <string name="settings_language">لغة</string>
     <string name="clear_recents">"هل تريد مسح الأحداث الأخيرة؟"</string>
-    <string name="context_protection_title">حماية</string>
     <!--  TODO example  -->
     <string name="settings_language_confirmation_message">
       الآن يستخدم التطبيق اللغة الإنجليزية بسبب تغير لغة
@@ -889,4 +887,42 @@
     <string name="personal_portal_end_button">أنشئ حسابًا مجانيًا</string>
     <string name="personal_portal_end_title">يتم إنهاء خدمة ONLYOFFICE Personal</string>
     <string name="personal_portal_end_text">سيتم إيقاف خدمة ONLYOFFICE Personal في الأول من سبتمبر 2024\n.نوصي بالانتقال إلى خدمة ONLYOFFICE DocSpace Cloud المجانية.</string>
+    <string name="dialogs_question_delete_all_fonts">هل تريد حذف جميع الخطوط؟</string>
+    <string name="dialogs_question_delete_font">هل تريد حذف هذا الخط؟</string>
+    <string name="dialogs_warning_title">تحذير</string>
+    <string name="dialogs_warning_only_pdf_form_message">لا يمكن نقل الملف إلى هذه الغرفة. يُرجى محاولة نقل نموذج "PDF" الخاص بـ"ONLYOFFICE".</string>
+    <string name="dialogs_warning_pinned_room_limit">لا يمكنك تثبيت أكثر من 10 غرف في الأعلى. يُرجى إلغاء تثبيت بعض الغرف المثبتة حاليًا.</string>
+    <string name="dialogs_warning_fill_forms_room_create">إنشاء الغرف باستخدام ملفات ومجلدات متعددة غير متاح لهذا النوع من الغرف. لإنشاء غرفة بهذا الشكل، اذهب إلى قسم "الغرف" أو استخدم أحد نماذج "PDF".</string>
+    <string name="toolbar_menu_view">عرض</string>
+    <string name="toolbar_menu_view_list">قائمة</string>
+    <string name="toolbar_menu_view_grid">شبكة</string>
+    <string name="list_context_duplicate">تكرار</string>
+    <string name="list_context_fill">تعبئة</string>
+    <string name="placeholder_no_fonts">لا توجد خطوط</string>
+    <string name="share_popup_access_custom_filter">تصفية مخصصة</string>
+    <string name="operation_select_room_title">اختر الغرفة</string>
+    <string name="room_duplicate_progress_title">جاري التكرار</string>
+    <string name="room_duplicate_complete">تم التكرار بنجاح</string>
+    <string name="room_duplicate_error">خطأ في التكرار</string>
+    <string name="room_duplicate_progress_hide_button">إخفاء</string>
+    <string name="rooms_add_fill_forms">غرفة تعبئة النماذج</string>
+    <string name="rooms_add_fill_forms_des">ارفع نماذج "PDF" إلى الغرفة. قم بدعوة المستخدمين لتعبئة نموذج "PDF". راجع النماذج المكتملة وحلل البيانات التي تم جمعها تلقائيًا في جدول بيانات.</string>
+    <string name="room_placeholder_created_filling_form_room_title">مرحبًا بك في غرفة تعبئة النماذج</string>
+    <string name="room_placeholder_created_filling_form_room_subtitle">ارفع نموذج "PDF" جاهزًا أو أنشئ مجلدات جديدة لتنظيم ملفاتك</string>
+    <string name="context_protection_title">حماية</string>
+    <string name="rooms_upload_pdf_from_docspace">رفع نموذج "PDF" من "DocSpace"</string>
+    <string name="rooms_upload_pdf_from_device">رفع نموذج "PDF" من الجهاز</string>
+    <string name="rooms_fill_in_as_title">املأ بصفة</string>
+    <string name="rooms_fill_out_form_yourself">قم بتعبئة النموذج بنفسك</string>
+    <string name="rooms_fill_out_form_yourself_desc">املأ حقول النموذج الأصلي في نافذة التحرير.</string>
+    <string name="rooms_share_and_collect">مشاركة وجمع</string>
+    <string name="rooms_share_and_collect_desc">شارك النموذج واجمع الردود عبر غرفة تعبئة النماذج.</string>
+    <string name="rooms_fill_form_complete_desc">النموذج المكتمل محفوظ ومتوفر لك في مجلد "المكتمل". للتحقق من الحالة، تواصل مع صاحب النموذج وقدم الرقم المُعطى.</string>
+    <string name="rooms_fill_form_complete_number_title">رقم النموذج</string>
+    <string name="rooms_fill_form_complete_owner_title">صاحب النموذج</string>
+    <string name="rooms_fill_form_complete_toolbar_title">تم إكمال النموذج بنجاح</string>
+    <string name="rooms_fill_form_complete_back_to_room">العودة إلى الغرفة</string>
+    <string name="rooms_fill_form_complete_check_forms">تحقق من النماذج الجاهزة</string>
+    <string name="errors_sign_in_account_not_found">لم يتم العثور على الحساب</string>
+    <string name="list_action_delete_image">حذف الصورة</string>
 </resources>

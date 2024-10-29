@@ -82,6 +82,7 @@ import app.editors.manager.ui.dialogs.AddRoomItem
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.viewModels.main.AddRoomData
+import app.editors.manager.viewModels.main.AddRoomEffect
 import app.editors.manager.viewModels.main.AddRoomViewModel
 import app.editors.manager.viewModels.main.CopyItems
 import app.editors.manager.viewModels.main.RoomUserListViewModel
@@ -184,8 +185,20 @@ class AddRoomFragment : ComposeDialogFragment() {
                     }
                 }
 
+            LaunchedEffect(viewModel) {
+                viewModel.effect.collect { effect ->
+                    when (effect) {
+                        is AddRoomEffect.Error -> {
+                            UiUtils.getSnackBar(requireActivity())
+                                .setText(effect.message)
+                                .show()
+                        }
+                    }
+                }
+            }
+
             NavHost(navController = navController, startDestination = Screens.Main.name) {
-                composable(Screens.Main.name) {
+                composable(route = Screens.Main.name) {
                     MainScreen(
                         isEdit = isEdit,
                         isRoomTypeEditable = !isEdit && copyItems == null,
@@ -224,7 +237,8 @@ class AddRoomFragment : ComposeDialogFragment() {
                 composable(Screens.Select.name) {
                     SelectRoomScreen(
                         currentType = roomState.value.type,
-                        navController = navController
+                        navController = navController,
+                        viewModel = viewModel
                     )
                 }
                 composable(
@@ -500,7 +514,7 @@ fun ThirdPartyBlock(
 }
 
 @Composable
-private fun SelectRoomScreen(currentType: Int, navController: NavHostController) {
+private fun SelectRoomScreen(currentType: Int, navController: NavHostController, viewModel: AddRoomViewModel) {
     AppScaffold(topBar = {
         AppTopBar(
             title = stringResource(id = R.string.rooms_choose_room),
@@ -510,7 +524,8 @@ private fun SelectRoomScreen(currentType: Int, navController: NavHostController)
         Column {
             for (type in RoomUtils.roomTypes) {
                 AddRoomItem(roomType = type, selected = currentType == type) { newType ->
-                    navController.navigate("${Screens.Main.name}/$newType") {
+                    viewModel.setRoomType(newType)
+                    navController.navigate(Screens.Main.name) {
                         popUpTo(navController.graph.id) {
                             inclusive = true
                         }
@@ -599,7 +614,7 @@ private fun ChooseImageBottomView(
         imageUri?.let {
             Divider()
             AppArrowItem(
-                title = stringResource(id = R.string.list_action_delete_link),
+                title = stringResource(id = R.string.list_action_delete_image),
                 titleColor = MaterialTheme.colors.error,
                 startIcon = R.drawable.ic_trash,
                 startIconTint = MaterialTheme.colors.error,
@@ -671,7 +686,7 @@ private fun MainScreenPreview() {
 @Composable
 private fun SelectScreenPreview() {
     ManagerTheme {
-        SelectRoomScreen(2, navController = rememberNavController())
+        SelectRoomScreen(2, navController = rememberNavController(), viewModel = viewModel())
     }
 }
 

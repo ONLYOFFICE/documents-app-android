@@ -858,6 +858,6 @@
     <string name="room_storage_not_availabale">ເນື້ອຫາຂອງໂຟນເດີພາກສ່ວນທີສາມ ບໍ່ ສາມາດໃຊ້ໄດ້. ພະຍາຍາມເຊື່ອມຕໍ່ບັນຊີຄືນໃໝ່.</string>
     <string name="personal_portal_end_button">ສ້າງບັນຊີຟຣີໄດ້ເລີຍ</string>
     <string name="personal_portal_end_title">ONLYOFFICE Personal ກຳລັງປິດຕົວລົງ</string>
-    <string name="personal_portal_end_text">ONLYOFFICE Personal ຈະຢຸດໃຫ້ບໍລິການຕັ້ງແຕ່ວັນທີ 1 ກັນຍາ 2024.\nພວກເຮົາຂໍແນະນຳໃຫ້ທ່ານຍ້າຍໄປໃຊ້ ONLYOFFICE DocSpace Cloud ຟຣີ.
-</string>
+    <string name="personal_portal_end_text">ONLYOFFICE Personal ຈະຢຸດໃຫ້ບໍລິການຕັ້ງແຕ່ວັນທີ 1 ກັນຍາ 2024.\nພວກເຮົາຂໍແນະນຳໃຫ້ທ່ານຍ້າຍໄປໃຊ້ ONLYOFFICE DocSpace Cloud ຟຣີ.</string>\
+    <string name="list_action_delete_image">ລຶບຮູບ</string>
 </resources>

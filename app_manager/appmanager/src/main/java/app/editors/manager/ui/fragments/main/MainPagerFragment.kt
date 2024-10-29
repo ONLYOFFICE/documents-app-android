@@ -347,16 +347,17 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         }, 250)
     }
 
-    override fun onSwitchAccount(data: OpenDataModel, isToken: Boolean) {
+    override fun onSwitchAccount(data: OpenDataModel) {
         UiUtils.showQuestionDialog(
             context = requireContext(),
             title = getString(R.string.switch_account_title),
             description = getString(R.string.switch_account_description, data.portal),
             acceptListener = {
-                activity?.showAccountsActivity(isToken)
+                activity?.showAccountsActivity()
             },
             cancelListener = {
                 presenter.onRemoveFileData()
+                requireActivity().intent.clearIntent()
             },
             acceptTitle = getString(R.string.switch_account_open_project_file)
         )

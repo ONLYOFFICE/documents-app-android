@@ -71,6 +71,7 @@ class DocsRoomFragment : DocsCloudFragment() {
             ExplorerContextItem.Reconnect -> reconnectStorage()
             ExplorerContextItem.Archive -> cloudPresenter.archiveRooms(true)
             ExplorerContextItem.AddUsers -> showInviteUsersDialog()
+            is ExplorerContextItem.Notifications -> cloudPresenter.muteRoomNotifications(!contextItem.muted)
             is ExplorerContextItem.ExternalLink -> cloudPresenter.copyLinkFromContextMenu()
             is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()
             is ExplorerContextItem.Delete -> if (presenter.isRoot) cloudPresenter.checkRoomOwner() else super.onContextButtonClick(contextItem)
@@ -87,7 +88,6 @@ class DocsRoomFragment : DocsCloudFragment() {
             ActionMenuItem.Info -> showRoomInfoFragment()
             ActionMenuItem.EditRoom -> cloudPresenter.editRoom()
             ActionMenuItem.Invite -> showInviteUsersDialog()
-            is ActionMenuItem.CopyLink -> cloudPresenter.copyLinkFromActionMenu(item.isRoom)
             ActionMenuItem.LeaveRoom -> cloudPresenter.checkRoomOwner()
             else -> super.actionMenuClickListener.invoke(item)
         }

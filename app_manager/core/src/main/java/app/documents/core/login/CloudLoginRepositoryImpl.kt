@@ -33,7 +33,8 @@ import java.net.ConnectException
 internal class CloudLoginRepositoryImpl(
     private val cloudPortal: CloudPortal?,
     private val cloudLoginDataSource: CloudLoginDataSource,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val isGooglePlayServicesAvailable: Boolean
 ) : CloudLoginRepository {
 
     private var savedAccessToken: String? = null
@@ -89,12 +90,13 @@ internal class CloudLoginRepositoryImpl(
         )
     }
 
-    override suspend fun signInWithProvider(accessToken: String?, provider: String): Flow<LoginResult> {
+    override suspend fun signInWithProvider(accessToken: String?, provider: String, code: String?): Flow<LoginResult> {
         if (provider == ApiContract.Social.GOOGLE) savedAccessToken = accessToken
         return signIn(
             request = RequestSignIn(
                 accessToken = checkNotNull(accessToken ?: savedAccessToken),
-                provider = provider
+                provider = provider,
+                code = code.orEmpty()
             )
         )
     }
@@ -150,7 +152,7 @@ internal class CloudLoginRepositoryImpl(
                     try {
                         val oldAccount = accountRepository.getAccount(result.oldAccountId)
                         if (oldAccount != null) {
-                            unsubscribePush(oldAccount)
+                            unsubscribePush(oldAccount.apply { unsubToken = accountRepository.getToken(oldAccount.accountName).orEmpty() })
                         }
 
                         val newAccount = accountRepository.getOnlineAccount()
@@ -275,14 +277,21 @@ internal class CloudLoginRepositoryImpl(
     }
 
     private suspend fun unsubscribePush(account: CloudAccount) {
-        val token = accountRepository.getToken(account.accountName)
-        if (account.portal.provider.registerDeviceRequired && token != null) {
-            cloudLoginDataSource.subscribe(
-                portal = account.portal,
-                token = token,
-                deviceToken = getDeviceToken(),
-                isSubscribe = false
-            )
+        if (isGooglePlayServicesAvailable) {
+            val token = account.unsubToken
+            if (account.portal.provider.registerDeviceRequired || token.isNotEmpty()) {
+                try {
+                    val deviceToken = getDeviceToken()
+                    cloudLoginDataSource.subscribe(
+                        portal = account.portal,
+                        token = token,
+                        deviceToken = deviceToken,
+                        isSubscribe = false
+                    )
+                } catch (_: Exception) {
+                    // Stub
+                }
+            }
         }
     }
 
@@ -293,10 +302,14 @@ internal class CloudLoginRepositoryImpl(
     }
 
     private suspend fun subscribePush(cloudPortal: CloudPortal, accessToken: String) {
-        if (cloudPortal.provider.registerDeviceRequired) {
-            val deviceToken = getDeviceToken()
-            cloudLoginDataSource.registerDevice(accessToken, deviceToken)
-            cloudLoginDataSource.subscribe(cloudPortal, accessToken, deviceToken, true)
+        if (cloudPortal.provider.registerDeviceRequired && isGooglePlayServicesAvailable) {
+            try {
+                val deviceToken = getDeviceToken()
+                cloudLoginDataSource.registerDevice(accessToken, deviceToken)
+                cloudLoginDataSource.subscribe(cloudPortal, accessToken, deviceToken, true)
+            } catch (_: Exception) {
+                // Stub
+            }
         }
     }
 

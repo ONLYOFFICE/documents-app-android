@@ -111,7 +111,7 @@ object RoomUtils {
                 2 -> "${words[0][0]}${words[1][0]}"
                 else -> "${words[0][0]}${words[words.lastIndex][0]}"
             }.uppercase()
-        } catch (_: IndexOutOfBoundsException) {
+        } catch (_: RuntimeException) {
             null
         }
     }

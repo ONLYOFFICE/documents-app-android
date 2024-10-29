@@ -735,5 +735,42 @@
     <string name="personal_portal_end_title">ONLYOFFICE Personal завершает работу</string>
     <string name="personal_portal_end_text">Пожалуйста, обратите внимание: поддержка ONLYOFFICE Personal прекращается 1 сентября 2024 года.\n
     Рекомендуем перейти на бесплатный ONLYOFFICE DocSpace Cloud.</string>
-
+    <string name="dialogs_question_delete_all_fonts">Удалить все шрифты?</string>
+    <string name="dialogs_question_delete_font">Удалить этот шрифт?</string>
+    <string name="dialogs_warning_title">Внимание</string>
+    <string name="dialogs_warning_only_pdf_form_message">Файл не может быть перемещен в эту комнату. Пожалуйста, попробуйте переместить PDF-форму ONLYOFFICE.</string>
+    <string name="dialogs_warning_pinned_room_limit">Нельзя закрепить вверху больше 10 комнат. Открепите некоторые комнаты, закрепленные в данный момент.</string>
+    <string name="dialogs_warning_fill_forms_room_create">Создание на основе нескольких файлов и папок недоступно для комнаты данного типа. Чтобы создать такую ​​комнату, перейдите в раздел Комнаты или воспользуйтесь одной из PDF-форм.</string>
+    <string name="toolbar_menu_view">Вид</string>
+    <string name="toolbar_menu_view_list">Список</string>
+    <string name="toolbar_menu_view_grid">Сетка</string>
+    <string name="list_context_duplicate">Дублирование</string>
+    <string name="list_context_fill">Заливка</string>
+    <string name="placeholder_no_fonts">Шрифты отсутствуют</string>
+    <string name="share_popup_access_custom_filter">Пользовательский фильтр</string>
+    <string name="operation_select_room_title">Выбрать комнату</string>
+    <string name="room_duplicate_progress_title">Дублирование в процессе</string>
+    <string name="room_duplicate_complete">Дублирование завершено</string>
+    <string name="room_duplicate_error">Ошибка дублирования</string>
+    <string name="room_duplicate_progress_hide_button">Скрыть</string>
+    <string name="rooms_add_fill_forms">Комната для заполнения форм</string>
+    <string name="rooms_add_fill_forms_des">Загружайте PDF-формы в комнату. Приглашайте пользователей к заполнению PDF-форм. Просматривайте заполненные формы и анализируйте данные, собираемые в электронную таблицу автоматически.</string>
+    <string name="room_placeholder_created_filling_form_room_title">Добро пожаловать в Комнату для заполнения форм</string>
+    <string name="room_placeholder_created_filling_form_room_subtitle">Загрузите готовую PDF-форму или создайте новые папки для организации ваших файлов</string>
+    <string name="context_protection_title">Защита</string>
+    <string name="rooms_upload_pdf_from_docspace">Загрузить PDF-форму из DocSpace</string>
+    <string name="rooms_upload_pdf_from_device">Загрузить PDF-форму с устройства</string>
+    <string name="rooms_fill_in_as_title">Заполните как</string>
+    <string name="rooms_fill_out_form_yourself">Заполните форму самостоятельно</string>
+    <string name="rooms_fill_out_form_yourself_desc">Заполните поля оригинальной формы в окне редактора.</string>
+    <string name="rooms_share_and_collect">Поделиться и собрать</string>
+    <string name="rooms_share_and_collect_desc">Поделитесь формой и соберите ответы через Комнату для заполнения форм.</string>
+    <string name="rooms_fill_form_complete_desc">Заполненная PDF-форма сохранена и доступна вам в папке Выполнено. Чтобы проверить статус, свяжитесь с владельцем формы, указав присвоенный номер.</string>
+    <string name="rooms_fill_form_complete_number_title">Номер формы</string>
+    <string name="rooms_fill_form_complete_owner_title">Владелец формы</string>
+    <string name="rooms_fill_form_complete_toolbar_title">Форма успешно заполнена</string>
+    <string name="rooms_fill_form_complete_back_to_room">Назад в комнату</string>
+    <string name="rooms_fill_form_complete_check_forms">Проверить готовые формы</string>
+    <string name="errors_sign_in_account_not_found">Аккаунт не найден</string>
+    <string name="list_action_delete_image">Удалить изображение</string>
 </resources>

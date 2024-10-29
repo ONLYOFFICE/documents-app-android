@@ -94,7 +94,7 @@ object ActionMenuItemsFactory {
         return if (root) {
             getRoomRootItems(section, selected, allSelected, asc, sortBy, isGridView)
         } else {
-            getRoomFolderItems(selected, provider, empty, allSelected, asc, sortBy, currentRoom, security, isGridView)
+            getRoomFolderItems(section, selected, provider, empty, allSelected, asc, sortBy, currentRoom, security, isGridView)
         }
     }
 
@@ -118,7 +118,8 @@ object ActionMenuItemsFactory {
             )
 
             // sort block
-            if (section == SectionType.ONEDRIVE) {
+            if (provider is PortalProvider.Storage) {
+                add(ActionMenuItem.Divider)
                 add(ActionMenuItem.Title.get(asc, sortBy))
             } else {
                 add(
@@ -210,6 +211,7 @@ object ActionMenuItemsFactory {
     }
 
     private fun getRoomFolderItems(
+        section: Int,
         selected: Boolean,
         provider: PortalProvider?,
         empty: Boolean,
@@ -220,6 +222,7 @@ object ActionMenuItemsFactory {
         security: Security,
         isGridView: Boolean
     ) = mutableListOf<ActionMenuItem>().apply {
+        val isArchive = section == SectionType.CLOUD_ARCHIVE_ROOM
         if (!selected) {
             add(
                 ActionMenuItem.ManageRoom.get(
@@ -231,7 +234,9 @@ object ActionMenuItemsFactory {
                         ActionMenuItem.Divider,
                         ActionMenuItem.Archive.takeIf { security.editRoom },
                         ActionMenuItem.Download,
-                        ActionMenuItem.LeaveRoom
+                        ActionMenuItem.Restore.takeIf { isArchive },
+                        ActionMenuItem.Delete.takeIf { isArchive },
+                        ActionMenuItem.LeaveRoom.takeIf { !isArchive }
                     )
                 )
             )
@@ -263,11 +268,16 @@ object ActionMenuItemsFactory {
                 )
             }
             if (selected) {
-                if (provider == PortalProvider.Cloud.DocSpace) add(ActionMenuItem.CreateRoom)
-                add(ActionMenuItem.Download)
-                add(ActionMenuItem.Move)
-                add(ActionMenuItem.Copy)
-                add(ActionMenuItem.Delete)
+                 if (isArchive) {
+                     add(ActionMenuItem.Download)
+                     add(ActionMenuItem.Copy)
+                 } else {
+                     if (provider == PortalProvider.Cloud.DocSpace) add(ActionMenuItem.CreateRoom)
+                     add(ActionMenuItem.Download)
+                     add(ActionMenuItem.Move)
+                     add(ActionMenuItem.Copy)
+                     add(ActionMenuItem.Delete)
+                 }
             }
             addAll(getSelectItems(selected, allSelected))
         }
