@@ -215,6 +215,8 @@
     <string name="dialogs_question_rate_first_info">Do you enjoy using ONLYOFFICE Documents?</string>
     <string name="dialogs_question_rate_second_info">Would you mind rating the app on Google Play?</string>
     <string name="dialogs_question_delete_all_title">Delete all items?</string>
+    <string name="dialogs_question_delete_all_fonts">Delete all fonts?</string>
+    <string name="dialogs_question_delete_font">Delete this font?</string>
 
     <plurals name="dialogs_question_message_delete">
         <item quantity="one">It will be irretrievably deleted.\nThis action is irreversible.</item>
@@ -230,6 +232,11 @@
         <item quantity="one">Delete this item?</item>
         <item quantity="other">Delete %1$d items?</item>
     </plurals>
+
+    <string name="dialogs_warning_title">Warning</string>
+    <string name="dialogs_warning_only_pdf_form_message">The file cannot be moved to this room. Please try to move the ONLYOFFICE PDF form.</string>
+    <string name="dialogs_warning_pinned_room_limit">You can’t pin more than 10 rooms to the top. Unpin some that are currently pinned.</string>
+    <string name="dialogs_warning_fill_forms_room_create">Creation based on several files and folders is not available for this type of room. To create such a room, go to the Rooms section or use one of the PDF forms.</string>
 
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">Rename</string>
@@ -298,6 +305,9 @@
     <string name="toolbar_menu_main_select_all">Select all</string>
     <string name="toolbar_menu_main_deselect">Deselect</string>
     <string name="toolbar_menu_sort_by">Sort by</string>
+    <string name="toolbar_menu_view">View</string>
+    <string name="toolbar_menu_view_list">List</string>
+    <string name="toolbar_menu_view_grid">Grid</string>
     <string name="toolbar_menu_sort_order">Sort order</string>
     <string name="toolbar_menu_sort_date_modified">Date</string>
     <string name="toolbar_menu_sort_title">Title</string>
@@ -318,6 +328,9 @@
     <string name="list_context_external_link">External access by link</string>
     <string name="list_context_move">Move</string>
     <string name="list_context_create_copy">Copy</string>
+    <string name="list_context_duplicate">Duplicate</string>
+    <string name="list_context_notification_enable">Enable notifications</string>
+    <string name="list_context_notification_disable">Disable notifications</string>
     <string name="list_context_create_download">Download</string>
     <string name="list_context_open_location">Open location</string>
     <string name="list_context_rename">Rename</string>
@@ -333,6 +346,7 @@
     <string name="list_context_leave_room">Leave the room</string>
     <string name="list_context_copy_general_link">Copy general link</string>
     <string name="list_context_edit_room">Edit room</string>
+    <string name="list_context_fill">Fill</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">Spreadsheet</string>
@@ -345,6 +359,8 @@
     <string name="list_action_import">Import file</string>
     <string name="list_action_image_from_library">Picture from Library</string>
     <string name="list_action_delete_link">Delete link</string>
+    <string name="list_action_delete_image">Delete image</string>
+
     <!-- Dialog info -->
 
     <!-- Pager -->
@@ -391,6 +407,7 @@
     <string name="placeholder_payment_required">Business subscription expired</string>
     <string name="placeholder_payment_required_desc">Your current tariff plan "Business" expired. Please renew your subscription in the account settings to be able to use your DocSpace. If you have any questions, please contact support</string>
     <string name="placeholder_payment_required_button">Renew Business plan</string>
+    <string name="placeholder_no_fonts">No fonts</string>
 
     <!-- Time marks-->
     <string name="list_headers_folder">Folders</string>
@@ -478,7 +495,7 @@
     <string name="storage_web_dav_settings_login">Login</string>
     <string name="storage_web_dav_settings_password">Password</string>
     <string name="storage_web_dav_settings_title">Input title for service</string>
-    <string name="storage_web_dav_settings_hint" tools:ignore="MissingTranslation">https://cloud.yourdomain.com</string>
+    <string name="storage_web_dav_settings_hint" tools:ignore="MissingTranslation" translatable="false">https://cloud.yourdomain.com</string>
     <string name="storage_web_dav_settings_server">Server</string>
     <string name="storage_web_dav_settings_required">Required</string>
 
@@ -490,6 +507,7 @@
     <!-- ======================================================================================= -->
     <!-- Operations -->
     <string name="operation_title">Select folder</string>
+    <string name="operation_select_room_title">Select room</string>
     <string name="operation_choose_section">Choose section</string>
     <string name="operation_complete_message">Operation complete</string>
     <string name="operation_delete_impossible">Cannot delete file. File is opened on the portal.</string>
@@ -557,6 +575,11 @@
     <string name="upload_manager_notification_cancel_upload">Cancel upload</string>
     <string name="upload_manager_waiting_title">Waiting for upload</string>
     <string name="upload_error_wifi">You can upload only when Wi-Fi is enabled</string>
+
+    <string name="room_duplicate_progress_title">Duplicate in progress</string>
+    <string name="room_duplicate_complete">Duplicate complete</string>
+    <string name="room_duplicate_error">Duplicate error</string>
+    <string name="room_duplicate_progress_hide_button">Hide</string>
 
     <!-- ======================================================================================= -->
     <!-- Socials -->
@@ -745,12 +768,15 @@
     <string name="rooms_add_public_room_des">Invite users via shared links to view documents without registration. You can also embed this room into any web interface.</string>
     <string name="rooms_add_custom">Custom room</string>
     <string name="rooms_add_custom_des">Apply your own settings to use this room for any custom purpose</string>
+    <string name="rooms_add_fill_forms">Form filling room</string>
+    <string name="rooms_add_fill_forms_des">Upload PDF forms into the room. Invite users to fill out a PDF form. Review completed forms and analyze data automatically collected in a spreadsheet.</string>
     <string name="rooms_choose_room">Choose room type</string>
     <string name="room_name_hint">Room name</string>
     <string name="room_add_tag_hint">Add tags</string>
     <string name="rooms_error_name">Room name cannot be empty</string>
     <string name="rooms_error_create">Error create room</string>
     <string name="rooms_error_edit">Error edit room</string>
+    <string name="rooms_error_logo_size_exceed">The maximum image size is exceeded (1 MB)</string>
     <string name="leave_room_title">Leave the room</string>
     <string name="leave_room_owner_desc">You are the owner of this room. Before you leave the room, you must transfer the owner’s role to another user.</string>
     <string name="leave_room_desc">Do you really want to leave this room? You will be able to join it again via new invitation by a room admin.</string>
@@ -761,6 +787,8 @@
     <string name="room_search_not_found_desc">The list of users previously invited to DocSpace or separate rooms will appear here.</string>
     <string name="room_placeholder_created_room_title">Room created!</string>
     <string name="room_placeholder_created_room_subtitle">Create new folders to organize your files.</string>
+    <string name="room_placeholder_created_filling_form_room_title">Welcome to the Form filling room</string>
+    <string name="room_placeholder_created_filling_form_room_subtitle">Upload a ready PDF form or create new folders to organize your files</string>
     <string name="room_recent_via_link">Accessible via link</string>
     <string name="room_manage_room">Manage room</string>
 
@@ -896,4 +924,20 @@
     <string name="personal_portal_end_title">ONLYOFFICE Personal is wrapping up</string>
     <string name="personal_portal_end_text">ONLYOFFICE Personal will be discontinued on September 1st, 2024.\nWe recommend you move to the free ONLYOFFICE DocSpace Cloud.</string>
 
+    <string name="rooms_upload_pdf_from_docspace">Upload PDF Form from DocSpace</string>
+    <string name="rooms_upload_pdf_from_device">Upload PDF Form from device</string>
+    <string name="rooms_fill_in_as_title">Fill in as</string>
+    <string name="rooms_fill_out_form_yourself">Fill out the form yourself</string>
+    <string name="rooms_fill_out_form_yourself_desc">Fill in the fields of the original form in the editor window.</string>
+    <string name="rooms_share_and_collect">Share &amp; collect</string>
+    <string name="rooms_share_and_collect_desc">Share your form and collect responses via a Form filling room.</string>
+    <string name="rooms_fill_form_complete_desc">The filled PDF form is saved and available to you in the Complete folder. To check the status, contact the form owner providing the assigned number.</string>
+    <string name="rooms_fill_form_complete_number_title">Form number</string>
+    <string name="rooms_fill_form_complete_owner_title">Form owner</string>
+    <string name="rooms_fill_form_complete_toolbar_title">Form completed successfully</string>
+    <string name="rooms_fill_form_complete_back_to_room">Back to room</string>
+    <string name="rooms_fill_form_complete_check_forms">Check ready forms</string>
+    <string name="errors_sign_in_account_not_found">Account not found</string>
+    <string name="rooms_notifications_disabled">Room notifications disabled</string>
+    <string name="rooms_notifications_enabled">Room notifications enabled</string>
 </resources>

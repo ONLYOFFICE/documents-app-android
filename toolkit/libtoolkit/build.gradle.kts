@@ -1,18 +1,18 @@
 plugins {
     id("com.android.library")
-    id("kotlinx-serialization")
     kotlin("android")
     kotlin("kapt")
-    id("com.google.devtools.ksp") version Kotlin.kspVersion
+    alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.kotlin.serialization.plugin)
 }
 
 android {
 
     namespace = "lib.toolkit.base"
-    compileSdk = AppDependency.COMPILE_SDK_VERSION
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = AppDependency.MIN_SDK_VERSION
+        minSdk = libs.versions.minSdk.get().toInt()
 
         buildConfigField("String", "SUBDOMAIN", "\"personal\"")
         buildConfigField("String", "DEFAULT_HOST", "\"onlyoffice.com\"")
@@ -50,50 +50,50 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     // Androidx
-    implementation(AndroidX.appCompat)
-    implementation(AndroidX.appCompatResources)
-    implementation(AndroidX.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.appcompat.resources)
+    implementation(libs.ktx)
 
     // Kotlin
-    implementation(Kotlin.kotlinCore)
-    implementation(Kotlin.coroutineCore)
-    implementation(Kotlin.coroutineAndroid)
-    implementation(Kotlin.kotlinSerialization)
+    implementation(libs.kotlin.core)
+    implementation(libs.kotlin.coroutines)
+    implementation(libs.kotlin.coroutines.android)
+    implementation(libs.kotlin.serialization.json)
 
     // Google
-    implementation(Google.material)
-    implementation(Google.gson)
+    implementation(libs.google.material)
+    implementation(libs.google.gson)
 
     // RecyclerView
-    implementation(AndroidX.recyclerView)
+    implementation(libs.recyclerView)
 
-    implementation(AndroidX.cardView)
-    implementation(AndroidX.constraint)
+    implementation(libs.cardView)
+    implementation(libs.constraint)
 
     // Retrofit
-    implementation(Retrofit.retrofit)
-    implementation(Retrofit.retrofitGson)
-    implementation(Retrofit.retrofitXml)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.retrofit.xml)
 
     // Moxy
-    implementation(Moxy.moxyAndroid)
-    implementation(Moxy.moxyMaterial)
-    implementation(Moxy.moxyKtx)
-    kapt(Moxy.moxyCompiler)
+    implementation(libs.moxy)
+    implementation(libs.moxy.material)
+    implementation(libs.moxy.ktx)
+    kapt(libs.moxy.compiler)
 
     // Dagger
-    implementation(Dagger.dagger)
-    ksp(Dagger.daggerCompiler)
+    implementation(libs.dagger)
+    ksp(libs.dagger.compiler)
 
     // Other
-    implementation(Libs.glide)
-    implementation(Libs.documentFile)
+    implementation(libs.glide)
+    implementation(libs.androidDocumentFile)
 
     // Rx
-    implementation(Rx.androidRx)
-    implementation(Rx.rxRelay)
+    implementation(libs.rx.java)
+    implementation(libs.rx.relay)
 
-    implementation(Lifecycle.viewModel)
-    implementation(Lifecycle.liveData)
-    implementation(Lifecycle.runtime)
+    implementation(libs.lifecycle.viewmodel)
+    implementation(libs.lifecycle.livedata)
+    implementation(libs.lifecycle.runtime)
 }

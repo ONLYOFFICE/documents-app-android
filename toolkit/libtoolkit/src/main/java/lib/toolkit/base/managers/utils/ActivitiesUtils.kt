@@ -264,8 +264,9 @@ class DocumentsPicker(
             callback.invoke(it)
         }
 
-    fun show() {
-        choseDocuments.launch(arrayOf("*/*"))
+    fun show(extension: String? = null) {
+        val mimeType = extension?.let(StringUtils::getMimeTypeFromExtension) ?: "*/*"
+        choseDocuments.launch(arrayOf(mimeType))
     }
 }
 
@@ -400,6 +401,11 @@ inline fun <reified T : Serializable> Bundle.getSerializableExt(key: String): T?
 }
 
 
+fun Bundle.getIntExt(key: String): Int? {
+    val value = getInt(key, Int.MIN_VALUE)
+    return if (value == Int.MIN_VALUE) null else value
+}
+
 fun <T : Parcelable> Intent.getParcelable(key: String, clazz: Class<T>): T {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
         this.getParcelableExtra(key, clazz)!!
@@ -414,7 +420,7 @@ fun <T : Parcelable> Bundle.getParcelableExt(key: String, clazz: Class<T>): T {
         this.getParcelable<T>(key) as T
 }
 
-fun Bundle.contains(key: String): Boolean {
+operator fun Bundle.contains(key: String): Boolean {
     return try {
         this.containsKey(key)
     } catch (error: BadParcelableException) {
@@ -458,6 +464,14 @@ fun Context.openSendTextActivity(title: String, text: String) {
 }
 
 fun Fragment.launchAfterResume(block: () -> Unit) {
+    lifecycleScope.launch {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            block()
+        }
+    }
+}
+
+fun Fragment.suspendLaunchAfterResume(block: suspend () -> Unit) {
     lifecycleScope.launch {
         lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             block()

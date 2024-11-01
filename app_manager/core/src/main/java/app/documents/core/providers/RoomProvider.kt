@@ -1,9 +1,16 @@
 package app.documents.core.providers
 
 import android.graphics.Bitmap
+import android.util.Size
+import androidx.core.text.isDigitsOnly
+import app.documents.core.network.common.Result
+import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Operation
+import app.documents.core.network.manager.models.request.RequestBatchOperation
+import app.documents.core.network.manager.models.request.RequestRoomNotifications
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.room.models.RequestAddTags
 import app.documents.core.network.room.models.RequestArchive
@@ -15,6 +22,7 @@ import app.documents.core.network.room.models.RequestRenameRoom
 import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
+import app.documents.core.network.room.models.ResponseUploadLogo
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.Share
@@ -31,47 +39,38 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import org.json.JSONObject
 import retrofit2.HttpException
 import java.util.UUID
 import javax.inject.Inject
 
 class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
-    fun archiveRoom(id: String, isArchive: Boolean = true): Observable<BaseResponse> {
-        return if (isArchive) {
-            roomService.archive(id, RequestArchive())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { it.body() }
+    suspend fun archiveRoom(id: String, isArchive: Boolean) {
+        if (isArchive) {
+            require(roomService.archive(id, RequestArchive()).isSuccessful)
         } else {
-            roomService.unarchive(id, RequestArchive())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { it.body() }
+            require(roomService.unarchive(id, RequestArchive()).isSuccessful)
         }
-
     }
 
     fun pinRoom(id: String, isPin: Boolean = true): Observable<BaseResponse> {
         return if (isPin) {
             roomService.pinRoom(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { it.body() }
         } else {
             roomService.unpinRoom(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { it.body() }
-        }
-
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .flatMap { if (it.isSuccessful) Observable.just(it.body()) else throw HttpException(it) }
     }
 
     suspend fun renameRoom(id: String, newTitle: String): Boolean {
@@ -234,27 +233,27 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             response.body()?.response?.members?.getOrNull(0) else throw HttpException(response)
     }
 
-    suspend fun setLogo(id: String, logo: Bitmap) {
+    suspend fun uploadLogo(bitmap: Bitmap): ResponseUploadLogo {
         val logoId = UUID.randomUUID().toString()
         val uploadResponse = roomService.uploadLogo(
             MultipartBody.Part.createFormData(
                 logoId,
                 "$logoId.png",
-                RequestBody.create(MediaType.get("image/*"), logo.toByteArray())
+                RequestBody.create(MediaType.get("image/*"), bitmap.toByteArray())
             )
         )
-        if (uploadResponse.isSuccessful) {
-            roomService.setLogo(
-                id,
-                RequestSetLogo(
-                    tmpFile = JSONObject(uploadResponse.body()?.string() ?: "").optJSONObject("response")
-                        ?.optString("data")
-                        ?: "",
-                    width = logo.width,
-                    height = logo.height
-                )
+        return uploadResponse.response
+    }
+
+    suspend fun setLogo(id: String, size: Size, data: String) {
+        roomService.setLogo(
+            id,
+            RequestSetLogo(
+                tmpFile = data,
+                width = size.width,
+                height = size.height
             )
-        }
+        )
     }
 
     suspend fun setRoomOwner(id: String, userId: String): CloudFolder {
@@ -294,5 +293,58 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
     suspend fun getExternalLink(roomId: String): String {
         return roomService.getExternalLink(roomId).response.sharedTo.shareLink
+    }
+
+    suspend fun copyItems(roomId: String, folderIds: List<String>, fileIds: List<String>) {
+        val request = RequestBatchOperation(destFolderId = roomId).apply {
+            this.folderIds = folderIds
+            this.fileIds = fileIds
+        }
+
+        roomService.copy(request)
+            .response
+            .forEach { operation -> waitOperationIsFinished(operation) }
+    }
+
+    private suspend fun waitOperationIsFinished(operation: Operation) {
+        while (true) {
+            val status = roomService.status()
+                .response
+                .find { it.id == operation.id } ?: break
+
+            if (status.progress == 100 || status.finished || !status.error.isNullOrEmpty()) break
+            delay(1000)
+        }
+    }
+
+    suspend fun duplicate(roomId: String): Flow<Result<Int>> {
+        return flow {
+            val response = roomService.duplicate(RequestBatchOperation().apply { folderIds = listOf(roomId) })
+            for (operation in response.response) {
+                if (operation.finished) continue
+                while (true) {
+                    val status = roomService.status().response.find { it.id == operation.id }
+                    if (status == null || status.finished || status.progress >= 100) break
+                    emit(status.progress)
+                    delay(1000)
+                }
+            }
+            emit(100)
+        }.asResult()
+    }
+
+    fun muteRoomNotifications(roomId: String, muted: Boolean): Flow<Result<List<String>>> {
+        return flow<List<String>> {
+            if (!roomId.isDigitsOnly()) throw IllegalArgumentException()
+            val rooms = roomService.muteNotifications(
+                RequestRoomNotifications(
+                    roomsId = roomId.toInt(),
+                    mute = muted
+                )
+            ).response.disabledRooms
+            emit(rooms)
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
     }
 }

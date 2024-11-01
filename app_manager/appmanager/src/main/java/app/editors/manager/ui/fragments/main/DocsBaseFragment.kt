@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
@@ -13,7 +14,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
@@ -27,20 +27,19 @@ import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Security
 import app.editors.manager.R
-import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.ActionMenuAdapter
 import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.managers.tools.ActionMenuItemsFactory
-import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.mvp.views.base.BaseViewExt
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
-import app.editors.manager.ui.activities.main.OperationActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.diffutilscallback.EntityDiffUtilsCallback
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
@@ -50,6 +49,7 @@ import app.editors.manager.ui.dialogs.MoveCopyDialog.DialogButtonOnClick
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextState
+import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -58,13 +58,13 @@ import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.CreateDocument
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.EditorsType
-import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.StringUtils.getHelpUrl
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
+import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.managers.utils.getSendFileIntent
 import lib.toolkit.base.ui.adapters.BaseAdapter
 import lib.toolkit.base.ui.adapters.BaseAdapter.OnItemContextListener
@@ -113,7 +113,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     private var selectItem: MenuItem? = null
 
     protected abstract val presenter: DocsBasePresenter<out DocsBaseView>
-    protected abstract val isWebDav: Boolean?
 
     private val lifecycleEventObserver = LifecycleEventObserver { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
@@ -132,6 +131,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(lifecycleEventObserver)
+        isGridView = presenter.preferenceTool.isGridView
         setHasOptionsMenu(true)
     }
 
@@ -144,18 +144,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         super.onDestroyView()
         actionBottomDialog = null
         moveCopyDialog = null
-    }
-
-    protected fun showOperationActivity(
-        operation: OperationsState.OperationType,
-        explorer: Explorer,
-        callback: (result: ActivityResult) -> Unit
-    ) {
-        LaunchActivityForResult(
-            requireActivity().activityResultRegistry,
-            callback,
-            OperationActivity.getIntent(requireContext(), operation, explorer)
-        ).show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -252,10 +240,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * Views callbacks
      * */
 
-    override fun onItemContextClick(position: Int) {
+    override fun onItemContextClick(position: Int, icon: Bitmap?) {
         val item = explorerAdapter?.getItem(position) as? Item
         if (item != null && !isFastClick) {
             val state = ExplorerContextState(
+                headerIcon = icon,
                 item = item,
                 headerInfo = app.editors.manager.managers.utils.StringUtils.getCloudItemInfo(
                     context = requireContext(),
@@ -277,8 +266,14 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onItemClick(view: View, position: Int) {
+        val item = explorerAdapter?.getItem(position) as Item
+
+        if (item is CloudFile && presenter.pickerMode == PickerMode.Folders) {
+            return
+        }
+
         if (!isFastClick || explorerAdapter?.isSelectMode == true) {
-            presenter.onItemClick(explorerAdapter?.getItem(position) as Item, position)
+            presenter.onItemClick(item, position)
         }
     }
 
@@ -681,11 +676,28 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onBatchMoveCopy(operation: OperationsState.OperationType, explorer: Explorer) {
-        showOperationActivity(operation, explorer) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
+        OperationDialogFragment.show(
+            activity = requireActivity(),
+            operation = operation,
+            explorer = explorer
+        ) { bundle ->
+            if (OperationDialogFragment.KEY_OPERATION_RESULT_COMPLETE in bundle) {
                 showSnackBar(R.string.operation_complete_message)
+                view?.postDelayed(::onRefresh, 500)
             }
-            onRefresh()
+        }
+    }
+
+    override fun onPickCloudFile(destFolderId: String) {
+        OperationDialogFragment.show(
+            activity = requireActivity(),
+            destFolderId = destFolderId,
+            explorer = Explorer()
+        ) { bundle ->
+            if (OperationDialogFragment.KEY_OPERATION_RESULT_COMPLETE in bundle) {
+                showSnackBar(R.string.operation_complete_message)
+                view?.postDelayed(::onRefresh, 500)
+            }
         }
     }
 
@@ -704,8 +716,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         explorerAdapter?.notifyItemChanged(position)
     }
 
-    override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
+    override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean, roomType: Int?) {
         actionBottomDialog?.let { dialog ->
+            dialog.roomType = roomType
             dialog.onClickListener = this
             dialog.isThirdParty = isThirdParty
             dialog.isDocs = isDocs
@@ -728,8 +741,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         presenter.createDownloadFile()
     }
 
-    override fun onFileUploadPermission() {
-        showMultipleFilePickerActivity { uris ->
+    override fun onFileUploadPermission(extension: String?) {
+        showMultipleFilePickerActivity(extension) { uris ->
             if (!uris.isNullOrEmpty()) {
                 presenter.upload(null, uris)
             }
@@ -783,6 +796,16 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 title!!, question, getString(R.string.dialogs_question_accept_yes),
                 getString(R.string.dialogs_question_accept_no), tag!!
             )
+        }
+    }
+
+    override fun onDialogWarning(title: String, message: String, tag: String?) {
+        if (isActivePage) {
+            getInfoDialog(
+                title = title,
+                info = message,
+                cancelTitle = getString(lib.toolkit.base.R.string.common_ok)
+            )?.show(requireActivity().supportFragmentManager)
         }
     }
 
@@ -844,29 +867,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onUploadFileProgress(progress: Int, id: String) {
-        val uploadFile = explorerAdapter?.getUploadFileById(id)
-        uploadFile?.let { file ->
-            file.progress = progress
-            explorerAdapter?.updateItem(file)
-        }
-    }
-
-    override fun onDeleteUploadFile(id: String) {
-        explorerAdapter?.removeUploadItemById(id)
-    }
-
-    override fun onRemoveUploadHead() {
-        explorerAdapter?.removeHeader(getApp().getString(R.string.upload_manager_progress_title))
-    }
-
-    override fun onAddUploadsFile(uploadFiles: List<Entity>) {
-        onRemoveUploadHead()
-        explorerAdapter?.addItemsAtTop(uploadFiles)
-        explorerAdapter?.addItemAtTop(Header(getString(R.string.upload_manager_progress_title)))
-        recyclerView?.scrollToPosition(0)
-    }
-
     override fun continueClick(tag: String?, action: String?) {
         var operationType = ApiContract.Operation.OVERWRITE
         tag?.let {
@@ -892,6 +892,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         presenter.interruptFileSending()
     }
 
+    override fun onSetGridView(isGrid: Boolean) {
+        explorerAdapter?.isGridView = isGrid
+        switchGridView(isGrid)
+    }
+
     /*
      * On pager scroll callback
      * */
@@ -915,7 +920,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
      * */
     private fun init() {
         setDialogs()
-        explorerAdapter = ExplorerAdapter(TypeFactoryExplorer.factory).apply {
+        explorerAdapter = ExplorerAdapter(TypeFactoryExplorer.factory, presenter.preferenceTool.isGridView).apply {
             setOnItemContextListener(this@DocsBaseFragment)
             setOnItemClickListener(this@DocsBaseFragment)
             setOnItemLongClickListener(this@DocsBaseFragment)
@@ -1075,11 +1080,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             }
 
             StringUtils.Extension.SHEET -> {
-                showEditors(null, EditorsType.CELLS, info)
+                showEditors(null, EditorsType.CELLS, info, false)
             }
 
             StringUtils.Extension.PRESENTATION -> {
-                showEditors(null, EditorsType.PRESENTATION, info)
+                showEditors(null, EditorsType.PRESENTATION, info, false)
             }
 
             StringUtils.Extension.PDF -> {
@@ -1164,19 +1169,43 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     protected open fun showActionBarMenu() {
+        val section = presenter.getSectionType()
+        val isRoom = ApiContract.SectionType.isRoom(section) || ApiContract.SectionType.isArchive(section)
+
         ActionBarMenu(
             context = requireContext(),
             adapter = ActionMenuAdapter(actionMenuClickListener),
-            items = ActionMenuItemsFactory.getDocsItems(
-                section = presenter.getSectionType(),
-                selected = presenter.isSelectionMode,
-                allSelected = presenter.isSelectedAll,
-                sortBy = presenter.preferenceTool.sortBy,
-                asc = presenter.preferenceTool.sortOrder.equals(
-                    ApiContract.Parameters.VAL_SORT_ORDER_ASC,
-                    ignoreCase = true
+            items = if (isRoom) {
+                ActionMenuItemsFactory.getRoomItems(
+                    section = presenter.getSectionType(),
+                    provider = context?.accountOnline?.portal?.provider,
+                    root = presenter.isRoot,
+                    selected = presenter.isSelectionMode,
+                    allSelected = presenter.isSelectedAll,
+                    sortBy = presenter.preferenceTool.sortBy,
+                    empty = presenter.isListEmpty(),
+                    currentRoom = presenter.isRoomFolder(),
+                    security = presenter.roomClicked?.security ?: Security(),
+                    isGridView = presenter.preferenceTool.isGridView,
+                    asc = presenter.preferenceTool.sortOrder.equals(
+                        ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                        ignoreCase = true
+                    )
                 )
-            )
+            } else {
+                ActionMenuItemsFactory.getDocsItems(
+                    section = presenter.getSectionType(),
+                    provider = context?.accountOnline?.portal?.provider,
+                    selected = presenter.isSelectionMode,
+                    allSelected = presenter.isSelectedAll,
+                    sortBy = presenter.preferenceTool.sortBy,
+                    isGridView = presenter.preferenceTool.isGridView,
+                    asc = presenter.preferenceTool.sortOrder.equals(
+                        ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                        ignoreCase = true
+                    )
+                )
+            }
         ).show(requireActivity().window.decorView)
     }
 
@@ -1186,6 +1215,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         when (item) {
             is ActionMenuItem.Sort -> presenter.sortBy(item.sortValue)
             is ActionMenuItem.Operation -> presenter.moveCopySelected(item.value)
+            is ActionMenuItem.GridView -> presenter.setGridView(true)
+            is ActionMenuItem.ListView -> presenter.setGridView(false)
             ActionMenuItem.Select -> presenter.setSelection(true)
             ActionMenuItem.SelectAll -> presenter.setSelectionAll()
             ActionMenuItem.Deselect -> presenter.deselectAll()

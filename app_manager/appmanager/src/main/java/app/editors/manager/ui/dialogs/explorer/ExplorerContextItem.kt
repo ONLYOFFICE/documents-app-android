@@ -1,8 +1,9 @@
 package app.editors.manager.ui.dialogs.explorer
 
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
-import app.editors.manager.managers.utils.ManagerUiUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 
 sealed class ExplorerContextItem(
@@ -13,21 +14,27 @@ sealed class ExplorerContextItem(
     fun get(state: ExplorerContextState): ExplorerContextItem? = takeIf { state.visible(this) }
 
     class Header(val state: ExplorerContextState) : ExplorerContextItem(
-        icon = ManagerUiUtils.getIcon(state.item),
+        icon = -1,
         title = -1
     ), ExplorerContextBlockOrder.Header {
         var info = state.headerInfo ?: TimeUtils.formatDate(state.item.updated)
     }
 
     class Edit(state: ExplorerContextState) : ExplorerContextItem(
-        icon = R.drawable.ic_list_context_edit,
+        icon = getIcon(state.item),
         title = getTitle(state)
     ), ExplorerContextBlockOrder.Common {
 
         companion object {
 
+            fun getIcon(item: Item) = when {
+                (item as? CloudFile)?.isPdfForm == true -> R.drawable.ic_access_fill_form
+                else -> R.drawable.ic_list_context_edit
+            }
+
             fun getTitle(state: ExplorerContextState) = when {
                 state.section.isRoom && state.isRoot -> R.string.list_context_edit_room
+                (state.item as? CloudFile)?.isPdfForm == true -> R.string.list_context_fill
                 else -> R.string.list_context_edit
             }
         }
@@ -113,6 +120,32 @@ sealed class ExplorerContextItem(
         icon = R.drawable.ic_list_context_copy,
         title = R.string.list_context_create_copy
     ), ExplorerContextBlockOrder.Operation
+
+    object Duplicate : ExplorerContextItem(
+        icon = R.drawable.ic_list_context_duplicate,
+        title = R.string.list_context_duplicate
+    ), ExplorerContextBlockOrder.Common
+
+    class Notifications(val muted: Boolean) : ExplorerContextItem(
+        icon = getIcon(muted),
+        title = getTitle(muted)
+    ), ExplorerContextBlockOrder.Common {
+
+        companion object {
+
+            fun getTitle(muted: Boolean) = if (muted) {
+                R.string.list_context_notification_enable
+            } else {
+                R.string.list_context_notification_disable
+            }
+
+            fun getIcon(muted: Boolean) = if (muted) {
+                R.drawable.ic_notification_on
+            } else {
+                R.drawable.ic_notification_off
+            }
+        }
+    }
 
     object Upload : ExplorerContextItem(
         icon = R.drawable.ic_list_action_upload,

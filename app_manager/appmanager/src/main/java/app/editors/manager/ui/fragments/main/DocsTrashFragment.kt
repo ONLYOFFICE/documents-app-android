@@ -23,14 +23,6 @@ class DocsTrashFragment : DocsCloudFragment() {
         initViews()
     }
 
-    override fun onItemClick(view: View, position: Int) {
-        if (presenter.isSelectionMode) {
-            super.onItemClick(view, position)
-        } else {
-            onItemContextClick(position)
-        }
-    }
-
     override fun setMenuMainEnabled(isEnabled: Boolean) {
         super.setMenuMainEnabled(isEnabled)
         searchItem?.isVisible = isEnabled
@@ -49,6 +41,7 @@ class DocsTrashFragment : DocsCloudFragment() {
             )
             cloudPresenter.checkBackStack()
         }
+        explorerAdapter?.isTrash = !isArchive
     }
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
@@ -125,13 +118,13 @@ class DocsTrashFragment : DocsCloudFragment() {
                 }
             }
 
-            ActionMenuItem.Delete -> presenter.delete()
+            ActionMenuItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
             else -> super.actionMenuClickListener(item)
         }
     }
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {
-        if (type == PlaceholderViews.Type.EMPTY) {
+        if (type == PlaceholderViews.Type.EMPTY && isRoot) {
             super.onPlaceholder(if (isArchive) PlaceholderViews.Type.EMPTY_ARCHIVE else PlaceholderViews.Type.EMPTY_TRASH)
         } else {
             super.onPlaceholder(type)
@@ -145,7 +138,7 @@ class DocsTrashFragment : DocsCloudFragment() {
             title = resources.getQuantityString(R.plurals.rooms_restore_title, count),
             description = resources.getQuantityString(R.plurals.rooms_restore_desc, count),
             acceptTitle = getString(R.string.trash_snackbar_move_button),
-            acceptListener = { cloudPresenter.archiveRoom(false) }
+            acceptListener = { cloudPresenter.archiveRooms(false) }
         )
     }
 

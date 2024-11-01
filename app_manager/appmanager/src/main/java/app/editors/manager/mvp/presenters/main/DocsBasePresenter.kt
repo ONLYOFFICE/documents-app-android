@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Handler
@@ -44,7 +45,6 @@ import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.models.filter.joinToString
-import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
@@ -59,6 +59,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Job
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
@@ -76,9 +77,34 @@ import java.util.TreeMap
 import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
 
+sealed class PickerMode {
+
+    data object None : PickerMode()
+
+    data object Folders : PickerMode()
+
+    sealed class Files(
+        open val selectedIds: MutableList<String> = mutableListOf(),
+        open val destFolderId: String
+    ) : PickerMode() {
+
+        data class PDFForm(override val destFolderId: String) : Files(destFolderId = destFolderId)
+
+        data class Any(override val destFolderId: String) : Files(destFolderId = destFolderId)
+
+        fun selectId(id: String) {
+            if (id in selectedIds) {
+                selectedIds.remove(id)
+            } else {
+                selectedIds.add(id)
+            }
+        }
+    }
+}
 
 @InjectViewState
-abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
+abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Inject
     lateinit var context: Context
@@ -109,20 +135,24 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     protected var modelExplorerStack: ModelExplorerStack = ModelExplorerStack()
     protected var filteringValue: String = ""
     private var placeholderViewType: PlaceholderViews.Type = PlaceholderViews.Type.NONE
-    protected var destFolderId: String? = null
     protected var operationStack: ExplorerStackMap? = null
     private var uploadUri: Uri? = null
     private var sendingFile: File? = null
+
+    var destFolderId: String? = null
+        protected set
 
     /**
      * Modes
      * */
 
-    var isFoldersMode = false
+    var pickerMode: PickerMode = PickerMode.None
+
     var isTrashMode = false
-    var isFilteringMode = false
-        protected set
+
     var isSelectionMode = false
+
+    var isFilteringMode = false
         protected set
 
     /**
@@ -167,6 +197,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
      * */
 
     protected var disposable = CompositeDisposable()
+    protected var requestJob: Job? = null
     protected var batchDisposable: Disposable? = null
     protected var uploadDisposable: Disposable? = null
     protected var downloadDisposable: Disposable? = null
@@ -189,8 +220,22 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     val currentFolder: Current?
         get() = modelExplorerStack.last()?.current
 
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+        when (key) {
+            PreferenceTool.KEY_IS_GRID_VIEW -> {
+                viewState.onSetGridView(preferenceTool.isGridView)
+            }
+        }
+    }
+
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        preferenceTool.registerChangeListener(this)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        preferenceTool.unregisterChangeListener(this)
         disposable.clear()
         disposable.dispose()
         fileProvider = null
@@ -425,13 +470,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                 fileProvider?.let { provider ->
                     disposable.add(
                         getFileInfo(provider, itemClicked as CloudFile).subscribe({ response ->
-                            if (response.fileStatus.isNotEmpty()) {
-                                val statusMask = response.fileStatus.toInt() and ApiContract.FileStatus.IS_EDITING
-                                if (statusMask != 0) {
-                                    onFileDeleteProtected()
-                                } else {
-                                    deleteItems()
-                                }
+                            if (response.isEditing) {
+                                onFileDeleteProtected()
                             } else {
                                 deleteItems()
                             }
@@ -459,10 +499,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
                     response.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap { file: CloudFile ->
-                            val fileStatus = if (file.fileStatus.isEmpty())
-                                ApiContract.FileStatus.NONE else file.fileStatus.toInt()
-                            val statusMask = fileStatus and ApiContract.FileStatus.IS_EDITING
-                            if (statusMask != 0) {
+                            if (file.isEditing) {
                                 Observable.just(true)
                             } else {
                                 Observable.just(false)
@@ -743,8 +780,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
             if (modelExplorerStack.last()?.itemsCount == 0) {
                 refresh()
-            } else {
-                viewState.onAddUploadsFile(uploadFiles)
             }
         }
     }
@@ -840,10 +875,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     private fun cancelGetRequests() {
         disposable.clear()
+        requestJob?.cancel()
     }
 
     fun cancelSingleOperationsRequests() {
         disposable.clear()
+        requestJob?.cancel()
     }
 
     fun resetDatesHeaders() {
@@ -928,112 +965,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     protected fun getListWithHeaders(explorer: Explorer?, isResetHeaders: Boolean): List<Entity> {
         if (explorer == null) return emptyList()
-        val entityList: MutableList<Entity> = mutableListOf()
-
-        // Reset headers, when new list
-        if (isResetHeaders) {
-            resetDatesHeaders()
-        }
-
-        UploadWork.getUploadFiles(modelExplorerStack.currentId)?.let { uploadFiles ->
-            if (uploadFiles.size != 0) {
-                entityList.add(Header(context.getString(R.string.upload_manager_progress_title)))
-                entityList.addAll(uploadFiles)
-            }
-        }
-
-        // Set folders headers
-        if (explorer.folders.isNotEmpty()) {
-            if (!isFolderHeader) {
-                isFolderHeader = true
-
-                val header = if (isRoot && currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM) {
-                    Header(context.getString(R.string.list_rooms_title))
-                } else {
-                    Header(context.getString(R.string.list_headers_folder))
-                }
-                entityList.add(header)
-            }
-            entityList.addAll(explorer.folders)
-        }
-
-        // Set files headers
-        if (explorer.files.isNotEmpty() && !isFoldersMode) {
-            val sortBy = preferenceTool.sortBy
-            val sortOrder = preferenceTool.sortOrder
-            val fileList = explorer.files
-
-            if (ApiContract.Parameters.VAL_SORT_BY_UPDATED == sortBy) { // For date sort add times headers
-                val todayMs = TimeUtils.todayMs
-                val yesterdayMs = TimeUtils.yesterdayMs
-                val weekMs = TimeUtils.weekMs
-                val monthMs = TimeUtils.monthMs
-                val yearMs = TimeUtils.yearMs
-                var itemMs: Long
-
-                // Set time headers
-                fileList.sortWith { o1: CloudFile, o2: CloudFile -> o1.updated.compareTo(o2.updated) }
-
-                if (sortOrder == ApiContract.Parameters.VAL_SORT_ORDER_DESC) {
-                    fileList.reverse()
-                }
-
-                for (item in fileList) {
-                    itemMs = item.updated.time
-
-                    // Check created property
-                    if (item.isJustCreated) {
-                        if (!isCreatedHeader) {
-                            isCreatedHeader = true
-                            entityList.add(Header(context.getString(R.string.list_headers_created)))
-                        }
-                    } else {
-
-                        // Check time intervals
-                        if (itemMs >= todayMs) {
-                            if (!isTodayHeader) {
-                                isTodayHeader = true
-                                entityList.add(Header(context.getString(R.string.list_headers_today)))
-                            }
-                        } else if (itemMs in (yesterdayMs + 1) until todayMs) {
-                            if (!isYesterdayHeader) {
-                                isYesterdayHeader = true
-                                entityList.add(Header(context.getString(R.string.list_headers_yesterday)))
-                            }
-                        } else if (itemMs in (weekMs + 1) until yesterdayMs) {
-                            if (!isWeekHeader) {
-                                isWeekHeader = true
-                                entityList.add(Header(context.getString(R.string.list_headers_week)))
-                            }
-                        } else if (itemMs in (monthMs + 1) until weekMs) {
-                            if (!isMonthHeader) {
-                                isMonthHeader = true
-                                entityList.add(Header(context.getString(R.string.list_headers_month)))
-                            }
-                        } else if (itemMs in (yearMs + 1) until monthMs) {
-                            if (!isYearHeader) {
-                                isYearHeader = true
-                                entityList.add(Header(context.getString(R.string.list_headers_year)))
-                            }
-                        } else if (itemMs < yearMs) {
-                            if (!isMoreYearHeader) {
-                                isMoreYearHeader = true
-                                entityList.add(Header(context.getString(R.string.list_headers_more_year)))
-                            }
-                        }
-                    }
-                    entityList.add(item)
-                }
-            } else {
-                if (!isFileHeader) {
-                    isFileHeader = true
-                    entityList.add(Header(context.getString(R.string.list_headers_files)))
-                }
-                entityList.addAll(fileList)
-            }
-        }
-
-        val placeholderType = if (entityList.isEmpty()) {
+        val entities = explorer.folders + explorer.files
+        val placeholderType = if (entities.isEmpty()) {
             if (isFilteringMode) {
                 PlaceholderViews.Type.SEARCH
             } else {
@@ -1053,7 +986,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
         setPlaceholderType(placeholderType)
 
-        return entityList
+        return entities
     }
 
     /**
@@ -1098,7 +1031,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     open fun getBackStack(): Boolean {
         cancelGetRequests()
         when {
-            isSelectionMode -> {
+            isSelectionMode && pickerMode !is PickerMode.Files -> {
                 setSelection(false)
                 updateViewsState()
                 return true
@@ -1256,9 +1189,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
         } ?: Explorer()
     }
 
-    open fun openFolder(id: String?, position: Int) {
+    open fun openFolder(id: String?, position: Int, roomType: Int? = null) {
         modelExplorerStack.listPosition = position
         viewState.onSwipeEnable(true)
+        roomType?.let { roomClicked = CloudFolder().apply {
+            this.id = id ?: ""
+            this.roomType = it
+        } }
         getItemsById(id)
     }
 
@@ -1278,19 +1215,23 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     protected fun getIconContext(ext: String): Int {
         return when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
-            StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet
-            StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
-            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_type_image
-            StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.PDF -> R.drawable.ic_type_pdf
-            StringUtils.Extension.VIDEO_SUPPORT -> R.drawable.ic_type_video
+            StringUtils.Extension.DOC -> R.drawable.ic_type_document_row
+            StringUtils.Extension.SHEET -> R.drawable.ic_spreadsheet_secure_row
+            StringUtils.Extension.PRESENTATION -> R.drawable.ic_presentation_secure_row
+            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_type_picture_row
+            StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.PDF -> R.drawable.ic_type_pdf_row
+            StringUtils.Extension.VIDEO_SUPPORT -> R.drawable.ic_type_video_row
             StringUtils.Extension.UNKNOWN -> R.drawable.ic_type_file
             else -> R.drawable.ic_type_folder
         }
     }
 
-    fun uploadPermission() {
-        viewState.onFileUploadPermission()
+    fun uploadPermission(extension: String? = null) {
+        viewState.onFileUploadPermission(extension)
+    }
+
+    fun showFileChooserFragment() {
+        viewState.onPickCloudFile(currentFolder?.id)
     }
 
     val itemTitle: String
@@ -1354,7 +1295,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     }
 
     val isRoot: Boolean
-        get() = modelExplorerStack.isRoot
+        get() = if (ApiContract.SectionType.isRoom(modelExplorerStack.rootFolderType)) {
+            modelExplorerStack.last()?.pathParts.orEmpty().size < 2
+        } else {
+            modelExplorerStack.isRoot
+        }
 
     private val isBackStackEmpty: Boolean
         get() = modelExplorerStack.isStackEmpty
@@ -1376,9 +1321,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
 
     protected fun setPlaceholderType(placeholderType: PlaceholderViews.Type) {
         this.placeholderViewType = placeholderType
-        if (isFoldersMode && placeholderType == PlaceholderViews.Type.EMPTY) {
-            this.placeholderViewType = PlaceholderViews.Type.SUBFOLDER
-        }
         viewState.onPlaceholder(this.placeholderViewType)
     }
 
@@ -1520,13 +1462,26 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
             when (responseCode) {
                 ApiContract.HttpCodes.CLIENT_UNAUTHORIZED -> viewState.onError(context.getString(R.string.errors_client_unauthorized))
                 ApiContract.HttpCodes.CLIENT_FORBIDDEN -> {
+                    val message = errorMessage
+                    if (message == null) {
+                        viewState.onError(context.getString(R.string.errors_client_forbidden))
+                        return
+                    }
+
                     when {
-                        errorMessage?.contains(ApiContract.Errors.DISK_SPACE_QUOTA) == true -> {
+                        ApiContract.Errors.DISK_SPACE_QUOTA in message -> {
                             viewState.onError(errorMessage)
                         }
-                        errorMessage?.contains(ApiContract.Errors.STORAGE_NOT_AVAILABLE) == true -> {
+                        ApiContract.Errors.STORAGE_NOT_AVAILABLE in message -> {
                             viewState.onError(context.getString(R.string.room_storage_not_availabale))
                             setPlaceholderType(PlaceholderViews.Type.NONE)
+                        }
+                        ApiContract.Errors.PINNED_ROOM_LIMIT in message -> {
+                            viewState.onDialogWarning(
+                                context.getString(R.string.dialogs_warning_title),
+                                context.getString(R.string.dialogs_warning_pinned_room_limit),
+                                null
+                            )
                         }
                         else -> {
                             viewState.onError(context.getString(R.string.errors_client_forbidden))
@@ -1743,7 +1698,16 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>() {
     fun isRoomFolder(): Boolean {
         return modelExplorerStack.last()?.current?.id == roomClicked?.id
     }
-    
+
+    fun setDestFolder(id: String) {
+        destFolderId = id
+    }
+
+
+    fun setGridView(isGrid: Boolean) {
+        preferenceTool.isGridView = isGrid
+    }
+
     abstract fun getNextList()
 
     abstract fun getFileInfo()

@@ -4,20 +4,34 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import com.bumptech.glide.Glide
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.Credentials
+import java.net.URI
 
 
 object GlideUtils {
@@ -32,16 +46,27 @@ object GlideUtils {
         )
     }
 
-    fun getCorrectLoad(url: String?, token: String): Any {
+    fun getCorrectLoad(url: String?, token: String, portal: String? = null): Any {
+        if (url.isNullOrEmpty()) {
+            return Any()
+        }
+
+        val urlWithPortal = if (url.startsWith("http")) url else portal.orEmpty() + url
+
         return GlideUrl(
-            url, LazyHeaders.Builder()
+            URI(urlWithPortal).normalize().toString(), // remove duplicated slashes
+            LazyHeaders.Builder()
                 .addHeader(ApiContract.HEADER_AUTHORIZATION, token)
                 .build()
         )
     }
 
     fun getWebDavUrl(webUrl: String, account: CloudAccount, password: String): Any {
-        return getWebDavLoad(account.portal.scheme.value + account.portal.url + webUrl, account, password)
+        return getWebDavLoad(
+            account.portal.scheme.value + account.portal.url + webUrl,
+            account,
+            password
+        )
     }
 
     val avatarOptions: RequestOptions
@@ -75,6 +100,7 @@ object GlideUtils {
             }
         }
 
+
     /**
      * Set Drawable avatar into ImageView
      * */
@@ -86,17 +112,41 @@ object GlideUtils {
             .into(this)
     }
 
-    fun ImageView.setRoomLogo(logo: String, placeholder: Int) {
+    fun ImageView.setRoomLogo(logo: String, isGrid: Boolean, onLoadError: () -> Unit) {
         context.accountOnline?.let { account ->
             val token = checkNotNull(AccountUtils.getToken(context, account.accountName))
             val url = getCorrectLoad(account.portal.scheme.value + account.portal.url + logo, token)
+
+            val cornerRadius = if (isGrid) {
+                context.resources.getDimension(lib.toolkit.base.R.dimen.grid_card_view_corner_radius)
+            } else {
+                context.resources.getDimension(lib.toolkit.base.R.dimen.default_corner_radius_medium)
+            }
+
             Glide.with(context)
                 .load(url)
-                .apply(
-                    RequestOptions()
-                        .timeout(30 * 1000)
-                        .error(placeholder)
-                )
+                .apply(RequestOptions().timeout(30 * 1000))
+                .transform(RoundedCorners(cornerRadius.toInt()))
+                .addListener(object : RequestListener<Drawable> {
+
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        onLoadError.invoke()
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        model: Any,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean = false
+                })
                 .into(this)
         }
     }
@@ -109,7 +159,10 @@ fun ImageView.setAvatarFromUrl(avatar: String) {
     val placeholderDrawable = R.drawable.drawable_list_share_image_item_user_placeholder
     context.accountOnline?.let { account ->
         val token = checkNotNull(AccountUtils.getToken(context, account.accountName))
-        val url = GlideUtils.getCorrectLoad(account.portal.scheme.value + account.portal.url + avatar, token)
+        val url = GlideUtils.getCorrectLoad(
+            account.portal.scheme.value + account.portal.url + avatar,
+            token
+        )
         Glide.with(context)
             .load(url)
             .apply(
@@ -122,4 +175,31 @@ fun ImageView.setAvatarFromUrl(avatar: String) {
             )
             .into(this)
     }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun GlideAvatarImage(modifier: Modifier = Modifier, url: String) {
+    val context = LocalContext.current
+    val token: String?
+    val account: CloudAccount?
+
+    if (!LocalView.current.isInEditMode) {
+        account = context.accountOnline
+        token = AccountUtils.getToken(context, account?.accountName.orEmpty())
+    } else {
+        account = null
+        token = null
+    }
+
+    GlideImage(
+        modifier = modifier,
+        model = GlideUtils.getCorrectLoad(
+            url = if (StringUtils.hasScheme(url)) url else "${account?.portal?.urlWithScheme}/$url",
+            token = token.orEmpty()
+        ),
+        contentDescription = null,
+        loading = placeholder(R.drawable.ic_account_placeholder),
+        failure = placeholder(R.drawable.ic_account_placeholder),
+    )
 }

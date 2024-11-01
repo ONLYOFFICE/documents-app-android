@@ -30,16 +30,30 @@
         android:fitsSystemWindows="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        style="@style/Widget.Common.BottomNavigationView"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_gravity="bottom"
-        app:labelVisibilityMode="labeled"
-        app:layout_behavior="app.editors.manager.ui.views.behaviors.BottomNavigationBehavior"
+        android:layout_height="wrap_content"
         app:layout_insetEdge="bottom"
-        app:menu="@menu/bottom_navigation" />
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:background="@drawable/drawable_bottom_nav_view_shadow" />
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_navigation"
+            style="@style/Widget.Common.BottomNavigationView"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:itemPaddingBottom="12dp"
+            app:itemPaddingTop="12dp"
+            app:labelVisibilityMode="labeled"
+            app:layout_behavior="app.editors.manager.ui.views.behaviors.BottomNavigationBehavior"
+            app:menu="@menu/bottom_navigation" />
+
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/app_floating_action_button"

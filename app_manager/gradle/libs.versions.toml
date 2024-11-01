@@ -1,0 +1,201 @@
+[versions]
+compileSdk = "34"
+minSdk = "26"
+targetSdk = "34"
+ndk = "21.3.6528147"
+
+#kotlin
+kotlin = "1.9.24"
+kotlinKsp = "1.9.24-1.0.20"
+kotlinSerialization = "1.6.3"
+coroutines = "1.8.1"
+
+#android
+androidx = "1.7.0"
+composeActivity = "1.9.0"
+cardView = "1.0.0"
+recyclerView = "1.3.2"
+recyclerViewSelection = "1.1.0"
+constraint = "2.1.4"
+ktx = "1.13.1"
+fragmentKtx = "1.8.1"
+biometric = "1.1.0"
+androidWorkManager = "2.9.0"
+androidDocumentFile = "1.0.1"
+
+#compose
+composeMaterial = "1.6.8"
+composeMaterial3 = "1.3.0"
+composeUi = "1.6.8"
+composeUiTooling = "1.6.8"
+composeUiToolingPreview = "1.6.8"
+composeNavigation = "2.7.7"
+composeCompiler = "1.5.14"
+compose = "1.6.7"
+
+#dagger
+dagger = "2.48.1"
+
+#room
+room = "2.5.1"
+
+#moxy
+moxy = "2.2.2"
+
+#koin
+koin = "3.6.0-wasm-alpha2"
+
+#firebase
+firebaseCore = "21.1.1"
+firebaseConfig = "22.0.0"
+firebaseMessaging = "24.0.0"
+firebaseCrashlytics = "19.0.2"
+
+#livedata
+lifecycle = "2.8.3"
+
+#google
+playServieAuth = "21.2.0"
+playReview = "2.0.1"
+material = "1.12.0"
+gson = "2.10.1"
+safetynet = "18.1.0"
+
+jackson = "2.16.1"
+
+rxjava = "2.1.1"
+
+retrofit = "2.9.0"
+retrofitKtSerialization = "1.0.0"
+
+firebaseCrashlyticsGradle = "3.0.2"
+googleServices = "4.4.2"
+gradle = "8.5.0"
+kotlinGradlePlugin = "1.9.24"
+
+customview = "1.2.0-alpha02"
+customviewPoolingcontainer = "1.0.0"
+
+#other
+phoneNumber = "8.13.28"
+facebookLogin = "16.2.0"
+pageIndicator = "v.1.0.3"
+glide = "4.16.0"
+glideKsp = "4.12.0"
+glideOkHttpIntegration = "4.0.0"
+glideCompose = "1.0.0-beta01"
+photoView = "2.3.0"
+pdfView = "3.1.0-beta.3"
+colorPicker = "2.3.0"
+dropboxSdk = "5.2.0"
+
+[libraries]
+appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx" }
+appcompat-resources = { module = "androidx.appcompat:appcompat-resources", version.ref = "androidx" }
+compose-activity = { module = "androidx.activity:activity-compose", version.ref = "composeActivity" }
+recyclerView = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerView" }
+recyclerViewSelection = { module = "androidx.recyclerview:recyclerview-selection", version.ref = "recyclerViewSelection" }
+cardView = { module = "androidx.cardview:cardview", version.ref = "cardView" }
+constraint = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraint" }
+ktx = { module = "androidx.core:core-ktx", version.ref = "ktx" }
+fragmentKtx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
+biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
+androidWorkManager = { module = "androidx.work:work-runtime-ktx", version.ref = "androidWorkManager" }
+androidDocumentFile = { module = "androidx.documentfile:documentfile", version.ref = "androidDocumentFile" }
+
+#compose
+compose-ui = { module = "androidx.compose.ui:ui", version.ref = "composeUi" }
+compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "composeUiTooling" }
+compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "composeUiToolingPreview" }
+compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial3" }
+compose-material = { module = "androidx.compose.material:material", version.ref = "composeMaterial" }
+compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
+compose-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "compose" }
+
+#google
+google-playServiceAuth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServieAuth" }
+google-playReview = { module = "com.google.android.play:review", version.ref = "playReview" }
+google-material = { module = "com.google.android.material:material", version.ref = "material" }
+google-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+google-safetynet = { module = "com.google.android.gms:play-services-safetynet", version.ref = "safetynet" }
+
+#kotlin
+kotlin-core = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinSerialization" }
+
+#dagger
+dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
+
+#room
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+
+#moxy
+moxy = { module = "com.github.moxy-community:moxy-androidx", version.ref = "moxy" }
+moxy-material = { module = "com.github.moxy-community:moxy-material", version.ref = "moxy" }
+moxy-compiler = { module = "com.github.moxy-community:moxy-compiler", version.ref = "moxy" }
+moxy-ktx ={ module = "com.github.moxy-community:moxy-ktx", version.ref = "moxy" }
+
+#koin
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+
+#firebase
+firebase-core = { module = "com.google.firebase:firebase-core", version.ref = "firebaseCore" }
+firebase-config = { module = "com.google.firebase:firebase-config", version.ref = "firebaseConfig" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebaseCrashlytics" }
+
+#retrofit
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit"}
+retrofit-xml = { module = "com.squareup.retrofit2:converter-simplexml", version.ref = "retrofit"}
+retrofit-rx = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "retrofit"}
+retrofit-kotlin-serialization = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofitKtSerialization" }
+
+#jacson
+jackson = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
+jackson-annotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+
+#rxjava
+rx-java = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "rxjava" }
+rx-relay = { module = "com.jakewharton.rxrelay2:rxrelay", version.ref = "rxjava" }
+
+#lifecycle
+lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
+
+customview-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version.ref = "customviewPoolingcontainer" }
+customview = { module = "androidx.customview:customview", version.ref = "customview" }
+
+firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsGradle" }
+google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
+gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
+kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlinGradlePlugin" }
+
+#other
+phoneNumber = { module = "io.michaelrocks:libphonenumber-android", version.ref = "phoneNumber" }
+facebookLogin = { module = "com.facebook.android:facebook-login", version.ref = "facebookLogin" }
+pageIndicator = { module = "com.github.romandanylyk:pageindicatorview", version.ref = "pageIndicator" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+glideKsp = { module = "com.github.bumptech.glide:ksp", version.ref = "glideKsp" }
+glideOkhttp = { module = "com.github.bumptech.glide:okhttp3-integration", version.ref = "glideOkHttpIntegration" }
+glideCompose = { module = "com.github.bumptech.glide:compose", version.ref = "glideCompose" }
+photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoView" }
+pdfView = { module = "com.github.TalbotGooday:AndroidPdfViewer", version.ref = "pdfView" }
+colorPicker = { module = "com.github.skydoves:colorpickerview", version.ref = "colorPicker" }
+dropboxSdk = { module = "com.dropbox.core:dropbox-core-sdk", version.ref = "dropboxSdk" }
+
+[plugins]
+android-library = { id = "com.android.library", version.ref = "gradle" }
+android-application = { id = "com.android.application", version.ref = "gradle" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinGradlePlugin" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinKsp" }
+kotlin-serialization-plugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinGradlePlugin" }

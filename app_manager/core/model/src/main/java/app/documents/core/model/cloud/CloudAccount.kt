@@ -31,6 +31,8 @@ data class CloudAccount(
         get() = "$login@${portal.url}"
 
     fun isPersonal(): Boolean = portal.isPersonal
+
+    var unsubToken: String = ""
 }
 
 val CloudAccount?.isDocSpace: Boolean

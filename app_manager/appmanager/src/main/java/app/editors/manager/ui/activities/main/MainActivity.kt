@@ -13,7 +13,6 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
-import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -23,13 +22,12 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ActivityMainBinding
 import app.editors.manager.managers.receivers.AppLocaleReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver
+import app.editors.manager.managers.receivers.RoomDuplicateReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
-import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter.Companion.PERSONAL_DUE_DATE
 import app.editors.manager.mvp.views.main.MainActivityView
 import app.editors.manager.ui.activities.base.BaseAppActivity
-import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.compose.personal.PersonalPortalMigrationFragment
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
 import app.editors.manager.ui.fragments.main.AppSettingsFragment
@@ -53,7 +51,6 @@ import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.RequestPermission
 import lib.toolkit.base.managers.utils.TimeUtils
-import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -72,7 +69,7 @@ interface IMainActivity {
     fun setAppBarStates(isVisible: Boolean)
     fun onSwitchAccount()
     fun showOnCloudFragment()
-    fun showAccountsActivity(isSwitch: Boolean = false)
+    fun showAccountsActivity()
     fun showWebViewer(file: CloudFile, isEditMode: Boolean = false, callback: (() -> Unit)? = null)
     fun onLogOut()
     fun showPersonalMigrationFragment()
@@ -121,55 +118,39 @@ class MainActivity : BaseAppActivity(), MainActivityView,
     }
 
     @SuppressLint("MissingSuperCall")
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        intent?.action?.let { action ->
-            if (action == DownloadReceiver.DOWNLOAD_ACTION_CANCELED) {
-                intent.extras?.let { extras ->
-                    WorkManager.getInstance(this)
-                        .cancelWorkById(UUID.fromString(extras.getString(DownloadReceiver.EXTRAS_KEY_ID)))
+        intent.action?.let { action ->
+            if (action == Intent.ACTION_VIEW) {
+                intent.data?.let {
+                    val fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
+                    if (fragment is MainPagerFragment && fragment.isVisible) {
+                        setIntent(intent)
+                        fragment.checkBundle()
+                    } else {
+                        setIntent(intent)
+                        openFile()
+                    }
                 }
-                return
             }
-            if (action == UploadReceiver.UPLOAD_ACTION_CANCELED) {
-                intent.extras?.let { extras ->
-                    WorkManager.getInstance(this)
-                        .cancelWorkById(UUID.fromString(extras.getString(UploadReceiver.EXTRAS_KEY_ID)))
+
+            intent.extras?.let extras@ { extras ->
+                val key = when (action) {
+                    DownloadReceiver.DOWNLOAD_ACTION_CANCELED -> DownloadReceiver.EXTRAS_KEY_ID
+                    UploadReceiver.UPLOAD_ACTION_CANCELED -> UploadReceiver.EXTRAS_KEY_ID
+                    RoomDuplicateReceiver.ACTION_HIDE -> RoomDuplicateReceiver.KEY_NOTIFICATION_HIDE
+                    else -> return@extras
                 }
+                WorkManager.getInstance(this).cancelWorkById(UUID.fromString(extras.getString(key)))
                 return
             }
         }
 
         if (isNotification()) {
-            intent?.extras?.getString(URL_KEY)?.let {
+            intent.extras?.getString(URL_KEY)?.let {
                 showBrowser(it)
             }
             return
-        }
-
-        var fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
-        if (fragment is MainPagerFragment) {
-            val fragments = fragment.getChildFragmentManager().fragments
-            //            for (fr in fragments) {
-            //                if (fr is DocsMyFragment) {
-            //                    fr.getArgs(intent)
-            //                }
-            //            }
-        }
-
-        fragment = supportFragmentManager.findFragmentByTag(DocsWebDavFragment.TAG)
-        if (fragment is DocsWebDavFragment) {
-            fragment.getArgs(intent)
-        }
-
-        fragment = supportFragmentManager.findFragmentByTag(DocsOnDeviceFragment.TAG)
-        if (fragment is DocsOnDeviceFragment) {
-            fragment.getArgs(intent)
-        }
-
-        fragment = supportFragmentManager.findFragmentByTag(DocsRecentFragment.TAG)
-        if (fragment is DocsRecentFragment) {
-            fragment.getArgs(intent)
         }
     }
 
@@ -179,10 +160,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
             when (requestCode) {
                 REQUEST_ACTIVITY_PORTAL -> {
                     presenter.init(true)
-                }
-
-                REQUEST_ACTIVITY_ACCOUNTS -> {
-                    presenter.onRemoveFileData()
                 }
             }
             if (data != null && data.extras != null) {
@@ -336,7 +313,7 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         }
     }
 
-    override fun openFile(account: CloudAccount, fileData: String) {
+    fun openFile() {
         viewBinding.bottomNavigation.setOnItemSelectedListener(null)
         viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
         showOnCloudFragment()
@@ -387,25 +364,6 @@ class MainActivity : BaseAppActivity(), MainActivityView,
                 showSnackBar(message)
             }
         }
-    }
-
-    override fun onSwitchAccount(data: OpenDataModel, isToken: Boolean) {
-        UiUtils.showQuestionDialog(
-            context = this,
-            title = getString(R.string.switch_account_title),
-            description = getString(R.string.switch_account_description, data.portal),
-            acceptListener = {
-                if (isToken) {
-                    showAccountsActivity(true)
-                } else {
-                    SignInActivity.showPortalSignIn(this, data.portal, data.email, arrayOf())
-                }
-            },
-            cancelListener = {
-                presenter.onRemoveFileData()
-            },
-            acceptTitle = getString(R.string.switch_account_open_project_file)
-        )
     }
 
     override fun showWebViewer(file: CloudFile, isEditMode: Boolean, callback: (() -> Unit)?) {
@@ -623,11 +581,11 @@ class MainActivity : BaseAppActivity(), MainActivityView,
         showNavigationButton(false)
     }
 
-    override fun showAccountsActivity(isSwitch: Boolean) {
+    override fun showAccountsActivity() {
         if (!isTablet) {
-            AccountsActivity.show(this, isSwitch)
+            AccountsActivity.show(this)
         } else {
-            CloudAccountDialogFragment.newInstance(isSwitch)
+            CloudAccountDialogFragment.newInstance()
                 .show(supportFragmentManager, CloudAccountDialogFragment.TAG)
         }
     }

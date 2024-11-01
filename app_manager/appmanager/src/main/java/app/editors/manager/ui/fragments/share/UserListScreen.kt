@@ -25,18 +25,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -51,18 +45,20 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import app.documents.core.model.login.RoomGroup
+import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.utils.displayNameFromHtml
+import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
+import app.editors.manager.ui.views.custom.SearchAppBar
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.UserListEffect
 import app.editors.manager.viewModels.main.UserListState
@@ -76,13 +72,13 @@ import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTabRow
-import lib.compose.ui.views.AppTextField
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.PlaceholderView
 import lib.compose.ui.views.TabRowItem
 import lib.compose.ui.views.TopAppBarAction
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.R
+import lib.toolkit.base.managers.utils.AccountUtils
 
 @Composable
 fun UserListScreen(
@@ -91,11 +87,12 @@ fun UserListScreen(
     withGroups: Boolean = false,
     closeable: Boolean = true,
     disableInvited: Boolean = false,
+    useTabletPaddings: Boolean = false,
     onClick: (id: String) -> Unit,
     onBack: () -> Unit,
     onSnackBar: (String) -> Unit,
     onSuccess: ((User) -> Unit)? = null,
-    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> },
+    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> }
 ) {
     val state by viewModel.viewState.collectAsState()
 
@@ -114,6 +111,7 @@ fun UserListScreen(
         withGroups = withGroups,
         closeable = closeable,
         disableInvited = disableInvited,
+        useTabletPaddings = useTabletPaddings,
         onClick = onClick,
         onSearch = viewModel::search,
         onBack = onBack,
@@ -130,15 +128,18 @@ private fun MainScreen(
     withGroups: Boolean = false,
     closeable: Boolean = true,
     disableInvited: Boolean = false,
+    useTabletPaddings: Boolean = false,
     onClick: (id: String) -> Unit,
     onSearch: (String) -> Unit,
     onBack: () -> Unit,
     onSnackBar: (String) -> Unit,
-    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> },
+    bottomContent: @Composable (count: Int, access: Int) -> Unit = { _, _ -> },
 ) {
     val searchState = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val token = remember { context.accountOnline?.accountName?.let { AccountUtils.getToken(context, it) }.orEmpty() }
+    val portal = remember { context.accountOnline?.portal?.urlWithScheme }
     val tabs = remember {
         listOfNotNull(
             TabRowItem(
@@ -152,7 +153,7 @@ private fun MainScreen(
     val pagerState = rememberPagerState(pageCount = tabs::size)
 
     AppScaffold(
-        useTablePaddings = false,
+        useTablePaddings = useTabletPaddings,
         topBar = {
             Column {
                 AnimatedContent(
@@ -207,19 +208,23 @@ private fun MainScreen(
                             val users = state.users
                             if (users.isNotEmpty()) {
                                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                    users.groupBy { user -> user.displayName.first().uppercaseChar() }
+                                    users.groupBy { user -> user.displayNameFromHtml.first().uppercaseChar() }
                                         .toSortedMap()
                                         .forEach { (letter, users) ->
                                             itemsIndexed(items = users.orEmpty()) { index, user ->
                                                 UserItem(
                                                     withLetter = true,
                                                     letter = letter?.toString().takeIf { index == 0 },
-                                                    name = user.displayName,
-                                                    subtitle = user.email.orEmpty(),
-                                                    avatar = user.avatarMedium,
+                                                    name = user.displayNameFromHtml,
+                                                    subtitle = user.groups.joinToString { group -> group.name },
                                                     shared = disableInvited && user.shared,
                                                     selected = state.selected.contains(user.id),
                                                     onClick = { onClick.invoke(user.id) },
+                                                    avatar = GlideUtils.getCorrectLoad(
+                                                        user.avatarMedium,
+                                                        token,
+                                                        portal
+                                                    )
                                                 )
                                             }
                                         }
@@ -241,7 +246,7 @@ private fun MainScreen(
                                             subtitle = null,
                                             avatar = null,
                                             selected = state.selected.contains(group.id),
-                                            onClick = { onClick.invoke(group.id) },
+                                            onClick = { onClick.invoke(group.id) }
                                         )
                                     }
                                 }
@@ -288,7 +293,7 @@ private fun LazyItemScope.UserItem(
     shared: Boolean,
     letter: String?,
     withLetter: Boolean,
-    avatar: String?,
+    avatar: Any?,
     subtitle: String?,
     onClick: () -> Unit,
 ) {
@@ -368,12 +373,14 @@ private fun LazyItemScope.UserItem(
         ) {
             Text(
                 text = name,
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1,
+                maxLines = 1
             )
-            subtitle?.let {
+            if (!subtitle.isNullOrEmpty()) {
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.body2,
+                    maxLines = 1,
                     color = MaterialTheme.colors.colorTextSecondary
                 )
             }
@@ -386,57 +393,6 @@ private fun LazyItemScope.UserItem(
                 color = MaterialTheme.colors.colorTextSecondary
             )
         }
-    }
-}
-
-@Composable
-private fun SearchAppBar(
-    onTextChange: (String) -> Unit,
-    onClose: () -> Unit,
-) {
-    val focusManager = LocalFocusManager.current
-    val searchValueState = remember { mutableStateOf("") }
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp)
-    ) {
-        AppTextField(
-            state = searchValueState,
-            onValueChange = {
-                searchValueState.value = it
-                onTextChange.invoke(it)
-            },
-            focusManager = focusManager,
-            label = app.editors.manager.R.string.share_title_search,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            onDone = { focusManager.clearFocus(true) },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = stringResource(id = android.R.string.search_go),
-                    modifier = Modifier.alpha(ContentAlpha.medium)
-                )
-            },
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        if (searchValueState.value.isNotEmpty()) {
-                            searchValueState.value = ""
-                        } else {
-                            onClose()
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(id = android.R.string.cancel),
-                        tint = MaterialTheme.colors.primary
-                    )
-                }
-            }
-        )
     }
 }
 
@@ -461,7 +417,7 @@ private fun PreviewMainWithBottom() {
                     User().copy(displayName = "5mike", id = "id6", email = "email", shared = true)
                 ),
                 groups = listOf(
-                    RoomGroup("", "group 1")
+                    Group("", "group 1")
                 )
             ),
             disableInvited = true,
@@ -509,7 +465,7 @@ private fun PreviewMain() {
                     User().copy(displayName = "5mike", id = "id6", email = "email")
                 ),
                 groups = listOf(
-                    RoomGroup("", "group 1")
+                    Group("", "group 1")
                 )
             ),
             withGroups = false,

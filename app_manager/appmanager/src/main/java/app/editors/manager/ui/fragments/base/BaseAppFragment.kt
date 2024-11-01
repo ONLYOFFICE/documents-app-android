@@ -6,11 +6,10 @@ import android.view.MenuInflater
 import androidx.activity.result.ActivityResult
 import androidx.fragment.app.Fragment
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
+import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.main.MediaActivity
-import app.editors.manager.ui.activities.main.ShareActivity.Companion.show
 import app.editors.manager.ui.activities.main.StorageActivity.Companion.show
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
 import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
@@ -79,10 +78,6 @@ abstract class BaseAppFragment : BaseFragment() {
         ).show()
     }
 
-    protected fun showShareActivity(item: Item?) {
-        show(this, item)
-    }
-
     protected fun showStorageActivity(
         isMySection: Boolean,
         isRoom: Boolean = false,
@@ -103,6 +98,18 @@ abstract class BaseAppFragment : BaseFragment() {
     protected fun getDialogFragment(): IBaseDialogFragment? {
         return requireActivity().supportFragmentManager
             .fragments.findLast { it is BaseDialogFragment } as? IBaseDialogFragment
+    }
+
+    protected fun showCreateFolderDialog() {
+        showEditDialogCreate(
+            getString(R.string.dialogs_edit_create_folder),
+            getString(R.string.dialogs_edit_create_folder),
+            getString(R.string.dialogs_edit_hint),
+            null,
+            DocsBasePresenter.TAG_DIALOG_ACTION_FOLDER,
+            getString(R.string.dialogs_edit_accept_create),
+            getString(R.string.dialogs_common_cancel_button)
+        )
     }
 
     companion object {

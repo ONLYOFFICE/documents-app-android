@@ -13,6 +13,6 @@ interface MainPagerView : BaseView {
     fun onRender(sections: List<Explorer>?)
     fun onFinishRequest()
     fun setFileData(fileData: String)
-    fun onSwitchAccount(data: OpenDataModel, isToken: Boolean = false)
+    fun onSwitchAccount(data: OpenDataModel)
     fun onPersonalPortalEnd()
 }

@@ -4,30 +4,36 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Size
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.PathPart
-import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.api
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.compose.ui.views.ChipData
+import java.io.Serializable
 
+data class CopyItems(
+    val folderIds: List<String> = emptyList(),
+    val fileIds: List<String> = emptyList()
+) : Serializable
 
 data class StorageState(
     val id: String,
@@ -53,11 +59,17 @@ sealed class ViewState {
     class Error(val message: String) : ViewState()
 }
 
+sealed class AddRoomEffect {
+
+    data class Error(val message: String) : AddRoomEffect()
+}
+
 class AddRoomViewModel(
     private val context: Application,
     private val roomProvider: RoomProvider,
     private val roomInfo: Item? = null,
-    private val isCopy: Boolean = false,
+    private val roomType: Int? = null,
+    private val copyItems: CopyItems? = null,
 ) : AndroidViewModel(application = context) {
 
     private val _roomState: MutableStateFlow<AddRoomData> = MutableStateFlow(
@@ -79,6 +91,8 @@ class AddRoomViewModel(
                     location = null
                 ).takeIf { roomInfo.providerItem }
             )
+        } else if (roomType != null){
+            AddRoomData(roomType)
         } else {
             AddRoomData(2)
         }
@@ -88,12 +102,11 @@ class AddRoomViewModel(
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.None)
     val viewState: StateFlow<ViewState> = _viewState
 
+    private val _effect: MutableSharedFlow<AddRoomEffect> = MutableSharedFlow(1)
+    val effect: SharedFlow<AddRoomEffect> = _effect.asSharedFlow()
+
     private val roomTags: Set<String> = (roomInfo as? CloudFolder)?.tags?.toSet().orEmpty()
     private var isDeleteLogo: Boolean = false
-
-    fun setType(roomType: Int) {
-        _roomState.value = _roomState.value.copy(type = roomType)
-    }
 
     fun setImageUri(imageUri: Uri?) {
         viewModelScope.launch {
@@ -115,14 +128,11 @@ class AddRoomViewModel(
     private suspend fun loadImage(imageUri: Any?, isCrop: Boolean = true): Bitmap {
         return viewModelScope.async(Dispatchers.IO) {
             val request = Glide.with(context).asBitmap()
-            request.apply {
-                load(imageUri)
-                if (isCrop) {
-                    request.circleCrop()
-                }
-            }
+            request.load(imageUri)
+            request.override(200)
+            request.encodeFormat(Bitmap.CompressFormat.JPEG)
+            if (isCrop) request.circleCrop()
             return@async request.submit().get()
-
         }.await()
     }
 
@@ -137,6 +147,22 @@ class AddRoomViewModel(
             _viewState.value = ViewState.Loading
             withContext(Dispatchers.IO) {
                 try {
+                    var imageUrl: String? = null
+                    var imageSize: Size? = null
+
+                    if (image != null) {
+                        try {
+                            val bitmap = loadImage(image, false)
+                            val response = roomProvider.uploadLogo(bitmap)
+                            imageUrl = response.data
+                            imageSize = Size(bitmap.width, bitmap.height)
+                        } catch (_: Exception) { }
+                    }
+
+                    if (image != null && (imageUrl == null || imageSize == null)) {
+                        throw error(context.getString(R.string.rooms_error_logo_size_exceed))
+                    }
+
                     val id = with(roomState.value.storageState) {
                         if (this != null) {
                             roomProvider.createThirdPartyRoom(
@@ -154,17 +180,13 @@ class AddRoomViewModel(
 
                     roomProvider.addTags(id, tags)
 
-                    if (id.isNotEmpty() && image != null) {
-                        roomProvider.setLogo(id, loadImage(image, false))
-                    }
-
                     if (isDeleteLogo) {
                         roomProvider.deleteLogo(id)
+                    } else if (id.isNotEmpty() && imageUrl != null && imageSize != null) {
+                        roomProvider.setLogo(id, imageSize, imageUrl)
                     }
 
-                    while (checkCopy(id)) {
-                        delay(100)
-                    }
+                    copyItems(id)
 
                     withContext(Dispatchers.Main) {
                         if (id.isNotEmpty()) {
@@ -194,19 +216,33 @@ class AddRoomViewModel(
             withContext(Dispatchers.IO) {
                 try {
                     val id = roomInfo?.id ?: ""
+                    val imageUri = roomState.value.imageUri
+
+                    var imageUrl: String? = null
+                    var imageSize: Size? = null
+
+                    if (imageUri != null) {
+                        try {
+                            val bitmap = loadImage(imageUri, false)
+                            val response = roomProvider.uploadLogo(bitmap)
+                            imageUrl = response.data
+                            imageSize = Size(bitmap.width, bitmap.height)
+                        } catch (_: Exception) { }
+                    }
+
+                    if (imageUri != null && (imageUrl == null || imageSize == null)) {
+                        throw error(context.getString(R.string.rooms_error_logo_size_exceed))
+                    }
+
                     val isSuccess = roomProvider.renameRoom(id, name)
 
                     roomProvider.deleteTags(id, (roomTags - tags.toSet()).toList())
                     roomProvider.addTags(id, tags - roomTags)
 
-                    when {
-                        isDeleteLogo -> {
-                            roomProvider.deleteLogo(id)
-                        }
-                        roomState.value.imageUri is Uri -> {
-                            roomProvider.setLogo(id, loadImage(roomState.value.imageUri!!, false))
-
-                        }
+                    if (isDeleteLogo) {
+                        roomProvider.deleteLogo(id)
+                    } else if (id.isNotEmpty() && imageUrl != null && imageSize != null) {
+                        roomProvider.setLogo(id, imageSize, imageUrl)
                     }
 
                     if (isSuccess) {
@@ -223,23 +259,8 @@ class AddRoomViewModel(
         }
     }
 
-    private suspend fun checkCopy(id: String): Boolean {
-        if (roomInfo == null) return false
-        if (!isCopy) return false
-        //TODO check only the first operation???
-        context.api.copyCoroutines(RequestBatchOperation(destFolderId = id).apply {
-            folderIds = if (roomInfo is CloudFolder) listOf(roomInfo.id) else emptyList()
-            fileIds = if (roomInfo is CloudFile) listOf(roomInfo.id) else emptyList()
-        }).response.forEach { operation ->
-            if (operation.finished) return false
-            while (true) {
-                val op = context.api.statusCoroutines().response.find { it.id == operation.id } ?: break
-                if (op.progress == 100 || op.finished) break
-                delay(100)
-            }
-        }
-
-        return false
+    private suspend fun copyItems(roomId: String) {
+        copyItems?.let { items -> roomProvider.copyItems(roomId, items.folderIds, items.fileIds) }
     }
 
     fun saveData(name: String, tags: List<ChipData>) {
@@ -295,5 +316,9 @@ class AddRoomViewModel(
 
     fun setOwner(user: User) {
         _roomState.update { it.copy(owner = user) }
+    }
+
+    fun setRoomType(newType: Int) {
+        _roomState.update { it.copy(type = newType) }
     }
 }

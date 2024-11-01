@@ -3,8 +3,12 @@ package app.documents.core.network.room
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Operation
+import app.documents.core.network.manager.models.request.RequestBatchOperation
+import app.documents.core.network.manager.models.request.RequestRoomNotifications
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.manager.models.response.ResponseExplorer
+import app.documents.core.network.manager.models.response.ResponseRoomNotifications
 import app.documents.core.network.room.models.RequestAddTags
 import app.documents.core.network.room.models.RequestArchive
 import app.documents.core.network.room.models.RequestCreateExternalLink
@@ -19,6 +23,7 @@ import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.room.models.ResponseRoomShare
 import app.documents.core.network.room.models.ResponseTags
 import app.documents.core.network.room.models.ResponseUpdateExternalLink
+import app.documents.core.network.room.models.ResponseUploadLogo
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.request.RequestAddInviteLink
@@ -53,20 +58,25 @@ interface RoomService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/rooms/")
     fun getAllRooms(@QueryMap options: Map<String, String>?): Observable<Response<ResponseExplorer>>
-
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/archive")
-    fun archive(@Path(value = "id") id: String, @Body body: RequestArchive): Observable<Response<BaseResponse>>
+    suspend fun archive(
+        @Path(value = "id") id: String,
+        @Body body: RequestArchive
+    ): Response<ResponseBody>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/unarchive")
-    fun unarchive(@Path(value = "id") id: String, @Body body: RequestArchive): Observable<Response<BaseResponse>>
+    suspend fun unarchive(
+        @Path(value = "id") id: String,
+        @Body body: RequestArchive
+    ): Response<ResponseBody>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -184,7 +194,7 @@ interface RoomService {
     @POST("api/" + ApiContract.API_VERSION + "/files/logos")
     suspend fun uploadLogo(
         @Part part: MultipartBody.Part,
-    ): Response<ResponseBody>
+    ): app.documents.core.network.BaseResponse<ResponseUploadLogo>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -318,4 +328,31 @@ interface RoomService {
         @Path("groupId") groupId: String,
     ): app.documents.core.network.BaseResponse<List<GroupShare>>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/copy")
+    suspend fun copy(@Body body: RequestBatchOperation): app.documents.core.network.BaseResponse<List<Operation>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/fileops")
+    suspend fun status(): app.documents.core.network.BaseResponse<List<Operation>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/duplicate")
+    suspend fun duplicate(@Body body: RequestBatchOperation): app.documents.core.network.BaseResponse<List<Operation>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/settings/notification/rooms")
+    suspend fun muteNotifications(@Body body: RequestRoomNotifications): app.documents.core.network.BaseResponse<ResponseRoomNotifications>
 }

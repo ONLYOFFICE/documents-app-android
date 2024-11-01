@@ -39,13 +39,6 @@ class OneDriveProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun getRoot(): Single<OneDriveResponse> {
-        return oneDriveService.getRoot()
-            .map { fetchResponse(it) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
     fun download(itemId: String): Single<Response<ResponseBody>> {
         return oneDriveService.download(itemId)
             .subscribeOn(Schedulers.io())
@@ -113,19 +106,6 @@ class OneDriveProvider(
         request: CopyItemRequest
     ): Single<Response<ResponseBody>> {
         return oneDriveService.moveItem(itemId, request)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    fun getPhoto(): Single<Response<ResponseBody>> {
-        return oneDriveService.getPhoto()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    fun filter(value: String, map: Map<String, String>): Single<OneDriveResponse> {
-        return oneDriveService.filter(value, map)
-            .map { fetchResponse(it) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

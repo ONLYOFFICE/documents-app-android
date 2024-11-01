@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -49,6 +50,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.view.updatePadding
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -622,7 +624,7 @@ object UiUtils {
         title: String,
         cancelTitle: String? = context.getString(android.R.string.cancel),
         isCircle: Boolean = false,
-        cancelListener: () -> Unit
+        cancelListener: (() -> Unit)? = null
     ): Dialog {
         val container = FrameLayout(context)
         val params = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -647,17 +649,21 @@ object UiUtils {
                 } else {
                     indeterminateDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN)
                 }
+                if (cancelListener == null) updatePadding(bottom = context.resources.getDimensionPixelSize(R.dimen.default_margin_large))
             }
 
         container.addView(progress)
-        return MaterialAlertDialogBuilder(context, R.style.App_Dialog_Alert)
-            .setTitle(title)
-            .setNegativeButton(cancelTitle) { dialog, _ ->
-                cancelListener()
-                dialog.dismiss()
+        return MaterialAlertDialogBuilder(context, R.style.App_Dialog_Alert).apply {
+            setTitle(title)
+            setView(container)
+            if (cancelListener != null) {
+                setNegativeButton(cancelTitle) { dialog, _ ->
+                    cancelListener.invoke()
+                    dialog.dismiss()
+                }
             }
-            .setView(container)
-            .create()
+        }.create()
+
     }
 
     fun showEditDialog(
@@ -906,4 +912,26 @@ class SlidesLinearLayoutManager(context: Context, orientation: Int, reverseLayou
         linearSmoothScroller.targetPosition = position
         startSmoothScroll(linearSmoothScroller)
     }
+}
+
+fun View.getParentActivity(): Activity? {
+    var context = this.context
+    while (context is ContextWrapper) {
+        if (context is Activity) {
+            return context
+        }
+        context = context.baseContext
+    }
+    return null
+}
+
+val View.viewVisibleRect: Rect
+    get() {
+        return Rect().apply {
+            getGlobalVisibleRect(this)
+        }
+    }
+
+fun View.isTouchInside(event: MotionEvent): Boolean {
+    return this.viewVisibleRect.contains(event.rawX.toInt(), event.rawY.toInt())
 }

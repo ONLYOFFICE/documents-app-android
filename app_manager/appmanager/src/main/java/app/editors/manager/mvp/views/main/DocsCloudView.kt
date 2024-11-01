@@ -1,10 +1,9 @@
 package app.editors.manager.mvp.views.main
 
 import androidx.annotation.StringRes
-import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.Item
+import app.editors.manager.viewModels.main.CopyItems
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
@@ -19,19 +18,16 @@ interface DocsCloudView : DocsBaseView {
     fun onStateUpdateFilterMenu()
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onArchiveRoom(isArchived: Boolean, count: Int = 1)
-
-    @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onArchiveSelectedRooms(rooms: List<Entity>)
-
-    @StateStrategyType(OneExecutionStateStrategy::class)
     fun onConversionQuestion()
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onConversionProgress(progress: Int, extension: String? = null)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onCreateRoom(type: Int = 2, item: Item, isCopy: Boolean = false)
+    fun showAddRoomFragment(type: Int = 2, copyItems: CopyItems? = null)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showEditRoomFragment(room: CloudFolder)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onLeaveRoomDialog(@StringRes title: Int, @StringRes question: Int, isOwner: Boolean)
@@ -39,4 +35,6 @@ interface DocsCloudView : DocsBaseView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showSetOwnerFragment(cloudFolder: CloudFolder)
 
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showFillFormChooserFragment()
 }

@@ -131,6 +131,7 @@ internal class AccountRepositoryImpl(
         accountIds.forEach { accountId ->
             cloudDataSource.getAccount(accountId)?.let { account ->
                 if (accountPreferences.onlineAccountId == accountId) accountPreferences.onlineAccountId = null
+                account.unsubToken = getToken(account.accountName).orEmpty()
                 accountManager.removeAccount(account.accountName)
                 cloudDataSource.deleteAccount(account)
                 deletedAccounts.add(account)
@@ -141,7 +142,9 @@ internal class AccountRepositoryImpl(
     }
 
     override suspend fun logOut(accountId: String): CloudAccount {
-        val account = checkNotNull(cloudDataSource.getAccount(accountId))
+        val account = checkNotNull(cloudDataSource.getAccount(accountId)).apply {
+            unsubToken = getToken(accountName).orEmpty()
+        }
         with(accountManager) {
             when (account.portal.provider) {
                 is PortalProvider.Webdav -> setPassword(account.accountName, null)

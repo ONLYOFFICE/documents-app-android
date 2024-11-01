@@ -13,6 +13,7 @@ import com.google.android.material.timepicker.TimeFormat
 import lib.toolkit.base.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -46,7 +47,6 @@ object TimeUtils {
     val DEFAULT_GMT_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DEFAULT).also { it.timeZone = TimeZone.getTimeZone("gmt") }
     private val OUTPUT_TIME_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_TIME)
     private val OUTPUT_DATE_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DATE)
-    private val OUTPUT_DATE_TIME_OFFSET_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DATE_TIME_OFFSET)
 
 
     /*
@@ -139,8 +139,13 @@ object TimeUtils {
     }
 
     fun parseDate(string: String?): Date? {
-        val time = OUTPUT_DATE_TIME_OFFSET_FORMAT.parse(string ?: return null)?.time
-        return if (time != null) Date(time) else null
+        try {
+           if (string == null) return null
+            val time = Instant.parse(string).toEpochMilli()
+            return Date(time)
+        } catch (error: Throwable) {
+            return null
+        }
     }
 
     fun getDateTimeLeft(context: Context, date: String): String? {
@@ -148,8 +153,8 @@ object TimeUtils {
             return null
         }
 
-        val time = OUTPUT_DATE_TIME_OFFSET_FORMAT.parse(date)?.time ?: 0
-        val timeLeft = (time - System.currentTimeMillis()).toFloat()
+        val time = Instant.parse(date).toEpochMilli()
+        val timeLeft = (time - Instant.now().toEpochMilli()).toFloat()
         val second = 1000
         val minute = 60 * second
         val hour = 60 * minute

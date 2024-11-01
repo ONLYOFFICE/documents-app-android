@@ -101,6 +101,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         return true
     }
 
+    override fun onListEnd() { }
+
     override fun onSwipeRefresh(): Boolean {
         if (!super.onSwipeRefresh()) {
             presenter.getItemsById(LocalContentTools.getDir(requireContext()))
@@ -219,7 +221,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         onSnackBar(resources.getQuantityString(R.plurals.operation_delete_irretrievably, items.size))
         explorerAdapter?.let { adapter ->
             adapter.removeItems(items.toList())
-            adapter.checkHeaders()
+//            adapter.checkHeaders()
             setPlaceholder(adapter.itemList.isNullOrEmpty())
             onClearMenu()
         }
@@ -234,11 +236,11 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun onShowCells(uri: Uri) {
-        showEditors(uri, EditorsType.CELLS)
+        showEditors(uri, EditorsType.CELLS, viewMode = false)
     }
 
     override fun onShowSlides(uri: Uri) {
-        showEditors(uri, EditorsType.PRESENTATION)
+        showEditors(uri, EditorsType.PRESENTATION, viewMode = false)
     }
 
     override fun onShowPdf(uri: Uri) {
@@ -382,9 +384,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override val isActivePage: Boolean
         get() = isAdded
-
-    override val isWebDav: Boolean
-        get() = false
 
     companion object {
         val TAG: String = DocsOnDeviceFragment::class.java.simpleName

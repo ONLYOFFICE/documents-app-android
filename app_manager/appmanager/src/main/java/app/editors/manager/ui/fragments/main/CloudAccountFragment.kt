@@ -34,13 +34,13 @@ import app.editors.manager.ui.dialogs.AccountContextDialog
 import app.editors.manager.ui.dialogs.fragments.IBaseDialogFragment
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.fragments.base.StorageLoginFragment
+import app.editors.manager.ui.fragments.login.EnterprisePortalFragment
 import app.editors.manager.ui.popup.CloudAccountPopup
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.contains
-import lib.toolkit.base.managers.utils.putArgs
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import moxy.presenter.InjectPresenter
@@ -60,10 +60,8 @@ class CloudAccountFragment : BaseAppFragment(),
         const val RESULT_LOG_OUT = "result_log_out"
 
 
-        fun newInstance(isSwitch: Boolean = false): CloudAccountFragment {
-            return CloudAccountFragment().putArgs(
-                CloudAccountPresenter.KEY_SWITCH to isSwitch
-            )
+        fun newInstance(): CloudAccountFragment {
+            return CloudAccountFragment()
         }
     }
 
@@ -282,8 +280,13 @@ class CloudAccountFragment : BaseAppFragment(),
         WebDavLoginActivity.show(requireActivity(), provider, account)
     }
 
-    override fun onAccountLogin(portal: String, login: String) {
-        SignInActivity.showPortalSignIn(this, portal, login)
+    override fun onAccountLogin(portal: String?, login: String?) {
+        if (login == null) {
+            showFragment(EnterprisePortalFragment.newInstance(portal), null , false)
+        } else {
+            SignInActivity.showPortalSignIn(this, portal, login)
+
+        }
     }
 
     override fun onGoogleDriveLogin() {
@@ -359,7 +362,7 @@ class CloudAccountFragment : BaseAppFragment(),
             .build()
         selectedTracker?.addObserver(selectionObserver)
 
-        presenter.getAccounts(savedInstanceState, arguments?.getBoolean(CloudAccountPresenter.KEY_SWITCH) ?: false)
+        presenter.getAccounts(savedInstanceState)
     }
 
     private fun setTabletToolbar() {

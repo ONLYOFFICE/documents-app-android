@@ -18,6 +18,11 @@ object EditorsContract {
     const val EDITOR_SLIDES = "lib.editors.gslides.ui.activities.SlidesActivity"
     const val PDF = "lib.editors.gbase.ui.activities.PdfActivity"
 
+    const val EXTRA_IS_MODIFIED = "EXTRA_IS_MODIFIED"
+    const val EXTRA_IS_REFRESH = "EXTRA_IS_REFRESH"
+    const val EXTRA_IS_SEND_FORM = "EXTRA_IS_SEND_FORM"
+    const val EXTRA_FILL_SESSION = "EXTRA_FILL_SESSION"
+
 }
 
 enum class EditorsType {

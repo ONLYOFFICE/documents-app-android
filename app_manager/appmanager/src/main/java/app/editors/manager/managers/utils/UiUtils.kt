@@ -1,11 +1,15 @@
 package app.editors.manager.managers.utils
 
+import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.WebdavProvider
@@ -16,7 +20,7 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import com.bumptech.glide.Glide
-import lib.toolkit.base.managers.tools.LocalContentTools
+import com.google.android.material.imageview.ShapeableImageView
 import lib.toolkit.base.managers.utils.StringUtils
 
 object ManagerUiUtils {
@@ -87,74 +91,78 @@ object ManagerUiUtils {
         }
     }
 
-    fun ImageView.setItemIcon(item: Item?, root: Boolean) {
-        when (item) {
-            is CloudFolder -> setFolderIcon(item, root)
-            is CloudFile -> setFileIcon(StringUtils.getExtensionFromPath(item.title))
-        }
+    fun getItemThumbnail(item: Item, isGrid: Boolean): Int {
+        return if (item is CloudFile) {
+            getFileThumbnail(StringUtils.getExtensionFromPath(item.title), isGrid)
+        } else -1
     }
 
-    fun getIcon(item: Item): Int {
-        return if (item is CloudFolder) {
-            getFolderIcon(item)
-        } else {
-            getFileIcon(StringUtils.getExtensionFromPath(item.title))
-        }
-    }
-
-    private fun getFileIcon(ext: String): Int {
+    fun getFileThumbnail(ext: String, isGrid: Boolean): Int {
         return when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
-            StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet
-            StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
+            StringUtils.Extension.DOC -> if (!isGrid) R.drawable.ic_type_document_row else R.drawable.ic_type_document_column
+            StringUtils.Extension.SHEET -> if (!isGrid) R.drawable.ic_type_spreadsheet_row else R.drawable.ic_type_spreadsheet_column
+            StringUtils.Extension.PRESENTATION -> if (!isGrid) R.drawable.ic_type_presentation_row else R.drawable.ic_type_presentation_column
             StringUtils.Extension.IMAGE,
-            StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_type_image
+            StringUtils.Extension.IMAGE_GIF -> if (!isGrid) R.drawable.ic_type_picture_row else R.drawable.ic_type_picture_column
+
             StringUtils.Extension.HTML,
             StringUtils.Extension.EBOOK,
-            StringUtils.Extension.PDF -> R.drawable.ic_type_pdf
+            StringUtils.Extension.PDF -> if (!isGrid) R.drawable.ic_type_pdf_row else R.drawable.ic_type_pdf_column
+
             StringUtils.Extension.VIDEO_SUPPORT,
-            StringUtils.Extension.VIDEO -> R.drawable.ic_type_video
-            StringUtils.Extension.ARCH -> R.drawable.ic_type_archive
-            StringUtils.Extension.FORM -> {
-                if (ext == ".${LocalContentTools.OFORM_EXTENSION}") R.drawable.ic_format_oform
-                else R.drawable.ic_format_docxf
+            StringUtils.Extension.VIDEO -> if (!isGrid) R.drawable.ic_type_video_row else R.drawable.ic_type_video_column
+
+            StringUtils.Extension.ARCH -> if (!isGrid) R.drawable.ic_type_archive_row else R.drawable.ic_type_archive_column
+            StringUtils.Extension.FORM -> if (!isGrid) R.drawable.ic_type_docxf_row else R.drawable.ic_type_docxf_column
+            else -> if (!isGrid) R.drawable.ic_type_other_row else R.drawable.ic_type_other_column
+        }
+    }
+
+    fun CardView.setRoomIcon(
+        room: CloudFolder,
+        image: ImageView,
+        text: TextView,
+        badge: ShapeableImageView,
+        isGrid: Boolean
+    ) {
+        val logo = room.logo?.large
+
+        fun setInitials() {
+            val initials = RoomUtils.getRoomInitials(room.title)
+            if (!initials.isNullOrEmpty()) {
+                image.isVisible = false
+                text.isVisible = true
+                text.text = initials
             }
-
-            else -> R.drawable.ic_type_file
+            setCardBackgroundColor(
+                room.logo?.color?.let { color -> Color.parseColor("#$color") }
+                    ?: context.getColor(lib.toolkit.base.R.color.colorPrimary)
+            )
         }
-    }
 
-    fun ImageView.setFileIcon(ext: String) {
-        setImageResource(getFileIcon(ext))
-        imageAlpha = 255
-    }
-
-    fun ImageView.setFolderIcon(folder: CloudFolder, isRoot: Boolean) {
-        val icon = getFolderIcon(folder, isRoot)
-        val logo = folder.logo?.large
         if (!logo.isNullOrEmpty()) {
-            setRoomLogo(logo, icon)
+            text.isVisible = false
+            image.isVisible = true
+            image.setRoomLogo(logo, isGrid, ::setInitials)
+            setCardBackgroundColor(context.getColor(lib.toolkit.base.R.color.colorTransparent))
         } else {
-            setImageResource(icon)
+            setInitials()
         }
-    }
 
-    private fun getFolderIcon(folder: CloudFolder, isRoot: Boolean = false): Int {
-        return when {
-            folder.isRoom -> getRoomIcon(folder)
-            folder.shared && folder.providerKey.isEmpty() -> R.drawable.ic_type_folder_shared
-            isRoot && folder.providerItem -> StorageUtils.getStorageIcon(folder.providerKey)
-            ApiContract.SectionType.isArchive(folder.rootFolderType) -> R.drawable.ic_type_archive
-            else -> R.drawable.ic_type_folder
-        }
-    }
-
-    private fun getRoomIcon(folder: CloudFolder): Int {
-        return when (folder.roomType) {
-            ApiContract.RoomType.COLLABORATION_ROOM -> R.drawable.ic_collaboration_room
-            ApiContract.RoomType.PUBLIC_ROOM -> R.drawable.ic_public_room
-            ApiContract.RoomType.CUSTOM_ROOM -> R.drawable.ic_custom_room
-            else -> R.drawable.ic_type_folder
+        if (room.providerItem && room.providerKey.isNotEmpty()) {
+            badge.setImageResource(StorageUtils.getStorageIcon(room.providerKey))
+            badge.isVisible = true
+        } else if (room.roomType == ApiContract.RoomType.PUBLIC_ROOM) {
+            badge.setImageResource(
+                if (isGrid) {
+                    R.drawable.ic_public_room_big
+                } else {
+                    R.drawable.ic_public_room_badge
+                }
+            )
+            badge.isVisible = true
+        } else {
+            badge.isVisible = false
         }
     }
 
@@ -162,6 +170,7 @@ object ManagerUiUtils {
         return when (accessCode) {
             ApiContract.ShareCode.NONE,
             ApiContract.ShareCode.RESTRICT -> R.drawable.ic_access_deny
+
             ApiContract.ShareCode.REVIEW -> R.drawable.ic_access_review
             ApiContract.ShareCode.READ -> R.drawable.ic_access_read
             ApiContract.ShareCode.ROOM_ADMIN -> R.drawable.ic_room_admin
@@ -173,6 +182,52 @@ object ManagerUiUtils {
             ApiContract.ShareCode.CUSTOM_FILTER -> R.drawable.ic_access_custom_filter
             else -> R.drawable.ic_access_deny
         }
+    }
+
+    fun getAccessList(extension: StringUtils.Extension, removable: Boolean = false): List<Int> {
+        return when (extension) {
+            StringUtils.Extension.DOC, StringUtils.Extension.DOCXF -> {
+                listOf(
+                    ApiContract.ShareCode.READ_WRITE,
+                    ApiContract.ShareCode.REVIEW,
+                    ApiContract.ShareCode.COMMENT,
+                    ApiContract.ShareCode.READ,
+                    ApiContract.ShareCode.RESTRICT
+                )
+            }
+            StringUtils.Extension.PRESENTATION -> {
+                listOf(
+                    ApiContract.ShareCode.READ_WRITE,
+                    ApiContract.ShareCode.COMMENT,
+                    ApiContract.ShareCode.READ,
+                    ApiContract.ShareCode.RESTRICT
+                )
+            }
+            StringUtils.Extension.SHEET -> {
+                listOf(
+                    ApiContract.ShareCode.READ_WRITE,
+                    ApiContract.ShareCode.CUSTOM_FILTER,
+                    ApiContract.ShareCode.COMMENT,
+                    ApiContract.ShareCode.READ,
+                    ApiContract.ShareCode.RESTRICT
+                )
+            }
+            StringUtils.Extension.PDF, StringUtils.Extension.OFORM -> {
+                listOf(
+                    ApiContract.ShareCode.READ_WRITE,
+                    ApiContract.ShareCode.FILL_FORMS,
+                    ApiContract.ShareCode.READ,
+                    ApiContract.ShareCode.RESTRICT
+                )
+            }
+            else -> {
+                listOf(
+                    ApiContract.ShareCode.READ_WRITE,
+                    ApiContract.ShareCode.READ,
+                    ApiContract.ShareCode.RESTRICT
+                )
+            }
+        }.run { if (removable) plus(ApiContract.ShareCode.NONE) else this }
     }
 
     fun setAccessIcon(icon: ImageView?, accessCode: Int) {

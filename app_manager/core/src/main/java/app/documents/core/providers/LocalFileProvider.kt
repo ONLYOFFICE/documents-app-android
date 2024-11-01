@@ -144,7 +144,7 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
     ): Observable<List<Operation>>? = null
 
     override fun fileInfo(item: Item?): Observable<CloudFile> {
-        (item as CloudFile?)?.fileStatus = java.lang.String.valueOf(ApiContract.FileStatus.NONE)
+        (item as CloudFile?)?.fileStatus = ApiContract.FileStatus.NONE
         return Observable.just(item)
     }
 
@@ -266,10 +266,15 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
             val sort = it[ApiContract.Parameters.ARG_SORT_BY]
             val order = it[ApiContract.Parameters.ARG_SORT_ORDER]
             when (sort) {
-                ApiContract.Parameters.VAL_SORT_BY_UPDATED -> folders.sortWith { o1: CloudFolder, o2: CloudFolder ->
-                    o1.updated.compareTo(
-                        o2.updated
-                    )
+                ApiContract.Parameters.VAL_SORT_BY_UPDATED -> {
+                    folders.sortWith { o1: CloudFolder, o2: CloudFolder ->
+                        o1.updated.compareTo(
+                            o2.updated
+                        )
+                    }
+                    files.sortWith { o1: CloudFile, o2: CloudFile ->
+                        o1.updated.compareTo(o2.updated)
+                    }
                 }
                 ApiContract.Parameters.VAL_SORT_BY_TITLE -> {
                     folders.sortWith { o1: CloudFolder, o2: CloudFolder ->

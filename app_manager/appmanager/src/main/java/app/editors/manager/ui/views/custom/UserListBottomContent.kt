@@ -8,19 +8,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import app.editors.manager.managers.utils.ManagerUiUtils
+import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppTextButton
@@ -36,7 +34,6 @@ fun UserListBottomContent(
     onDelete: (() -> Unit)? = null,
     onNext: () -> Unit
 ) {
-    var dropdown by remember { mutableStateOf(false) }
     AppDivider()
     Row(
         modifier = Modifier
@@ -58,30 +55,12 @@ fun UserListBottomContent(
             Text(text = "$count", style = MaterialTheme.typography.h6, textAlign = TextAlign.Center)
         }
         access?.let {
-            IconButton(onClick = { dropdown = true }) {
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(access)),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.colorTextSecondary
-                    )
-                    Icon(
-                        imageVector = ImageVector.vectorResource(app.editors.manager.R.drawable.ic_drawer_menu_header_arrow),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.colorTextSecondary
-                    )
-                    AccessDropdownMenu(
-                        onDismissRequest = { dropdown = false },
-                        expanded = dropdown,
-                        accessList = accessList,
-                        onClick = { newAccess -> dropdown = false; onAccess.invoke(newAccess) }
-                    )
-                }
-            }
+            AccessIconButton(
+                access = access,
+                enabled = true,
+                accessList = accessList,
+                onAccess = onAccess::invoke
+            )
         }
         Spacer(modifier = Modifier.weight(1f))
         AppTextButton(
@@ -89,5 +68,23 @@ fun UserListBottomContent(
             title = nextButtonTitle,
             onClick = onNext
         )
+    }
+}
+
+@Composable
+@Preview
+private fun UserListBottomContentPreview() {
+    ManagerTheme {
+        Surface {
+            UserListBottomContent(
+                nextButtonTitle = R.string.common_next,
+                count = 1,
+                access = 1,
+                accessList = listOf(1, 2, 3),
+                onAccess = {},
+                onDelete = {},
+                onNext = {}
+            )
+        }
     }
 }

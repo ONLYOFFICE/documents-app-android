@@ -3,6 +3,9 @@ package app.editors.manager.viewModels.main
 import androidx.lifecycle.ViewModel
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.isFavorite
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
@@ -39,6 +42,8 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.AddUsers,
                 ExplorerContextItem.ExternalLink(state),
+                ExplorerContextItem.Notifications((state.item as? CloudFolder)?.mute == true),
+                ExplorerContextItem.Duplicate,
                 ExplorerContextItem.Download,
                 ExplorerContextItem.Archive,
                 ExplorerContextItem.Restore,
@@ -76,11 +81,11 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Share.takeIf {
-                    state.provider != PortalProvider.Cloud.DocSpace || state.section == ApiContract.Section.User
+                    state.provider != PortalProvider.Cloud.DocSpace || state.section == ApiContract.Section.User && !((state.item is CloudFile) && state.item.isPdfForm)
                 },
                 ExplorerContextItem.CreateRoom.takeIf { state.provider == PortalProvider.Cloud.DocSpace },
                 ExplorerContextItem.ExternalLink(state),
-                ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.favorite),
+                ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.isFavorite),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Location,
                 ExplorerContextItem.Move,

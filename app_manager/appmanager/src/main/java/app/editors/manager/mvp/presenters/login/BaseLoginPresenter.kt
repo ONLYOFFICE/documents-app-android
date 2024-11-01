@@ -7,6 +7,7 @@ import app.documents.core.login.LoginResult
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.login.User
 import app.documents.core.model.login.request.RequestSignIn
+import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.mvp.presenters.base.BasePresenter
@@ -15,6 +16,7 @@ import com.google.android.gms.auth.UserRecoverableAuthException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import moxy.presenterScope
+import retrofit2.HttpException
 import javax.inject.Inject
 
 abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
@@ -44,7 +46,19 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                 .collect { result ->
                     when (result) {
                         is LoginResult.Success -> onAccountCreateSuccess(result.cloudAccount)
-                        is LoginResult.Error -> fetchError(result.exception)
+                        is LoginResult.Error -> {
+                            when (val exception = result.exception) {
+                                is HttpException -> {
+                                    val errorMessage = exception.response()?.errorBody()?.string().orEmpty()
+                                    if (exception.code() in arrayOf(401, 500) && errorMessage.contains("failed")) {
+                                        viewState.onError(context.getString(R.string.errors_webdav_username_password))
+                                    } else {
+                                        fetchError(exception)
+                                    }
+                                }
+                                else -> fetchError(exception)
+                            }
+                        }
                         is LoginResult.Sms -> onTwoFactorAuth(result.phoneNoise, RequestSignIn(email, password))
                         is LoginResult.Tfa -> onTwoFactorAuthApp(result.key, RequestSignIn(email, password))
                     }
@@ -52,9 +66,9 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         }
     }
 
-    fun signInWithProvider(accessToken: String?, provider: String) {
+    fun signInWithProvider(accessToken: String?, provider: String, smsCode: String? = null) {
         signInJob = presenterScope.launch {
-            loginRepository.signInWithProvider(accessToken, provider)
+            loginRepository.signInWithProvider(accessToken, provider, smsCode)
                 .collect { result ->
                     when (result) {
                         is LoginResult.Success -> onAccountCreateSuccess(result.cloudAccount)

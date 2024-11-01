@@ -8,6 +8,7 @@
         <item name="colorError">@color/colorError</item>
         <item name="colorOnError">@color/colorOnError</item>
         <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorSurfaceContainerHigh">@color/colorSurface</item>
         <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="colorOnBackground">@color/colorOnBackground</item>
         <item name="android:textColorPrimary">@color/colorTextPrimary</item>
@@ -38,9 +39,12 @@
     </style>
 
     <style name="MainActivityTheme" parent="AppBaseTheme">
-        <item name="android:navigationBarColor">@color/colorBottomBar</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+
+    <style name="OperationActivityTheme" parent="AppTheme">
+        <item name="android:navigationBarColor">@color/colorSurface</item>
     </style>
 
     <style name="WebViewerActivityStyle" parent="AppTheme">
@@ -266,8 +270,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
     </style>
 
-    <style name="Widget.Common.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
-        <item name="android:background">@color/colorBottomBar</item>
+    <style name="Widget.Common.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/colorSurface</item>
     </style>
 
     <style name="Widget.Common.Toolbar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
@@ -288,6 +292,14 @@
     </style>
 
     <style name="Widget.Common.ImageView.Context" parent="Widget.Common.ImageView.Secondary">
+        <item name="android:layout_width">@dimen/image_default_size</item>
+        <item name="android:layout_height">@dimen/image_default_size</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginStart">@dimen/default_margin_large</item>
+        <item name="android:layout_marginEnd">@dimen/default_margin_large</item>
+    </style>
+
+    <style name="Widget.Common.ImageView.ActionBottomMenu" parent="Widget.Common.ImageView">
         <item name="android:layout_width">@dimen/image_default_size</item>
         <item name="android:layout_height">@dimen/image_default_size</item>
         <item name="android:layout_gravity">center</item>

@@ -9,12 +9,7 @@ object GoogleUtils {
 
     fun isGooglePlayServicesAvailable(context: Context): Boolean {
         val services = GoogleApiAvailability.getInstance()
-        return when (services.isGooglePlayServicesAvailable(context)) {
-            ConnectionResult.SUCCESS -> {
-                true
-            }
-            else -> false
-        }
+        return services.isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
     }
 
     fun getDeviceToken(result: (resultListener: String) -> Unit, errorListener: (error: Throwable) -> Unit) {

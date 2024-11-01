@@ -25,10 +25,12 @@ open class UploadReceiver : BaseReceiver<Intent?>() {
         const val EXTRAS_KEY_PROGRESS = "EXTRAS_KEY_PROGRESS"
         const val EXTRAS_KEY_ID = "EXTRAS_KEY_ID"
         const val EXTRAS_FOLDER_ID = "EXTRAS_FOLDER_ID"
+        const val EXTRAS_ERROR_PDF_FORM = "EXTRAS_ERROR_PDF_FORM"
     }
 
     interface OnUploadListener {
         fun onUploadError(path: String?, info: String?, file: String?)
+        fun onUploadErrorDialog(title: String, message: String, file: String?)
         fun onUploadComplete(path: String?, info: String?, title: String?, file: CloudFile?, id: String?)
         fun onUploadAndOpen(path: String?, title: String?, file: CloudFile?, id: String?)
         fun onUploadFileProgress(progress: Int, id: String?, folderId: String?)
@@ -48,6 +50,14 @@ open class UploadReceiver : BaseReceiver<Intent?>() {
 
                 when (intent.action) {
                     UPLOAD_ACTION_ERROR -> {
+                        if (intent.hasExtra(EXTRAS_ERROR_PDF_FORM)) {
+                            onUploadListener?.onUploadErrorDialog(
+                                title = context.getString(R.string.dialogs_warning_title),
+                                message = context.getString(R.string.dialogs_warning_only_pdf_form_message),
+                                file = intent.getStringExtra(EXTRAS_KEY_FILE)
+                            )
+                            return
+                        }
                         onUploadListener?.onUploadError(
                             path = title,
                             info = context.getString(R.string.upload_manager_error),

@@ -42,7 +42,7 @@ interface CloudLoginRepository : LoginRepository {
 
     suspend fun signInByEmail(email: String, password: String, code: String?): Flow<LoginResult>
 
-    suspend fun signInWithProvider(accessToken: String?, provider: String): Flow<LoginResult>
+    suspend fun signInWithProvider(accessToken: String?, provider: String, code: String?): Flow<LoginResult>
 
     suspend fun signInWithSSO(accessToken: String): Flow<Result<CloudAccount>>
 

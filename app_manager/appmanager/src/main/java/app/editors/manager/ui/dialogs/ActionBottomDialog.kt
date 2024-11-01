@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import app.documents.core.model.cloud.isDocSpace
+import app.documents.core.network.common.contracts.ApiContract
+import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.databinding.ListExplorerActionMenuBinding
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
@@ -27,6 +29,7 @@ class ActionBottomDialog : BaseBottomDialog() {
     var isDocs = true
     var isLocal = false
     var isWebDav = false
+    var roomType: Int? = null
     var onClickListener: OnClickListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,6 +104,11 @@ class ActionBottomDialog : BaseBottomDialog() {
     }
 
     private fun setViewState() {
+        if (roomType == ApiContract.RoomType.FILL_FORMS_ROOM) {
+            setFillFormsRoomState()
+            return
+        }
+
         viewBinding?.let {
             it.viewLineSeparatorStorage.viewLineSeparator.isVisible = isThirdParty
             it.listExplorerActionStorage.isVisible = isThirdParty
@@ -116,6 +124,23 @@ class ActionBottomDialog : BaseBottomDialog() {
                 val isDocSpace = context?.accountOnline.isDocSpace
                 it.viewLineSeparatorStorage.viewLineSeparator.isVisible = !isDocSpace
                 it.listExplorerActionStorage.isVisible = !isDocSpace
+            }
+        }
+    }
+
+    private fun setFillFormsRoomState() {
+        viewBinding?.let { binding ->
+            with(binding) {
+                listOf(
+                    listExplorerActionPhoto,
+                    listExplorerActionDocs,
+                    listExplorerActionSheet,
+                    listExplorerActionPresentation,
+                    listExplorerActionStorage,
+                    viewLineSeparatorStorage.viewLineSeparator
+                ).forEach { it.isVisible = false }
+                listExplorerActionUploadText.setText(R.string.rooms_upload_pdf_from_docspace)
+                listExplorerActionImportText.setText(R.string.rooms_upload_pdf_from_device)
             }
         }
     }

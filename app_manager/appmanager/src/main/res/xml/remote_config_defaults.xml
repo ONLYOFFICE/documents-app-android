@@ -32,4 +32,8 @@
         <key>check_sdk_fully</key>
         <value>false</value>
     </entry>
+    <entry>
+        <key>allow_google_drive</key>
+        <value>true</value>
+    </entry>
 </defaultsMap>

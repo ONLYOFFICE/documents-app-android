@@ -88,6 +88,8 @@ object ApiContract {
         const val EXCEED_FILE_SIZE_100 = "Exceeds the maximum file size (100MB)"
         const val EXCEED_FILE_SIZE_25 = "Exceeds the maximum file size (25MB)"
         const val STORAGE_NOT_AVAILABLE = "The content of third party folder are not available. Try to reconnect the account"
+        const val PINNED_ROOM_LIMIT = "You can't pin a room"
+        const val FILLING_FORM_ROOM_UPLOAD = "Please try to upload the ONLYOFFICE PDF form"
     }
     object ShareType {
         const val NONE = "None"
@@ -322,7 +324,12 @@ object ApiContract {
         const val CUSTOM_ROOM = 5
         const val PUBLIC_ROOM = 6
 
-        fun hasExternalLink(roomType: Int?): Boolean = arrayOf(CUSTOM_ROOM, PUBLIC_ROOM).contains(roomType)
+        fun hasExternalLink(roomType: Int?): Boolean = roomType != CUSTOM_ROOM
+    }
+
+    object FolderType {
+        const val IN_PROGRESS = 26
+        const val COMPLETE = 25
     }
 
     object SectionPath {

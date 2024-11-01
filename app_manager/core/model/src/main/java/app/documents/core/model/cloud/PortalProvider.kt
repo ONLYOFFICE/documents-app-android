@@ -19,13 +19,16 @@ sealed class PortalProvider {
     }
 
     @Serializable
-    data object Onedrive : PortalProvider()
+    sealed class Storage : PortalProvider()
 
     @Serializable
-    data object Dropbox : PortalProvider()
+    data object Onedrive : Storage()
 
     @Serializable
-    data object GoogleDrive : PortalProvider()
+    data object Dropbox : Storage()
+
+    @Serializable
+    data object GoogleDrive : Storage()
 
     @Serializable
     data class Webdav(val provider: WebdavProvider, val path: String = "") : PortalProvider()

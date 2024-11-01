@@ -5,54 +5,50 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.forEach
 import androidx.fragment.app.setFragmentResultListener
-import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.Security
 import app.editors.manager.R
-import app.editors.manager.managers.tools.ActionMenuAdapter
 import app.editors.manager.managers.tools.ActionMenuItem
-import app.editors.manager.managers.tools.ActionMenuItemsFactory
 import app.editors.manager.mvp.models.filter.RoomFilterType
-import app.editors.manager.ui.activities.main.ShareActivity
-import app.editors.manager.ui.dialogs.AddRoomBottomDialog
+import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.share.InviteUsersFragment
-import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.managers.utils.setFragmentResultListener
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
-import lib.toolkit.base.ui.popup.ActionBarMenu
 
 class DocsRoomFragment : DocsCloudFragment() {
+
     private val isRoom get() = cloudPresenter.isCurrentRoom && cloudPresenter.isRoot
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setFragmentResultListener(KEY_ROOM_CREATED_REQUEST) { _, bundle ->
             val roomId = bundle.getString(KEY_RESULT_ROOM_ID)
+            val roomType = bundle.getInt(KEY_RESULT_ROOM_TYPE)
             if (!roomId.isNullOrEmpty()) {
-                presenter.openFolder(roomId, 0)
+                presenter.openFolder(roomId, 0, roomType)
             }
         }
     }
 
-    override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean) {
+    override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean, roomType: Int?) {
         if (isRoom) {
-            setFragmentResultListener { bundle ->
-                onActionDialogClose()
-                if (bundle?.getInt("type") != -1) {
-                    showAddRoomFragment(bundle?.getInt("type") ?: 2)
-                }
-            }
-            AddRoomBottomDialog().show(parentFragmentManager, AddRoomBottomDialog.TAG)
+            showAddRoomBottomDialog(false)
         } else {
-            super.onActionDialog(isThirdParty, isDocs)
+            super.onActionDialog(isThirdParty, isDocs, roomType)
+        }
+    }
+
+    override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
+        when (buttons) {
+            ActionBottomDialog.Buttons.UPLOAD -> presenter.showFileChooserFragment()
+            ActionBottomDialog.Buttons.IMPORT -> presenter.uploadPermission(".pdf")
+            else -> super.onActionButtonClick(buttons)
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.toolbar_selection_archive -> cloudPresenter.archiveSelectedRooms()
+            R.id.toolbar_selection_archive -> cloudPresenter.archiveRooms(true)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -68,33 +64,14 @@ class DocsRoomFragment : DocsCloudFragment() {
         } else super.onStateMenuSelection()
     }
 
-    override fun showActionBarMenu() {
-        ActionBarMenu(
-            context = requireContext(),
-            adapter = ActionMenuAdapter(actionMenuClickListener),
-            items = ActionMenuItemsFactory.getRoomItems(
-                section = presenter.getSectionType(),
-                root = presenter.isRoot,
-                selected = presenter.isSelectionMode,
-                allSelected = presenter.isSelectedAll,
-                sortBy = presenter.preferenceTool.sortBy,
-                empty = presenter.isListEmpty(),
-                currentRoom = presenter.isRoomFolder(),
-                security = presenter.roomClicked?.security ?: Security(),
-                asc = presenter.preferenceTool.sortOrder.equals(
-                    ApiContract.Parameters.VAL_SORT_ORDER_ASC,
-                    ignoreCase = true
-                )
-            )
-        ).show(requireActivity().window.decorView)
-    }
-
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
+            ExplorerContextItem.Duplicate -> cloudPresenter.duplicateRoom()
             ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             ExplorerContextItem.Reconnect -> reconnectStorage()
-            ExplorerContextItem.Archive -> cloudPresenter.archiveRoom()
+            ExplorerContextItem.Archive -> cloudPresenter.archiveRooms(true)
             ExplorerContextItem.AddUsers -> showInviteUsersDialog()
+            is ExplorerContextItem.Notifications -> cloudPresenter.muteRoomNotifications(!contextItem.muted)
             is ExplorerContextItem.ExternalLink -> cloudPresenter.copyLinkFromContextMenu()
             is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()
             is ExplorerContextItem.Delete -> if (presenter.isRoot) cloudPresenter.checkRoomOwner() else super.onContextButtonClick(contextItem)
@@ -106,16 +83,11 @@ class DocsRoomFragment : DocsCloudFragment() {
         when (item) {
             ActionMenuItem.Archive -> {
                 cloudPresenter.popToRoot()
-                cloudPresenter.archiveRoom()
+                cloudPresenter.archiveRooms(true)
             }
             ActionMenuItem.Info -> showRoomInfoFragment()
             ActionMenuItem.EditRoom -> cloudPresenter.editRoom()
-            ActionMenuItem.Invite -> ShareActivity.show(
-                this,
-                presenter.roomClicked ?: error("room can not be null"),
-                false
-            )
-            is ActionMenuItem.CopyLink -> cloudPresenter.copyLinkFromActionMenu(item.isRoom)
+            ActionMenuItem.Invite -> showInviteUsersDialog()
             ActionMenuItem.LeaveRoom -> cloudPresenter.checkRoomOwner()
             else -> super.actionMenuClickListener.invoke(item)
         }
@@ -140,15 +112,6 @@ class DocsRoomFragment : DocsCloudFragment() {
         } else super.getFilters()
     }
 
-    override fun onPlaceholder(type: PlaceholderViews.Type) {
-        val isRoom = (presenter.currentFolder?.roomType ?: -1) > -1
-        if (type == PlaceholderViews.Type.EMPTY && isRoom) {
-            placeholderViews?.setEmptyRoomPlaceholder(presenter.itemClicked?.security?.editRoom == true)
-        } else {
-            super.onPlaceholder(type)
-        }
-    }
-
     private fun reconnectStorage() {
         val room = presenter.itemClicked as? CloudFolder
         showStorageActivity(
@@ -161,7 +124,7 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     private fun showInviteUsersDialog() {
-        (presenter.itemClicked as? CloudFolder)?.let { room ->
+        presenter.roomClicked?.let { room ->
             InviteUsersFragment.newInstance(room.id, room.roomType).show(parentFragmentManager, null)
         }
     }
@@ -170,6 +133,7 @@ class DocsRoomFragment : DocsCloudFragment() {
 
         val TAG: String = DocsRoomFragment::class.java.simpleName
         const val KEY_RESULT_ROOM_ID = "key_result_room_id"
+        const val KEY_RESULT_ROOM_TYPE = "key_result_room_type"
         const val TAG_LEAVE_ROOM = "tag_leave_room"
 
         fun newInstance(section: Int, rootPath: String): DocsCloudFragment {

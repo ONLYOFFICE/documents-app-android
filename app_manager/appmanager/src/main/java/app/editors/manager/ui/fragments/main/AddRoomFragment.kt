@@ -8,9 +8,6 @@ import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -53,7 +50,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
@@ -61,7 +57,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentManager
+import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -82,13 +79,15 @@ import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.AddRoomItem
-import app.editors.manager.ui.dialogs.fragments.AddRoomDialog
+import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.viewModels.main.AddRoomData
+import app.editors.manager.viewModels.main.AddRoomEffect
 import app.editors.manager.viewModels.main.AddRoomViewModel
+import app.editors.manager.viewModels.main.CopyItems
+import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.StorageState
 import app.editors.manager.viewModels.main.UserListMode
-import app.editors.manager.viewModels.main.UserListViewModel
 import app.editors.manager.viewModels.main.ViewState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -109,88 +108,70 @@ import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
-import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.capitalize
+import lib.toolkit.base.managers.utils.getIntExt
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
-import lib.toolkit.base.ui.fragments.base.BaseFragment
 import java.io.File
 
-private enum class Navigation(val route: String) {
-    Main("MainScreen"),
-    Select("SelectScreen"),
-    Folder("FolderScreen"),
-    ChangeOwner("ChangeOwnerScreen")
+private enum class Screens {
+    Main, Select, Folder, ChangeOwner
 }
 
-class AddRoomFragment : BaseFragment() {
+class AddRoomFragment : ComposeDialogFragment() {
 
     companion object {
 
         const val TAG_ROOM_TYPE = "room_type"
         const val TAG_ROOM_INFO = "room_info"
-        const val TAG_COPY = "files_copy"
+        const val TAG_COPY_ITEMS = "files_copy"
         const val TAG_RESULT = "add_room_result"
 
         val TAG: String = AddRoomFragment::class.java.simpleName
 
-        fun newInstance(roomType: Int, room: Item?, isCopy: Boolean = false) =
-            AddRoomFragment().putArgs(TAG_ROOM_TYPE to roomType, TAG_ROOM_INFO to room, TAG_COPY to isCopy)
+        private fun newInstance(roomType: Int?, room: Item?, items: CopyItems?) =
+            AddRoomFragment().putArgs(
+                TAG_ROOM_TYPE to roomType,
+                TAG_ROOM_INFO to room,
+                TAG_COPY_ITEMS to items
+            )
 
         fun show(
-            fragmentManager: FragmentManager,
-            roomType: Int,
-            roomInfo: Item? = null,
-            isCopy: Boolean = false,
+            activity: FragmentActivity,
+            type: Int? = null,
+            room: CloudFolder? = null,
+            copyItems: CopyItems? = null,
+            onResult: (Bundle) -> Unit
         ) {
-            FragmentUtils.showFragment(
-                fragmentManager = fragmentManager,
-                fragment = newInstance(roomType, roomInfo, isCopy),
-                frameId = android.R.id.content,
-                tag = TAG,
-                isAdd = true
-            )
+            activity.supportFragmentManager.setFragmentResultListener(
+                TAG_RESULT, activity
+            ) { _, bundle -> onResult(bundle) }
+            newInstance(type, room, copyItems)
+                .show(activity.supportFragmentManager, TAG)
         }
     }
 
-    private lateinit var navController: NavHostController
+    private val copyItems: CopyItems? by lazy { arguments?.getSerializableExt(TAG_COPY_ITEMS) }
 
-    private val isEdit: Boolean
-        get() = arguments?.getSerializableExt<Item>(TAG_ROOM_INFO) != null && arguments?.getBoolean(TAG_COPY) == false
+    private val roomData: CloudFolder? by lazy { arguments?.getSerializableExt(TAG_ROOM_INFO) }
 
-    override fun onBackPressed(): Boolean {
-        if (!navController.popBackStack()) {
-            if (parentFragment is AddRoomDialog) {
-                (parentFragment as AddRoomDialog).dismiss()
-            }
-        }
-        return true
-    }
+    private val isEdit: Boolean get() = roomData != null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        return ComposeView(requireContext()).apply {
-            layoutParams =
-                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        (view as ComposeView).setContent {
-            navController = rememberNavController()
-            val roomType = remember { arguments?.getInt(TAG_ROOM_TYPE) }
+    @Composable
+    override fun Content() {
+        ManagerTheme {
+            val navController = rememberNavController()
             val room = remember { arguments?.getSerializableExt<Item>(TAG_ROOM_INFO) }
+            val roomType = remember { arguments?.getIntExt(TAG_ROOM_TYPE) ?: (room as? CloudFolder)?.roomType }
             val viewModel = viewModel {
                 AddRoomViewModel(
                     context = requireActivity().application,
                     roomProvider = requireContext().roomProvider,
+                    roomType = roomType,
                     roomInfo = room,
-                    isCopy = arguments?.getBoolean(TAG_COPY) ?: false
+                    copyItems = copyItems
                 )
             }
             val roomState = viewModel.roomState.collectAsState()
@@ -204,98 +185,100 @@ class AddRoomFragment : BaseFragment() {
                     }
                 }
 
-            ManagerTheme {
-                NavHost(navController = navController, startDestination = "${Navigation.Main.route}/{roomType}") {
-                    composable(
-                        "${Navigation.Main.route}/{roomType}",
-                        arguments = listOf(navArgument("roomType") { type = NavType.IntType })
-                    ) {
-                        val type = remember { it.arguments?.getInt("roomType", roomType ?: -1) }
-
-                        LaunchedEffect(Unit) {
-                            viewModel.setType(type ?: -1)
+            LaunchedEffect(viewModel) {
+                viewModel.effect.collect { effect ->
+                    when (effect) {
+                        is AddRoomEffect.Error -> {
+                            UiUtils.getSnackBar(requireActivity())
+                                .setText(effect.message)
+                                .show()
                         }
+                    }
+                }
+            }
 
-                        MainScreen(
-                            isEdit = isEdit,
-                            navController = navController,
-                            viewState = viewState.value,
-                            roomState = roomState.value,
-                            saveData = viewModel::saveData,
-                            imageCallBack = viewModel::setImageUri,
-                            onBackPressed = ::onBackPressed,
-                            onCreateNewFolder = viewModel::setCreateNewFolder,
-                            onLocationClick = { navController.navigate("${Navigation.Folder.route}/$it") },
-                            onSetOwnerClick = { navController.navigate(Navigation.ChangeOwner.route) },
-                            create = { type1, name, image, tags ->
-                                if (isEdit) {
-                                    viewModel.edit(name, tags)
-                                } else {
-                                    viewModel.createRoom(type1, name, image, tags)
-                                }
-                            },
-                            created = { id ->
-                                requireActivity().supportFragmentManager.setFragmentResult(
-                                    TAG_RESULT,
-                                    Bundle(1).apply { putString("id", id) }
-                                )
-                                onBackPressed()
-                            },
-                            onStorageConnect = { isConnect ->
-                                if (isConnect) {
-                                    storageActivityLauncher.launch(StorageActivity.getIntent(requireContext()))
-                                } else {
-                                    viewModel.disconnectStorage()
-                                }
+            NavHost(navController = navController, startDestination = Screens.Main.name) {
+                composable(route = Screens.Main.name) {
+                    MainScreen(
+                        isEdit = isEdit,
+                        isRoomTypeEditable = !isEdit && copyItems == null,
+                        navController = navController,
+                        viewState = viewState.value,
+                        roomState = roomState.value,
+                        saveData = viewModel::saveData,
+                        imageCallBack = viewModel::setImageUri,
+                        onBackPressed = ::dismiss,
+                        onCreateNewFolder = viewModel::setCreateNewFolder,
+                        onLocationClick = { navController.navigate("${Screens.Folder.name}/$it") },
+                        onSetOwnerClick = { navController.navigate(Screens.ChangeOwner.name) },
+                        create = { type1, name, image, tags ->
+                            if (isEdit) {
+                                viewModel.edit(name, tags)
+                            } else {
+                                viewModel.createRoom(type1, name, image, tags)
                             }
-                        )
-                    }
-                    composable(
-                        route = "${Navigation.Select.route}/{roomType}",
-                        arguments = listOf(navArgument("roomType") { type = NavType.IntType })
-                    ) {
-                        val type = it.arguments?.getInt("roomType") ?: -1
-                        SelectRoomScreen(type, navController)
-                    }
-                    composable(
-                        route = "${Navigation.Folder.route}/{folderId}",
-                        arguments = listOf(navArgument("folderId") { type = NavType.StringType })
-                    ) {
-                        SelectFolderScreen(
-                            folderId = it.arguments?.getString("folderId").orEmpty(),
-                            onBack = navController::popBackStack,
-                            onAccept = viewModel::setStorageLocation
-                        )
-                    }
-                    composable(route = Navigation.ChangeOwner.route) {
-                        val userListViewModel = UserListViewModel(
-                            roomId = room?.id.orEmpty(),
-                            roomType = roomType,
-                            roomOwnerId = room?.createdBy?.id.orEmpty(),
-                            mode = UserListMode.ChangeOwner,
-                            shareService = requireContext().shareApi,
-                            roomProvider = requireContext().roomProvider,
-                            resourcesProvider = ResourcesProvider(requireContext())
-                        )
-                        UserListScreen(
-                            viewModel = userListViewModel,
-                            title = R.string.room_set_owner_title,
-                            disableInvited = false,
-                            onClick = { userId -> userListViewModel.setOwner(userId, leave = false) },
-                            onBack = navController::popBackStackWhenResumed,
-                            onSuccess = {
-                                navController.popBackStackWhenResumed()
-                                viewModel.setOwner(it)
-                                requireActivity().supportFragmentManager.setFragmentResult(
-                                    TAG_RESULT,
-                                    Bundle.EMPTY
-                                )
-                            },
-                            onSnackBar = {
-                                UiUtils.getSnackBar(requireActivity()).setText(it).show()
+                        },
+                        created = { id ->
+                            requireActivity().supportFragmentManager.setFragmentResult(
+                                TAG_RESULT,
+                                bundleOf("id" to id, "type" to roomState.value.type)
+                            )
+                            dismiss()
+                        },
+                        onStorageConnect = { isConnect ->
+                            if (isConnect) {
+                                storageActivityLauncher.launch(StorageActivity.getIntent(requireContext()))
+                            } else {
+                                viewModel.disconnectStorage()
                             }
-                        )
-                    }
+                        }
+                    )
+                }
+                composable(Screens.Select.name) {
+                    SelectRoomScreen(
+                        currentType = roomState.value.type,
+                        navController = navController,
+                        viewModel = viewModel
+                    )
+                }
+                composable(
+                    route = "${Screens.Folder.name}/{folderId}",
+                    arguments = listOf(navArgument("folderId") { type = NavType.StringType })
+                ) {
+                    SelectFolderScreen(
+                        folderId = it.arguments?.getString("folderId").orEmpty(),
+                        onBack = navController::popBackStack,
+                        onAccept = viewModel::setStorageLocation
+                    )
+                }
+                composable(Screens.ChangeOwner.name) {
+                    val userListViewModel = RoomUserListViewModel(
+                        roomId = room?.id.orEmpty(),
+                        roomType = roomType,
+                        roomOwnerId = roomState.value.owner.id,
+                        mode = UserListMode.ChangeOwner,
+                        shareService = requireContext().shareApi,
+                        roomProvider = requireContext().roomProvider,
+                        resourcesProvider = ResourcesProvider(requireContext())
+                    )
+                    UserListScreen(
+                        viewModel = userListViewModel,
+                        title = R.string.room_set_owner_title,
+                        disableInvited = false,
+                        onClick = { userId -> userListViewModel.setOwner(userId, leave = false) },
+                        onBack = navController::popBackStackWhenResumed,
+                        onSuccess = {
+                            navController.popBackStackWhenResumed()
+                            viewModel.setOwner(it)
+                            requireActivity().supportFragmentManager.setFragmentResult(
+                                TAG_RESULT,
+                                Bundle.EMPTY
+                            )
+                        },
+                        onSnackBar = {
+                            UiUtils.getSnackBar(requireActivity()).setText(it).show()
+                        }
+                    )
                 }
             }
         }
@@ -307,6 +290,7 @@ class AddRoomFragment : BaseFragment() {
 @Composable
 private fun MainScreen(
     isEdit: Boolean,
+    isRoomTypeEditable: Boolean,
     navController: NavHostController,
     viewState: ViewState,
     roomState: AddRoomData,
@@ -326,7 +310,6 @@ private fun MainScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val tags = remember(roomState.tags::toMutableStateList)
     val name = remember { mutableStateOf(roomState.name) }
-    val roomInfo = RoomUtils.getRoomInfo(roomState.type)
 
     if (viewState is ViewState.Success) {
         if (viewState.id != null) {
@@ -381,13 +364,11 @@ private fun MainScreen(
                     Spacer(modifier = Modifier.height(4.dp))
                 }
                 AddRoomItem(
-                    isClickable = !isEdit,
-                    icon = roomInfo.icon,
-                    title = roomInfo.title,
-                    description = roomInfo.description
+                    roomType = roomState.type,
+                    clickable = isRoomTypeEditable
                 ) {
                     saveData(name.value, tags)
-                    navController.navigate("${Navigation.Select.route}/${roomState.type}")
+                    navController.navigate(Screens.Select.name)
                 }
                 Row(
                     modifier = Modifier
@@ -516,8 +497,6 @@ fun ThirdPartyBlock(
                     } else {
                         state.location ?: stringResource(id = R.string.room_create_thirdparty_location_root)
                     },
-                    enabled = !isEdit,
-                    arrowVisible = !isEdit,
                     onClick = { onLocationClick.invoke(state.id) }
                 )
                 AppSwitchItem(
@@ -535,7 +514,7 @@ fun ThirdPartyBlock(
 }
 
 @Composable
-private fun SelectRoomScreen(type: Int, navController: NavHostController) {
+private fun SelectRoomScreen(currentType: Int, navController: NavHostController, viewModel: AddRoomViewModel) {
     AppScaffold(topBar = {
         AppTopBar(
             title = stringResource(id = R.string.rooms_choose_room),
@@ -543,39 +522,13 @@ private fun SelectRoomScreen(type: Int, navController: NavHostController) {
         )
     }, useTablePaddings = false) {
         Column {
-            AddRoomItem(
-                icon = R.drawable.ic_collaboration_room,
-                title = R.string.rooms_add_collaboration,
-                description = R.string.rooms_add_collaboration_des,
-                isSelect = type == 2
-            ) {
-                navController.navigate("${Navigation.Main.route}/2") {
-                    popUpTo(navController.graph.id) {
-                        inclusive = true
-                    }
-                }
-            }
-            AddRoomItem(
-                icon = R.drawable.ic_public_room,
-                title = R.string.rooms_add_public_room,
-                description = R.string.rooms_add_public_room_des,
-                isSelect = type == 6
-            ) {
-                navController.navigate("${Navigation.Main.route}/6") {
-                    popUpTo(navController.graph.id) {
-                        inclusive = true
-                    }
-                }
-            }
-            AddRoomItem(
-                icon = R.drawable.ic_custom_room,
-                title = R.string.rooms_add_custom,
-                description = R.string.rooms_add_custom_des,
-                isSelect = type == 5
-            ) {
-                navController.navigate("${Navigation.Main.route}/5") {
-                    popUpTo(navController.graph.id) {
-                        inclusive = true
+            for (type in RoomUtils.roomTypes) {
+                AddRoomItem(roomType = type, selected = currentType == type) { newType ->
+                    viewModel.setRoomType(newType)
+                    navController.navigate(Screens.Main.name) {
+                        popUpTo(navController.graph.id) {
+                            inclusive = true
+                        }
                     }
                 }
             }
@@ -608,7 +561,7 @@ private fun ChooseImageBottomView(
     val cameraPermission =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                photoLauncher.launch(photo)
+                photo?.let { photoLauncher.launch(it) }
             }
         }
 
@@ -661,7 +614,7 @@ private fun ChooseImageBottomView(
         imageUri?.let {
             Divider()
             AppArrowItem(
-                title = stringResource(id = R.string.list_action_delete_link),
+                title = stringResource(id = R.string.list_action_delete_image),
                 titleColor = MaterialTheme.colors.error,
                 startIcon = R.drawable.ic_trash,
                 startIconTint = MaterialTheme.colors.error,
@@ -707,6 +660,7 @@ private fun MainScreenPreview() {
     ManagerTheme {
         MainScreen(
             isEdit = true,
+            isRoomTypeEditable = false,
             navController = rememberNavController(),
             viewState = ViewState.None,
             roomState = AddRoomData(
@@ -732,7 +686,7 @@ private fun MainScreenPreview() {
 @Composable
 private fun SelectScreenPreview() {
     ManagerTheme {
-        SelectRoomScreen(2, navController = rememberNavController())
+        SelectRoomScreen(2, navController = rememberNavController(), viewModel = viewModel())
     }
 }
 

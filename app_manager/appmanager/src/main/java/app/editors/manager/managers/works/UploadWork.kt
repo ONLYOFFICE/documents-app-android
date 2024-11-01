@@ -6,14 +6,16 @@ import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import app.editors.manager.app.App
-import app.editors.manager.app.api
-import app.editors.manager.managers.receivers.UploadReceiver
 import app.documents.core.manager.ProgressRequestBody
-import app.editors.manager.managers.utils.NotificationUtils
+import app.documents.core.network.common.contracts.ApiContract.Errors
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.UploadFile
 import app.documents.core.network.manager.models.response.ResponseFile
+import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.app.api
+import app.editors.manager.managers.receivers.UploadReceiver
+import app.editors.manager.managers.utils.NotificationUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
@@ -21,7 +23,7 @@ import okhttp3.Headers
 import okhttp3.MultipartBody
 import retrofit2.Call
 import java.io.IOException
-import java.util.*
+import java.util.Collections
 
 class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
 
@@ -92,7 +94,18 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
                 removeUploadFile(from)
             } else {
                 notificationUtils.showUploadErrorNotification(id.hashCode(), title)
-                sendBroadcastUnknownError(title!!, path)
+
+                if (Errors.FILLING_FORM_ROOM_UPLOAD in response?.errorBody()?.string().orEmpty()) {
+                    notificationUtils.showUploadErrorNotification(
+                        id.hashCode(),
+                        title,
+                        R.string.dialogs_warning_only_pdf_form_message
+                    )
+                    sendBroadcastPDFFormError(path)
+                } else {
+                    sendBroadcastUnknownError(title!!, path)
+                }
+
                 if (!NetworkUtils.isOnline(applicationContext)) {
                     return Result.retry()
                 } else {
@@ -177,6 +190,13 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
         val intent = Intent(UploadReceiver.UPLOAD_ACTION_ERROR)
         intent.putExtra(UploadReceiver.EXTRAS_KEY_FILE, uploadFile)
         intent.putExtra(UploadReceiver.EXTRAS_KEY_TITLE, title)
+        LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
+    }
+
+    private fun sendBroadcastPDFFormError(uploadFile: String?) {
+        val intent = Intent(UploadReceiver.UPLOAD_ACTION_ERROR)
+        intent.putExtra(UploadReceiver.EXTRAS_KEY_FILE, uploadFile)
+        intent.putExtra(UploadReceiver.EXTRAS_ERROR_PDF_FORM, true)
         LocalBroadcastManager.getInstance(App.getApp()).sendBroadcast(intent)
     }
 

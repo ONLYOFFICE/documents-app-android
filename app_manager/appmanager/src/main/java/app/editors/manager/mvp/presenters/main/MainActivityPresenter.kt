@@ -176,20 +176,6 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         accountPreferences.onlineAccountId = null
     }
 
-//    fun checkFileData(fileData: Uri) {
-//        preferenceTool.fileData
-//
-//        context.accountOnline?.let { account ->
-//            if (fileData.queryParameterNames.contains("push")) {
-//                viewState.openFile(account, fileData.getQueryParameter("data") ?: "")
-//            }
-//        }
-//    }
-
-    fun onRemoveFileData() {
-        preferenceTool.fileData = ""
-    }
-
     fun onRateOff() {
         preferenceTool.isRateOn = false
     }

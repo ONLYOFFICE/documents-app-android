@@ -1,8 +1,8 @@
 buildscript {
 
     extra.apply {
-        set("NDK_VERSION", AppDependency.NDK_VERSION)
-        set("kotlin_version", Kotlin.version)
+        set("NDK_VERSION", libs.versions.ndk.get())
+        set("kotlin_version", libs.versions.kotlin.get())
     }
 
     repositories {
@@ -14,11 +14,10 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:8.4.0")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Kotlin.version}")
-        classpath("com.google.gms:google-services:4.4.0")
-        classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.9")
-        classpath("org.jetbrains.kotlin:kotlin-serialization:${Kotlin.version}")
+        classpath(libs.gradle)
+        classpath(libs.kotlin.gradle.plugin)
+        classpath(libs.google.services)
+        classpath(libs.firebase.crashlytics.gradle)
     }
 }
 
@@ -38,6 +37,7 @@ allprojects {
 }
 
 plugins {
+    alias(libs.plugins.kotlin.serialization.plugin) apply false
     id("maven-publish")
 }
 

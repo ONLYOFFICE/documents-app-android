@@ -6,8 +6,8 @@ import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
 @StateStrategyType(OneExecutionStateStrategy::class)
-interface BaseStorageDocsView: DocsBaseView {
-    fun onFileWebView(file: CloudFile)
-    fun onChooseDownloadFolder()
-    fun onAuthorization()
+interface BaseStorageDocsView : DocsBaseView {
+    fun onFileWebView(file: CloudFile) {}
+    fun onChooseDownloadFolder() {}
+    fun onAuthorization() {}
 }

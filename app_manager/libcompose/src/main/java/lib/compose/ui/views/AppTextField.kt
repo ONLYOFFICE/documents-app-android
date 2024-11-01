@@ -36,6 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -53,6 +55,7 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import lib.compose.ui.addIfNotNull
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextPrimary
 import lib.compose.ui.theme.colorTextSecondary
@@ -71,6 +74,7 @@ fun AppTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     focusManager: FocusManager? = null,
+    focusRequester: FocusRequester? = null,
     errorState: MutableState<String?>? = null,
     onValueChange: ((String) -> Unit)? = null,
     onDone: (() -> Unit)? = null
@@ -86,7 +90,9 @@ fun AppTextField(
 
     Column(modifier = modifier.fillMaxWidth()) {
         TextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .addIfNotNull(focusRequester) { focusRequester(it) },
             value = state.value,
             onValueChange = { value ->
                 onValueChange?.let {
@@ -129,6 +135,10 @@ fun AppTextField(
             color = MaterialTheme.colors.error,
             style = MaterialTheme.typography.caption,
         )
+    }
+
+    focusRequester?.let {
+        LaunchedEffect(Unit) { it.requestFocus() }
     }
 }
 

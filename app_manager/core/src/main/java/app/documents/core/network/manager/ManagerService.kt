@@ -3,6 +3,7 @@ package app.documents.core.network.manager
 import app.documents.core.model.login.Settings
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.request.RequestBatchBase
 import app.documents.core.network.manager.models.request.RequestBatchOperation
@@ -25,6 +26,7 @@ import app.documents.core.network.manager.models.response.ResponseExplorer
 import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseFile
 import app.documents.core.network.manager.models.response.ResponseFiles
+import app.documents.core.network.manager.models.response.ResponseFillResult
 import app.documents.core.network.manager.models.response.ResponseFolder
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.manager.models.response.ResponsePortal
@@ -146,6 +148,14 @@ interface ManagerService {
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}")
     fun getFileInfo(@Path(value = "file_id") fileId: String?): Observable<Response<ResponseFile>>
 
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}")
+    suspend fun getCloudFileInfo(@Path(value = "file_id") fileId: String?): app.documents.core.network.BaseResponse<CloudFile>
+
     /*
      * Create folder
      * */
@@ -189,14 +199,6 @@ interface ManagerService {
     @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/copy")
     fun copy(@Body body: RequestBatchOperation): Observable<Response<ResponseOperation>>
 
-    // Need to room
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/copy")
-    suspend fun copyCoroutines(@Body body: RequestBatchOperation): ResponseOperation
-
     /*
      * Terminate all operations
      * */
@@ -216,14 +218,6 @@ interface ManagerService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/fileops")
     fun status(): Single<ResponseOperation>
-
-    // Need to room
-    @Headers(
-        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
-        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
-    )
-    @GET("api/" + ApiContract.API_VERSION + "/files/fileops")
-    suspend fun statusCoroutines(): ResponseOperation
 
     /*
      * Rename folder
@@ -438,6 +432,12 @@ interface ManagerService {
         @Part part: MultipartBody.Part
     ): Single<Response<ResponseBody>>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/${ApiContract.API_VERSION}/files/file/fillresult")
+    suspend fun getFillResult(@Query(value = "fillingSessionId") fillingSessionId: String): ResponseFillResult
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

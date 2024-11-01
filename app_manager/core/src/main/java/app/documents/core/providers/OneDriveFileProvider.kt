@@ -50,21 +50,16 @@ class OneDriveFileProvider(
     private val api: OneDriveProvider get() = helper.api
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
-        return Observable.fromCallable {
-            if (filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE) == null || filter[ApiContract.Parameters.ARG_FILTER_VALUE]?.isEmpty() == true) {
-                if (id?.isEmpty() == true) {
-                    api.getFiles(OneDriveUtils.getSortBy(filter)).blockingGet()
-                } else {
-                    id?.let {
-                        api.getChildren(it, OneDriveUtils.getSortBy(filter))
-                            .blockingGet()
-                    }
-                }
-            } else {
-                api.filter(filter[ApiContract.Parameters.ARG_FILTER_VALUE]!!, OneDriveUtils.getSortBy(filter))
-                    .blockingGet()
-            }
+        val searchValue = filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE)?.trim().orEmpty()
+        val mapWithSearchValue = OneDriveUtils.getSortBy(filter).plus(
+            "\$filter" to "startswith(name, '$searchValue')"
+        )
+        return if (id.isNullOrEmpty()) {
+            api.getFiles(mapWithSearchValue)
+        } else {
+            api.getChildren(id, mapWithSearchValue)
         }
+            .toObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { response ->
@@ -120,14 +115,16 @@ class OneDriveFileProvider(
             explorer.files = files
             explorer.folders = folders
         } else {
-            val current = Current()
-
-            val context = response.context.split("/")
-
-            current.id = context[6].split("'")[1].replace("%21", "!")
-            current.filesCount = 0.toString()
-            current.foldersCount = 0.toString()
-            explorer.current = current
+            explorer.current = Current().apply {
+                id = runCatching {
+                    response.context
+                        .split("/")[6]
+                        .split("'")[1]
+                        .replace("%21", "!")
+                }.getOrElse { "" }
+                filesCount = "0"
+                foldersCount = "0"
+            }
         }
         return explorer
     }

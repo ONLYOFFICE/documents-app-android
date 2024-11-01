@@ -44,8 +44,6 @@ import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
-import app.editors.manager.mvp.presenters.share.AddPresenter
-import app.editors.manager.mvp.presenters.share.SettingsPresenter
 import app.editors.manager.mvp.presenters.storage.ConnectPresenter
 import app.editors.manager.mvp.presenters.storage.SelectPresenter
 import app.editors.manager.mvp.presenters.storages.DocsDropboxPresenter
@@ -53,7 +51,7 @@ import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
-import app.editors.manager.ui.activities.main.OperationActivity
+import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.MediaAdapter
@@ -166,7 +164,7 @@ interface AppComponent {
     fun inject(onlyOfficePresenter: DocsCloudPresenter?)
     fun inject(webDavPresenter: DocsWebDavPresenter?)
     fun inject(docsOnDevicePresenter: DocsOnDevicePresenter?)
-    fun inject(operationActivity: OperationActivity?)
+    fun inject(operationDialogFragment: OperationDialogFragment)
     fun inject(webViewerFragment: WebViewerFragment?)
     fun inject(docsBaseFragment: DocsBaseFragment?)
     fun inject(docsOperationSectionFragment: DocsOperationSectionFragment?)
@@ -184,12 +182,6 @@ interface AppComponent {
     * */
     fun inject(mediaVideoFragment: MediaVideoFragment?)
     fun inject(mediaImageFragment: MediaImageFragment?)
-
-    /*
-    * Share
-    * */
-    fun inject(settingsPresenter: SettingsPresenter?)
-    fun inject(addPresenter: AddPresenter?)
 
     /*
     * Storage

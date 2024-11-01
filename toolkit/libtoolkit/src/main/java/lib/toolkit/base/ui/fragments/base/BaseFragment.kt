@@ -381,7 +381,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     /*
     * Action bar
     * */
-    protected fun setActionBarTitle(title: String?) {
+    protected open fun setActionBarTitle(title: String?) {
         if (title != null && isVisible) {
             toolbarTitle = title
             supportActionBar?.title = toolbarTitle
@@ -479,9 +479,9 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     @SuppressLint("MissingPermission")
-    protected fun showMultipleFilePickerActivity(callback: (uris: List<Uri>?) -> Unit) {
+    protected fun showMultipleFilePickerActivity(extension: String? = null, callback: (uris: List<Uri>?) -> Unit) {
         DocumentsPicker(requireActivity().activityResultRegistry, callback = callback)
-            .show()
+            .show(extension)
     }
 
     protected fun showFileShareActivity(uri: Uri) {
