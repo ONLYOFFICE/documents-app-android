@@ -750,7 +750,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
         if (model.file?.id == null && model.folder?.id != null) {
-            openFolder(model.folder.id.toString(), 0)
+            openFolder(model.folder.id, 0)
             return
         }
         fileProvider?.let { provider ->

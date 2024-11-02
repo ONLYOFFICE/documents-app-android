@@ -75,7 +75,7 @@ open class CloudFile : Item() {
 
     @SerializedName("isForm")
     @Expose
-    val isForm: Boolean = false
+    var isForm: Boolean = false
 
     val nextVersion: Int
         get() = ++version

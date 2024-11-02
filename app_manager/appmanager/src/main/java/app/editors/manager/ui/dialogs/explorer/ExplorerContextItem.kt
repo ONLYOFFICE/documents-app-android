@@ -34,7 +34,7 @@ sealed class ExplorerContextItem(
 
             fun getTitle(state: ExplorerContextState) = when {
                 state.section.isRoom && state.isRoot -> R.string.list_context_edit_room
-                (state.item as? CloudFile)?.isPdfForm == true -> R.string.list_context_fill
+                (state.item as? CloudFile)?.isPdfForm == true && !state.section.isLocal -> R.string.list_context_fill
                 else -> R.string.list_context_edit
             }
         }
