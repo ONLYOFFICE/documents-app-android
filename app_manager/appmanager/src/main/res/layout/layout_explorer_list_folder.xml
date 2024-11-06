@@ -31,27 +31,28 @@
 
         <ImageView
             android:id="@+id/storageImage"
-            android:layout_width="@dimen/image_default_size"
-            android:layout_height="@dimen/image_default_size"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/image"
             app:layout_constraintEnd_toEndOf="@id/image"
             app:layout_constraintStart_toStartOf="@id/image"
             app:layout_constraintTop_toTopOf="@id/image"
-            app:layout_constraintVertical_bias=".65"
+            app:layout_constraintVertical_bias=".6"
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_storage_dropbox_logo" />
 
         <ImageView
             android:id="@+id/overlayImage"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:layout_marginEnd="2dp"
-            android:visibility="visible"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/image"
             app:layout_constraintEnd_toEndOf="@id/image"
+            app:layout_constraintHorizontal_bias=".8"
+            app:layout_constraintStart_toStartOf="@id/image"
             app:layout_constraintTop_toTopOf="@id/image"
-            app:layout_constraintVertical_bias=".65"
+            app:layout_constraintVertical_bias=".6"
             app:tint="@color/colorBlack60"
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_list_item_share_user_icon" />
