@@ -3,11 +3,13 @@ package app.editors.manager.mvp.models.models
 import android.os.Parcel
 import android.os.Parcelable
 import app.documents.core.network.common.contracts.ApiContract
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.JsonTransformingSerializer
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 @Serializable
 data class OpenDataModel(
@@ -60,18 +62,18 @@ data class OpenDataModel(
 
 @Serializable
 data class OpenFileModel(
-    val id: Int? = null,
+    @Serializable(with = IntOrStringAsStringSerializer::class) val id: String? = null,
     val title: String? = null,
     val extension: String? = null
-): Parcelable {
+) : Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readString(),
         parcel.readString(),
         parcel.readString()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeValue(id)
+        parcel.writeString(id)
         parcel.writeString(title)
         parcel.writeString(extension)
     }
@@ -89,23 +91,24 @@ data class OpenFileModel(
             return arrayOfNulls(size)
         }
     }
+
 }
 
 @Serializable
 data class OpenFolderModel(
-    val id: Int? = null,
-    val parentId: Int? = null,
+    @Serializable(with = IntOrStringAsStringSerializer::class) val id: String? = null,
+    @Serializable(with = IntOrStringAsStringSerializer::class) val parentId: String? = null,
     val rootFolderType: Int? = null
-): Parcelable {
+) : Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readValue(Int::class.java.classLoader) as? Int,
-        parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readString(),
+        parcel.readString(),
         parcel.readValue(Int::class.java.classLoader) as? Int
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeValue(id)
-        parcel.writeValue(parentId)
+        parcel.writeString(id)
+        parcel.writeString(parentId)
         parcel.writeValue(rootFolderType)
     }
 
@@ -122,11 +125,17 @@ data class OpenFolderModel(
             return arrayOfNulls(size)
         }
     }
+
 }
 
-// TODO need string?
-object JsonAsStringSerializer: JsonTransformingSerializer<String>(tSerializer = String.serializer()) {
-    override fun transformDeserialize(element: JsonElement): JsonElement {
-        return JsonPrimitive(value = element.toString())
+object IntOrStringAsStringSerializer : KSerializer<String> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("IntOrStringAsString", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: String) {
+        encoder.encodeString(value)
+    }
+
+    override fun deserialize(decoder: Decoder): String {
+        return decoder.decodeString()
     }
 }
