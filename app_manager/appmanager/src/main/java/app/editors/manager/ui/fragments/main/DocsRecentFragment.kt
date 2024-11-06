@@ -300,9 +300,10 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                             }
                         }
                     },
-                    getEditorsIntent(state.uri, checkNotNull(state.type))
+                    getEditorsIntent(state.uri, checkNotNull(state.type), isForm = state is OpenState.Pdf && state.isForm)
                 ).show()
             }
+
             is OpenState.Media -> {
                 showMediaActivity(state.explorer, state.isWebDav) {
                     // Stub
