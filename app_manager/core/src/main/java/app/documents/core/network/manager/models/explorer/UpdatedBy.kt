@@ -22,6 +22,14 @@ open class UpdatedBy : Cloneable, Serializable {
     @Expose
     var profileUrl = ""
 
+    @SerializedName("hasAvatar")
+    @Expose
+    var hasAvatar = false
+
+    @SerializedName("isAnonim")
+    @Expose
+    var isAnonim = false
+
     @Throws(CloneNotSupportedException::class)
     public override fun clone(): UpdatedBy {
         return super.clone() as UpdatedBy

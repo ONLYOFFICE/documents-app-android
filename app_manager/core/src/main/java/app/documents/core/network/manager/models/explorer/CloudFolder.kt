@@ -60,6 +60,22 @@ open class CloudFolder : Item(), Serializable {
     @Expose
     var mute: Boolean = false
 
+    @SerializedName("indexing")
+    @Expose
+    var indexing: Boolean = false
+
+    @SerializedName("denyDownload")
+    @Expose
+    var denyDownload: Boolean = false
+
+    @SerializedName("inRoom")
+    @Expose
+    var inRoom: Boolean = false
+
+    @SerializedName("usedSpace")
+    @Expose
+    var usedSpace: Long = 0
+
     fun setFolder(folder: CloudFolder) {
         setItem(folder)
         parentId = folder.parentId
