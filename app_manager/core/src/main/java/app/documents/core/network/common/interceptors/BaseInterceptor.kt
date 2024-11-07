@@ -39,3 +39,20 @@ class BaseInterceptor(private val token: String?, private val context: Context) 
         }
     }
 }
+
+class RequestInterceptor(private val token: String?) : Interceptor {
+
+
+    @Throws(IOException::class)
+    override fun intercept(chain: Interceptor.Chain): Response {
+        return chain.proceed(
+            chain.request()
+                .newBuilder().apply {
+                        addHeader("Request-Token", token.orEmpty())
+                }
+                .build()
+        )
+    }
+
+
+}

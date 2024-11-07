@@ -2,11 +2,15 @@ package app.documents.core.network.common
 
 import android.annotation.SuppressLint
 import app.documents.core.model.cloud.PortalSettings
+import app.documents.core.network.common.interceptors.RequestInterceptor
 import okhttp3.CipherSuite
 import okhttp3.ConnectionSpec
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.TlsVersion
+import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.HostnameVerifier
@@ -23,7 +27,18 @@ object NetworkClient {
         const val CONNECT_TIMEOUT = 60L
     }
 
+    inline fun <reified V>getRetrofit(url: String, token: String): V {
+        return Retrofit.Builder()
+            .baseUrl(url)
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(getOkHttpBuilder(PortalSettings(), RequestInterceptor(token)).build())
+            .build()
+            .create(V::class.java)
+    }
+
     private val trustAllCerts: Array<TrustManager> = arrayOf(
+        @SuppressLint("CustomX509TrustManager")
         object : X509TrustManager {
 
             @SuppressLint("TrustAllX509TrustManager")

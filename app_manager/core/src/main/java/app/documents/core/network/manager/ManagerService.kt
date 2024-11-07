@@ -401,6 +401,11 @@ interface ManagerService {
         @Query("version") version: Int
     ): Single<Response<ResponseBody>>
 
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/openedit")
+    fun openFile(
+        @Path(value = "id") id: String,
+    ): Single<Response<ResponseBody>>
+
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
