@@ -58,6 +58,7 @@ import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.CreateDocument
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.EditorsType
+import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
@@ -244,7 +245,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         val item = explorerAdapter?.getItem(position) as? Item
         if (item != null && !isFastClick) {
             val state = ExplorerContextState(
-                headerIcon = icon,
+                headerIcon = icon?.toByteArray(),
                 item = item,
                 headerInfo = app.editors.manager.managers.utils.StringUtils.getCloudItemInfo(
                     context = requireContext(),
