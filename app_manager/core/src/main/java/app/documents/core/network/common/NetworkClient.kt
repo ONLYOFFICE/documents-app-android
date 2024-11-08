@@ -1,8 +1,10 @@
 package app.documents.core.network.common
 
 import android.annotation.SuppressLint
+import android.content.Context
 import app.documents.core.model.cloud.PortalSettings
-import app.documents.core.network.common.interceptors.RequestInterceptor
+import app.documents.core.network.common.interceptors.BaseInterceptor
+import app.documents.core.network.common.interceptors.HeaderType
 import okhttp3.CipherSuite
 import okhttp3.ConnectionSpec
 import okhttp3.Interceptor
@@ -27,12 +29,12 @@ object NetworkClient {
         const val CONNECT_TIMEOUT = 60L
     }
 
-    inline fun <reified V>getRetrofit(url: String, token: String): V {
+    inline fun <reified V>getRetrofit(url: String, token: String, context: Context): V {
         return Retrofit.Builder()
             .baseUrl(url)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
-            .client(getOkHttpBuilder(PortalSettings(), RequestInterceptor(token)).build())
+            .client(getOkHttpBuilder(PortalSettings(), BaseInterceptor(token, context, HeaderType.REQUEST_TOKEN)).build())
             .build()
             .create(V::class.java)
     }

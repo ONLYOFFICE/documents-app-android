@@ -8,7 +8,12 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
 
-class BaseInterceptor(private val token: String?, private val context: Context) : Interceptor {
+enum class HeaderType(val header: String) {
+    AUTHORIZATION("Authorization"),
+    REQUEST_TOKEN("Request-Token")
+}
+
+class BaseInterceptor(private val token: String?, private val context: Context, private val type: HeaderType = HeaderType.AUTHORIZATION) : Interceptor {
 
     companion object {
         private const val KEY_AUTH = "Bearer "
@@ -20,13 +25,17 @@ class BaseInterceptor(private val token: String?, private val context: Context) 
         val token = if (chain.request().url().host().contains(ApiContract.PERSONAL_HOST)) {
             token
         } else {
-            KEY_AUTH + token
+            if (type == HeaderType.AUTHORIZATION) {
+                KEY_AUTH + token.orEmpty()
+            } else {
+                token
+            }
         }
         return chain.proceed(
             chain.request()
                 .newBuilder().apply {
                     if (chain.request().headers()[ApiContract.HEADER_AUTHORIZATION] == null)
-                        addHeader(ApiContract.HEADER_AUTHORIZATION, token.orEmpty())
+                        addHeader(type.header, token.orEmpty())
                 }
                 .build()
         )
@@ -38,21 +47,4 @@ class BaseInterceptor(private val token: String?, private val context: Context) 
             throw NoConnectivityException()
         }
     }
-}
-
-class RequestInterceptor(private val token: String?) : Interceptor {
-
-
-    @Throws(IOException::class)
-    override fun intercept(chain: Interceptor.Chain): Response {
-        return chain.proceed(
-            chain.request()
-                .newBuilder().apply {
-                        addHeader("Request-Token", token.orEmpty())
-                }
-                .build()
-        )
-    }
-
-
 }

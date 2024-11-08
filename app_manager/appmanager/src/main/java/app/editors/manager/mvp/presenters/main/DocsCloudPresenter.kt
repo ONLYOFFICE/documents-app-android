@@ -1240,7 +1240,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (model.portal.isNullOrEmpty()) return
         showDialogWaiting(null)
         presenterScope.launch {
-            val api = NetworkClient.getRetrofit<ManagerService>(model.portal, model.share)
+            val api = NetworkClient.getRetrofit<ManagerService>(model.portal, model.share, context)
 
             try {
                 val response = withContext(Dispatchers.IO) {
