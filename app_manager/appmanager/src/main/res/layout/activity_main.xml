@@ -65,7 +65,7 @@
         android:clickable="true"
         android:focusable="true"
         android:scaleType="center"
-        android:src="@drawable/ic_action_button_docs_add"
+        android:src="@drawable/ic_default_add"
         app:fabSize="normal"
         app:layout_anchorGravity="bottom|right|end"
         tools:ignore="ContentDescription" />

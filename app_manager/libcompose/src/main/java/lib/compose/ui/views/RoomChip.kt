@@ -15,13 +15,13 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -70,7 +70,7 @@ fun RoomChip(
                     .background(Color.Black.copy(alpha = .4f))
                     .size(16.dp)
                     .padding(2.dp),
-                imageVector = Icons.Filled.Close,
+                imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_close),
                 tint = Color(0xFFE0E0E0),
                 contentDescription = null
             )

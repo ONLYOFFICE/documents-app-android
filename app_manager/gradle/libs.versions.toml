@@ -24,14 +24,14 @@ androidWorkManager = "2.10.0"
 androidDocumentFile = "1.0.1"
 
 #compose
-composeMaterial = "1.6.8"
+composeMaterial = "1.7.5"
 composeMaterial3 = "1.3.0"
-composeUi = "1.6.8"
-composeUiTooling = "1.6.8"
-composeUiToolingPreview = "1.6.8"
-composeNavigation = "2.7.7"
+composeUi = "1.7.5"
+composeUiTooling = "1.7.5"
+composeUiToolingPreview = "1.7.5"
+composeNavigation = "2.8.3"
 composeCompiler = "1.5.14"
-compose = "1.6.7"
+compose = "1.7.5"
 
 #dagger
 dagger = "2.48.1"
