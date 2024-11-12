@@ -13,6 +13,7 @@ object RoomUtils {
     val roomTypes: List<Int> = listOf(
         ApiContract.RoomType.PUBLIC_ROOM,
         ApiContract.RoomType.FILL_FORMS_ROOM,
+        ApiContract.RoomType.VIRTUAL_ROOM,
         ApiContract.RoomType.COLLABORATION_ROOM,
         ApiContract.RoomType.CUSTOM_ROOM
     )
@@ -23,6 +24,7 @@ object RoomUtils {
             ApiContract.RoomType.PUBLIC_ROOM -> R.drawable.ic_public_room
             ApiContract.RoomType.CUSTOM_ROOM -> R.drawable.ic_custom_room
             ApiContract.RoomType.FILL_FORMS_ROOM -> R.drawable.ic_fill_forms_room
+            ApiContract.RoomType.VIRTUAL_ROOM -> R.drawable.ic_vdr_room
             else -> R.drawable.ic_collaboration_room
         }
         val title = when (type) {
@@ -30,6 +32,7 @@ object RoomUtils {
             ApiContract.RoomType.PUBLIC_ROOM -> R.string.rooms_add_public_room
             ApiContract.RoomType.CUSTOM_ROOM -> R.string.rooms_add_custom
             ApiContract.RoomType.FILL_FORMS_ROOM -> R.string.rooms_add_fill_forms
+            ApiContract.RoomType.VIRTUAL_ROOM -> R.string.rooms_vdr
             else -> R.string.rooms_add_collaboration
         }
         val des = when (type) {
@@ -37,6 +40,7 @@ object RoomUtils {
             ApiContract.RoomType.PUBLIC_ROOM -> R.string.rooms_add_public_room_des
             ApiContract.RoomType.CUSTOM_ROOM -> R.string.rooms_add_custom_des
             ApiContract.RoomType.FILL_FORMS_ROOM -> R.string.rooms_add_fill_forms_des
+            ApiContract.RoomType.VIRTUAL_ROOM -> R.string.rooms_vdr_desc
             else -> R.string.rooms_add_collaboration_des
         }
         return RoomInfo(icon, title, des)

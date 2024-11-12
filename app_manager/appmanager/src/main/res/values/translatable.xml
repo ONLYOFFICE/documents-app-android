@@ -940,4 +940,7 @@
     <string name="errors_sign_in_account_not_found">Account not found</string>
     <string name="rooms_notifications_disabled">Room notifications disabled</string>
     <string name="rooms_notifications_enabled">Room notifications enabled</string>
+
+    <string name="rooms_vdr">Virtual Data Room</string>
+    <string name="rooms_vdr_desc">Use VDR for advanced file security and transparency while filling and signing documents step-by-step. Set watermarks, automatically index and track all content, restrict downloading and copying.</string>
 </resources>
