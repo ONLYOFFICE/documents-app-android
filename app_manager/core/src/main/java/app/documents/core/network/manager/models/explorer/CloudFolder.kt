@@ -76,6 +76,10 @@ open class CloudFolder : Item(), Serializable {
     @Expose
     var usedSpace: Long = 0
 
+    @SerializedName("lifetime")
+    @Expose
+    var lifetime: Lifetime? = null
+
     fun setFolder(folder: CloudFolder) {
         setItem(folder)
         parentId = folder.parentId

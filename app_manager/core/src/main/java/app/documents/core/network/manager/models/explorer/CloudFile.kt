@@ -73,6 +73,10 @@ open class CloudFile : Item() {
     @Expose
     var encrypted = false
 
+    @SerializedName("availableExternalRights")
+    @Expose
+    var availableExternalRights: ExternalAccessRights? = null
+
     @SerializedName("isForm")
     @Expose
     var isForm: Boolean = false
