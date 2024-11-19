@@ -41,7 +41,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Pin(state.pinned),
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.AddUsers,
-                ExplorerContextItem.ExternalLink(state),
+                ExplorerContextItem.ExternalLink(state).takeIf { (state.item is CloudFolder) && state.item.roomType != 8 },
                 ExplorerContextItem.Notifications((state.item as? CloudFolder)?.mute == true),
                 ExplorerContextItem.Duplicate,
                 ExplorerContextItem.Download,
