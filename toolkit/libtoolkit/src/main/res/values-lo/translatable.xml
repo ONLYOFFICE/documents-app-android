@@ -27,5 +27,5 @@
     <plurals name="hours">
         <item quantity="other">ຊົ່ວໂມງ</item>
     </plurals>
-
+    <string name="settings_view">ເບິ່ງ</string>
 </resources>

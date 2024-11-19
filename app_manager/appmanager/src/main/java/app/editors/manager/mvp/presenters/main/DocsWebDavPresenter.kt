@@ -106,7 +106,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                             addFile(file)
                             setPlaceholderType(PlaceholderViews.Type.NONE)
                             viewState.onDialogClose()
-                            viewState.onOpenLocalFile(file)
+                            viewState.onOpenLocalFile(file, null)
                         }, ::fetchError)
                 )
             }
@@ -133,7 +133,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                     { file: CloudFile? ->
                         tempFile = file
                         viewState.onDialogClose()
-                        viewState.onOpenLocalFile(file)
+                        viewState.onOpenLocalFile(file, null)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }
         }

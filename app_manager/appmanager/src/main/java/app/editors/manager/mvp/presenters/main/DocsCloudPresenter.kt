@@ -66,6 +66,7 @@ import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -268,26 +269,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             requestCreate.title = title
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.createFile(id, requestCreate).flatMap { cloudFile ->
+                    provider.createFile(id, requestCreate).subscribe({ cloudFile ->
                         addFile(cloudFile)
                         addRecent(cloudFile)
-                        (provider as CloudFileProvider).opeEdit(cloudFile, isItemShareable)
-                            .toObservable()
-                            .zipWith(Observable.fromCallable { cloudFile }) { info, file ->
-                                return@zipWith arrayOf(file, info)
-                            }
-                    }.subscribe({ info ->
-                        setPlaceholderType(PlaceholderViews.Type.NONE)
                         viewState.onDialogClose()
-                        checkSdkVersion { result ->
-                            if (result) {
-                                viewState.onOpenDocumentServer(info[0] as CloudFile, info[1] as String, true)
-                            } else {
-                                downloadTempFile(info[0] as CloudFile, true)
-
-                            }
-                        }
-                    }) { throwable: Throwable -> fetchError(throwable) })
+                        onFileClickAction(cloudFile, isEdit = true, null)
+                    }, ::fetchError))
             }
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         }
@@ -299,7 +286,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.fileInfo(item)
-                        .subscribe(::onFileClickAction) { onFileClickAction(item) }
+                        .subscribe({ onFileClickAction(item, editType = null) }, ::fetchError)
                 )
             }
         }
@@ -483,7 +470,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         super.openFolder(id, position, roomType)
     }
 
-    fun onEditContextClick() {
+    fun onContextClick(editType: EditType?) {
         when (val item = itemClicked) {
             is CloudFile -> {
                 if (LocalContentTools.isOpenFormat(item.clearExt)) {
@@ -497,7 +484,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     item.webUrl = url
                 }
                 addRecent(item)
-                onFileClickAction(item, true)
+                onFileClickAction(item, true, editType)
             }
             is CloudFolder -> editRoom()
         }
@@ -680,8 +667,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.showMoveCopyDialog(names, action, titleFolder)
     }
 
-    private fun onFileClickAction(cloudFile: CloudFile, isEdit: Boolean = false) {
-        if (cloudFile.isPdfForm && isUserSection) {
+    private fun onFileClickAction(cloudFile: CloudFile, isEdit: Boolean = false, editType: EditType?) {
+        if (cloudFile.isPdfForm && isUserSection && editType == null) {
             viewState.showFillFormChooserFragment()
             return
         }
@@ -696,9 +683,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             StringUtils.Extension.PDF -> {
                 checkSdkVersion { result ->
                     if (result) {
-                        openDocumentServer(cloudFile, isEdit, isItemShareable)
+                        if (cloudFile.isPdfForm && editType == null) {
+                            fillPdfForm()
+                        } else {
+                            openDocumentServer(cloudFile, isEdit, isItemShareable, editType)
+                        }
                     } else {
-                        downloadTempFile(cloudFile, isEdit)
+                        downloadTempFile(cloudFile, isEdit, editType)
                     }
                 }
             }
@@ -713,14 +704,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, extension)
     }
 
-    private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean, canShareable: Boolean) {
+    private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean, canShareable: Boolean, editType: EditType?) {
         with(fileProvider as CloudFileProvider) {
             val token = AccountUtils.getToken(context, account.accountName)
             disposable.add(
-                openDocument(cloudFile, token, canShareable).subscribe({ result ->
+                openDocument(cloudFile, token, canShareable, editType).subscribe({ result ->
                     viewState.onDialogClose()
                     if (result.isPdf) {
-                        downloadTempFile(cloudFile, false)
+                        downloadTempFile(cloudFile, false, null)
                     } else if (result.info != null) {
                         viewState.onOpenDocumentServer(cloudFile, result.info, isEdit)
                     }
@@ -743,9 +734,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (item is CloudFile && item.isPdfForm) {
             checkSdkVersion { result ->
                 if (result) {
-                    openDocumentServer(item, isEdit = true, canShareable = false)
+                    openDocumentServer(item, isEdit = true, canShareable = false, editType = EditType.FILL)
                 } else {
-                    downloadTempFile(item, true)
+                    downloadTempFile(item, true, editType = EditType.FILL)
                 }
             }
         }
@@ -766,7 +757,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 id = model.file?.id.toString()
             }).subscribe({ cloudFile ->
                 itemClicked = cloudFile
-                onFileClickAction(cloudFile)
+                onFileClickAction(cloudFile, editType = null)
             }, { error ->
                 fetchError(error)
             }))

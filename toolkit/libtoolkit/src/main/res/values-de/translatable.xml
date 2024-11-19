@@ -28,4 +28,5 @@
         <item quantity="other">Stunden</item>
     </plurals>
     <string name="settings_fonts_title">Schriftarten</string>
+    <string name="settings_view">Ansicht</string>
 </resources>

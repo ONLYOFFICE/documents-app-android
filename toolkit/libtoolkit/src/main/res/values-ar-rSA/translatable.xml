@@ -35,4 +35,5 @@
         <item quantity="other">ساعات</item>
     </plurals>
     <string name="settings_fonts_title">خطوط</string>
+    <string name="settings_view">عرض</string>
 </resources>
