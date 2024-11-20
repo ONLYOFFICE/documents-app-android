@@ -2,6 +2,7 @@ package app.editors.manager.ui.dialogs.explorer
 
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import lib.toolkit.base.managers.utils.TimeUtils
@@ -53,6 +54,7 @@ sealed class ExplorerContextItem(
         companion object {
 
             fun getTitle(state: ExplorerContextState) = when {
+                state.section.isRoom && state.isRoot && state.item is CloudFolder && state.item.roomType == ApiContract.RoomType.VIRTUAL_ROOM -> R.string.rooms_info_copy_link
                 state.section.isRoom && state.isRoot -> R.string.list_context_copy_general_link
                 else -> R.string.list_context_get_external_link
             }

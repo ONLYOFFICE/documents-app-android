@@ -1180,17 +1180,21 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private fun copyRoomLink() {
         roomClicked?.let { room ->
-            if (room.roomType == ApiContract.RoomType.COLLABORATION_ROOM) {
+            if (room.roomType == ApiContract.RoomType.COLLABORATION_ROOM || room.roomType == ApiContract.RoomType.VIRTUAL_ROOM) {
                 setDataToClipboard(getInternalLink(room))
             } else {
                 presenterScope.launch {
-                    val externalLink = roomProvider?.getExternalLink(roomClicked?.id.orEmpty())
-                    withContext(Dispatchers.Main) {
-                        if (externalLink.isNullOrEmpty()) {
-                            viewState.onError(context.getString(R.string.errors_unknown_error))
-                        } else {
-                            saveLink(externalLink)
+                    try {
+                        val externalLink = roomProvider?.getExternalLink(roomClicked?.id.orEmpty())
+                        withContext(Dispatchers.Main) {
+                            if (externalLink.isNullOrEmpty()) {
+                                viewState.onError(context.getString(R.string.errors_unknown_error))
+                            } else {
+                                saveLink(externalLink)
+                            }
                         }
+                    } catch (error: Throwable) {
+                        fetchError(error)
                     }
                 }
             }
