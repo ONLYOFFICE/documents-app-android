@@ -9,20 +9,17 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
-import app.editors.manager.app.appComponent
 import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
 import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.presenters.main.RecentState
@@ -167,24 +164,9 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> {
                 requestReadWritePermission()
             }
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                requestAccessStorage()
+            else -> {
+                presenter.getRecentFiles()
             }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun requestAccessStorage() {
-        if (!Environment.isExternalStorageManager() && requireContext().appComponent.preference.isShowStorageAccess) {
-            showQuestionDialog(
-                getString(R.string.app_manage_files_title),
-                getString(R.string.app_manage_files_description),
-                getString(R.string.dialogs_common_ok_button),
-                getString(R.string.dialogs_common_cancel_button),
-                TAG_STORAGE_ACCESS
-            )
-        } else {
-            presenter.getRecentFiles()
         }
     }
 
