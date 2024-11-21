@@ -406,8 +406,6 @@
     <string name="snackbar_undo">ANNULER</string>
     <string name="errors_server_auth_too_many_attempts">Trop de tentatives. Réessayez plus tard</string>
     <string name="share_snackbar_remove_user">L\'utilisateur est supprimé</string>
-    <string name="share_group_admin">Admin</string>
-    <string name="share_group_everyone">Tout le monde</string>
     <string name="storage_onedrive_error_opened">Le fichier est ouvert sur le portail</string>
     <string name="storage_onedrive_error_exist">Le fichier avec le même nom existe déjà dans ce dossier.</string>
     <string name="operation_panel_restore_button">Restaurer ici</string>

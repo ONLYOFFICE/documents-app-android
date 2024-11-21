@@ -406,8 +406,6 @@
     <string name="snackbar_undo">DISFARE</string>
     <string name="errors_server_auth_too_many_attempts">Troppi tentativi. Riprova più tardi</string>
     <string name="share_snackbar_remove_user">L\'utente è stato eliminato</string>
-    <string name="share_group_admin">Amministratore</string>
-    <string name="share_group_everyone">Ognuno</string>
     <string name="storage_onedrive_error_opened">Il file è aperto sul portale</string>
     <string name="storage_onedrive_error_exist">Il file con lo stesso nome esiste già nella cartella</string>
     <string name="operation_panel_restore_button">Recupera qui</string>

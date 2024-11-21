@@ -559,8 +559,6 @@
     <string name="snackbar_undo">ຍົກເລີກ</string>
     <string name="errors_server_auth_too_many_attempts">ຜິດຫຼາຍຄັ້ງເກີນໄປ. ລອງໃໝ່ໃນພາຍຫຼັງ</string>
     <string name="share_snackbar_remove_user">ຜູ້ໃຊ້ຖືກລຶບອອກ</string>
-    <string name="share_group_admin">ຄຸ້ມຄອງ</string>
-    <string name="share_group_everyone">ທຸກຄົນ</string>
     <string name="storage_onedrive_error_opened">ໄຟລ໌ຖືກເປີດຢູ່ໃນເວັບແລ້ວ</string>
     <string name="storage_onedrive_error_exist">ໄຟລ໌ທີ່ມີຊື່ດຽວກັນແມ່ນມີຢູ່ໃນໂຟນເດີນີ້ແລ້ວ</string>
     <string name="operation_panel_restore_button">ເກັບກູ້ໄວ້ທີ່ນີ້</string>

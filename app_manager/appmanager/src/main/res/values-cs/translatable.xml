@@ -548,8 +548,6 @@
     <string name="snackbar_undo">UNDO</string>
     <string name="errors_server_auth_too_many_attempts">Příliš mnoho pokusů. Zkuste to později</string>
     <string name="share_snackbar_remove_user">Uživatel je odstraněn</string>
-    <string name="share_group_admin">Admin</string>
-    <string name="share_group_everyone">Všichni</string>
     <string name="storage_onedrive_error_opened">Soubor je otevřen na portálu</string>
     <string name="storage_onedrive_error_exist">Soubor se stejným názvem již v této složce existuje</string>
     <string name="operation_panel_restore_button">Obnovit zde</string>
