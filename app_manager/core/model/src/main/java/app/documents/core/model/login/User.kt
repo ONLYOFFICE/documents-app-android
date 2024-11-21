@@ -33,7 +33,10 @@ data class User(
     val cultureName: String = "",
     val isSSO: Boolean = false,
     val avatarSmall: String = "",
+    val hasAvatar: Boolean = false,
     val profileUrl: String = "",
     val mobilePhone: String = "",
+    val quotaLimit: Long = 0,
+    val usedSpace: Long = 0,
     override val shared: Boolean = false
 ) : Member
