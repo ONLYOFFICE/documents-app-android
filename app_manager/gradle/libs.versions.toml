@@ -74,9 +74,6 @@ googleServices = "4.4.2"
 gradle = "8.6.1"
 kotlinGradlePlugin = "1.9.24"
 
-customview = "1.2.0-alpha02"
-customviewPoolingcontainer = "1.0.0"
-
 #other
 phoneNumber = "8.13.28"
 facebookLogin = "16.2.0"
@@ -172,10 +169,6 @@ rx-relay = { module = "com.jakewharton.rxrelay2:rxrelay", version.ref = "rxjava"
 lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
-
-customview-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version.ref = "customviewPoolingcontainer" }
-customview = { module = "androidx.customview:customview", version.ref = "customview" }
-
 firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsGradle" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
