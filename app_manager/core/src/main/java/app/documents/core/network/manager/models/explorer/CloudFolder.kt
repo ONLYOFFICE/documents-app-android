@@ -80,6 +80,10 @@ open class CloudFolder : Item(), Serializable {
     @Expose
     var lifetime: Lifetime? = null
 
+    @SerializedName("watermark")
+    @Expose
+    var watermark: Watermark? = null
+
     fun setFolder(folder: CloudFolder) {
         setItem(folder)
         parentId = folder.parentId
