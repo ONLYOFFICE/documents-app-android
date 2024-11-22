@@ -36,4 +36,5 @@
         <item quantity="other">hours</item>
     </plurals>
     <string name="settings_fonts_title">Fonts</string>
+    <string name="settings_font_size_title">Font size</string>
 </resources>
