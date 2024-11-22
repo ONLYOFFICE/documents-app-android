@@ -5,6 +5,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.view.forEach
 import androidx.fragment.app.setFragmentResultListener
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.managers.tools.ActionMenuItem
@@ -39,10 +40,14 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
-        when (buttons) {
-            ActionBottomDialog.Buttons.UPLOAD -> presenter.showFileChooserFragment()
-            ActionBottomDialog.Buttons.IMPORT -> presenter.uploadPermission(".pdf")
-            else -> super.onActionButtonClick(buttons)
+        if (presenter.roomClicked?.roomType == ApiContract.RoomType.FILL_FORMS_ROOM){
+            when (buttons) {
+                ActionBottomDialog.Buttons.UPLOAD -> presenter.showFileChooserFragment()
+                ActionBottomDialog.Buttons.IMPORT -> presenter.uploadPermission(".pdf")
+                else -> super.onActionButtonClick(buttons)
+            }
+        } else {
+            super.onActionButtonClick(buttons)
         }
     }
 

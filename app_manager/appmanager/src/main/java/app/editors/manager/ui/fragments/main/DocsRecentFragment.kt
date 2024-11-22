@@ -38,6 +38,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
@@ -70,7 +71,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             headerInfo = (recent.source ?: getString(R.string.this_device)) +
                     getString(R.string.placeholder_point) +
                     TimeUtils.formatDate(Date(recent.date)),
-            headerIcon = thumbnail
+            headerIcon = thumbnail.toByteArray()
         )
         presenter.onContextClick(recent, position)
         showExplorerContextBottomDialog(state)
@@ -300,9 +301,10 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                             }
                         }
                     },
-                    getEditorsIntent(state.uri, checkNotNull(state.type))
+                    getEditorsIntent(state.uri, checkNotNull(state.type), isForm = state is OpenState.Pdf && state.isForm)
                 ).show()
             }
+
             is OpenState.Media -> {
                 showMediaActivity(state.explorer, state.isWebDav) {
                     // Stub

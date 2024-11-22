@@ -134,6 +134,10 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
                 Json.decodeFromString(CryptUtils.decodeUri(fileData?.query))
             }
             preferenceTool.fileData = ""
+            if (dataModel.share.isNotEmpty()) {
+                viewState.setFileData(Json.encodeToString(dataModel))
+                return
+            }
             if (dataModel.getPortalWithoutScheme()?.equals(
                     account?.portal?.url,
                     ignoreCase = true

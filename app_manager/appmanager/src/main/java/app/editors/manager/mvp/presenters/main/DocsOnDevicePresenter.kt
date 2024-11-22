@@ -15,7 +15,6 @@ import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.WebDavFileProvider
-import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -307,19 +306,20 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         openFile(uri, ext, viewMode)
     }
 
-    @Suppress("KotlinConstantConditions")
     private fun openFile(uri: Uri, ext: String, viewMode: Boolean = true) {
-        when (val enumExt = StringUtils.getExtension(ext)) {
+        when (StringUtils.getExtension(ext)) {
             StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> {
-                if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && enumExt == StringUtils.Extension.FORM) {
-                    viewState.onError(context.getString(R.string.error_unsupported_format))
-                } else {
-                    viewState.onShowDocs(uri, viewMode)
-                }
+                viewState.onShowDocs(uri, viewMode)
             }
             StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
             StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
-            StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
+            StringUtils.Extension.PDF -> {
+                if (FileUtils.isOformPdf(context.contentResolver.openInputStream(uri))) {
+                    viewState.onShowDocs(uri, viewMode)
+                } else {
+                    viewState.onShowPdf(uri)
+                }
+            }
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(
                 uri
             )

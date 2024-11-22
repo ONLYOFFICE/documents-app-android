@@ -57,11 +57,18 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     private fun checkSdk() {
         presenterScope.launch(Dispatchers.IO) {
-            if (preferenceTool.appVersion != BuildConfig.VERSION_NAME) {
+            val version = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode
+            } else {
+                @Suppress("DEPRECATION")
+                context.packageManager.getPackageInfo(context.packageName, 0).versionCode.toLong()
+            }
+
+            if (preferenceTool.appVersion != BuildConfig.VERSION_NAME + "." + version) {
                 context.externalCacheDir?.let(FileUtils::deletePath)
                 context.cacheDir?.let(FileUtils::deletePath)
             }
-            preferenceTool.appVersion = BuildConfig.VERSION_NAME
+            preferenceTool.appVersion = BuildConfig.VERSION_NAME + "." + version
         }
     }
 

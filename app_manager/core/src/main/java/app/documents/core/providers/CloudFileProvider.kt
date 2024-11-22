@@ -60,7 +60,7 @@ class CloudFileProvider @Inject constructor(
 
     companion object {
         private const val KEY_RESPONSE = "response"
-        private const val STATIC_DOC_URL = "/web-apps/apps/api/documents/api.js"
+        const val STATIC_DOC_URL = "/web-apps/apps/api/documents/api.js"
     }
 
     interface RoomCallback {

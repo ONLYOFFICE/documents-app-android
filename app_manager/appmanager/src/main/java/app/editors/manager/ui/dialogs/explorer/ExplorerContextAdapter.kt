@@ -48,7 +48,7 @@ class ExplorerContextAdapter(
 
         fun bind(header: ExplorerContextItem.Header) {
             with(viewBinding) {
-                icon.setImageBitmap(header.state.headerIcon)
+                icon.setImageBitmap(header.state.icon)
                 title.text = header.state.item.title
                 subtitle.text = header.info
             }

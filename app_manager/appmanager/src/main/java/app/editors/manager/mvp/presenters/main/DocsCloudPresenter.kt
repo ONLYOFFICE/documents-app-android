@@ -9,9 +9,11 @@ import androidx.work.WorkManager
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.Recent
 import app.documents.core.model.cloud.isDocSpace
+import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
+import app.documents.core.network.common.models.BaseResponse.Companion.KEY_RESPONSE
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -25,6 +27,7 @@ import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.UserIdInvitation
 import app.documents.core.providers.CloudFileProvider
+import app.documents.core.providers.CloudFileProvider.Companion.STATIC_DOC_URL
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -71,6 +74,7 @@ import moxy.presenterScope
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import org.json.JSONObject
 import java.io.File
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -750,7 +754,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
         if (model.file?.id == null && model.folder?.id != null) {
-            openFolder(model.folder.id.toString(), 0)
+            openFolder(model.folder.id, 0)
+            return
+        }
+        if (model.share.isNotEmpty()) {
+            openFromLink(model)
             return
         }
         fileProvider?.let { provider ->
@@ -1223,6 +1231,59 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         )
                     }
                 }
+            }
+        }
+    }
+
+    // TODO For hotfix
+    private fun openFromLink(model: OpenDataModel) {
+        if (model.portal.isNullOrEmpty()) return
+        showDialogWaiting(null)
+        presenterScope.launch {
+            val api = NetworkClient.getRetrofit<ManagerService>(model.portal, model.share, context)
+
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    JSONObject(api.openFile(model.file?.id ?: "").blockingGet().body()?.string()).getJSONObject(
+                        KEY_RESPONSE
+                    )
+
+                }
+
+                val json = withContext(Dispatchers.IO) {
+                    JSONObject(api.getDocService().blockingGet().body()?.string())
+                }
+
+                val docService = if (json.optJSONObject(KEY_RESPONSE) != null) {
+                    json.getJSONObject(KEY_RESPONSE).getString("docServiceUrlApi")
+                        .replace(STATIC_DOC_URL, "")
+                } else {
+                    json.getString(KEY_RESPONSE)
+                        .replace(STATIC_DOC_URL, "")
+                }
+
+                val result = withContext(Dispatchers.IO) {
+                    response
+                        .put("url", docService)
+                        .put("fileId", model.file?.id)
+                        .put("canShareable", false)
+                }
+
+                withContext(Dispatchers.Main) {
+                    viewState.onDialogClose()
+                    delay(50)
+                    viewState.onOpenDocumentServer(
+                        CloudFile().apply {
+                            id = model.file?.id.toString()
+                            title = model.file?.title ?: ""
+                            fileExst = model.file?.extension ?: ""
+                        },
+                        result.toString(),
+                        false
+                    )
+                }
+            } catch (e: Exception) {
+                fetchError(e)
             }
         }
     }

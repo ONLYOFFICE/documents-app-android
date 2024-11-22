@@ -58,6 +58,7 @@ import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.CreateDocument
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.EditorsType
+import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
@@ -244,7 +245,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         val item = explorerAdapter?.getItem(position) as? Item
         if (item != null && !isFastClick) {
             val state = ExplorerContextState(
-                headerIcon = icon,
+                headerIcon = icon?.toByteArray(),
                 item = item,
                 headerInfo = app.editors.manager.managers.utils.StringUtils.getCloudItemInfo(
                     context = requireContext(),
@@ -1096,7 +1097,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun showEditors(uri: Uri?, type: EditorsType, info: String? = null, viewMode: Boolean = true) {
+    protected open fun showEditors(uri: Uri?, type: EditorsType, info: String? = null, viewMode: Boolean = true) {
         try {
             val intent = Intent().apply {
                 data = uri
@@ -1133,7 +1134,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, viewMode: Boolean = false): Intent {
+    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, viewMode: Boolean = false, isForm: Boolean = false): Intent {
         val intent = Intent().apply {
             data = uri
             putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
@@ -1142,17 +1143,22 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
         when (type) {
-            EditorsType.DOCS, EditorsType.PDF -> {
+            EditorsType.DOCS -> {
                 intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
-                if (type == EditorsType.PDF) {
-                    intent.extras?.putBoolean("pdf", true)
-                }
             }
             EditorsType.CELLS -> {
                 intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS)
             }
             EditorsType.PRESENTATION -> {
                 intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
+            }
+            EditorsType.PDF -> {
+                if (isForm) {
+                    intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
+                    intent.extras?.putBoolean("pdf", true)
+                } else {
+                    intent.setClassName(requireContext(), EditorsContract.PDF)
+                }
             }
         }
         return intent
