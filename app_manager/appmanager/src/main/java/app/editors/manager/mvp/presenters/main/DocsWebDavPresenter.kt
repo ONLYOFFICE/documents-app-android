@@ -83,7 +83,11 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     override fun onDestroy() {
         super.onDestroy()
         exportReceiver.onExportReceiver = null
-        context.unregisterReceiver(exportReceiver)
+        try {
+            context.unregisterReceiver(exportReceiver)
+        } catch (error: IllegalArgumentException) {
+            error.printStackTrace()
+        }
     }
 
     override fun getNextList() {

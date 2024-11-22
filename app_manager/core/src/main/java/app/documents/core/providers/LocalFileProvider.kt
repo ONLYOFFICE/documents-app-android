@@ -214,6 +214,11 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
                 file.folderId = checkNotNull(convertFile.parentFile).absolutePath
                 file.webUrl = convertFile.absolutePath
                 file.updated = Date(convertFile.lastModified())
+                file.isForm = if (file.fileExst.replace(".", "") == LocalContentTools.PDF_EXTENSION) {
+                    FileUtils.isOformPdf(File(convertFile.absolutePath).inputStream())
+                } else {
+                    false
+                }
                 files.add(file)
             }
         }
