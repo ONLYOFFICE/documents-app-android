@@ -16,6 +16,7 @@ import app.documents.core.network.manager.models.explorer.Item;
 import app.editors.manager.mvp.models.states.OperationsState;
 import app.editors.manager.mvp.views.base.BaseViewExt;
 import app.editors.manager.ui.views.custom.PlaceholderViews;
+import lib.toolkit.base.managers.utils.EditType;
 import moxy.viewstate.strategy.OneExecutionStateStrategy;
 import moxy.viewstate.strategy.StateStrategyType;
 
@@ -128,7 +129,7 @@ public interface DocsBaseView extends BaseViewExt {
     void onSnackBarWithAction(@NonNull String message, @NonNull String button, @NonNull View.OnClickListener action);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onOpenLocalFile(CloudFile file);
+    void onOpenLocalFile(CloudFile file, @Nullable EditType editType);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onNoProvider();
 

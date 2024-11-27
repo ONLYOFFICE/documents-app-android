@@ -144,7 +144,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                     fileProvider.fileInfo(CloudFile().apply {
                         id = recent.fileId
                     }).flatMap { cloudFile ->
-                        fileProvider.opeEdit(cloudFile, cloudFile.allowShare && !account.isVisitor).toObservable()
+                        fileProvider.opeEdit(cloudFile, cloudFile.allowShare && !account.isVisitor, null).toObservable()
                             .zipWith(Observable.fromCallable { cloudFile }) { info, file ->
                                 return@zipWith arrayOf(file, info)
                             }
@@ -183,7 +183,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                         if (isCheck) {
                             viewState.onOpenDocumentServer(file, info, false)
                         } else {
-                            downloadTempFile(file, false)
+                            downloadTempFile(file, false, null)
                         }
                     }
                 }
@@ -359,7 +359,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                     { file: CloudFile? ->
                         viewState.onDialogClose()
                         file?.let { addRecent(it) }
-                        viewState.onOpenLocalFile(file)
+                        viewState.onOpenLocalFile(file, null)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }
         } ?: run {

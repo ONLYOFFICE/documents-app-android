@@ -138,7 +138,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                         tempFile = file
                         viewState.onDialogClose()
                         file?.let { addRecent(it) }
-                        viewState.onOpenLocalFile(file)
+                        viewState.onOpenLocalFile(file, null)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }
         }

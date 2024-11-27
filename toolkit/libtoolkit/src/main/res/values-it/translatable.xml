@@ -27,4 +27,5 @@
         <item quantity="other">ore</item>
     </plurals>
     <string name="settings_fonts_title">Tipi di carattere</string>
+    <string name="settings_view">Visualizzazione</string>
 </resources>
