@@ -1072,22 +1072,22 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onOpenDocumentServer(file: CloudFile?, info: String?, isEdit: Boolean) {
+    override fun onOpenDocumentServer(file: CloudFile?, info: String?, editType: EditType?) {
         when (getExtension(file?.fileExst ?: "")) {
             StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
-                showEditors(null, EditorsType.DOCS, info)
+                showEditors(null, EditorsType.DOCS, info, editType)
             }
 
             StringUtils.Extension.SHEET -> {
-                showEditors(null, EditorsType.CELLS, info)
+                showEditors(null, EditorsType.CELLS, info, editType)
             }
 
             StringUtils.Extension.PRESENTATION -> {
-                showEditors(null, EditorsType.PRESENTATION, info)
+                showEditors(null, EditorsType.PRESENTATION, info, editType)
             }
 
             StringUtils.Extension.PDF -> {
-                showEditors(null, EditorsType.PDF, info)
+                showEditors(null, EditorsType.PDF, info, editType)
             }
 
             else -> {

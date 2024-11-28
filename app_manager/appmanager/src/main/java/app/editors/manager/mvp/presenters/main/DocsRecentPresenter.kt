@@ -181,7 +181,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 StringUtils.Extension.VIDEO_SUPPORT, StringUtils.Extension.PDF -> {
                     checkSdkVersion { isCheck ->
                         if (isCheck) {
-                            viewState.onOpenDocumentServer(file, info, false)
+                            viewState.onOpenDocumentServer(/* file = */ file, /* info = */ info, /* type = */ null)
                         } else {
                             downloadTempFile(file, false, null)
                         }

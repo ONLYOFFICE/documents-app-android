@@ -477,12 +477,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     viewState.onConversionQuestion()
                     return
                 }
-                item.isReadOnly = false
-                var url = item.webUrl
-                if (url.contains(ApiContract.Parameters.ARG_ACTION) && url.contains(ApiContract.Parameters.VAL_ACTION_VIEW)) {
-                    url = url.substring(0, url.indexOf('&'))
-                    item.webUrl = url
-                }
                 addRecent(item)
                 onFileClickAction(item, true, editType)
             }
@@ -713,7 +707,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     if (result.isPdf) {
                         downloadTempFile(cloudFile, false, null)
                     } else if (result.info != null) {
-                        viewState.onOpenDocumentServer(cloudFile, result.info, isEdit)
+                        viewState.onOpenDocumentServer(cloudFile, result.info, editType)
                     }
                 }) { error ->
                     fetchError(error)
@@ -1133,7 +1127,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             )
             disposable.add(
                 (fileProvider as CloudFileProvider).updateDocument(itemClicked?.id.orEmpty(), body)
-                    .subscribe({ result ->
+                    .subscribe({
                         FileUtils.deletePath(file)
                         viewState.onDialogClose()
                     }, {
@@ -1264,13 +1258,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     viewState.onDialogClose()
                     delay(50)
                     viewState.onOpenDocumentServer(
-                        CloudFile().apply {
+                        /* file = */ CloudFile().apply {
                             id = model.file?.id.toString()
                             title = model.file?.title ?: ""
                             fileExst = model.file?.extension ?: ""
                         },
-                        result.toString(),
-                        false
+                        /* info = */ result.toString(),
+                        /* type = */ null
                     )
                 }
             } catch (e: Exception) {
