@@ -68,7 +68,7 @@ data class OpenDataModel(
         get() {
             if (originalUrl == null) return ""
             return try {
-                Uri.parse(originalUrl).getQueryParameter("share").toString()
+                Uri.parse(originalUrl).getQueryParameter("share") ?: ""
             } catch (error: Exception) {
                 ""
             }
