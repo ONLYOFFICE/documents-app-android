@@ -28,4 +28,5 @@
         <item quantity="other">часове</item>
     </plurals>
     <string name="settings_fonts_title">Шрифтове</string>
+    <string name="settings_view">Преглед</string>
 </resources>

@@ -62,6 +62,7 @@ class ExplorerContextViewModel : ViewModel() {
 
             state.section is ApiContract.Section.Device -> listOf(
                 ExplorerContextItem.Header(state),
+                ExplorerContextItem.Fill().takeIf { ((state.item is CloudFile) && state.item.isPdfForm) },
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Move,
@@ -79,6 +80,7 @@ class ExplorerContextViewModel : ViewModel() {
 
             else -> listOf(
                 ExplorerContextItem.Header(state),
+                ExplorerContextItem.Fill().takeIf { ((state.item is CloudFile) && state.item.isPdfForm) },
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Share.takeIf {
                     state.provider != PortalProvider.Cloud.DocSpace || state.section == ApiContract.Section.User && !((state.item is CloudFile) && state.item.isPdfForm)

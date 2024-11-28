@@ -60,9 +60,6 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
             }
         } else if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
-                BaseActivity.REQUEST_ACTIVITY_FILE_PICKER -> {
-//                    webDavPresenter.upload(data!!.data, data.clipData)
-                }
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
                     webDavPresenter.upload(cameraUri, null)
                 }
@@ -120,12 +117,6 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
             it.showNavigationButton(!isVisible)
             it.showAccount(isVisible)
         }
-    }
-
-    override fun setExpandToolbar() {
-//        if (requireActivity() instanceof MainActivity) {
-//            ((MainActivity) requireActivity()).expandToolBar();
-//        }
     }
 
     override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {

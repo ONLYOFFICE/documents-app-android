@@ -70,10 +70,10 @@ abstract class BaseAppFragment : BaseFragment() {
     /**
      * Show activity
      * */
-    protected fun showMediaActivity(explorer: Explorer, isWebDAv: Boolean, callback: (result: ActivityResult) -> Unit) {
+    protected fun showMediaActivity(explorer: Explorer, isWebDAv: Boolean, callback: ((result: ActivityResult) -> Unit)? = null) {
         LaunchActivityForResult(
             activityResultRegistry = requireActivity().activityResultRegistry,
-            callback = callback,
+            callback = callback ?: {},
             intent = MediaActivity.getIntent(requireContext(), explorer, isWebDAv)
         ).show()
     }
