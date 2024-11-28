@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import lib.toolkit.base.BuildConfig
@@ -55,7 +57,11 @@ class LocalContentTools @Inject constructor(val context: Context) {
         private const val URI_KEY = "external"
 
         fun getDir(context: Context): String {
-            return "${context.filesDir.path}/${BuildConfig.ROOT_FOLDER}"
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+                "${context.filesDir.path}/${BuildConfig.ROOT_FOLDER}"
+            } else {
+                "${Environment.getExternalStorageDirectory().absolutePath}/${BuildConfig.ROOT_FOLDER}"
+            }
         }
 
         fun toOOXML(ext: String): String {

@@ -1,15 +1,19 @@
 package app.editors.manager.ui.fragments.main
 
 import android.Manifest
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
@@ -36,6 +40,7 @@ import lib.toolkit.base.managers.utils.FolderChooser
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils.getHelpUrl
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.launchAfterResume
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
 import java.util.Locale
@@ -53,6 +58,16 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     private val openFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) { data: Uri? ->
         data?.let { presenter.openFromChooser(it) }
+    }
+
+    private val readStorage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_CANCELED) {
+            launchAfterResume {
+                preferenceTool?.isShowStorageAccess = false
+                presenter.recreateStack()
+                presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+            }
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -77,7 +92,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        openItem?.isVisible = true
+        openItem?.isVisible = false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -149,6 +164,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         tag?.let {
             string = string?.trim { it <= ' ' }
             when (tag) {
+                TAG_STORAGE_ACCESS -> requestManage()
                 DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED -> presenter.deleteItems()
                 DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME -> string?.let {
                     presenter.rename(it)
@@ -176,6 +192,13 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             }
         }
         hideDialog()
+    }
+
+    override fun onCancelClick(dialogs: Dialogs?, tag: String?) {
+        super.onCancelClick(dialogs, tag)
+        if (tag == TAG_STORAGE_ACCESS) {
+            preferenceTool?.isShowStorageAccess = false
+        }
     }
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
@@ -265,7 +288,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        presenter.checkBackStack()
+
         // Check shortcut
         val bundle = requireActivity().intent?.extras
         if (savedInstanceState == null && bundle != null && bundle.containsKey(KEY_SHORTCUT)) {
@@ -308,26 +331,56 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 requestReadWritePermission()
             }
 
-            else -> {
-                preferenceTool?.isShowStorageAccess = false
-                presenter.recreateStack()
-                presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                requestAccessStorage()
             }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun requestAccessStorage() {
+        if (!Environment.isExternalStorageManager() && preferenceTool?.isShowStorageAccess == true) {
+            showQuestionDialog(
+                getString(R.string.app_manage_files_title),
+                getString(R.string.app_manage_files_description),
+                getString(R.string.dialogs_common_ok_button),
+                getString(R.string.dialogs_common_cancel_button),
+                TAG_STORAGE_ACCESS
+            )
+        } else {
+            presenter.checkBackStack()
         }
     }
 
     private fun requestReadWritePermission() {
         RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
             if (permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true && permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
-                presenter.recreateStack()
-                presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+                presenter.checkBackStack()
             } else {
                 swipeRefreshLayout?.isEnabled = false
-                openItem?.isVisible = true
+                openItem?.isVisible = false
                 activity?.showActionButton(false)
                 placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
             }
         }, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)).request()
+    }
+
+    private fun requestManage() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                readStorage.launch(
+                    Intent(
+                        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                        Uri.parse("package:" + requireContext().packageName)
+                    )
+                )
+            }
+        } catch (e: ActivityNotFoundException) {
+            openItem?.isVisible = false
+            swipeRefreshLayout?.isEnabled = false
+            activity?.showActionButton(false)
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
+        }
     }
 
     private fun setPlaceholder(isEmpty: Boolean) {
@@ -361,6 +414,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     companion object {
         val TAG: String = DocsOnDeviceFragment::class.java.simpleName
+
+        private const val TAG_STORAGE_ACCESS = "TAG_STORAGE_ACCESS"
 
         private const val KEY_SHORTCUT = "create_type"
 
