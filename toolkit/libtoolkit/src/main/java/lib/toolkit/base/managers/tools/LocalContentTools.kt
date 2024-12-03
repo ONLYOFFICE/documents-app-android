@@ -108,14 +108,27 @@ class LocalContentTools @Inject constructor(val context: Context) {
         }
 
         if (rootDir.exists()) {
-            copyFilesToPublicDocuments(rootDir)
-        } else if (isFirstLaunch()) {
-            val onlyofficeDir = File(publicDocuments, BuildConfig.ROOT_FOLDER)
-            if (!onlyofficeDir.exists()) {
-                onlyofficeDir.mkdirs()
+            try {
+                copyFilesToPublicDocuments(rootDir)
+            } catch (errorP: Throwable) {
+
             }
-            addSamples(onlyofficeDir)
-            setFirstLaunchFlag()
+
+        } else if (isFirstLaunch()) {
+            if (rootDir.exists()) {
+                try {
+                    val onlyofficeDir = File(publicDocuments, BuildConfig.ROOT_FOLDER)
+                    if (!onlyofficeDir.exists()) {
+                        onlyofficeDir.mkdirs()
+                    }
+                    addSamples(onlyofficeDir)
+                    setFirstLaunchFlag()
+                } catch (errorP: Throwable) {
+
+                }
+
+            }
+
         }
 
         return File(getDir(context, true))
@@ -123,15 +136,19 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
     // TODO Remove 8.3.0 and change root dir to public documents
     private fun copyFilesToPublicDocuments(from: File) {
-        val publicDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        val onlyofficeDir = File(publicDocuments, BuildConfig.ROOT_FOLDER)
-        if (!onlyofficeDir.exists()) {
-            onlyofficeDir.mkdirs()
-        } else {
-            return
-        }
-        from.listFiles()?.forEach {
-            moveFiles(it, onlyofficeDir, true)
+        try {
+            val publicDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+            val onlyofficeDir = File(publicDocuments, BuildConfig.ROOT_FOLDER)
+            if (!onlyofficeDir.exists()) {
+                onlyofficeDir.mkdirs()
+            } else {
+                return
+            }
+            from.listFiles()?.forEach {
+                moveFiles(it, onlyofficeDir, true)
+            }
+        } catch (e: Exception) {
+            throw Error(e)
         }
     }
 
