@@ -284,7 +284,11 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun setVisibilityActionButton(isShow: Boolean) {
-        activity?.showActionButton(isShow)
+        if (placeholderViews?.type == PlaceholderViews.Type.ACCESS){
+            activity?.showActionButton(false)
+        } else {
+            activity?.showActionButton(isShow)
+        }
     }
 
     private fun init(savedInstanceState: Bundle?) {
