@@ -227,9 +227,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun openFile(response: CloudFile) {
         val ext = response.fileExst
         if (StringUtils.isVideoSupport(ext) || StringUtils.isImage(ext)) {
-            showMediaActivity(getExplorer(response), false) {
-                // Stub
-            }
+            showMediaActivity(getExplorer(response), false)
         } else if (StringUtils.isDocument(ext)) {
             activity?.showWebViewer(response)
         } else {
@@ -306,9 +304,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             }
 
             is OpenState.Media -> {
-                showMediaActivity(state.explorer, state.isWebDav) {
-                    // Stub
-                }
+                showMediaActivity(state.explorer, state.isWebDav)
             }
         }
     }

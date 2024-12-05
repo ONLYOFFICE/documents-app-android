@@ -33,6 +33,7 @@ import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.FolderChooser
@@ -91,7 +92,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        openItem?.isVisible = true
+        openItem?.isVisible = false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -205,7 +206,9 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             ExplorerContextItem.Upload -> presenter.upload()
             ExplorerContextItem.Copy -> showFolderChooser(OperationsState.OperationType.COPY)
             ExplorerContextItem.Move -> showFolderChooser(OperationsState.OperationType.MOVE)
-            is ExplorerContextItem.Edit -> presenter.getFileInfo(false)
+            is ExplorerContextItem.Edit -> presenter.getFileInfo(EditType.EDIT)
+            is ExplorerContextItem.Fill -> presenter.getFileInfo(EditType.FILL)
+            is ExplorerContextItem.View -> presenter.getFileInfo(EditType.VIEW)
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT)
             else -> super.onContextButtonClick(contextItem)
         }
@@ -233,35 +236,25 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         super.showDeleteDialog(count, false, tag)
     }
 
-    override fun onShowDocs(uri: Uri, isNew: Boolean) {
-        showEditors(uri, EditorsType.DOCS, viewMode = isNew)
-    }
-
-    override fun onShowCells(uri: Uri) {
-        showEditors(uri, EditorsType.CELLS, viewMode = false)
-    }
-
-    override fun onShowSlides(uri: Uri) {
-        showEditors(uri, EditorsType.PRESENTATION, viewMode = false)
-    }
-
     override fun onShowPdf(uri: Uri) {
         showEditors(uri, EditorsType.PDF)
     }
 
     override fun onOpenMedia(state: OpenState.Media) {
-        showMediaActivity(state.explorer, state.isWebDav) {
-            // Stub
-        }
+        showMediaActivity(state.explorer, state.isWebDav)
     }
 
-    override fun showEditors(uri: Uri?, type: EditorsType, info: String?, viewMode: Boolean) {
+    override fun onShowEditors(uri: Uri, type: EditorsType, editType: EditType?) {
+        showEditors(uri, type, null, editType)
+    }
+
+    override fun showEditors(uri: Uri?, type: EditorsType, info: String?, editType: EditType?) {
         try {
             val intent = Intent().apply {
                 data = uri
                 info?.let { putExtra(EditorsContract.KEY_DOC_SERVER, info) }
                 putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-                putExtra(EditorsContract.KEY_VIEW_MODE, viewMode)
+                putExtra(EditorsContract.KEY_EDIT_TYPE, editType)
                 action = Intent.ACTION_VIEW
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
@@ -277,7 +270,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 }
 
                 else -> {
-                    super.showEditors(uri, type, info, viewMode)
+                    super.showEditors(uri, type, info, editType)
                 }
             }
         } catch (e: ActivityNotFoundException) {
@@ -291,11 +284,15 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun setVisibilityActionButton(isShow: Boolean) {
-        activity?.showActionButton(isShow)
+        if (placeholderViews?.type == PlaceholderViews.Type.ACCESS){
+            activity?.showActionButton(false)
+        } else {
+            activity?.showActionButton(isShow)
+        }
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        presenter.checkBackStack()
+
         // Check shortcut
         val bundle = requireActivity().intent?.extras
         if (savedInstanceState == null && bundle != null && bundle.containsKey(KEY_SHORTCUT)) {
@@ -354,17 +351,18 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 getString(R.string.dialogs_common_cancel_button),
                 TAG_STORAGE_ACCESS
             )
+        } else {
+            presenter.checkBackStack()
         }
     }
 
     private fun requestReadWritePermission() {
         RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
             if (permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true && permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
-                presenter.recreateStack()
-                presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+                presenter.checkBackStack()
             } else {
                 swipeRefreshLayout?.isEnabled = false
-                openItem?.isVisible = true
+                openItem?.isVisible = false
                 activity?.showActionButton(false)
                 placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
             }
