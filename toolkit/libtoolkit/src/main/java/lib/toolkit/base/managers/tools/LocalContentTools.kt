@@ -101,6 +101,7 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
     fun createRootDir(): File {
         val publicDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val onlyofficeDir = File(publicDocuments, BuildConfig.ROOT_FOLDER)
         val rootDir = File(getDir(context, false))
 
         if (!publicDocuments.exists()) {
@@ -108,37 +109,28 @@ class LocalContentTools @Inject constructor(val context: Context) {
         }
 
         if (rootDir.exists()) {
-            try {
-                copyFilesToPublicDocuments(rootDir)
-            } catch (errorP: Throwable) {
-
-            }
-
-        } else if (isFirstLaunch()) {
-            if (rootDir.exists()) {
-                try {
-                    val onlyofficeDir = File(publicDocuments, BuildConfig.ROOT_FOLDER)
-                    if (!onlyofficeDir.exists()) {
-                        onlyofficeDir.mkdirs()
-                    }
-                    addSamples(onlyofficeDir)
-                    setFirstLaunchFlag()
-                } catch (errorP: Throwable) {
-
-                }
-
-            }
-
+            copyFilesToPublicDocuments(rootDir)
         }
 
-        return File(getDir(context, true))
+        if (onlyofficeDir.exists()) {
+            return onlyofficeDir
+        } else {
+            onlyofficeDir.mkdirs()
+        }
+        if (isFirstLaunch()) {
+            onlyofficeDir.mkdirs()
+            addSamples(onlyofficeDir)
+            setFirstLaunchFlag()
+        }
+
+        return onlyofficeDir
     }
 
     // TODO Remove 8.3.0 and change root dir to public documents
     private fun copyFilesToPublicDocuments(from: File) {
+        val publicDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        val onlyofficeDir = File(publicDocuments, BuildConfig.ROOT_FOLDER)
         try {
-            val publicDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-            val onlyofficeDir = File(publicDocuments, BuildConfig.ROOT_FOLDER)
             if (!onlyofficeDir.exists()) {
                 onlyofficeDir.mkdirs()
             } else {
@@ -148,7 +140,8 @@ class LocalContentTools @Inject constructor(val context: Context) {
                 moveFiles(it, onlyofficeDir, true)
             }
         } catch (e: Exception) {
-            throw Error(e)
+            publicDocuments.mkdirs()
+            onlyofficeDir.mkdirs()
         }
     }
 
