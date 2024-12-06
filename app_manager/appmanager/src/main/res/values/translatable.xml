@@ -941,4 +941,8 @@
 
     <string name="rooms_vdr">Virtual Data Room</string>
     <string name="rooms_vdr_desc">Use VDR for advanced file security and transparency while filling and signing documents step-by-step. Set watermarks, automatically index and track all content, restrict downloading and copying.</string>
+    <string name="file_lifetime_hint">Files older than</string>
+    <string name="file_lifetime_time_period">Time period</string>
+    <string name="file_lifetime_action">Action on files</string>
+    <string name="file_lifetime_action_delete">Delete permanently</string>
 </resources>

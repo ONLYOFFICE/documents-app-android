@@ -11,7 +11,9 @@ import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Lifetime
 import app.documents.core.network.manager.models.explorer.PathPart
+import app.documents.core.network.manager.models.explorer.Watermark
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
@@ -50,6 +52,10 @@ data class AddRoomData(
     val tags: MutableList<ChipData> = mutableListOf(),
     val imageUri: Any? = null,
     val storageState: StorageState? = null,
+    val lifetime: Lifetime? = null,
+    val denyDownload: Boolean = false,
+    val watermark: Watermark? = null,
+    val indexing: Boolean = false,
 )
 
 sealed class ViewState {
@@ -84,6 +90,10 @@ class AddRoomViewModel(
                 } else {
                     null
                 },
+                lifetime = roomInfo.lifetime,
+                denyDownload = roomInfo.denyDownload,
+                watermark = roomInfo.watermark,
+                indexing = roomInfo.indexing,
                 storageState = StorageState(
                     id = roomInfo.id,
                     providerKey = roomInfo.providerKey,
@@ -320,5 +330,9 @@ class AddRoomViewModel(
 
     fun setRoomType(newType: Int) {
         _roomState.update { it.copy(type = newType) }
+    }
+
+    fun updateState(addRoomData: AddRoomData) {
+        _roomState.value = addRoomData
     }
 }

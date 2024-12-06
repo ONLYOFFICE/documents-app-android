@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetDefaults
@@ -42,9 +41,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +56,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
@@ -70,6 +72,8 @@ import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Lifetime
+import app.documents.core.network.manager.models.explorer.Watermark
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
@@ -100,10 +104,12 @@ import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppSwitchItem
+import lib.compose.ui.views.AppTextField
 import lib.compose.ui.views.AppTextFieldListItem
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.ChipData
 import lib.compose.ui.views.ChipsTextField
+import lib.compose.ui.views.NestedColumn
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils
@@ -211,11 +217,11 @@ class AddRoomFragment : ComposeDialogFragment() {
                         onCreateNewFolder = viewModel::setCreateNewFolder,
                         onLocationClick = { navController.navigate("${Screens.Folder.name}/$it") },
                         onSetOwnerClick = { navController.navigate(Screens.ChangeOwner.name) },
-                        create = { type1, name, image, tags ->
+                        create = { roomType, name, image, tags ->
                             if (isEdit) {
                                 viewModel.edit(name, tags)
                             } else {
-                                viewModel.createRoom(type1, name, image, tags)
+                                viewModel.createRoom(roomType, name, image, tags)
                             }
                         },
                         created = { id ->
@@ -231,14 +237,15 @@ class AddRoomFragment : ComposeDialogFragment() {
                             } else {
                                 viewModel.disconnectStorage()
                             }
-                        }
+                        },
+                        updateState = viewModel::updateState
                     )
                 }
                 composable(Screens.Select.name) {
                     SelectRoomScreen(
                         currentType = roomState.value.type,
                         navController = navController,
-                        viewModel = viewModel
+                        select = { viewModel.setRoomType(it) }
                     )
                 }
                 composable(
@@ -286,7 +293,6 @@ class AddRoomFragment : ComposeDialogFragment() {
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MainScreen(
     isEdit: Boolean,
@@ -303,6 +309,7 @@ private fun MainScreen(
     onCreateNewFolder: (Boolean) -> Unit,
     onStorageConnect: (Boolean) -> Unit,
     onSetOwnerClick: () -> Unit,
+    updateState: (AddRoomData) -> Unit = {}
 ) {
     val keyboardController = LocalFocusManager.current
     val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
@@ -357,7 +364,7 @@ private fun MainScreen(
                 }
             )
         }, useTablePaddings = false) {
-            Column {
+            NestedColumn {
                 if (viewState is ViewState.Loading) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 } else {
@@ -443,6 +450,12 @@ private fun MainScreen(
                         onStorageConnect = onStorageConnect
                     )
                 }
+
+
+                if (roomState.type == ApiContract.RoomType.VIRTUAL_ROOM) {
+                    VdrRoomBlock(roomState, updateState)
+                }
+
             }
             if (viewState is ViewState.Error) {
                 keyboardController.clearFocus(true)
@@ -460,6 +473,7 @@ private fun MainScreen(
         }
     }
 }
+
 
 @Composable
 fun ThirdPartyBlock(
@@ -513,8 +527,97 @@ fun ThirdPartyBlock(
     }
 }
 
+
+//TODO Vdr content
 @Composable
-private fun SelectRoomScreen(currentType: Int, navController: NavHostController, viewModel: AddRoomViewModel) {
+fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
+    var download by remember { mutableStateOf(false) }
+    var watermark by remember { mutableStateOf<Watermark?>(null) }
+
+    AppSwitchItem(title = "Automatic indexing", checked = state.indexing) { onChecked ->
+        updateState(state.copy(indexing = onChecked))
+    }
+    Text(
+        text = "Enable automatic indexing to index files and folders by serial number. Sorting by number will be set as default for all users.",
+        style = MaterialTheme.typography.body2,
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 8.dp)
+    )
+    AppSwitchItem(title = "File lifetime", checked = state.lifetime != null) { onChecked ->
+        if(onChecked) {
+            updateState(state.copy(lifetime = Lifetime()))
+        } else {
+            updateState(state.copy(lifetime = null))
+        }
+    }
+
+    state.lifetime?.let {
+        LifeTimeBlock(it) { lifetime ->
+            updateState(state.copy(lifetime = lifetime))
+        }
+    }
+
+    Text(
+        "Set file lifetime to automatically delete the files in this room after a defined period. Lifetime begins on the date of upload/creation of the file.",
+        style = MaterialTheme.typography.body2,
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 8.dp)
+    )
+    AppSwitchItem(title = "Restrict file content copy, file download and printing", checked = download, singleLine = false) { onChecked ->
+        download = onChecked
+    }
+    Text(
+        "Enable this setting to disable downloads, printing, and content copying for users with the “Viewer” role",
+        style = MaterialTheme.typography.body2,
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 8.dp)
+    )
+
+    AppSwitchItem(title = "Add watermarks to documents", checked = watermark != null, singleLine = false) { onChecked ->
+        watermark = if (onChecked) {
+            Watermark()
+        } else {
+            null
+        }
+    }
+    Text(
+        "Protect all documents in this room with watermarks. If a document already contains one, it will not be replaced.",
+        style = MaterialTheme.typography.body2,
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 8.dp)
+    )
+}
+
+@Composable
+fun LifeTimeBlock(lifetime: Lifetime, updateState: (Lifetime?) -> Unit) {
+    val lifetimeValue = remember { mutableStateOf(lifetime.value) }
+    var deletePermanently by remember { mutableStateOf(lifetime.deletePermanently) }
+    var period by remember { mutableStateOf(lifetime.period) }
+
+    Column {
+        AppTextField(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            state = lifetimeValue,
+            onValueChange = { value ->
+                updateState(lifetime.apply { this.value = value })
+                lifetimeValue.value = value
+            },
+            hint = stringResource(R.string.file_lifetime_hint),
+            keyboardType = KeyboardType.Number,
+            label = R.string.file_lifetime_hint,
+        )
+        AppSwitchItem(title = stringResource(R.string.file_lifetime_action), checked = deletePermanently) { onChecked ->
+            deletePermanently = onChecked
+        }
+    }
+}
+
+@Composable
+private fun SelectRoomScreen(currentType: Int, navController: NavHostController, select: (Int) -> Unit) {
     AppScaffold(topBar = {
         AppTopBar(
             title = stringResource(id = R.string.rooms_choose_room),
@@ -524,7 +627,7 @@ private fun SelectRoomScreen(currentType: Int, navController: NavHostController,
         Column {
             for (type in RoomUtils.roomTypes) {
                 AddRoomItem(roomType = type, selected = currentType == type) { newType ->
-                    viewModel.setRoomType(newType)
+                    select(newType)
                     navController.navigate(Screens.Main.name) {
                         popUpTo(navController.graph.id) {
                             inclusive = true
@@ -537,7 +640,6 @@ private fun SelectRoomScreen(currentType: Int, navController: NavHostController,
 }
 
 @SuppressLint("MissingPermission")
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ChooseImageBottomView(
     scope: CoroutineScope,
@@ -686,11 +788,10 @@ private fun MainScreenPreview() {
 @Composable
 private fun SelectScreenPreview() {
     ManagerTheme {
-        SelectRoomScreen(2, navController = rememberNavController(), viewModel = viewModel())
+        SelectRoomScreen(2, navController = rememberNavController()) {}
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun SelectImagePreview() {
