@@ -198,6 +198,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         super.onCancelClick(dialogs, tag)
         if (tag == TAG_STORAGE_ACCESS) {
             preferenceTool?.isShowStorageAccess = false
+            presenter.recreateStack()
+            presenter.getItemsById(LocalContentTools.getDir(requireContext()))
         }
     }
 
