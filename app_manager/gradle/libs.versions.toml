@@ -48,8 +48,8 @@ koin = "4.0.0"
 #firebase
 firebaseCore = "21.1.1"
 firebaseConfig = "22.0.1"
-firebaseMessaging = "24.0.3"
-firebaseCrashlytics = "19.2.1"
+firebaseMessaging = "24.1.0"
+firebaseCrashlytics = "19.3.0"
 
 #livedata
 lifecycle = "2.8.7"

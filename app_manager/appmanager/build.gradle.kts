@@ -65,7 +65,7 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 596
-        versionName = "8.2.2"
+        versionName = "8.2.3"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
