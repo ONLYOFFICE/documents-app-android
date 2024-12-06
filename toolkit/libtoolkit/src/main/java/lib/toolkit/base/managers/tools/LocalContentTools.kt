@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
@@ -59,15 +58,8 @@ class LocalContentTools @Inject constructor(val context: Context) {
         private const val PREFS_NAME = "sample_prefs"
         private const val KEY_FIRST_LAUNCH = "first_launch"
 
-        fun getDir(context: Context, isPublic: Boolean = true): String {
-            if (isPublic) {
-                return "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath}/${BuildConfig.ROOT_FOLDER}"
-            }
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-                "${context.filesDir.path}/${BuildConfig.ROOT_FOLDER}"
-            } else {
-                "${Environment.getExternalStorageDirectory().absolutePath}/${BuildConfig.ROOT_FOLDER}"
-            }
+        fun getDir(): String {
+            return "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath}/${BuildConfig.ROOT_FOLDER}"
         }
 
         fun toOOXML(ext: String): String {
@@ -100,49 +92,18 @@ class LocalContentTools @Inject constructor(val context: Context) {
     }
 
     fun createRootDir(): File {
-        val publicDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        val onlyofficeDir = File(publicDocuments, BuildConfig.ROOT_FOLDER)
-        val rootDir = File(getDir(context, false))
-
-        if (!publicDocuments.exists()) {
-            publicDocuments.mkdirs()
+        val publicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        if (!publicDir.exists()) {
+            publicDir.mkdirs()
         }
-
-        if (rootDir.exists()) {
-            copyFilesToPublicDocuments(rootDir)
-        }
-
-        if (onlyofficeDir.exists()) {
-            return onlyofficeDir
-        } else {
-            onlyofficeDir.mkdirs()
+        if (!File(getDir()).exists()) {
+            File(getDir()).mkdirs()
         }
         if (isFirstLaunch()) {
-            onlyofficeDir.mkdirs()
-            addSamples(onlyofficeDir)
+            addSamples(File(getDir()))
             setFirstLaunchFlag()
         }
-
-        return onlyofficeDir
-    }
-
-    // TODO Remove 8.3.0 and change root dir to public documents
-    private fun copyFilesToPublicDocuments(from: File) {
-        val publicDocuments = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        val onlyofficeDir = File(publicDocuments, BuildConfig.ROOT_FOLDER)
-        try {
-            if (!onlyofficeDir.exists()) {
-                onlyofficeDir.mkdirs()
-            } else {
-                return
-            }
-            from.listFiles()?.forEach {
-                moveFiles(it, onlyofficeDir, true)
-            }
-        } catch (e: Exception) {
-            publicDocuments.mkdirs()
-            onlyofficeDir.mkdirs()
-        }
+        return File(getDir())
     }
 
     private fun addSamples(rootDir: File) {
@@ -150,6 +111,7 @@ class LocalContentTools @Inject constructor(val context: Context) {
         samplesName?.let {
             it.forEach { name ->
                 val file = File(rootDir.absolutePath + "/" + name)
+                file.createNewFile()
                 val inputStream = context.assets.open("samples/$name")
                 val outputStream = FileOutputStream(file)
                 outputStream.write(inputStream.readBytes())
