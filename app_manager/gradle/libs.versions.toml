@@ -47,9 +47,9 @@ koin = "3.6.0-wasm-alpha2"
 
 #firebase
 firebaseCore = "21.1.1"
-firebaseConfig = "22.0.0"
-firebaseMessaging = "24.0.0"
-firebaseCrashlytics = "19.0.2"
+firebaseConfig = "22.0.1"
+firebaseMessaging = "24.1.0"
+firebaseCrashlytics = "19.3.0"
 
 #livedata
 lifecycle = "2.8.3"
