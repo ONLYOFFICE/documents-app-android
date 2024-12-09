@@ -19,7 +19,6 @@
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
@@ -41,12 +40,15 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
+    <!--suppress AndroidElementNotAllowed -->
     <meta-data
         android:name="firebase_crashlytics_collection_enabled"
         android:value="false" />
+    <!--suppress AndroidElementNotAllowed -->
     <meta-data
         android:name="com.samsung.android.keepalive.density"
         android:value="true" />
+    <!--suppress AndroidElementNotAllowed -->
     <meta-data
         android:name="com.samsung.android.multidisplay.keep_process_alive"
         android:value="true" />
@@ -172,16 +174,6 @@
             android:launchMode="singleInstance"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateHidden">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="app.editors.manager.ui.activities.main.MainActivity" />
-        </activity>
-        <activity
-            android:name="app.editors.manager.ui.activities.main.OperationActivity"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:theme="@style/OperationActivityTheme"
-            android:windowSoftInputMode="adjustPan|stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />

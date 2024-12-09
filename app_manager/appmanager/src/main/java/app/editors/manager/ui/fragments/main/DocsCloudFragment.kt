@@ -54,6 +54,7 @@ import app.editors.manager.viewModels.main.CopyItems
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.DialogUtils
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.contains
@@ -218,7 +219,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 acceptErrorTint = true
             )
 
-            is ExplorerContextItem.Edit -> cloudPresenter.onEditContextClick()
+            is ExplorerContextItem.Edit -> cloudPresenter.onContextClick(EditType.EDIT)
+            is ExplorerContextItem.Fill -> cloudPresenter.onContextClick(EditType.FILL)
+            is ExplorerContextItem.View -> cloudPresenter.onContextClick(EditType.VIEW)
             is ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()

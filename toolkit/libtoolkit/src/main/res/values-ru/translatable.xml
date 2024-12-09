@@ -30,4 +30,5 @@
     <item quantity="other">часов</item>
   </plurals>
   <string name="settings_fonts_title">Шрифты</string>
+  <string name="settings_view">Просмотр</string>
 </resources>

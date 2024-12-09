@@ -28,4 +28,5 @@
         <item quantity="other">hodiny</item>
     </plurals>
     <string name="settings_fonts_title">Fonty</string>
+    <string name="settings_view">Zobrazit</string>
 </resources>

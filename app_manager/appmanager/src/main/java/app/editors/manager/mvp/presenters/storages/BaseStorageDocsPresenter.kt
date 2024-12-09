@@ -96,7 +96,7 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
                     addFile(file)
                     setPlaceholderType(PlaceholderViews.Type.NONE)
                     viewState.onDialogClose()
-                    viewState.onOpenLocalFile(file)
+                    viewState.onOpenLocalFile(file, null)
                 }) { throwable: Throwable -> fetchError(throwable) })
             }
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
