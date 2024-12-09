@@ -9,17 +9,16 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import app.editors.manager.R
@@ -54,7 +53,7 @@ fun SearchAppBar(
             onDone = { focusManager.clearFocus(true) },
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_toolbar_search),
                     contentDescription = stringResource(id = android.R.string.search_go),
                     modifier = Modifier.alpha(ContentAlpha.medium)
                 )
@@ -70,7 +69,7 @@ fun SearchAppBar(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Close,
+                        imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_close),
                         contentDescription = stringResource(id = android.R.string.cancel),
                         tint = MaterialTheme.colors.primary
                     )

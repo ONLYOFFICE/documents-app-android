@@ -424,8 +424,6 @@
     <string name="snackbar_undo">ОТМЕНИТЬ</string>
     <string name="errors_server_auth_too_many_attempts">Слишком много попыток. Повторите попытку позже</string>
     <string name="share_snackbar_remove_user">Пользователь удален</string>
-    <string name="share_group_admin">Администратор</string>
-    <string name="share_group_everyone">Все</string>
     <string name="storage_onedrive_error_opened">Файл открыт на портале</string>
     <string name="storage_onedrive_error_exist">Файл с таким именем уже существует в этой папке</string>
     <string name="operation_panel_restore_button">Восстановить здесь</string>

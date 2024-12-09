@@ -323,6 +323,7 @@ object ApiContract {
         const val COLLABORATION_ROOM = 2
         const val CUSTOM_ROOM = 5
         const val PUBLIC_ROOM = 6
+        const val VIRTUAL_ROOM = 8
 
         fun hasExternalLink(roomType: Int?): Boolean = roomType != CUSTOM_ROOM
     }

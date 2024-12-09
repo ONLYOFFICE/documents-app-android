@@ -39,7 +39,7 @@ internal fun ExternalLinkBlock(
             if (canEditRoom) {
                 IconButton(onClick = onSharedLinkCreate) {
                     Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_action_button_docs_add),
+                        imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_default_add),
                         tint = MaterialTheme.colors.primary,
                         contentDescription = null
                     )

@@ -406,8 +406,6 @@
     <string name="snackbar_undo">DESHACER</string>
     <string name="errors_server_auth_too_many_attempts">Demasiados intentos. Vuelva a intentarlo más tarde</string>
     <string name="share_snackbar_remove_user">Se ha quitado al usuario</string>
-    <string name="share_group_admin">Administrador</string>
-    <string name="share_group_everyone">Todos</string>
     <string name="storage_onedrive_error_opened">El archivo está abierto en el portal</string>
     <string name="storage_onedrive_error_exist">El archivo con el mismo nombre ya existe en esta carpeta</string>
     <string name="operation_panel_restore_button">Restaurar aquí</string>

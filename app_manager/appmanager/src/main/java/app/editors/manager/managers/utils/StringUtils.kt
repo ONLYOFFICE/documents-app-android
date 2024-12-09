@@ -16,10 +16,11 @@ internal object StringUtils {
         item: Item,
         userId: String?,
         sortBy: String? = null,
-        isSectionMy: Boolean = false
+        isSectionMy: Boolean = false,
+        isGrid: Boolean = false
     ): String? {
         return when (item) {
-            is CloudFolder -> getFolderInfo(context, item, userId, sortBy, isSectionMy)
+            is CloudFolder -> getFolderInfo(context, item, userId, sortBy, isSectionMy, isGrid)
             is CloudFile -> getFileInfo(context, item, userId, sortBy, isSectionMy)
             else -> return null
         }.filterNotNull().joinToString(context.getString(R.string.placeholder_point))
@@ -30,13 +31,18 @@ internal object StringUtils {
         folder: CloudFolder,
         userId: String?,
         sortBy: String? = null,
-        isSectionMy: Boolean = false
+        isSectionMy: Boolean = false,
+        isGrid: Boolean = false
     ): Array<String?> {
         val date = TimeUtils.getWeekDate(folder.updated)
         val owner = getItemOwner(context, folder, userId).takeUnless { isSectionMy }
 
         return if (folder.isRoom) {
             val roomType = context.getString(RoomUtils.getRoomInfo(folder.roomType).title)
+            if (isGrid) {
+                return arrayOf(roomType)
+            }
+
             when (sortBy) {
                 ActionMenuItem.Date.sortValue -> arrayOf(date, roomType, owner)
                 ActionMenuItem.Author.sortValue -> arrayOf(owner, roomType, date)
@@ -68,7 +74,7 @@ internal object StringUtils {
     private fun getItemOwner(context: Context, item: Item, userId: String?): String? {
         return when {
             userId.equals(item.createdBy.id, ignoreCase = true) -> context.getString(R.string.item_owner_self)
-            item.createdBy.displayName.isNotEmpty() -> item.createdBy.displayName
+            item.createdBy.displayName.isNotEmpty() -> item.createdBy.displayNameFromHtml
             else -> null
         }
     }

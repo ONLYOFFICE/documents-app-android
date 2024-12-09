@@ -6,8 +6,9 @@ import kotlinx.serialization.Serializable
 data class Group(
     override val id: String = "",
     val name: String = "",
-//    val manager: String? = "",
-    override val shared: Boolean = false
+    override val shared: Boolean = false,
+    val memberCount: Int = 0,
+    val isLDAP: Boolean = false,
 ): Comparable<Group>, Member {
 
     override fun compareTo(other: Group): Int = id.compareTo(other.id)

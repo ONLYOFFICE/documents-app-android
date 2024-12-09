@@ -415,8 +415,6 @@
     <string name="snackbar_undo">RÜCKGÄNGIG MACHEN</string>
     <string name="errors_server_auth_too_many_attempts">Zu viele Versuche. Bitte versuchen Sie es später erneut.</string>
     <string name="share_snackbar_remove_user">Benutzer wurde entfernt</string>
-    <string name="share_group_admin">Administrator</string>
-    <string name="share_group_everyone">Alle</string>
     <string name="storage_onedrive_error_opened">Die Datei ist auf dem Portal geöffnet</string>
     <string name="storage_onedrive_error_exist">In diesem Ordner gibt es schon eine Datei mit demselben Namen</string>
     <string name="operation_panel_restore_button">Hier wiederherstellen</string>

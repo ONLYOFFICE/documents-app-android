@@ -401,9 +401,6 @@
 
     <string name="share_snackbar_remove_user">تتم إزالة المستخدم</string>
 
-    <string name="share_group_admin">مسؤل</string>
-    <string name="share_group_everyone">الجميع</string>
-
     <!-- External link -->
     <string name="share_access_success">تم الوصول الخارجي بنجاح</string>
     <string name="share_access_denied">تم رفض الوصول الخارجي</string>

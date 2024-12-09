@@ -253,6 +253,7 @@ dependencies {
     implementation(libs.google.material)
     implementation(libs.google.gson)
     implementation(libs.google.safetynet)
+    implementation(libs.google.update)
 
     // Androidx
     implementation(libs.appcompat)
@@ -325,10 +326,6 @@ dependencies {
     implementation(libs.jackson)
     implementation(libs.jackson.annotations)
     implementation(libs.jackson.databind)
-
-    // For compose preview
-    debugApi(libs.customview)
-    debugApi(libs.customview.poolingcontainer)
 }
 
 apply(plugin = "com.google.gms.google-services")

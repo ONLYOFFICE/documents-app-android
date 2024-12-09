@@ -1,7 +1,7 @@
 [versions]
-compileSdk = "34"
+compileSdk = "35"
 minSdk = "26"
-targetSdk = "34"
+targetSdk = "35"
 ndk = "21.3.6528147"
 
 #kotlin
@@ -12,54 +12,55 @@ coroutines = "1.8.1"
 
 #android
 androidx = "1.7.0"
-composeActivity = "1.9.0"
+composeActivity = "1.9.3"
 cardView = "1.0.0"
 recyclerView = "1.3.2"
 recyclerViewSelection = "1.1.0"
-constraint = "2.1.4"
-ktx = "1.13.1"
-fragmentKtx = "1.8.1"
+constraint = "2.2.0"
+ktx = "1.15.0"
+fragmentKtx = "1.8.5"
 biometric = "1.1.0"
-androidWorkManager = "2.9.0"
+androidWorkManager = "2.10.0"
 androidDocumentFile = "1.0.1"
 
 #compose
-composeMaterial = "1.6.8"
+composeMaterial = "1.7.5"
 composeMaterial3 = "1.3.0"
-composeUi = "1.6.8"
-composeUiTooling = "1.6.8"
-composeUiToolingPreview = "1.6.8"
-composeNavigation = "2.7.7"
+composeUi = "1.7.5"
+composeUiTooling = "1.7.5"
+composeUiToolingPreview = "1.7.5"
+composeNavigation = "2.8.3"
 composeCompiler = "1.5.14"
-compose = "1.6.7"
+compose = "1.7.5"
 
 #dagger
 dagger = "2.48.1"
 
 #room
-room = "2.5.1"
+room = "2.6.1"
 
 #moxy
 moxy = "2.2.2"
 
 #koin
-koin = "3.6.0-wasm-alpha2"
+koin = "4.0.0"
 
 #firebase
 firebaseCore = "21.1.1"
-firebaseConfig = "22.0.0"
-firebaseMessaging = "24.0.0"
-firebaseCrashlytics = "19.0.2"
+firebaseConfig = "22.0.1"
+firebaseMessaging = "24.0.3"
+firebaseCrashlytics = "19.2.1"
 
 #livedata
-lifecycle = "2.8.3"
+lifecycle = "2.8.7"
 
 #google
 playServieAuth = "21.2.0"
-playReview = "2.0.1"
+playReview = "2.0.2"
 material = "1.12.0"
 gson = "2.10.1"
 safetynet = "18.1.0"
+app-update = "2.1.0"
 
 jackson = "2.16.1"
 
@@ -70,11 +71,8 @@ retrofitKtSerialization = "1.0.0"
 
 firebaseCrashlyticsGradle = "3.0.2"
 googleServices = "4.4.2"
-gradle = "8.5.0"
+gradle = "8.6.1"
 kotlinGradlePlugin = "1.9.24"
-
-customview = "1.2.0-alpha02"
-customviewPoolingcontainer = "1.0.0"
 
 #other
 phoneNumber = "8.13.28"
@@ -118,6 +116,7 @@ google-playReview = { module = "com.google.android.play:review", version.ref = "
 google-material = { module = "com.google.android.material:material", version.ref = "material" }
 google-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 google-safetynet = { module = "com.google.android.gms:play-services-safetynet", version.ref = "safetynet" }
+google-update = { module = "com.google.android.play:app-update-ktx", version.ref = "app-update" }
 
 #kotlin
 kotlin-core = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
@@ -170,10 +169,6 @@ rx-relay = { module = "com.jakewharton.rxrelay2:rxrelay", version.ref = "rxjava"
 lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
-
-customview-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version.ref = "customviewPoolingcontainer" }
-customview = { module = "androidx.customview:customview", version.ref = "customview" }
-
 firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsGradle" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }

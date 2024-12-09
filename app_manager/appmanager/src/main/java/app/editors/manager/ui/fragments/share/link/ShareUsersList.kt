@@ -145,7 +145,7 @@ private fun ShareUserItem(share: ShareEntity, portal: String?, key: ShareType, o
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = lib.toolkit.base.managers.utils.StringUtils.getAvatarName(share.sharedTo.name),
+                        text = lib.toolkit.base.managers.utils.StringUtils.getAvatarName(share.sharedTo.nameHtml),
                         style = MaterialTheme.typography.h6,
                         color = MaterialTheme.colors.colorTextSecondary
                     )
@@ -154,7 +154,7 @@ private fun ShareUserItem(share: ShareEntity, portal: String?, key: ShareType, o
             Text(
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.body1,
-                text = if (key != ShareType.Group) share.sharedTo.displayName else share.sharedTo.name
+                text = if (key != ShareType.Group) share.sharedTo.displayNameHtml else share.sharedTo.nameHtml
             )
             Text(
                 text = stringResource(id = RoomUtils.getAccessTitleOrOwner(share.isOwner, share.accessCode)),

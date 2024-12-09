@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package app.documents.core.network.webdav
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -49,6 +51,7 @@ class ConverterFactory : Converter.Factory() {
         return jsonConverter.requestBodyConverter(type, parameterAnnotations, methodAnnotations, retrofit)
     }
 
+    @Suppress("JSON_FORMAT_REDUNDANT")
     private val jsonConverter: Converter.Factory
         get() = Json {
             isLenient = true

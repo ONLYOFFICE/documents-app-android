@@ -59,7 +59,8 @@ abstract class GridBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
             item = element,
             userId = adapter.accountId,
             sortBy = adapter.preferenceTool.sortBy,
-            isSectionMy = adapter.isSectionMy
+            isSectionMy = adapter.isSectionMy,
+            isGrid = true
         )
     }
 }

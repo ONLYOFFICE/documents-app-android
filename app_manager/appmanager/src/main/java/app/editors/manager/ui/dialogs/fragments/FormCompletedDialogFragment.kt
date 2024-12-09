@@ -22,8 +22,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -252,7 +250,7 @@ fun FormCompletedScreen(
         ) {
             IconButton(onClick = onSendEmailClick) {
                 Icon(
-                    imageVector = Icons.Default.Email,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_email),
                     contentDescription = null,
                     tint = MaterialTheme.colors.primary
                 )

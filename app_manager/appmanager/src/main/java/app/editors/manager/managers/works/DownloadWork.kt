@@ -13,7 +13,9 @@ import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.api
 import com.google.gson.Gson
-import lib.toolkit.base.managers.utils.*
+import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.managers.utils.FileUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.ResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
@@ -32,7 +34,7 @@ class DownloadWork(
         get() = AccountUtils.getToken(
             applicationContext,
             Account(
-                applicationContext.accountOnline?.accountName,
+                applicationContext.accountOnline?.accountName ?: "",
                 applicationContext.getString(lib.toolkit.base.R.string.account_type)
             )
         )

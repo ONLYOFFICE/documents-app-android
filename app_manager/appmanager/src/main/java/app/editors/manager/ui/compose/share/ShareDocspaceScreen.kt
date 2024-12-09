@@ -1,7 +1,6 @@
 package app.editors.manager.ui.compose.share
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -173,7 +172,6 @@ private fun MainScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ShareSettingsScreen(
     isCreateLoading: Boolean,
@@ -203,7 +201,7 @@ private fun ShareSettingsScreen(
                             if (state.links.isNotEmpty()) {
                                 IconButton(onClick = onCreate) {
                                     Icon(
-                                        imageVector = ImageVector.vectorResource(R.drawable.ic_action_button_docs_add),
+                                        imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_default_add),
                                         tint = MaterialTheme.colors.primary,
                                         contentDescription = null
                                     )
@@ -214,7 +212,7 @@ private fun ShareSettingsScreen(
                     if (state.links.isNotEmpty()) {
                         items(state.links, key = { it.sharedTo.id }) { link ->
                             SharedLinkItem(
-                                modifier = Modifier.animateItemPlacement(),
+                                modifier = Modifier.animateItem(),
                                 access = link.access,
                                 internal = link.sharedTo.internal == true,
                                 expirationDate = link.sharedTo.expirationDate,
@@ -272,7 +270,7 @@ private fun ShareSettingsScreenPreview() {
             primary = true,
             requestToken = "",
             password = "",
-            expirationDate = "2024-4-05T22:00:00.0000000+03:00"
+            expirationDate = "2024-04-05T22:00:00.0000000+03:00"
         )
     )
 

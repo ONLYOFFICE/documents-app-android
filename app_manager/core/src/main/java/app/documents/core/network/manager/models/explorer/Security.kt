@@ -53,4 +53,36 @@ class Security : Serializable {
     @SerializedName("Duplicate")
     @Expose
     var duplicate: Boolean = false
+
+    @SerializedName("Mute")
+    @Expose
+    var mute: Boolean = false
+
+    @SerializedName("Download")
+    @Expose
+    var download: Boolean = false
+
+    @SerializedName("CopySharedLink")
+    @Expose
+    var copySharedLink: Boolean = false
+
+    @SerializedName("Reconnect")
+    @Expose
+    var reconnect: Boolean = false
+
+    @SerializedName("CreateRoomFrom")
+    @Expose
+    var createRoomFrom: Boolean = false
+
+    @SerializedName("CopyLink")
+    @Expose
+    var copyLink: Boolean = false
+
+    @SerializedName("Embed")
+    @Expose
+    var embed: Boolean = false
+
+    @SerializedName("ChangeOwner")
+    @Expose
+    var changeOwner: Boolean = false
 }
