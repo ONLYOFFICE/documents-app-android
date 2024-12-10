@@ -190,6 +190,7 @@ fun AppPasswordTextField(
 fun AppTextFieldListItem(
     modifier: Modifier = Modifier,
     state: MutableState<String>,
+    onValueChange: ((String) -> Unit) = {},
     hint: String = "",
     isPassword: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -219,7 +220,7 @@ fun AppTextFieldListItem(
                     modifier = Modifier
                         .onFocusChanged { focused = it.isFocused },
                     value = state.value,
-                    onValueChange = { state.value = it },
+                    onValueChange = { state.value = it; onValueChange(it) },
                     singleLine = true,
                     cursorBrush = SolidColor(MaterialTheme.colors.primary),
                     textStyle = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.colorTextPrimary),

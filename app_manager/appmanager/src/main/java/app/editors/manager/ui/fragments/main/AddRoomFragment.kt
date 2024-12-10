@@ -60,6 +60,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
+import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -100,8 +101,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.utils.popBackStackWhenResumed
+import lib.compose.ui.views.AnimatedVisibilityVerticalFade
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDescriptionItem
+import lib.compose.ui.views.AppListItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppSwitchItem
 import lib.compose.ui.views.AppTextField
@@ -109,6 +112,8 @@ import lib.compose.ui.views.AppTextFieldListItem
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.ChipData
 import lib.compose.ui.views.ChipsTextField
+import lib.compose.ui.views.DropdownMenuButton
+import lib.compose.ui.views.DropdownMenuItem
 import lib.compose.ui.views.NestedColumn
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.AccountUtils
@@ -170,7 +175,8 @@ class AddRoomFragment : ComposeDialogFragment() {
         ManagerTheme {
             val navController = rememberNavController()
             val room = remember { arguments?.getSerializableExt<Item>(TAG_ROOM_INFO) }
-            val roomType = remember { arguments?.getIntExt(TAG_ROOM_TYPE) ?: (room as? CloudFolder)?.roomType }
+            val roomType =
+                remember { arguments?.getIntExt(TAG_ROOM_TYPE) ?: (room as? CloudFolder)?.roomType }
             val viewModel = viewModel {
                 AddRoomViewModel(
                     context = requireActivity().application,
@@ -185,9 +191,10 @@ class AddRoomFragment : ComposeDialogFragment() {
             val storageActivityLauncher =
                 rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
                     if (it.resultCode == Activity.RESULT_OK) {
-                        it.data?.getSerializableExt<CloudFolder>(StorageActivity.TAG_RESULT)?.let { folder ->
-                            viewModel.connectStorage(folder)
-                        }
+                        it.data?.getSerializableExt<CloudFolder>(StorageActivity.TAG_RESULT)
+                            ?.let { folder ->
+                                viewModel.connectStorage(folder)
+                            }
                     }
                 }
 
@@ -233,7 +240,11 @@ class AddRoomFragment : ComposeDialogFragment() {
                         },
                         onStorageConnect = { isConnect ->
                             if (isConnect) {
-                                storageActivityLauncher.launch(StorageActivity.getIntent(requireContext()))
+                                storageActivityLauncher.launch(
+                                    StorageActivity.getIntent(
+                                        requireContext()
+                                    )
+                                )
                             } else {
                                 viewModel.disconnectStorage()
                             }
@@ -312,7 +323,8 @@ private fun MainScreen(
     updateState: (AddRoomData) -> Unit = {}
 ) {
     val keyboardController = LocalFocusManager.current
-    val modalBottomSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
+    val modalBottomSheetState =
+        rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val tags = remember(roomState.tags::toMutableStateList)
@@ -351,9 +363,14 @@ private fun MainScreen(
                     TextButton(
                         onClick = {
                             keyboardController.clearFocus()
-                            create(roomState.type, name.value, roomState.imageUri, tags.map(ChipData::text))
+                            create(
+                                roomState.type,
+                                name.value,
+                                roomState.imageUri,
+                                tags.map(ChipData::text)
+                            )
                         },
-                        enabled = viewState !is ViewState.Loading
+                        enabled = viewState !is ViewState.Loading && roomState.canApplyChanges
                     ) {
                         Text(
                             text = if (isEdit)
@@ -415,7 +432,8 @@ private fun MainScreen(
                             .height(56.dp)
                             .padding(start = 16.dp),
                         state = name,
-                        hint = stringResource(id = R.string.room_name_hint)
+                        hint = stringResource(id = R.string.room_name_hint),
+                        onValueChange = { updateState(roomState.copy(name = it)) }
                     )
                 }
                 ChipsTextField(
@@ -509,7 +527,8 @@ fun ThirdPartyBlock(
                     option = if (state.createAsNewFolder) {
                         state.location?.let { "$it${roomName.value}" } ?: "/${roomName.value}"
                     } else {
-                        state.location ?: stringResource(id = R.string.room_create_thirdparty_location_root)
+                        state.location
+                            ?: stringResource(id = R.string.room_create_thirdparty_location_root)
                     },
                     onClick = { onLocationClick.invoke(state.id) }
                 )
@@ -542,30 +561,48 @@ fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
         style = MaterialTheme.typography.body2,
         modifier = Modifier
             .padding(horizontal = 16.dp)
-            .padding(top = 8.dp)
+            .padding(top = 8.dp, bottom = 12.dp)
     )
-    AppSwitchItem(title = "File lifetime", checked = state.lifetime != null) { onChecked ->
-        if(onChecked) {
+    AppSwitchItem(
+        title = R.string.file_lifetime_title,
+        checked = state.lifetime != null
+    ) { onChecked ->
+        if (onChecked) {
             updateState(state.copy(lifetime = Lifetime()))
         } else {
             updateState(state.copy(lifetime = null))
         }
     }
 
-    state.lifetime?.let {
-        LifeTimeBlock(it) { lifetime ->
-            updateState(state.copy(lifetime = lifetime))
-        }
+    AnimatedVisibilityVerticalFade(
+        visible = state.lifetime != null
+    ) {
+        LifeTimeBlock(
+            lifetime = state.lifetime,
+            onChangeValue = {
+                updateState(state.copy(lifetime = state.lifetime?.copy(value = it)))
+            },
+            onChangePeriod = {
+                updateState(state.copy(lifetime = state.lifetime?.copy(period = it)))
+            },
+            onChangeAction = {
+                updateState(state.copy(lifetime = state.lifetime?.copy(deletePermanently = it)))
+            }
+        )
     }
 
     Text(
-        "Set file lifetime to automatically delete the files in this room after a defined period. Lifetime begins on the date of upload/creation of the file.",
+        stringResource(R.string.file_lifetime_desc),
         style = MaterialTheme.typography.body2,
         modifier = Modifier
             .padding(horizontal = 16.dp)
-            .padding(top = 8.dp)
+            .padding(top = 8.dp, bottom = 12.dp)
     )
-    AppSwitchItem(title = "Restrict file content copy, file download and printing", checked = download, singleLine = false) { onChecked ->
+    AppSwitchItem(
+        title = "Restrict file content copy, file download and printing",
+        checked = download,
+        singleLine = false
+    ) { onChecked ->
         download = onChecked
     }
     Text(
@@ -573,10 +610,14 @@ fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
         style = MaterialTheme.typography.body2,
         modifier = Modifier
             .padding(horizontal = 16.dp)
-            .padding(top = 8.dp)
+            .padding(top = 8.dp, bottom = 12.dp)
     )
 
-    AppSwitchItem(title = "Add watermarks to documents", checked = watermark != null, singleLine = false) { onChecked ->
+    AppSwitchItem(
+        title = "Add watermarks to documents",
+        checked = watermark != null,
+        singleLine = false
+    ) { onChecked ->
         watermark = if (onChecked) {
             Watermark()
         } else {
@@ -588,36 +629,124 @@ fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
         style = MaterialTheme.typography.body2,
         modifier = Modifier
             .padding(horizontal = 16.dp)
-            .padding(top = 8.dp)
+            .padding(top = 8.dp, bottom = 12.dp)
     )
 }
 
 @Composable
-fun LifeTimeBlock(lifetime: Lifetime, updateState: (Lifetime?) -> Unit) {
-    val lifetimeValue = remember { mutableStateOf(lifetime.value) }
-    var deletePermanently by remember { mutableStateOf(lifetime.deletePermanently) }
-    var period by remember { mutableStateOf(lifetime.period) }
+fun LifeTimeBlock(
+    lifetime: Lifetime?,
+    onChangeValue: (String) -> Unit,
+    onChangePeriod: (Int) -> Unit,
+    onChangeAction: (Boolean) -> Unit
+) {
+    val lifetimeValue = remember { mutableStateOf(lifetime?.value.orEmpty()) }
 
     Column {
         AppTextField(
             modifier = Modifier.padding(horizontal = 16.dp),
             state = lifetimeValue,
             onValueChange = { value ->
-                updateState(lifetime.apply { this.value = value })
+                if (!value.isDigitsOnly() || value.length > 3) return@AppTextField
+                onChangeValue(value)
                 lifetimeValue.value = value
             },
-            hint = stringResource(R.string.file_lifetime_hint),
             keyboardType = KeyboardType.Number,
             label = R.string.file_lifetime_hint,
         )
-        AppSwitchItem(title = stringResource(R.string.file_lifetime_action), checked = deletePermanently) { onChecked ->
-            deletePermanently = onChecked
+        AppListItem(
+            title = stringResource(R.string.file_lifetime_time_period),
+            endContent = {
+                val popupVisible = remember { mutableStateOf(false) }
+
+                DropdownMenuButton(
+                    title = stringResource(
+                        when (lifetime?.period) {
+                            1 -> R.string.file_lifetime_period_months
+                            2 -> R.string.file_lifetime_period_years
+                            else -> R.string.file_lifetime_period_days
+                        }
+                    ),
+                    state = popupVisible,
+                    items = {
+                        DropdownMenuItem(
+                            title = stringResource(R.string.file_lifetime_period_days),
+                            selected = lifetime?.period == Lifetime.PERIOD_DAYS
+                        ) {
+                            onChangePeriod(Lifetime.PERIOD_DAYS)
+                            popupVisible.value = false
+                        }
+                        DropdownMenuItem(
+                            title = stringResource(R.string.file_lifetime_period_months),
+                            selected = lifetime?.period == Lifetime.PERIOD_MONTHS
+                        ) {
+                            onChangePeriod(Lifetime.PERIOD_MONTHS)
+                            popupVisible.value = false
+                        }
+                        DropdownMenuItem(
+                            title = stringResource(R.string.file_lifetime_period_years),
+                            selected = lifetime?.period == Lifetime.PERIOD_YEARS
+                        ) {
+                            onChangePeriod(Lifetime.PERIOD_YEARS)
+                            popupVisible.value = false
+                        }
+                    },
+                    onDismiss = { popupVisible.value = false }
+                ) { popupVisible.value = true }
+            }
+        )
+        AppListItem(
+            title = stringResource(R.string.file_lifetime_action),
+            endContent = {
+                val popupVisible = remember { mutableStateOf(false) }
+
+                DropdownMenuButton(
+                    title = stringResource(
+                        when (lifetime?.deletePermanently) {
+                            true -> R.string.file_lifetime_action_delete
+                            else -> R.string.file_lifetime_action_move_to_trash
+                        }
+                    ),
+                    state = popupVisible,
+                    onDismiss = { popupVisible.value = false },
+                    items = {
+                        DropdownMenuItem(
+                            title = stringResource(R.string.file_lifetime_action_move_to_trash),
+                            selected = lifetime?.deletePermanently != true
+                        ) {
+                            onChangeAction(false)
+                            popupVisible.value = false
+                        }
+                        DropdownMenuItem(
+                            title = stringResource(R.string.file_lifetime_action_delete),
+                            selected = lifetime?.deletePermanently == true
+                        ) {
+                            onChangeAction(true)
+                            popupVisible.value = false
+                        }
+                    }
+                ) { popupVisible.value = true }
+            }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LifeTimeBlockPreview() {
+    AppScaffold {
+        LifeTimeBlock(Lifetime(), {}, {}) {
+
         }
     }
 }
 
 @Composable
-private fun SelectRoomScreen(currentType: Int, navController: NavHostController, select: (Int) -> Unit) {
+private fun SelectRoomScreen(
+    currentType: Int,
+    navController: NavHostController,
+    select: (Int) -> Unit
+) {
     AppScaffold(topBar = {
         AppTopBar(
             title = stringResource(id = R.string.rooms_choose_room),
@@ -651,14 +780,16 @@ private fun ChooseImageBottomView(
     var photo: Uri? = null
 
     val photoLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicture(), onResult = { success ->
-            if (success) {
-                scope.launch {
-                    state.hide()
-                    uriCallback.invoke(photo)
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.TakePicture(),
+            onResult = { success ->
+                if (success) {
+                    scope.launch {
+                        state.hide()
+                        uriCallback.invoke(photo)
+                    }
                 }
-            }
-        })
+            })
 
     val cameraPermission =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -668,12 +799,14 @@ private fun ChooseImageBottomView(
         }
 
     val galleryLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(), onResult = {
-            scope.launch {
-                state.hide()
-                uriCallback.invoke(it)
-            }
-        })
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent(),
+            onResult = {
+                scope.launch {
+                    state.hide()
+                    uriCallback.invoke(it)
+                }
+            })
 
     Column(
         modifier = Modifier
@@ -698,7 +831,11 @@ private fun ChooseImageBottomView(
             modifier = Modifier.padding(top = 4.dp)
         ) {
             val tempPhoto =
-                FileUtils.createFile(File(context.cacheDir.absolutePath), TimeUtils.fileTimeStamp, "png")
+                FileUtils.createFile(
+                    File(context.cacheDir.absolutePath),
+                    TimeUtils.fileTimeStamp,
+                    "png"
+                )
             photo = ContentResolverUtils.getFileUri(context, tempPhoto!!).also {
                 cameraPermission.launch(Manifest.permission.CAMERA)
             }

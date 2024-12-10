@@ -56,7 +56,11 @@ data class AddRoomData(
     val denyDownload: Boolean = false,
     val watermark: Watermark? = null,
     val indexing: Boolean = false,
-)
+) {
+
+    val canApplyChanges: Boolean
+        get() = lifetime?.value?.isNotEmpty() ?: name.isNotEmpty()
+}
 
 sealed class ViewState {
     data object None : ViewState()
@@ -147,6 +151,11 @@ class AddRoomViewModel(
     }
 
     fun createRoom(roomType: Int, name: String, image: Any?, tags: List<String>) {
+        val lifetime = _roomState.value.lifetime
+        if (lifetime != null && lifetime.value.isEmpty()) {
+            error(context.getString(R.string.rooms_error_logo_size_exceed))
+        }
+
         viewModelScope.launch {
             if (name.isEmpty()) {
                 _viewState.value = ViewState.Error(context.getString(R.string.rooms_error_name))
@@ -170,7 +179,7 @@ class AddRoomViewModel(
                     }
 
                     if (image != null && (imageUrl == null || imageSize == null)) {
-                        throw error(context.getString(R.string.rooms_error_logo_size_exceed))
+                        error(context.getString(R.string.rooms_error_logo_size_exceed))
                     }
 
                     val id = with(roomState.value.storageState) {
