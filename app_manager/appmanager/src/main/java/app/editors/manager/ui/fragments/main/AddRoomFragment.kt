@@ -41,11 +41,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -550,33 +548,25 @@ fun ThirdPartyBlock(
 //TODO Vdr content
 @Composable
 fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
-    var download by remember { mutableStateOf(false) }
-    var watermark by remember { mutableStateOf<Watermark?>(null) }
-
-    AppSwitchItem(title = "Automatic indexing", checked = state.indexing) { onChecked ->
-        updateState(state.copy(indexing = onChecked))
-    }
+    AppSwitchItem(
+        title = stringResource(R.string.rooms_vdr_indexing_title),
+        checked = state.indexing,
+        onCheck = { checked -> updateState(state.copy(indexing = checked)) }
+    )
     Text(
-        text = "Enable automatic indexing to index files and folders by serial number. Sorting by number will be set as default for all users.",
+        text = stringResource(R.string.rooms_vdr_indexing_desc),
         style = MaterialTheme.typography.body2,
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .padding(top = 8.dp, bottom = 12.dp)
     )
+
     AppSwitchItem(
         title = R.string.file_lifetime_title,
-        checked = state.lifetime != null
-    ) { onChecked ->
-        if (onChecked) {
-            updateState(state.copy(lifetime = Lifetime()))
-        } else {
-            updateState(state.copy(lifetime = null))
-        }
-    }
-
-    AnimatedVisibilityVerticalFade(
-        visible = state.lifetime != null
-    ) {
+        checked = state.lifetime != null,
+        onCheck = { checked -> updateState(state.copy(lifetime = if (checked) Lifetime() else null)) }
+    )
+    AnimatedVisibilityVerticalFade(visible = state.lifetime != null) {
         LifeTimeBlock(
             lifetime = state.lifetime,
             onChangeValue = {
@@ -590,7 +580,6 @@ fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
             }
         )
     }
-
     Text(
         stringResource(R.string.file_lifetime_desc),
         style = MaterialTheme.typography.body2,
@@ -598,15 +587,15 @@ fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
             .padding(horizontal = 16.dp)
             .padding(top = 8.dp, bottom = 12.dp)
     )
+
     AppSwitchItem(
-        title = "Restrict file content copy, file download and printing",
-        checked = download,
-        singleLine = false
-    ) { onChecked ->
-        download = onChecked
-    }
+        title = stringResource(R.string.rooms_info_file_rectrict),
+        checked = state.denyDownload,
+        singleLine = false,
+        onCheck = { checked -> updateState(state.copy(denyDownload = checked)) }
+    )
     Text(
-        "Enable this setting to disable downloads, printing, and content copying for users with the “Viewer” role",
+        text = stringResource(R.string.rooms_vdr_file_restrict_desc),
         style = MaterialTheme.typography.body2,
         modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -614,18 +603,25 @@ fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
     )
 
     AppSwitchItem(
-        title = "Add watermarks to documents",
-        checked = watermark != null,
-        singleLine = false
-    ) { onChecked ->
-        watermark = if (onChecked) {
-            Watermark()
-        } else {
-            null
-        }
-    }
+        title = stringResource(R.string.rooms_vdr_watermark_title),
+        checked = state.watermark != null,
+        onCheck = { checked -> updateState(state.copy(watermark = if (checked) Watermark() else null)) }
+    )
     Text(
-        "Protect all documents in this room with watermarks. If a document already contains one, it will not be replaced.",
+        text = stringResource(R.string.rooms_vdr_watermark_desc),
+        style = MaterialTheme.typography.body2,
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 8.dp, bottom = 12.dp)
+    )
+
+    AppSwitchItem(
+        title = stringResource(R.string.rooms_vdr_watermark_title),
+        checked = state.watermark != null,
+        onCheck = { checked -> updateState(state.copy(watermark = if (checked) Watermark() else null)) }
+    )
+    Text(
+        text = stringResource(R.string.rooms_vdr_watermark_desc),
         style = MaterialTheme.typography.body2,
         modifier = Modifier
             .padding(horizontal = 16.dp)

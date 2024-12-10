@@ -954,5 +954,11 @@
     <string name="file_lifetime_period_months">Months</string>
     <string name="file_lifetime_period_years">Years</string>
     <string name="file_lifetime_no_value_error">File lifetime value cannot be empty</string>
+    
+    <string name="rooms_vdr_file_restrict_desc">Enable this setting to disable downloads, printing, and content copying for users with the “Viewer” role</string>
+    <string name="rooms_vdr_watermark_title">Add watermarks to documents</string>
+    <string name="rooms_vdr_watermark_desc">Protect all documents in this room with watermarks. If a document already contains one, it will not be replaced.</string>
+    <string name="rooms_vdr_indexing_title">Automatic indexing</string>
+    <string name="rooms_vdr_indexing_desc">Enable automatic indexing to index files and folders by serial number. Sorting by number will be set as default for all users.</string>
 
 </resources>
