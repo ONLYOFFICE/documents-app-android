@@ -4,6 +4,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Operation
+import app.documents.core.network.manager.models.explorer.Quota
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestRoomNotifications
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
@@ -15,7 +16,7 @@ import app.documents.core.network.room.models.RequestCreateExternalLink
 import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
-import app.documents.core.network.room.models.RequestRenameRoom
+import app.documents.core.network.room.models.RequestEditRoom
 import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSendLinks
 import app.documents.core.network.room.models.RequestSetLogo
@@ -108,7 +109,7 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}")
-    suspend fun renameRoom(@Path(value = "id") id: String, @Body body: RequestRenameRoom): Response<BaseResponse>
+    suspend fun editRoom(@Path(value = "id") id: String, @Body body: RequestEditRoom): Response<BaseResponse>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -355,4 +356,11 @@ interface RoomService {
     )
     @POST("api/" + ApiContract.API_VERSION + "/settings/notification/rooms")
     suspend fun muteNotifications(@Body body: RequestRoomNotifications): app.documents.core.network.BaseResponse<ResponseRoomNotifications>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/portal/payment/quota")
+    suspend fun getQuota(): app.documents.core.network.BaseResponse<Quota>
 }

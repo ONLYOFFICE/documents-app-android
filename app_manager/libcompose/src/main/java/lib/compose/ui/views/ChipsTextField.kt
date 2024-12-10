@@ -101,7 +101,7 @@ fun ChipsTextField(
                             selected = true,
                             onClick = { onChipDelete.invoke(chipData) }
                         ) {
-                            Text(text = chipData.text)
+                            Text(text = chipData.text, color = MaterialTheme.colors.onPrimary)
                         }
                     }
                 }

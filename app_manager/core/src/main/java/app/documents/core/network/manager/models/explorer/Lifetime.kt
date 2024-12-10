@@ -6,15 +6,15 @@ import com.google.gson.annotations.SerializedName
 data class Lifetime(
     @SerializedName("deletePermanently")
     @Expose
-    var deletePermanently: Boolean = false,
+    val deletePermanently: Boolean = false,
 
     @SerializedName("period")
     @Expose
-    var period: Int = PERIOD_DAYS,
+    val period: Int = PERIOD_DAYS,
 
     @SerializedName("value")
     @Expose
-    var value: String = ""
+    val value: String = ""
 ) {
 
     companion object {

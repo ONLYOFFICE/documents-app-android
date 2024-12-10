@@ -961,4 +961,9 @@
     <string name="rooms_vdr_indexing_title">Automatic indexing</string>
     <string name="rooms_vdr_indexing_desc">Enable automatic indexing to index files and folders by serial number. Sorting by number will be set as default for all users.</string>
 
+    <string name="rooms_vdr_storage_quota_title">Storage quota</string>
+    <string name="rooms_vdr_storage_quota_desc">Storage quota set per room. You can change this value or turn off storage limit.</string>
+    <string name="rooms_vdr_size_quota">Size quota</string>
+    <string name="rooms_vdr_measurement_unit">Measurement unit</string>
+
 </resources>

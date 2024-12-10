@@ -127,14 +127,16 @@ fun AppTextField(
                 focusedLabelColor = MaterialTheme.colors.primary
             ),
         )
-        Text(
-            modifier = Modifier
-                .alpha(alpha = errorAnimation.value)
-                .padding(top = 4.dp, bottom = 8.dp),
-            text = errorState?.value.orEmpty(),
-            color = MaterialTheme.colors.error,
-            style = MaterialTheme.typography.caption,
-        )
+        AnimatedVisibilityVerticalFade(visible = !errorState?.value.isNullOrEmpty()) {
+            Text(
+                modifier = Modifier
+                    .alpha(alpha = errorAnimation.value)
+                    .padding(top = 4.dp, bottom = 8.dp),
+                text = errorState?.value.orEmpty(),
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+            )
+        }
     }
 
     focusRequester?.let {

@@ -8,6 +8,7 @@ import android.util.Size
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.model.login.User
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
@@ -17,6 +18,7 @@ import app.documents.core.network.manager.models.explorer.Watermark
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
+import app.editors.manager.mvp.models.ui.StorageQuota
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -56,6 +58,7 @@ data class AddRoomData(
     val denyDownload: Boolean = false,
     val watermark: Watermark? = null,
     val indexing: Boolean = false,
+    val storageQuota: StorageQuota? = null
 ) {
 
     val canApplyChanges: Boolean
@@ -105,7 +108,7 @@ class AddRoomViewModel(
                     location = null
                 ).takeIf { roomInfo.providerItem }
             )
-        } else if (roomType != null){
+        } else if (roomType != null) {
             AddRoomData(roomType)
         } else {
             AddRoomData(2)
@@ -121,6 +124,30 @@ class AddRoomViewModel(
 
     private val roomTags: Set<String> = (roomInfo as? CloudFolder)?.tags?.toSet().orEmpty()
     private var isDeleteLogo: Boolean = false
+
+    init {
+        if (roomInfo is CloudFolder && roomInfo.quotaLimit != null) {
+            _roomState.update {
+                it.copy(
+                    storageQuota = StorageQuota.fromBytes(roomInfo.quotaLimit ?: 0)
+                )
+            }
+        } else {
+            viewModelScope.launch {
+                roomProvider.getRoomsQuota().collect { result ->
+                    if (result is Result.Success) {
+                        if (result.result.enabled) {
+                            _roomState.update {
+                                it.copy(
+                                    storageQuota = StorageQuota.fromBytes(result.result.value)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     fun setImageUri(imageUri: Uri?) {
         viewModelScope.launch {
@@ -175,7 +202,8 @@ class AddRoomViewModel(
                             val response = roomProvider.uploadLogo(bitmap)
                             imageUrl = response.data
                             imageSize = Size(bitmap.width, bitmap.height)
-                        } catch (_: Exception) { }
+                        } catch (_: Exception) {
+                        }
                     }
 
                     if (image != null && (imageUrl == null || imageSize == null)) {
@@ -192,7 +220,8 @@ class AddRoomViewModel(
                         } else {
                             roomProvider.createRoom(
                                 title = name,
-                                type = roomType
+                                type = roomType,
+                                quota = _roomState.value.storageQuota?.bytes
                             )
                         }
                     }
@@ -211,7 +240,8 @@ class AddRoomViewModel(
                         if (id.isNotEmpty()) {
                             _viewState.value = ViewState.Success(id)
                         } else {
-                            _viewState.value = ViewState.Error(context.getString(R.string.rooms_error_create))
+                            _viewState.value =
+                                ViewState.Error(context.getString(R.string.rooms_error_create))
                         }
                     }
                 } catch (error: Throwable) {
@@ -246,14 +276,19 @@ class AddRoomViewModel(
                             val response = roomProvider.uploadLogo(bitmap)
                             imageUrl = response.data
                             imageSize = Size(bitmap.width, bitmap.height)
-                        } catch (_: Exception) { }
+                        } catch (_: Exception) {
+                        }
                     }
 
                     if (imageUri != null && (imageUrl == null || imageSize == null)) {
-                        throw error(context.getString(R.string.rooms_error_logo_size_exceed))
+                        error(context.getString(R.string.rooms_error_logo_size_exceed))
                     }
 
-                    val isSuccess = roomProvider.renameRoom(id, name)
+                    val isSuccess = roomProvider.editRoom(
+                        id = id,
+                        newTitle = name,
+                        quota = _roomState.value.storageQuota?.bytes
+                    )
 
                     roomProvider.deleteTags(id, (roomTags - tags.toSet()).toList())
                     roomProvider.addTags(id, tags - roomTags)
@@ -267,7 +302,8 @@ class AddRoomViewModel(
                     if (isSuccess) {
                         _viewState.value = ViewState.Success(roomInfo?.id ?: "")
                     } else {
-                        _viewState.value = ViewState.Error(context.getString(R.string.rooms_error_edit))
+                        _viewState.value =
+                            ViewState.Error(context.getString(R.string.rooms_error_edit))
                     }
                 } catch (error: Throwable) {
                     _viewState.value = ViewState.Error(error.message.toString())

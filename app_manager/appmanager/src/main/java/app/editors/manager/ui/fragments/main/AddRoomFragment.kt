@@ -80,6 +80,8 @@ import app.editors.manager.app.shareApi
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.StorageUtils
+import app.editors.manager.mvp.models.ui.SizeUnit
+import app.editors.manager.mvp.models.ui.StorageQuota
 import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.AddRoomItem
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
@@ -469,9 +471,10 @@ private fun MainScreen(
 
 
                 if (roomState.type == ApiContract.RoomType.VIRTUAL_ROOM) {
-                    VdrRoomBlock(roomState, updateState)
+                    VdrRoomBlock(state = roomState, updateState = updateState)
                 }
 
+                QuotaBlock(state = roomState, updateState = updateState)
             }
             if (viewState is ViewState.Error) {
                 keyboardController.clearFocus(true)
@@ -492,7 +495,7 @@ private fun MainScreen(
 
 
 @Composable
-fun ThirdPartyBlock(
+private fun ThirdPartyBlock(
     isEdit: Boolean,
     state: StorageState?,
     roomName: State<String>,
@@ -547,7 +550,7 @@ fun ThirdPartyBlock(
 
 //TODO Vdr content
 @Composable
-fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
+private fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
     AppSwitchItem(
         title = stringResource(R.string.rooms_vdr_indexing_title),
         checked = state.indexing,
@@ -614,23 +617,76 @@ fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
             .padding(horizontal = 16.dp)
             .padding(top = 8.dp, bottom = 12.dp)
     )
-
-    AppSwitchItem(
-        title = stringResource(R.string.rooms_vdr_watermark_title),
-        checked = state.watermark != null,
-        onCheck = { checked -> updateState(state.copy(watermark = if (checked) Watermark() else null)) }
-    )
-    Text(
-        text = stringResource(R.string.rooms_vdr_watermark_desc),
-        style = MaterialTheme.typography.body2,
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 8.dp, bottom = 12.dp)
-    )
 }
 
 @Composable
-fun LifeTimeBlock(
+private fun QuotaBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
+    Column {
+        AppSwitchItem(
+            title = stringResource(R.string.rooms_vdr_storage_quota_title),
+            checked = state.storageQuota != null,
+            onCheck = { checked ->
+                updateState(state.copy(storageQuota = if (checked) StorageQuota() else null))
+            }
+        )
+        AnimatedVisibilityVerticalFade(visible = state.storageQuota != null) {
+            Column {
+                val quota = remember { mutableStateOf(state.storageQuota?.value.toString()) }
+
+                AppTextField(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    state = quota,
+                    onValueChange = { value ->
+                        if (!value.isDigitsOnly()) return@AppTextField
+                        val digitValue = if (value.isEmpty()) 0 else value.toLong()
+                        updateState(state.copy(storageQuota = state.storageQuota?.copy(value = digitValue)))
+                        quota.value = digitValue.toString()
+                    },
+                    keyboardType = KeyboardType.Number,
+                    label = R.string.rooms_vdr_size_quota,
+                )
+                AppListItem(
+                    title = stringResource(R.string.rooms_vdr_measurement_unit),
+                    endContent = {
+                        val popupVisible = remember { mutableStateOf(false) }
+
+                        DropdownMenuButton(
+                            title = state.storageQuota?.unit?.let { stringResource(it.title) }.orEmpty(),
+                            state = popupVisible,
+                            items = {
+                                SizeUnit.values().forEach { unit ->
+                                    DropdownMenuItem(
+                                        title = stringResource(unit.title),
+                                        selected = state.storageQuota?.unit == unit,
+                                        onClick = {
+                                            updateState(
+                                                state.copy(
+                                                    storageQuota = state.storageQuota?.copy(unit = unit)
+                                                )
+                                            )
+                                            popupVisible.value = false
+                                        }
+                                    )
+                                }
+                            },
+                            onDismiss = { popupVisible.value = false }
+                        ) { popupVisible.value = true }
+                    }
+                )
+            }
+        }
+        Text(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 8.dp, bottom = 16.dp),
+            text = stringResource(R.string.rooms_vdr_storage_quota_desc),
+            style = MaterialTheme.typography.body2
+        )
+    }
+}
+
+@Composable
+private fun LifeTimeBlock(
     lifetime: Lifetime?,
     onChangeValue: (String) -> Unit,
     onChangePeriod: (Int) -> Unit,
