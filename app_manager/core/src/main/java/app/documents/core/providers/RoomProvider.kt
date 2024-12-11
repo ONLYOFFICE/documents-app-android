@@ -11,6 +11,7 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Lifetime
 import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.explorer.QuotaData
+import app.documents.core.network.manager.models.explorer.Watermark
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestRoomNotifications
 import app.documents.core.network.room.RoomService
@@ -397,7 +398,8 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         quota: Long? = null,
         lifetime: Lifetime? = null,
         denyDownload: Boolean? = null,
-        indexing: Boolean? = null
+        indexing: Boolean? = null,
+        watermark: Watermark? = null
     ): Boolean {
         return roomService.editRoom(
             id = id,
@@ -406,7 +408,8 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 quota = quota,
                 lifetime = lifetime,
                 denyDownload = denyDownload,
-                indexing = indexing
+                indexing = indexing,
+                watermark = watermark
             )
         ).isSuccessful
     }

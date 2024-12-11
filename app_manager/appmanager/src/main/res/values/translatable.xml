@@ -966,4 +966,17 @@
     <string name="rooms_vdr_size_quota">Size quota</string>
     <string name="rooms_vdr_measurement_unit">Measurement unit</string>
 
+    <string name="rooms_vdr_watermark_type">Time Watermark type</string>
+    <string name="rooms_vdr_watermark_type_info">Viewer info</string>
+    <string name="rooms_vdr_watermark_type_image">Image</string>
+    <string name="rooms_vdr_watermark_static_text">Static text</string>
+    <string name="rooms_vdr_watermark_position">Position</string>
+    <string name="rooms_vdr_watermark_position_diagonal">Diagonal</string>
+    <string name="rooms_vdr_watermark_position_horizontal">Horizontal</string>
+    <string name="rooms_vdr_watermark_info_username">User Name</string>
+    <string name="rooms_vdr_watermark_info_email">User Email</string>
+    <string name="rooms_vdr_watermark_info_ip_address">Use IP Address</string>
+    <string name="rooms_vdr_watermark_info_current_date">Current Date</string>
+    <string name="rooms_vdr_watermark_info_room_name">Room Name</string>
+
 </resources>

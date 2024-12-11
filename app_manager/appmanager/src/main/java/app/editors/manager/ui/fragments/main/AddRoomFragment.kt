@@ -10,11 +10,15 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,6 +45,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -73,6 +78,9 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.Lifetime
 import app.documents.core.network.manager.models.explorer.Watermark
+import app.documents.core.network.manager.models.explorer.WatermarkInfo
+import app.documents.core.network.manager.models.explorer.WatermarkTextPosition
+import app.documents.core.network.manager.models.explorer.WatermarkType
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
@@ -106,6 +114,7 @@ import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppListItem
 import lib.compose.ui.views.AppScaffold
+import lib.compose.ui.views.AppSelectableChip
 import lib.compose.ui.views.AppSwitchItem
 import lib.compose.ui.views.AppTextField
 import lib.compose.ui.views.AppTextFieldListItem
@@ -618,6 +627,12 @@ private fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit)
         checked = state.watermark != null,
         onCheck = { checked -> updateState(state.copy(watermark = if (checked) Watermark() else null)) }
     )
+    AnimatedVisibilityVerticalFade(visible = state.watermark != null) {
+        WatermarkBlock(
+            state = state,
+            updateState = updateState
+        )
+    }
     Text(
         text = stringResource(R.string.rooms_vdr_watermark_desc),
         style = MaterialTheme.typography.body2,
@@ -625,6 +640,169 @@ private fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit)
             .padding(horizontal = 16.dp)
             .padding(top = 8.dp, bottom = 12.dp)
     )
+}
+
+@Composable
+private fun WatermarkBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
+    Column {
+        AppListItem(
+            title = stringResource(R.string.rooms_vdr_watermark_type),
+            endContent = {
+                val popupVisible = remember { mutableStateOf(false) }
+
+                DropdownMenuButton(
+                    title = state.watermark?.type?.let {
+                        stringResource(
+                            when (it) {
+                                WatermarkType.Image -> R.string.rooms_vdr_watermark_type_image
+                                WatermarkType.ViewerInfo -> R.string.rooms_vdr_watermark_type_info
+                            }
+                        )
+                    }.orEmpty(),
+                    state = popupVisible,
+                    items = {
+                        WatermarkType.values().forEach { type ->
+                            DropdownMenuItem(
+                                title = stringResource(
+                                    when (type) {
+                                        WatermarkType.Image -> R.string.rooms_vdr_watermark_type_image
+                                        WatermarkType.ViewerInfo -> R.string.rooms_vdr_watermark_type_info
+                                    }
+                                ),
+                                selected = state.watermark?.type == type,
+                                onClick = {
+                                    updateState(
+                                        state.copy(
+                                            watermark = state.watermark?.copy(type = type),
+                                        )
+                                    )
+                                    popupVisible.value = false
+                                }
+                            )
+                        }
+                    },
+                    onDismiss = { popupVisible.value = false }
+                ) { popupVisible.value = true }
+            }
+        )
+        AnimatedContent(state.watermark?.type) { type ->
+            when (type) {
+                WatermarkType.ViewerInfo -> WatermarkViewerInfoBlock(
+                    watermark = state.watermark,
+                    updateState = { updateState(state.copy(watermark = it)) }
+                )
+
+                WatermarkType.Image -> WatermarkImageBlock(state, updateState)
+                else -> Unit
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun WatermarkViewerInfoBlock(watermark: Watermark?, updateState: (Watermark?) -> Unit) {
+    Column {
+        val staticText = remember { mutableStateOf(watermark?.text.orEmpty()) }
+
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(top = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            WatermarkInfo.values().forEach { info ->
+                key(info) {
+                    val selected = info in watermark?.watermarkInfoList.orEmpty()
+                    AppSelectableChip(
+                        selected = selected,
+                        onClick = {
+                            watermark?.let {
+                                updateState(
+                                    it.copy(
+                                        additions = if (selected) {
+                                            it.additions - info.mask
+                                        } else {
+                                            it.additions + info.mask
+                                        }
+                                    )
+                                )
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(
+                                when (info) {
+                                    WatermarkInfo.CurrentDate -> R.string.rooms_vdr_watermark_info_current_date
+                                    WatermarkInfo.Email -> R.string.rooms_vdr_watermark_info_email
+                                    WatermarkInfo.IpAddress -> R.string.rooms_vdr_watermark_info_ip_address
+                                    WatermarkInfo.RoomName -> R.string.rooms_vdr_watermark_info_room_name
+                                    WatermarkInfo.Username -> R.string.rooms_vdr_watermark_info_username
+                                }
+                            )
+                        )
+                    }
+                }
+            }
+        }
+        AppTextField(
+            modifier = Modifier.padding(start = 16.dp),
+            state = staticText,
+            onValueChange = { value ->
+                updateState(watermark?.copy(text = value))
+                staticText.value = value
+            },
+            keyboardType = KeyboardType.Text,
+            label = R.string.rooms_vdr_watermark_static_text,
+        )
+        AppListItem(
+            title = stringResource(R.string.rooms_vdr_watermark_position),
+            endContent = {
+                val popupVisible = remember { mutableStateOf(false) }
+
+                DropdownMenuButton(
+                    title = watermark?.textPosition?.let {
+                        stringResource(
+                            when (it) {
+                                WatermarkTextPosition.Diagonal -> R.string.rooms_vdr_watermark_position_diagonal
+                                WatermarkTextPosition.Horizontal -> R.string.rooms_vdr_watermark_position_horizontal
+                            }
+                        )
+                    }.orEmpty(),
+                    state = popupVisible,
+                    items = {
+                        WatermarkTextPosition.values().forEach { position ->
+                            DropdownMenuItem(
+                                title = stringResource(
+                                    when (position) {
+                                        WatermarkTextPosition.Diagonal -> R.string.rooms_vdr_watermark_position_diagonal
+                                        WatermarkTextPosition.Horizontal -> R.string.rooms_vdr_watermark_position_horizontal
+                                    }
+                                ),
+                                selected = watermark?.textPosition == position,
+                                onClick = {
+                                    updateState(
+                                        watermark?.copy(
+                                            rotate = position.angle
+                                        )
+                                    )
+                                    popupVisible.value = false
+                                }
+                            )
+                        }
+                    },
+                    onDismiss = { popupVisible.value = false }
+                ) { popupVisible.value = true }
+            }
+        )
+    }
+}
+
+@Composable
+fun WatermarkImageBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
+
 }
 
 @Composable
@@ -642,7 +820,7 @@ private fun QuotaBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
                 val quota = remember { mutableStateOf(state.storageQuota?.value.toString()) }
 
                 AppTextField(
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    modifier = Modifier.padding(start = 16.dp),
                     state = quota,
                     onValueChange = { value ->
                         if (!value.isDigitsOnly()) return@AppTextField
@@ -659,7 +837,8 @@ private fun QuotaBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
                         val popupVisible = remember { mutableStateOf(false) }
 
                         DropdownMenuButton(
-                            title = state.storageQuota?.unit?.let { stringResource(it.title) }.orEmpty(),
+                            title = state.storageQuota?.unit?.let { stringResource(it.title) }
+                                .orEmpty(),
                             state = popupVisible,
                             items = {
                                 SizeUnit.values().forEach { unit ->
@@ -704,7 +883,7 @@ private fun LifeTimeBlock(
 
     Column {
         AppTextField(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(start = 16.dp),
             state = lifetimeValue,
             onValueChange = { value ->
                 if (!value.isDigitsOnly() || value.length > 3) return@AppTextField

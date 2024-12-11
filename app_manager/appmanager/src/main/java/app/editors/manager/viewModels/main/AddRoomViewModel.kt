@@ -62,7 +62,12 @@ data class AddRoomData(
 ) {
 
     val canApplyChanges: Boolean
-        get() = (lifetime?.value ?: 0) > 0 && name.isNotEmpty()
+        get() {
+            if (lifetime != null) {
+                return lifetime.value > 0
+            }
+            return name.isNotEmpty()
+        }
 }
 
 sealed class ViewState {
@@ -316,9 +321,13 @@ class AddRoomViewModel(
                 id = srcRoom.id,
                 newTitle = newName.takeIf { it != srcRoom.title },
                 quota = (storageQuota?.bytes ?: -1).takeIf { it != srcRoom.quotaLimit },
-                lifetime = (lifetime ?: Lifetime(enabled = false, value = 1)).takeIf { it != srcRoom.lifetime },
+                lifetime = (lifetime ?: Lifetime(
+                    enabled = false,
+                    value = 1
+                )).takeIf { it != srcRoom.lifetime },
                 denyDownload = denyDownload.takeIf { it != srcRoom.denyDownload },
-                indexing = indexing.takeIf { it != srcRoom.denyDownload }
+                indexing = indexing.takeIf { it != srcRoom.denyDownload },
+                watermark = watermark.takeIf { it != srcRoom.watermark }
             )
         }
     }
