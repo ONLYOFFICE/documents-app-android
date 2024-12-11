@@ -567,7 +567,15 @@ private fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit)
     AppSwitchItem(
         title = R.string.file_lifetime_title,
         checked = state.lifetime != null,
-        onCheck = { checked -> updateState(state.copy(lifetime = if (checked) Lifetime() else null)) }
+        onCheck = { checked ->
+            updateState(
+                state.copy(
+                    lifetime = if (checked)
+                        Lifetime(value = Lifetime.DEFAULT_VALUE) else
+                        null
+                )
+            )
+        }
     )
     AnimatedVisibilityVerticalFade(visible = state.lifetime != null) {
         LifeTimeBlock(
@@ -688,11 +696,11 @@ private fun QuotaBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
 @Composable
 private fun LifeTimeBlock(
     lifetime: Lifetime?,
-    onChangeValue: (String) -> Unit,
+    onChangeValue: (Int) -> Unit,
     onChangePeriod: (Int) -> Unit,
     onChangeAction: (Boolean) -> Unit
 ) {
-    val lifetimeValue = remember { mutableStateOf(lifetime?.value.orEmpty()) }
+    val lifetimeValue = remember { mutableStateOf(lifetime?.value.toString()) }
 
     Column {
         AppTextField(
@@ -700,8 +708,9 @@ private fun LifeTimeBlock(
             state = lifetimeValue,
             onValueChange = { value ->
                 if (!value.isDigitsOnly() || value.length > 3) return@AppTextField
-                onChangeValue(value)
-                lifetimeValue.value = value
+                val digitValue = if (value.isEmpty()) 0 else value.toInt()
+                onChangeValue(digitValue)
+                lifetimeValue.value = digitValue.toString()
             },
             keyboardType = KeyboardType.Number,
             label = R.string.file_lifetime_hint,

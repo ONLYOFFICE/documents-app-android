@@ -8,6 +8,7 @@ import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Lifetime
 import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.explorer.QuotaData
 import app.documents.core.network.manager.models.request.RequestBatchOperation
@@ -74,12 +75,22 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .flatMap { if (it.isSuccessful) Observable.just(it.body()) else throw HttpException(it) }
     }
 
-    suspend fun createRoom(title: String, type: Int, quota: Long? = null): String {
+    suspend fun createRoom(
+        title: String,
+        type: Int,
+        quota: Long? = null,
+        lifetime: Lifetime? = null,
+        denyDownload: Boolean? = null,
+        indexing: Boolean? = null
+    ): String {
         val response = roomService.createRoom(
             RequestCreateRoom(
                 title = title,
                 roomType = type,
-                quota = quota
+                quota = quota ?: -1,
+                lifetime = lifetime ?: Lifetime(enabled = false),
+                denyDownload = denyDownload,
+                indexing = indexing
             )
         )
         return response.body()?.response?.id ?: ""
@@ -380,10 +391,23 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .asResult()
     }
 
-    suspend fun editRoom(id: String, newTitle: String? = null, quota: Long? = null): Boolean {
+    suspend fun editRoom(
+        id: String,
+        newTitle: String? = null,
+        quota: Long? = null,
+        lifetime: Lifetime? = null,
+        denyDownload: Boolean? = null,
+        indexing: Boolean? = null
+    ): Boolean {
         return roomService.editRoom(
             id = id,
-            body = RequestEditRoom(title = newTitle, quota = quota)
+            body = RequestEditRoom(
+                title = newTitle,
+                quota = quota,
+                lifetime = lifetime,
+                denyDownload = denyDownload,
+                indexing = indexing
+            )
         ).isSuccessful
     }
 }

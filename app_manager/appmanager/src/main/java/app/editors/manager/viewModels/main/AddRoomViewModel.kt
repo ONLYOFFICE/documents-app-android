@@ -62,7 +62,7 @@ data class AddRoomData(
 ) {
 
     val canApplyChanges: Boolean
-        get() = lifetime?.value?.isNotEmpty() ?: name.isNotEmpty()
+        get() = (lifetime?.value ?: 0) > 0 && name.isNotEmpty()
 }
 
 sealed class ViewState {
@@ -178,11 +178,6 @@ class AddRoomViewModel(
     }
 
     fun createRoom(roomType: Int, name: String, image: Any?, tags: List<String>) {
-        val lifetime = _roomState.value.lifetime
-        if (lifetime != null && lifetime.value.isEmpty()) {
-            error(context.getString(R.string.rooms_error_logo_size_exceed))
-        }
-
         viewModelScope.launch {
             if (name.isEmpty()) {
                 _viewState.value = ViewState.Error(context.getString(R.string.rooms_error_name))
@@ -221,7 +216,10 @@ class AddRoomViewModel(
                             roomProvider.createRoom(
                                 title = name,
                                 type = roomType,
-                                quota = _roomState.value.storageQuota?.bytes
+                                quota = _roomState.value.storageQuota?.bytes,
+                                lifetime = _roomState.value.lifetime,
+                                denyDownload = _roomState.value.denyDownload,
+                                indexing = _roomState.value.indexing
                             )
                         }
                     }
@@ -284,11 +282,7 @@ class AddRoomViewModel(
                         error(context.getString(R.string.rooms_error_logo_size_exceed))
                     }
 
-                    val isSuccess = roomProvider.editRoom(
-                        id = id,
-                        newTitle = name,
-                        quota = _roomState.value.storageQuota?.bytes
-                    )
+                    val isSuccess = editRoom(name)
 
                     roomProvider.deleteTags(id, (roomTags - tags.toSet()).toList())
                     roomProvider.addTags(id, tags - roomTags)
@@ -311,6 +305,21 @@ class AddRoomViewModel(
                     _viewState.value = ViewState.None
                 }
             }
+        }
+    }
+
+    // pass nulls if property has not been changed
+    private suspend fun editRoom(newName: String): Boolean {
+        val srcRoom = roomInfo as? CloudFolder ?: return false
+        return with(_roomState.value) {
+            roomProvider.editRoom(
+                id = srcRoom.id,
+                newTitle = newName.takeIf { it != srcRoom.title },
+                quota = (storageQuota?.bytes ?: -1).takeIf { it != srcRoom.quotaLimit },
+                lifetime = (lifetime ?: Lifetime(enabled = false, value = 1)).takeIf { it != srcRoom.lifetime },
+                denyDownload = denyDownload.takeIf { it != srcRoom.denyDownload },
+                indexing = indexing.takeIf { it != srcRoom.denyDownload }
+            )
         }
     }
 

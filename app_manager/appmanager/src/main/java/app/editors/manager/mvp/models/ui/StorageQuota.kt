@@ -18,7 +18,9 @@ data class StorageQuota(
 
     companion object {
 
-        fun fromBytes(bytes: Long): StorageQuota {
+        fun fromBytes(bytes: Long): StorageQuota? {
+            if (bytes == -1L) return null
+
             val kb = 1024.0
             val b = bytes.toDouble()
             val k = bytes / kb
