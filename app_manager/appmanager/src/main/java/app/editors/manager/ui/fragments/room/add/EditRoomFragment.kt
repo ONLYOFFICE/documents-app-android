@@ -82,7 +82,7 @@ class EditRoomFragment : ComposeDialogFragment() {
 
                         is RoomSettingsEffect.Success -> {
                             requireActivity().supportFragmentManager.setFragmentResult(
-                                AddRoomFragment.TAG_RESULT,
+                                TAG_RESULT,
                                 Bundle.EMPTY
                             )
                             dismiss()

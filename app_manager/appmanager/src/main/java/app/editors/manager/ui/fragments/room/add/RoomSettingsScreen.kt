@@ -477,6 +477,15 @@ private fun VdrRoomBlock(
         checked = watermarkState.watermark.enabled,
         onCheck = onWatermarkEnable
     )
+    if (!watermarkState.watermark.enabled) {
+        Text(
+            text = stringResource(R.string.rooms_vdr_watermark_desc),
+            style = MaterialTheme.typography.body2,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 8.dp, bottom = 12.dp)
+        )
+    }
     AnimatedVisibilityVerticalFade(visible = watermarkState.watermark.enabled) {
         WatermarkBlock(
             watermarkState = watermarkState,
@@ -676,7 +685,7 @@ private fun WatermarkSelectImageBlock(
     onClick: () -> Unit
 ) {
     AppListItem(
-        title = "Select image",
+        title = stringResource(R.string.rooms_vdr_watermark_image_select),
         titleColor = MaterialTheme.colors.primary,
         onClick = onClick
     )
@@ -744,7 +753,7 @@ private fun WatermarkImageBlock(
             }
         }
         AppListItem(
-            title = "Scale",
+            title = stringResource(R.string.rooms_vdr_watermark_image_select),
             endContent = {
                 val popupVisible = remember { mutableStateOf(false) }
 
@@ -774,7 +783,7 @@ private fun WatermarkImageBlock(
             }
         )
         AppListItem(
-            title = "Rotate",
+            title = stringResource(R.string.rooms_vdr_watermark_image_rotate),
             endContent = {
                 val popupVisible = remember { mutableStateOf(false) }
 
@@ -804,12 +813,12 @@ private fun WatermarkImageBlock(
             }
         )
         AppListItem(
-            title = "Delete",
+            title = stringResource(R.string.list_action_delete_image),
             titleColor = MaterialTheme.colors.error,
             onClick = onDeleteImage
         )
         Text(
-            text = "This image preview roughly shows how the watermark will be displayed in your files.",
+            text = stringResource(R.string.rooms_vdr_watermark_image_desc),
             style = MaterialTheme.typography.body2,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
