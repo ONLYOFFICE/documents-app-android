@@ -3,6 +3,7 @@ package app.documents.core.network.manager.models.explorer
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 private const val MASK_USERNAME = 1
 private const val MASK_EMAIL = 2
@@ -13,12 +14,22 @@ private const val MASK_ROOM_NAME = 16
 private const val ROTATE_ANGLE_DIAGONAL = -45
 private const val ROTATE_ANGLE_HORIZONTAL = 0
 
+@Serializable
 sealed class WatermarkInfo(val mask: Int) {
 
+    @Serializable
     data object Username : WatermarkInfo(MASK_USERNAME)
+
+    @Serializable
     data object Email : WatermarkInfo(MASK_EMAIL)
+
+    @Serializable
     data object IpAddress : WatermarkInfo(MASK_IP_ADDRESS)
+
+    @Serializable
     data object CurrentDate : WatermarkInfo(MASK_CURRENT_DATE)
+
+    @Serializable
     data object RoomName : WatermarkInfo(MASK_ROOM_NAME)
 
     companion object {
@@ -32,7 +43,10 @@ sealed class WatermarkInfo(val mask: Int) {
 @Serializable
 sealed class WatermarkTextPosition(val angle: Int ) {
 
+    @Serializable
     data object Diagonal : WatermarkTextPosition(ROTATE_ANGLE_DIAGONAL)
+
+    @Serializable
     data object Horizontal : WatermarkTextPosition(ROTATE_ANGLE_HORIZONTAL)
 
     companion object {
@@ -51,9 +65,12 @@ sealed class WatermarkTextPosition(val angle: Int ) {
 }
 
 @Serializable
-sealed class WatermarkType {
+sealed class WatermarkType : java.io.Serializable {
 
+    @Serializable
     data object Image : WatermarkType()
+
+    @Serializable
     data object ViewerInfo : WatermarkType()
 
     companion object {
@@ -72,7 +89,7 @@ data class Watermark(
 
     @SerializedName("additions")
     @Expose
-    val additions: Int = 0,
+    val additions: Int = MASK_USERNAME,
 
     @SerializedName("rotate")
     @Expose
@@ -80,7 +97,7 @@ data class Watermark(
 
     @SerializedName("imageScale")
     @Expose
-    val imageScale: Int = 0,
+    val imageScale: Int = 100,
 
     @SerializedName("imageHeight")
     @Expose
@@ -94,12 +111,12 @@ data class Watermark(
     @Expose
     val imageUrl: String? = null,
 
-    val type: WatermarkType = if (imageWidth == 0 || imageHeight == 0) {
-        WatermarkType.ViewerInfo
-    } else {
-        WatermarkType.Image
-    }
-) {
+    @Transient
+    val type: WatermarkType = WatermarkType.ViewerInfo,
+
+    @Transient
+    val enabled: Boolean = true
+) : java.io.Serializable {
 
     val textPosition: WatermarkTextPosition
         get() = WatermarkTextPosition.from(angle = rotate)

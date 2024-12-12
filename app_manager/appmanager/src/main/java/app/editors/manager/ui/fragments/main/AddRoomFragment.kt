@@ -10,29 +10,41 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import androidx.activity.result.contract.ActivityResultContracts.TakePicture
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Divider
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
@@ -54,8 +66,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -105,9 +122,9 @@ import app.editors.manager.viewModels.main.ViewState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AnimatedVisibilityVerticalFade
 import lib.compose.ui.views.AppArrowItem
@@ -322,7 +339,7 @@ private fun MainScreen(
     roomState: AddRoomData,
     saveData: (String, List<ChipData>) -> Unit = { _, _ -> },
     create: (Int, String, Any?, List<String>) -> Unit = { _, _, _, _ -> },
-    imageCallBack: (uri: Uri?) -> Unit = {},
+    imageCallBack: (uri: Uri?, isWatermark: Boolean) -> Unit = { _, _ -> },
     onBackPressed: () -> Unit = {},
     created: (String) -> Unit = {},
     onLocationClick: (String) -> Unit,
@@ -338,6 +355,7 @@ private fun MainScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val tags = remember(roomState.tags::toMutableStateList)
     val name = remember { mutableStateOf(roomState.name) }
+    var isWatermarkSelecting = remember { false }
 
     if (viewState is ViewState.Success) {
         if (viewState.id != null) {
@@ -348,11 +366,38 @@ private fun MainScreen(
         }
     }
 
+    fun selectPhoto(isWatermark: Boolean) {
+        scope.launch {
+            isWatermarkSelecting = isWatermark
+            modalBottomSheetState.show()
+        }
+    }
+
     ModalBottomSheetLayout(
         sheetContent = {
-            ChooseImageBottomView(scope, modalBottomSheetState, roomState.imageUri) { uri ->
-                imageCallBack(uri)
-            }
+            ChooseImageBottomView(
+                onDelete = {
+                    scope.launch {
+                        modalBottomSheetState.hide()
+                    }
+                    imageCallBack.invoke(
+                        null,
+                        isWatermarkSelecting
+                    )
+                }.takeIf {
+                    if (!isWatermarkSelecting) {
+                        roomState.imageUri != null
+                    } else {
+                        roomState.watermarkImageUri != null
+                    }
+                },
+                onSuccess = {
+                    scope.launch {
+                        modalBottomSheetState.hide()
+                    }
+                    imageCallBack(it, isWatermarkSelecting)
+                }
+            )
         },
         sheetState = modalBottomSheetState,
         scrimColor = if (!isSystemInDarkTheme()) {
@@ -414,12 +459,12 @@ private fun MainScreen(
                         modifier = Modifier
                             .clip(CircleShape)
                             .size(40.dp)
-                            .clickable(onClick = {
-                                keyboardController.clearFocus()
-                                scope.launch {
-                                    modalBottomSheetState.show()
+                            .clickable(
+                                onClick = {
+                                    keyboardController.clearFocus()
+                                    selectPhoto(false)
                                 }
-                            }),
+                            ),
                         model = if (roomState.imageUri is String && roomState.imageUri.isNotEmpty()) {
                             // TODO need interceptor
                             GlideUtils.getCorrectLoad(
@@ -478,9 +523,13 @@ private fun MainScreen(
                     )
                 }
 
-
                 if (roomState.type == ApiContract.RoomType.VIRTUAL_ROOM) {
-                    VdrRoomBlock(state = roomState, updateState = updateState)
+                    VdrRoomBlock(
+                        state = roomState,
+                        updateState = updateState,
+                        onSelectImage = { selectPhoto(true) },
+                        onDeleteImage = { imageCallBack(null, true) }
+                    )
                 }
 
                 QuotaBlock(state = roomState, updateState = updateState)
@@ -559,7 +608,12 @@ private fun ThirdPartyBlock(
 
 //TODO Vdr content
 @Composable
-private fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
+private fun VdrRoomBlock(
+    state: AddRoomData,
+    updateState: (AddRoomData) -> Unit,
+    onSelectImage: () -> Unit,
+    onDeleteImage: () -> Unit
+) {
     AppSwitchItem(
         title = stringResource(R.string.rooms_vdr_indexing_title),
         checked = state.indexing,
@@ -624,26 +678,34 @@ private fun VdrRoomBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit)
 
     AppSwitchItem(
         title = stringResource(R.string.rooms_vdr_watermark_title),
-        checked = state.watermark != null,
-        onCheck = { checked -> updateState(state.copy(watermark = if (checked) Watermark() else null)) }
+        checked = state.watermark?.enabled == true,
+        onCheck = { checked ->
+            updateState(
+                state.copy(watermark = state.watermark?.copy(enabled = checked) ?: Watermark())
+            )
+        }
     )
-    AnimatedVisibilityVerticalFade(visible = state.watermark != null) {
+    AnimatedVisibilityVerticalFade(visible = state.watermark?.enabled == true) {
         WatermarkBlock(
-            state = state,
-            updateState = updateState
+            watermark = state.watermark ?: return@AnimatedVisibilityVerticalFade,
+            onSelectImage = onSelectImage,
+            onDeleteImage = onDeleteImage,
+            watermarkImagePreview = state.watermarkImagePreview?.asImageBitmap(),
+            updateState = { watermark ->
+                updateState(state.copy(watermark = watermark))
+            }
         )
     }
-    Text(
-        text = stringResource(R.string.rooms_vdr_watermark_desc),
-        style = MaterialTheme.typography.body2,
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 8.dp, bottom = 12.dp)
-    )
 }
 
 @Composable
-private fun WatermarkBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
+private fun WatermarkBlock(
+    watermark: Watermark,
+    watermarkImagePreview: ImageBitmap?,
+    updateState: (Watermark) -> Unit,
+    onSelectImage: () -> Unit,
+    onDeleteImage: () -> Unit
+) {
     Column {
         AppListItem(
             title = stringResource(R.string.rooms_vdr_watermark_type),
@@ -651,14 +713,12 @@ private fun WatermarkBlock(state: AddRoomData, updateState: (AddRoomData) -> Uni
                 val popupVisible = remember { mutableStateOf(false) }
 
                 DropdownMenuButton(
-                    title = state.watermark?.type?.let {
-                        stringResource(
-                            when (it) {
-                                WatermarkType.Image -> R.string.rooms_vdr_watermark_type_image
-                                WatermarkType.ViewerInfo -> R.string.rooms_vdr_watermark_type_info
-                            }
-                        )
-                    }.orEmpty(),
+                    title = stringResource(
+                        when (watermark.type) {
+                            WatermarkType.Image -> R.string.rooms_vdr_watermark_type_image
+                            WatermarkType.ViewerInfo -> R.string.rooms_vdr_watermark_type_info
+                        }
+                    ),
                     state = popupVisible,
                     items = {
                         WatermarkType.values().forEach { type ->
@@ -669,13 +729,9 @@ private fun WatermarkBlock(state: AddRoomData, updateState: (AddRoomData) -> Uni
                                         WatermarkType.ViewerInfo -> R.string.rooms_vdr_watermark_type_info
                                     }
                                 ),
-                                selected = state.watermark?.type == type,
+                                selected = watermark.type == type,
                                 onClick = {
-                                    updateState(
-                                        state.copy(
-                                            watermark = state.watermark?.copy(type = type),
-                                        )
-                                    )
+                                    updateState(watermark.copy(type = type))
                                     popupVisible.value = false
                                 }
                             )
@@ -685,15 +741,36 @@ private fun WatermarkBlock(state: AddRoomData, updateState: (AddRoomData) -> Uni
                 ) { popupVisible.value = true }
             }
         )
-        AnimatedContent(state.watermark?.type) { type ->
-            when (type) {
-                WatermarkType.ViewerInfo -> WatermarkViewerInfoBlock(
-                    watermark = state.watermark,
-                    updateState = { updateState(state.copy(watermark = it)) }
-                )
+        AnimatedContent(
+            targetState = watermark.type,
+            transitionSpec = {
+                (fadeIn() + slideInVertically()).togetherWith(fadeOut() + slideOutVertically())
+            }
+        ) { type ->
+            Column {
+                when (type) {
+                    WatermarkType.ViewerInfo -> WatermarkViewerInfoBlock(
+                        watermark = watermark,
+                        updateState = updateState
+                    )
 
-                WatermarkType.Image -> WatermarkImageBlock(state, updateState)
-                else -> Unit
+                    WatermarkType.Image -> WatermarkSelectImageBlock(onClick = onSelectImage)
+                }
+                Text(
+                    text = stringResource(R.string.rooms_vdr_watermark_desc),
+                    style = MaterialTheme.typography.body2,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 8.dp, bottom = 12.dp)
+                )
+                if (type == WatermarkType.Image && watermarkImagePreview != null) {
+                    WatermarkImageBlock(
+                        watermark = watermark,
+                        watermarkImagePreview = watermarkImagePreview,
+                        onDeleteImage = onDeleteImage,
+                        updateState = updateState
+                    )
+                }
             }
         }
     }
@@ -701,9 +778,9 @@ private fun WatermarkBlock(state: AddRoomData, updateState: (AddRoomData) -> Uni
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun WatermarkViewerInfoBlock(watermark: Watermark?, updateState: (Watermark?) -> Unit) {
+private fun WatermarkViewerInfoBlock(watermark: Watermark, updateState: (Watermark) -> Unit) {
     Column {
-        val staticText = remember { mutableStateOf(watermark?.text.orEmpty()) }
+        val staticText = remember { mutableStateOf(watermark.text) }
 
         FlowRow(
             modifier = Modifier
@@ -715,11 +792,11 @@ private fun WatermarkViewerInfoBlock(watermark: Watermark?, updateState: (Waterm
         ) {
             WatermarkInfo.values().forEach { info ->
                 key(info) {
-                    val selected = info in watermark?.watermarkInfoList.orEmpty()
+                    val selected = info in watermark.watermarkInfoList
                     AppSelectableChip(
                         selected = selected,
                         onClick = {
-                            watermark?.let {
+                            watermark.let {
                                 updateState(
                                     it.copy(
                                         additions = if (selected) {
@@ -748,10 +825,12 @@ private fun WatermarkViewerInfoBlock(watermark: Watermark?, updateState: (Waterm
             }
         }
         AppTextField(
-            modifier = Modifier.padding(start = 16.dp),
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .padding(vertical = 8.dp),
             state = staticText,
             onValueChange = { value ->
-                updateState(watermark?.copy(text = value))
+                updateState(watermark.copy(text = value))
                 staticText.value = value
             },
             keyboardType = KeyboardType.Text,
@@ -763,14 +842,12 @@ private fun WatermarkViewerInfoBlock(watermark: Watermark?, updateState: (Waterm
                 val popupVisible = remember { mutableStateOf(false) }
 
                 DropdownMenuButton(
-                    title = watermark?.textPosition?.let {
-                        stringResource(
-                            when (it) {
-                                WatermarkTextPosition.Diagonal -> R.string.rooms_vdr_watermark_position_diagonal
-                                WatermarkTextPosition.Horizontal -> R.string.rooms_vdr_watermark_position_horizontal
-                            }
-                        )
-                    }.orEmpty(),
+                    title = stringResource(
+                        when (watermark.textPosition) {
+                            WatermarkTextPosition.Diagonal -> R.string.rooms_vdr_watermark_position_diagonal
+                            WatermarkTextPosition.Horizontal -> R.string.rooms_vdr_watermark_position_horizontal
+                        }
+                    ),
                     state = popupVisible,
                     items = {
                         WatermarkTextPosition.values().forEach { position ->
@@ -781,10 +858,10 @@ private fun WatermarkViewerInfoBlock(watermark: Watermark?, updateState: (Waterm
                                         WatermarkTextPosition.Horizontal -> R.string.rooms_vdr_watermark_position_horizontal
                                     }
                                 ),
-                                selected = watermark?.textPosition == position,
+                                selected = watermark.textPosition == position,
                                 onClick = {
                                     updateState(
-                                        watermark?.copy(
+                                        watermark.copy(
                                             rotate = position.angle
                                         )
                                     )
@@ -801,8 +878,122 @@ private fun WatermarkViewerInfoBlock(watermark: Watermark?, updateState: (Waterm
 }
 
 @Composable
-fun WatermarkImageBlock(state: AddRoomData, updateState: (AddRoomData) -> Unit) {
+private fun WatermarkSelectImageBlock(
+    onClick: () -> Unit
+) {
+    AppListItem(
+        title = "Select image",
+        titleColor = MaterialTheme.colors.primary,
+        onClick = onClick
+    )
+}
 
+@Composable
+private fun WatermarkImageBlock(
+    watermark: Watermark,
+    watermarkImagePreview: ImageBitmap,
+    onDeleteImage: () -> Unit,
+    updateState: (Watermark) -> Unit
+) {
+    Column {
+        val previewShape = RoundedCornerShape(16.dp)
+        Box(
+            modifier = Modifier
+                .height(IntrinsicSize.Max)
+                .width(IntrinsicSize.Max)
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp)
+                .clip(previewShape)
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .border(1.dp, colorResource(lib.toolkit.base.R.color.colorOutline), previewShape)
+        ) {
+            Image(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        val scale = watermark.imageScale
+                        val rotate = watermark.rotate
+                        if (scale > 0) {
+                            scaleX = scale / 100f
+                            scaleY = scale / 100f
+                        }
+                        rotationZ = -rotate.toFloat()
+                    },
+                bitmap = watermarkImagePreview,
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds
+            )
+        }
+        AppListItem(
+            title = "Scale",
+            endContent = {
+                val popupVisible = remember { mutableStateOf(false) }
+
+                DropdownMenuButton(
+                    title = "${watermark.imageScale.takeIf { it > 0 } ?: 100}%",
+                    state = popupVisible,
+                    items = {
+                        listOf(
+                            0,
+                            200,
+                            300,
+                            400,
+                            500
+                        ).forEach { scale ->
+                            DropdownMenuItem(
+                                title = "${scale.takeIf { it > 0 } ?: 100}",
+                                selected = watermark.imageScale == scale,
+                                onClick = {
+                                    updateState(watermark.copy(imageScale = scale))
+                                    popupVisible.value = false
+                                }
+                            )
+                        }
+                    },
+                    onDismiss = { popupVisible.value = false }
+                ) { popupVisible.value = true }
+            }
+        )
+        AppListItem(
+            title = "Rotate",
+            endContent = {
+                val popupVisible = remember { mutableStateOf(false) }
+
+                DropdownMenuButton(
+                    title = "${watermark.rotate}°",
+                    state = popupVisible,
+                    items = {
+                        listOf(
+                            0,
+                            30,
+                            45,
+                            60,
+                            90
+                        ).forEach { rotate ->
+                            DropdownMenuItem(
+                                title = "$rotate°",
+                                selected = watermark.rotate == rotate,
+                                onClick = {
+                                    updateState(watermark.copy(rotate = rotate))
+                                    popupVisible.value = false
+                                }
+                            )
+                        }
+                    },
+                    onDismiss = { popupVisible.value = false }
+                ) { popupVisible.value = true }
+            }
+        )
+        AppListItem(title = "Delete", titleColor = MaterialTheme.colors.error, onClick = onDeleteImage)
+        Text(
+            text = "This image preview roughly shows how the watermark will be displayed in your files.",
+            style = MaterialTheme.typography.body2,
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(top = 8.dp, bottom = 12.dp)
+        )
+    }
 }
 
 @Composable
@@ -1011,42 +1202,34 @@ private fun SelectRoomScreen(
 @SuppressLint("MissingPermission")
 @Composable
 private fun ChooseImageBottomView(
-    scope: CoroutineScope,
-    state: ModalBottomSheetState,
-    imageUri: Any? = null,
-    uriCallback: (Uri?) -> Unit,
+    onDelete: (() -> Unit)? = null,
+    onSuccess: (Uri?) -> Unit,
 ) {
     val context = LocalContext.current
     var photo: Uri? = null
 
-    val photoLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.TakePicture(),
-            onResult = { success ->
-                if (success) {
-                    scope.launch {
-                        state.hide()
-                        uriCallback.invoke(photo)
-                    }
-                }
-            })
-
-    val cameraPermission =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                photo?.let { photoLauncher.launch(it) }
+    val photoLauncher = rememberLauncherForActivityResult(
+        contract = TakePicture(),
+        onResult = { success ->
+            if (success && photo != null) {
+                onSuccess.invoke(photo)
             }
         }
+    )
 
-    val galleryLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetContent(),
-            onResult = {
-                scope.launch {
-                    state.hide()
-                    uriCallback.invoke(it)
-                }
-            })
+    val cameraPermission = rememberLauncherForActivityResult(
+        contract = RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                photo?.let(photoLauncher::launch)
+            }
+        }
+    )
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = onSuccess::invoke
+    )
 
     Column(
         modifier = Modifier
@@ -1062,49 +1245,39 @@ private fun ChooseImageBottomView(
                 .padding(4.dp)
                 .fillMaxWidth()
         )
-        AppArrowItem(
+        AppListItem(
             title = stringResource(id = R.string.list_action_photo),
             startIcon = R.drawable.ic_list_action_photo,
-            startIconTint = MaterialTheme.colors.onSurface,
-            arrowVisible = false,
+            startIconTint = MaterialTheme.colors.colorTextSecondary,
             dividerVisible = false,
             modifier = Modifier.padding(top = 4.dp)
         ) {
-            val tempPhoto =
-                FileUtils.createFile(
-                    File(context.cacheDir.absolutePath),
-                    TimeUtils.fileTimeStamp,
-                    "png"
-                )
-            photo = ContentResolverUtils.getFileUri(context, tempPhoto!!).also {
+            FileUtils.createFile(
+                dir = File(context.cacheDir.absolutePath),
+                name = TimeUtils.fileTimeStamp,
+                extension = "png"
+            )?.also { tempPhoto ->
+                photo = ContentResolverUtils.getFileUri(context, tempPhoto)
                 cameraPermission.launch(Manifest.permission.CAMERA)
             }
         }
-        AppArrowItem(
+        AppListItem(
             title = stringResource(id = R.string.list_action_image_from_library),
             startIcon = lib.toolkit.base.R.drawable.ic_image,
-            startIconTint = MaterialTheme.colors.onSurface,
-            arrowVisible = false,
-            dividerVisible = false
-        ) {
-            galleryLauncher.launch("image/*")
-        }
-
-        imageUri?.let {
-            Divider()
+            startIconTint = MaterialTheme.colors.colorTextSecondary,
+            dividerVisible = onDelete != null,
+            onClick = { galleryLauncher.launch("image/*") }
+        )
+        onDelete?.let {
             AppArrowItem(
                 title = stringResource(id = R.string.list_action_delete_image),
                 titleColor = MaterialTheme.colors.error,
                 startIcon = R.drawable.ic_trash,
                 startIconTint = MaterialTheme.colors.error,
                 arrowVisible = false,
-                dividerVisible = false
-            ) {
-                scope.launch {
-                    state.hide()
-                    uriCallback(null)
-                }
-            }
+                dividerVisible = false,
+                onClick = onDelete
+            )
         }
     }
 }
@@ -1170,15 +1343,14 @@ private fun SelectScreenPreview() {
 }
 
 @Preview(uiMode = UI_MODE_NIGHT_YES)
+@Preview
 @Composable
 private fun SelectImagePreview() {
     ManagerTheme {
         Surface {
             ChooseImageBottomView(
-                scope = rememberCoroutineScope(),
-                state = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Expanded),
-                imageUri = null,
-                uriCallback = {}
+                onDelete = {},
+                onSuccess = {}
             )
         }
     }

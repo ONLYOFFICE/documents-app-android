@@ -211,7 +211,8 @@ private fun AppArrowItemsPreview() {
                     title = R.string.toolbar_menu_search_hint,
                     startIcon = R.drawable.drawable_ic_logo,
                     option = stringResource(id = R.string.app_title),
-                    arrowVisible = false
+                    arrowVisible = false,
+                    enabled = false
                 ) {}
                 AppArrowItem(
                     title = R.string.toolbar_menu_search_hint,

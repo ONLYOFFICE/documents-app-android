@@ -15,6 +15,7 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.Lifetime
 import app.documents.core.network.manager.models.explorer.PathPart
 import app.documents.core.network.manager.models.explorer.Watermark
+import app.documents.core.network.manager.models.explorer.WatermarkType
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
@@ -57,6 +58,8 @@ data class AddRoomData(
     val lifetime: Lifetime? = null,
     val denyDownload: Boolean = false,
     val watermark: Watermark? = null,
+    val watermarkImageUri: Uri? = null,
+    val watermarkImagePreview: Bitmap? = null,
     val indexing: Boolean = false,
     val storageQuota: StorageQuota? = null
 ) {
@@ -65,6 +68,9 @@ data class AddRoomData(
         get() {
             if (lifetime != null) {
                 return lifetime.value > 0
+            }
+            if (watermark?.enabled == true) {
+                return watermark.watermarkInfoList.isNotEmpty() || watermarkImageUri != null || watermark.imageUrl != null
             }
             return name.isNotEmpty()
         }
@@ -104,7 +110,7 @@ class AddRoomViewModel(
                 },
                 lifetime = roomInfo.lifetime,
                 denyDownload = roomInfo.denyDownload,
-                watermark = roomInfo.watermark,
+                watermark = roomInfo.watermark?.copy(enabled = true),
                 indexing = roomInfo.indexing,
                 storageState = StorageState(
                     id = roomInfo.id,
@@ -129,13 +135,34 @@ class AddRoomViewModel(
 
     private val roomTags: Set<String> = (roomInfo as? CloudFolder)?.tags?.toSet().orEmpty()
     private var isDeleteLogo: Boolean = false
+    private var isDeleteWatermarkImage: Boolean = false
 
     init {
         if (roomInfo is CloudFolder && roomInfo.quotaLimit != null) {
             _roomState.update {
                 it.copy(
-                    storageQuota = StorageQuota.fromBytes(roomInfo.quotaLimit ?: 0)
+                    storageQuota = StorageQuota.fromBytes(roomInfo.quotaLimit ?: 0),
+                    watermark = it.watermark?.copy(
+                        type = if (it.watermark.imageUrl != null) {
+                            WatermarkType.Image
+                        } else {
+                            WatermarkType.ViewerInfo
+                        }
+                    )
                 )
+            }
+            viewModelScope.launch(Dispatchers.IO) {
+                roomInfo.watermark?.imageUrl?.let { url ->
+                    val preview = Glide.with(context)
+                        .asBitmap()
+                        .load(url)
+                        .submit()
+                        .get()
+
+                    _roomState.update {
+                        it.copy(watermarkImagePreview = preview)
+                    }
+                }
             }
         } else {
             viewModelScope.launch {
@@ -154,18 +181,39 @@ class AddRoomViewModel(
         }
     }
 
-    fun setImageUri(imageUri: Uri?) {
+    fun setImageUri(imageUri: Uri?, isWatermark: Boolean) {
         viewModelScope.launch {
             _viewState.value = ViewState.Loading
             if (imageUri == null) {
-                isDeleteLogo = true
-                _viewState.value = ViewState.None
-                _roomState.value = _roomState.value.copy(imageUri = null)
+                if (!isWatermark) {
+                    isDeleteLogo = true
+                    _viewState.value = ViewState.None
+                    _roomState.update { it.copy(imageUri = null) }
+                } else {
+                    isDeleteWatermarkImage = true
+                    _viewState.value = ViewState.None
+                    _roomState.update { it.copy(watermarkImageUri = null) }
+                    _roomState.update { it.copy(watermarkImagePreview = null) }
+                }
             } else {
-                isDeleteLogo = false
-                _viewState.value = ViewState.None
-                _roomState.value = _roomState.value.copy(imageUri = imageUri)
+                if (!isWatermark) {
+                    isDeleteLogo = false
+                    _viewState.value = ViewState.None
+                    _roomState.update { it.copy(imageUri = imageUri) }
+                } else {
+                    isDeleteWatermarkImage = true
+                    _viewState.value = ViewState.None
+                    _roomState.update { it.copy(watermarkImageUri = imageUri) }
 
+                    withContext(Dispatchers.IO) {
+                        val preview = Glide.with(context)
+                            .asBitmap()
+                            .load(imageUri)
+                            .submit()
+                            .get()
+                        _roomState.update { it.copy(watermarkImagePreview = preview) }
+                    }
+                }
             }
         }
     }
@@ -268,35 +316,9 @@ class AddRoomViewModel(
             withContext(Dispatchers.IO) {
                 try {
                     val id = roomInfo?.id ?: ""
-                    val imageUri = roomState.value.imageUri
-
-                    var imageUrl: String? = null
-                    var imageSize: Size? = null
-
-                    if (imageUri != null) {
-                        try {
-                            val bitmap = loadImage(imageUri, false)
-                            val response = roomProvider.uploadLogo(bitmap)
-                            imageUrl = response.data
-                            imageSize = Size(bitmap.width, bitmap.height)
-                        } catch (_: Exception) {
-                        }
-                    }
-
-                    if (imageUri != null && (imageUrl == null || imageSize == null)) {
-                        error(context.getString(R.string.rooms_error_logo_size_exceed))
-                    }
-
                     val isSuccess = editRoom(name)
-
                     roomProvider.deleteTags(id, (roomTags - tags.toSet()).toList())
                     roomProvider.addTags(id, tags - roomTags)
-
-                    if (isDeleteLogo) {
-                        roomProvider.deleteLogo(id)
-                    } else if (id.isNotEmpty() && imageUrl != null && imageSize != null) {
-                        roomProvider.setLogo(id, imageSize, imageUrl)
-                    }
 
                     if (isSuccess) {
                         _viewState.value = ViewState.Success(roomInfo?.id ?: "")
@@ -313,10 +335,58 @@ class AddRoomViewModel(
         }
     }
 
+    private suspend fun uploadLogo() {
+        val imageUri = roomState.value.imageUri
+        val roomId = roomInfo?.id.orEmpty()
+
+        var imageUrl: String? = null
+        var imageSize: Size? = null
+
+        if (imageUri != null) {
+            val bitmap = loadImage(imageUri, false)
+            val response = roomProvider.uploadLogo(bitmap)
+            imageUrl = response.data
+            imageSize = Size(bitmap.width, bitmap.height)
+        }
+
+        if (imageUri != null && (imageUrl == null || imageSize == null)) {
+            error(context.getString(R.string.rooms_error_logo_size_exceed))
+        }
+
+        if (isDeleteLogo) {
+            roomProvider.deleteLogo(roomId)
+        } else if (roomId.isNotEmpty() && imageUrl != null && imageSize != null) {
+            roomProvider.setLogo(roomId, imageSize, imageUrl)
+        }
+    }
+
+    private suspend fun uploadAndSetWatermark() {
+        val imageUri = roomState.value.watermarkImageUri
+        val bitmap = roomState.value.watermarkImagePreview
+        if (imageUri != null && bitmap != null) {
+            val response = roomProvider.uploadLogo(bitmap)
+            if (!response.success) {
+                error(context.getString(R.string.rooms_error_logo_size_exceed))
+            }
+
+            _roomState.update {
+                it.copy(
+                    watermark = it.watermark?.copy(
+                        imageUrl = response.data,
+                        imageWidth = bitmap.width,
+                        imageHeight = bitmap.height
+                    )
+                )
+            }
+        }
+    }
+
     // pass nulls if property has not been changed
     private suspend fun editRoom(newName: String): Boolean {
-        val srcRoom = roomInfo as? CloudFolder ?: return false
+        uploadLogo()
+        uploadAndSetWatermark()
         return with(_roomState.value) {
+            val srcRoom = roomInfo as? CloudFolder ?: return false
             roomProvider.editRoom(
                 id = srcRoom.id,
                 newTitle = newName.takeIf { it != srcRoom.title },
