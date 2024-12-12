@@ -129,6 +129,7 @@ class AddRoomFragment : ComposeDialogFragment() {
                 composable(route = Screens.Main.name) {
                     RoomSettingsScreen(
                         isEdit = false,
+                        canApplyChanges = viewModel.canApplyChangesFlow.collectAsState(false).value,
                         isRoomTypeEditable = copyItems == null,
                         state = state.value,
                         logoState = logoState.value,

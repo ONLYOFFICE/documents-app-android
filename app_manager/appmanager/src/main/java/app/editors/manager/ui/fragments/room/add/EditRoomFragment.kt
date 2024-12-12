@@ -97,6 +97,7 @@ class EditRoomFragment : ComposeDialogFragment() {
                     RoomSettingsScreen(
                         isEdit = true,
                         isRoomTypeEditable = false,
+                        canApplyChanges = viewModel.canApplyChangesFlow.collectAsState(true).value,
                         loadingRoom = loadingRoomState.value,
                         state = state.value,
                         logoState = logoState.value,

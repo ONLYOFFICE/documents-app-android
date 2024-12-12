@@ -12,15 +12,18 @@ import androidx.lifecycle.ViewModel
 import app.documents.core.model.login.User
 import app.documents.core.network.manager.models.explorer.Lifetime
 import app.documents.core.network.manager.models.explorer.Watermark
+import app.documents.core.network.manager.models.explorer.WatermarkType
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.mvp.models.ui.StorageQuota
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 
 data class RoomSettingsStorage(
@@ -83,6 +86,45 @@ abstract class RoomSettingsViewModel(
 
     private val _effect: MutableSharedFlow<RoomSettingsEffect> = MutableSharedFlow(1)
     val effect: SharedFlow<RoomSettingsEffect> = _effect.asSharedFlow()
+
+    val canApplyChangesFlow: Flow<Boolean> = combine(
+        watermarkState,
+        state,
+        loading,
+        transform = { watermarkState, state, loading ->
+            if (loading) {
+                return@combine false
+            }
+
+            if (state.name.isEmpty()) {
+                return@combine false
+            }
+
+            if (state.lifetime.enabled && state.lifetime.value == 0) {
+                return@combine false
+            }
+
+            if (watermarkState.watermark.enabled) {
+                with(watermarkState) {
+                    when (watermark.type) {
+                        WatermarkType.Image -> {
+                            if (imageUri == null && watermark.imageUrl == null) {
+                                return@combine false
+                            }
+                        }
+
+                        WatermarkType.ViewerInfo -> {
+                            if (watermark.additions == 0) {
+                                return@combine false
+                            }
+                        }
+                    }
+                }
+            }
+
+            return@combine true
+        }
+    )
 
     protected var initialTags: List<String> = emptyList()
 

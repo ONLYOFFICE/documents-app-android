@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -120,6 +119,7 @@ import java.io.File
 @Composable
 fun RoomSettingsScreen(
     isEdit: Boolean,
+    canApplyChanges: Boolean,
     isRoomTypeEditable: Boolean,
     state: RoomSettingsState,
     loadingState: Boolean,
@@ -193,39 +193,39 @@ fun RoomSettingsScreen(
         }
     ) {
         AppScaffold(topBar = {
-            AppTopBar(
-                backListener = onBack,
-                title = if (isEdit)
-                    stringResource(id = R.string.list_context_edit_room) else
-                    stringResource(id = R.string.dialog_create_room),
-                isClose = true,
-                actions = {
-                    TextButton(
-                        enabled = !loadingState && state.name.isNotEmpty(),
-                        onClick = {
-                            keyboardController.clearFocus()
-                            onApply()
+            Column {
+                AppTopBar(
+                    backListener = onBack,
+                    title = if (isEdit)
+                        stringResource(id = R.string.list_context_edit_room) else
+                        stringResource(id = R.string.dialog_create_room),
+                    isClose = true,
+                    actions = {
+                        TextButton(
+                            enabled = canApplyChanges,
+                            onClick = {
+                                keyboardController.clearFocus()
+                                onApply()
+                            }
+                        ) {
+                            Text(
+                                text = if (isEdit)
+                                    stringResource(id = lib.toolkit.base.R.string.common_done) else
+                                    stringResource(id = R.string.login_create_signin_create_button).capitalize(),
+                            )
                         }
-                    ) {
-                        Text(
-                            text = if (isEdit)
-                                stringResource(id = lib.toolkit.base.R.string.common_done) else
-                                stringResource(id = R.string.login_create_signin_create_button).capitalize(),
-                        )
                     }
+                )
+                if (loadingState) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
-            )
+            }
         }, useTablePaddings = false) {
             if (loadingRoom) {
                 ActivityIndicatorView()
             } else {
                 val context = LocalContext.current
                 NestedColumn {
-                    if (loadingState) {
-                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                    } else {
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
                     AddRoomItem(
                         roomType = state.type,
                         clickable = isRoomTypeEditable
@@ -1088,6 +1088,7 @@ private fun MainScreenPreview() {
     ManagerTheme {
         RoomSettingsScreen(
             isEdit = false,
+            canApplyChanges = true,
             isRoomTypeEditable = false,
             state = remember { RoomSettingsState(type = ApiContract.RoomType.VIRTUAL_ROOM) },
             logoState = remember { RoomSettingsLogoState() },
