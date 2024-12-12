@@ -45,6 +45,8 @@ import app.editors.manager.ui.dialogs.fragments.FormCompletedDialogFragment
 import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_TYPE
+import app.editors.manager.ui.fragments.room.add.AddRoomFragment
+import app.editors.manager.ui.fragments.room.add.EditRoomFragment
 import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
 import app.editors.manager.ui.fragments.share.ShareFragment
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
@@ -522,7 +524,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun showEditRoomFragment(room: CloudFolder) {
-        AddRoomFragment.show(activity = requireActivity(), room = room) { onRefresh() }
+        EditRoomFragment.show(activity = requireActivity(), room.id) { onRefresh() }
     }
 
     override fun showFillFormChooserFragment() {

@@ -13,8 +13,8 @@ import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
-import app.editors.manager.ui.fragments.main.AddRoomFragment
 import app.editors.manager.ui.fragments.main.DocsCloudFragment
+import app.editors.manager.ui.fragments.room.add.AddRoomFragment
 import app.editors.manager.viewModels.main.CopyItems
 import lib.toolkit.base.managers.utils.getIntExt
 import lib.toolkit.base.managers.utils.getSerializableExt

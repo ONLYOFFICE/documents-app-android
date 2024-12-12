@@ -363,4 +363,9 @@ interface RoomService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/portal/payment/quota")
     suspend fun getQuota(): app.documents.core.network.BaseResponse<Quota>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{roomId}")
+    suspend fun getRoomInfo(
+        @Path("roomId") roomId: String
+    ): app.documents.core.network.BaseResponse<CloudFolder>
 }

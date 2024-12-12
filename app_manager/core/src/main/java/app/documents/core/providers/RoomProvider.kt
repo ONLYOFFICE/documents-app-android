@@ -25,7 +25,6 @@ import app.documents.core.network.room.models.RequestEditRoom
 import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
-import app.documents.core.network.room.models.ResponseUploadLogo
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.Share
@@ -42,11 +41,12 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import okhttp3.MediaType
@@ -89,7 +89,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 title = title,
                 roomType = type,
                 quota = quota ?: -1,
-                lifetime = lifetime ?: Lifetime(enabled = false),
+                lifetime = lifetime?.takeIf { it.enabled } ?: Lifetime(enabled = false),
                 denyDownload = denyDownload,
                 indexing = indexing
             )
@@ -132,24 +132,23 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         }
     }
 
-    suspend fun addTags(id: String, tags: List<String>): Boolean {
+    suspend fun addTags(roomId: String, tags: List<String>): Boolean {
         val existTags = roomService.getTags().tags
         withContext(Dispatchers.IO) {
-            tags.forEach { newTag ->
-                if (!existTags.contains(newTag)) {
-                    launch { roomService.createTag(RequestCreateTag(newTag)) }
-                }
+            tags.mapNotNull { newTag ->
+                async { roomService.createTag(RequestCreateTag(newTag)) }
+                    .takeIf { !existTags.contains(newTag) }
             }
-        }
-        return roomService.addTags(id, RequestAddTags(tags.toTypedArray())).isSuccessful
+        }.awaitAll()
+        return roomService.addTags(roomId, RequestAddTags(tags.toTypedArray())).isSuccessful
     }
 
     suspend fun deleteTags(id: String, tag: List<String>): Boolean {
         return roomService.deleteTagsFromRoom(id, RequestAddTags(tag.toTypedArray())).isSuccessful
     }
 
-    suspend fun deleteLogo(id: String): Boolean {
-        return roomService.deleteLogo(id).isSuccessful
+    suspend fun deleteLogo(roomId: String): Boolean {
+        return roomService.deleteLogo(roomId).isSuccessful
     }
 
     suspend fun getRoomInviteLink(id: String): ExternalLink? {
@@ -262,23 +261,24 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             response.body()?.response?.members?.getOrNull(0) else throw HttpException(response)
     }
 
-    suspend fun uploadLogo(bitmap: Bitmap): ResponseUploadLogo {
-        val logoId = UUID.randomUUID().toString()
-        val uploadResponse = roomService.uploadLogo(
+    // return image web url
+    suspend fun uploadImage(bitmap: Bitmap): String {
+        val uuid = UUID.randomUUID().toString()
+        val response = roomService.uploadLogo(
             MultipartBody.Part.createFormData(
-                logoId,
-                "$logoId.png",
+                uuid,
+                "$uuid.png",
                 RequestBody.create(MediaType.get("image/*"), bitmap.toByteArray())
             )
-        )
-        return uploadResponse.response
+        ).response
+        return response.data.takeIf { response.success } ?: throw RuntimeException()
     }
 
-    suspend fun setLogo(id: String, size: Size, data: String) {
+    suspend fun setLogo(roomId: String, size: Size, url: String) {
         roomService.setLogo(
-            id,
+            roomId,
             RequestSetLogo(
-                tmpFile = data,
+                tmpFile = url,
                 width = size.width,
                 height = size.height
             )
@@ -351,7 +351,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         }
     }
 
-    suspend fun duplicate(roomId: String): Flow<Result<Int>> {
+    fun duplicate(roomId: String): Flow<Result<Int>> {
         return flow {
             val response =
                 roomService.duplicate(RequestBatchOperation().apply { folderIds = listOf(roomId) })
@@ -412,5 +412,14 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 watermark = watermark
             )
         ).isSuccessful
+    }
+
+    fun getRoomInfo(roomId: String): Flow<Result<CloudFolder>> {
+        return flow {
+            val response = roomService.getRoomInfo(roomId)
+            emit(response.response)
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
     }
 }
