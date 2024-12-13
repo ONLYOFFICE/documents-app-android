@@ -837,14 +837,14 @@ private fun QuotaBlock(
     Column {
         AppSwitchItem(
             title = stringResource(R.string.rooms_vdr_storage_quota_title),
-            checked = state.storageQuota.enabled,
+            checked = state.quota.enabled,
             onCheck = onSetEnabled
         )
-        AnimatedVisibilityVerticalFade(visible = state.storageQuota.enabled) {
+        AnimatedVisibilityVerticalFade(visible = state.quota.enabled) {
             Column {
                 AppTextField(
                     modifier = Modifier.padding(start = 16.dp),
-                    value = state.storageQuota.value.toString(),
+                    value = state.quota.value.toString(),
                     onValueChange = { value ->
                         if (!value.isDigitsOnly()) return@AppTextField
                         val digitValue = if (value.isEmpty()) 0 else value.toLong()
@@ -859,13 +859,13 @@ private fun QuotaBlock(
                         val popupVisible = remember { mutableStateOf(false) }
 
                         DropdownMenuButton(
-                            title = stringResource(state.storageQuota.unit.title),
+                            title = stringResource(state.quota.unit.title),
                             state = popupVisible,
                             items = {
                                 SizeUnit.values().forEach { unit ->
                                     DropdownMenuItem(
                                         title = stringResource(unit.title),
-                                        selected = state.storageQuota.unit == unit,
+                                        selected = state.quota.unit == unit,
                                         onClick = {
                                             onSetMeasurementUnit(unit)
                                             popupVisible.value = false

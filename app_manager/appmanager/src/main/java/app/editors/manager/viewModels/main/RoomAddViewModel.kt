@@ -34,7 +34,7 @@ class RoomAddViewModel(
                     if (result.result.enabled) {
                         updateState {
                             it.copy(
-                                storageQuota = StorageQuota.fromBytes(result.result.value)
+                                quota = StorageQuota.fromBytes(result.result.value)
                             )
                         }
                     }
@@ -72,7 +72,7 @@ class RoomAddViewModel(
                     roomProvider.createRoom(
                         title = name,
                         type = type,
-                        quota = storageQuota.bytes,
+                        quota = quota.bytes,
                         lifetime = lifetime,
                         denyDownload = denyDownload,
                         indexing = indexing

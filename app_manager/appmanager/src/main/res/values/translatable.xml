@@ -941,9 +941,12 @@
 
     <string name="rooms_vdr">Virtual Data Room</string>
     <string name="rooms_vdr_desc">Use VDR for advanced file security and transparency while filling and signing documents step-by-step. Set watermarks, automatically index and track all content, restrict downloading and copying.</string>
+
     <string name="file_lifetime_desc">"Set file lifetime to automatically delete the files in this room after a defined period. Lifetime begins on the date of upload/creation of the file."</string>
     <string name="file_lifetime_title">File lifetime</string>
     <string name="file_lifetime_hint">Files older than</string>
+    <string name="file_lifetime_warning_title">Older files with exceeded lifetime will be deleted</string>
+    <string name="file_lifetime_warning_desc">Lifetime countdown begins at the file creation date. Some files in this room exceed the proposed lifetime and will be deleted once you enable the setting.</string>
 
     <string name="file_lifetime_action">Action on files</string>
     <string name="file_lifetime_action_delete">Delete permanently</string>

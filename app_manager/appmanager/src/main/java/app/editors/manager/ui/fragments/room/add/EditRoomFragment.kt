@@ -1,10 +1,14 @@
 package app.editors.manager.ui.fragments.room.add
 
 import android.os.Bundle
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -21,6 +25,7 @@ import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.UserListMode
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.utils.popBackStackWhenResumed
+import lib.compose.ui.views.AppTextButton
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.putArgs
@@ -71,6 +76,31 @@ class EditRoomFragment : ComposeDialogFragment() {
             val loadingState = viewModel.loading.collectAsState()
             val loadingRoomState = viewModel.loadingRoom.collectAsState()
 
+            val lifetimeConfirmDialogState = remember { mutableStateOf(false) }
+
+            if (lifetimeConfirmDialogState.value) {
+                AlertDialog(
+                    title = { Text(stringResource(R.string.file_lifetime_warning_title)) },
+                    text = { Text(stringResource(R.string.file_lifetime_warning_desc)) },
+                    onDismissRequest = { lifetimeConfirmDialogState.value = false },
+                    confirmButton = {
+                        AppTextButton(
+                            title = lib.toolkit.base.R.string.common_ok,
+                            onClick = {
+                                viewModel.updateLifeTimeState { it.copy(enabled = true) }
+                                lifetimeConfirmDialogState.value = false
+                            }
+                        )
+                    },
+                    dismissButton = {
+                        AppTextButton(
+                            title = lib.toolkit.base.R.string.common_cancel,
+                            onClick = { lifetimeConfirmDialogState.value = false }
+                        )
+                    }
+                )
+            }
+
             LaunchedEffect(viewModel) {
                 viewModel.effect.collect { effect ->
                     when (effect) {
@@ -119,7 +149,11 @@ class EditRoomFragment : ComposeDialogFragment() {
                         onSetIndexing = viewModel::setIndexing,
                         onSetRestrict = viewModel::setRestrict,
                         onSetLifetimeEnable = { enabled ->
-                            viewModel.updateLifeTimeState { it.copy(enabled = enabled) }
+                            if (enabled && state.value.filesCount > 0 ) {
+                                lifetimeConfirmDialogState.value = true
+                            } else {
+                                viewModel.updateLifeTimeState { it.copy(enabled = enabled) }
+                            }
                         },
                         onSetLifetimeValue = { value ->
                             viewModel.updateLifeTimeState { it.copy(value = value) }

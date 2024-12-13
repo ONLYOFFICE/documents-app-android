@@ -50,13 +50,14 @@ data class RoomSettingsState(
     val roomId: String? = null,
     val type: Int = -1,
     val name: String = "",
-    val owner: User = User(),
+    val filesCount: Int = 0,
     val indexing: Boolean = false,
     val denyDownload: Boolean = false,
     val tags: List<String> = emptyList(),
-    val storageState: RoomSettingsStorage? = null,
+    val owner: User = User(),
     val lifetime: Lifetime = Lifetime(),
-    val storageQuota: StorageQuota = StorageQuota()
+    val quota: StorageQuota = StorageQuota(),
+    val storageState: RoomSettingsStorage? = null
 )
 
 sealed class RoomSettingsEffect {
@@ -235,7 +236,7 @@ abstract class RoomSettingsViewModel(
     }
 
     fun updateStorageQuota(block: (StorageQuota) -> StorageQuota) {
-        _state.update { it.copy(storageQuota = block(it.storageQuota)) }
+        _state.update { it.copy(quota = block(it.quota)) }
     }
 
     fun updateWatermarkState(block: (RoomSettingsWatermarkState) -> RoomSettingsWatermarkState) {

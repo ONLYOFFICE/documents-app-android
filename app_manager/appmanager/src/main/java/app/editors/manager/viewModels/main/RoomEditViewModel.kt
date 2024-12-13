@@ -58,7 +58,8 @@ class RoomEditViewModel(
                                     providerId = roomInfo.providerId,
                                     location = null
                                 ).takeIf { roomInfo.providerItem },
-                                storageQuota = StorageQuota.fromBytes(roomInfo.quotaLimit ?: 0),
+                                quota = StorageQuota.fromBytes(roomInfo.quotaLimit ?: 0),
+                                filesCount = roomInfo.filesCount
                             )
                         }
                         updateLogoState {
@@ -94,7 +95,7 @@ class RoomEditViewModel(
             roomProvider.editRoom(
                 id = roomId,
                 newTitle = state.value.name,
-                quota = state.value.storageQuota.takeIf(StorageQuota::enabled)?.bytes ?: -1,
+                quota = state.value.quota.takeIf(StorageQuota::enabled)?.bytes ?: -1,
                 lifetime = state.value.lifetime,
                 denyDownload = state.value.denyDownload,
                 indexing = state.value.indexing,
