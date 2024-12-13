@@ -308,6 +308,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun updateViewsState() {
+        viewState.onRoomLifetime(null)
         if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
             if (pickerMode is PickerMode.Files) {
@@ -327,7 +328,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onStateUpdateRoot(false)
             // TODO check security...
             if (isRoom) {
-                viewState.onStateActionButton(modelExplorerStack.last()?.current?.security?.create == true)
+                val current = modelExplorerStack.last()?.current
+                viewState.onStateActionButton(current?.security?.create == true)
+                current?.lifetime?.let { lifetime -> viewState.onRoomLifetime(lifetime) }
             } else {
                 viewState.onStateActionButton(isContextEditable && !isRecentViaLinkSection())
             }

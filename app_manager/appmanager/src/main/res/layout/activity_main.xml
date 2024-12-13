@@ -12,6 +12,7 @@
         android:id="@+id/app_bar_layout"
         style="@style/Widget.Common.AppBarLayout"
         android:layout_width="match_parent"
+        android:animateLayoutChanges="true"
         android:layout_height="wrap_content">
 
         <app.editors.manager.ui.views.custom.MainToolbar
@@ -19,6 +20,33 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:minHeight="?attr/actionBarSize" />
+
+        <LinearLayout
+            android:id="@+id/infoLayout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorOutline" />
+
+            <TextView
+                android:id="@+id/infoText"
+                style="@style/Widget.Common.TextView.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                tools:drawableStartCompat="@drawable/ic_expiring"
+                tools:text="The file lifetime is set to 12 days in this room" />
+
+        </LinearLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -33,9 +61,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_insetEdge="bottom"
         android:layout_gravity="bottom"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_insetEdge="bottom">
 
         <View
             android:layout_width="match_parent"

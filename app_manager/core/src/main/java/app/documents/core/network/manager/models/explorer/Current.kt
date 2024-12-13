@@ -84,6 +84,10 @@ class Current : Cloneable, Serializable {
     @Expose
     var security: Security? = null
 
+    @SerializedName("lifetime")
+    @Expose
+    var lifetime: Lifetime? = null
+
     public override fun clone(): Current {
         return (super.clone() as Current).apply {
             createdBy = createdBy.clone()

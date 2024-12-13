@@ -20,6 +20,7 @@ import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Lifetime
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
@@ -534,6 +535,28 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             onFillForm = cloudPresenter::fillPdfForm,
             onSelectRoom = { cloudPresenter.moveCopyOperation(OperationType.COPY_TO_FILL_FORM_ROOM) }
         )
+    }
+
+    override fun onRoomLifetime(lifetime: Lifetime?) {
+         (activity as? IMainActivity)?.let { activity ->
+            if (lifetime != null) {
+                activity.setToolbarInfo(
+                    title = getString(
+                        R.string.rooms_vdr_lifetime_info,
+                        lifetime.value,
+                        when (lifetime.period) {
+                            Lifetime.PERIOD_DAYS -> lib.toolkit.base.R.plurals.days
+                            Lifetime.PERIOD_MONTHS -> lib.toolkit.base.R.plurals.months
+                            Lifetime.PERIOD_YEARS ->lib.toolkit.base.R.plurals.years
+                            else -> return@let
+                        }.let { resources.getQuantityText(it, lifetime.value) }
+                    ),
+                    drawable = lib.toolkit.base.R.drawable.ic_expiring
+                )
+            } else {
+                activity.setToolbarInfo(null)
+            }
+        }
     }
 
     override fun onBatchMoveCopy(operation: OperationType, explorer: Explorer) {

@@ -35,6 +35,17 @@
         <item quantity="one">hour</item>
         <item quantity="other">hours</item>
     </plurals>
+
+    <plurals name="months">
+        <item quantity="one">month</item>
+        <item quantity="other">months</item>
+    </plurals>
+
+    <plurals name="years">
+        <item quantity="one">year</item>
+        <item quantity="other">years</item>
+    </plurals>
+
     <string name="settings_fonts_title">Fonts</string>
     <string name="settings_view">View</string>
 </resources>

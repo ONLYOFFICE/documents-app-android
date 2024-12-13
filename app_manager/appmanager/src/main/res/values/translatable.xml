@@ -987,5 +987,6 @@
     <string name="rooms_vdr_watermark_image_scale">Scale</string>
     <string name="rooms_vdr_watermark_image_rotate">Rotate</string>
     <string name="rooms_vdr_watermark_image_desc">This image preview roughly shows how the watermark will be displayed in your files.</string>
+    <string name="rooms_vdr_lifetime_info">The file lifetime is set to %1d %2s in this room</string> <!-- example: The file lifetime is set to 12 days in this room -->
 
 </resources>
