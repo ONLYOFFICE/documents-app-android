@@ -859,6 +859,7 @@
     <string name="rooms_share_link_life_time">Link life time</string>
 
     <string name="rooms_filter_type_filling_forms">Filling form</string>
+    <string name="rooms_filter_type_virtual_room">Virtual data room</string>
     <string name="rooms_filter_type_collaboration">Collaboration</string>
     <string name="rooms_filter_type_review">Review</string>
     <string name="rooms_filter_type_public">Public</string>
