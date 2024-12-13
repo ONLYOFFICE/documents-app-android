@@ -60,7 +60,7 @@ data class RoomSettingsState(
     val denyDownload: Boolean = false,
     val tags: ChipList = ChipList(),
     val owner: User = User(),
-    val lifetime: Lifetime = Lifetime(),
+    val lifetime: Lifetime = Lifetime(enabled = false),
     val quota: StorageQuota = StorageQuota(),
     val storageState: RoomSettingsStorage? = null
 )
@@ -173,7 +173,9 @@ abstract class RoomSettingsViewModel(
                     _watermarkState.update {
                         it.copy(
                             watermark = it.watermark.copy(
-                                imageUrl = roomProvider.uploadImage(imagePreview)
+                                imageUrl = roomProvider.uploadImage(imagePreview),
+                                imageHeight = imagePreview.height,
+                                imageWidth = imagePreview.width
                             )
                         )
                     }
@@ -199,6 +201,7 @@ abstract class RoomSettingsViewModel(
         _watermarkState.update {
             if (uri != null) {
                 it.copy(
+                    watermark = it.watermark.copy(rotate = 0),
                     imageUri = uri,
                     imagePreview = getBitmapFromUri(uri)
                 )

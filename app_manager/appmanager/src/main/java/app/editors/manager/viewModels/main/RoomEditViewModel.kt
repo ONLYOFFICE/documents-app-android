@@ -50,7 +50,7 @@ class RoomEditViewModel(
                                     )
                                 },
                                 tags = ChipList(roomInfo.tags.toList()),
-                                lifetime = roomInfo.lifetime?.copy(enabled = true) ?: Lifetime(),
+                                lifetime = roomInfo.lifetime?.copy(enabled = true) ?: Lifetime(enabled = false),
                                 denyDownload = roomInfo.denyDownload,
                                 indexing = roomInfo.indexing,
                                 storageState = RoomSettingsStorage(
@@ -88,22 +88,26 @@ class RoomEditViewModel(
 
     override fun applyChanges() {
         viewModelScope.launch(Dispatchers.IO) {
-            setLoading(true)
-            val uploadLogoAsync = async { setOrDeleteRoomLogo(roomId) }
-            val uploadWatermarkAsync = async { setWatermarkImage() }
-            awaitAll(uploadLogoAsync, uploadWatermarkAsync)
-            saveTags(roomId)
-            roomProvider.editRoom(
-                id = roomId,
-                newTitle = state.value.name,
-                quota = state.value.quota.takeIf(StorageQuota::enabled)?.bytes ?: -1,
-                lifetime = state.value.lifetime,
-                denyDownload = state.value.denyDownload,
-                indexing = state.value.indexing,
-                watermark = watermarkState.value.watermark
-            )
-            emitEffect(RoomSettingsEffect.Success())
-            setLoading(false)
+            try {
+                setLoading(true)
+                val uploadLogoAsync = async { setOrDeleteRoomLogo(roomId) }
+                val uploadWatermarkAsync = async { setWatermarkImage() }
+                awaitAll(uploadLogoAsync, uploadWatermarkAsync)
+                saveTags(roomId)
+                roomProvider.editRoom(
+                    id = roomId,
+                    newTitle = state.value.name,
+                    quota = state.value.quota.takeIf(StorageQuota::enabled)?.bytes ?: -1,
+                    lifetime = state.value.lifetime,
+                    denyDownload = state.value.denyDownload,
+                    indexing = state.value.indexing,
+                    watermark = watermarkState.value.watermark
+                )
+                emitEffect(RoomSettingsEffect.Success())
+                setLoading(false)
+            } catch (e: Exception) {
+                emitEffect(RoomSettingsEffect.Error(R.string.rooms_error_edit))
+            }
         }
     }
 

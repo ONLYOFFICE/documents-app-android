@@ -20,7 +20,7 @@ data class Lifetime(
 
     @SerializedName("enabled")
     @Expose
-    val enabled: Boolean = false
+    val enabled: Boolean
 ) {
 
     companion object {

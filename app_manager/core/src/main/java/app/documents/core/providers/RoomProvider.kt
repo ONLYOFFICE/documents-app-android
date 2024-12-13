@@ -12,6 +12,7 @@ import app.documents.core.network.manager.models.explorer.Lifetime
 import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.explorer.QuotaData
 import app.documents.core.network.manager.models.explorer.Watermark
+import app.documents.core.network.manager.models.explorer.WatermarkType
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestRoomNotifications
 import app.documents.core.network.room.RoomService
@@ -400,18 +401,23 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         denyDownload: Boolean? = null,
         indexing: Boolean? = null,
         watermark: Watermark? = null
-    ): Boolean {
-        return roomService.editRoom(
+    ) {
+        val response = roomService.editRoom(
             id = id,
             body = RequestEditRoom(
                 title = newTitle,
                 quota = quota,
-                lifetime = lifetime,
+                lifetime = lifetime?.copy(value = lifetime.value.takeIf { it != 0 } ?: 1) ?: Lifetime(enabled = false, value = 1),
                 denyDownload = denyDownload,
                 indexing = indexing,
-                watermark = watermark
+                watermark = if (watermark?.type == WatermarkType.ViewerInfo) {
+                    watermark.copy(imageUrl = null)
+                } else {
+                    watermark
+                }
             )
-        ).isSuccessful
+        )
+        if (!response.isSuccessful) throw HttpException(response)
     }
 
     fun getRoomInfo(roomId: String): Flow<Result<CloudFolder>> {
