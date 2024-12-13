@@ -787,6 +787,8 @@
     <string name="room_placeholder_created_room_subtitle">Create new folders to organize your files.</string>
     <string name="room_placeholder_created_filling_form_room_title">Welcome to the Form filling room</string>
     <string name="room_placeholder_created_filling_form_room_subtitle">Upload a ready PDF form or create new folders to organize your files</string>
+    <string name="room_placeholder_created_virtual_room_title">Welcome to the Virtual Data Room</string>
+    <string name="room_placeholder_created_virtual_room_subtitle">Get started with quick actions:\nCreate a new file</string>
     <string name="room_recent_via_link">Accessible via link</string>
     <string name="room_manage_room">Manage room</string>
 

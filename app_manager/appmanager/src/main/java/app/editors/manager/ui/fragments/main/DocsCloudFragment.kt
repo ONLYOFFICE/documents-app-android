@@ -382,6 +382,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     when {
                         presenter.itemClicked?.security?.editRoom != true -> PlaceholderViews.Type.VISITOR_EMPTY_ROOM
                         roomType == ApiContract.RoomType.FILL_FORMS_ROOM -> PlaceholderViews.Type.EMPTY_FORM_FILLING_ROOM
+                        roomType == ApiContract.RoomType.VIRTUAL_ROOM -> PlaceholderViews.Type.EMPTY_VIRTUAL_ROOM
                         else -> PlaceholderViews.Type.EMPTY_ROOM
                     }
                 }
