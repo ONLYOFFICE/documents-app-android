@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalGlideComposeApi::class)
-
 package app.editors.manager.ui.fragments.room.add
 
 import android.app.Activity
@@ -32,7 +30,6 @@ import app.editors.manager.ui.fragments.main.SelectFolderScreen
 import app.editors.manager.viewModels.main.CopyItems
 import app.editors.manager.viewModels.main.RoomAddViewModel
 import app.editors.manager.viewModels.main.RoomSettingsEffect
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTopBar
@@ -56,7 +53,7 @@ class AddRoomFragment : ComposeDialogFragment() {
         val TAG: String = EditRoomFragment::class.java.simpleName
 
         private fun newInstance(roomType: Int?, items: CopyItems?) =
-            EditRoomFragment().putArgs(
+            AddRoomFragment().putArgs(
                 TAG_ROOM_TYPE to roomType,
                 TAG_COPY_ITEMS to items
             )
@@ -163,8 +160,8 @@ class AddRoomFragment : ComposeDialogFragment() {
                         onRemoveTag = viewModel::removeTag,
                         onSetIndexing = viewModel::setIndexing,
                         onSetRestrict = viewModel::setRestrict,
-                        onSetLifetimeEnable = {
-                            viewModel.updateLifeTimeState { it.copy(enabled = true) }
+                        onSetLifetimeEnable = { enabled ->
+                            viewModel.updateLifeTimeState { it.copy(enabled = enabled) }
                         },
                         onSetLifetimeValue = { value ->
                             viewModel.updateLifeTimeState { it.copy(value = value) }
@@ -210,7 +207,7 @@ class AddRoomFragment : ComposeDialogFragment() {
                         },
                         onSetQuotaEnabled = { enabled ->
                             viewModel.updateStorageQuota {
-                                it.copy()
+                                it.copy(enabled = enabled)
                             }
                         },
                         onSetQuotaValue = { value ->

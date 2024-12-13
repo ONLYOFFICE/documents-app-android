@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import lib.compose.ui.views.ChipList
 
 class RoomEditViewModel(
     private val roomId: String,
@@ -48,7 +49,7 @@ class RoomEditViewModel(
                                         displayName = displayName
                                     )
                                 },
-                                tags = roomInfo.tags.toList(),
+                                tags = ChipList(roomInfo.tags.toList()),
                                 lifetime = roomInfo.lifetime?.copy(enabled = true) ?: Lifetime(),
                                 denyDownload = roomInfo.denyDownload,
                                 indexing = roomInfo.indexing,

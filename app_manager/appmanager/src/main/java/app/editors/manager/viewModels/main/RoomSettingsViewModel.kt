@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Size
+import androidx.compose.runtime.Immutable
 import androidx.core.graphics.decodeBitmap
 import androidx.lifecycle.ViewModel
 import app.documents.core.model.login.User
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
+import lib.compose.ui.views.ChipList
 
 data class RoomSettingsStorage(
     val id: String,
@@ -34,18 +36,21 @@ data class RoomSettingsStorage(
     val createAsNewFolder: Boolean = false,
 )
 
+@Immutable
 data class RoomSettingsWatermarkState(
     val watermark: Watermark = Watermark(),
     val imageUri: Uri? = null,
     val imagePreview: Bitmap? = null,
 )
 
+@Immutable
 data class RoomSettingsLogoState(
     val logoWebUrl: String? = null,
     val logoUri: Uri? = null,
     val logoPreview: Bitmap? = null,
 )
 
+@Immutable
 data class RoomSettingsState(
     val roomId: String? = null,
     val type: Int = -1,
@@ -53,7 +58,7 @@ data class RoomSettingsState(
     val filesCount: Int = 0,
     val indexing: Boolean = false,
     val denyDownload: Boolean = false,
-    val tags: List<String> = emptyList(),
+    val tags: ChipList = ChipList(),
     val owner: User = User(),
     val lifetime: Lifetime = Lifetime(),
     val quota: StorageQuota = StorageQuota(),
@@ -180,8 +185,8 @@ abstract class RoomSettingsViewModel(
     }
 
     protected suspend fun saveTags(roomId: String) {
-        roomProvider.addTags(roomId, state.value.tags - initialTags.toSet())
-        roomProvider.deleteTags(roomId, initialTags - state.value.tags.toSet())
+        roomProvider.addTags(roomId, state.value.tags.list - initialTags.toSet())
+        roomProvider.deleteTags(roomId, initialTags - state.value.tags.list.toSet())
     }
 
     abstract fun applyChanges()
@@ -212,11 +217,11 @@ abstract class RoomSettingsViewModel(
     }
 
     fun addTag(tag: String) {
-        _state.update { it.copy(tags = it.tags + tag) }
+        _state.update { it.copy(tags = ChipList(it.tags.list + tag)) }
     }
 
     fun removeTag(tag: String) {
-        _state.update { it.copy(tags = it.tags - tag) }
+        _state.update { it.copy(tags = ChipList(it.tags.list - tag)) }
     }
 
     fun setIndexing(enabled: Boolean) {

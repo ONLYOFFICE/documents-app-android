@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -102,7 +103,7 @@ import lib.compose.ui.views.AppSwitchItem
 import lib.compose.ui.views.AppTextField
 import lib.compose.ui.views.AppTextFieldListItem
 import lib.compose.ui.views.AppTopBar
-import lib.compose.ui.views.ChipData
+import lib.compose.ui.views.ChipList
 import lib.compose.ui.views.ChipsTextField
 import lib.compose.ui.views.DropdownMenuButton
 import lib.compose.ui.views.DropdownMenuItem
@@ -259,13 +260,17 @@ fun RoomSettingsScreen(
                                     contentDescription = null,
                                 )
                             } ?: run {
-                                val urlWithToken = GlideUtils.getCorrectLoad(
-                                    context.accountOnline?.portal?.urlWithScheme + logoState.logoWebUrl,
-                                    AccountUtils.getToken(
-                                        context,
-                                        context.appComponent.accountOnline?.accountName.orEmpty()
-                                    ).orEmpty()
-                                )
+                                val urlWithToken = if (!LocalView.current.isInEditMode) {
+                                    GlideUtils.getCorrectLoad(
+                                        context.accountOnline?.portal?.urlWithScheme + logoState.logoWebUrl,
+                                        AccountUtils.getToken(
+                                            context,
+                                            context.appComponent.accountOnline?.accountName.orEmpty()
+                                        ).orEmpty()
+                                    )
+                                } else {
+                                    ""
+                                }
 
                                 GlideImage(
                                     modifier = Modifier.fillMaxSize(),
@@ -288,13 +293,12 @@ fun RoomSettingsScreen(
                     ChipsTextField(
                         modifier = Modifier.padding(start = 16.dp),
                         label = stringResource(id = R.string.room_add_tag_hint),
-                        chips = state.tags.map(::ChipData),
+                        chips = state.tags,
                         onChipAdd = { tag ->
-                            val tags = state.tags.map(::ChipData)
-                            val exists = tags.any { it.text == tag }
+                            val exists = state.tags.list.any { it == tag }
                             if (!exists) onAddTag(tag)
                         },
-                        onChipDelete = { onRemoveTag(it.text) }
+                        onChipDelete = onRemoveTag
                     )
 
                     if (isEdit) {
@@ -429,12 +433,9 @@ private fun VdrRoomBlock(
         checked = state.indexing,
         onCheck = { checked -> onSetIndexing(checked) }
     )
-    Text(
+    AppDescriptionItem(
         text = stringResource(R.string.rooms_vdr_indexing_desc),
-        style = MaterialTheme.typography.body2,
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 8.dp, bottom = 12.dp)
+        modifier = Modifier.padding(top = 8.dp, bottom = 12.dp)
     )
 
     AppSwitchItem(
@@ -450,12 +451,9 @@ private fun VdrRoomBlock(
             onSetAction = onSetLifetimeAction,
         )
     }
-    Text(
-        stringResource(R.string.file_lifetime_desc),
-        style = MaterialTheme.typography.body2,
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 8.dp, bottom = 12.dp)
+    AppDescriptionItem(
+        text = stringResource(R.string.file_lifetime_desc),
+        modifier = Modifier.padding(top = 8.dp, bottom = 12.dp)
     )
 
     AppSwitchItem(
@@ -464,12 +462,9 @@ private fun VdrRoomBlock(
         singleLine = false,
         onCheck = { checked -> onSetRestrict(checked) }
     )
-    Text(
+    AppDescriptionItem(
         text = stringResource(R.string.rooms_vdr_file_restrict_desc),
-        style = MaterialTheme.typography.body2,
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 8.dp, bottom = 12.dp)
+        modifier = Modifier.padding(top = 8.dp, bottom = 12.dp)
     )
 
     AppSwitchItem(
@@ -478,12 +473,9 @@ private fun VdrRoomBlock(
         onCheck = onWatermarkEnable
     )
     if (!watermarkState.watermark.enabled) {
-        Text(
+        AppDescriptionItem(
             text = stringResource(R.string.rooms_vdr_watermark_desc),
-            style = MaterialTheme.typography.body2,
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 8.dp, bottom = 12.dp)
+            modifier = Modifier.padding(top = 8.dp, bottom = 12.dp)
         )
     }
     AnimatedVisibilityVerticalFade(visible = watermarkState.watermark.enabled) {
@@ -565,12 +557,9 @@ private fun WatermarkBlock(
 
                     WatermarkType.Image -> WatermarkSelectImageBlock(onClick = onSelectImage)
                 }
-                Text(
+                AppDescriptionItem(
                     text = stringResource(R.string.rooms_vdr_watermark_desc),
-                    style = MaterialTheme.typography.body2,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 8.dp, bottom = 12.dp)
+                    modifier = Modifier.padding(top = 8.dp, bottom = 12.dp)
                 )
                 if (type == WatermarkType.Image) {
                     if (watermarkState.imagePreview != null || watermarkState.watermark.imageUrl != null) {
@@ -817,12 +806,9 @@ private fun WatermarkImageBlock(
             titleColor = MaterialTheme.colors.error,
             onClick = onDeleteImage
         )
-        Text(
+        AppDescriptionItem(
             text = stringResource(R.string.rooms_vdr_watermark_image_desc),
-            style = MaterialTheme.typography.body2,
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 8.dp, bottom = 12.dp)
+            modifier = Modifier.padding(top = 8.dp, bottom = 12.dp)
         )
     }
 }
@@ -879,12 +865,9 @@ private fun QuotaBlock(
                 )
             }
         }
-        Text(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 8.dp, bottom = 16.dp),
+        AppDescriptionItem(
             text = stringResource(R.string.rooms_vdr_storage_quota_desc),
-            style = MaterialTheme.typography.body2
+            modifier = Modifier.padding(top = 8.dp, bottom = 12.dp)
         )
     }
 }
@@ -1069,12 +1052,7 @@ private fun TextFieldPreview() {
         ) {
             ChipsTextField(
                 label = "Add tag",
-                chips = listOf(
-                    ChipData("one"),
-                    ChipData("two"),
-                    ChipData("two"),
-                    ChipData("three"),
-                ),
+                chips = ChipList(listOf("one", "two", "two", "three")),
                 onChipAdd = {},
                 onChipDelete = {}
             )
