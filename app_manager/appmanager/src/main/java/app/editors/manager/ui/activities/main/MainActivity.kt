@@ -611,9 +611,9 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
     }
 
     override fun setToolbarInfo(title: String?, drawable: Int?) {
-        viewBinding.infoLayout.isVisible = title != null
-        viewBinding.infoText.text = title
-        viewBinding.infoText.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
+        viewBinding.infoLayout.root.isVisible = title != null
+        viewBinding.infoLayout.infoText.text = title
+        viewBinding.infoLayout.infoText.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
     }
 
     private fun isNotification(): Boolean =
