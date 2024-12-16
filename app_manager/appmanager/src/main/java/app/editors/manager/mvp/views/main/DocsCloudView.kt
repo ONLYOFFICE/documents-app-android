@@ -41,4 +41,7 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onRoomLifetime(lifetime: Lifetime?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onRoomFileIndexing(indexing: Boolean)
 }

@@ -70,6 +70,10 @@ open class Item : ItemProperties(), Serializable {
     @Expose
     var etag = ""
 
+    @SerializedName("order")
+    @Expose
+    var order: Int = 0
+
     val intAccess: Int
         get() {
             val access = access

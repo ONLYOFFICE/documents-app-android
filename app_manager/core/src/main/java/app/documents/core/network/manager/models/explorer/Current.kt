@@ -88,6 +88,10 @@ class Current : Cloneable, Serializable {
     @Expose
     var lifetime: Lifetime? = null
 
+    @SerializedName("indexing")
+    @Expose
+    var indexing: Boolean = false
+
     public override fun clone(): Current {
         return (super.clone() as Current).apply {
             createdBy = createdBy.clone()

@@ -51,13 +51,11 @@ abstract class ListBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
         }
     }
 
-    private fun getSubtitleText(element: T): String? {
+    protected open fun getSubtitleText(element: T): String? {
         return StringUtils.getCloudItemInfo(
             context = adapter.context,
             item = element,
-            userId = adapter.accountId,
-            sortBy = adapter.preferenceTool.sortBy,
-            isSectionMy = adapter.isSectionMy
+            state = adapter
         )
     }
 }

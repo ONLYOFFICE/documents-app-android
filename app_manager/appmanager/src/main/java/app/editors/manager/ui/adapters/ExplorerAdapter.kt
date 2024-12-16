@@ -6,8 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.UploadFile
-import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.PreferenceTool
@@ -30,7 +28,23 @@ import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import lib.toolkit.base.ui.adapters.factory.inflate
 import javax.inject.Inject
 
-class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView: Boolean) : BaseAdapter<Entity>() {
+interface AdapterState {
+
+    val accountId: String?
+    val sortBy: String?
+
+    var isRoot: Boolean
+    var isFooter: Boolean
+    var isSectionMy: Boolean
+    var isTrash: Boolean
+    var isIndexing: Boolean
+    var isGridView: Boolean
+}
+
+class ExplorerAdapter(
+    private val factory: TypeFactoryExplorer,
+    initialGridView: Boolean
+) : BaseAdapter<Entity>(), AdapterState {
 
     @Inject
     lateinit var context: Context
@@ -38,12 +52,16 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
     @Inject
     lateinit var preferenceTool: PreferenceTool
 
-    val accountId: String? by lazy { context.accountOnline?.id }
+    override val accountId: String? by lazy { context.accountOnline?.id }
 
-    var isRoot: Boolean = false
-    var isFooter: Boolean = false
-    var isSectionMy: Boolean = false
-    var isTrash: Boolean = false
+    override var isRoot: Boolean = false
+    override var isFooter: Boolean = false
+    override var isSectionMy: Boolean = false
+    override var isTrash: Boolean = false
+    override var isIndexing: Boolean = false
+    override var isGridView: Boolean = initialGridView
+
+    override val sortBy: String? get() = preferenceTool.sortBy
 
     var isSelectMode = false
         set(isSelectMode) {
@@ -57,7 +75,6 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
             notifyDataSetChanged()
         }
 
-    var isGridView: Boolean = initialGridView
 
     private val footer: Footer = Footer()
 
@@ -78,7 +95,11 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
         }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<*>) {
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+        payloads: List<*>
+    ) {
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
             return

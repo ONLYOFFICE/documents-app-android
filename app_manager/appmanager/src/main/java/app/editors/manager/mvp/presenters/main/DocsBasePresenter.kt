@@ -966,7 +966,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     protected fun getListWithHeaders(explorer: Explorer?, isResetHeaders: Boolean): List<Entity> {
         if (explorer == null) return emptyList()
-        val entities = explorer.folders + explorer.files
+
+        val entities = (explorer.folders + explorer.files).run {
+            if (currentFolder?.indexing == true) sortedBy(Item::order) else this
+        }
+
         val placeholderType = if (entities.isEmpty()) {
             if (isFilteringMode) {
                 PlaceholderViews.Type.SEARCH

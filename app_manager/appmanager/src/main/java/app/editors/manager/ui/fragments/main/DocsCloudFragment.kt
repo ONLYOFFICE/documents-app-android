@@ -559,6 +559,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    override fun onRoomFileIndexing(indexing: Boolean) {
+        explorerAdapter?.isIndexing = indexing
+    }
+
     override fun onBatchMoveCopy(operation: OperationType, explorer: Explorer) {
         OperationDialogFragment.show(requireActivity(), operation, explorer) { bundle ->
             if (OperationDialogFragment.KEY_OPERATION_RESULT_COMPLETE in bundle) {
