@@ -24,7 +24,7 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
         style="@style/Widget.Common.TextView"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="@dimen/default_margin_medium"
@@ -35,8 +35,11 @@
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/image"
         app:layout_constraintTop_toTopOf="parent"
+        tools:drawableEnd="@drawable/ic_small_clock"
+        android:drawablePadding="4dp"
+        android:drawableTint="@color/colorSecondary"
         app:layout_constraintVertical_chainStyle="packed"
-        tools:text="File nameFile nameFile nameFile nameFile nameFile nameFile name" />
+        tools:text="File name" />
 
     <LinearLayout
         android:id="@+id/statusLayout"

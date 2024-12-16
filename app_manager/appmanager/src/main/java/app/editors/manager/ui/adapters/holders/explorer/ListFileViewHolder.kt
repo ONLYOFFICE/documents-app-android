@@ -45,6 +45,7 @@ class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
         binding.favorite.isVisible = element.isFavorite
         binding.badgeNewCard.isVisible = element.isNew
         binding.editing.isVisible = element.isEditing
+        setFileExpiring(element, binding.title)
     }
 
     companion object {
