@@ -40,6 +40,7 @@ class GridRoomViewHolder(view: View, adapter: ExplorerAdapter) :
             cardText.text = RoomUtils.getRoomInitials(element.title)
             iconPinned.isVisible = element.pinned
             cardImageLayout.setRoomIcon(element, cardImage, cardText, badge, adapter.isGridView)
+            setRoomExpiring(element, title)
         }
     }
 

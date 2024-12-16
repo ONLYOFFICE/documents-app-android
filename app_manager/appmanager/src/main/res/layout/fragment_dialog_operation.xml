@@ -21,6 +21,33 @@
             app:navigationIcon="@drawable/ic_back"
             app:navigationIconTint="@color/colorPrimary" />
 
+        <LinearLayout
+            android:id="@+id/infoLayout"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorOutline" />
+
+            <TextView
+                android:id="@+id/infoText"
+                style="@style/Widget.Common.TextView.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:drawablePadding="4dp"
+                android:gravity="center"
+                android:paddingHorizontal="8dp"
+                tools:drawableStartCompat="@drawable/ic_expiring"
+                tools:text="The file lifetime is set to 12 days in this room" />
+
+        </LinearLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout

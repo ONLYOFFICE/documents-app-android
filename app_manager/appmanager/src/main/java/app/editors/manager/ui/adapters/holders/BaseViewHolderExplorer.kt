@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -142,6 +144,20 @@ abstract class BaseViewHolderExplorer<T>(
 
                 else -> Unit
             }
+        }
+    }
+
+    protected fun setRoomExpiring(element: T, textView: TextView) {
+        if (adapter.pickerMode == PickerMode.Folders) {
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                null,
+                null,
+                AppCompatResources.getDrawable(
+                    textView.context,
+                    lib.toolkit.base.R.drawable.ic_expiring
+                ).takeIf { element is CloudFolder && element.lifetime != null },
+                null
+            )
         }
     }
 }

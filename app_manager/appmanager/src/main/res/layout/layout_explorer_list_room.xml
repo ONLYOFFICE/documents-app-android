@@ -46,15 +46,18 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
         style="@style/Widget.Common.TextView"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="8dp"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/subtitle"
         app:layout_constraintEnd_toStartOf="@+id/iconPinned"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@+id/cardImageLayout"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
+        tools:drawableEnd="@drawable/ic_expiring"
         tools:text="Room name" />
 
     <com.google.android.material.imageview.ShapeableImageView

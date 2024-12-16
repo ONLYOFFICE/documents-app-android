@@ -9,6 +9,7 @@ import app.documents.core.network.common.contracts.ApiContract.Access
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Lifetime
 import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.mvp.presenters.main.PickerMode
@@ -238,6 +239,26 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
             operationDialogFragment?.setEnabledActionButton(mode.selectedIds.isNotEmpty())
         } else {
             operationDialogFragment?.setEnabledActionButton(enabled)
+        }
+    }
+
+    override fun onRoomLifetime(lifetime: Lifetime?) {
+        if (lifetime != null) {
+            operationDialogFragment?.setToolbarInfo(
+                title = getString(
+                    R.string.rooms_vdr_lifetime_info,
+                    lifetime.value,
+                    when (lifetime.period) {
+                        Lifetime.PERIOD_DAYS -> lib.toolkit.base.R.plurals.days
+                        Lifetime.PERIOD_MONTHS -> lib.toolkit.base.R.plurals.months
+                        Lifetime.PERIOD_YEARS ->lib.toolkit.base.R.plurals.years
+                        else -> return
+                    }.let { resources.getQuantityText(it, lifetime.value) }
+                ),
+                drawable = lib.toolkit.base.R.drawable.ic_expiring
+            )
+        } else {
+            operationDialogFragment?.setToolbarInfo(null)
         }
     }
 }
