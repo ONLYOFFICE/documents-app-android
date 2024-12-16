@@ -77,7 +77,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        openItem?.isVisible = true
+        openItem?.isVisible = false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -93,7 +93,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onSwipeRefresh(): Boolean {
         if (!super.onSwipeRefresh()) {
-            presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+            presenter.getItemsById(LocalContentTools.getDir())
             return true
         }
         return false
@@ -120,7 +120,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onStateEmptyBackStack() {
         swipeRefreshLayout?.isRefreshing = true
-        presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+        presenter.getItemsById(LocalContentTools.getDir())
     }
 
     override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
@@ -176,6 +176,15 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             }
         }
         hideDialog()
+    }
+
+    override fun onCancelClick(dialogs: Dialogs?, tag: String?) {
+        super.onCancelClick(dialogs, tag)
+        if (tag == TAG_STORAGE_ACCESS) {
+            preferenceTool?.isShowStorageAccess = false
+            presenter.recreateStack()
+            presenter.getItemsById(LocalContentTools.getDir())
+        }
     }
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
@@ -261,11 +270,15 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun setVisibilityActionButton(isShow: Boolean) {
-        activity?.showActionButton(isShow)
+        if (placeholderViews?.type == PlaceholderViews.Type.ACCESS){
+            activity?.showActionButton(false)
+        } else {
+            activity?.showActionButton(isShow)
+        }
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        presenter.checkBackStack()
+
         // Check shortcut
         val bundle = requireActivity().intent?.extras
         if (savedInstanceState == null && bundle != null && bundle.containsKey(KEY_SHORTCUT)) {
@@ -308,10 +321,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 requestReadWritePermission()
             }
 
-            else -> {
-                preferenceTool?.isShowStorageAccess = false
-                presenter.recreateStack()
-                presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                presenter.checkBackStack()
             }
         }
     }
@@ -319,16 +330,16 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     private fun requestReadWritePermission() {
         RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
             if (permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true && permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
-                presenter.recreateStack()
-                presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+                presenter.checkBackStack()
             } else {
                 swipeRefreshLayout?.isEnabled = false
-                openItem?.isVisible = true
+                openItem?.isVisible = false
                 activity?.showActionButton(false)
                 placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
             }
         }, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)).request()
     }
+
 
     private fun setPlaceholder(isEmpty: Boolean) {
         onPlaceholder(if (isEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
@@ -336,7 +347,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     fun showRoot() {
         presenter.recreateStack()
-        presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+        presenter.getItemsById(LocalContentTools.getDir())
         presenter.updateState()
         onScrollToPosition(0)
     }
@@ -361,6 +372,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     companion object {
         val TAG: String = DocsOnDeviceFragment::class.java.simpleName
+
+        private const val TAG_STORAGE_ACCESS = "TAG_STORAGE_ACCESS"
 
         private const val KEY_SHORTCUT = "create_type"
 

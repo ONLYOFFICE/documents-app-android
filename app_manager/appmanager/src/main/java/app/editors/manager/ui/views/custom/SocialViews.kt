@@ -11,16 +11,6 @@ import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.editors.manager.BuildConfig
 import app.editors.manager.databinding.IncludeSocialNetworksLayoutBinding
 import app.editors.manager.managers.utils.GoogleUtils
-import com.facebook.AccessToken
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.FacebookSdk
-import com.facebook.FacebookSdkNotInitializedException
-import com.facebook.login.LoginBehavior
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
-import com.facebook.login.widget.LoginButton
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -49,8 +39,8 @@ class SocialViews(
 
     private var onSocialNetworkCallbacks: OnSocialNetworkCallbacks? = null
     private var googleSignInClient: GoogleSignInClient? = null
-    private var facebookCallbackManager: CallbackManager? = null
-    private var loginPersonalSocialFacebookNativeButton: LoginButton? = null
+//    private var facebookCallbackManager: CallbackManager? = null
+//    private var loginPersonalSocialFacebookNativeButton: LoginButton? = null
     private var viewBinding: IncludeSocialNetworksLayoutBinding? = null
 
     init {
@@ -78,16 +68,15 @@ class SocialViews(
     * */
     private fun initFacebook() {
         Log.d(TAG, "initFacebook() - app ID: " + BuildConfig.FACEBOOK_APP_ID)
-        if (FacebookSdk.isInitialized()) {
-            facebookId?.let { FacebookSdk.setApplicationId(it) }
-            loginPersonalSocialFacebookNativeButton = LoginButton(activity)
-            loginPersonalSocialFacebookNativeButton?.loginBehavior = LoginBehavior.WEB_ONLY
-            facebookCallbackManager = CallbackManager.Factory.create()
-            LoginManager.getInstance().registerCallback(facebookCallbackManager, FacebookAuthCallback())
-        } else {
-            viewBinding?.loginSocialFacebookButton?.isVisible = false
-        }
-
+//        if (FacebookSdk.isInitialized()) {
+//            facebookId?.let { FacebookSdk.setApplicationId(it) }
+//            loginPersonalSocialFacebookNativeButton = LoginButton(activity)
+//            loginPersonalSocialFacebookNativeButton?.loginBehavior = LoginBehavior.WEB_ONLY
+//            facebookCallbackManager = CallbackManager.Factory.create()
+//            LoginManager.getInstance().registerCallback(facebookCallbackManager, FacebookAuthCallback())
+//        } else {
+//            viewBinding?.loginSocialFacebookButton?.isVisible = false
+//        }
     }
 
     private fun initListeners() {
@@ -139,47 +128,47 @@ class SocialViews(
     * Facebook click. Get previous token or get new with button click.
     * */
     private fun onFacebookClick() {
-        try {
-            val accessToken: AccessToken? = AccessToken.getCurrentAccessToken()
-            onSocialNetworkCallbacks?.let { callbacks ->
-                accessToken?.let { token ->
-                    callbacks.onFacebookLogin(token.userId)
-                } ?: run {
-                    loginPersonalSocialFacebookNativeButton?.performClick()
-                }
-            }
-        } catch (error: FacebookSdkNotInitializedException) {
-            Log.e(TAG, "onFacebookClick: ", error)
-            onSocialNetworkCallbacks?.onFacebookFailed()
-        }
+//        try {
+//            val accessToken: AccessToken? = AccessToken.getCurrentAccessToken()
+//            onSocialNetworkCallbacks?.let { callbacks ->
+//                accessToken?.let { token ->
+//                    callbacks.onFacebookLogin(token.userId)
+//                } ?: run {
+//                    loginPersonalSocialFacebookNativeButton?.performClick()
+//                }
+//            }
+//        } catch (error: FacebookSdkNotInitializedException) {
+//            Log.e(TAG, "onFacebookClick: ", error)
+//            onSocialNetworkCallbacks?.onFacebookFailed()
+//        }
     }
 
     fun onFacebookContinue() {
-        onSocialNetworkCallbacks?.onFacebookSuccess(AccessToken.getCurrentAccessToken()?.token ?: "")
+//        onSocialNetworkCallbacks?.onFacebookSuccess(AccessToken.getCurrentAccessToken()?.token ?: "")
     }
 
     fun onFacebookLogout() {
-        LoginManager.getInstance().logOut()
-        loginPersonalSocialFacebookNativeButton?.performClick()
+//        LoginManager.getInstance().logOut()
+//        loginPersonalSocialFacebookNativeButton?.performClick()
     }
 
     /*
     * Lifecycle methods
     * */
     fun onDestroyView() {
-        if (FacebookSdk.isInitialized()) {
-            LoginManager.getInstance().unregisterCallback(facebookCallbackManager)
-        }
-        setOnSocialNetworkCallbacks(null)
-        viewBinding = null
+//        if (FacebookSdk.isInitialized()) {
+//            LoginManager.getInstance().unregisterCallback(facebookCallbackManager)
+//        }
+//        setOnSocialNetworkCallbacks(null)
+//        viewBinding = null
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == RC_SIGN_IN) {
-            getGoogleToken(GoogleSignIn.getSignedInAccountFromIntent(data))
-        } else {
-            facebookCallbackManager?.onActivityResult(requestCode, resultCode, data)
-        }
+//        if (requestCode == RC_SIGN_IN) {
+//            getGoogleToken(GoogleSignIn.getSignedInAccountFromIntent(data))
+//        } else {
+//            facebookCallbackManager?.onActivityResult(requestCode, resultCode, data)
+//        }
     }
 
     /*
@@ -192,20 +181,20 @@ class SocialViews(
     /*
     * Facebook callback
     * */
-    private inner class FacebookAuthCallback : FacebookCallback<LoginResult> {
-        override fun onSuccess(result: LoginResult) {
-            onSocialNetworkCallbacks?.onFacebookSuccess(result.accessToken.token)
-        }
-
-        override fun onCancel() {
-            onSocialNetworkCallbacks?.onFacebookCancel()
-        }
-
-        override fun onError(error: FacebookException) {
-            LoginManager.getInstance().logOut()
-            onSocialNetworkCallbacks?.onFacebookFailed()
-        }
-    }
+//    private inner class FacebookAuthCallback : FacebookCallback<LoginResult> {
+//        override fun onSuccess(result: LoginResult) {
+//            onSocialNetworkCallbacks?.onFacebookSuccess(result.accessToken.token)
+//        }
+//
+//        override fun onCancel() {
+//            onSocialNetworkCallbacks?.onFacebookCancel()
+//        }
+//
+//        override fun onError(error: FacebookException) {
+//            LoginManager.getInstance().logOut()
+//            onSocialNetworkCallbacks?.onFacebookFailed()
+//        }
+//    }
 
     companion object {
         val TAG = SocialViews::class.java.simpleName

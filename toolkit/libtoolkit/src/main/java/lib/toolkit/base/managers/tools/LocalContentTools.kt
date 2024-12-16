@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import lib.toolkit.base.BuildConfig
@@ -54,8 +55,11 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         private const val URI_KEY = "external"
 
-        fun getDir(context: Context): String {
-            return "${context.filesDir.path}/${BuildConfig.ROOT_FOLDER}"
+        private const val PREFS_NAME = "sample_prefs"
+        private const val KEY_FIRST_LAUNCH = "first_launch"
+
+        fun getDir(): String {
+            return "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath}/${BuildConfig.ROOT_FOLDER}"
         }
 
         fun toOOXML(ext: String): String {
@@ -78,19 +82,28 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
     private val contentResolver: ContentResolver = context.contentResolver
     private val uri: Uri = MediaStore.Files.getContentUri(URI_KEY)
-    private lateinit var rootDir: File
+
+    private fun isFirstLaunch(): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getBoolean(KEY_FIRST_LAUNCH, true)
+    }
+
+    private fun setFirstLaunchFlag() {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_FIRST_LAUNCH, false).apply()
+    }
 
     fun createRootDir(): File {
-        val rootDir = File(getDir(context))
-        if (rootDir.exists()) {
-            this.rootDir = rootDir
-            return rootDir
+        val publicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        if (!publicDir.exists()) {
+            publicDir.mkdirs()
         }
-        if (!rootDir.exists() && rootDir.mkdirs()) {
-            addSamples(rootDir)
+        if (!File(getDir()).exists()) {
+            File(getDir()).mkdirs()
         }
-        this.rootDir = rootDir
-        return rootDir
+        if (isFirstLaunch()) {
+            addSamples(File(getDir()))
+            setFirstLaunchFlag()
+        }
+        return File(getDir())
     }
 
     private fun addSamples(rootDir: File) {
@@ -98,12 +111,13 @@ class LocalContentTools @Inject constructor(val context: Context) {
         samplesName?.let {
             it.forEach { name ->
                 val file = File(rootDir.absolutePath + "/" + name)
+                file.createNewFile()
                 val inputStream = context.assets.open("samples/$name")
                 val outputStream = FileOutputStream(file)
                 outputStream.write(inputStream.readBytes())
                 inputStream.close()
                 outputStream.close()
-                context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))
+                MediaScannerConnection.scanFile(context, arrayOf(file.toString()), null, null)
             }
         }
     }
