@@ -992,4 +992,5 @@
     <string name="rooms_vdr_lifetime_info">The file lifetime is set to %1d %2s in this room</string>
 
     <string name="trash_toolbar_info">Items in Trash are automatically deleted after 30 days</string>
+    <string name="rooms_expire_context_info">The file will be deleted on %s</string>
 </resources>
