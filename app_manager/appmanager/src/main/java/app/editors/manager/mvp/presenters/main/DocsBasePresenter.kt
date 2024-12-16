@@ -61,6 +61,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Job
 import lib.toolkit.base.managers.utils.ContentResolverUtils
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -246,7 +247,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             setPlaceholderType(PlaceholderViews.Type.LOAD)
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.getFiles(id, mapOf<String, String>().putFilters())
+                    provider.getFiles(id, getArgs(filteringValue).putFilters())
                         .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
                         .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)
                 )
@@ -1666,17 +1667,17 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         }
     }
 
-    protected fun downloadTempFile(cloudFile: CloudFile, edit: Boolean) {
+    protected fun downloadTempFile(cloudFile: CloudFile, edit: Boolean, editType: EditType?) {
         disposable.add(
             context.cloudFileProvider
                 .getCachedFile(context, cloudFile, context.accountOnline?.accountName.orEmpty())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ file -> openFileFromPortal(file, cloudFile.id, edit) }, ::fetchError)
+                .subscribe({ file -> openFileFromPortal(file, cloudFile.id, edit, editType = editType) }, ::fetchError)
         )
     }
 
-    private fun openFileFromPortal(file: File, fileId: String, edit: Boolean) {
+    private fun openFileFromPortal(file: File, fileId: String, edit: Boolean, editType: EditType?) {
         viewState.onDialogClose()
         viewState.onOpenLocalFile(CloudFile().apply {
             id = fileId
@@ -1684,7 +1685,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
             title = file.name
             viewUrl = file.absolutePath
-        })
+        }, editType)
     }
 
     fun isRecentViaLinkSection(): Boolean {

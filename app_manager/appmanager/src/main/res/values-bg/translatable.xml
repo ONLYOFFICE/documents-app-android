@@ -407,8 +407,6 @@
     <string name="snackbar_undo">ОТМЯНА</string>
     <string name="errors_server_auth_too_many_attempts">Твърде много опити. Опитайте отново по-късно</string>
     <string name="share_snackbar_remove_user">Потребителят е премахнат</string>
-    <string name="share_group_admin">Админ</string>
-    <string name="share_group_everyone">Всички</string>
     <string name="storage_onedrive_error_opened">Файлът е отворен в портала</string>
     <string name="storage_onedrive_error_exist">Файл със същото име вече съществува в тази папка</string>
     <string name="operation_panel_restore_button">Възстанови тук</string>

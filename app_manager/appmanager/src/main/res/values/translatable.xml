@@ -429,6 +429,7 @@
 
     <string name="share_goal_user">Users</string>
     <string name="share_goal_group">Groups</string>
+    <string name="share_goal_guest">Guests</string>
     <string name="share_main_external_access">External access by link</string>
     <string name="share_main_external_access_info">Provide access for everyone who has link</string>
     <string name="share_main_external_copy_button">COPY LINK</string>
@@ -444,9 +445,6 @@
     <string name="share_popup_access_custom_filter">Custom filter</string>
 
     <string name="share_snackbar_remove_user">User is removed</string>
-
-    <string name="share_group_admin">Admin</string>
-    <string name="share_group_everyone">Everyone</string>
 
     <!-- External link -->
     <string name="share_access_success">External access successful</string>

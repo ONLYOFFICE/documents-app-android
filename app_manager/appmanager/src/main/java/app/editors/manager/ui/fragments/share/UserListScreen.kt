@@ -2,10 +2,10 @@ package app.editors.manager.ui.fragments.share
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -120,7 +120,6 @@ fun UserListScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MainScreen(
     state: UserListState,
@@ -147,6 +146,9 @@ private fun MainScreen(
             ),
             TabRowItem(
                 context.getString(app.editors.manager.R.string.share_goal_group)
+            ),
+            TabRowItem(
+                context.getString(app.editors.manager.R.string.share_goal_guest)
             )
         )
     }
@@ -205,7 +207,7 @@ private fun MainScreen(
                 HorizontalPager(modifier = Modifier.weight(1f), state = pagerState) {
                     when (it) {
                         0 -> {
-                            val users = state.users
+                            val users = state.users.filter { user -> !user.isVisitor }
                             if (users.isNotEmpty()) {
                                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                                     users.groupBy { user -> user.displayNameFromHtml.first().uppercaseChar() }
@@ -220,11 +222,11 @@ private fun MainScreen(
                                                     shared = disableInvited && user.shared,
                                                     selected = state.selected.contains(user.id),
                                                     onClick = { onClick.invoke(user.id) },
-                                                    avatar = GlideUtils.getCorrectLoad(
-                                                        user.avatarMedium,
-                                                        token,
-                                                        portal
-                                                    )
+                                                    avatar = if (user.hasAvatar) {
+                                                        GlideUtils.getCorrectLoad(user.avatarMedium, token, portal)
+                                                    } else {
+                                                        null
+                                                    }
                                                 )
                                             }
                                         }
@@ -233,6 +235,7 @@ private fun MainScreen(
                                 PlaceholderView(withGroups, searchState.value)
                             }
                         }
+
                         1 -> {
                             val groups = state.groups
                             if (groups.isNotEmpty()) {
@@ -249,6 +252,36 @@ private fun MainScreen(
                                             onClick = { onClick.invoke(group.id) }
                                         )
                                     }
+                                }
+                            } else {
+                                PlaceholderView(withGroups, searchState.value)
+                            }
+                        }
+
+                        2 -> {
+                            val guests = state.users.filter { user -> user.isVisitor }
+                            if (guests.isNotEmpty()) {
+                                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                                    guests.groupBy { user -> user.displayNameFromHtml.first().uppercaseChar() }
+                                        .toSortedMap()
+                                        .forEach { (letter, users) ->
+                                            itemsIndexed(items = users.orEmpty()) { index, user ->
+                                                UserItem(
+                                                    withLetter = true,
+                                                    letter = letter?.toString().takeIf { index == 0 },
+                                                    name = user.displayNameFromHtml,
+                                                    subtitle = user.groups.joinToString { group -> group.name },
+                                                    shared = disableInvited && user.shared,
+                                                    selected = state.selected.contains(user.id),
+                                                    onClick = { onClick.invoke(user.id) },
+                                                    avatar = if (user.hasAvatar) {
+                                                        GlideUtils.getCorrectLoad(user.avatarMedium, token, portal)
+                                                    } else {
+                                                        null
+                                                    }
+                                                )
+                                            }
+                                        }
                                 }
                             } else {
                                 PlaceholderView(withGroups, searchState.value)
@@ -285,7 +318,7 @@ private fun PlaceholderView(withGroups: Boolean, search: Boolean) {
     )
 }
 
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun LazyItemScope.UserItem(
     name: String,
@@ -301,7 +334,7 @@ private fun LazyItemScope.UserItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp)
-            .animateItemPlacement()
+            .animateItem()
             .clickable(onClick = onClick, enabled = !shared),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -348,7 +381,7 @@ private fun LazyItemScope.UserItem(
                     )
                 }
             }
-            if (selected) {
+            this@Row.AnimatedVisibility(visible = selected, enter = fadeIn(), exit = fadeOut()) {
                 Box(
                     modifier = Modifier
                         .background(Color.Black.copy(alpha = .7f))

@@ -472,8 +472,6 @@
     <string name="snackbar_undo">撤消</string>
     <string name="errors_server_auth_too_many_attempts">尝试次数过多。请稍后重试或 </string>
     <string name="share_snackbar_remove_user">用户被删除</string>
-    <string name="share_group_admin">管理员</string>
-    <string name="share_group_everyone">每个人</string>
     <string name="storage_onedrive_error_opened">文件在门户网站上被打开</string>
     <string name="storage_onedrive_error_exist">该文件夹中已经存在相同名称的文件。</string>
     <string name="operation_panel_restore_button">在这里恢复</string>

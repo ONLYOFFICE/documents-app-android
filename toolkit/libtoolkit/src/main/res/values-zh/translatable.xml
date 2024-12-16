@@ -28,4 +28,5 @@
         <item quantity="other">小时</item>
     </plurals>
     <string name="settings_fonts_title">字体</string>
+    <string name="settings_view">查看</string>
 </resources>

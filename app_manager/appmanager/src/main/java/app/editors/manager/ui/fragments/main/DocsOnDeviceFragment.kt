@@ -1,19 +1,15 @@
 package app.editors.manager.ui.fragments.main
 
 import android.Manifest
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
@@ -33,13 +29,13 @@ import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.FolderChooser
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils.getHelpUrl
 import lib.toolkit.base.managers.utils.UiUtils
-import lib.toolkit.base.managers.utils.launchAfterResume
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
 import java.util.Locale
@@ -57,16 +53,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     private val openFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) { data: Uri? ->
         data?.let { presenter.openFromChooser(it) }
-    }
-
-    private val readStorage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_CANCELED) {
-            launchAfterResume {
-                preferenceTool?.isShowStorageAccess = false
-                presenter.recreateStack()
-                presenter.getItemsById(LocalContentTools.getDir(requireContext()))
-            }
-        }
     }
 
     override fun onAttach(context: Context) {
@@ -91,7 +77,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        openItem?.isVisible = true
+        openItem?.isVisible = false
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -107,7 +93,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onSwipeRefresh(): Boolean {
         if (!super.onSwipeRefresh()) {
-            presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+            presenter.getItemsById(LocalContentTools.getDir())
             return true
         }
         return false
@@ -134,7 +120,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onStateEmptyBackStack() {
         swipeRefreshLayout?.isRefreshing = true
-        presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+        presenter.getItemsById(LocalContentTools.getDir())
     }
 
     override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
@@ -163,7 +149,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         tag?.let {
             string = string?.trim { it <= ' ' }
             when (tag) {
-                TAG_STORAGE_ACCESS -> requestManage()
                 DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_SELECTED -> presenter.deleteItems()
                 DocsBasePresenter.TAG_DIALOG_CONTEXT_RENAME -> string?.let {
                     presenter.rename(it)
@@ -197,6 +182,8 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         super.onCancelClick(dialogs, tag)
         if (tag == TAG_STORAGE_ACCESS) {
             preferenceTool?.isShowStorageAccess = false
+            presenter.recreateStack()
+            presenter.getItemsById(LocalContentTools.getDir())
         }
     }
 
@@ -205,7 +192,9 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             ExplorerContextItem.Upload -> presenter.upload()
             ExplorerContextItem.Copy -> showFolderChooser(OperationsState.OperationType.COPY)
             ExplorerContextItem.Move -> showFolderChooser(OperationsState.OperationType.MOVE)
-            is ExplorerContextItem.Edit -> presenter.getFileInfo(false)
+            is ExplorerContextItem.Edit -> presenter.getFileInfo(EditType.EDIT)
+            is ExplorerContextItem.Fill -> presenter.getFileInfo(EditType.FILL)
+            is ExplorerContextItem.View -> presenter.getFileInfo(EditType.VIEW)
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT)
             else -> super.onContextButtonClick(contextItem)
         }
@@ -233,35 +222,25 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         super.showDeleteDialog(count, false, tag)
     }
 
-    override fun onShowDocs(uri: Uri, isNew: Boolean) {
-        showEditors(uri, EditorsType.DOCS, viewMode = isNew)
-    }
-
-    override fun onShowCells(uri: Uri) {
-        showEditors(uri, EditorsType.CELLS, viewMode = false)
-    }
-
-    override fun onShowSlides(uri: Uri) {
-        showEditors(uri, EditorsType.PRESENTATION, viewMode = false)
-    }
-
     override fun onShowPdf(uri: Uri) {
         showEditors(uri, EditorsType.PDF)
     }
 
     override fun onOpenMedia(state: OpenState.Media) {
-        showMediaActivity(state.explorer, state.isWebDav) {
-            // Stub
-        }
+        showMediaActivity(state.explorer, state.isWebDav)
     }
 
-    override fun showEditors(uri: Uri?, type: EditorsType, info: String?, viewMode: Boolean) {
+    override fun onShowEditors(uri: Uri, type: EditorsType, editType: EditType?) {
+        showEditors(uri, type, null, editType)
+    }
+
+    override fun showEditors(uri: Uri?, type: EditorsType, info: String?, editType: EditType?) {
         try {
             val intent = Intent().apply {
                 data = uri
                 info?.let { putExtra(EditorsContract.KEY_DOC_SERVER, info) }
                 putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-                putExtra(EditorsContract.KEY_VIEW_MODE, viewMode)
+                putExtra(EditorsContract.KEY_EDIT_TYPE, editType)
                 action = Intent.ACTION_VIEW
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
@@ -277,7 +256,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 }
 
                 else -> {
-                    super.showEditors(uri, type, info, viewMode)
+                    super.showEditors(uri, type, info, editType)
                 }
             }
         } catch (e: ActivityNotFoundException) {
@@ -291,11 +270,15 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun setVisibilityActionButton(isShow: Boolean) {
-        activity?.showActionButton(isShow)
+        if (placeholderViews?.type == PlaceholderViews.Type.ACCESS){
+            activity?.showActionButton(false)
+        } else {
+            activity?.showActionButton(isShow)
+        }
     }
 
     private fun init(savedInstanceState: Bundle?) {
-        presenter.checkBackStack()
+
         // Check shortcut
         val bundle = requireActivity().intent?.extras
         if (savedInstanceState == null && bundle != null && bundle.containsKey(KEY_SHORTCUT)) {
@@ -339,55 +322,24 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             }
 
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                requestAccessStorage()
+                presenter.checkBackStack()
             }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun requestAccessStorage() {
-        if (!Environment.isExternalStorageManager() && preferenceTool?.isShowStorageAccess == true) {
-            showQuestionDialog(
-                getString(R.string.app_manage_files_title),
-                getString(R.string.app_manage_files_description),
-                getString(R.string.dialogs_common_ok_button),
-                getString(R.string.dialogs_common_cancel_button),
-                TAG_STORAGE_ACCESS
-            )
         }
     }
 
     private fun requestReadWritePermission() {
         RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
             if (permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true && permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
-                presenter.recreateStack()
-                presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+                presenter.checkBackStack()
             } else {
                 swipeRefreshLayout?.isEnabled = false
-                openItem?.isVisible = true
+                openItem?.isVisible = false
                 activity?.showActionButton(false)
                 placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
             }
         }, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)).request()
     }
 
-    private fun requestManage() {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                readStorage.launch(
-                    Intent(
-                        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-                        Uri.parse("package:" + requireContext().packageName)
-                    )
-                )
-            }
-        } catch (e: ActivityNotFoundException) {
-            openItem?.isVisible = false
-            swipeRefreshLayout?.isEnabled = false
-            activity?.showActionButton(false)
-            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
-        }
-    }
 
     private fun setPlaceholder(isEmpty: Boolean) {
         onPlaceholder(if (isEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
@@ -395,7 +347,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     fun showRoot() {
         presenter.recreateStack()
-        presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+        presenter.getItemsById(LocalContentTools.getDir())
         presenter.updateState()
         onScrollToPosition(0)
     }

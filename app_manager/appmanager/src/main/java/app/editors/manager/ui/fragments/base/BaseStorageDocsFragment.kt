@@ -17,6 +17,7 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FolderChooser
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -105,16 +106,14 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         }
     }
 
-    override fun onOpenLocalFile(file: CloudFile) {
+    override fun onOpenLocalFile(file: CloudFile, editType: EditType?) {
         val uri = Uri.parse(file.webUrl)
         when(StringUtils.getExtension(file.fileExst)) {
             StringUtils.Extension.IMAGE -> {
                 val state = OpenState.Media(getMediaFile(uri), false)
-                showMediaActivity(state.explorer, state.isWebDav) {
-                    // Stub
-                }
+                showMediaActivity(state.explorer, state.isWebDav)
             }
-            else -> super.onOpenLocalFile(file)
+            else -> super.onOpenLocalFile(file, editType)
         }
 
     }

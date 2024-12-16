@@ -64,8 +64,8 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 591
-        versionName = "8.2.1"
+        versionCode = 597
+        versionName = "8.3.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
@@ -326,10 +326,6 @@ dependencies {
     implementation(libs.jackson)
     implementation(libs.jackson.annotations)
     implementation(libs.jackson.databind)
-
-    // For compose preview
-    debugApi(libs.customview)
-    debugApi(libs.customview.poolingcontainer)
 }
 
 apply(plugin = "com.google.gms.google-services")

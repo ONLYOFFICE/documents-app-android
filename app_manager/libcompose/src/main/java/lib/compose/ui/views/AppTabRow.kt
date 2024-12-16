@@ -3,7 +3,6 @@ package lib.compose.ui.views
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -46,7 +45,6 @@ class TabRowItem(val title: String)
 @Immutable
 private data class TabOffset(val left: Dp = 0.dp, val width: Dp = 0.dp)
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppTabRow(pagerState: PagerState, tabs: List<TabRowItem>, onTabClick: (Int) -> Unit) {
     val tabsOffset = remember { mutableStateListOf(*Array(tabs.size) { TabOffset() }) }
@@ -114,7 +112,6 @@ private fun BoxScope.TabRowIndicator(tabOffset: TabOffset) {
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Preview
 @Composable
 private fun Preview() {

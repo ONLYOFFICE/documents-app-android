@@ -406,8 +406,6 @@
     <string name="snackbar_undo">COFNIJ</string>
     <string name="errors_server_auth_too_many_attempts">Zbyt wiele prób. Spróbuj ponownie później</string>
     <string name="share_snackbar_remove_user">Użytkownik został usunięty</string>
-    <string name="share_group_admin">Admin</string>
-    <string name="share_group_everyone">Wszyscy</string>
     <string name="storage_onedrive_error_opened">Plik jest otwarty w portalu</string>
     <string name="storage_onedrive_error_exist">Plik o tej samej nazwie istnieje już w tym folderze</string>
     <string name="operation_panel_restore_button">Odzyskaj tutaj</string>

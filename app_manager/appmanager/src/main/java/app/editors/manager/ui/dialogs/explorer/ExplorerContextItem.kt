@@ -22,24 +22,28 @@ sealed class ExplorerContextItem(
     }
 
     class Edit(state: ExplorerContextState) : ExplorerContextItem(
-        icon = getIcon(state.item),
+        icon = R.drawable.ic_list_context_edit,
         title = getTitle(state)
     ), ExplorerContextBlockOrder.Common {
 
         companion object {
 
-            fun getIcon(item: Item) = when {
-                (item as? CloudFile)?.isPdfForm == true -> R.drawable.ic_access_fill_form
-                else -> R.drawable.ic_list_context_edit
-            }
-
             fun getTitle(state: ExplorerContextState) = when {
                 state.section.isRoom && state.isRoot -> R.string.list_context_edit_room
-                (state.item as? CloudFile)?.isPdfForm == true && !state.section.isLocal -> R.string.list_context_fill
                 else -> R.string.list_context_edit
             }
         }
     }
+
+    class Fill : ExplorerContextItem(
+        icon = R.drawable.ic_access_fill_form,
+        title =  R.string.list_context_fill
+    ), ExplorerContextBlockOrder.Common
+
+    class View : ExplorerContextItem(
+        icon = R.drawable.ic_access_read,
+        title =  lib.toolkit.base.R.string.settings_view
+    ), ExplorerContextBlockOrder.Common
 
     object Share : ExplorerContextItem(
         icon = lib.toolkit.base.R.drawable.ic_list_context_share,

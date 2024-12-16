@@ -3,6 +3,7 @@ package app.documents.core.network.common
 import android.annotation.SuppressLint
 import android.content.Context
 import app.documents.core.model.cloud.PortalSettings
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.interceptors.BaseInterceptor
 import app.documents.core.network.common.interceptors.HeaderType
 import okhttp3.CipherSuite
@@ -30,8 +31,14 @@ object NetworkClient {
     }
 
     inline fun <reified V>getRetrofit(url: String, token: String, context: Context): V {
+        val modifiedUrl = if (!url.startsWith(ApiContract.SCHEME_HTTP) && !url.startsWith(ApiContract.SCHEME_HTTPS)) {
+            "https://$url"
+        } else {
+            url
+        }
+
         return Retrofit.Builder()
-            .baseUrl(url)
+            .baseUrl(modifiedUrl)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .client(getOkHttpBuilder(PortalSettings(), BaseInterceptor(token, context, HeaderType.REQUEST_TOKEN)).build())
