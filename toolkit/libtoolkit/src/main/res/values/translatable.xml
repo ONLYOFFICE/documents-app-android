@@ -37,5 +37,4 @@
     </plurals>
     <string name="settings_fonts_title">Fonts</string>
     <string name="settings_view">View</string>
-    <string name="settings_font_size_title">Font size</string>
 </resources>
