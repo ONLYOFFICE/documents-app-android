@@ -38,17 +38,8 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
 
     protected lateinit var baseActivity: BaseActivity
     protected var closeHandler: Handler = Handler(Looper.getMainLooper())
-    protected var anchorView: View? = null
+    protected var anchorRect: Rect? = null
     protected var marginOffset: Int = 0
-    protected var isPercentWidth: Boolean = true
-
-
-    protected val anchorSize: Rect?
-        get() = anchorView?.let {
-            Rect().apply {
-                it.getGlobalVisibleRect(this)
-            }
-        }
 
     protected val dialogSize: Rect?
         get() = dialog?.window?.attributes?.let { layoutParams ->
@@ -103,7 +94,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     }
 
     private fun setVisibleView(decorView: View?) {
-        if (anchorView != null && isTablet() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (anchorRect != null && isTablet() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             decorView?.isInvisible = true
         }
     }
@@ -127,7 +118,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     }
 
     override fun onShow(dialogInterface: DialogInterface) {
-        if (anchorView != null) {
+        if (anchorRect != null) {
             setDialogAnchorPosition()
         } else {
             setLayout()
@@ -180,10 +171,10 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     }
 
     protected fun setDialogAnchorPosition() {
-        if (anchorView != null && dialog != null) {
+        if (anchorRect != null && dialog != null) {
             val offset = Point(marginOffset, marginOffset)
             val restrict = UiUtils.getWindowVisibleRect(requireActivity().window.decorView)
-            val position = UiUtils.getOverlapViewRect(anchorSize!!, dialogSize!!, restrict, offset)
+            val position = UiUtils.getOverlapViewRect(anchorRect!!, dialogSize!!, restrict, offset)
 
             dialog?.window?.let { window ->
                 window.setGravity(Gravity.START or Gravity.LEFT or Gravity.TOP)
@@ -199,10 +190,10 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
         }
     }
 
-    fun setAnchor(view: View?) {
-        anchorView = view
+    fun setAnchor(rect: Rect?) {
+        anchorRect = rect
     }
-
+    
     protected fun showKeyboard(editText: AppCompatEditText) {
         KeyboardUtils.showKeyboard(editText)
     }
