@@ -10,6 +10,7 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerListFileBinding
 import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.ExplorerAdapter
 
 class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
@@ -46,6 +47,10 @@ class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
         binding.badgeNewCard.isVisible = element.isNew
         binding.editing.isVisible = element.isEditing
         setFileExpiring(element, binding.title)
+        if (adapter.pickerMode == PickerMode.Ordering) {
+            contextButton.isVisible = false
+            binding.dragIcon.isVisible = true
+        }
     }
 
     companion object {

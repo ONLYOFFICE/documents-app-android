@@ -7,6 +7,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.managers.utils.StringUtils
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
 
@@ -33,6 +34,10 @@ abstract class ListBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
     }
 
     private fun initListeners() {
+        if (adapter.pickerMode is PickerMode.Ordering) {
+            return
+        }
+
         contextButton.setOnClickListener {
             adapter.mOnItemContextListener?.onItemContextClick(layoutPosition, icon)
         }

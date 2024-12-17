@@ -5,9 +5,11 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerListFolderBinding
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.ExplorerAdapter
 
 class ListFolderViewHolder(view: View, adapter: ExplorerAdapter) :
@@ -36,6 +38,10 @@ class ListFolderViewHolder(view: View, adapter: ExplorerAdapter) :
     override fun bind(element: CloudFolder) {
         super.bind(element)
         bindFolderImage(element, binding.overlayImage, binding.storageImage)
+        if (adapter.pickerMode == PickerMode.Ordering) {
+            contextButton.isVisible = false
+            binding.dragIcon.isVisible = true
+        }
     }
 
     override fun getCachedIcon(): View {

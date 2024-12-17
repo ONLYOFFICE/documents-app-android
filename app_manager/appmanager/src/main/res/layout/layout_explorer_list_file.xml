@@ -18,8 +18,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/ic_thumbnail_small_archive"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        tools:src="@drawable/ic_thumbnail_small_archive" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
@@ -28,6 +28,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="@dimen/default_margin_medium"
+        android:drawablePadding="4dp"
+        android:drawableTint="@color/colorSecondary"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/subtitle"
         app:layout_constraintEnd_toStartOf="@id/statusLayout"
@@ -35,10 +37,8 @@
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/image"
         app:layout_constraintTop_toTopOf="parent"
-        tools:drawableEnd="@drawable/ic_small_clock"
-        android:drawablePadding="4dp"
-        android:drawableTint="@color/colorSecondary"
         app:layout_constraintVertical_chainStyle="packed"
+        tools:drawableEnd="@drawable/ic_small_clock"
         tools:text="File name" />
 
     <LinearLayout
@@ -65,9 +65,9 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginEnd="@dimen/default_margin_medium"
-            android:visibility="gone"
             android:importantForAccessibility="no"
             android:src="@drawable/ic_fab_edit_mode"
+            android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@id/image"
             app:layout_constraintTop_toBottomOf="@id/favorite"
             app:tint="@color/colorPrimary" />
@@ -77,8 +77,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/default_margin_medium"
-            app:cardBackgroundColor="@color/colorSecondary"
             android:visibility="gone"
+            app:cardBackgroundColor="@color/colorSecondary"
             app:cardCornerRadius="4dp"
             app:cardElevation="4dp"
             app:layout_constraintBottom_toTopOf="@id/image"
@@ -93,12 +93,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/colorSecondary"
-                android:visibility="gone"
                 android:includeFontPadding="false"
                 android:paddingHorizontal="3dp"
                 android:paddingVertical="1dp"
                 android:text="new"
-                android:textColor="@color/colorOnSecondary" />
+                android:textColor="@color/colorOnSecondary"
+                android:visibility="gone" />
 
         </androidx.cardview.widget.CardView>
 
@@ -133,6 +133,7 @@
             style="@style/Widget.Common.Button.IconButton.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="visible"
             app:icon="@drawable/ic_list_context_button"
             tools:ignore="ContentDescription" />
 
@@ -145,6 +146,19 @@
             app:layout_constraintBottom_toBottomOf="@id/badgeNewCard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/badgeNewCard"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/dragIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_dehaze"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/badgeNewCard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/badgeNewCard"
+            app:tint="@color/colorTextTertiary"
             tools:ignore="ContentDescription" />
 
     </FrameLayout>

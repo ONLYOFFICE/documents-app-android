@@ -84,6 +84,8 @@ sealed class PickerMode {
 
     data object Folders : PickerMode()
 
+    data object Ordering : PickerMode()
+
     sealed class Files(
         open val selectedIds: MutableList<String> = mutableListOf(),
         open val destFolderId: String

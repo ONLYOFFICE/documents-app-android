@@ -51,6 +51,7 @@ abstract class BaseViewHolderExplorer<T>(
         val selectable = when (adapter.pickerMode) {
             is PickerMode.Files.Any -> element is CloudFile
             is PickerMode.Files.PDFForm -> element is CloudFile && element.isPdfForm
+            is PickerMode.Ordering -> false
             else -> adapter.isSelectMode
         }
 
@@ -73,6 +74,16 @@ abstract class BaseViewHolderExplorer<T>(
     protected fun setElementClickable(element: T) {
         val pickerMode = adapter.pickerMode
         if (pickerMode == PickerMode.None) {
+            return
+        }
+
+        if (pickerMode == PickerMode.Ordering) {
+            root?.let { root ->
+                root.isClickable = false
+                root.isFocusable = false
+                root.setOnClickListener(null)
+                root.foreground = null
+            }
             return
         }
 
