@@ -12,6 +12,7 @@ import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
+import app.editors.manager.ui.fragments.room.order.RoomOrderDialogFragment
 import app.editors.manager.ui.fragments.share.InviteUsersFragment
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -94,6 +95,7 @@ class DocsRoomFragment : DocsCloudFragment() {
             ActionMenuItem.EditRoom -> cloudPresenter.editRoom()
             ActionMenuItem.Invite -> showInviteUsersDialog()
             ActionMenuItem.LeaveRoom -> cloudPresenter.checkRoomOwner()
+            ActionMenuItem.EditIndex -> showEditIndexDialog()
             else -> super.actionMenuClickListener.invoke(item)
         }
     }
@@ -131,6 +133,12 @@ class DocsRoomFragment : DocsCloudFragment() {
     private fun showInviteUsersDialog() {
         presenter.roomClicked?.let { room ->
             InviteUsersFragment.newInstance(room.id, room.roomType).show(parentFragmentManager, null)
+        }
+    }
+
+    private fun showEditIndexDialog() {
+        presenter.roomClicked?.id?.let { id ->
+            RoomOrderDialogFragment.show(parentFragmentManager, id)
         }
     }
 

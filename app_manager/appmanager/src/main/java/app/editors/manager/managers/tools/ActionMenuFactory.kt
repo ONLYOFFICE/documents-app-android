@@ -53,6 +53,8 @@ sealed class ActionMenuItem(override val title: Int) : IActionMenuItem {
     data object Invite : None(R.string.share_invite_user)
     data object CreateRoom : None(R.string.dialog_create_room)
     data object LeaveRoom : None(R.string.leave_room_title)
+    data object EditIndex : None(R.string.rooms_index_edit)
+    data object ExportIndex : None(R.string.rooms_index_export)
     data class CopyLink(val isRoom: Boolean) : None(R.string.rooms_info_copy_link)
 
     data object ManageRoom : Arrow(R.string.room_manage_room)
@@ -89,12 +91,25 @@ object ActionMenuItemsFactory {
         asc: Boolean,
         security: Security,
         sortBy: String?,
-        isGridView: Boolean
+        isGridView: Boolean,
+        isIndexing: Boolean
     ): List<ActionMenuItem> {
         return if (root) {
             getRoomRootItems(section, selected, allSelected, asc, sortBy, isGridView)
         } else {
-            getRoomFolderItems(section, selected, provider, empty, allSelected, asc, sortBy, currentRoom, security, isGridView)
+            getRoomFolderItems(
+                section = section,
+                selected = selected,
+                provider = provider,
+                empty = empty,
+                allSelected = allSelected,
+                asc = asc,
+                sortBy = sortBy,
+                currentRoom = currentRoom,
+                security = security,
+                isGridView = isGridView,
+                isIndexing = isIndexing
+            )
         }
     }
 
@@ -220,7 +235,8 @@ object ActionMenuItemsFactory {
         sortBy: String?,
         currentRoom: Boolean,
         security: Security,
-        isGridView: Boolean
+        isGridView: Boolean,
+        isIndexing: Boolean
     ) = mutableListOf<ActionMenuItem>().apply {
         val isArchive = section == SectionType.CLOUD_ARCHIVE_ROOM
         if (!selected) {
@@ -232,6 +248,9 @@ object ActionMenuItemsFactory {
                         ActionMenuItem.Invite.takeIf { security.editRoom },
                         ActionMenuItem.CopyLink(true),
                         ActionMenuItem.Divider,
+                        ActionMenuItem.EditIndex.takeIf { isIndexing },
+                        ActionMenuItem.ExportIndex.takeIf { isIndexing },
+                        ActionMenuItem.Divider.takeIf { isIndexing },
                         ActionMenuItem.Archive.takeIf { security.editRoom },
                         ActionMenuItem.Download,
                         ActionMenuItem.Restore.takeIf { isArchive },

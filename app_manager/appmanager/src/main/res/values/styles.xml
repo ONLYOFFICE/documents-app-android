@@ -5,7 +5,7 @@
         <item name="android:windowBackground">@drawable/drawable_launcher</item>
     </style>
 
-    <style name="FullScreenDialog" parent="Theme.AppCompat.DayNight.Dialog">
+    <style name="FullScreenDialog" parent="AppTheme">
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:padding">0dp</item>
@@ -14,7 +14,6 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowCloseOnTouchOutside">false</item>
-        <item name="android:theme">@style/AppTheme</item>
     </style>
 
     <style name="PasscodeActivityTheme" parent="NoActionBarTheme">

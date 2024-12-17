@@ -994,4 +994,9 @@
     <string name="trash_toolbar_info">Items in Trash are automatically deleted after 30 days</string>
     <string name="rooms_expire_context_info">The file will be deleted on %s</string>
     <string name="rooms_index_subtitle">Index %d</string>
+    <string name="rooms_index_edit">Edit index</string>
+    <string name="rooms_index_export">Export room index</string>
+    <string name="rooms_index_title">Sorting index</string>
+    <string name="rooms_index_reorder">Reorder</string>
+    <string name="rooms_index_apply">Apply</string>
 </resources>

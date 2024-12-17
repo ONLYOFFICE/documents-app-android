@@ -17,6 +17,7 @@ import app.documents.core.network.common.models.BaseResponse.Companion.KEY_RESPO
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.isFavorite
@@ -111,6 +112,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     return modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_RECENT
                 }
             }
+        }
+
+        if (folderId != null) {
+            modelExplorerStack.addStack(Explorer(current = Current().apply { id = folderId!! }))
         }
     }
 
