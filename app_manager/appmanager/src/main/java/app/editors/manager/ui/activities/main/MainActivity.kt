@@ -599,6 +599,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
     }
 
     override fun setAppBarStates(isVisible: Boolean) {
+        setToolbarInfo(null)
         setAppBarMode(isVisible)
         showAccount(isVisible)
         showNavigationButton(!isVisible)

@@ -313,8 +313,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun updateViewsState() {
-        viewState.onRoomLifetime(modelExplorerStack.last()?.current?.lifetime)
-        viewState.onRoomFileIndexing(modelExplorerStack.last()?.current?.indexing == true)
         if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
             if (pickerMode is PickerMode.Files) {
@@ -367,6 +365,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onStateAdapterRoot(true)
             viewState.onStateUpdateRoot(true)
         }
+        viewState.onRoomLifetime(modelExplorerStack.last()?.current?.lifetime)
+        viewState.onRoomFileIndexing(modelExplorerStack.last()?.current?.indexing == true)
     }
 
     override fun onActionClick() {
