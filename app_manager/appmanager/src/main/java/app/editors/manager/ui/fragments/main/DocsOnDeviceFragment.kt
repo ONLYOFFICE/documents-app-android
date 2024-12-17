@@ -77,7 +77,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        openItem?.isVisible = false
+        openItem?.isVisible = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
