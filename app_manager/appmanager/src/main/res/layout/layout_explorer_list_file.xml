@@ -8,6 +8,7 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
+    android:background="@color/colorBackground"
     android:paddingBottom="@dimen/line_separator_height">
 
     <ImageView
