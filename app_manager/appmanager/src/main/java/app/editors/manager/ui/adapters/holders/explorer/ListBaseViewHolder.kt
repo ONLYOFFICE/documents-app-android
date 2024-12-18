@@ -1,5 +1,7 @@
 package app.editors.manager.ui.adapters.holders.explorer
 
+import android.annotation.SuppressLint
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -62,5 +64,17 @@ abstract class ListBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
             item = element,
             state = adapter
         )
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    protected fun initOrderingMode(dragIcon: View, buttonLayout: View) {
+        contextButton.isVisible = false
+        dragIcon.isVisible = true
+        buttonLayout.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                adapter.onDragStartListener.invoke(this)
+            }
+            true
+        }
     }
 }

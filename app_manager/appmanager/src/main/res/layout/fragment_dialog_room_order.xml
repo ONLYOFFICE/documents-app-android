@@ -28,7 +28,14 @@
                 android:layout_marginEnd="8dp"
                 android:text="@string/rooms_index_reorder" />
 
+
         </com.google.android.material.appbar.MaterialToolbar>
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/loadingIndicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -37,10 +44,10 @@
         android:layout_height="match_parent">
 
         <FrameLayout
-            android:background="@color/colorBackground"
             android:id="@+id/fragmentContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:background="@color/colorBackground" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/apply"

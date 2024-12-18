@@ -3,6 +3,7 @@ package app.documents.core.providers
 import android.graphics.Bitmap
 import android.util.Size
 import androidx.core.text.isDigitsOnly
+import app.documents.core.model.cloud.Order
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
@@ -23,6 +24,7 @@ import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestEditRoom
+import app.documents.core.network.room.models.RequestOrder
 import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
@@ -424,6 +426,16 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return flow {
             val response = roomService.getRoomInfo(roomId)
             emit(response.response)
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
+    fun order(itemList: List<Order>): Flow<Result<*>> {
+        return flow {
+            val response = roomService.order(RequestOrder(itemList))
+            if (!response.isSuccessful) throw HttpException(response)
+            emit(null)
         }
             .flowOn(Dispatchers.IO)
             .asResult()

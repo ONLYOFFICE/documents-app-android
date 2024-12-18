@@ -5,7 +5,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.isVisible
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerListFolderBinding
@@ -39,8 +38,7 @@ class ListFolderViewHolder(view: View, adapter: ExplorerAdapter) :
         super.bind(element)
         bindFolderImage(element, binding.overlayImage, binding.storageImage)
         if (adapter.pickerMode == PickerMode.Ordering) {
-            contextButton.isVisible = false
-            binding.dragIcon.isVisible = true
+            initOrderingMode(binding.dragIcon, binding.contextButtonLayout)
         }
     }
 

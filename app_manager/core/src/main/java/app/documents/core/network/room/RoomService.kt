@@ -17,6 +17,7 @@ import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestEditRoom
+import app.documents.core.network.room.models.RequestOrder
 import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSendLinks
 import app.documents.core.network.room.models.RequestSetLogo
@@ -368,4 +369,7 @@ interface RoomService {
     suspend fun getRoomInfo(
         @Path("roomId") roomId: String
     ): app.documents.core.network.BaseResponse<CloudFolder>
+
+    @PUT("api/" + ApiContract.API_VERSION + "/files/order")
+    suspend fun order(@Body body: RequestOrder): Response<ResponseBody>
 }
