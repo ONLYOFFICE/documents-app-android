@@ -25,6 +25,9 @@ class RoomOrderHelper @Inject constructor() {
 
     private val orderToItemMap: MutableMap<Int, Item> = mutableMapOf()
 
+    val hasChanges: Boolean
+        get() = orderToItemMap.isNotEmpty()
+
     fun setItems(items: List<Item>) {
         items.forEach { item -> orderToItemMap[item.order] = item }
     }
@@ -37,6 +40,10 @@ class RoomOrderHelper @Inject constructor() {
                 entryType = if (item is CloudFile) ENTRY_TYPE_FILE else ENTRY_TYPE_FOLDER
             )
         }
+    }
+
+    fun clear() {
+        orderToItemMap.clear()
     }
 }
 
@@ -66,6 +73,10 @@ class RoomOrderViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RoomOrderViewModel(roomProvider, roomOrderHelper) as T
         }
+    }
+
+    override fun onCleared() {
+        roomOrderHelper.clear()
     }
 
     fun reorder() {

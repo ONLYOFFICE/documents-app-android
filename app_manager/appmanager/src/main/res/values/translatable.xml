@@ -999,4 +999,5 @@
     <string name="rooms_index_title">Sorting index</string>
     <string name="rooms_index_reorder">Reorder</string>
     <string name="rooms_index_apply">Apply</string>
+    <string name="rooms_index_exit_no_saving">Exit without saving?\nYou have made changes in the index. If you proceed without saving, those changes will not be applied.</string>
 </resources>

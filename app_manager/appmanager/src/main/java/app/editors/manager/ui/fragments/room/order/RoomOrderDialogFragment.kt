@@ -107,7 +107,7 @@ class RoomOrderDialogFragment : DialogFragment() {
 
     private fun initViews() {
         binding?.let { binding ->
-            binding.toolbar.setNavigationOnClickListener { dismiss() }
+            binding.toolbar.setNavigationOnClickListener { close() }
             binding.apply.setOnClickListener { viewModel.apply() }
             binding.reorder.setOnClickListener { viewModel.reorder() }
 
@@ -128,13 +128,16 @@ class RoomOrderDialogFragment : DialogFragment() {
         )
     }
 
-    private fun setDialogSize() {
-        val width = resources.getDimension(lib.toolkit.base.R.dimen.accounts_dialog_fragment_width)
-        val height = if (UiUtils.isLandscape(requireContext())) {
-            resources.displayMetrics.heightPixels / 1.2
+    private fun close() {
+        if (roomOrderHelper.hasChanges) {
+            UiUtils.showQuestionDialog(
+                requireContext(),
+                title = getString(R.string.dialogs_warning_title),
+                description = getString(R.string.rooms_index_exit_no_saving),
+                acceptListener = ::dismiss
+            )
         } else {
-            width * 1.3
+            dismiss()
         }
-        dialog?.window?.setLayout(width.toInt(), height.toInt())
     }
 }
