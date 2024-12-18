@@ -6,6 +6,8 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import lib.toolkit.base.managers.utils.StringUtils.Extension
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
+import java.time.Duration
+import java.time.Instant
 
 open class CloudFile : Item() {
 
@@ -98,6 +100,14 @@ open class CloudFile : Item() {
 
     val isEditing: Boolean
         get() = (fileStatus and ApiContract.FileStatus.IS_EDITING) != 0
+
+    val isExpiringSoon: Boolean
+        get() {
+            if (expired == null) return false
+            val totalDuration = Duration.between(expired.toInstant(), created.toInstant()).abs()
+            val timePassed =  Duration.between(Instant.now(), created.toInstant()).abs()
+            return timePassed.toMillis() >= totalDuration.toMillis() * 0.9
+        }
 
     private fun String.toIntOrZero(): Int {
         return if (isNotEmpty()) toInt() else 0

@@ -173,14 +173,10 @@ abstract class BaseViewHolderExplorer<T>(
     }
 
     protected fun setFileExpiring(element: CloudFile, textView: TextView) {
-        textView.setCompoundDrawables(null, null, null, null)
-        element.expired?.let { expired ->
-            val now = System.currentTimeMillis()
-            val ratioBeforeExpire = (expired.time - now) /
-                    (expired.time - element.created.time).toDouble()
-            if (ratioBeforeExpire < 0.1) {
-                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_small_clock, 0)
-            }
+        if (element.isExpiringSoon) {
+            textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_small_clock, 0)
+        } else {
+            textView.setCompoundDrawables(null, null, null, null)
         }
     }
 }
