@@ -72,7 +72,15 @@ open class Item : ItemProperties(), Serializable {
 
     @SerializedName("order")
     @Expose
-    var order: Int = 0
+    var order: String = ""
+
+    var index: Int
+        get() = order.split(".").lastOrNull()?.toInt() ?: 0
+        set(value) {
+            val indices = order.split(".").toMutableList()
+            indices[indices.lastIndex] = value.toString()
+            order = if (indices.size > 1) indices.joinToString(".") else indices[0]
+        }
 
     val intAccess: Int
         get() {

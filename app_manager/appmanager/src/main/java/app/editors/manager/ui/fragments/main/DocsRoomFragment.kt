@@ -137,7 +137,7 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     private fun showEditIndexDialog() {
-        presenter.roomClicked?.id?.let { id ->
+        presenter.currentFolder?.id?.let { id ->
             RoomOrderDialogFragment.show(
                 activity = requireActivity(),
                 folderId = id,

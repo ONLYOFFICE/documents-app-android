@@ -209,9 +209,9 @@ class ExplorerAdapter(
 
     private fun swapIndexes(from: Int, to: Int) {
         val list = itemList
-        val orderFrom = (list[from] as Item).order
-        val orderTo = (list[to] as Item).order
-        (list[from] as Item).order = orderTo
-        (list[to] as Item).order = orderFrom
+        val indexFrom = (list[from] as Item).index
+        val indexTo = (list[to] as Item).index
+        (list[from] as Item).index = indexTo
+        (list[to] as Item).index = indexFrom
     }
 }

@@ -30,6 +30,11 @@ class RoomOrderFragment : DocsCloudFragment() {
         App.getApp().appComponent.inject(this)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        cloudPresenter.isIndexing = true
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         swipeRefreshLayout?.isEnabled = false

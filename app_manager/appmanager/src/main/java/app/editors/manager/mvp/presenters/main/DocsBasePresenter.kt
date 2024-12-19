@@ -223,6 +223,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
     val currentFolder: Current?
         get() = modelExplorerStack.last()?.current
 
+    var isIndexing: Boolean = false
+        get() {
+            return (modelExplorerStack.last()?.pathParts?.find { it.id == roomClicked?.id } != null &&
+                    roomClicked?.indexing == true) || currentFolder?.indexing == true || field
+        }
+
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
             PreferenceTool.KEY_IS_GRID_VIEW -> {
@@ -970,7 +976,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         if (explorer == null) return emptyList()
 
         val entities = (explorer.folders + explorer.files).run {
-            if (currentFolder?.indexing == true) sortedBy(Item::order) else this
+            if (isIndexing) sortedBy(Item::index) else this
         }
 
         val placeholderType = if (entities.isEmpty()) {

@@ -366,7 +366,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onStateUpdateRoot(true)
         }
         viewState.onRoomLifetime(modelExplorerStack.last()?.current?.lifetime)
-        viewState.onRoomFileIndexing(modelExplorerStack.last()?.current?.indexing == true)
+        viewState.onRoomFileIndexing(isIndexing)
     }
 
     override fun onActionClick() {

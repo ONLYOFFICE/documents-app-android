@@ -29,7 +29,7 @@ class RoomOrderHelper @Inject constructor() {
         get() = orderToItemMap.isNotEmpty()
 
     fun setItems(items: List<Item>) {
-        items.forEach { item -> orderToItemMap[item.order] = item }
+        items.forEach { item -> orderToItemMap[item.index] = item }
     }
 
     fun getOrderSet(): List<Order> {
