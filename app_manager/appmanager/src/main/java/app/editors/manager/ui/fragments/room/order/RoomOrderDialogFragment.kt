@@ -94,11 +94,13 @@ class RoomOrderDialogFragment : DialogFragment() {
                         .show()
 
                     RoomOrderEffect.Success -> {
-                        requireActivity().supportFragmentManager.setFragmentResult(
-                            TAG_RESULT,
-                            Bundle.EMPTY
-                        )
+                        refreshParentFragment()
                         dismiss()
+                    }
+
+                    RoomOrderEffect.Refresh -> {
+                        refreshParentFragment()
+                        inflateCloudFragment()
                     }
                 }
             }
@@ -109,7 +111,7 @@ class RoomOrderDialogFragment : DialogFragment() {
         binding?.let { binding ->
             binding.toolbar.setNavigationOnClickListener { close() }
             binding.apply.setOnClickListener { viewModel.apply() }
-            binding.reorder.setOnClickListener { viewModel.reorder() }
+            binding.reorder.setOnClickListener { reorder() }
 
             lifecycleScope.launch {
                 viewModel.loading.collect { loading ->
@@ -128,10 +130,20 @@ class RoomOrderDialogFragment : DialogFragment() {
         )
     }
 
+    private fun reorder() {
+        UiUtils.showQuestionDialog(
+            context = requireContext(),
+            title = getString(R.string.dialogs_warning_title),
+            description = getString(R.string.rooms_index_reorder_desc),
+            acceptListener = { viewModel.reorder(arguments?.getString(KEY_FOLDER_ID).orEmpty()) },
+            acceptTitle = getString(R.string.rooms_index_reorder)
+        )
+    }
+
     private fun close() {
         if (roomOrderHelper.hasChanges) {
             UiUtils.showQuestionDialog(
-                requireContext(),
+                context = requireContext(),
                 title = getString(R.string.dialogs_warning_title),
                 description = getString(R.string.rooms_index_exit_no_saving),
                 acceptListener = ::dismiss
@@ -139,5 +151,12 @@ class RoomOrderDialogFragment : DialogFragment() {
         } else {
             dismiss()
         }
+    }
+
+    private fun refreshParentFragment() {
+        requireActivity().supportFragmentManager.setFragmentResult(
+            TAG_RESULT,
+            Bundle.EMPTY
+        )
     }
 }

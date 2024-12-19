@@ -372,4 +372,10 @@ interface RoomService {
 
     @PUT("api/" + ApiContract.API_VERSION + "/files/order")
     suspend fun order(@Body body: RequestOrder): Response<ResponseBody>
+
+
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{roomId}/reorder")
+    suspend fun reorder(
+        @Path("roomId") roomId: String
+    ): Response<ResponseBody>
 }

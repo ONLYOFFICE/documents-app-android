@@ -440,4 +440,14 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .flowOn(Dispatchers.IO)
             .asResult()
     }
+
+    fun reorder(roomId: String): Flow<Result<*>> {
+        return flow {
+            val response = roomService.reorder(roomId)
+            if (!response.isSuccessful) throw HttpException(response)
+            emit(null)
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
 }

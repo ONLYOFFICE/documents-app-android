@@ -50,6 +50,7 @@ class RoomOrderHelper @Inject constructor() {
 sealed class RoomOrderEffect {
 
     data object Success : RoomOrderEffect()
+    data object Refresh : RoomOrderEffect()
     data object Error : RoomOrderEffect()
 }
 
@@ -79,8 +80,18 @@ class RoomOrderViewModel(
         roomOrderHelper.clear()
     }
 
-    fun reorder() {
-
+    fun reorder(roomId: String) {
+        _loading.value = true
+        viewModelScope.launch {
+            roomProvider.reorder(roomId)
+                .collect { result ->
+                    _loading.value = false
+                    when (result) {
+                        is Result.Error -> _effect.emit(RoomOrderEffect.Error)
+                        is Result.Success<*> -> _effect.emit(RoomOrderEffect.Refresh)
+                    }
+                }
+        }
     }
 
     fun apply() {
