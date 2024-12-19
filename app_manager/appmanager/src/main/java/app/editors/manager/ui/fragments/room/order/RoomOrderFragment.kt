@@ -33,6 +33,7 @@ class RoomOrderFragment : DocsCloudFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cloudPresenter.isIndexing = true
+        isGridView = false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,6 +44,7 @@ class RoomOrderFragment : DocsCloudFragment() {
             touchHelper.attachToRecyclerView(recyclerView)
             adapter.onDragStartListener = touchHelper::startDrag
             adapter.pickerMode = PickerMode.Ordering
+            adapter.isGridView = false
         }
     }
 

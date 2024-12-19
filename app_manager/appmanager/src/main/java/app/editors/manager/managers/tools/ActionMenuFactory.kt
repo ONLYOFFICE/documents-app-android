@@ -249,7 +249,7 @@ object ActionMenuItemsFactory {
                         ActionMenuItem.CopyLink(true),
                         ActionMenuItem.Divider,
                         ActionMenuItem.EditIndex.takeIf { isIndexing },
-                        ActionMenuItem.ExportIndex.takeIf { isIndexing },
+                        ActionMenuItem.ExportIndex.takeIf { isIndexing && security.indexExport },
                         ActionMenuItem.Divider.takeIf { isIndexing },
                         ActionMenuItem.Archive.takeIf { security.editRoom },
                         ActionMenuItem.Download,
@@ -274,17 +274,19 @@ object ActionMenuItemsFactory {
                         )
                     )
                 )
-                add(
-                    ActionMenuItem.SortBy.get(
-                        listOf(
-                            ActionMenuItem.Title,
-                            ActionMenuItem.Type,
-                            ActionMenuItem.Size,
-                            ActionMenuItem.Author,
-                            ActionMenuItem.Date
-                        ).map { it.get(asc, sortBy) }
+                if (!isIndexing) {
+                    add(
+                        ActionMenuItem.SortBy.get(
+                            listOf(
+                                ActionMenuItem.Title,
+                                ActionMenuItem.Type,
+                                ActionMenuItem.Size,
+                                ActionMenuItem.Author,
+                                ActionMenuItem.Date
+                            ).map { it.get(asc, sortBy) }
+                        )
                     )
-                )
+                }
             }
             if (selected) {
                  if (isArchive) {

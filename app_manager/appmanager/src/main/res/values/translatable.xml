@@ -184,6 +184,7 @@
     <!-- Common -->
     <string name="dialogs_common_ok_button">ACCEPT</string>
     <string name="dialogs_common_cancel_button" tools:ignore="ButtonCase">CANCEL</string>
+    <string name="dialogs_common_close">Close</string>
     <string name="dialogs_check_portal_header_text">Check portal capabilities</string>
     <string name="dialogs_sign_in_portal_header_text">Sign in to portal</string>
     <string name="dialogs_sign_in_register_portal">Registering portal</string>
@@ -1001,4 +1002,7 @@
     <string name="rooms_index_apply">Apply</string>
     <string name="rooms_index_exit_no_saving">Exit without saving?\nYou have made changes in the index. If you proceed without saving, those changes will not be applied.</string>
     <string name="rooms_index_reorder_desc">The Reorder action will remove spaces in the indexes. The files will be re-indexed in order with offset to fill in missing indexes.</string>
+    <string name="rooms_index_reorder_complete_title">File exported</string>
+    <string name="rooms_index_reorder_complete_desc">%s file exported to Documents</string>
+    <string name="rooms_index_reorder_open_file">Open file</string>
 </resources>

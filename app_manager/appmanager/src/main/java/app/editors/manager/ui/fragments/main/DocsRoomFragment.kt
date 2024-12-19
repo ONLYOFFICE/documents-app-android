@@ -96,6 +96,7 @@ class DocsRoomFragment : DocsCloudFragment() {
             ActionMenuItem.Invite -> showInviteUsersDialog()
             ActionMenuItem.LeaveRoom -> cloudPresenter.checkRoomOwner()
             ActionMenuItem.EditIndex -> showEditIndexDialog()
+            ActionMenuItem.ExportIndex -> cloudPresenter.exportIndex()
             else -> super.actionMenuClickListener.invoke(item)
         }
     }

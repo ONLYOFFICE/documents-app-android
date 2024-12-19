@@ -3,6 +3,7 @@ package app.documents.core.network.room
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.ExportIndexOperation
 import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.explorer.Quota
 import app.documents.core.network.manager.models.request.RequestBatchOperation
@@ -373,9 +374,16 @@ interface RoomService {
     @PUT("api/" + ApiContract.API_VERSION + "/files/order")
     suspend fun order(@Body body: RequestOrder): Response<ResponseBody>
 
-
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{roomId}/reorder")
     suspend fun reorder(
+        @Path("roomId") roomId: String
+    ): Response<ResponseBody>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/indexexport")
+    suspend fun getIndexExportProgress(): app.documents.core.network.BaseResponse<ExportIndexOperation>
+
+    @POST("api/" + ApiContract.API_VERSION + "/files/rooms/{roomId}/indexexport")
+    suspend fun startIndexExport(
         @Path("roomId") roomId: String
     ): Response<ResponseBody>
 }

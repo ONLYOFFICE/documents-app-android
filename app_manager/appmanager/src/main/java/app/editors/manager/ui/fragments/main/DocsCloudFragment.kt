@@ -20,6 +20,7 @@ import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.ExportIndexOperation
 import app.documents.core.network.manager.models.explorer.Lifetime
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
@@ -59,6 +60,7 @@ import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.DialogUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.managers.utils.getSerializable
@@ -561,6 +563,17 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun onRoomFileIndexing(indexing: Boolean) {
         explorerAdapter?.isIndexing = indexing
+    }
+
+    override fun onRoomExportIndex(operation: ExportIndexOperation) {
+        UiUtils.showQuestionDialog(
+            requireContext(),
+            title = getString(R.string.rooms_index_reorder_complete_title),
+            description = getString(R.string.rooms_index_reorder_complete_desc, operation.resultFileName),
+            cancelTitle = getString(R.string.dialogs_common_close),
+            acceptTitle = getString(R.string.rooms_index_reorder_open_file),
+            acceptListener = { cloudPresenter.openFileById(operation.resultFileId) }
+        )
     }
 
     override fun onBatchMoveCopy(operation: OperationType, explorer: Explorer) {

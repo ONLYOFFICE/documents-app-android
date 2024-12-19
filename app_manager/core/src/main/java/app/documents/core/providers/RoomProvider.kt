@@ -9,6 +9,7 @@ import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.ExportIndexOperation
 import app.documents.core.network.manager.models.explorer.Lifetime
 import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.explorer.QuotaData
@@ -446,6 +447,22 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             val response = roomService.reorder(roomId)
             if (!response.isSuccessful) throw HttpException(response)
             emit(null)
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
+    fun exportIndex(roomId: String): Flow<Result<ExportIndexOperation>> {
+        return flow {
+            val startResponse = roomService.startIndexExport(roomId)
+            if (!startResponse.isSuccessful) throw HttpException(startResponse)
+
+            var operation = ExportIndexOperation()
+            while (!operation.isCompleted) {
+                operation = roomService.getIndexExportProgress().response
+                emit(operation)
+                delay(1000)
+            }
         }
             .flowOn(Dispatchers.IO)
             .asResult()

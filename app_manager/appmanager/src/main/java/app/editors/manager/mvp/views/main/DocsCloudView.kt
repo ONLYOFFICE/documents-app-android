@@ -3,6 +3,7 @@ package app.editors.manager.mvp.views.main
 import androidx.annotation.StringRes
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.ExportIndexOperation
 import app.documents.core.network.manager.models.explorer.Lifetime
 import app.editors.manager.viewModels.main.CopyItems
 import moxy.viewstate.strategy.OneExecutionStateStrategy
@@ -44,4 +45,7 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onRoomFileIndexing(indexing: Boolean)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onRoomExportIndex(operation: ExportIndexOperation)
 }

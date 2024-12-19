@@ -743,6 +743,18 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    fun openFileById(id: String) {
+        fileProvider?.let { provider ->
+            disposable.add(
+                provider.fileInfo(Item().apply { this.id = id })
+                    .subscribe(
+                        { file -> onFileClickAction(file, editType = null) },
+                        ::fetchError
+                    )
+            )
+        }
+    }
+
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
         if (model.file?.id == null && model.folder?.id != null) {
@@ -1280,6 +1292,30 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
             } catch (e: Exception) {
                 fetchError(e)
+            }
+        }
+    }
+
+    fun exportIndex() {
+        viewState.onDialogProgress(
+            context.getString(R.string.dialogs_wait_title),
+            false,
+            TAG_DIALOG_CANCEL_SINGLE_OPERATIONS
+        )
+        presenterScope.launch {
+            roomProvider?.exportIndex(roomClicked?.id.orEmpty())?.collect { result ->
+                when (result) {
+                    is Result.Error -> fetchError(result.exception)
+                    is Result.Success -> {
+                        val operation = result.result
+                        val progress = operation.percentage
+                        viewState.onDialogProgress(100, progress)
+                        if (progress == 100 || operation.isCompleted) {
+                            viewState.onDialogClose()
+                            viewState.onRoomExportIndex(operation)
+                        }
+                    }
+                }
             }
         }
     }

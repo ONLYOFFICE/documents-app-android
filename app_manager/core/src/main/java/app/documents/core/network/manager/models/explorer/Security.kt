@@ -85,4 +85,8 @@ class Security : Serializable {
     @SerializedName("ChangeOwner")
     @Expose
     var changeOwner: Boolean = false
+
+    @SerializedName("IndexExport")
+    @Expose
+    var indexExport: Boolean = false
 }
