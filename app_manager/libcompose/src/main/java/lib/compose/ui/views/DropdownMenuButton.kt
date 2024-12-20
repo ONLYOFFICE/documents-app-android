@@ -23,25 +23,22 @@ import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.colorTextSecondary
 
 @Composable
-fun DropdownMenuButton(
+private fun DropdownMenuButton(
     modifier: Modifier = Modifier,
     state: State<Boolean>,
-    title: String,
+    title: @Composable () -> Unit,
     items: @Composable ColumnScope.() -> Unit,
     onDismiss: () -> Unit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .clickable(onClick = onClick)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = title,
-            color = MaterialTheme.colors.colorTextSecondary
-        )
+        title()
         Icon(
             imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_dropdown),
             contentDescription = null,
@@ -55,15 +52,82 @@ fun DropdownMenuButton(
     }
 }
 
+
 @Composable
-fun DropdownMenuItem(title: String, selected: Boolean, onClick: () -> Unit) {
+fun DropdownMenuButton(
+    modifier: Modifier = Modifier,
+    state: State<Boolean>,
+    icon: ImageVector,
+    items: @Composable ColumnScope.() -> Unit,
+    onDismiss: () -> Unit,
+    onClick: () -> Unit,
+) {
+    DropdownMenuButton(
+        modifier = modifier,
+        state = state,
+        title = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colors.colorTextSecondary
+            )
+        },
+        items = items,
+        onDismiss = onDismiss,
+        onClick = onClick
+    )
+}
+
+@Composable
+fun DropdownMenuButton(
+    modifier: Modifier = Modifier,
+    state: State<Boolean>,
+    title: String,
+    items: @Composable ColumnScope.() -> Unit,
+    onDismiss: () -> Unit,
+    onClick: () -> Unit,
+) {
+    DropdownMenuButton(
+        modifier = modifier,
+        state = state,
+        title = {
+            Text(
+                text = title,
+                color = MaterialTheme.colors.colorTextSecondary
+            )
+        },
+        items = items,
+        onDismiss = onDismiss,
+        onClick = onClick
+    )
+}
+
+@Composable
+fun DropdownMenuItem(
+    title: String,
+    selected: Boolean,
+    startIcon: Int? = null,
+    onClick: () -> Unit,
+) {
     androidx.compose.material.DropdownMenuItem(onClick = onClick) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(title)
+            Row(
+                modifier = Modifier.weight(1f).padding(end = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                startIcon?.let {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(startIcon),
+                        contentDescription = null,
+                        tint = MaterialTheme.colors.colorTextSecondary
+                    )
+                }
+                Text(title)
+            }
             if (selected) {
                 Icon(
                     imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_done),
@@ -80,10 +144,10 @@ private fun DropdownMenu(
     modifier: Modifier = Modifier,
     state: State<Boolean>,
     onDismiss: () -> Unit,
-    items: @Composable ColumnScope.() -> Unit
+    items: @Composable ColumnScope.() -> Unit,
 ) {
     androidx.compose.material.DropdownMenu(
-        modifier = Modifier.widthIn(230.dp),
+        modifier = modifier.widthIn(230.dp),
         offset = DpOffset(0.dp, 16.dp),
         expanded = state.value,
         onDismissRequest = onDismiss,
