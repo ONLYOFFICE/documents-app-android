@@ -84,6 +84,17 @@ class RoomEditViewModel(
             }
             _loadingRoom.value = false
         }
+        viewModelScope.launch(Dispatchers.IO) {
+            roomProvider.getRoomsQuota().collect { result ->
+                if (result is Result.Success) {
+                    updateState {
+                        it.copy(
+                            quota = it.quota.copy(visible = result.result.enabled)
+                        )
+                    }
+                }
+            }
+        }
     }
 
     override fun applyChanges() {

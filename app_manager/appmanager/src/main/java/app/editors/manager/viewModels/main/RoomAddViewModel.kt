@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import androidx.lifecycle.viewModelScope
 import app.documents.core.network.common.Result
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Lifetime
 import app.documents.core.network.manager.models.explorer.PathPart
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
@@ -46,12 +47,13 @@ class RoomAddViewModel(
     override fun applyChanges() {
         viewModelScope.launch(Dispatchers.IO) {
             setLoading(true)
+            setWatermarkImage()
             val roomId = createRoomAndGetId()
             if (roomId != null) {
                 setOrDeleteRoomLogo(roomId)
-                setWatermarkImage()
-                copyItems(roomId)
                 saveTags(roomId)
+                copyItems(roomId)
+                emitEffect(RoomSettingsEffect.Success(roomId))
             } else {
                 emitEffect(RoomSettingsEffect.Error(R.string.rooms_error_create))
             }
@@ -72,10 +74,11 @@ class RoomAddViewModel(
                     roomProvider.createRoom(
                         title = name,
                         type = type,
-                        quota = quota.bytes,
-                        lifetime = lifetime,
+                        quota = quota.takeIf(StorageQuota::enabled)?.bytes ?: -1,
+                        lifetime = lifetime.takeIf(Lifetime::enabled),
                         denyDownload = denyDownload,
-                        indexing = indexing
+                        indexing = indexing,
+                        watermark = watermarkState.value.watermark
                     )
                 }
             }

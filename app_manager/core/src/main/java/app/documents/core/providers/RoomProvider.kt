@@ -86,19 +86,26 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         quota: Long? = null,
         lifetime: Lifetime? = null,
         denyDownload: Boolean? = null,
-        indexing: Boolean? = null
+        indexing: Boolean? = null,
+        watermark: Watermark? = null
     ): String {
         val response = roomService.createRoom(
             RequestCreateRoom(
                 title = title,
                 roomType = type,
-                quota = quota ?: -1,
-                lifetime = lifetime?.takeIf { it.enabled } ?: Lifetime(enabled = false),
+                quota = quota,
+                lifetime = lifetime,
                 denyDownload = denyDownload,
-                indexing = indexing
+                indexing = indexing,
+                watermark = if (watermark?.type == WatermarkType.ViewerInfo) {
+                    watermark.copy(imageUrl = null)
+                } else {
+                    watermark
+                }
             )
         )
-        return response.body()?.response?.id ?: ""
+        if (!response.isSuccessful) throw HttpException(response)
+        return checkNotNull(response.body()?.response?.id)
     }
 
     suspend fun createThirdPartyRoom(

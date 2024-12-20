@@ -3,7 +3,10 @@ package app.editors.manager.mvp.models.ui
 data class StorageQuota(
     val value: Long = 0,
     val unit: SizeUnit = SizeUnit.Bytes,
-    val enabled: Boolean = false
+    val enabled: Boolean = false,
+
+    @Transient
+    val visible: Boolean = false
 ) {
 
     val bytes: Long
@@ -20,7 +23,7 @@ data class StorageQuota(
     companion object {
 
         fun fromBytes(bytes: Long): StorageQuota {
-            if (bytes == -1L) return StorageQuota()
+            if (bytes == -1L) return StorageQuota(visible = true)
 
             val kb = 1024.0
             val b = bytes.toDouble()
@@ -35,7 +38,7 @@ data class StorageQuota(
                 m > 1 -> StorageQuota(unit = SizeUnit.MB, value = m.toLong())
                 k > 1 -> StorageQuota(unit = SizeUnit.KB, value = k.toLong())
                 else -> StorageQuota(unit = SizeUnit.Bytes, value = b.toLong())
-            }.copy(enabled = true)
+            }.copy(enabled = true, visible = true)
         }
     }
 }

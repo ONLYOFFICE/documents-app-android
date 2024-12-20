@@ -322,19 +322,23 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             }
             viewState.onStateAdapterRoot(modelExplorerStack.isNavigationRoot)
             viewState.onStateActionButton(false)
+            viewState.onRoomLifetime(null)
         } else if (isFilteringMode) {
             viewState.onActionBarTitle(context.getString(R.string.toolbar_menu_search_result))
             viewState.onStateUpdateFilter(true, filteringValue)
             viewState.onStateAdapterRoot(modelExplorerStack.isNavigationRoot)
             viewState.onStateActionButton(false)
+            viewState.onRoomLifetime(null)
         } else if (!modelExplorerStack.isRoot) {
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             // TODO check security...
             if (isRoom) {
                 viewState.onStateActionButton(modelExplorerStack.last()?.current?.security?.create == true)
+                viewState.onRoomLifetime(roomClicked?.lifetime)
             } else {
                 viewState.onStateActionButton(isContextEditable && !isRecentViaLinkSection())
+                viewState.onRoomLifetime(null)
             }
             viewState.onActionBarTitle(currentTitle)
         } else {
@@ -364,8 +368,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             }
             viewState.onStateAdapterRoot(true)
             viewState.onStateUpdateRoot(true)
+            viewState.onRoomLifetime(null)
         }
-        viewState.onRoomLifetime(modelExplorerStack.last()?.current?.lifetime)
         viewState.onRoomFileIndexing(isIndexing)
     }
 

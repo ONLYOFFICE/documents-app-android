@@ -106,7 +106,7 @@ class AddRoomFragment : ComposeDialogFragment() {
                 viewModel.effect.collect { effect ->
                     when (effect) {
                         is RoomSettingsEffect.Error -> {
-                            UiUtils.getSnackBar(requireActivity())
+                            UiUtils.getSnackBar(requireView())
                                 .setText(effect.message)
                                 .show()
                         }
@@ -114,7 +114,7 @@ class AddRoomFragment : ComposeDialogFragment() {
                         is RoomSettingsEffect.Success -> {
                             requireActivity().supportFragmentManager.setFragmentResult(
                                 TAG_RESULT,
-                                bundleOf("id" to id, "type" to state.value.type)
+                                bundleOf("id" to effect.id, "type" to state.value.type)
                             )
                             dismiss()
                         }

@@ -342,12 +342,14 @@ fun RoomSettingsScreen(
                         )
                     }
 
-                    QuotaBlock(
-                        state = state,
-                        onSetEnabled = onSetQuotaEnabled,
-                        onSetValue = onSetQuotaValue,
-                        onSetMeasurementUnit = onSetQuotaMeasurementUnit,
-                    )
+                    AnimatedVisibilityVerticalFade(visible = state.quota.visible) {
+                        QuotaBlock(
+                            state = state,
+                            onSetEnabled = onSetQuotaEnabled,
+                            onSetValue = onSetQuotaValue,
+                            onSetMeasurementUnit = onSetQuotaMeasurementUnit,
+                        )
+                    }
                 }
             }
         }
