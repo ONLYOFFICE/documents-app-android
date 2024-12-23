@@ -325,7 +325,8 @@ object ApiContract {
         const val PUBLIC_ROOM = 6
         const val VIRTUAL_ROOM = 8
 
-        fun hasExternalLink(roomType: Int?): Boolean = roomType != CUSTOM_ROOM
+        fun hasExternalLink(roomType: Int?): Boolean =
+            roomType !in arrayOf(CUSTOM_ROOM, VIRTUAL_ROOM)
     }
 
     object FolderType {

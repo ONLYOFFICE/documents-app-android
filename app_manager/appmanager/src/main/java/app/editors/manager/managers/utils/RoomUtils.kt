@@ -6,7 +6,11 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 
 
-data class RoomInfo(@DrawableRes val icon: Int, @StringRes val title: Int, @StringRes val description: Int)
+data class RoomInfo(
+    @DrawableRes val icon: Int,
+    @StringRes val title: Int,
+    @StringRes val description: Int,
+)
 
 object RoomUtils {
 
@@ -59,6 +63,13 @@ object RoomUtils {
         else -> R.string.share_access_room_viewer
     }
 
+    fun getLinkAccessOptions(): List<Int> = listOf(
+        ApiContract.ShareCode.EDITOR,
+        ApiContract.ShareCode.REVIEW,
+        ApiContract.ShareCode.COMMENT,
+        ApiContract.ShareCode.READ
+    )
+
     fun getAccessOptions(roomType: Int, isRemove: Boolean, isAdmin: Boolean = false): List<Int> {
         if (isAdmin) {
             return listOfNotNull(
@@ -74,6 +85,7 @@ object RoomUtils {
                     ApiContract.ShareCode.POWER_USER
                 )
             }
+
             ApiContract.RoomType.COLLABORATION_ROOM -> {
                 mutableListOf(
                     ApiContract.ShareCode.ROOM_ADMIN,
@@ -82,6 +94,7 @@ object RoomUtils {
                     ApiContract.ShareCode.READ
                 )
             }
+
             ApiContract.RoomType.CUSTOM_ROOM -> {
                 mutableListOf(
                     ApiContract.ShareCode.ROOM_ADMIN,
@@ -93,6 +106,7 @@ object RoomUtils {
                     ApiContract.ShareCode.READ
                 )
             }
+
             ApiContract.RoomType.FILL_FORMS_ROOM -> {
                 mutableListOf(
                     ApiContract.ShareCode.ROOM_ADMIN,
@@ -100,6 +114,7 @@ object RoomUtils {
                     ApiContract.ShareCode.FILL_FORMS,
                 )
             }
+
             else -> mutableListOf()
         }.apply { if (isRemove) add(ApiContract.ShareCode.NONE) }
     }

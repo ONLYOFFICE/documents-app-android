@@ -15,18 +15,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.contracts.ApiContract.RoomType.FILL_FORMS_ROOM
 import app.documents.core.network.common.contracts.ApiContract.RoomType.PUBLIC_ROOM
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
+import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.viewModels.link.ExternalLinkSettingsEffect
 import app.editors.manager.viewModels.link.ExternalLinkSettingsViewModel
 import kotlinx.coroutines.delay
@@ -37,11 +42,14 @@ import lib.compose.ui.views.AnimatedVisibilityVerticalFade
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppHeaderItem
+import lib.compose.ui.views.AppListItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppSwitchItem
 import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTextFieldListItem
 import lib.compose.ui.views.AppTopBar
+import lib.compose.ui.views.DropdownMenuButton
+import lib.compose.ui.views.DropdownMenuItem
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import java.text.DateFormat
@@ -51,16 +59,24 @@ import java.util.Locale
 @Composable
 fun ExternalLinkSettingsScreen(
     link: ExternalLinkSharedTo?,
+    access: Int,
     isCreate: Boolean,
     roomType: Int?,
     roomId: String?,
-    onBackListener: () -> Unit
+    onBackListener: () -> Unit,
 ) {
     if (link == null) return
     val context = LocalContext.current
     val localView = LocalView.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    val viewModel = viewModel { ExternalLinkSettingsViewModel(link, roomId, context.roomProvider) }
+    val viewModel = viewModel {
+        ExternalLinkSettingsViewModel(
+            access = access,
+            inputLink = link,
+            roomId = roomId,
+            roomProvider = context.roomProvider
+        )
+    }
     val state by viewModel.state.collectAsState()
     val waitingDialog = rememberWaitingDialog(
         title = R.string.dialogs_wait_title,
@@ -76,6 +92,7 @@ fun ExternalLinkSettingsScreen(
                     waitingDialog.show()
                     delay(500)
                 }
+
                 ExternalLinkSettingsEffect.Delete -> {
                     waitingDialog.dismiss()
                     onBackListener.invoke()
@@ -87,10 +104,12 @@ fun ExternalLinkSettingsScreen(
                         )
                         .show()
                 }
+
                 is ExternalLinkSettingsEffect.Save -> {
                     waitingDialog.dismiss()
                     onBackListener.invoke()
                 }
+
                 is ExternalLinkSettingsEffect.Error -> {
                     waitingDialog.dismiss()
                     UiUtils.getSnackBar(localView).setText(effect.message).show()
@@ -101,8 +120,11 @@ fun ExternalLinkSettingsScreen(
 
     MainScreen(
         link = state.link,
+        access = state.access,
+        roomType = roomType,
         isCreate = isCreate,
         isRevoke = isRevoke,
+        onSetAccess = viewModel::setAccess,
         onBackListener = onBackListener,
         onDoneClick = if (isCreate) viewModel::createLink else viewModel::save,
         onDeleteOrRevokeLink = {
@@ -133,12 +155,15 @@ fun ExternalLinkSettingsScreen(
 @Composable
 private fun MainScreen(
     link: ExternalLinkSharedTo,
+    access: Int,
+    roomType: Int?,
     isCreate: Boolean,
     isRevoke: Boolean,
+    onSetAccess: (Int) -> Unit,
     onBackListener: () -> Unit,
     onDoneClick: () -> Unit,
     onDeleteOrRevokeLink: () -> Unit,
-    updateViewState: (ExternalLinkSharedTo.() -> ExternalLinkSharedTo) -> Unit
+    updateViewState: (ExternalLinkSharedTo.() -> ExternalLinkSharedTo) -> Unit,
 ) {
     ManagerTheme {
         var linkDateChanged by remember { mutableStateOf(false) }
@@ -196,6 +221,33 @@ private fun MainScreen(
                     state = title,
                     hint = stringResource(id = lib.toolkit.base.R.string.text_hint_required)
                 )
+                AppHeaderItem(title = R.string.rooms_share_general_header)
+                AppListItem(
+                    title = stringResource(R.string.share_access_room_type),
+                    endContent = {
+                        val dropdownMenuShow = remember { mutableStateOf(false) }
+                        DropdownMenuButton(
+                            state = dropdownMenuShow,
+                            icon = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(access)),
+                            onDismiss = { dropdownMenuShow.value = false },
+                            items = {
+                                RoomUtils.getLinkAccessOptions().forEach { accessCode ->
+                                    DropdownMenuItem(
+                                        title = stringResource(RoomUtils.getAccessTitle(accessCode)),
+                                        selected = access == accessCode,
+                                        startIcon = ManagerUiUtils.getAccessIcon(accessCode),
+                                        onClick = {
+                                            dropdownMenuShow.value = false
+                                            onSetAccess(accessCode)
+                                        }
+                                    )
+                                }
+                            }
+                        ) {
+                            dropdownMenuShow.value = true
+                        }
+                    }
+                )
                 AppHeaderItem(title = R.string.context_protection_title)
                 AppSwitchItem(
                     title = R.string.rooms_info_password_access,
@@ -247,7 +299,8 @@ private fun MainScreen(
                                             .getDateTimeInstance(
                                                 DateFormat.LONG,
                                                 DateFormat.SHORT,
-                                                TimeUtils.getCurrentLocale(context) ?: Locale.getDefault()
+                                                TimeUtils.getCurrentLocale(context)
+                                                    ?: Locale.getDefault()
                                             )
                                             .format(date)
                                     }
@@ -301,9 +354,12 @@ private fun Preview() {
 
     MainScreen(
         link = link,
+        roomType = ApiContract.RoomType.PUBLIC_ROOM,
+        access = ApiContract.ShareCode.EDITOR,
         isCreate = false,
         isRevoke = true,
         onBackListener = {},
+        onSetAccess = {},
         onDoneClick = {},
         onDeleteOrRevokeLink = {}) {}
 }

@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.editors.manager.R
@@ -48,14 +47,6 @@ import lib.toolkit.base.managers.utils.TimeUtils
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
-
-
-private fun getAccessList(): Map<Int, Int> = mapOf(
-    R.drawable.ic_access_full to ApiContract.ShareCode.EDITOR,
-    R.drawable.ic_access_review to ApiContract.ShareCode.REVIEW,
-    R.drawable.ic_access_comment to ApiContract.ShareCode.COMMENT,
-    R.drawable.ic_access_read to ApiContract.ShareCode.READ
-)
 
 @Composable
 fun SharedLinkSettingsScreen(
@@ -153,15 +144,11 @@ private fun MainScreen(
                                     state = accessDropDownState,
                                     icon = ImageVector.vectorResource(getAccessIcon(state.value.access)),
                                     items = {
-                                        getAccessList().forEach { (icon, access) ->
+                                        RoomUtils.getLinkAccessOptions().forEach { access ->
                                             DropdownMenuItem(
-                                                title = stringResource(
-                                                    RoomUtils.getAccessTitle(
-                                                        access
-                                                    )
-                                                ),
+                                                title = stringResource(RoomUtils.getAccessTitle(access)),
                                                 selected = access == state.value.access,
-                                                startIcon = icon,
+                                                startIcon = getAccessIcon(access),
                                                 onClick = {
                                                     onSetAccess(access)
                                                     accessDropDownState.value = false

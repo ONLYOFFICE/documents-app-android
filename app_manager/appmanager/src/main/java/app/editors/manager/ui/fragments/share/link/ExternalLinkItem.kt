@@ -27,8 +27,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import app.editors.manager.managers.utils.ManagerUiUtils
 import lib.compose.ui.addIfNotNull
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.theme.colorTextTertiary
 import lib.toolkit.base.R
 
@@ -41,7 +43,6 @@ fun ExternalLinkItem(
     expiring: Boolean,
     isExpired: Boolean,
     canEdit: Boolean,
-    onCopyLinkClick: () -> Unit,
     onShareClick: () -> Unit,
     onClick: (() -> Unit)? = null,
 ) {
@@ -49,7 +50,8 @@ fun ExternalLinkItem(
         modifier = Modifier
             .height(dimensionResource(id = R.dimen.item_onehalf_line_height))
             .fillMaxWidth()
-            .addIfNotNull(onClick) { clickable(onClick = it) },
+            .addIfNotNull(onClick) { clickable(onClick = it) }
+            .padding(end = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -85,13 +87,6 @@ fun ExternalLinkItem(
                 }
             }
         }
-        IconButton(modifier = Modifier, onClick = onCopyLinkClick) {
-            Icon(
-                imageVector = ImageVector.vectorResource(app.editors.manager.R.drawable.ic_list_context_external_link),
-                tint = MaterialTheme.colors.primary,
-                contentDescription = null
-            )
-        }
         IconButton(modifier = Modifier, onClick = onShareClick) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_list_context_share),
@@ -99,9 +94,14 @@ fun ExternalLinkItem(
                 contentDescription = null
             )
         }
+        Icon(
+            modifier = Modifier.padding(start = 8.dp),
+            imageVector = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(access)),
+            tint = MaterialTheme.colors.colorTextSecondary,
+            contentDescription = null
+        )
         if (canEdit) {
             Icon(
-                modifier = Modifier.padding(horizontal = 8.dp),
                 imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_right),
                 tint = MaterialTheme.colors.colorTextTertiary,
                 contentDescription = null
@@ -151,7 +151,6 @@ private fun Preview() {
                     isExpired = false,
                     canEdit = true,
                     {},
-                    {}
                 ) {}
                 ExternalLinkItem(
                     linkTitle = "Shared link", access = 2,
@@ -160,7 +159,6 @@ private fun Preview() {
                     isExpired = true,
                     canEdit = false,
                     {},
-                    {}
                 ) {}
             }
         }

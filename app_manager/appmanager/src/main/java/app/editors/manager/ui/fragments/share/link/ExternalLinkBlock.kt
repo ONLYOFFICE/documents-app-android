@@ -24,8 +24,7 @@ internal fun ExternalLinkBlock(
     sharedLinks: List<ExternalLink>,
     canEditRoom: Boolean,
     onLinkClick: (ExternalLink) -> Unit,
-    onSharedLinkCreate: () -> Unit,
-    onCopyLinkClick: (String) -> Unit
+    onSharedLinkCreate: () -> Unit
 ) {
     val context = LocalContext.current
     if (sharedLinks.isNotEmpty()) {
@@ -55,7 +54,6 @@ internal fun ExternalLinkBlock(
                 expiring = !link.sharedTo.expirationDate.isNullOrEmpty(),
                 isExpired = link.sharedTo.isExpired,
                 canEdit = canEditRoom,
-                onCopyLinkClick = { onCopyLinkClick.invoke(link.sharedTo.shareLink) },
                 onShareClick = {
                     context.openSendTextActivity(
                         context.getString(R.string.toolbar_menu_main_share),

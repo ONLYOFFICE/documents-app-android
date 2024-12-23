@@ -126,7 +126,7 @@ fun DropdownMenuItem(
                         tint = MaterialTheme.colors.colorTextSecondary
                     )
                 }
-                Text(title)
+                Text(title, maxLines = 1)
             }
             if (selected) {
                 Icon(

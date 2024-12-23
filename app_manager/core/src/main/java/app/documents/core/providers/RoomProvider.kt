@@ -224,12 +224,14 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         expirationDate: String?,
         password: String?,
         title: String,
+        access: Int
     ): ExternalLink {
         val request = RequestCreateExternalLink(
             denyDownload = denyDownload,
             expirationDate = expirationDate,
             password = password,
-            title = title
+            title = title,
+            access = access
         )
         val response = roomService.createRoomSharedLink(roomId.orEmpty(), request)
         val body = response.body()

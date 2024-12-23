@@ -153,12 +153,12 @@ class RoomInfoFragment : ComposeDialogFragment() {
                             },
                             onLinkClick = { link ->
                                 val json = Json.encodeToString(link.sharedTo)
-                                navController.navigate("${RoomInfoScreens.LinkSettings.name}?link=$json")
+                                navController.navigate("${RoomInfoScreens.LinkSettings.name}?link=$json&access=${link.access}")
                             },
                         )
                     }
                     composable(
-                        route = "${RoomInfoScreens.LinkSettings.name}?link={link}&create={create}",
+                        route = "${RoomInfoScreens.LinkSettings.name}?link={link}&create={create}&access={access}",
                         arguments = listOf(
                             navArgument("link") {
                                 type = NavType.StringType
@@ -180,11 +180,16 @@ class RoomInfoFragment : ComposeDialogFragment() {
                             navArgument("create") {
                                 type = NavType.BoolType
                                 defaultValue = false
+                            },
+                            navArgument("access") {
+                                type = NavType.IntType
+                                defaultValue = ApiContract.ShareCode.EDITOR
                             }
                         )
                     ) { backStackEntry ->
                         ExternalLinkSettingsScreen(
                             link = backStackEntry.arguments?.getString("link")?.let(Json::decodeFromString),
+                            access = backStackEntry.arguments?.getInt("access") ?: ApiContract.ShareCode.EDITOR,
                             isCreate = backStackEntry.arguments?.getBoolean("create") == true,
                             roomId = room.id,
                             roomType = room.roomType,
@@ -353,8 +358,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
                             sharedLinks = state.sharedLinks,
                             canEditRoom = canEditRoom,
                             onLinkClick = onLinkClick,
-                            onSharedLinkCreate = onSharedLinkCreate,
-                            onCopyLinkClick = { url -> copyLinkToClipboard(requireView(), url, false) }
+                            onSharedLinkCreate = onSharedLinkCreate
                         )
                     }
                     ShareUsersList(

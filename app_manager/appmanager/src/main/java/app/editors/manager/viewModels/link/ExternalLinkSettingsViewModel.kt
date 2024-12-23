@@ -14,10 +14,14 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
-data class ExternalLinkSettingsState(val link: ExternalLinkSharedTo, val viewStateChanged: Boolean)
+data class ExternalLinkSettingsState(
+    val link: ExternalLinkSharedTo,
+    val access: Int,
+)
 
 sealed class ExternalLinkSettingsEffect {
     data class Error(val message: Int) : ExternalLinkSettingsEffect()
@@ -27,12 +31,13 @@ sealed class ExternalLinkSettingsEffect {
 }
 
 class ExternalLinkSettingsViewModel(
+    access: Int,
     inputLink: ExternalLinkSharedTo,
     private val roomId: String?,
-    private val roomProvider: RoomProvider
+    private val roomProvider: RoomProvider,
 ) : BaseViewModel() {
 
-    private val _state = MutableStateFlow(ExternalLinkSettingsState(inputLink, false))
+    private val _state = MutableStateFlow(ExternalLinkSettingsState(inputLink, access))
     val state: StateFlow<ExternalLinkSettingsState> = _state.asStateFlow()
 
     private val _effect: MutableSharedFlow<ExternalLinkSettingsEffect> = MutableSharedFlow(1)
@@ -60,9 +65,10 @@ class ExternalLinkSettingsViewModel(
     }
 
     fun updateViewState(body: ExternalLinkSharedTo.() -> ExternalLinkSharedTo) {
-        val updated = body.invoke(state.value.link)
-        if (updated != state.value.link) {
-            _state.value = ExternalLinkSettingsState(updated, true)
+        _state.update {
+            it.copy(
+                link = body(it.link),
+            )
         }
     }
 
@@ -76,7 +82,8 @@ class ExternalLinkSettingsViewModel(
                         denyDownload = denyDownload,
                         expirationDate = expirationDate,
                         password = password,
-                        title = title
+                        title = title,
+                        access = state.value.access
                     )
                     _effect.tryEmit(ExternalLinkSettingsEffect.Save)
                 }
@@ -86,13 +93,17 @@ class ExternalLinkSettingsViewModel(
         }
     }
 
+    fun setAccess(access: Int) {
+        _state.update { it.copy(access = access) }
+    }
+
     private suspend fun updateLink(deleteOrRevoke: Boolean = false): ExternalLink? {
         _effect.tryEmit(ExternalLinkSettingsEffect.Loading)
         return try {
             with(state.value.link) {
                 roomProvider.updateRoomSharedLink(
                     roomId = roomId.orEmpty(),
-                    access = if (!deleteOrRevoke) 2 else 0,
+                    access = if (deleteOrRevoke) 0 else state.value.access,
                     linkId = id,
                     linkType = linkType,
                     denyDownload = denyDownload,
