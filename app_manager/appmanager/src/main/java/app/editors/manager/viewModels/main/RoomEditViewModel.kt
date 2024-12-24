@@ -59,7 +59,7 @@ class RoomEditViewModel(
                                     providerId = roomInfo.providerId,
                                     location = null
                                 ).takeIf { roomInfo.providerItem },
-                                quota = StorageQuota.fromBytes(roomInfo.quotaLimit ?: 0),
+                                quota = StorageQuota.fromBytes(roomInfo.quotaLimit),
                                 filesCount = roomInfo.filesCount
                             )
                         }

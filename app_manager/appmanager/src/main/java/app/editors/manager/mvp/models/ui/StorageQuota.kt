@@ -2,7 +2,7 @@ package app.editors.manager.mvp.models.ui
 
 data class StorageQuota(
     val value: Long = 0,
-    val unit: SizeUnit = SizeUnit.Bytes,
+    val unit: SizeUnit = SizeUnit.MB,
     val enabled: Boolean = false,
 
     @Transient
@@ -22,7 +22,8 @@ data class StorageQuota(
 
     companion object {
 
-        fun fromBytes(bytes: Long): StorageQuota {
+        fun fromBytes(bytes: Long?): StorageQuota {
+            if (bytes == null) return StorageQuota(visible = false)
             if (bytes == -1L) return StorageQuota(visible = true)
 
             val kb = 1024.0
