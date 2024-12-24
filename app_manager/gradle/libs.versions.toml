@@ -3,6 +3,7 @@ compileSdk = "35"
 minSdk = "26"
 targetSdk = "35"
 ndk = "21.3.6528147"
+gradle = "8.7.3"
 
 #kotlin
 kotlin = "1.9.24"
@@ -58,34 +59,30 @@ lifecycle = "2.8.7"
 playServieAuth = "21.3.0"
 playReview = "2.0.2"
 material = "1.12.0"
-gson = "2.10.1"
+gson = "2.11.0"
 safetynet = "18.1.0"
 app-update = "2.1.0"
 
-jackson = "2.16.1"
+jackson = "2.18.2"
 
 rxjava = "2.1.1"
 
-retrofit = "2.9.0"
+retrofit = "2.11.0"
 retrofitKtSerialization = "1.0.0"
 
 firebaseCrashlyticsGradle = "3.0.2"
 googleServices = "4.4.2"
-gradle = "8.6.1"
-kotlinGradlePlugin = "1.9.24"
 
 #other
 phoneNumber = "8.13.28"
-facebookLogin = "16.2.0"
+facebookLogin = "17.0.1"
 pageIndicator = "v.1.0.3"
 glide = "4.16.0"
-glideKsp = "4.12.0"
 glideOkHttpIntegration = "4.0.0"
 glideCompose = "1.0.0-beta01"
 photoView = "2.3.0"
 pdfView = "3.1.0-beta.3"
 colorPicker = "2.3.0"
-dropboxSdk = "5.2.0"
 
 [libraries]
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx" }
@@ -172,25 +169,24 @@ lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", ver
 firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsGradle" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
-kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlinGradlePlugin" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 
 #other
 phoneNumber = { module = "io.michaelrocks:libphonenumber-android", version.ref = "phoneNumber" }
 facebookLogin = { module = "com.facebook.android:facebook-login", version.ref = "facebookLogin" }
 pageIndicator = { module = "com.github.romandanylyk:pageindicatorview", version.ref = "pageIndicator" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
-glideKsp = { module = "com.github.bumptech.glide:ksp", version.ref = "glideKsp" }
+glideKsp = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
 glideOkhttp = { module = "com.github.bumptech.glide:okhttp3-integration", version.ref = "glideOkHttpIntegration" }
 glideCompose = { module = "com.github.bumptech.glide:compose", version.ref = "glideCompose" }
 photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoView" }
 pdfView = { module = "com.github.TalbotGooday:AndroidPdfViewer", version.ref = "pdfView" }
 colorPicker = { module = "com.github.skydoves:colorpickerview", version.ref = "colorPicker" }
-dropboxSdk = { module = "com.dropbox.core:dropbox-core-sdk", version.ref = "dropboxSdk" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "gradle" }
 android-application = { id = "com.android.application", version.ref = "gradle" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinGradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinKsp" }
-kotlin-serialization-plugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinGradlePlugin" }
+kotlin-serialization-plugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
