@@ -30,8 +30,6 @@ import app.editors.manager.viewModels.link.SharedLinkSettingsEffect
 import app.editors.manager.viewModels.link.SharedLinkSettingsViewModel
 import lib.compose.ui.TouchDisable
 import lib.compose.ui.theme.ManagerTheme
-import lib.compose.ui.utils.popBackStackWhenResumed
-import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppListItem
@@ -43,10 +41,6 @@ import lib.compose.ui.views.DropdownMenuButton
 import lib.compose.ui.views.DropdownMenuItem
 import lib.compose.ui.views.NestedColumn
 import lib.compose.ui.views.VerticalSpacer
-import lib.toolkit.base.managers.utils.TimeUtils
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @Composable
 fun SharedLinkSettingsScreen(
@@ -88,15 +82,8 @@ fun SharedLinkSettingsScreen(
                 onDeleteLink = viewModel::delete,
                 onRegenerateLink = viewModel::regenerate,
                 onBack = onBack,
-                onLifeTimeClick = { navController.navigate(Route.LifeTimeScreen.name) },
+                onSetLifeTime = viewModel::setLifeTime,
                 onSetAccess = viewModel::setAccess
-            )
-        }
-        composable(Route.LifeTimeScreen.name) {
-            SharedLinkLifeTimeScreen(
-                useTabletPadding = useTabletPadding,
-                onBack = navController::popBackStackWhenResumed,
-                onSetLifeTime = viewModel::setLifeTime
             )
         }
     }
@@ -110,8 +97,8 @@ private fun MainScreen(
     onSetInternal: (Boolean) -> Unit,
     onDeleteLink: () -> Unit,
     onRegenerateLink: () -> Unit,
-    onLifeTimeClick: () -> Unit,
     onSetAccess: (Int) -> Unit,
+    onSetLifeTime: (SharedLinkLifeTime) -> Unit,
     onBack: () -> Unit,
 ) {
     AppScaffold(
@@ -162,20 +149,13 @@ private fun MainScreen(
                                 }
                             }
                         )
+
                         AppHeaderItem(title = R.string.rooms_info_time_limit_title)
-                        AppArrowItem(
-                            title = stringResource(id = R.string.rooms_info_valid_through),
-                            option = TimeUtils.parseDate(state.value.sharedTo.expirationDate)?.let {
-                                SimpleDateFormat
-                                    .getDateTimeInstance(
-                                        DateFormat.LONG,
-                                        DateFormat.SHORT,
-                                        TimeUtils.getCurrentLocale(context) ?: Locale.getDefault()
-                                    )
-                                    .format(it)
-                            } ?: stringResource(id = R.string.rooms_share_lifetime_unlimited),
-                            onClick = onLifeTimeClick
+                        LinkLifeTimeListItem(
+                            expirationDate = state.value.sharedTo.expirationDate,
+                            onSetLifeTime = onSetLifeTime
                         )
+
                         AppHeaderItem(title = R.string.filter_title_type)
                         AppSelectItem(
                             title = R.string.rooms_share_shared_to_docsspace_users,
@@ -218,6 +198,7 @@ private fun MainScreen(
 }
 
 @Preview(locale = "ru")
+@Preview()
 @Composable
 private fun ShareSettingsScreenPreview() {
     val link = ExternalLink(
@@ -250,7 +231,7 @@ private fun ShareSettingsScreenPreview() {
             onRegenerateLink = {},
             onDeleteLink = {},
             onSetAccess = {},
-            onLifeTimeClick = {}
+            onSetLifeTime = {}
         )
     }
 }
