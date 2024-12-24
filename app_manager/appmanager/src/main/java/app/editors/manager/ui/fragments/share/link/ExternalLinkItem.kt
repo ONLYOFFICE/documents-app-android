@@ -39,6 +39,7 @@ import lib.toolkit.base.R
 fun ExternalLinkItem(
     linkTitle: String,
     access: Int,
+    showAccess: Boolean,
     hasPassword: Boolean,
     expiring: Boolean,
     isExpired: Boolean,
@@ -94,12 +95,14 @@ fun ExternalLinkItem(
                 contentDescription = null
             )
         }
-        Icon(
-            modifier = Modifier.padding(start = 8.dp),
-            imageVector = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(access)),
-            tint = MaterialTheme.colors.colorTextSecondary,
-            contentDescription = null
-        )
+        if (showAccess) {
+            Icon(
+                modifier = Modifier.padding(start = 8.dp),
+                imageVector = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(access)),
+                tint = MaterialTheme.colors.colorTextSecondary,
+                contentDescription = null
+            )
+        }
         if (canEdit) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_right),
@@ -150,16 +153,21 @@ private fun Preview() {
                     expiring = false,
                     isExpired = false,
                     canEdit = true,
-                    {},
-                ) {}
+                    showAccess = true,
+                    onClick = {},
+                    onShareClick = {}
+                )
                 ExternalLinkItem(
-                    linkTitle = "Shared link", access = 2,
+                    showAccess = false,
+                    linkTitle = "Shared link",
+                    access = 2,
                     hasPassword = true,
                     expiring = false,
                     isExpired = true,
-                    canEdit = false,
-                    {},
-                ) {}
+                    canEdit = true,
+                    onClick = {},
+                    onShareClick = {}
+                )
             }
         }
     }

@@ -23,7 +23,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -68,7 +67,6 @@ fun ExternalLinkSettingsScreen(
     if (link == null) return
     val context = LocalContext.current
     val localView = LocalView.current
-    val keyboardController = LocalSoftwareKeyboardController.current
     val viewModel = viewModel {
         ExternalLinkSettingsViewModel(
             access = access,
@@ -120,6 +118,7 @@ fun ExternalLinkSettingsScreen(
         link = state.link,
         access = state.access,
         loading = state.loading,
+        roomType = roomType,
         passwordErrorState = passwordErrorState,
         isCreate = isCreate,
         isRevoke = isRevoke,
@@ -156,6 +155,7 @@ fun ExternalLinkSettingsScreen(
 private fun MainScreen(
     link: ExternalLinkSharedTo,
     loading: Boolean,
+    roomType: Int?,
     access: Int,
     passwordErrorState: MutableState<String?>,
     isCreate: Boolean,
@@ -221,33 +221,37 @@ private fun MainScreen(
                     state = title,
                     hint = stringResource(id = lib.toolkit.base.R.string.text_hint_required)
                 )
-                AppHeaderItem(title = R.string.rooms_share_general_header)
-                AppListItem(
-                    title = stringResource(R.string.share_access_room_type),
-                    endContent = {
-                        val dropdownMenuShow = remember { mutableStateOf(false) }
-                        DropdownMenuButton(
-                            state = dropdownMenuShow,
-                            icon = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(access)),
-                            onDismiss = { dropdownMenuShow.value = false },
-                            items = {
-                                RoomUtils.getLinkAccessOptions().forEach { accessCode ->
-                                    DropdownMenuItem(
-                                        title = stringResource(RoomUtils.getAccessTitle(accessCode)),
-                                        selected = access == accessCode,
-                                        startIcon = ManagerUiUtils.getAccessIcon(accessCode),
-                                        onClick = {
-                                            dropdownMenuShow.value = false
-                                            onSetAccess(accessCode)
-                                        }
-                                    )
+
+                if (roomType != FILL_FORMS_ROOM) {
+                    AppHeaderItem(title = R.string.rooms_share_general_header)
+                    AppListItem(
+                        title = stringResource(R.string.share_access_room_type),
+                        endContent = {
+                            val dropdownMenuShow = remember { mutableStateOf(false) }
+                            DropdownMenuButton(
+                                state = dropdownMenuShow,
+                                icon = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(access)),
+                                onDismiss = { dropdownMenuShow.value = false },
+                                items = {
+                                    RoomUtils.getLinkAccessOptions().forEach { accessCode ->
+                                        DropdownMenuItem(
+                                            title = stringResource(RoomUtils.getAccessTitle(accessCode)),
+                                            selected = access == accessCode,
+                                            startIcon = ManagerUiUtils.getAccessIcon(accessCode),
+                                            onClick = {
+                                                dropdownMenuShow.value = false
+                                                onSetAccess(accessCode)
+                                            }
+                                        )
+                                    }
                                 }
+                            ) {
+                                dropdownMenuShow.value = true
                             }
-                        ) {
-                            dropdownMenuShow.value = true
                         }
-                    }
-                )
+                    )
+                }
+
                 if (!link.primary) {
                     LinkLifeTimeListItem(
                         expirationDate = link.expirationDate,
@@ -262,7 +266,7 @@ private fun MainScreen(
                     title = R.string.rooms_info_password_access,
                     checked = passwordEnabled.value,
                     onCheck = { checked ->
-                        passwordEnabled.value = checked;
+                        passwordEnabled.value = checked
                         updateViewState { copy(password = "".takeIf { checked }) }
                     }
                 )
@@ -285,17 +289,19 @@ private fun MainScreen(
                         errorState = passwordErrorState
                     )
                 }
-                AppSwitchItem(
-                    title = R.string.rooms_info_file_rectrict,
-                    checked = denyDownload,
-                    singleLine = false,
-                    onCheck = { denyDownload = it }
-                )
-                AppDescriptionItem(
-                    modifier = Modifier.padding(top = 8.dp),
-                    text = R.string.rooms_info_file_rectrict_desc
-                )
-                if (!isCreate) {
+                if (roomType != FILL_FORMS_ROOM) {
+                    AppSwitchItem(
+                        title = R.string.rooms_info_file_rectrict,
+                        checked = denyDownload,
+                        singleLine = false,
+                        onCheck = { denyDownload = it }
+                    )
+                    AppDescriptionItem(
+                        modifier = Modifier.padding(top = 8.dp),
+                        text = R.string.rooms_info_file_rectrict_desc
+                    )
+                }
+                if (!isCreate && roomType != FILL_FORMS_ROOM) {
                     AppTextButton(
                         modifier = Modifier.padding(start = 8.dp, top = 8.dp),
                         title = if (isRevoke)
@@ -328,6 +334,7 @@ private fun Preview() {
 
     MainScreen(
         link = link,
+        roomType = FILL_FORMS_ROOM,
         loading = true,
         passwordErrorState = remember { mutableStateOf(null) },
         access = ApiContract.ShareCode.EDITOR,

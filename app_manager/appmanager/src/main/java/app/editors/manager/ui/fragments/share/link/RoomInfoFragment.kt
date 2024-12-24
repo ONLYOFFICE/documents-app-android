@@ -356,6 +356,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
                     if (ApiContract.RoomType.hasExternalLink(roomType)) {
                         ExternalLinkBlock(
                             sharedLinks = state.sharedLinks,
+                            roomType = roomType,
                             canEditRoom = canEditRoom,
                             onLinkClick = onLinkClick,
                             onSharedLinkCreate = onSharedLinkCreate
