@@ -103,7 +103,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
                 viewModel.effect.collect { effect ->
                     when (effect) {
                         is RoomInfoEffect.Create -> {
-                            copyLinkToClipboard(requireView(), effect.url, true)
+                            copyLinkToClipboard(requireView(), effect.url)
                             waitingDialog.dismiss()
                         }
                         is RoomInfoEffect.Error -> {
@@ -390,13 +390,11 @@ class RoomInfoFragment : ComposeDialogFragment() {
         }
     }
 
-    private fun copyLinkToClipboard(rootView: View, url: String, isCreate: Boolean) {
+    private fun copyLinkToClipboard(rootView: View, url: String) {
         KeyboardUtils.setDataToClipboard(requireContext(), url)
-        UiUtils.getSnackBar(rootView).setText(
-            if (!isCreate)
-                R.string.rooms_info_copy_link_to_clipboard else
-                R.string.rooms_info_create_link_complete
-        ).show()
+        UiUtils.getSnackBar(rootView)
+            .setText(R.string.rooms_info_create_link_complete)
+            .show()
     }
 
     @Preview

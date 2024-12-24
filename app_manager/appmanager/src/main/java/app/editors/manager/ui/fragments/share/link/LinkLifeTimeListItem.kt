@@ -16,6 +16,7 @@ import lib.compose.ui.views.DropdownMenuItem
 import lib.toolkit.base.managers.utils.TimeUtils
 import java.util.Calendar
 import java.util.Date
+import java.util.TimeZone
 
 sealed interface SharedLinkLifeTimeWithAmount {
 
@@ -56,7 +57,21 @@ sealed class SharedLinkLifeTime(val title: Int) {
     }
 
     data object Unlimited : SharedLinkLifeTime(R.string.rooms_share_lifetime_unlimited)
+
     data class Custom(val date: Date) : SharedLinkLifeTime(R.string.rooms_share_lifetime_custom)
+
+    fun getFormattedDateTime(): String? {
+        var calendar: Calendar? = Calendar.getInstance()
+        calendar?.timeZone = TimeZone.getTimeZone("gmt")
+
+        when (this) {
+            Unlimited -> calendar = null
+            is Custom -> calendar?.time = date
+            is SharedLinkLifeTimeWithAmount -> calendar?.add(field, amount)
+        }
+
+        return calendar?.let { TimeUtils.DEFAULT_GMT_FORMAT.format(calendar.time) }
+    }
 
     companion object {
 

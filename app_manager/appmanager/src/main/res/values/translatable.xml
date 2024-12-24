@@ -814,6 +814,7 @@
     <string name="rooms_info_additional_links">"Additional links (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Create and copy</string>
     <string name="rooms_info_create_link_complete">Link successfully created and copied to clipboard</string>
+    <string name="rooms_info_create_maximum_exceed">The maximum number of links has been exceeded</string>
     <string name="rooms_info_delete_link">Delete link</string>
     <string name="rooms_info_delete_link_complete">Link was deleted</string>
     <string name="rooms_info_delete_link_desc">The link will be deleted permanently. You will not be able to undo this action.</string>

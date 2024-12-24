@@ -20,15 +20,15 @@ import lib.toolkit.base.managers.utils.StringUtils
 import retrofit2.HttpException
 
 data class ExternalLinkSettingsState(
+    val loading: Boolean,
     val link: ExternalLinkSharedTo,
-    val access: Int,
+    val access: Int
 )
 
 sealed class ExternalLinkSettingsEffect {
     data class Error(val message: Int) : ExternalLinkSettingsEffect()
     data object Delete : ExternalLinkSettingsEffect()
     data object Save : ExternalLinkSettingsEffect()
-    data object Loading : ExternalLinkSettingsEffect()
     data object PasswordLength : ExternalLinkSettingsEffect()
     data object PasswordForbiddenSymbols : ExternalLinkSettingsEffect()
 }
@@ -40,7 +40,12 @@ class ExternalLinkSettingsViewModel(
     private val roomProvider: RoomProvider,
 ) : BaseViewModel() {
 
-    private val _state = MutableStateFlow(ExternalLinkSettingsState(inputLink, access))
+    companion object {
+
+        private const val MAXIMUM_LINKS_ERROR = "The maximum number of links"
+    }
+
+    private val _state = MutableStateFlow(ExternalLinkSettingsState(false, inputLink, access))
     val state: StateFlow<ExternalLinkSettingsState> = _state.asStateFlow()
 
     private val _effect: MutableSharedFlow<ExternalLinkSettingsEffect> = MutableSharedFlow(1)
@@ -74,7 +79,7 @@ class ExternalLinkSettingsViewModel(
 
     fun createLink() {
         if (!validatePassword()) return
-        _effect.tryEmit(ExternalLinkSettingsEffect.Loading)
+        _state.update { it.copy(loading = true) }
         operationJob = viewModelScope.launch {
             try {
                 with(state.value.link) {
@@ -89,7 +94,14 @@ class ExternalLinkSettingsViewModel(
                     _effect.tryEmit(ExternalLinkSettingsEffect.Save)
                 }
             } catch (httpException: HttpException) {
-                onError(httpException)
+                val errorMessage = httpException.response()?.errorBody()?.string().orEmpty()
+                if (MAXIMUM_LINKS_ERROR in errorMessage) {
+                    _effect.tryEmit(ExternalLinkSettingsEffect.Error(R.string.rooms_info_create_maximum_exceed))
+                } else {
+                    onError(httpException)
+                }
+            } finally {
+                _state.update { it.copy(loading = false) }
             }
         }
     }
@@ -100,7 +112,7 @@ class ExternalLinkSettingsViewModel(
 
     private suspend fun updateLink(deleteOrRevoke: Boolean = false): ExternalLink? {
         if (!validatePassword()) return null
-        _effect.tryEmit(ExternalLinkSettingsEffect.Loading)
+        _state.update { it.copy(loading = true) }
         return try {
             with(state.value.link) {
                 roomProvider.updateRoomSharedLink(
@@ -117,6 +129,8 @@ class ExternalLinkSettingsViewModel(
         } catch (httpException: HttpException) {
             onError(httpException)
             null
+        } finally {
+            _state.update { it.copy(loading = false) }
         }
     }
 
