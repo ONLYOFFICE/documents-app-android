@@ -96,10 +96,16 @@ class LocalContentTools @Inject constructor(val context: Context) {
         if (!publicDir.exists()) {
             publicDir.mkdirs()
         }
+
         if (!File(getDir()).exists()) {
             File(getDir()).mkdirs()
         }
-        if (isFirstLaunch()) {
+
+        if (File(getDir()).exists()) {
+            return File(getDir())
+        }
+
+        if (isFirstLaunch() && File(getDir()).canWrite()) {
             addSamples(File(getDir()))
             setFirstLaunchFlag()
         }
@@ -111,7 +117,9 @@ class LocalContentTools @Inject constructor(val context: Context) {
         samplesName?.let {
             it.forEach { name ->
                 val file = File(rootDir.absolutePath + "/" + name)
+                if (file.exists()) return@forEach
                 file.createNewFile()
+                file.setWritable(true)
                 val inputStream = context.assets.open("samples/$name")
                 val outputStream = FileOutputStream(file)
                 outputStream.write(inputStream.readBytes())
