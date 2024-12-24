@@ -9,14 +9,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -43,6 +47,7 @@ import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppListItem
+import lib.compose.ui.views.AppPasswordTextField
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppSwitchItem
 import lib.compose.ui.views.AppTextButton
@@ -83,6 +88,7 @@ fun ExternalLinkSettingsScreen(
         onCancel = viewModel::cancelJob
     )
     val isRevoke = link.primary && roomType in arrayOf(PUBLIC_ROOM, FILL_FORMS_ROOM)
+    val passwordErrorState = remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -114,6 +120,14 @@ fun ExternalLinkSettingsScreen(
                     waitingDialog.dismiss()
                     UiUtils.getSnackBar(localView).setText(effect.message).show()
                 }
+
+                ExternalLinkSettingsEffect.PasswordForbiddenSymbols -> {
+                    passwordErrorState.value = context.getString(R.string.rooms_info_password_allowed_symbols)
+                }
+
+                ExternalLinkSettingsEffect.PasswordLength -> {
+                    passwordErrorState.value = context.getString(R.string.rooms_info_password_minimum_length)
+                }
             }
         }
     }
@@ -121,7 +135,7 @@ fun ExternalLinkSettingsScreen(
     MainScreen(
         link = state.link,
         access = state.access,
-        roomType = roomType,
+        passwordErrorState = passwordErrorState,
         isCreate = isCreate,
         isRevoke = isRevoke,
         onSetAccess = viewModel::setAccess,
@@ -156,7 +170,7 @@ fun ExternalLinkSettingsScreen(
 private fun MainScreen(
     link: ExternalLinkSharedTo,
     access: Int,
-    roomType: Int?,
+    passwordErrorState: MutableState<String?>,
     isCreate: Boolean,
     isRevoke: Boolean,
     onSetAccess: (Int) -> Unit,
@@ -196,6 +210,7 @@ private fun MainScreen(
                 var denyDownload by remember { mutableStateOf(link.denyDownload) }
                 var expirationString by remember { mutableStateOf(link.expirationDate) }
                 var expirationDate by remember { mutableStateOf(TimeUtils.parseDate(expirationString)) }
+                val focusRequester = remember { FocusRequester() }
 
                 LaunchedEffect(denyDownload) {
                     updateViewState { copy(denyDownload = denyDownload) }
@@ -252,14 +267,28 @@ private fun MainScreen(
                 AppSwitchItem(
                     title = R.string.rooms_info_password_access,
                     checked = passwordEnabled.value,
-                    onCheck = { checked -> passwordEnabled.value = checked; password.value = "" }
+                    onCheck = { checked ->
+                        passwordEnabled.value = checked;
+                        updateViewState { copy(password = "".takeIf { checked }) }
+                    }
                 )
                 AnimatedVisibilityVerticalFade(visible = passwordEnabled.value) {
-                    AppTextFieldListItem(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+
+                    LaunchedEffect(passwordEnabled.value) {
+                        if (passwordEnabled.value) {
+                            delay(500)
+                            focusRequester.requestFocus()
+                        }
+                    }
+
+                    AppPasswordTextField(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .focusRequester(focusRequester),
+                        label = null,
                         state = password,
-                        hint = stringResource(id = R.string.login_enterprise_password_hint),
-                        isPassword = true
+                        focusManager = LocalFocusManager.current,
+                        errorState = passwordErrorState
                     )
                 }
                 AppSwitchItem(
@@ -354,7 +383,7 @@ private fun Preview() {
 
     MainScreen(
         link = link,
-        roomType = ApiContract.RoomType.PUBLIC_ROOM,
+        passwordErrorState = remember { mutableStateOf(null) },
         access = ApiContract.ShareCode.EDITOR,
         isCreate = false,
         isRevoke = true,

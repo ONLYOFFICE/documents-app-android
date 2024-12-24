@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.utils.StringUtils
 import retrofit2.HttpException
 
 data class ExternalLinkSettingsState(
@@ -28,6 +29,8 @@ sealed class ExternalLinkSettingsEffect {
     data object Delete : ExternalLinkSettingsEffect()
     data object Save : ExternalLinkSettingsEffect()
     data object Loading : ExternalLinkSettingsEffect()
+    data object PasswordLength : ExternalLinkSettingsEffect()
+    data object PasswordForbiddenSymbols : ExternalLinkSettingsEffect()
 }
 
 class ExternalLinkSettingsViewModel(
@@ -53,7 +56,6 @@ class ExternalLinkSettingsViewModel(
     }
 
     fun save() {
-        _effect.tryEmit(ExternalLinkSettingsEffect.Loading)
         operationJob = viewModelScope.launch {
             updateLink()
             _effect.tryEmit(ExternalLinkSettingsEffect.Save)
@@ -66,13 +68,12 @@ class ExternalLinkSettingsViewModel(
 
     fun updateViewState(body: ExternalLinkSharedTo.() -> ExternalLinkSharedTo) {
         _state.update {
-            it.copy(
-                link = body(it.link),
-            )
+            it.copy(link = body(it.link))
         }
     }
 
     fun createLink() {
+        if (!validatePassword()) return
         _effect.tryEmit(ExternalLinkSettingsEffect.Loading)
         operationJob = viewModelScope.launch {
             try {
@@ -98,6 +99,7 @@ class ExternalLinkSettingsViewModel(
     }
 
     private suspend fun updateLink(deleteOrRevoke: Boolean = false): ExternalLink? {
+        if (!validatePassword()) return null
         _effect.tryEmit(ExternalLinkSettingsEffect.Loading)
         return try {
             with(state.value.link) {
@@ -118,6 +120,21 @@ class ExternalLinkSettingsViewModel(
         }
     }
 
+    private fun validatePassword(): Boolean {
+        val password = state.value.link.password ?: return true
+
+        if (password.length < 8) {
+            _effect.tryEmit(ExternalLinkSettingsEffect.PasswordLength)
+            return false
+        }
+
+        if (!StringUtils.PASSWORD_FORBIDDEN_SYMBOLS.toRegex().matches(password)) {
+            _effect.tryEmit(ExternalLinkSettingsEffect.PasswordForbiddenSymbols)
+            return false
+        }
+
+        return true
+    }
 
     private fun onError(httpException: HttpException?) {
         viewModelScope.launch {

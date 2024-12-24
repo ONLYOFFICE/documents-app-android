@@ -832,6 +832,8 @@
     <string name="rooms_info_link_expired_full">The link has expired and has been disabled</string>
     <string name="rooms_info_link_name">Link name</string>
     <string name="rooms_info_password_access">Password access</string>
+    <string name="rooms_info_password_allowed_symbols">Allowed characters: a–z, A–Z, 0–9, !"#%&amp;'()*+,-./:;\u003C=>?@[]^_`{|}</string>
+    <string name="rooms_info_password_minimum_length">Minimum length: 8 characters</string>
     <string name="rooms_info_file_rectrict">Restrict file content copy, file download and printing</string>
     <string name="rooms_info_file_rectrict_desc">Enable this setting to disable downloads of files and folders from this room shared via a link</string>
     <string name="rooms_info_time_limit_title">Time limit</string>

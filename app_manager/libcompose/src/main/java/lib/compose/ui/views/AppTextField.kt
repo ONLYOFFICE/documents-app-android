@@ -124,7 +124,7 @@ fun AppTextField(
             Text(
                 modifier = Modifier
                     .alpha(alpha = errorAnimation.value)
-                    .padding(top = 4.dp, bottom = 8.dp),
+                    .padding(top = 4.dp, start = 16.dp, bottom = 8.dp),
                 text = errorState?.value.orEmpty(),
                 color = MaterialTheme.colors.error,
                 style = MaterialTheme.typography.caption,
@@ -185,7 +185,7 @@ fun AppTextField(
 fun AppPasswordTextField(
     modifier: Modifier = Modifier,
     state: MutableState<String>,
-    label: Int,
+    label: Int?,
     focusManager: FocusManager,
     onDone: (() -> Unit)? = null,
     errorState: MutableState<String?>? = null,
