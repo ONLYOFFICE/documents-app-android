@@ -670,9 +670,7 @@
     <string name="rooms_info_create_link_complete">链接已成功创建并复制到剪贴板</string>
     <string name="rooms_info_delete_link">删除链接</string>
     <string name="rooms_info_delete_link_complete">链接已删除</string>
-    <string name="rooms_info_delete_link_desc">链接将被永久删除。您将无法撤销此操作。</string>
     <string name="rooms_info_revoke_link">撤销链接</string>
-    <string name="rooms_info_revoke_link_desc">先前的链接将不可用。将创建一个新的通用链接。</string>
     <string name="rooms_info_revoke_link_complete">链接已撤销</string>
     <string name="rooms_info_revoke">撤销</string>
     <string name="rooms_info_copy_link">复制链接</string>

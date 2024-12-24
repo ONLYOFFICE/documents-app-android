@@ -739,9 +739,7 @@
     <string name="rooms_info_create_link_complete">تم إنشاء الرابط ونسخه إلى الحافظة بنجاح</string>
     <string name="rooms_info_delete_link">حذف الرابط</string>
     <string name="rooms_info_delete_link_complete">تم حذف الرابط</string>
-    <string name="rooms_info_delete_link_desc">سيتم حذف الرابط نهائيا لن تتمكن من التراجع عن هذا الإجراء</string>
     <string name="rooms_info_revoke_link">إبطال الارتباط</string>
-    <string name="rooms_info_revoke_link_desc">سيصبح الرابط السابق غير متاح. سيتم إنشاء رابط عام جديد</string>
     <string name="rooms_info_revoke_link_complete">تم إبطال الرابط</string>
     <string name="rooms_info_revoke">سحب او إبطال</string>
     <string name="rooms_info_copy_link">نسخ الوصلة</string>

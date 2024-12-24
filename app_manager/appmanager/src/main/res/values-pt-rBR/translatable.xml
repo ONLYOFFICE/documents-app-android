@@ -612,9 +612,7 @@
     <string name="rooms_info_create_link_complete">Link criado e copiado com sucesso para a área de transferência</string>
     <string name="rooms_info_delete_link">Excluir link</string>
     <string name="rooms_info_delete_link_complete">O link foi excluído</string>
-    <string name="rooms_info_delete_link_desc">O link será excluído permanentemente. Você não poderá desfazer esta ação.</string>
     <string name="rooms_info_revoke_link">Revogar link</string>
-    <string name="rooms_info_revoke_link_desc">O link anterior ficará indisponível. Um novo link geral será criado.</string>
     <string name="rooms_info_revoke_link_complete">O link foi revogado</string>
     <string name="rooms_info_revoke">Revogar</string>
     <string name="rooms_info_copy_link">Link de cópia</string>

@@ -611,9 +611,7 @@
     <string name="rooms_info_create_link_complete">Link został pomyślnie utworzony i skopiowany do schowka</string>
     <string name="rooms_info_delete_link">Usuń link</string>
     <string name="rooms_info_delete_link_complete">Link został usunięty</string>
-    <string name="rooms_info_delete_link_desc">Link zostanie trwale usunięty. Nie będziesz w stanie cofnąć tego działania.</string>
     <string name="rooms_info_revoke_link">Unieważnij link</string>
-    <string name="rooms_info_revoke_link_desc">Poprzedni link stanie się niedostępny. Zostanie utworzony nowy link główny.</string>
     <string name="rooms_info_revoke_link_complete">Link został unieważniony</string>
     <string name="rooms_info_revoke">Unieważnij</string>
     <string name="rooms_info_copy_link">Kopiuj link</string>

@@ -633,9 +633,7 @@
     <string name="rooms_info_create_link_complete">Ссылка успешно создана и скопирована в буфер обмена</string>
     <string name="rooms_info_delete_link">Удалить ссылку</string>
     <string name="rooms_info_delete_link_complete">Ссылка удалена</string>
-    <string name="rooms_info_delete_link_desc">Ссылка будет удалена навсегда. Вы не сможете отменить это действие.</string>
     <string name="rooms_info_revoke_link">Отозвать ссылку</string>
-    <string name="rooms_info_revoke_link_desc">Предыдущая ссылка станет недоступной. Будет создана новая общая ссылка.</string>
     <string name="rooms_info_revoke_link_complete">Ссылка отозвана</string>
     <string name="rooms_info_revoke">Отозвать</string>
     <string name="rooms_info_copy_link">Скопировать ссылку</string>

@@ -758,9 +758,7 @@
     <string name="rooms_info_create_link_complete">ສ້າງລິ້ງສຳເລັດ ແລະສຳເນົາໄປໃສ່ຄລິບບອດແລ້ວ</string>
     <string name="rooms_info_delete_link">ລຶບລິ້ງ</string>
     <string name="rooms_info_delete_link_complete">ລິ້ງຖືກລຶບແລ້ວ</string>
-    <string name="rooms_info_delete_link_desc">ລິ້ງຈະຖືກລຶບອອກຖາວອນ. ທ່ານຈະບໍ່ສາມາດຍົກເລີກຄຳສັ່ງນີ້ໄດ້.</string>
     <string name="rooms_info_revoke_link">ຖອນການເຊື່ອມຕໍ່</string>
-    <string name="rooms_info_revoke_link_desc">ລິ້ງກ່ອນໜ້ານີ້ຈະບໍ່ສາມາດໃຊ້ໄດ້. ການເຊື່ອມໂຍງທົ່ວໄປໃຫມ່ຈະຖືກສ້າງຂື້ນ.</string>
     <string name="rooms_info_revoke_link_complete">ລິ້ງຖືກຖອນຄືນ</string>
     <string name="rooms_info_revoke">ຖອນຄືນ</string>
     <string name="rooms_info_copy_link">ສຳເນົາລິ້ງ</string>

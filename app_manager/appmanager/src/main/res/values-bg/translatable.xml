@@ -605,9 +605,7 @@
     <string name="rooms_info_create_link_complete">Линкът беше успешно създаден и копиран в клипборда</string>
     <string name="rooms_info_delete_link">Изтрий линк</string>
     <string name="rooms_info_delete_link_complete">Линкът беше изтрит</string>
-    <string name="rooms_info_delete_link_desc">Линкът ше бъде изтрит завинаги. Няма да можете да върнете това действие.</string>
     <string name="rooms_info_revoke_link">Отмени линк</string>
-    <string name="rooms_info_revoke_link_desc">Предишният линк ще стане недостъпен. Ще бъде създаден нов главен линк.</string>
     <string name="rooms_info_revoke_link_complete">Линкът беше отменен</string>
     <string name="rooms_info_revoke">Отмени</string>
     <string name="rooms_info_copy_link">Копирай линк</string>

@@ -144,6 +144,7 @@ fun ExternalLinkSettingsScreen(
                 } else {
                     context.getString(R.string.list_context_delete)
                 },
+                acceptErrorTint = true,
                 acceptListener = viewModel::deleteOrRevoke
             )
         },

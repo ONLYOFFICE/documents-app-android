@@ -90,9 +90,7 @@
     <string name="rooms_info_create_link_complete">සබැඳිය සෑදී පසුරුපුවරුවට පිටපත් විය</string>
     <string name="rooms_info_delete_link">සබැඳිය මකන්න</string>
     <string name="rooms_info_delete_link_complete">සබැඳිය මැකිණි</string>
-    <string name="rooms_info_delete_link_desc">සබැඳිය සදහටම මැකෙනු ඇත. මෙම ක්‍රියාමාර්ගය අප්‍රතිවර්ත්‍යයි.</string>
     <string name="rooms_info_revoke_link">සබැඳිය ඉවතලන්න</string>
-    <string name="rooms_info_revoke_link_desc">කලින් සබැඳිය අහෝසි වනු ඇත. නව සාමාන්‍ය සබැඳියක් සෑදෙනු ඇත.</string>
     <string name="rooms_info_revoke_link_complete">සබැඳිය අහෝසි කෙරිණි</string>
     <string name="rooms_info_revoke">ඉවතලන්න</string>
     <string name="rooms_info_copy_link">සබැඳියේ පිටපතක්</string>

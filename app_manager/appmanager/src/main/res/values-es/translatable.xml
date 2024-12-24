@@ -612,9 +612,7 @@
     <string name="rooms_info_create_link_complete">Enlace creado y copiado correctamente en el portapapeles</string>
     <string name="rooms_info_delete_link">Eliminar enlace</string>
     <string name="rooms_info_delete_link_complete">El enlace se ha eliminado</string>
-    <string name="rooms_info_delete_link_desc">El enlace se eliminará de forma permanente. No podrá deshacer esta acción.</string>
     <string name="rooms_info_revoke_link">Revocar enlace</string>
-    <string name="rooms_info_revoke_link_desc">El enlace anterior dejará de estar disponible. Se creará un nuevo enlace general.</string>
     <string name="rooms_info_revoke_link_complete">El enlace se ha revocado</string>
     <string name="rooms_info_revoke">Revocar</string>
     <string name="rooms_info_copy_link">Copiar enlace</string>

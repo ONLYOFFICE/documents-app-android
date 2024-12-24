@@ -613,9 +613,7 @@
     <string name="rooms_info_create_link_complete">Link erfolgreich erstellt und in die Zwischenablage kopiert</string>
     <string name="rooms_info_delete_link">Link löschen</string>
     <string name="rooms_info_delete_link_complete">Link wurde gelöscht</string>
-    <string name="rooms_info_delete_link_desc">Der Link wird endgültig gelöscht. Sie können diese Aktion nicht mehr rückgängig machen.</string>
     <string name="rooms_info_revoke_link">Link widerrufen</string>
-    <string name="rooms_info_revoke_link_desc">Der vorherige Link ist nicht mehr verfügbar. Es wird ein neuer allgemeiner Link erstellt.</string>
     <string name="rooms_info_revoke_link_complete">Link wurde widerrufen</string>
     <string name="rooms_info_revoke">Widerrufen</string>
     <string name="rooms_info_copy_link">Link kopieren</string>

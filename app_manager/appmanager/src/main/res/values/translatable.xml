@@ -817,9 +817,9 @@
     <string name="rooms_info_create_maximum_exceed">The maximum number of links has been exceeded</string>
     <string name="rooms_info_delete_link">Delete link</string>
     <string name="rooms_info_delete_link_complete">Link was deleted</string>
-    <string name="rooms_info_delete_link_desc">The link will be deleted permanently. You will not be able to undo this action.</string>
+    <string name="rooms_info_delete_link_desc">Links to all files in the room will be deleted. Previous links to room files and embedded documents will become unavailable.\n\nThis action cannot be undone. Are you sure you want to continue?</string>
     <string name="rooms_info_revoke_link">Revoke link</string>
-    <string name="rooms_info_revoke_link_desc">The previous link will become unavailable. A new general link will be created.</string>
+    <string name="rooms_info_revoke_link_desc">Links to all files in the room will be re-generated. Previous links to room files and embedded documents will become unavailable.\n\nThis action cannot be undone. Are you sure you want to continue?</string>
     <string name="rooms_info_revoke_link_complete">Link was revoked</string>
     <string name="rooms_info_revoke">Revoke</string>
     <string name="rooms_info_copy_link">Copy link</string>

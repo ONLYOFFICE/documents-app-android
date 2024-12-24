@@ -610,9 +610,7 @@
     <string name="rooms_info_create_link_complete">Link creato e copiato con successo negli appunti</string>
     <string name="rooms_info_delete_link">Elimina il link</string>
     <string name="rooms_info_delete_link_complete">Il link è stato eliminato</string>
-    <string name="rooms_info_delete_link_desc">Il link verrà eliminato definitivamente. Non potrai annullare questa azione.</string>
     <string name="rooms_info_revoke_link">Revoca il link</string>
-    <string name="rooms_info_revoke_link_desc">Il link precedente non sarà più disponibile. Verrà creato un nuovo link generale.</string>
     <string name="rooms_info_revoke_link_complete">Il link è stato revocato</string>
     <string name="rooms_info_revoke">Revoca</string>
     <string name="rooms_info_copy_link">Copia il link</string>

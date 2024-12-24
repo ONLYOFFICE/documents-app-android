@@ -615,9 +615,7 @@
     <string name="rooms_info_create_link_complete">Lien créé avec succès et copié dans le presse-papiers</string>
     <string name="rooms_info_delete_link">Supprimer le lien</string>
     <string name="rooms_info_delete_link_complete">Lien supprimé</string>
-    <string name="rooms_info_delete_link_desc">Le lien sera définitivement supprimé. Vous ne pourrez pas annuler cette action.</string>
     <string name="rooms_info_revoke_link">Révoquer le lien</string>
-    <string name="rooms_info_revoke_link_desc">Le lien précédent devient indisponible. Un nouveau lien général sera créé.</string>
     <string name="rooms_info_revoke_link_complete">Le lien a été révoqué</string>
     <string name="rooms_info_revoke">Révoquer</string>
     <string name="rooms_info_copy_link">Copier le lien</string>
