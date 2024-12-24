@@ -15,6 +15,7 @@ plugins {
     kotlin("android")
     kotlin("kapt")
     alias(libs.plugins.kotlin.ksp)
+//    id("org.owasp.dependencycheck")
 }
 
 // Onlyoffice
@@ -130,7 +131,8 @@ android {
     buildTypes {
 
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
 
             signingConfig = signingConfigs.getByName("onlyoffice")
@@ -274,7 +276,7 @@ dependencies {
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
-    implementation(libs.retrofit.xml)
+    implementation(libs.retrofit.xml) { exclude(group="xpp3", module= "xpp3" )}
     implementation(libs.retrofit.rx)
     implementation(libs.retrofit.kotlin.serialization)
 
