@@ -37,10 +37,21 @@ class GridFolderViewHolder(view: View, adapter: ExplorerAdapter) :
 
     override fun bind(element: CloudFolder) {
         super.bind(element)
-        bindFolderImage(element, binding.overlayImage, binding.storageImage)
+        bindFolderType(element)
+        bindFolderStorageImage(element, binding.storageImage)
     }
 
     override fun getCachedIcon(): View {
         return binding.imageLayout
+    }
+
+    private fun bindFolderType(folder: CloudFolder) {
+        binding.image.setImageResource(
+            when (folder.type) {
+                26 -> R.drawable.ic_folder_column_in_process
+                25 -> R.drawable.ic_folder_column_complete
+                else -> R.drawable.ic_folder_column
+            }
+        )
     }
 }

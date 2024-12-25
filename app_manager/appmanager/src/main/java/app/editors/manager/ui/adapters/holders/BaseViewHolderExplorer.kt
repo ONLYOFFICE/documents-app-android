@@ -123,37 +123,16 @@ abstract class BaseViewHolderExplorer<T>(
         }
     }
 
-    protected fun bindFolderImage(
+    protected fun bindFolderStorageImage(
         folder: CloudFolder,
-        overlayImage: ImageView,
-        storageImage: ImageView
+        storageImageView: ImageView
     ) {
         with(folder) {
-            storageImage.isVisible = false
-            overlayImage.isVisible = false
-            when {
-                providerItem && providerKey.isNotEmpty() && adapter.isRoot -> {
-                    storageImage.isVisible = true
-                    StorageUtils.getStorageIconLarge(providerKey)
-                        ?.let(storageImage::setImageResource)
-                }
-
-                folder.shared -> {
-                    overlayImage.isVisible = true
-                    overlayImage.setImageResource(R.drawable.ic_list_item_share_user_icon)
-                }
-
-                folder.type == 26 -> {
-                    overlayImage.isVisible = true
-                    overlayImage.setImageResource(R.drawable.ic_access_fill_form)
-                }
-
-                folder.type == 25 -> {
-                    overlayImage.isVisible = true
-                    overlayImage.setImageResource(R.drawable.ic_list_select_done_white)
-                }
-
-                else -> Unit
+            storageImageView.isVisible = false
+            if (providerItem && providerKey.isNotEmpty() && adapter.isRoot) {
+                storageImageView.isVisible = true
+                StorageUtils.getStorageIconLarge(providerKey)
+                    ?.let(storageImageView::setImageResource)
             }
         }
     }
