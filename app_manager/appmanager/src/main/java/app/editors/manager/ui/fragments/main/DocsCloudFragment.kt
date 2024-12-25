@@ -47,6 +47,7 @@ import app.editors.manager.ui.dialogs.fragments.FormCompletedDialogFragment
 import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_TYPE
+import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment
 import app.editors.manager.ui.fragments.room.add.EditRoomFragment
 import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
@@ -587,9 +588,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    override fun onRoomViaLinkPasswordRequired(error: Boolean) { }
+    override fun onRoomViaLinkPasswordRequired(error: Boolean, tag: String) { }
 
-    protected fun showRoomInfoFragment() {
+    override fun showRoomInfoFragment() {
+        if (presenter.roomClicked?.passwordProtected == true) {
+            onRoomViaLinkPasswordRequired(false, TAG_PROTECTED_ROOM_SHOW_INFO)
+            return
+        }
         RoomInfoFragment.newInstance(presenter.roomClicked ?: error("room can not be null"))
             .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
     }

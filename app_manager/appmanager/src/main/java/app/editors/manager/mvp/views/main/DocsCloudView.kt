@@ -50,5 +50,8 @@ interface DocsCloudView : DocsBaseView {
     fun onRoomExportIndex(operation: ExportIndexOperation)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onRoomViaLinkPasswordRequired(error: Boolean)
+    fun onRoomViaLinkPasswordRequired(error: Boolean, tag: String)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showRoomInfoFragment()
 }

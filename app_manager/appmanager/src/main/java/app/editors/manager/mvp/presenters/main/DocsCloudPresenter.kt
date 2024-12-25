@@ -51,6 +51,9 @@ import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.MoveCopyDialog
+import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_DOWNLOAD
+import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_OPEN_FOLDER
+import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
 import io.reactivex.Observable
@@ -178,7 +181,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             } else {
                 if (itemClicked is CloudFolder) {
                     if (itemClicked.isRoom && itemClicked.passwordProtected) {
-                        viewState.onRoomViaLinkPasswordRequired(false)
+                        viewState.onRoomViaLinkPasswordRequired(false, TAG_PROTECTED_ROOM_OPEN_FOLDER)
                     } else {
                         openFolder(itemClicked.id, position)
                     }
@@ -483,6 +486,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         setFiltering(false)
         resetFilters()
         super.openFolder(id, position, roomType)
+    }
+
+    override fun createDownloadFile() {
+        if (isRoom && isRoot && roomClicked?.passwordProtected == true) {
+            viewState.onRoomViaLinkPasswordRequired(false, TAG_PROTECTED_ROOM_DOWNLOAD)
+            return
+        }
+        super.createDownloadFile()
     }
 
     fun onContextClick(editType: EditType?) {
@@ -1328,7 +1339,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun authRoomViaLink(password: String) {
+    fun authRoomViaLink(password: String, tag: String) {
         showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         requestJob = presenterScope.launch {
             val requestToken = roomClicked?.requestToken.orEmpty()
@@ -1338,11 +1349,16 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     is Result.Success -> {
                         val roomId = result.result
                         if (roomId == null) {
-                            viewState.onRoomViaLinkPasswordRequired(true)
+                            viewState.onRoomViaLinkPasswordRequired(true, tag)
                         } else {
+                            roomClicked?.passwordProtected = false
                             refresh {
                                 viewState.onDialogClose()
-                                openFolder(result.result, 0)
+                                when (tag) {
+                                    TAG_PROTECTED_ROOM_OPEN_FOLDER -> openFolder(result.result, 0)
+                                    TAG_PROTECTED_ROOM_DOWNLOAD -> createDownloadFile()
+                                    TAG_PROTECTED_ROOM_SHOW_INFO -> viewState.showRoomInfoFragment()
+                                }
                             }
                         }
                     }
