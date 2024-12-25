@@ -26,6 +26,7 @@ import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestEditRoom
 import app.documents.core.network.room.models.RequestOrder
+import app.documents.core.network.room.models.RequestRoomAuthViaLink
 import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
@@ -472,6 +473,21 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 emit(operation)
                 delay(1000)
             }
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
+    /**
+     * @return id of room that is accessed via link
+     * */
+    fun authRoomViaLink(requestToken: String, password: String): Flow<Result<String?>> {
+        return flow {
+            val response = roomService
+                .authRoomViaLink(requestToken, RequestRoomAuthViaLink(password))
+                .response
+
+            emit(response.id)
         }
             .flowOn(Dispatchers.IO)
             .asResult()

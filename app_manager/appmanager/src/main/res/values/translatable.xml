@@ -1008,4 +1008,7 @@
     <string name="rooms_index_reorder_complete_title">File exported</string>
     <string name="rooms_index_reorder_complete_desc">%s file exported to Documents</string>
     <string name="rooms_index_reorder_open_file">Open file</string>
+    
+    <string name="rooms_protected_room">Protected room</string>
+    <string name="rooms_invalid_password">Invalid password</string>
 </resources>

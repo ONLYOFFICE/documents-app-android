@@ -19,10 +19,12 @@ import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestEditRoom
 import app.documents.core.network.room.models.RequestOrder
+import app.documents.core.network.room.models.RequestRoomAuthViaLink
 import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSendLinks
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
+import app.documents.core.network.room.models.ResponseRoomAuthViaLink
 import app.documents.core.network.room.models.ResponseRoomShare
 import app.documents.core.network.room.models.ResponseTags
 import app.documents.core.network.room.models.ResponseUpdateExternalLink
@@ -386,4 +388,10 @@ interface RoomService {
     suspend fun startIndexExport(
         @Path("roomId") roomId: String
     ): Response<ResponseBody>
+
+    @POST("api/" + ApiContract.API_VERSION + "/files/share/{token}/password")
+    suspend fun authRoomViaLink(
+        @Path("token") requestToken: String,
+        @Body body: RequestRoomAuthViaLink
+    ): app.documents.core.network.BaseResponse<ResponseRoomAuthViaLink>
 }

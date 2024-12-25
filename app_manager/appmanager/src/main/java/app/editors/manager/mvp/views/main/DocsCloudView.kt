@@ -48,4 +48,7 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onRoomExportIndex(operation: ExportIndexOperation)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onRoomViaLinkPasswordRequired(error: Boolean)
 }

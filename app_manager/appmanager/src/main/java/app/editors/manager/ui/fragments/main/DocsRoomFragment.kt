@@ -15,6 +15,7 @@ import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.room.order.RoomOrderDialogFragment
 import app.editors.manager.ui.fragments.share.InviteUsersFragment
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 class DocsRoomFragment : DocsCloudFragment() {
@@ -103,9 +104,8 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
         when (tag) {
-            TAG_LEAVE_ROOM -> {
-                cloudPresenter.leaveRoom()
-            }
+            TAG_LEAVE_ROOM -> cloudPresenter.leaveRoom()
+            TAG_PROTECTED_ROOM -> cloudPresenter.authRoomViaLink(value.orEmpty())
             else -> super.onAcceptClick(dialogs, value, tag)
         }
     }
@@ -118,6 +118,20 @@ class DocsRoomFragment : DocsCloudFragment() {
                     filter.tags.isNotEmpty() ||
                     filter.provider != null
         } else super.getFilters()
+    }
+
+    override fun onRoomViaLinkPasswordRequired(error: Boolean) {
+        (requireActivity() as? BaseActivity)?.showEditDialog(
+            title = getString(R.string.rooms_protected_room),
+            value = "",
+            editHint = getString(lib.editors.gbase.R.string.dialog_edit_hint),
+            acceptTitle = getString(lib.editors.gbase.R.string.dialog_edit_accept),
+            cancelTitle = getString(lib.toolkit.base.R.string.common_cancel),
+            isPassword = true,
+            error = getString(R.string.rooms_invalid_password).takeIf { error },
+            tag = TAG_PROTECTED_ROOM,
+            bottomTitle = null
+        )
     }
 
     private fun reconnectStorage() {
@@ -153,6 +167,7 @@ class DocsRoomFragment : DocsCloudFragment() {
         const val KEY_RESULT_ROOM_ID = "key_result_room_id"
         const val KEY_RESULT_ROOM_TYPE = "key_result_room_type"
         const val TAG_LEAVE_ROOM = "tag_leave_room"
+        const val TAG_PROTECTED_ROOM = "tag_protected_room"
 
         fun newInstance(section: Int, rootPath: String): DocsCloudFragment {
             return DocsRoomFragment().apply {

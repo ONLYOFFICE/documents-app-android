@@ -177,7 +177,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 ) { moveCopySelected(OperationsState.OperationType.RESTORE) }
             } else {
                 if (itemClicked is CloudFolder) {
-                    openFolder(itemClicked.id, position)
+                    if (itemClicked.isRoom && itemClicked.passwordProtected) {
+                        viewState.onRoomViaLinkPasswordRequired(false)
+                    } else {
+                        openFolder(itemClicked.id, position)
+                    }
                 } else if (itemClicked is CloudFile) {
                     if (LocalContentTools.isOpenFormat(itemClicked.clearExt)) {
                         viewState.onConversionQuestion()
@@ -1317,6 +1321,29 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         if (progress == 100 || operation.isCompleted) {
                             viewState.onDialogClose()
                             viewState.onRoomExportIndex(operation)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun authRoomViaLink(password: String) {
+        showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+        requestJob = presenterScope.launch {
+            val requestToken = roomClicked?.requestToken.orEmpty()
+            roomProvider?.authRoomViaLink(requestToken, password)?.collect { result ->
+                when (result) {
+                    is Result.Error -> fetchError(result.exception)
+                    is Result.Success -> {
+                        val roomId = result.result
+                        if (roomId == null) {
+                            viewState.onRoomViaLinkPasswordRequired(true)
+                        } else {
+                            refresh {
+                                viewState.onDialogClose()
+                                openFolder(result.result, 0)
+                            }
                         }
                     }
                 }

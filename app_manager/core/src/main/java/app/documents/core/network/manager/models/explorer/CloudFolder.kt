@@ -96,6 +96,14 @@ open class CloudFolder : Item(), Serializable {
     @Expose
     var expired: Boolean = false
 
+    @SerializedName("passwordProtected")
+    @Expose
+    var passwordProtected: Boolean = false
+
+    @SerializedName("requestToken")
+    @Expose
+    var requestToken: String? = null
+
     fun setFolder(folder: CloudFolder) {
         setItem(folder)
         parentId = folder.parentId

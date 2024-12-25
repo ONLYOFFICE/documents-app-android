@@ -263,7 +263,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         }
     }
 
-    open fun refresh(): Boolean {
+    open fun refresh(onRefresh: () -> Unit = {}): Boolean {
         //        setPlaceholderType(PlaceholderViews.Type.LOAD)
         modelExplorerStack.currentId?.let { id ->
             fileProvider?.let { provider ->
@@ -277,6 +277,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                         .subscribe({ explorer ->
                             updateViewsState()
                             viewState.onDocsRefresh(explorer)
+                            onRefresh()
                         }, this::fetchError)
                 )
                 viewState.onSwipeEnable(true)

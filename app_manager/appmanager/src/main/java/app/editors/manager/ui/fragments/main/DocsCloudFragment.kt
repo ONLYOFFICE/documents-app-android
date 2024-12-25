@@ -587,6 +587,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    override fun onRoomViaLinkPasswordRequired(error: Boolean) { }
+
     protected fun showRoomInfoFragment() {
         RoomInfoFragment.newInstance(presenter.roomClicked ?: error("room can not be null"))
             .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
