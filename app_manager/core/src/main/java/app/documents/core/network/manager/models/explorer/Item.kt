@@ -39,9 +39,6 @@ open class Item : ItemProperties(), Serializable {
     @Expose
     var created = Date()
 
-    @SerializedName("expired")
-    val expired: Date? = null
-
     @SerializedName("createdBy")
     @Expose
     var createdBy = CreatedBy()

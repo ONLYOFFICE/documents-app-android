@@ -62,12 +62,24 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/badge"
-        style="@style/ExplorerItemLayout.RoomBadge"
+        style="@style/ExplorerItemLayout.RoomPublicBadge"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/cardImageLayout"
         app:layout_constraintEnd_toEndOf="@id/cardImageLayout"
         tools:src="@drawable/ic_public_room_badge" />
+
+    <ImageView
+        android:id="@+id/externalBadge"
+        style="@style/ExplorerItemLayout.RoomExternalBadge"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_room_external_badge"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/cardImageLayout"
+        app:layout_constraintEnd_toEndOf="@id/cardImageLayout"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/iconPinned"

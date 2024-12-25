@@ -88,6 +88,14 @@ open class CloudFolder : Item(), Serializable {
     @Expose
     var quotaLimit: Long? = null
 
+    @SerializedName("external")
+    @Expose
+    var external: Boolean = false
+
+    @SerializedName("expired")
+    @Expose
+    var expired: Boolean = false
+
     fun setFolder(folder: CloudFolder) {
         setItem(folder)
         parentId = folder.parentId

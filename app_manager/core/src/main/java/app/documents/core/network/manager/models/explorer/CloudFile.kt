@@ -8,6 +8,7 @@ import lib.toolkit.base.managers.utils.StringUtils.Extension
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import java.time.Duration
 import java.time.Instant
+import java.util.Date
 
 open class CloudFile : Item() {
 
@@ -82,6 +83,9 @@ open class CloudFile : Item() {
     @SerializedName("isForm")
     @Expose
     var isForm: Boolean = false
+
+    @SerializedName("expired")
+    val expired: Date? = null
 
     val nextVersion: Int
         get() = ++version
