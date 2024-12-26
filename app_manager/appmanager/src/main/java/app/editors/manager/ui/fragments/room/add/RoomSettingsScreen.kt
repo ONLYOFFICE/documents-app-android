@@ -942,8 +942,8 @@ private fun LifeTimeBlock(
                     onDismiss = { popupVisible.value = false },
                     items = {
                         mapOf(
-                            true to R.string.file_lifetime_action_move_to_trash,
-                            false to R.string.file_lifetime_action_delete
+                            false to R.string.file_lifetime_action_move_to_trash,
+                            true to R.string.file_lifetime_action_delete
                         ).forEach { (state, title) ->
                             DropdownMenuItem(
                                 title = stringResource(title),
