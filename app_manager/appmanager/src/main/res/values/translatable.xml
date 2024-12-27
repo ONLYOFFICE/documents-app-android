@@ -1012,4 +1012,6 @@
     
     <string name="rooms_protected_room">Protected room</string>
     <string name="rooms_invalid_password">Invalid password</string>
+
+    <string name="rooms_invite_access_description">Guests, Users and Groups cannot be assigned as Room managers. Only Room and DocSpace admins are suitable for the specified role.</string>
 </resources>

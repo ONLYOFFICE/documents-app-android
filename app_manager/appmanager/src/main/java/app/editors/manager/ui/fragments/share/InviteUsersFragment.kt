@@ -221,6 +221,7 @@ fun InviteUsersScreen(
                 }
                 InviteAccessScreen(
                     accessList = remember { RoomUtils.getAccessOptions(roomType, false) },
+                    description = stringResource(R.string.rooms_invite_access_description),
                     viewModel = inviteAccessViewModel,
                     onBack = navController::popBackStackWhenResumed,
                     onSnackBar = onSnackBar,

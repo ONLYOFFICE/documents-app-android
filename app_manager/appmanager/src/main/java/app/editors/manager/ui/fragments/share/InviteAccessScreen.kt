@@ -26,12 +26,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
+import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.views.custom.AccessIconButton
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.InviteAccessEffect
@@ -42,6 +44,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
+import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppScaffold
@@ -55,9 +58,10 @@ import kotlin.random.Random
 fun InviteAccessScreen(
     accessList: List<Int>,
     viewModel: InviteAccessViewModel,
+    description: String? = null,
     onBack: () -> Unit,
     onSuccess: () -> Unit,
-    onSnackBar: (String) -> Unit
+    onSnackBar: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
@@ -79,6 +83,7 @@ fun InviteAccessScreen(
 
     MainScreen(
         state = state,
+        description = description,
         accessList = accessList,
         onSetAccess = viewModel::setAccess,
         onBack = onBack,
@@ -90,6 +95,7 @@ fun InviteAccessScreen(
 @Composable
 private fun MainScreen(
     state: InviteAccessState,
+    description: String? = null,
     accessList: List<Int>,
     onSetAccess: (String, Int) -> Unit,
     onSetAllAccess: (Int) -> Unit,
@@ -106,6 +112,12 @@ private fun MainScreen(
         useTablePaddings = false
     ) {
         Column {
+            description?.let { text ->
+                AppDescriptionItem(
+                    modifier = Modifier.padding(top = 8.dp),
+                    text = text
+                )
+            }
             LazyColumn(modifier = Modifier.weight(1f)) {
                 item {
                     if (state.loading) {
@@ -138,7 +150,8 @@ private fun MainScreen(
                         items(users) { user ->
                             InviteItem(
                                 title = user.displayName,
-                                subtitle = user.groups.joinToString { group -> group.name },
+                                subtitle = stringResource(RoomUtils.getUserRole(user))
+                                        + user.email?.let { " | $it" },
                                 avatar = user.avatarMedium,
                                 access = state.idAccessList[user.id] ?: -1,
                                 accessList = accessList,
@@ -201,7 +214,7 @@ private fun <T> InviteItem(
     access: Int,
     accessList: List<Int>,
     value: T,
-    onSetAccess: (T, Int) -> Unit
+    onSetAccess: (T, Int) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -325,6 +338,7 @@ private fun InviteAccessScreenUsersPreview() {
                 groups = groups,
                 idAccessList = accessList
             ),
+            description = "Guests, Users and Groups cannot be assigned as Room managers. Only Room and DocSpace admins are suitable for the specified role.",
             accessList = listOf(),
             onSetAccess = { _, _ -> },
             onBack = {},
