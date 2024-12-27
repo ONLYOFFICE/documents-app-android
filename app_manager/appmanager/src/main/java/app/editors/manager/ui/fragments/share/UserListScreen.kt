@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
@@ -31,6 +32,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -44,12 +46,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
@@ -61,6 +68,7 @@ import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.views.custom.SearchAppBar
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.UserListEffect
+import app.editors.manager.viewModels.main.UserListMode
 import app.editors.manager.viewModels.main.UserListState
 import app.editors.manager.viewModels.main.UserListViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -84,15 +92,13 @@ import lib.toolkit.base.managers.utils.AccountUtils
 fun UserListScreen(
     viewModel: UserListViewModel,
     title: Int,
-    withGroups: Boolean = false,
     closeable: Boolean = true,
-    disableInvited: Boolean = false,
     useTabletPaddings: Boolean = false,
     onClick: (id: String) -> Unit,
     onBack: () -> Unit,
     onSnackBar: (String) -> Unit,
     onSuccess: ((User) -> Unit)? = null,
-    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> }
+    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> },
 ) {
     val state by viewModel.viewState.collectAsState()
 
@@ -108,14 +114,11 @@ fun UserListScreen(
     MainScreen(
         state = state,
         title = title,
-        withGroups = withGroups,
         closeable = closeable,
-        disableInvited = disableInvited,
         useTabletPaddings = useTabletPaddings,
         onClick = onClick,
         onSearch = viewModel::search,
         onBack = onBack,
-        onSnackBar = onSnackBar,
         bottomContent = bottomContent
     )
 }
@@ -124,21 +127,30 @@ fun UserListScreen(
 private fun MainScreen(
     state: UserListState,
     title: Int,
-    withGroups: Boolean = false,
     closeable: Boolean = true,
-    disableInvited: Boolean = false,
     useTabletPaddings: Boolean = false,
     onClick: (id: String) -> Unit,
     onSearch: (String) -> Unit,
     onBack: () -> Unit,
-    onSnackBar: (String) -> Unit,
     bottomContent: @Composable (count: Int, access: Int) -> Unit = { _, _ -> },
 ) {
     val searchState = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-    val token = remember { context.accountOnline?.accountName?.let { AccountUtils.getToken(context, it) }.orEmpty() }
-    val portal = remember { context.accountOnline?.portal?.urlWithScheme }
+    val view = LocalView.current
+    val token = remember {
+        if (!view.isInEditMode) {
+            context.accountOnline?.accountName?.let { AccountUtils.getToken(context, it) }.orEmpty()
+        } else {
+            ""
+        }
+    }
+    val portal = remember {
+        if (!view.isInEditMode) {
+            context.accountOnline?.portal
+        } else {
+            CloudPortal(provider = PortalProvider.Cloud.DocSpace)
+        }
+    }
     val tabs = remember {
         listOfNotNull(
             TabRowItem(
@@ -146,10 +158,10 @@ private fun MainScreen(
             ),
             TabRowItem(
                 context.getString(app.editors.manager.R.string.share_goal_group)
-            ),
+            ).takeIf { state.mode == UserListMode.Invite },
             TabRowItem(
                 context.getString(app.editors.manager.R.string.share_goal_guest)
-            )
+            ).takeIf { portal.isDocSpace && state.mode == UserListMode.Invite }
         )
     }
     val pagerState = rememberPagerState(pageCount = tabs::size)
@@ -157,41 +169,15 @@ private fun MainScreen(
     AppScaffold(
         useTablePaddings = useTabletPaddings,
         topBar = {
-            Column {
-                AnimatedContent(
-                    targetState = searchState.value,
-                    transitionSpec = { fadeIn().togetherWith(fadeOut()) },
-                    label = "appbar_content"
-                ) { search ->
-                    if (search) {
-                        SearchAppBar(
-                            onClose = { searchState.value = false; onSearch.invoke("") },
-                            onTextChange = onSearch::invoke
-                        )
-                    } else {
-                        AppTopBar(
-                            title = stringResource(id = title),
-                            isClose = closeable,
-                            backListener = onBack,
-                            actions = {
-                                TopAppBarAction(
-                                    icon = app.editors.manager.R.drawable.ic_toolbar_search,
-                                    onClick = { searchState.value = true }
-                                )
-                            }
-                        )
-                    }
-                }
-                if (withGroups) {
-                    AppTabRow(
-                        pagerState = pagerState,
-                        tabs = tabs,
-                        onTabClick = {
-                            coroutineScope.launch { pagerState.animateScrollToPage(it) }
-                        }
-                    )
-                }
-            }
+            AppBar(
+                title = stringResource(title),
+                closeable = closeable,
+                searchState = searchState,
+                pagerState = pagerState,
+                tabs = tabs,
+                onSearch = onSearch,
+                onBack = onBack
+            )
         }
     ) {
         if (state.loading) {
@@ -203,92 +189,14 @@ private fun MainScreen(
                 } else {
                     VerticalSpacer(height = 4.dp)
                 }
-
-                HorizontalPager(modifier = Modifier.weight(1f), state = pagerState) {
-                    when (it) {
-                        0 -> {
-                            val users = state.users.filter { user -> !user.isVisitor }
-                            if (users.isNotEmpty()) {
-                                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                    users.groupBy { user -> user.displayNameFromHtml.first().uppercaseChar() }
-                                        .toSortedMap()
-                                        .forEach { (letter, users) ->
-                                            itemsIndexed(items = users.orEmpty()) { index, user ->
-                                                UserItem(
-                                                    withLetter = true,
-                                                    letter = letter?.toString().takeIf { index == 0 },
-                                                    name = user.displayNameFromHtml,
-                                                    subtitle = user.groups.joinToString { group -> group.name },
-                                                    shared = disableInvited && user.shared,
-                                                    selected = state.selected.contains(user.id),
-                                                    onClick = { onClick.invoke(user.id) },
-                                                    avatar = if (user.hasAvatar) {
-                                                        GlideUtils.getCorrectLoad(user.avatarMedium, token, portal)
-                                                    } else {
-                                                        null
-                                                    }
-                                                )
-                                            }
-                                        }
-                                }
-                            } else {
-                                PlaceholderView(withGroups, searchState.value)
-                            }
-                        }
-
-                        1 -> {
-                            val groups = state.groups
-                            if (groups.isNotEmpty()) {
-                                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                    items(items = groups) { group ->
-                                        UserItem(
-                                            withLetter = false,
-                                            name = group.name,
-                                            shared = group.shared,
-                                            letter = null,
-                                            subtitle = null,
-                                            avatar = null,
-                                            selected = state.selected.contains(group.id),
-                                            onClick = { onClick.invoke(group.id) }
-                                        )
-                                    }
-                                }
-                            } else {
-                                PlaceholderView(withGroups, searchState.value)
-                            }
-                        }
-
-                        2 -> {
-                            val guests = state.users.filter { user -> user.isVisitor }
-                            if (guests.isNotEmpty()) {
-                                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                    guests.groupBy { user -> user.displayNameFromHtml.first().uppercaseChar() }
-                                        .toSortedMap()
-                                        .forEach { (letter, users) ->
-                                            itemsIndexed(items = users.orEmpty()) { index, user ->
-                                                UserItem(
-                                                    withLetter = true,
-                                                    letter = letter?.toString().takeIf { index == 0 },
-                                                    name = user.displayNameFromHtml,
-                                                    subtitle = user.groups.joinToString { group -> group.name },
-                                                    shared = disableInvited && user.shared,
-                                                    selected = state.selected.contains(user.id),
-                                                    onClick = { onClick.invoke(user.id) },
-                                                    avatar = if (user.hasAvatar) {
-                                                        GlideUtils.getCorrectLoad(user.avatarMedium, token, portal)
-                                                    } else {
-                                                        null
-                                                    }
-                                                )
-                                            }
-                                        }
-                                }
-                            } else {
-                                PlaceholderView(withGroups, searchState.value)
-                            }
-                        }
-                    }
-                }
+                PagerScreen(
+                    modifier = Modifier.weight(1f),
+                    pagerState = pagerState,
+                    state = state,
+                    onClick = onClick,
+                    portal = portal?.urlWithScheme,
+                    token = token
+                )
                 bottomContent(state.selected.size, state.access ?: 0)
             }
         }
@@ -296,31 +204,170 @@ private fun MainScreen(
 }
 
 @Composable
-private fun PlaceholderView(withGroups: Boolean, search: Boolean) {
-    val title: Int
-    val subtitle: Int
-
-    if (search) {
-        title = app.editors.manager.R.string.placeholder_no_search_result
-        subtitle = app.editors.manager.R.string.placeholder_no_search_result_desc
-    } else if (withGroups) {
-        title = app.editors.manager.R.string.placeholder_no_members_found
-        subtitle = app.editors.manager.R.string.placeholder_no_members_found_desc
-    } else {
-        title = app.editors.manager.R.string.placeholder_no_users_found
-        subtitle = app.editors.manager.R.string.placeholder_no_users_found_desc
+private fun AppBar(
+    title: String,
+    closeable: Boolean,
+    searchState: MutableState<Boolean>,
+    pagerState: PagerState,
+    tabs: List<TabRowItem>,
+    onSearch: (String) -> Unit,
+    onBack: () -> Unit,
+) {
+    val coroutineScope = rememberCoroutineScope()
+    Column {
+        AnimatedContent(
+            targetState = searchState.value,
+            transitionSpec = { fadeIn().togetherWith(fadeOut()) },
+            label = "appbar_content"
+        ) { search ->
+            if (search) {
+                SearchAppBar(
+                    onClose = { searchState.value = false; onSearch.invoke("") },
+                    onTextChange = onSearch::invoke
+                )
+            } else {
+                AppTopBar(
+                    title = title,
+                    isClose = closeable,
+                    backListener = onBack,
+                    actions = {
+                        TopAppBarAction(
+                            icon = app.editors.manager.R.drawable.ic_toolbar_search,
+                            onClick = { searchState.value = true }
+                        )
+                    }
+                )
+            }
+        }
+        if (!searchState.value && tabs.size > 1) {
+            AppTabRow(
+                pagerState = pagerState,
+                tabs = tabs,
+                onTabClick = { coroutineScope.launch { pagerState.animateScrollToPage(it) } }
+            )
+        }
     }
+}
 
-    PlaceholderView(
-        image = R.drawable.placeholder_no_search_result,
-        title = stringResource(id = title),
-        subtitle = stringResource(id = subtitle)
-    )
+@Composable
+private fun PagerScreen(
+    modifier: Modifier = Modifier,
+    pagerState: PagerState,
+    state: UserListState,
+    onClick: (id: String) -> Unit,
+    token: String,
+    portal: String?,
+) {
+    HorizontalPager(modifier = modifier, state = pagerState) {
+        when (it) {
+            0 -> {
+                if (state.users.isNotEmpty()) {
+                    UsersScreen(
+                        users = state.users,
+                        mode = state.mode,
+                        selectedIdList = state.selected,
+                        token = token,
+                        portal = portal,
+                        onClick = onClick
+                    )
+                } else {
+                    PlaceholderView(
+                        image = app.editors.manager.R.drawable.placeholder_no_users,
+                        title = stringResource(id = app.editors.manager.R.string.placeholder_no_members_found),
+                        subtitle = stringResource(id = app.editors.manager.R.string.placeholder_no_members_found_desc)
+                    )
+                }
+            }
+
+            1 -> {
+                val groups = state.groups
+                if (groups.isNotEmpty()) {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(items = groups, key = Group::id) { group ->
+                            ListItem(
+                                withLetter = false,
+                                name = group.name,
+                                shared = group.shared,
+                                letter = null,
+                                subtitle = null,
+                                avatar = null,
+                                selected = state.selected.contains(group.id),
+                                onClick = { onClick.invoke(group.id) }
+                            )
+                        }
+                    }
+                } else {
+                    PlaceholderView(
+                        image = app.editors.manager.R.drawable.placeholder_no_users,
+                        title = stringResource(id = app.editors.manager.R.string.placeholder_no_members_found),
+                        subtitle = stringResource(id = app.editors.manager.R.string.placeholder_no_members_found_desc)
+                    )
+                }
+            }
+
+            2 -> {
+                if (state.guests.isNotEmpty()) {
+                    UsersScreen(
+                        users = state.guests,
+                        mode = state.mode,
+                        selectedIdList = state.selected,
+                        token = token,
+                        portal = portal,
+                        onClick = onClick
+                    )
+                } else {
+                    PlaceholderView(
+                        image = app.editors.manager.R.drawable.placeholder_no_users,
+                        title = stringResource(id = app.editors.manager.R.string.placeholder_no_members_found),
+                        subtitle = stringResource(id = app.editors.manager.R.string.placeholder_no_members_found_desc)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun UsersScreen(
+    users: List<User>,
+    mode: UserListMode,
+    selectedIdList: List<String>,
+    token: String,
+    portal: String?,
+    onClick: (String) -> Unit,
+) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        users.groupBy { user -> user.displayNameFromHtml.first().uppercaseChar() }
+            .toSortedMap()
+            .forEach { (letter, users) ->
+                itemsIndexed(items = users.orEmpty(), key = { _, item -> item.id }) { index, user ->
+                    ListItem(
+                        withLetter = true,
+                        letter = letter?.toString().takeIf { index == 0 },
+                        name = user.displayNameFromHtml,
+                        subtitle = stringResource(RoomUtils.getUserRole(user))
+                                + user.email?.let { " | $it" },
+                        shared = mode == UserListMode.Invite && user.shared,
+                        selected = selectedIdList.contains(user.id),
+                        onClick = { onClick.invoke(user.id) },
+                        avatar = if (user.hasAvatar) {
+                            GlideUtils.getCorrectLoad(
+                                user.avatarMedium,
+                                token,
+                                portal
+                            )
+                        } else {
+                            null
+                        }
+                    )
+                }
+            }
+    }
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun LazyItemScope.UserItem(
+private fun LazyItemScope.ListItem(
     name: String,
     selected: Boolean,
     shared: Boolean,
@@ -414,7 +461,8 @@ private fun LazyItemScope.UserItem(
                     text = subtitle,
                     style = MaterialTheme.typography.body2,
                     maxLines = 1,
-                    color = MaterialTheme.colors.colorTextSecondary
+                    color = MaterialTheme.colors.colorTextSecondary,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
@@ -437,28 +485,30 @@ private fun PreviewMainWithBottom() {
         MainScreen(
             title = app.editors.manager.R.string.invite_choose_from_list,
             state = UserListState(
+                mode = UserListMode.Invite,
                 loading = false,
                 requestLoading = false,
                 selected = selected,
                 users = listOf(
-                    User().copy(displayName = "user", id = "id", email = "email"),
-                    User().copy(displayName = "User", id = "id1", email = "email"),
-                    User().copy(displayName = "Mike", id = "id2", email = "email"),
-                    User().copy(displayName = "mike", id = "id3", email = "email"),
-                    User().copy(displayName = "User", id = "id4", email = "email"),
-                    User().copy(displayName = "123", id = "id5", email = "email"),
-                    User().copy(displayName = "5mike", id = "id6", email = "email", shared = true)
+                    User().copy(displayName = "user", id = "id", email = "email@emailemail.com", isAdmin = true, shared = true),
+                    User().copy(displayName = "User", id = "id1", email = "email@email.com"),
+                    User().copy(displayName = "Mike", id = "id2", email = "email@email.com"),
+                    User().copy(displayName = "mike", id = "id3", email = "email@email.com"),
+                    User().copy(displayName = "User", id = "id4", email = "email@email.com", isAdmin = true),
+                    User().copy(displayName = "123", id = "id5", email = "email@email.com", isAdmin = true),
+                    User().copy(displayName = "5mike", id = "id6", email = "email@email.com", shared = true)
                 ),
                 groups = listOf(
                     Group("", "group 1")
                 )
             ),
-            disableInvited = true,
-            withGroups = true,
             closeable = false,
-            onClick = { user -> if (selected.contains(user)) selected.remove(user) else selected.add(user) },
+            onClick = { user ->
+                if (selected.contains(user)) selected.remove(user) else selected.add(
+                    user
+                )
+            },
             onSearch = {},
-            onSnackBar = {},
             onBack = {}
         ) { _, _ ->
             UserListBottomContent(
@@ -486,6 +536,7 @@ private fun PreviewMain() {
         MainScreen(
             title = app.editors.manager.R.string.room_set_owner_title,
             state = UserListState(
+                mode = UserListMode.ChangeOwner,
                 loading = false,
                 requestLoading = false,
                 users = listOf(
@@ -501,11 +552,9 @@ private fun PreviewMain() {
                     Group("", "group 1")
                 )
             ),
-            withGroups = false,
             closeable = false,
             onClick = { },
             onSearch = {},
-            onSnackBar = {},
             onBack = {}
         ) { _, _ -> }
     }
@@ -518,15 +567,14 @@ private fun PreviewEmptyMain() {
         MainScreen(
             title = app.editors.manager.R.string.room_set_owner_title,
             state = UserListState(
+                mode = UserListMode.ChangeOwner,
                 loading = false,
                 requestLoading = false,
                 users = emptyList()
             ),
-            withGroups = false,
             closeable = false,
             onClick = { },
             onSearch = {},
-            onSnackBar = {},
             onBack = {}
         )
     }

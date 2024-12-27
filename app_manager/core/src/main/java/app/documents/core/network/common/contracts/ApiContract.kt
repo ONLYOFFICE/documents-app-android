@@ -198,6 +198,8 @@ object ApiContract {
         const val ARG_COUNT = "count"
         const val ARG_START_INDEX = "startIndex"
         const val ARG_SORT_BY = "sortBy"
+        const val ARG_AREA = "area"
+        const val ARG_INVITER_ID = "inviterId"
         const val ARG_SORT_ORDER = "sortOrder"
         const val ARG_FILTER_BY = "filterBy"
         const val ARG_FILTER_OP = "filterOp"
@@ -241,6 +243,8 @@ object ApiContract {
         const val VAL_SORT_BY_DISPLAY_NAME = "displayName"
         const val VAL_SORT_BY_ROOM_TYPE = "roomType"
         const val VAL_SORT_BY_TAGS = "Tags"
+        const val VAL_AREA_GUESTS = "guests"
+        const val VAL_AREA_PEOPLE = "people"
     }
 
     object SectionType {

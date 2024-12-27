@@ -6,34 +6,35 @@ import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.share.ShareService
 import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import retrofit2.HttpException
 import kotlin.time.Duration.Companion.milliseconds
 
+sealed class UserListMode {
+    data object Invite : UserListMode()
+    data object ChangeOwner : UserListMode()
+}
+
 data class UserListState(
+    val mode: UserListMode,
     val loading: Boolean = true,
     val requestLoading: Boolean = false,
     val users: List<User> = emptyList(),
     val groups: List<Group> = emptyList(),
+    val guests: List<User> = emptyList(),
     val access: Int? = null,
     val selected: List<String> = emptyList(),
 )
@@ -44,14 +45,15 @@ sealed class UserListEffect {
 }
 
 @OptIn(FlowPreview::class)
-open class UserListViewModel(
+abstract class UserListViewModel(
     access: Int?,
-    private val invitedIds: List<String> = emptyList(),
-    private val shareService: ShareService,
+    mode: UserListMode,
+    protected val invitedIds: List<String> = emptyList(),
     private val resourcesProvider: ResourcesProvider,
 ) : ViewModel() {
 
-    private val _viewState: MutableStateFlow<UserListState> = MutableStateFlow(UserListState(access = access))
+    private val _viewState: MutableStateFlow<UserListState> =
+        MutableStateFlow(UserListState(mode = mode, access = access))
     val viewState: StateFlow<UserListState> = _viewState
 
     private val _effect: MutableSharedFlow<UserListEffect> = MutableSharedFlow(1)
@@ -59,30 +61,32 @@ open class UserListViewModel(
 
     private val searchFlow: MutableSharedFlow<String> = MutableSharedFlow(1)
 
-    protected open var cachedMembersFlow: SharedFlow<List<Member>> = flow {
-        val groups = shareService.getGroups(getOptions())
-            .response
-            .run { if (invitedIds.isNotEmpty()) map { it.copy(shared = it.id in invitedIds) } else this }
+    protected abstract val cachedMembersFlow: SharedFlow<List<Member>>
 
-        val users = shareService.getUsers(getOptions())
-            .response
-            .run { if (invitedIds.isNotEmpty()) map { it.copy(shared = it.id in invitedIds) } else this }
-            .run {
-                val invitedGroups = groups.filter { it.shared }.map { it.id }
-                if (invitedGroups.isNotEmpty()) {
-                    map {
-                        if (!it.shared) {
-                            it.copy(shared = it.groups.any { group -> group.id in invitedGroups })
-                        } else it
-                    }
-                } else this
+    init {
+        collectSearchFlow()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    protected inline fun <reified T : Member> List<T>.checkIfShared(groups: List<Group>): List<T> {
+        return when (T::class) {
+            Group::class -> {
+                filterIsInstance<Group>().map { it.copy(shared = it.id in invitedIds) }
             }
 
-        emit(users + groups)
+            User::class -> {
+                val invitedGroups = groups.filter(Group::shared).map(Group::id)
+                filterIsInstance<User>()
+                    .map {
+                        it.copy(
+                            shared = it.groups.any { group -> group.id in invitedGroups } || it.id in invitedIds
+                        )
+                    }
+            }
+
+            else -> this
+        } as List<T>
     }
-        .catch { error -> handleError(error) }
-        .onCompletion { updateListState() }
-        .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
 
     protected fun handleError(error: Throwable) {
         val message = when (error) {
@@ -92,32 +96,39 @@ open class UserListViewModel(
         _effect.tryEmit(UserListEffect.Error(message))
     }
 
-    init {
-        collectSearchFlow()
-    }
-
     private fun collectSearchFlow() {
         viewModelScope.launch {
             searchFlow
                 .onStart { emit("") }
                 .distinctUntilChanged()
                 .debounce(500.milliseconds)
-                .collect(::updateListState)
+                .collect { value ->
+                    updateListState(cachedMembersFlow.replayCache.lastOrNull(), value)
+                }
         }
     }
 
-    protected fun updateListState(searchValue: String = "") {
-        viewModelScope.launch {
-            cachedMembersFlow.replayCache.lastOrNull()?.let { cachedMembers ->
-                val groups = cachedMembers
-                    .filterIsInstance<Group>()
-                    .filter { it.name.startsWith(searchValue, true) }
+    protected fun updateListState(members: List<Member>?, searchValue: String = "") {
+        members?.let { cachedMembers ->
+            val groups = cachedMembers
+                .filterIsInstance<Group>()
+                .filter { it.name.startsWith(searchValue, true) }
 
-                val users = cachedMembers
-                    .filterIsInstance<User>()
-                    .filter { it.displayNameFromHtml.startsWith(searchValue, true) }
+            val users = cachedMembers
+                .filterIsInstance<User>()
+                .filter { !it.isGuest && it.displayNameFromHtml.startsWith(searchValue, true) }
 
-                _viewState.update { it.copy(loading = false, users = users, groups = groups) }
+            val guests = cachedMembers
+                .filterIsInstance<User>()
+                .filter { it.isGuest && it.displayNameFromHtml.startsWith(searchValue, true) }
+
+            _viewState.update {
+                it.copy(
+                    loading = false,
+                    users = users,
+                    groups = groups,
+                    guests = guests
+                )
             }
         }
     }

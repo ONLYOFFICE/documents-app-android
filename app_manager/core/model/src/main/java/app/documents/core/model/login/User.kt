@@ -27,6 +27,8 @@ data class User(
     val avatar: String = "",
     val isOnline: Boolean = false,
     val isAdmin: Boolean = false,
+    val isRoomAdmin: Boolean = false,
+    val isGuest: Boolean = false,
     val isLDAP: Boolean = false,
     val listAdminModules: List<String> = emptyList(),
     val isOwner: Boolean = false,

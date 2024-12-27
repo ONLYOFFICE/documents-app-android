@@ -29,7 +29,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
-import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.providers.RoomProvider
@@ -37,7 +36,6 @@ import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
-import app.editors.manager.app.shareApi
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
@@ -166,7 +164,6 @@ fun InviteUsersScreen(
                         mode = UserListMode.Invite,
                         roomId = roomId,
                         roomType = roomType,
-                        shareService = context.shareApi,
                         roomProvider = context.roomProvider,
                         resourcesProvider = context.appComponent.resourcesProvider,
                     )
@@ -174,8 +171,6 @@ fun InviteUsersScreen(
                 UserListScreen(
                     title = R.string.filter_toolbar_users_title,
                     closeable = false,
-                    disableInvited = true,
-                    withGroups = roomType != ApiContract.RoomType.PUBLIC_ROOM,
                     viewModel = userListViewModel,
                     onClick = userListViewModel::toggleSelect,
                     onBack = navController::popBackStackWhenResumed,

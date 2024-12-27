@@ -884,6 +884,7 @@
     <string name="share_access_room_group_desc">Access rights for all users in the group</string>
     <string name="share_access_room_owner">Owner</string>
     <string name="share_access_room_admin">Room admin</string>
+    <string name="share_access_room_docspace_admin">DocSpace admin</string>
     <string name="share_access_room_power_user">Power user</string>
     <string name="share_access_room_editor">Editor</string>
     <string name="share_access_room_form_filler">Form filler</string>

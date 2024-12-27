@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.util.Size
 import androidx.core.text.isDigitsOnly
 import app.documents.core.model.cloud.Order
+import app.documents.core.model.login.Group
+import app.documents.core.model.login.User
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
@@ -266,6 +268,22 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return if (response.isSuccessful && body != null) body.response else throw HttpException(
             response
         )
+    }
+
+    suspend fun getUsers(args: Map<String, String>): List<User> {
+        return roomService.getUsers(
+            args + (ApiContract.Parameters.ARG_AREA to ApiContract.Parameters.VAL_AREA_PEOPLE)
+        ).response
+    }
+
+    suspend fun getGroups(args: Map<String, String>): List<Group> {
+        return roomService.getGroups(args).response
+    }
+
+    suspend fun getGuests(args: Map<String, String>): List<User> {
+        return roomService.getUsers(
+            args + (ApiContract.Parameters.ARG_AREA to ApiContract.Parameters.VAL_AREA_GUESTS)
+        ).response.map { it.copy(isGuest = true) }
     }
 
     suspend fun setRoomUserAccess(roomId: String, userId: String, access: Int): Share? {

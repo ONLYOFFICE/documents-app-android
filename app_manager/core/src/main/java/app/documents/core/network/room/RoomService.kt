@@ -1,5 +1,7 @@
 package app.documents.core.network.room
 
+import app.documents.core.model.login.Group
+import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -63,6 +65,7 @@ interface RoomService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/rooms/")
     fun getAllRooms(@QueryMap options: Map<String, String>?): Observable<Response<ResponseExplorer>>
+
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
@@ -92,7 +95,10 @@ interface RoomService {
         path = "api/" + ApiContract.API_VERSION + "/files/rooms/{id}",
         hasBody = true
     )
-    fun deleteRoom(@Path(value = "id") id: String, @Body body: RequestDeleteRoom): Observable<Response<BaseResponse>>
+    fun deleteRoom(
+        @Path(value = "id") id: String,
+        @Body body: RequestDeleteRoom,
+    ): Observable<Response<BaseResponse>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -113,7 +119,10 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}")
-    suspend fun editRoom(@Path(value = "id") id: String, @Body body: RequestEditRoom): Response<BaseResponse>
+    suspend fun editRoom(
+        @Path(value = "id") id: String,
+        @Body body: RequestEditRoom,
+    ): Response<BaseResponse>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -127,7 +136,10 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links/send")
-    fun sendLink(@Path("id") id: String, @Body body: RequestSendLinks): Observable<Response<BaseResponse>>
+    fun sendLink(
+        @Path("id") id: String,
+        @Body body: RequestSendLinks,
+    ): Observable<Response<BaseResponse>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -168,7 +180,10 @@ interface RoomService {
         path = "api/" + ApiContract.API_VERSION + "/files/rooms/{id}/tags",
         hasBody = true
     )
-    suspend fun deleteTagsFromRoom(@Path("id") id: String, @Body body: RequestAddTags): Response<ResponseBody>
+    suspend fun deleteTagsFromRoom(
+        @Path("id") id: String,
+        @Body body: RequestAddTags,
+    ): Response<ResponseBody>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -301,7 +316,10 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share")
-    suspend fun setRoomUserAccess(@Path("id") id: String, @Body body: RequestRoomShare): Response<ResponseRoomShare>
+    suspend fun setRoomUserAccess(
+        @Path("id") id: String,
+        @Body body: RequestRoomShare,
+    ): Response<ResponseRoomShare>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -370,7 +388,7 @@ interface RoomService {
 
     @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{roomId}")
     suspend fun getRoomInfo(
-        @Path("roomId") roomId: String
+        @Path("roomId") roomId: String,
     ): app.documents.core.network.BaseResponse<CloudFolder>
 
     @PUT("api/" + ApiContract.API_VERSION + "/files/order")
@@ -378,7 +396,7 @@ interface RoomService {
 
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{roomId}/reorder")
     suspend fun reorder(
-        @Path("roomId") roomId: String
+        @Path("roomId") roomId: String,
     ): Response<ResponseBody>
 
     @GET("api/" + ApiContract.API_VERSION + "/files/rooms/indexexport")
@@ -386,12 +404,22 @@ interface RoomService {
 
     @POST("api/" + ApiContract.API_VERSION + "/files/rooms/{roomId}/indexexport")
     suspend fun startIndexExport(
-        @Path("roomId") roomId: String
+        @Path("roomId") roomId: String,
     ): Response<ResponseBody>
 
     @POST("api/" + ApiContract.API_VERSION + "/files/share/{token}/password")
     suspend fun authRoomViaLink(
         @Path("token") requestToken: String,
-        @Body body: RequestRoomAuthViaLink
+        @Body body: RequestRoomAuthViaLink,
     ): app.documents.core.network.BaseResponse<ResponseRoomAuthViaLink>
+
+    @GET("api/" + ApiContract.API_VERSION + "/people/filter")
+    suspend fun getUsers(
+        @QueryMap options: Map<String, String> = mapOf(),
+    ): app.documents.core.network.BaseResponse<List<User>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/group")
+    suspend fun getGroups(
+        @QueryMap options: Map<String, String> = mapOf(),
+    ): app.documents.core.network.BaseResponse<List<Group>>
 }

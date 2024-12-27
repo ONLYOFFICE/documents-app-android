@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import app.editors.manager.R
 import app.editors.manager.managers.utils.ManagerUiUtils
 import lib.compose.ui.theme.colorTextTertiary
+import lib.compose.ui.visible
 
 @Composable
 fun AccessIconButton(
@@ -47,13 +48,12 @@ fun AccessIconButton(
                 tint = MaterialTheme.colors.colorTextTertiary
             )
             Spacer(modifier = Modifier.padding(end = 4.dp))
-            if (enabled) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_drawer_menu_header_arrow),
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.colorTextTertiary
-                )
-            }
+            Icon(
+                modifier = Modifier.visible(enabled),
+                imageVector = ImageVector.vectorResource(R.drawable.ic_drawer_menu_header_arrow),
+                contentDescription = null,
+                tint = MaterialTheme.colors.colorTextTertiary
+            )
             AccessDropdownMenu(
                 onDismissRequest = { dropdown = false },
                 expanded = dropdown,

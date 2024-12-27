@@ -69,11 +69,12 @@ import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.ui.views.custom.AccessIconButton
 import app.editors.manager.ui.views.custom.SearchAppBar
 import app.editors.manager.ui.views.custom.UserListBottomContent
+import app.editors.manager.viewModels.main.CloudUserListViewModel
 import app.editors.manager.viewModels.main.InviteAccessViewModel
 import app.editors.manager.viewModels.main.ShareEffect
 import app.editors.manager.viewModels.main.ShareState
 import app.editors.manager.viewModels.main.ShareViewModel
-import app.editors.manager.viewModels.main.UserListViewModel
+import app.editors.manager.viewModels.main.UserListMode
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import kotlinx.serialization.encodeToString
@@ -204,7 +205,8 @@ fun ShareScreen(
         }
         composable(Screens.AddUsers.name) {
             val userListViewModel = viewModel {
-                UserListViewModel(
+                CloudUserListViewModel(
+                    mode = UserListMode.Invite,
                     access = accessListWithOutRestricted.last(),
                     resourcesProvider = ResourcesProvider(context),
                     shareService = shareApi,
@@ -216,8 +218,6 @@ fun ShareScreen(
                 title = R.string.share_invite_user,
                 onClick = userListViewModel::toggleSelect,
                 closeable = false,
-                withGroups = true,
-                disableInvited = true,
                 useTabletPaddings = useTabletPaddings,
                 onBack = navController::popBackStackWhenResumed,
                 onSnackBar = ::onSnackBar,

@@ -16,7 +16,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
-import app.editors.manager.app.shareApi
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.viewModels.main.RoomEditViewModel
@@ -222,16 +221,15 @@ class EditRoomFragment : ComposeDialogFragment() {
                         roomType = state.value.type,
                         roomOwnerId = state.value.owner.id,
                         mode = UserListMode.ChangeOwner,
-                        shareService = requireContext().shareApi,
                         roomProvider = requireContext().roomProvider,
                         resourcesProvider = ResourcesProvider(requireContext())
                     )
                     UserListScreen(
                         viewModel = userListViewModel,
                         title = R.string.room_set_owner_title,
-                        disableInvited = false,
                         onClick = { userId -> userListViewModel.setOwner(userId, leave = false) },
                         onBack = navController::popBackStackWhenResumed,
+                        closeable = false,
                         onSuccess = {
                             navController.popBackStackWhenResumed()
                             viewModel.setOwner(it)
