@@ -58,10 +58,7 @@ fun RoomAccessScreen(
             }
         } else {
             val groupOptions = options.minus(
-                arrayOf(
-                    ApiContract.ShareCode.ROOM_ADMIN,
-                    ApiContract.ShareCode.POWER_USER
-                )
+                arrayOf(ApiContract.ShareCode.ROOM_ADMIN)
             )
 
             Column {

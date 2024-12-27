@@ -413,13 +413,15 @@ interface RoomService {
         @Body body: RequestRoomAuthViaLink,
     ): app.documents.core.network.BaseResponse<ResponseRoomAuthViaLink>
 
-    @GET("api/" + ApiContract.API_VERSION + "/people/filter")
+    @GET("api/" + ApiContract.API_VERSION + "/people/room/{roomId}")
     suspend fun getUsers(
+        @Path("roomId") roomId: String,
         @QueryMap options: Map<String, String> = mapOf(),
     ): app.documents.core.network.BaseResponse<List<User>>
 
-    @GET("api/" + ApiContract.API_VERSION + "/group")
+    @GET("api/" + ApiContract.API_VERSION + "/group/room/{roomId}")
     suspend fun getGroups(
+        @Path("roomId") roomId: String,
         @QueryMap options: Map<String, String> = mapOf(),
     ): app.documents.core.network.BaseResponse<List<Group>>
 }

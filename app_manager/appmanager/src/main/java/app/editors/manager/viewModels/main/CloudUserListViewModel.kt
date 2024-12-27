@@ -1,7 +1,9 @@
 package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
+import app.documents.core.model.login.User
 import app.documents.core.network.share.ShareService
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -14,13 +16,12 @@ import lib.toolkit.base.managers.tools.ResourcesProvider
 class CloudUserListViewModel(
     access: Int?,
     mode: UserListMode,
-    invitedIds: List<String>,
     resourcesProvider: ResourcesProvider,
+    private val invitedIds: List<String>,
     private val shareService: ShareService
 ) : UserListViewModel(
     access = access,
     mode = mode,
-    invitedIds = invitedIds,
     resourcesProvider = resourcesProvider
 ) {
 
@@ -39,5 +40,28 @@ class CloudUserListViewModel(
             .checkIfShared(groups)
 
         return groups + users
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private inline fun <reified T : Member> List<T>.checkIfShared(groups: List<Group>): List<T> {
+        return when (T::class) {
+            Group::class -> {
+                filterIsInstance<Group>().map { it.copy(shared = it.id in invitedIds) }
+            }
+
+            User::class -> {
+                val invitedGroups = groups.filter(Group::shared).map(Group::id)
+                filterIsInstance<User>()
+                    .map { user ->
+                        user.copy(
+                            shared = user.groups.any { group ->
+                                group.id in invitedGroups
+                            } || user.id in invitedIds
+                        )
+                    }
+            }
+
+            else -> this
+        } as List<T>
     }
 }

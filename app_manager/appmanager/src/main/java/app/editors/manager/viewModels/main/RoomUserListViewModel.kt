@@ -29,7 +29,9 @@ class RoomUserListViewModel(
     resourcesProvider = resourcesProvider
 ) {
 
-    override val cachedMembersFlow: SharedFlow<List<Member>> = flow { emit(getMembers()) }
+    override val cachedMembersFlow: SharedFlow<List<Member>> = flow {
+        emit(getMembers())
+    }
         .onEach(::updateListState)
         .catch { error -> handleError(error) }
         .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
@@ -37,11 +39,9 @@ class RoomUserListViewModel(
     private suspend fun getMembers(): List<Member> {
         val portal = App.getApp().accountOnline?.portal?.urlWithScheme
 
-        val groups = roomProvider.getGroups(getOptions())
-            .checkIfShared(emptyList())
+        val groups = roomProvider.getGroups(roomId, getOptions())
 
-        val users = roomProvider.getUsers(getOptions())
-            .checkIfShared(groups)
+        val users = roomProvider.getUsers(roomId, getOptions())
             .map { user -> user.copy(avatarMedium = portal + user.avatarMedium) }
             .run {
                 if (mode == UserListMode.ChangeOwner) {
@@ -51,9 +51,8 @@ class RoomUserListViewModel(
                 }
             }
 
-        val guests = roomProvider.getGuests(getOptions())
+        val guests = roomProvider.getGuests(roomId, getOptions())
             .map { user -> user.copy(avatarMedium = portal + user.avatarMedium) }
-            .checkIfShared(groups)
 
         return groups + users + guests
     }

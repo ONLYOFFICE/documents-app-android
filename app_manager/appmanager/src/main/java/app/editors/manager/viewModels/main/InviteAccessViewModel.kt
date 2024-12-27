@@ -61,11 +61,8 @@ open class InviteAccessViewModel(
                         groups.map(Group::id)
                             .associateWith {
                                 access.takeIf {
-                                    it !in arrayOf(
-                                        ApiContract.ShareCode.ROOM_ADMIN,
-                                        ApiContract.ShareCode.POWER_USER
-                                    )
-                                } ?: ApiContract.ShareCode.READ
+                                    it != ApiContract.ShareCode.ROOM_ADMIN
+                                } ?: ApiContract.ShareCode.POWER_USER
                             }
             )
         }

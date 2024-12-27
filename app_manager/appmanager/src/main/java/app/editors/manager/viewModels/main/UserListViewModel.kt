@@ -48,7 +48,6 @@ sealed class UserListEffect {
 abstract class UserListViewModel(
     access: Int?,
     mode: UserListMode,
-    protected val invitedIds: List<String> = emptyList(),
     private val resourcesProvider: ResourcesProvider,
 ) : ViewModel() {
 
@@ -65,27 +64,6 @@ abstract class UserListViewModel(
 
     init {
         collectSearchFlow()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    protected inline fun <reified T : Member> List<T>.checkIfShared(groups: List<Group>): List<T> {
-        return when (T::class) {
-            Group::class -> {
-                filterIsInstance<Group>().map { it.copy(shared = it.id in invitedIds) }
-            }
-
-            User::class -> {
-                val invitedGroups = groups.filter(Group::shared).map(Group::id)
-                filterIsInstance<User>()
-                    .map {
-                        it.copy(
-                            shared = it.groups.any { group -> group.id in invitedGroups } || it.id in invitedIds
-                        )
-                    }
-            }
-
-            else -> this
-        } as List<T>
     }
 
     protected fun handleError(error: Throwable) {

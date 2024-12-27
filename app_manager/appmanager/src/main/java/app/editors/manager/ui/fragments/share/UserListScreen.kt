@@ -58,6 +58,7 @@ import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.model.login.Group
+import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.utils.displayNameFromHtml
@@ -78,6 +79,7 @@ import kotlinx.coroutines.launch
 import lib.compose.ui.enabled
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
+import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTabRow
 import lib.compose.ui.views.AppTopBar
@@ -87,6 +89,15 @@ import lib.compose.ui.views.TopAppBarAction
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.AccountUtils
+
+private data class Header(val title: Int) : Member {
+
+    override val id: String
+        get() = title.toString()
+
+    override val shared: Boolean
+        get() = false
+}
 
 @Composable
 fun UserListScreen(
@@ -189,15 +200,82 @@ private fun MainScreen(
                 } else {
                     VerticalSpacer(height = 4.dp)
                 }
-                PagerScreen(
-                    modifier = Modifier.weight(1f),
-                    pagerState = pagerState,
-                    state = state,
-                    onClick = onClick,
-                    portal = portal?.urlWithScheme,
-                    token = token
-                )
+                if (searchState.value) {
+                    SearchListScreen(
+                        modifier = Modifier.weight(1f),
+                        state = state,
+                        token = token,
+                        portal = portal?.urlWithScheme,
+                        onClick = onClick
+                    )
+                } else {
+                    PagerScreen(
+                        modifier = Modifier.weight(1f),
+                        pagerState = pagerState,
+                        state = state,
+                        onClick = onClick,
+                        portal = portal?.urlWithScheme,
+                        token = token
+                    )
+                }
                 bottomContent(state.selected.size, state.access ?: 0)
+            }
+        }
+    }
+}
+
+@Composable
+private fun SearchListScreen(
+    modifier: Modifier,
+    state: UserListState,
+    onClick: (id: String) -> Unit,
+    token: String,
+    portal: String?,
+) {
+    val members = mutableListOf<Member>()
+
+    if (state.users.isNotEmpty()) {
+        members.add(Header(app.editors.manager.R.string.share_add_common_header_users))
+        members.addAll(state.users)
+    }
+
+    if (state.groups.isNotEmpty()) {
+        members.add(Header(app.editors.manager.R.string.share_add_common_header_groups))
+        members.addAll(state.groups)
+    }
+
+    if (state.guests.isNotEmpty()) {
+        members.add(Header(app.editors.manager.R.string.share_goal_guest))
+        members.addAll(state.guests)
+    }
+
+    LazyColumn(modifier = modifier) {
+        items(members, key = Member::id) { member ->
+            when (member) {
+                is Header -> {
+                    AppHeaderItem(member.title)
+                }
+
+                is User -> {
+                    UserItem(
+                        user = member,
+                        letter = null,
+                        withLetter = false,
+                        selected = state.selected.contains(member.id),
+                        mode = state.mode,
+                        token = token,
+                        portal = portal,
+                        onClick = onClick
+                    )
+                }
+
+                is Group -> {
+                    GroupItem(
+                        group = member,
+                        selected = state.selected.contains(member.id),
+                        onClick = onClick
+                    )
+                }
             }
         }
     }
@@ -280,19 +358,13 @@ private fun PagerScreen(
             }
 
             1 -> {
-                val groups = state.groups
-                if (groups.isNotEmpty()) {
+                if (state.groups.isNotEmpty()) {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(items = groups, key = Group::id) { group ->
-                            ListItem(
-                                withLetter = false,
-                                name = group.name,
-                                shared = group.shared,
-                                letter = null,
-                                subtitle = null,
-                                avatar = null,
+                        items(items = state.groups, key = Group::id) { group ->
+                            GroupItem(
+                                group = group,
                                 selected = state.selected.contains(group.id),
-                                onClick = { onClick.invoke(group.id) }
+                                onClick = onClick
                             )
                         }
                     }
@@ -328,6 +400,48 @@ private fun PagerScreen(
 }
 
 @Composable
+private fun LazyItemScope.UserItem(
+    user: User,
+    selected: Boolean,
+    letter: String?,
+    withLetter: Boolean,
+    mode: UserListMode,
+    token: String,
+    portal: String?,
+    onClick: (String) -> Unit,
+) {
+    ListItem(
+        withLetter = withLetter,
+        letter = letter,
+        name = user.displayNameFromHtml,
+        subtitle = stringResource(RoomUtils.getUserRole(user))
+                + user.email?.let { " | $it" },
+        shared = mode == UserListMode.Invite && user.shared,
+        selected = selected,
+        onClick = { onClick.invoke(user.id) },
+        avatar = GlideUtils.getCorrectLoad(
+            user.avatarMedium,
+            token,
+            portal
+        )
+    )
+}
+
+@Composable
+private fun LazyItemScope.GroupItem(group: Group, selected: Boolean, onClick: (String) -> Unit) {
+    ListItem(
+        withLetter = false,
+        name = group.name,
+        shared = group.shared,
+        letter = null,
+        subtitle = null,
+        avatar = null,
+        selected = selected,
+        onClick = { onClick.invoke(group.id) }
+    )
+}
+
+@Composable
 private fun UsersScreen(
     users: List<User>,
     mode: UserListMode,
@@ -341,24 +455,15 @@ private fun UsersScreen(
             .toSortedMap()
             .forEach { (letter, users) ->
                 itemsIndexed(items = users.orEmpty(), key = { _, item -> item.id }) { index, user ->
-                    ListItem(
-                        withLetter = true,
+                    UserItem(
+                        user = user,
                         letter = letter?.toString().takeIf { index == 0 },
-                        name = user.displayNameFromHtml,
-                        subtitle = stringResource(RoomUtils.getUserRole(user))
-                                + user.email?.let { " | $it" },
-                        shared = mode == UserListMode.Invite && user.shared,
+                        withLetter = true,
                         selected = selectedIdList.contains(user.id),
-                        onClick = { onClick.invoke(user.id) },
-                        avatar = if (user.hasAvatar) {
-                            GlideUtils.getCorrectLoad(
-                                user.avatarMedium,
-                                token,
-                                portal
-                            )
-                        } else {
-                            null
-                        }
+                        mode = mode,
+                        token = token,
+                        portal = portal,
+                        onClick = onClick
                     )
                 }
             }
@@ -490,13 +595,34 @@ private fun PreviewMainWithBottom() {
                 requestLoading = false,
                 selected = selected,
                 users = listOf(
-                    User().copy(displayName = "user", id = "id", email = "email@emailemail.com", isAdmin = true, shared = true),
+                    User().copy(
+                        displayName = "user",
+                        id = "id",
+                        email = "email@emailemail.com",
+                        isAdmin = true,
+                        shared = true
+                    ),
                     User().copy(displayName = "User", id = "id1", email = "email@email.com"),
                     User().copy(displayName = "Mike", id = "id2", email = "email@email.com"),
                     User().copy(displayName = "mike", id = "id3", email = "email@email.com"),
-                    User().copy(displayName = "User", id = "id4", email = "email@email.com", isAdmin = true),
-                    User().copy(displayName = "123", id = "id5", email = "email@email.com", isAdmin = true),
-                    User().copy(displayName = "5mike", id = "id6", email = "email@email.com", shared = true)
+                    User().copy(
+                        displayName = "User",
+                        id = "id4",
+                        email = "email@email.com",
+                        isAdmin = true
+                    ),
+                    User().copy(
+                        displayName = "123",
+                        id = "id5",
+                        email = "email@email.com",
+                        isAdmin = true
+                    ),
+                    User().copy(
+                        displayName = "5mike",
+                        id = "id6",
+                        email = "email@email.com",
+                        shared = true
+                    )
                 ),
                 groups = listOf(
                     Group("", "group 1")
@@ -550,6 +676,10 @@ private fun PreviewMain() {
                 ),
                 groups = listOf(
                     Group("", "group 1")
+                ),
+                guests = listOf(
+                    User().copy(displayName = "Guest", id = "id7", email = "email"),
+                    User().copy(displayName = "Guest2", id = "id8", email = "email"),
                 )
             ),
             closeable = false,

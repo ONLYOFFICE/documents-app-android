@@ -222,7 +222,7 @@ class EditRoomFragment : ComposeDialogFragment() {
                         roomOwnerId = state.value.owner.id,
                         mode = UserListMode.ChangeOwner,
                         roomProvider = requireContext().roomProvider,
-                        resourcesProvider = ResourcesProvider(requireContext())
+                        resourcesProvider = ResourcesProvider(requireContext()),
                     )
                     UserListScreen(
                         viewModel = userListViewModel,

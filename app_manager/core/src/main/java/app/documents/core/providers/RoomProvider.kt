@@ -270,18 +270,20 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         )
     }
 
-    suspend fun getUsers(args: Map<String, String>): List<User> {
+    suspend fun getUsers(roomId: String, args: Map<String, String>): List<User> {
         return roomService.getUsers(
+            roomId,
             args + (ApiContract.Parameters.ARG_AREA to ApiContract.Parameters.VAL_AREA_PEOPLE)
         ).response
     }
 
-    suspend fun getGroups(args: Map<String, String>): List<Group> {
-        return roomService.getGroups(args).response
+    suspend fun getGroups(roomId: String, args: Map<String, String>): List<Group> {
+        return roomService.getGroups(roomId, args).response
     }
 
-    suspend fun getGuests(args: Map<String, String>): List<User> {
+    suspend fun getGuests(roomId: String, args: Map<String, String>): List<User> {
         return roomService.getUsers(
+            roomId,
             args + (ApiContract.Parameters.ARG_AREA to ApiContract.Parameters.VAL_AREA_GUESTS)
         ).response.map { it.copy(isGuest = true) }
     }
