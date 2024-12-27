@@ -6,6 +6,7 @@ import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.exception.CloudAccountNotFoundException
 import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.interceptors.BaseInterceptor
+import app.documents.core.network.common.interceptors.CookieInterceptor
 import app.documents.core.network.login.LoginInterceptor
 import app.documents.core.network.login.LoginOkHttpClient
 import app.documents.core.network.manager.models.explorer.PathPart
@@ -42,6 +43,11 @@ object CoreModule {
 
     @Provides
     @Singleton
+    fun provideCookieInterceptor(): CookieInterceptor {
+        return CookieInterceptor()
+    }
+
+    @Provides
     fun provideBaseInterceptor(
         @Token token: String,
         context: Context,
@@ -53,11 +59,13 @@ object CoreModule {
     fun provideOkHttpClient(
         cloudAccount: CloudAccount?,
         baseInterceptor: BaseInterceptor,
+        cookieInterceptor: CookieInterceptor
     ): OkHttpClient {
         return NetworkClient
             .getOkHttpBuilder(
                 cloudAccount?.portal?.settings ?: throw CloudAccountNotFoundException,
-                baseInterceptor
+                baseInterceptor,
+                cookieInterceptor
             )
             .build()
     }
