@@ -524,7 +524,7 @@
     <string name="dialog_create_room">Raum erstellen</string>
     <string name="dialog_create_room_value">Neuer Raum</string>
     <string name="invite_by_email">Benutzer per E-Mail einladen</string>
-    <string name="share_access_room_admin">Admin des Raums</string>
+    <string name="share_user_type_room_admin">Admin des Raums</string>
     <string name="share_access_room_editor">Bearbeitung</string>
     <string name="share_access_room_form_filler">Ausfüllen von Formularen</string>
     <string name="share_access_room_reviewer">Überprüfung</string>
@@ -562,7 +562,6 @@
         <item quantity="one">Artikel endgültig gelöscht</item>
         <item quantity="other">Artikel endgültig gelöscht</item>
     </plurals>
-    <string name="share_access_room_power_user">Power user</string>
     <string name="share_expected_member">Mitglieder erwarten</string>
     <string name="app_settings_main_help">Hilfe</string>
     <string name="clear_recents">"Zuletzt verwendete löschen?"</string>

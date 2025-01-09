@@ -3,7 +3,6 @@ package app.editors.manager.managers.utils
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import app.documents.core.model.cloud.Access
-import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 
@@ -112,16 +111,6 @@ object RoomUtils {
             }.uppercase()
         } catch (_: RuntimeException) {
             null
-        }
-    }
-
-    fun getUserRole(user: User): Int {
-        return when {
-            user.isOwner -> R.string.share_access_room_owner
-            user.isAdmin -> R.string.share_access_room_docspace_admin
-            user.isRoomAdmin -> R.string.share_access_room_admin
-            user.isGuest -> R.string.profile_type_visitor
-            else -> R.string.profile_type_user
         }
     }
 }

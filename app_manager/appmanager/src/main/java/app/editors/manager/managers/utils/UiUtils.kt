@@ -13,7 +13,9 @@ import androidx.core.view.isVisible
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.model.cloud.UserType
 import app.documents.core.model.cloud.WebdavProvider
+import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -268,8 +270,8 @@ fun Access.toUi(): AccessUI {
         )
 
         Access.RoomManager -> arrayOf(
-            R.drawable.ic_room_admin,
-            R.string.share_access_room_admin
+            R.drawable.ic_room_manager,
+            R.string.share_access_room_manager
         )
 
         Access.ContentCreator -> arrayOf(
@@ -284,3 +286,12 @@ fun Access.toUi(): AccessUI {
     }
     return AccessUI(this, title, icon)
 }
+
+val User.typeTitle: Int
+    get() = when (type) {
+        UserType.DocSpaceOwner -> R.string.share_user_type_room_docspace_owner
+        UserType.DocSpaceAdmin -> R.string.share_user_type_room_docspace_admin
+        UserType.RoomAdmin -> R.string.share_user_type_room_admin
+        UserType.User -> R.string.profile_type_user
+        UserType.Guest -> R.string.profile_type_visitor
+    }

@@ -775,8 +775,7 @@
     <string name="dialog_create_room_value">غرفة جديدة</string>
     <string name="invite_by_email">دعوة المستخدمين عن طريق البريد الإلكتروني</string>
     <string name="share_access_room_owner">مالك</string>
-    <string name="share_access_room_admin">مشرف الغرفة</string>
-    <string name="share_access_room_power_user">مستخدم قوي</string>
+    <string name="share_user_type_room_admin">مشرف الغرفة</string>
     <string name="share_access_room_editor">محرر</string>
     <string name="share_access_room_form_filler">ملئ النموذج</string>
     <string name="share_access_room_reviewer">المراجع</string>

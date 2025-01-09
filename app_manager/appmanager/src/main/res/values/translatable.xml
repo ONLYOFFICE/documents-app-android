@@ -883,9 +883,11 @@
     <string name="share_access_room_type">Access type</string>
     <string name="share_access_room_group_desc">Access rights for all users in the group</string>
     <string name="share_access_room_owner">Owner</string>
-    <string name="share_access_room_admin">Room admin</string>
-    <string name="share_access_room_docspace_admin">DocSpace admin</string>
-    <string name="share_access_room_power_user">Power user</string>
+    <string name="share_user_type_room_docspace_admin">DocSpace admin</string>
+    <string name="share_user_type_room_docspace_owner">DocSpace Owner</string>
+    <string name="share_user_type_room_admin">Room admin</string>
+    <string name="share_access_room_manager">Room manager</string>
+    <string name="share_access_room_power_user">Content creator</string>
     <string name="share_access_room_editor">Editor</string>
     <string name="share_access_room_form_filler">Form filler</string>
     <string name="share_access_room_reviewer">Reviewer</string>

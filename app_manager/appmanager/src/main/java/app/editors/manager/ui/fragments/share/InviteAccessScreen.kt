@@ -33,7 +33,7 @@ import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.editors.manager.R
-import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.managers.utils.typeTitle
 import app.editors.manager.ui.views.custom.AccessIconButton
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.InviteAccessEffect
@@ -151,8 +151,7 @@ private fun MainScreen(
                         items(users) { user ->
                             InviteItem(
                                 title = user.displayName,
-                                subtitle = stringResource(RoomUtils.getUserRole(user))
-                                        + user.email?.let { " | $it" },
+                                subtitle = stringResource(user.typeTitle) + user.email?.let { " | $it" },
                                 avatar = user.avatarMedium,
                                 access = state.idAccessList[user.id] ?: Access.None,
                                 accessList = accessList,

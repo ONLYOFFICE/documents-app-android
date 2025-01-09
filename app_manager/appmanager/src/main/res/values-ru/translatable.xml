@@ -533,7 +533,7 @@
     <string name="dialog_create_room">Создать комнату</string>
     <string name="dialog_create_room_value">Новая комната</string>
     <string name="invite_by_email">Пригласить пользователей по электронной почте</string>
-    <string name="share_access_room_admin">Администратор комнаты</string>
+    <string name="share_user_type_room_admin">Администратор комнаты</string>
     <string name="share_access_room_editor">Редактор</string>
     <string name="share_access_room_form_filler">Заполняющий форму</string>
     <string name="share_access_room_reviewer">Рецензент</string>
@@ -578,7 +578,6 @@
         <item quantity="many">Элементы безвозвратно удалены</item>
         <item quantity="few">Элементы безвозвратно удалены</item>
     </plurals>
-    <string name="share_access_room_power_user">Опытный пользователь</string>
     <string name="share_expected_member">Ожидайте участников</string>
     <string name="app_settings_main_help">Помощь</string>
     <string name="clear_recents">"Очистить последние?"</string>

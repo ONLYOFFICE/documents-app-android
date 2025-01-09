@@ -515,7 +515,7 @@
     <string name="dialog_create_room">Criar sala</string>
     <string name="dialog_create_room_value">Nova sala</string>
     <string name="invite_by_email">Convidar usuários por e-mail</string>
-    <string name="share_access_room_admin">Administrador da sala</string>
+    <string name="share_user_type_room_admin">Administrador da sala</string>
     <string name="share_access_room_editor">Editor</string>
     <string name="share_access_room_form_filler">Preenchedor de formulário</string>
     <string name="share_access_room_reviewer">Revisor</string>
@@ -558,7 +558,6 @@
         <item quantity="other">Itens excluídos irremediavelmente</item>
         <item quantity="many">Itens excluídos irremediavelmente</item>
     </plurals>
-    <string name="share_access_room_power_user">Usuário avançado</string>
     <string name="share_expected_member">Espere membros</string>
     <string name="app_settings_main_help">Ajuda</string>
     <string name="clear_recents">"Limpar recente?"</string>

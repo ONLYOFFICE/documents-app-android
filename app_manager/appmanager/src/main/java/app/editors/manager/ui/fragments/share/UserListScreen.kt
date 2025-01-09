@@ -66,6 +66,7 @@ import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.managers.utils.typeTitle
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.views.custom.SearchAppBar
 import app.editors.manager.ui.views.custom.UserListBottomContent
@@ -415,8 +416,7 @@ private fun LazyItemScope.UserItem(
         withLetter = withLetter,
         letter = letter,
         name = user.displayNameFromHtml,
-        subtitle = stringResource(RoomUtils.getUserRole(user))
-                + user.email?.let { " | $it" },
+        subtitle = stringResource(user.typeTitle) + user.email?.let { " | $it" },
         shared = mode == UserListMode.Invite && user.shared,
         selected = selected,
         onClick = { onClick.invoke(user.id) },

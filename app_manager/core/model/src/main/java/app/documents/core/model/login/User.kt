@@ -1,5 +1,6 @@
 package app.documents.core.model.login
 
+import app.documents.core.model.cloud.UserType
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -41,4 +42,14 @@ data class User(
     val quotaLimit: Long = 0,
     val usedSpace: Long = 0,
     override val shared: Boolean = false
-) : Member
+) : Member {
+
+    val type: UserType
+        get() = when {
+            isOwner -> UserType.DocSpaceOwner
+            isAdmin -> UserType.DocSpaceAdmin
+            isRoomAdmin -> UserType.RoomAdmin
+            isGuest -> UserType.Guest
+            else -> UserType.User
+        }
+}

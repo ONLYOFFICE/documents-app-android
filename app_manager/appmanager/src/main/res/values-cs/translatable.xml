@@ -657,7 +657,7 @@
     <string name="dialog_create_room">Vytvořit místnost</string>
     <string name="dialog_create_room_value">Nová místnost</string>
     <string name="invite_by_email">Pozvat uživatele e-mailem</string>
-    <string name="share_access_room_admin">Správce místnosti</string>
+    <string name="share_user_type_room_admin">Správce místnosti</string>
     <string name="share_access_room_editor">Editor</string>
     <string name="share_access_room_form_filler">Výplň formuláře</string>
     <string name="share_access_room_reviewer">Recenzent</string>
@@ -705,7 +705,6 @@
         <item quantity="few">Nenávratně odstraněné položky</item>
         <item quantity="many">Nenávratně odstraněné položky</item>
     </plurals>
-    <string name="share_access_room_power_user">Mocný uživatel</string>
     <string name="share_expected_member">Očekávaní členové</string>
     <string name="app_settings_main_help">Nápověda</string>
     <string name="clear_recents">"Vymazat poslední?"</string>

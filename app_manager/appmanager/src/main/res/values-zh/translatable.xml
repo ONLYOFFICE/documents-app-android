@@ -581,7 +581,7 @@
     <string name="dialog_create_room">创建房间</string>
     <string name="dialog_create_room_value">新建房间</string>
     <string name="invite_by_email">通过电子邮件邀请用户</string>
-    <string name="share_access_room_admin">房间管理员</string>
+    <string name="share_user_type_room_admin">房间管理员</string>
     <string name="share_access_room_editor">编辑者</string>
     <string name="share_access_room_form_filler">填表者</string>
     <string name="share_access_room_reviewer">审查者</string>
@@ -619,7 +619,6 @@
         <item quantity="one">无法复原的删除项目</item>
         <item quantity="other">无法复原的删除项目</item>
     </plurals>
-    <string name="share_access_room_power_user">高级用户</string>
     <string name="share_expected_member">等待成员</string>
     <string name="app_settings_main_help">帮助</string>
     <string name="clear_recents">"删除最近记录?"</string>
