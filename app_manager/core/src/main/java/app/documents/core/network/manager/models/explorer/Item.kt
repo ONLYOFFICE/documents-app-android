@@ -78,11 +78,14 @@ open class Item : ItemProperties(), Serializable {
             order = if (indices.size > 1) indices.joinToString(".") else indices[0]
         }
 
-    val access: Access
+    var access: Access
         get() = runCatching {
             Access.get(_access.toInt())
         }.getOrElse {
             Access.get(_access)
+        }
+        set(value) {
+            _access = value.code.toString()
         }
 
     fun setItem(item: Item) {

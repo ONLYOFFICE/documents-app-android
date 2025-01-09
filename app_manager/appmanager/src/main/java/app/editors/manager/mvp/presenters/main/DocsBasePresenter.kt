@@ -1588,16 +1588,15 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         get() = modelExplorerStack.currentId
 
     private fun setAccess(explorer: Explorer?): Explorer {
-        return explorer ?: Explorer()
-        // TODO: check it
-//        return explorer?.also {
-//            explorer.files.map { file ->
-//                file.also { it.access = "0" }
-//            }
-//            explorer.folders.map { folder ->
-//                folder.also { it.access = "0" }
-//            }
-//        } ?: Explorer()
+        return explorer?.apply {
+            files = files
+                .map { file -> file.also { it.access = Access.None } }
+                .toMutableList()
+
+            folders = folders
+                .map { folder -> folder.also { it.access = Access.None } }
+                .toMutableList()
+        } ?: Explorer()
     }
 
     fun setAccessDenied() {
