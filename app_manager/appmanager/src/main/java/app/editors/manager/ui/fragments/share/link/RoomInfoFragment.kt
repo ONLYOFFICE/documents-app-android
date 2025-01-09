@@ -26,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.share.models.ExternalLink
@@ -183,13 +184,13 @@ class RoomInfoFragment : ComposeDialogFragment() {
                             },
                             navArgument("access") {
                                 type = NavType.IntType
-                                defaultValue = ApiContract.ShareCode.EDITOR
+                                defaultValue = Access.Editor.code
                             }
                         )
                     ) { backStackEntry ->
                         ExternalLinkSettingsScreen(
                             link = backStackEntry.arguments?.getString("link")?.let(Json::decodeFromString),
-                            access = backStackEntry.arguments?.getInt("access") ?: ApiContract.ShareCode.EDITOR,
+                            access = Access.get(backStackEntry.arguments?.getInt("access")),
                             isCreate = backStackEntry.arguments?.getBoolean("create") == true,
                             roomId = room.id,
                             roomType = room.roomType,
@@ -211,7 +212,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
                     ) { backStackEntry ->
                         RoomAccessScreen(
                             roomType = room.roomType,
-                            currentAccess = backStackEntry.arguments?.getInt("access") ?: -1,
+                            currentAccess = Access.get(backStackEntry.arguments?.getInt("access")),
                             ownerOrAdmin = backStackEntry.arguments?.getBoolean("ownerOrAdmin") == true,
                             portal = remember { requireContext().accountOnline?.portalUrl.orEmpty() },
                             isRemove = backStackEntry.arguments?.getBoolean("removable") == true,
@@ -253,7 +254,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
 
                         RoomAccessScreen(
                             roomType = room.roomType,
-                            currentAccess = backStackEntry.arguments?.getInt("access") ?: -1,
+                            currentAccess = Access.get(backStackEntry.arguments?.getInt("access")),
                             ownerOrAdmin = false,
                             portal = remember { requireContext().accountOnline?.portalUrl.orEmpty() },
                             isRemove = true,
@@ -434,12 +435,12 @@ class RoomInfoFragment : ComposeDialogFragment() {
                         link.copy(sharedTo = link.sharedTo.copy(title = "Shared link 3", isExpired = true)),
                     ),
                     shareList = listOf(
-                        Share(access = "1", sharedTo = SharedTo(displayName = "User 1"), isOwner = true),
-                        Share(access = "5", sharedTo = SharedTo(name = "Group 2"), subjectType = 2),
-                        Share(access = "9", sharedTo = SharedTo(displayName = "User 2")),
-                        Share(access = "11", sharedTo = SharedTo(displayName = "User 3")),
-                        Share(access = "10", sharedTo = SharedTo(displayName = "User 4")),
-                        Share(access = "10", sharedTo = SharedTo(displayName = "User 4", activationStatus = 2)),
+                        Share(_access = "1", sharedTo = SharedTo(displayName = "User 1"), isOwner = true),
+                        Share(_access = "5", sharedTo = SharedTo(name = "Group 2"), subjectType = 2),
+                        Share(_access = "9", sharedTo = SharedTo(displayName = "User 2")),
+                        Share(_access = "11", sharedTo = SharedTo(displayName = "User 3")),
+                        Share(_access = "10", sharedTo = SharedTo(displayName = "User 4")),
+                        Share(_access = "10", sharedTo = SharedTo(displayName = "User 4", activationStatus = 2)),
                     )
                 ),
                 onBackClick = {},

@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.isDocSpace
@@ -109,7 +110,7 @@ fun UserListScreen(
     onBack: () -> Unit,
     onSnackBar: (String) -> Unit,
     onSuccess: ((User) -> Unit)? = null,
-    bottomContent: @Composable (Int, Int) -> Unit = { _, _ -> },
+    bottomContent: @Composable (Int, Access) -> Unit = { _, _ -> },
 ) {
     val state by viewModel.viewState.collectAsState()
 
@@ -143,7 +144,7 @@ private fun MainScreen(
     onClick: (id: String) -> Unit,
     onSearch: (String) -> Unit,
     onBack: () -> Unit,
-    bottomContent: @Composable (count: Int, access: Int) -> Unit = { _, _ -> },
+    bottomContent: @Composable (count: Int, access: Access) -> Unit = { _, _ -> },
 ) {
     val searchState = remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -218,7 +219,7 @@ private fun MainScreen(
                         token = token
                     )
                 }
-                bottomContent(state.selected.size, state.access ?: 0)
+                bottomContent(state.selected.size, state.access ?: Access.None)
             }
         }
     }
@@ -640,7 +641,7 @@ private fun PreviewMainWithBottom() {
             UserListBottomContent(
                 nextButtonTitle = app.editors.manager.R.string.share_invite_title,
                 count = selected.size,
-                access = 4,
+                access = Access.Editor,
                 accessList = RoomUtils.getAccessOptions(ApiContract.RoomType.CUSTOM_ROOM, false),
                 {}, {}) {}
         }

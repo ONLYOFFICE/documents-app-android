@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.contracts.ApiContract.Access
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -134,7 +134,7 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
                 setEnabledActionButton(security.editAccess || security.editRoom)
                 operationDialogFragment?.setEnabledCreateFolderButton(security.create, isRoomsRoot)
             } else {
-                val editable = current.access in arrayOf(Access.ReadWrite.type, Access.RoomAdmin.type)
+                val editable = current.access in arrayOf(Access.ReadWrite, Access.RoomManager)
                 setEnabledActionButton(editable)
                 operationDialogFragment?.setEnabledCreateFolderButton(editable, isRoomsRoot)
             }

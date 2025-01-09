@@ -1,6 +1,7 @@
 package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
@@ -14,7 +15,7 @@ import kotlinx.coroutines.flow.shareIn
 import lib.toolkit.base.managers.tools.ResourcesProvider
 
 class CloudUserListViewModel(
-    access: Int?,
+    access: Access?,
     mode: UserListMode,
     resourcesProvider: ResourcesProvider,
     private val invitedIds: List<String>,

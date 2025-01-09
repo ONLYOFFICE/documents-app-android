@@ -2,6 +2,7 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
@@ -35,7 +36,7 @@ data class UserListState(
     val users: List<User> = emptyList(),
     val groups: List<Group> = emptyList(),
     val guests: List<User> = emptyList(),
-    val access: Int? = null,
+    val access: Access? = null,
     val selected: List<String> = emptyList(),
 )
 
@@ -46,7 +47,7 @@ sealed class UserListEffect {
 
 @OptIn(FlowPreview::class)
 abstract class UserListViewModel(
-    access: Int?,
+    access: Access?,
     mode: UserListMode,
     private val resourcesProvider: ResourcesProvider,
 ) : ViewModel() {
@@ -127,7 +128,7 @@ abstract class UserListViewModel(
         _viewState.update { it.copy(selected = selected) }
     }
 
-    fun setAccess(access: Int) {
+    fun setAccess(access: Access) {
         _viewState.update { it.copy(access = access) }
     }
 

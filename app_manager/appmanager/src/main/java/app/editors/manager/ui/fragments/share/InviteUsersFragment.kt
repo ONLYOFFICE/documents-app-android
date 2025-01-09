@@ -27,6 +27,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.network.share.models.ExternalLink
@@ -37,6 +38,7 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.managers.utils.toUi
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.fragments.share.link.RoomAccessScreen
@@ -137,7 +139,7 @@ fun InviteUsersScreen(
             composable(Screens.Access.name) {
                 RoomAccessScreen(
                     roomType = roomType,
-                    currentAccess = state.externalLink?.access ?: -1,
+                    currentAccess = Access.get(state.externalLink?.access),
                     portal = remember { context.accountOnline?.portalUrl.orEmpty() },
                     ownerOrAdmin = false,
                     isRemove = false,
@@ -153,7 +155,8 @@ fun InviteUsersScreen(
                             Screens.InviteAccess.name +
                                     "?emails=${Json.encodeToString<List<String>>(it)}&" +
                                     "users=null&" +
-                                    "groups=null&"
+                                    "groups=null&" +
+                                    "access=${RoomUtils.getAccessOptions(roomType, false).last().code}"
                         )
                     }
                 )
@@ -191,7 +194,7 @@ fun InviteUsersScreen(
                                     "?emails=null&" +
                                     "users=${URLEncoder.encode(users, Charsets.UTF_8.toString())}&" +
                                     "groups=${URLEncoder.encode(groups, Charsets.UTF_8.toString())}&" +
-                                    "access=$access"
+                                    "access=${access.code}"
                         )
                     }
                 }
@@ -213,7 +216,7 @@ fun InviteUsersScreen(
                     RoomInviteAccessViewModel(
                         roomId = roomId,
                         roomProvider = roomProvider,
-                        access = it.arguments?.getInt("access") ?: 2,
+                        access = Access.get(it.arguments?.getInt("access")),
                         users = it.arguments?.getJsonString<List<User>>("users", true).orEmpty(),
                         groups = it.arguments?.getJsonString<List<Group>>("groups", true).orEmpty(),
                         emails = it.arguments?.getJsonString<List<String>>("emails").orEmpty(),
@@ -274,7 +277,7 @@ private fun MainScreen(
                 if (state.externalLink != null) {
                     AppArrowItem(
                         title = R.string.rooms_share_access_rights,
-                        option = stringResource(id = RoomUtils.getAccessTitle(state.externalLink.access)),
+                        option = stringResource(id = Access.get(state.externalLink.access).toUi().title),
                         onClick = onAccessClick
                     )
                     Row(modifier = Modifier.padding(start = 16.dp, end = 8.dp)) {

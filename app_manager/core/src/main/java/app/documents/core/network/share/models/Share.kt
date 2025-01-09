@@ -1,7 +1,7 @@
 package app.documents.core.network.share.models
 
-import androidx.core.text.isDigitsOnly
-import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.model.cloud.Access
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
 enum class ShareType {
@@ -11,7 +11,7 @@ enum class ShareType {
 
 @Serializable
 data class Share(
-    val access: String = ApiContract.ShareType.NONE,
+    @SerializedName("access") private val _access: String = Access.None.type,
     override val sharedTo: SharedTo = SharedTo(),
     val isLocked: Boolean = false,
     override val isOwner: Boolean = false,
@@ -19,27 +19,19 @@ data class Share(
     val subjectType: Int? = null
 ) : ShareEntity {
 
-    val intAccess: Int
-        get() {
-            return if (access.isDigitsOnly()) {
-                access.toInt()
-            } else {
-                ApiContract.ShareType.getCode(access)
-            }
+    override val access: Access
+        get() = runCatching {
+            Access.get(_access.toInt())
+        }.getOrElse {
+            Access.get(_access)
         }
-
-    override val accessCode: Int
-        get() = intAccess
 
     companion object {
 
         fun groupByAccess(shareList: List<Share>): Map<ShareType, List<Share>> {
             return shareList.groupBy { share ->
                 when {
-                    arrayOf(
-                        ApiContract.ShareCode.READ_WRITE,
-                        ApiContract.ShareCode.ROOM_ADMIN
-                    ).contains(share.intAccess) -> ShareType.Admin
+                    share.access == Access.RoomManager -> ShareType.Admin
                     share.sharedTo.activationStatus == 2 -> ShareType.Expected
                     share.subjectType == 2 -> ShareType.Group
                     else -> ShareType.User

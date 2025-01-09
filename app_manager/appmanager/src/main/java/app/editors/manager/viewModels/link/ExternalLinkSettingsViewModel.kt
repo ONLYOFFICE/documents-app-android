@@ -1,6 +1,7 @@
 package app.editors.manager.viewModels.link
 
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
@@ -22,7 +23,7 @@ import retrofit2.HttpException
 data class ExternalLinkSettingsState(
     val loading: Boolean,
     val link: ExternalLinkSharedTo,
-    val access: Int
+    val access: Access
 )
 
 sealed class ExternalLinkSettingsEffect {
@@ -34,7 +35,7 @@ sealed class ExternalLinkSettingsEffect {
 }
 
 class ExternalLinkSettingsViewModel(
-    access: Int,
+    access: Access,
     inputLink: ExternalLinkSharedTo,
     private val roomId: String?,
     private val roomProvider: RoomProvider,
@@ -106,7 +107,7 @@ class ExternalLinkSettingsViewModel(
         }
     }
 
-    fun setAccess(access: Int) {
+    fun setAccess(access: Access) {
         _state.update { it.copy(access = access) }
     }
 
@@ -117,7 +118,7 @@ class ExternalLinkSettingsViewModel(
             with(state.value.link) {
                 roomProvider.updateRoomSharedLink(
                     roomId = roomId.orEmpty(),
-                    access = if (deleteOrRevoke) 0 else state.value.access,
+                    access = if (deleteOrRevoke) Access.None else state.value.access,
                     linkId = id,
                     linkType = linkType,
                     denyDownload = denyDownload,

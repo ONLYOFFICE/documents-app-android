@@ -3,6 +3,7 @@ package app.documents.core.providers
 import android.graphics.Bitmap
 import android.util.Size
 import androidx.core.text.isDigitsOnly
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.Order
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
@@ -198,7 +199,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
     suspend fun updateRoomSharedLink(
         roomId: String?,
-        access: Int?,
+        access: Access?,
         linkId: String?,
         linkType: Int?,
         denyDownload: Boolean?,
@@ -207,7 +208,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         title: String?,
     ): ExternalLink {
         val request = RequestUpdateExternalLink(
-            access = access ?: ApiContract.ShareCode.READ,
+            access = access?.code ?: Access.None.code,
             denyDownload = denyDownload == true,
             expirationDate = expirationDate,
             linkId = linkId,
@@ -227,14 +228,14 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         expirationDate: String?,
         password: String?,
         title: String,
-        access: Int
+        access: Access
     ): ExternalLink {
         val request = RequestCreateExternalLink(
             denyDownload = denyDownload,
             expirationDate = expirationDate,
             password = password,
             title = title,
-            access = access
+            access = access.code
         )
         val response = roomService.createRoomSharedLink(roomId.orEmpty(), request)
         val body = response.body()
@@ -325,7 +326,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
     }
 
     suspend fun leaveRoom(roomId: String, userId: String) {
-        inviteById(roomId, mapOf(userId to ApiContract.ShareCode.NONE))
+        inviteById(roomId, mapOf(userId to Access.None.code))
     }
 
     suspend fun inviteByEmail(roomId: String, emails: Map<String, Int>) {

@@ -1,5 +1,6 @@
 package app.documents.core.network.manager.models.explorer
 
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import com.google.gson.annotations.Expose
@@ -135,17 +136,4 @@ open class CloudFile : Item() {
 }
 
 val CloudFile.allowShare: Boolean
-    get() = run {
-        if (isDenySharing) return@run false
-        if (intAccess in listOf(
-                ApiContract.ShareCode.RESTRICT,
-                ApiContract.ShareCode.VARIES,
-                ApiContract.ShareCode.REVIEW,
-                ApiContract.ShareCode.COMMENT,
-                ApiContract.ShareCode.FILL_FORMS
-            )
-        ) {
-            return false
-        }
-        return@run true
-    }
+    get() = access in listOf(Access.Editor, Access.Read) && !isDenySharing

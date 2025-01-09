@@ -29,14 +29,14 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract.RoomType.FILL_FORMS_ROOM
 import app.documents.core.network.common.contracts.ApiContract.RoomType.PUBLIC_ROOM
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
-import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.managers.utils.toUi
 import app.editors.manager.viewModels.link.ExternalLinkSettingsEffect
 import app.editors.manager.viewModels.link.ExternalLinkSettingsViewModel
 import kotlinx.coroutines.delay
@@ -58,7 +58,7 @@ import lib.toolkit.base.managers.utils.UiUtils
 @Composable
 fun ExternalLinkSettingsScreen(
     link: ExternalLinkSharedTo?,
-    access: Int,
+    access: Access,
     isCreate: Boolean,
     roomType: Int?,
     roomId: String?,
@@ -156,11 +156,11 @@ private fun MainScreen(
     link: ExternalLinkSharedTo,
     loading: Boolean,
     roomType: Int?,
-    access: Int,
+    access: Access,
     passwordErrorState: MutableState<String?>,
     isCreate: Boolean,
     isRevoke: Boolean,
-    onSetAccess: (Int) -> Unit,
+    onSetAccess: (Access) -> Unit,
     onBackListener: () -> Unit,
     onDoneClick: () -> Unit,
     onDeleteOrRevokeLink: () -> Unit,
@@ -230,17 +230,18 @@ private fun MainScreen(
                             val dropdownMenuShow = remember { mutableStateOf(false) }
                             DropdownMenuButton(
                                 state = dropdownMenuShow,
-                                icon = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(access)),
+                                icon = ImageVector.vectorResource(access.toUi().icon),
                                 onDismiss = { dropdownMenuShow.value = false },
                                 items = {
-                                    RoomUtils.getLinkAccessOptions().forEach { accessCode ->
+                                    RoomUtils.getLinkAccessOptions().forEach { accessOption ->
+                                        val accessUi = accessOption.toUi()
                                         DropdownMenuItem(
-                                            title = stringResource(RoomUtils.getAccessTitle(accessCode)),
-                                            selected = access == accessCode,
-                                            startIcon = ManagerUiUtils.getAccessIcon(accessCode),
+                                            title = stringResource(accessUi.title),
+                                            selected = access == accessOption,
+                                            startIcon = accessUi.icon,
                                             onClick = {
                                                 dropdownMenuShow.value = false
-                                                onSetAccess(accessCode)
+                                                onSetAccess(accessOption)
                                             }
                                         )
                                     }
@@ -337,7 +338,7 @@ private fun Preview() {
         roomType = FILL_FORMS_ROOM,
         loading = true,
         passwordErrorState = remember { mutableStateOf(null) },
-        access = ApiContract.ShareCode.EDITOR,
+        access = Access.Editor,
         isCreate = false,
         isRevoke = true,
         onBackListener = {},

@@ -1,6 +1,6 @@
 package app.editors.manager.mvp.models.models
 
-import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.model.cloud.Access
 import app.editors.manager.mvp.models.ui.GroupUi
 import app.editors.manager.mvp.models.ui.UserUi
 import java.lang.ref.WeakReference
@@ -11,7 +11,7 @@ class ModelShareStack {
     val userSet: MutableSet<UserUi> = TreeSet()
     val groupSet: MutableSet<GroupUi> = TreeSet()
 
-    var accessCode: Int = ApiContract.ShareCode.READ
+    var accessCode: Int = Access.Read.code
     var message: String? = null
     var isRefresh: Boolean = false
 

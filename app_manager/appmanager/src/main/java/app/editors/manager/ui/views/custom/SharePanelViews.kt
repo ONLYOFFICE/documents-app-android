@@ -3,12 +3,12 @@ package app.editors.manager.ui.views.custom
 import android.text.Editable
 import android.view.View
 import androidx.core.view.isVisible
-import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludeSharePanelBinding
-import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.toUi
 import app.editors.manager.ui.views.animation.HeightValueAnimator
 import app.editors.manager.ui.views.edits.BaseWatcher
 import app.editors.manager.ui.views.popup.SharePopup
@@ -90,8 +90,8 @@ class SharePanelViews(
     private val isMessageShowed: Boolean
         get() = viewBinding?.sharePanelMessageEditLayout?.isVisible == true
 
-    fun setAccessIcon(accessCode: Int) {
-        viewBinding?.buttonPopupLayout?.setIconResource(ManagerUiUtils.getAccessIcon(accessCode))
+    private fun setAccessIcon(accessCode: Int) {
+        viewBinding?.buttonPopupLayout?.setIconResource(Access.get(accessCode).toUi().icon)
     }
 
     fun popupDismiss(): Boolean {
@@ -155,17 +155,20 @@ class SharePanelViews(
             sharePopup.hide()
             when (v.id) {
                 R.id.fullAccessItem -> {
-                    val accessCode = if (isRoom) ApiContract.ShareCode.ROOM_ADMIN else ApiContract.ShareCode.READ_WRITE
-                    onPopupAccess(accessCode)
+                    val access = if (isRoom)
+                        Access.RoomManager else
+                        Access.ReadWrite
+
+                    onPopupAccess(access.code)
                 }
-                R.id.powerUserItem -> onPopupAccess(ApiContract.ShareCode.POWER_USER)
-                R.id.reviewItem -> onPopupAccess(ApiContract.ShareCode.REVIEW)
-                R.id.viewItem -> onPopupAccess(ApiContract.ShareCode.READ)
-                R.id.editorItem -> onPopupAccess(ApiContract.ShareCode.EDITOR)
-                R.id.denyItem -> onPopupAccess(ApiContract.ShareCode.NONE)
-                R.id.commentItem -> onPopupAccess(ApiContract.ShareCode.COMMENT)
-                R.id.fillFormItem -> onPopupAccess(ApiContract.ShareCode.FILL_FORMS)
-                R.id.customFilterItem -> onPopupAccess(ApiContract.ShareCode.CUSTOM_FILTER)
+                R.id.powerUserItem -> onPopupAccess(Access.ContentCreator.code)
+                R.id.reviewItem -> onPopupAccess(Access.Review.code)
+                R.id.viewItem -> onPopupAccess(Access.Read.code)
+                R.id.editorItem -> onPopupAccess(Access.Editor.code)
+                R.id.denyItem -> onPopupAccess(Access.None.code)
+                R.id.commentItem -> onPopupAccess(Access.Comment.code)
+                R.id.fillFormItem -> onPopupAccess(Access.FormFiller.code)
+                R.id.customFilterItem -> onPopupAccess(Access.CustomFilter.code)
             }
         }
     }

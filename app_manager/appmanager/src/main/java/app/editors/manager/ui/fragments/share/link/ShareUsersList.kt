@@ -92,7 +92,7 @@ internal fun ShareUsersList(
                                 ShareUserItem(share = share, portal = portal, key = type) {
                                     onClick.invoke(
                                         share.sharedTo.id,
-                                        share.accessCode,
+                                        share.access.code,
                                         share.sharedTo.isOwner || share.sharedTo.isAdmin
                                     )
                                 }
@@ -101,7 +101,7 @@ internal fun ShareUsersList(
                                 ShareUserItem(share = share, portal = portal, key = type) {
                                     onClick.invoke(
                                         share.sharedTo.id,
-                                        share.accessCode,
+                                        share.access.code,
                                         share.sharedTo.isOwner || share.sharedTo.isAdmin
                                     )
                                 }
@@ -160,7 +160,7 @@ private fun ShareUserItem(share: ShareEntity, portal: String?, key: ShareType, o
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = stringResource(id = RoomUtils.getAccessTitleOrOwner(share.isOwner, share.accessCode)),
+                text = stringResource(id = RoomUtils.getAccessTitleOrOwner(share.isOwner, share.access.code)),
                 style = MaterialTheme.typography.body2,
                 color = if (share.canEditAccess)
                     MaterialTheme.colors.colorTextSecondary else

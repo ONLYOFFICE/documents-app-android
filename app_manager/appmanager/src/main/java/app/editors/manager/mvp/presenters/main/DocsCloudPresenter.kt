@@ -6,6 +6,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.Recent
 import app.documents.core.model.cloud.isDocSpace
@@ -834,8 +835,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = StringUtils.equals(modelExplorerStack.currentFolderOwnerId, account.id)
 
     private val isContextReadWrite: Boolean
-        get() = isContextOwner || modelExplorerStack.currentFolderAccess == ApiContract.ShareCode.READ_WRITE ||
-                modelExplorerStack.currentFolderAccess == ApiContract.ShareCode.NONE
+        get() = isContextOwner || modelExplorerStack.currentFolderAccess == Access.Read.code ||
+                modelExplorerStack.currentFolderAccess == Access.None.code
 
     val isUserSection: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_USER
@@ -869,16 +870,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = StringUtils.equals(itemClicked?.createdBy?.id, account.id)
 
     private val isItemReadWrite: Boolean
-        get() = itemClicked?.intAccess == ApiContract.ShareCode.READ_WRITE || isUserSection
+        get() = itemClicked?.access == Access.ReadWrite || isUserSection
 
     private val isItemEditable: Boolean
         get() = if (account.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
             itemClicked?.isCanEdit == true
         } else {
             !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
-                    itemClicked?.intAccess == ApiContract.ShareCode.REVIEW ||
-                    itemClicked?.intAccess == ApiContract.ShareCode.FILL_FORMS ||
-                    itemClicked?.intAccess == ApiContract.ShareCode.COMMENT)
+                    itemClicked?.access in listOf(Access.Review, Access.FormFiller, Access.Comment))
         }
 
     private val isItemShareable: Boolean
@@ -1116,7 +1115,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             invitations = listOf(
                                 UserIdInvitation(
                                     id = account.id,
-                                    access = ApiContract.Access.None.code
+                                    access = Access.None.code
                                 )
                             )
                         )

@@ -1,7 +1,7 @@
 package app.documents.core.network.manager.models.explorer
 
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.contracts.ApiContract.ShareType.getCode
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
@@ -34,7 +34,7 @@ class Current : Cloneable, Serializable {
 
     @SerializedName("access")
     @Expose
-    var access = ApiContract.ShareType.NONE
+    private var _access = Access.None.type
 
     @SerializedName("shared")
     @Expose
@@ -99,13 +99,10 @@ class Current : Cloneable, Serializable {
         }
     }
 
-    val intAccess: Int
-        get() {
-            val access = access
-            return try {
-                access.toInt()
-            } catch (error: NumberFormatException) {
-                getCode(access)
-            }
+    val access: Access
+        get() = runCatching {
+            Access.get(_access.toInt())
+        }.getOrElse {
+            Access.get(_access)
         }
 }

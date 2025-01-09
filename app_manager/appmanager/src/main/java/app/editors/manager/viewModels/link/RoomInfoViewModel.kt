@@ -1,6 +1,7 @@
 package app.editors.manager.viewModels.link
 
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
@@ -56,11 +57,11 @@ class RoomInfoViewModel(private val roomProvider: RoomProvider, private val room
         }
     }
 
-    fun setUserAccess(roomId: String, userId: String, access: Int) {
+    fun setUserAccess(roomId: String, userId: String, access: Access) {
         _effect.tryEmit(RoomInfoEffect.ShowOperationDialog)
         operationJob = viewModelScope.launch {
             try {
-                roomProvider.setRoomUserAccess(roomId, userId, access)
+                roomProvider.setRoomUserAccess(roomId, userId, access.code)
                 fetchRoomInfo()
                 _effect.tryEmit(RoomInfoEffect.CloseDialog)
             } catch (httpException: HttpException) {

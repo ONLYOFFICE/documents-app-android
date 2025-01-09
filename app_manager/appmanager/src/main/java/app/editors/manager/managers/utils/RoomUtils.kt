@@ -2,6 +2,7 @@ package app.editors.manager.managers.utils
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
@@ -51,77 +52,55 @@ object RoomUtils {
         return RoomInfo(icon, title, des)
     }
 
-    fun getAccessTitle(access: Int): Int = when (access) {
-        ApiContract.ShareCode.ROOM_ADMIN -> R.string.share_access_room_admin
-        ApiContract.ShareCode.POWER_USER -> R.string.share_access_room_power_user
-        ApiContract.ShareCode.READ_WRITE -> R.string.share_access_room_editor
-        ApiContract.ShareCode.EDITOR -> R.string.share_access_room_editor
-        ApiContract.ShareCode.FILL_FORMS -> R.string.share_access_room_form_filler
-        ApiContract.ShareCode.REVIEW -> R.string.share_access_room_reviewer
-        ApiContract.ShareCode.COMMENT -> R.string.share_access_room_commentator
-        ApiContract.ShareCode.RESTRICT -> R.string.share_popup_access_deny_access
-        ApiContract.ShareCode.NONE -> R.string.share_popup_access_deny_remove
-        else -> R.string.share_access_room_viewer
-    }
-
-    fun getLinkAccessOptions(): List<Int> = listOf(
-        ApiContract.ShareCode.EDITOR,
-        ApiContract.ShareCode.REVIEW,
-        ApiContract.ShareCode.COMMENT,
-        ApiContract.ShareCode.READ
+    fun getLinkAccessOptions(): List<Access> = listOf(
+        Access.Editor,
+        Access.Review,
+        Access.Comment,
+        Access.Read
     )
 
-    fun getAccessOptions(roomType: Int, isRemove: Boolean, isAdmin: Boolean = false): List<Int> {
-        if (isAdmin) {
-            return listOfNotNull(
-                ApiContract.ShareCode.ROOM_ADMIN,
-                ApiContract.ShareCode.NONE.takeIf { isRemove }
-            )
-        }
-
+    fun getAccessOptions(roomType: Int, isRemove: Boolean, isAdmin: Boolean = false): List<Access> {
         return when (roomType) {
             ApiContract.RoomType.PUBLIC_ROOM -> {
-                mutableListOf(
-                    ApiContract.ShareCode.ROOM_ADMIN,
-                    ApiContract.ShareCode.POWER_USER
+                mutableListOf<Access>(
+                    Access.ContentCreator
                 )
             }
 
             ApiContract.RoomType.COLLABORATION_ROOM -> {
                 mutableListOf(
-                    ApiContract.ShareCode.ROOM_ADMIN,
-                    ApiContract.ShareCode.POWER_USER,
-                    ApiContract.ShareCode.EDITOR,
-                    ApiContract.ShareCode.READ
+                    Access.ContentCreator,
+                    Access.Editor,
+                    Access.Read
                 )
             }
 
             ApiContract.RoomType.CUSTOM_ROOM -> {
                 mutableListOf(
-                    ApiContract.ShareCode.ROOM_ADMIN,
-                    ApiContract.ShareCode.POWER_USER,
-                    ApiContract.ShareCode.EDITOR,
-                    ApiContract.ShareCode.FILL_FORMS,
-                    ApiContract.ShareCode.REVIEW,
-                    ApiContract.ShareCode.COMMENT,
-                    ApiContract.ShareCode.READ
+                   Access.ContentCreator,
+                   Access.Editor,
+                   Access.Review,
+                   Access.Comment,
+                   Access.Read
                 )
             }
 
             ApiContract.RoomType.FILL_FORMS_ROOM -> {
                 mutableListOf(
-                    ApiContract.ShareCode.ROOM_ADMIN,
-                    ApiContract.ShareCode.POWER_USER,
-                    ApiContract.ShareCode.FILL_FORMS,
+                    Access.ContentCreator,
+                    Access.FormFiller
                 )
             }
 
             else -> mutableListOf()
-        }.apply { if (isRemove) add(ApiContract.ShareCode.NONE) }
+        }.apply {
+            if (isRemove) add(Access.None)
+            if (isAdmin) add(0, Access.RoomManager)
+        }
     }
 
     fun getAccessTitleOrOwner(isOwner: Boolean, access: Int): Int =
-        if (isOwner) R.string.share_access_room_owner else getAccessTitle(access)
+        if (isOwner) R.string.share_access_room_owner else Access.get(access).toUi().title
 
     fun getRoomInitials(title: String): String? {
         return try {

@@ -16,6 +16,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -217,8 +218,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     protected var currentSectionType = ApiContract.SectionType.UNKNOWN
 
-    val currentFolderAccess: ApiContract.Access
-        get() = ApiContract.Access.get(modelExplorerStack.currentFolderAccess)
+    val currentFolderAccess: Access
+        get() = Access.get(modelExplorerStack.currentFolderAccess)
 
     val currentFolder: Current?
         get() = modelExplorerStack.last()?.current
@@ -1587,14 +1588,16 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         get() = modelExplorerStack.currentId
 
     private fun setAccess(explorer: Explorer?): Explorer {
-        return explorer?.also {
-            explorer.files.map { file ->
-                file.also { it.access = "0" }
-            }
-            explorer.folders.map { folder ->
-                folder.also { it.access = "0" }
-            }
-        } ?: Explorer()
+        return explorer ?: Explorer()
+        // TODO: check it
+//        return explorer?.also {
+//            explorer.files.map { file ->
+//                file.also { it.access = "0" }
+//            }
+//            explorer.folders.map { folder ->
+//                folder.also { it.access = "0" }
+//            }
+//        } ?: Explorer()
     }
 
     fun setAccessDenied() {

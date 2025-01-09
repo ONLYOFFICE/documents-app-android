@@ -29,9 +29,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
-import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.views.custom.AccessIconButton
@@ -52,11 +52,10 @@ import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.managers.utils.StringUtils
 import retrofit2.HttpException
-import kotlin.random.Random
 
 @Composable
 fun InviteAccessScreen(
-    accessList: List<Int>,
+    accessList: List<Access>,
     viewModel: InviteAccessViewModel,
     description: String? = null,
     onBack: () -> Unit,
@@ -96,9 +95,9 @@ fun InviteAccessScreen(
 private fun MainScreen(
     state: InviteAccessState,
     description: String? = null,
-    accessList: List<Int>,
-    onSetAccess: (String, Int) -> Unit,
-    onSetAllAccess: (Int) -> Unit,
+    accessList: List<Access>,
+    onSetAccess: (String, Access) -> Unit,
+    onSetAllAccess: (Access) -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
 ) {
@@ -112,18 +111,20 @@ private fun MainScreen(
         useTablePaddings = false
     ) {
         Column {
-            description?.let { text ->
-                AppDescriptionItem(
-                    modifier = Modifier.padding(top = 8.dp),
-                    text = text
-                )
-            }
             LazyColumn(modifier = Modifier.weight(1f)) {
                 item {
                     if (state.loading) {
                         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                     } else {
                         VerticalSpacer(height = 4.dp)
+                    }
+                }
+                item {
+                    description?.let { text ->
+                        AppDescriptionItem(
+                            modifier = Modifier.padding(top = 8.dp),
+                            text = text
+                        )
                     }
                 }
                 if (state.emails.isNotEmpty()) {
@@ -135,7 +136,7 @@ private fun MainScreen(
                             title = email,
                             subtitle = null,
                             avatar = null,
-                            access = state.idAccessList[email] ?: -1,
+                            access = state.idAccessList[email] ?: Access.None,
                             accessList = accessList,
                             onSetAccess = onSetAccess,
                             value = email
@@ -153,7 +154,7 @@ private fun MainScreen(
                                 subtitle = stringResource(RoomUtils.getUserRole(user))
                                         + user.email?.let { " | $it" },
                                 avatar = user.avatarMedium,
-                                access = state.idAccessList[user.id] ?: -1,
+                                access = state.idAccessList[user.id] ?: Access.None,
                                 accessList = accessList,
                                 onSetAccess = onSetAccess,
                                 value = user.id
@@ -171,12 +172,12 @@ private fun MainScreen(
                                 title = group.name,
                                 subtitle = null,
                                 avatar = "",
-                                access = state.idAccessList[group.id] ?: -1,
+                                access = state.idAccessList[group.id] ?: Access.None,
                                 accessList = accessList.minus(
                                     arrayOf(
-                                        ApiContract.ShareCode.ROOM_ADMIN,
-                                        ApiContract.ShareCode.POWER_USER
-                                    ),
+                                        Access.RoomManager,
+                                        Access.ContentCreator
+                                    ).toSet(),
                                 ),
                                 onSetAccess = onSetAccess,
                                 value = group.id
@@ -189,10 +190,10 @@ private fun MainScreen(
                 nextButtonTitle = R.string.share_invite_title,
                 accessList = accessList.run {
                     takeIf { state.groups.isEmpty() } ?: minus(
-                        arrayOf(
-                            ApiContract.ShareCode.ROOM_ADMIN,
-                            ApiContract.ShareCode.POWER_USER
-                        )
+                        listOf(
+                            Access.RoomManager,
+                            Access.ContentCreator
+                        ).toSet()
                     )
                 },
                 count = null,
@@ -211,10 +212,10 @@ private fun <T> InviteItem(
     title: String,
     subtitle: String?,
     avatar: String?,
-    access: Int,
-    accessList: List<Int>,
+    access: Access,
+    accessList: List<Access>,
     value: T,
-    onSetAccess: (T, Int) -> Unit,
+    onSetAccess: (T, Access) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -301,9 +302,9 @@ private fun InviteAccessScreenEmailPreview() {
         val emails = Array(5) { "email@email $it" }
         MainScreen(
             state = InviteAccessState(
-                access = 2,
+                access = Access.Read,
                 emails = emails.toList(),
-                idAccessList = emails.associateWith { 1 }
+                idAccessList = emails.associateWith { Access.Read }
             ),
             accessList = listOf(),
             onSetAccess = { _, _ -> },
@@ -329,11 +330,11 @@ private fun InviteAccessScreenUsersPreview() {
         val groups = Array(5) { Group(name = "group $it") }.toList()
         val accessList = users.map(User::id)
             .plus(groups.map(Group::id))
-            .associateWith { Random.nextInt(0, 2) }
+            .associateWith { Access.Read }
 
         MainScreen(
             InviteAccessState(
-                access = 2,
+                access = Access.Read,
                 users = users,
                 groups = groups,
                 idAccessList = accessList

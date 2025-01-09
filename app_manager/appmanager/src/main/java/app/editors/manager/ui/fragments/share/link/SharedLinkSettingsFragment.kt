@@ -21,11 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.editors.manager.R
-import app.editors.manager.managers.utils.ManagerUiUtils.getAccessIcon
 import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.managers.utils.toUi
 import app.editors.manager.viewModels.link.SharedLinkSettingsEffect
 import app.editors.manager.viewModels.link.SharedLinkSettingsViewModel
 import lib.compose.ui.TouchDisable
@@ -129,15 +130,16 @@ private fun MainScreen(
                             endContent = {
                                 DropdownMenuButton(
                                     state = accessDropDownState,
-                                    icon = ImageVector.vectorResource(getAccessIcon(state.value.access)),
+                                    icon = ImageVector.vectorResource(Access.get(state.value.access).toUi().icon),
                                     items = {
                                         RoomUtils.getLinkAccessOptions().forEach { access ->
+                                            val accessUi = access.toUi()
                                             DropdownMenuItem(
-                                                title = stringResource(RoomUtils.getAccessTitle(access)),
-                                                selected = access == state.value.access,
-                                                startIcon = getAccessIcon(access),
+                                                title = stringResource(accessUi.title),
+                                                selected = access.code == state.value.access,
+                                                startIcon = accessUi.icon,
                                                 onClick = {
-                                                    onSetAccess(access)
+                                                    onSetAccess(access.code)
                                                     accessDropDownState.value = false
                                                 }
                                             )

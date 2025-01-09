@@ -30,8 +30,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import app.documents.core.model.cloud.Access
 import app.editors.manager.R
-import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.toUi
 import lib.compose.ui.addIfNotNull
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
@@ -139,7 +140,7 @@ fun SharedLinkItem(
                 }
                 Icon(
                     modifier = Modifier.padding(start = 8.dp),
-                    imageVector = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(access)),
+                    imageVector = ImageVector.vectorResource(Access.get(access).toUi().icon),
                     tint = MaterialTheme.colors.colorTextTertiary,
                     contentDescription = null
                 )

@@ -2,9 +2,9 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
-import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.ShareService
 import app.documents.core.network.share.models.request.RequestShare
 import app.documents.core.network.share.models.request.RequestShareItem
@@ -19,11 +19,11 @@ import kotlinx.coroutines.launch
 
 data class InviteAccessState(
     val loading: Boolean = false,
-    val access: Int,
+    val access: Access,
     val emails: List<String> = emptyList(),
     val users: List<User> = emptyList(),
     val groups: List<Group> = emptyList(),
-    val idAccessList: Map<String, Int> = emptyMap(),
+    val idAccessList: Map<String, Access> = emptyMap(),
 )
 
 sealed class InviteAccessEffect {
@@ -33,7 +33,7 @@ sealed class InviteAccessEffect {
 }
 
 open class InviteAccessViewModel(
-    access: Int,
+    access: Access,
     users: List<User>,
     groups: List<Group>,
     emails: List<String> = emptyList(),
@@ -45,7 +45,7 @@ open class InviteAccessViewModel(
     companion object {
 
         fun initState(
-            access: Int,
+            access: Access,
             users: List<User>,
             groups: List<Group>,
             emails: List<String>
@@ -61,8 +61,8 @@ open class InviteAccessViewModel(
                         groups.map(Group::id)
                             .associateWith {
                                 access.takeIf {
-                                    it != ApiContract.ShareCode.ROOM_ADMIN
-                                } ?: ApiContract.ShareCode.POWER_USER
+                                    it != Access.RoomManager
+                                } ?: Access.ContentCreator
                             }
             )
         }
@@ -74,15 +74,15 @@ open class InviteAccessViewModel(
     private val _effect: MutableSharedFlow<InviteAccessEffect> = MutableSharedFlow(1)
     val effect: SharedFlow<InviteAccessEffect> = _effect.asSharedFlow()
 
-    fun setAccess(emailOrId: String, access: Int) {
-        if (access == ApiContract.ShareCode.NONE) {
+    fun setAccess(emailOrId: String, access: Access) {
+        if (access == Access.None) {
             _state.update { it.copy(idAccessList = it.idAccessList.minus(emailOrId)) }
         } else {
             _state.update { it.copy(idAccessList = it.idAccessList.toMutableMap().apply { this[emailOrId] = access }) }
         }
     }
 
-    fun setAllAccess(access: Int) {
+    fun setAllAccess(access: Access) {
         _state.update {
             it.copy(
                 access = access,

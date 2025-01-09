@@ -2,6 +2,7 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.managers.utils.RoomUtils
@@ -50,7 +51,7 @@ class InviteUserViewModel(
             if (enabled) {
                 try {
                     val access = RoomUtils.getAccessOptions(roomType, false).last()
-                    val link = roomProvider.addRoomInviteLink(roomId, access)
+                    val link = roomProvider.addRoomInviteLink(roomId, access.code)
                     _state.value = InviteUserState(externalLink = link)
                 } catch (e: Exception) {
                     _error.emit(e)
@@ -70,14 +71,14 @@ class InviteUserViewModel(
         }
     }
 
-    fun setAccess(access: Int) {
+    fun setAccess(access: Access) {
         viewModelScope.launch {
             _state.update { it.copy(requestLoading = true) }
             try {
                 val link = roomProvider.setRoomInviteLinkAccess(
                     roomId = roomId,
                     linkId = state.value.externalLink?.sharedTo?.id.orEmpty(),
-                    access = access
+                    access = access.code
                 )
                 _state.value = InviteUserState(externalLink = link)
             } catch (e: Exception) {

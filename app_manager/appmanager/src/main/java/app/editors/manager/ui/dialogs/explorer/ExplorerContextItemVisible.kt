@@ -1,5 +1,6 @@
 package app.editors.manager.ui.dialogs.explorer
 
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -71,7 +72,7 @@ interface ExplorerContextItemVisible {
 
                     ApiContract.Section.Trash,
                     ApiContract.Section.Room.Archive -> false
-                    else -> access != ApiContract.Access.Read || item.security?.editAccess == true
+                    else -> access != Access.Read || item.security?.editAccess == true
                 }
             } else section.isRoom && isRoot && item.security?.editRoom == true
         }
@@ -92,7 +93,7 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.rename: Boolean
         get() = if (!section.isRoom) {
-            access == ApiContract.Access.ReadWrite || section in listOf(
+            access == Access.ReadWrite || section in listOf(
                 ApiContract.Section.User,
                 ApiContract.Section.Device
             )
@@ -116,8 +117,8 @@ interface ExplorerContextItemVisible {
             section == ApiContract.Section.User && item is CloudFile
         } else if (item is CloudFile) {
             !item.isDenySharing && access in arrayOf(
-                ApiContract.Access.ReadWrite,
-                ApiContract.Access.None
+                Access.ReadWrite,
+                Access.None
             )
         } else {
             isShareVisible(access, section)
@@ -166,10 +167,10 @@ interface ExplorerContextItemVisible {
         )
     }
 
-    private fun isShareVisible(access: ApiContract.Access, section: ApiContract.Section): Boolean =
+    private fun isShareVisible(access: Access, section: ApiContract.Section): Boolean =
         section == ApiContract.Section.User || access in listOf(
-            ApiContract.Access.Comment,
-            ApiContract.Access.ReadWrite
+            Access.Comment,
+            Access.ReadWrite
         )
 
 }

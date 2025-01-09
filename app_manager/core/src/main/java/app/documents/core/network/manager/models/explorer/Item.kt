@@ -1,7 +1,6 @@
 package app.documents.core.network.manager.models.explorer
 
-import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.contracts.ApiContract.ShareType.getCode
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.base.ItemProperties
 import com.google.gson.annotations.Expose
@@ -21,7 +20,7 @@ open class Item : ItemProperties(), Serializable {
 
     @SerializedName("access")
     @Expose
-    var access = ApiContract.ShareType.NONE
+    private var _access = Access.None.type
 
     @SerializedName("shared")
     @Expose
@@ -79,20 +78,17 @@ open class Item : ItemProperties(), Serializable {
             order = if (indices.size > 1) indices.joinToString(".") else indices[0]
         }
 
-    val intAccess: Int
-        get() {
-            val access = access
-            return try {
-                access.toInt()
-            } catch (error: NumberFormatException) {
-                getCode(access)
-            }
+    val access: Access
+        get() = runCatching {
+            Access.get(_access.toInt())
+        }.getOrElse {
+            Access.get(_access)
         }
 
     fun setItem(item: Item) {
         id = item.id
         title = item.title
-        access = item.access
+        _access = item._access
         shared = item.shared
         rootFolderType = item.rootFolderType
         updatedBy = item.updatedBy
