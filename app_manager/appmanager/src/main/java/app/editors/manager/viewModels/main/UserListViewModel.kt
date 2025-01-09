@@ -137,7 +137,7 @@ abstract class UserListViewModel(
     }
 
     fun getSelectedUsers(): List<User> {
-        return _viewState.value.users.filter { _viewState.value.selected.contains(it.id) }
+        return with(_viewState.value) { (users + guests).filter { selected.contains(it.id) } }
     }
 
     fun getSelectedGroups(): List<Group> {
