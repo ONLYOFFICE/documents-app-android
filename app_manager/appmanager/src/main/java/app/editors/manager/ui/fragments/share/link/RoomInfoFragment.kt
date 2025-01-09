@@ -3,8 +3,10 @@ package app.editors.manager.ui.fragments.share.link
 import android.view.View
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -44,12 +46,11 @@ import app.editors.manager.viewModels.link.RoomAccessViewModel
 import app.editors.manager.viewModels.link.RoomInfoEffect
 import app.editors.manager.viewModels.link.RoomInfoState
 import app.editors.manager.viewModels.link.RoomInfoViewModel
-import kotlinx.coroutines.delay
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import lib.compose.ui.rememberWaitingDialog
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.utils.popBackStackWhenResumed
+import lib.compose.ui.views.AnimatedVisibilityVerticalFade
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.TopAppBarAction
@@ -91,10 +92,6 @@ class RoomInfoFragment : ComposeDialogFragment() {
                 }
             }
             val state by viewModel.state.collectAsState()
-            val waitingDialog = rememberWaitingDialog(
-                title = R.string.dialogs_wait_title,
-                onCancel = viewModel::cancelOperation
-            )
 
             BackHandler {
                 dismiss()
@@ -105,19 +102,12 @@ class RoomInfoFragment : ComposeDialogFragment() {
                     when (effect) {
                         is RoomInfoEffect.Create -> {
                             copyLinkToClipboard(requireView(), effect.url)
-                            waitingDialog.dismiss()
                         }
                         is RoomInfoEffect.Error -> {
                             UiUtils.getShortSnackBar(requireView())
                                 .setText(effect.message)
                                 .show()
                         }
-                        RoomInfoEffect.ShowOperationDialog -> {
-                            keyboardController?.hide()
-                            waitingDialog.show()
-                            delay(500)
-                        }
-                        RoomInfoEffect.CloseDialog -> waitingDialog.dismiss()
                     }
                 }
             }
@@ -326,27 +316,32 @@ class RoomInfoFragment : ComposeDialogFragment() {
         AppScaffold(
             useTablePaddings = false,
             topBar = {
-                AppTopBar(
-                    title = {
-                        Column {
-                            Text(text = roomTitle ?: stringResource(id = R.string.list_context_info))
-                            roomType?.let { type ->
-                                Text(
-                                    text = stringResource(id = RoomUtils.getRoomInfo(type).title),
-                                    style = MaterialTheme.typography.caption
-                                )
+                Column {
+                    AppTopBar(
+                        title = {
+                            Column {
+                                Text(text = roomTitle ?: stringResource(id = R.string.list_context_info))
+                                roomType?.let { type ->
+                                    Text(
+                                        text = stringResource(id = RoomUtils.getRoomInfo(type).title),
+                                        style = MaterialTheme.typography.caption
+                                    )
+                                }
                             }
-                        }
-                    },
-                    actions = {
-                        TopAppBarAction(
-                            icon = R.drawable.ic_add_users,
-                            onClick = onAddUsers,
-                            enabled = canEditRoom
-                        )
-                    },
-                    backListener = onBackClick
-                )
+                        },
+                        actions = {
+                            TopAppBarAction(
+                                icon = R.drawable.ic_add_users,
+                                onClick = onAddUsers,
+                                enabled = canEditRoom
+                            )
+                        },
+                        backListener = onBackClick
+                    )
+                    AnimatedVisibilityVerticalFade(visible = state.requestLoading) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
+                }
             }
         ) {
             if (state.isLoading) {
