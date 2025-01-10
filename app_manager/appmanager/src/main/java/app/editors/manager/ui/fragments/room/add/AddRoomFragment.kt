@@ -173,7 +173,9 @@ class AddRoomFragment : ComposeDialogFragment() {
                             viewModel.updateLifeTimeState { it.copy(deletePermanently = isDeletePermanently) }
                         },
                         onWatermarkEnable = { enabled ->
-                            viewModel.updateLifeTimeState { it.copy(enabled = enabled) }
+                            viewModel.updateWatermarkState {
+                                it.copy(watermark = it.watermark.copy(enabled = enabled))
+                            }
                         },
                         onSetWatermarkAddition = { additions ->
                             viewModel.updateWatermarkState {
