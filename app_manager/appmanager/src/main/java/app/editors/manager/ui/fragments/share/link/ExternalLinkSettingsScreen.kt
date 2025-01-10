@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.documents.core.model.cloud.Access
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.contracts.ApiContract.RoomType.FILL_FORMS_ROOM
 import app.documents.core.network.common.contracts.ApiContract.RoomType.PUBLIC_ROOM
 import app.documents.core.network.share.models.ExternalLinkSharedTo
@@ -40,6 +41,7 @@ import app.editors.manager.managers.utils.toUi
 import app.editors.manager.viewModels.link.ExternalLinkSettingsEffect
 import app.editors.manager.viewModels.link.ExternalLinkSettingsViewModel
 import kotlinx.coroutines.delay
+import lib.compose.ui.TouchDisable
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.AnimatedVisibilityVerticalFade
 import lib.compose.ui.views.AppDescriptionItem
@@ -215,93 +217,98 @@ private fun MainScreen(
                     updateViewState { copy(password = password.value) }
                 }
 
-                AppHeaderItem(title = R.string.rooms_info_link_name)
-                AppTextFieldListItem(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    state = title,
-                    hint = stringResource(id = lib.toolkit.base.R.string.text_hint_required)
-                )
+                TouchDisable(disableTouch = link.isExpired) {
+                    Column {
+                        AppHeaderItem(title = R.string.rooms_info_link_name)
+                        AppTextFieldListItem(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            state = title,
+                            hint = stringResource(id = lib.toolkit.base.R.string.text_hint_required)
+                        )
 
-                if (roomType != FILL_FORMS_ROOM) {
-                    AppHeaderItem(title = R.string.rooms_share_general_header)
-                    AppListItem(
-                        title = stringResource(R.string.share_access_room_type),
-                        endContent = {
-                            val dropdownMenuShow = remember { mutableStateOf(false) }
-                            DropdownMenuButton(
-                                state = dropdownMenuShow,
-                                icon = ImageVector.vectorResource(access.toUi().icon),
-                                onDismiss = { dropdownMenuShow.value = false },
-                                items = {
-                                    RoomUtils.getLinkAccessOptions().forEach { accessOption ->
-                                        val accessUi = accessOption.toUi()
-                                        DropdownMenuItem(
-                                            title = stringResource(accessUi.title),
-                                            selected = access == accessOption,
-                                            startIcon = accessUi.icon,
-                                            onClick = {
-                                                dropdownMenuShow.value = false
-                                                onSetAccess(accessOption)
+                        if (roomType != FILL_FORMS_ROOM) {
+                            AppHeaderItem(title = R.string.rooms_share_general_header)
+                            AppListItem(
+                                title = stringResource(R.string.share_access_room_type),
+                                endContent = {
+                                    val dropdownMenuShow = remember { mutableStateOf(false) }
+                                    DropdownMenuButton(
+                                        state = dropdownMenuShow,
+                                        icon = ImageVector.vectorResource(access.toUi().icon),
+                                        onDismiss = { dropdownMenuShow.value = false },
+                                        items = {
+                                            RoomUtils.getLinkAccessOptions().forEach { accessOption ->
+                                                val accessUi = accessOption.toUi()
+                                                DropdownMenuItem(
+                                                    title = stringResource(accessUi.title),
+                                                    selected = access == accessOption,
+                                                    startIcon = accessUi.icon,
+                                                    onClick = {
+                                                        dropdownMenuShow.value = false
+                                                        onSetAccess(accessOption)
+                                                    }
+                                                )
                                             }
-                                        )
+                                        }
+                                    ) {
+                                        dropdownMenuShow.value = true
                                     }
                                 }
-                            ) {
-                                dropdownMenuShow.value = true
+                            )
+                        }
+
+                        if (!link.primary) {
+                            LinkLifeTimeListItem(
+                                expirationDate = link.expirationDate,
+                                onSetLifeTime = {
+                                    updateViewState { copy(expirationDate = it.getFormattedDateTime()) }
+                                }
+                            )
+                        }
+
+                        AppHeaderItem(title = R.string.context_protection_title)
+                        AppSwitchItem(
+                            title = R.string.rooms_info_password_access,
+                            checked = passwordEnabled.value,
+                            onCheck = { checked ->
+                                passwordEnabled.value = checked
+                                updateViewState { copy(password = "".takeIf { checked }) }
                             }
-                        }
-                    )
-                }
+                        )
+                        AnimatedVisibilityVerticalFade(visible = passwordEnabled.value) {
 
-                if (!link.primary) {
-                    LinkLifeTimeListItem(
-                        expirationDate = link.expirationDate,
-                        onSetLifeTime = {
-                            updateViewState { copy(expirationDate = it.getFormattedDateTime()) }
-                        }
-                    )
-                }
+                            LaunchedEffect(passwordEnabled.value) {
+                                if (passwordEnabled.value && !link.isExpired) {
+                                    delay(500)
+                                    focusRequester.requestFocus()
+                                }
+                            }
 
-                AppHeaderItem(title = R.string.context_protection_title)
-                AppSwitchItem(
-                    title = R.string.rooms_info_password_access,
-                    checked = passwordEnabled.value,
-                    onCheck = { checked ->
-                        passwordEnabled.value = checked
-                        updateViewState { copy(password = "".takeIf { checked }) }
+                            AppPasswordTextField(
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .focusRequester(focusRequester),
+                                label = null,
+                                state = password,
+                                focusManager = LocalFocusManager.current,
+                                errorState = passwordErrorState
+                            )
+                        }
+                        if (roomType != FILL_FORMS_ROOM) {
+                            AppSwitchItem(
+                                title = R.string.rooms_info_file_rectrict,
+                                checked = denyDownload,
+                                singleLine = false,
+                                onCheck = { denyDownload = it }
+                            )
+                            AppDescriptionItem(
+                                modifier = Modifier.padding(top = 8.dp),
+                                text = R.string.rooms_info_file_rectrict_desc
+                            )
+                        }
                     }
-                )
-                AnimatedVisibilityVerticalFade(visible = passwordEnabled.value) {
-
-                    LaunchedEffect(passwordEnabled.value) {
-                        if (passwordEnabled.value) {
-                            delay(500)
-                            focusRequester.requestFocus()
-                        }
-                    }
-
-                    AppPasswordTextField(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .focusRequester(focusRequester),
-                        label = null,
-                        state = password,
-                        focusManager = LocalFocusManager.current,
-                        errorState = passwordErrorState
-                    )
                 }
-                if (roomType != FILL_FORMS_ROOM) {
-                    AppSwitchItem(
-                        title = R.string.rooms_info_file_rectrict,
-                        checked = denyDownload,
-                        singleLine = false,
-                        onCheck = { denyDownload = it }
-                    )
-                    AppDescriptionItem(
-                        modifier = Modifier.padding(top = 8.dp),
-                        text = R.string.rooms_info_file_rectrict_desc
-                    )
-                }
+
                 if (!isCreate && roomType != FILL_FORMS_ROOM) {
                     AppTextButton(
                         modifier = Modifier.padding(start = 8.dp, top = 8.dp),
@@ -326,8 +333,8 @@ private fun Preview() {
         shareLink = "",
         linkType = 2,
         denyDownload = false,
-        isExpired = false,
-        primary = true,
+        isExpired = true,
+        primary = false,
         requestToken = "",
         password = null,
         expirationDate = null
@@ -335,12 +342,12 @@ private fun Preview() {
 
     MainScreen(
         link = link,
-        roomType = FILL_FORMS_ROOM,
+        roomType = ApiContract.RoomType.PUBLIC_ROOM,
         loading = true,
         passwordErrorState = remember { mutableStateOf(null) },
         access = Access.Editor,
         isCreate = false,
-        isRevoke = true,
+        isRevoke = false,
         onBackListener = {},
         onSetAccess = {},
         onDoneClick = {},
