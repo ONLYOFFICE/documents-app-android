@@ -737,7 +737,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
             )
         }
-        addRecent(itemClicked as CloudFile)
+        addRecent(cloudFile)
     }
 
     private fun resetFilters() {
