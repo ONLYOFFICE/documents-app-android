@@ -15,6 +15,7 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowCloseOnTouchOutside">false</item>
         <item name="android:theme">@style/AppTheme</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
     <style name="PasscodeActivityTheme" parent="NoActionBarTheme">
