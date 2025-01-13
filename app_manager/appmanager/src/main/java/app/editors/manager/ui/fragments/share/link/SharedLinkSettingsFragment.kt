@@ -43,6 +43,7 @@ import java.util.Locale
 @Composable
 fun SharedLinkSettingsScreen(
     viewModel: SharedLinkSettingsViewModel,
+    fileExtension: String,
     useTabletPadding: Boolean = false,
     onSnackBar: (String) -> Unit,
     onBack: () -> Unit
@@ -88,7 +89,8 @@ fun SharedLinkSettingsScreen(
                 useTabletPadding = useTabletPadding,
                 currentAccess = state.value.access,
                 onBack = navController::popBackStackWhenResumed,
-                onSetUserAccess = viewModel::setAccess
+                onSetUserAccess = viewModel::setAccess,
+                fileExtension = fileExtension
             )
         }
         composable(Route.LifeTimeScreen.name) {

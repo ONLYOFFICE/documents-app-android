@@ -184,50 +184,43 @@ object ManagerUiUtils {
         }
     }
 
-    fun getAccessList(extension: StringUtils.Extension, removable: Boolean = false): List<Int> {
-        return when (extension) {
-            StringUtils.Extension.DOC, StringUtils.Extension.DOCXF -> {
-                listOf(
-                    ApiContract.ShareCode.READ_WRITE,
-                    ApiContract.ShareCode.REVIEW,
-                    ApiContract.ShareCode.COMMENT,
-                    ApiContract.ShareCode.READ,
-                    ApiContract.ShareCode.RESTRICT
-                )
+    fun getAccessList(
+        extension: StringUtils.Extension,
+        removable: Boolean = false,
+        isDocSpace: Boolean = false,
+    ): List<Int> {
+        return buildList {
+            if (isDocSpace) {
+                add(ApiContract.ShareCode.EDITOR)
+            } else {
+                add(ApiContract.ShareCode.READ_WRITE)
             }
-            StringUtils.Extension.PRESENTATION -> {
-                listOf(
-                    ApiContract.ShareCode.READ_WRITE,
-                    ApiContract.ShareCode.COMMENT,
-                    ApiContract.ShareCode.READ,
-                    ApiContract.ShareCode.RESTRICT
-                )
+            when (extension) {
+                StringUtils.Extension.DOC, StringUtils.Extension.DOCXF -> {
+                    add(ApiContract.ShareCode.REVIEW)
+                    add(ApiContract.ShareCode.COMMENT)
+                }
+
+                StringUtils.Extension.PRESENTATION -> {
+                    add(ApiContract.ShareCode.COMMENT)
+                }
+
+                StringUtils.Extension.SHEET -> {
+                    add(ApiContract.ShareCode.CUSTOM_FILTER)
+                    add(ApiContract.ShareCode.COMMENT)
+                }
+
+                StringUtils.Extension.PDF, StringUtils.Extension.OFORM -> {
+                    add(ApiContract.ShareCode.FILL_FORMS)
+                }
+                else -> Unit
             }
-            StringUtils.Extension.SHEET -> {
-                listOf(
-                    ApiContract.ShareCode.READ_WRITE,
-                    ApiContract.ShareCode.CUSTOM_FILTER,
-                    ApiContract.ShareCode.COMMENT,
-                    ApiContract.ShareCode.READ,
-                    ApiContract.ShareCode.RESTRICT
-                )
+            add(ApiContract.ShareCode.READ)
+            add(ApiContract.ShareCode.RESTRICT)
+            if (removable) {
+                add(ApiContract.ShareCode.NONE)
             }
-            StringUtils.Extension.PDF, StringUtils.Extension.OFORM -> {
-                listOf(
-                    ApiContract.ShareCode.READ_WRITE,
-                    ApiContract.ShareCode.FILL_FORMS,
-                    ApiContract.ShareCode.READ,
-                    ApiContract.ShareCode.RESTRICT
-                )
-            }
-            else -> {
-                listOf(
-                    ApiContract.ShareCode.READ_WRITE,
-                    ApiContract.ShareCode.READ,
-                    ApiContract.ShareCode.RESTRICT
-                )
-            }
-        }.run { if (removable) plus(ApiContract.ShareCode.NONE) else this }
+        }
     }
 
     fun setAccessIcon(icon: ImageView?, accessCode: Int) {

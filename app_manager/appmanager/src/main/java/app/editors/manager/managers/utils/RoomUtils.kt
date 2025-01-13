@@ -50,6 +50,7 @@ object RoomUtils {
         ApiContract.ShareCode.ROOM_ADMIN -> R.string.share_access_room_admin
         ApiContract.ShareCode.POWER_USER -> R.string.share_access_room_power_user
         ApiContract.ShareCode.READ_WRITE -> R.string.share_access_room_editor
+        ApiContract.ShareCode.CUSTOM_FILTER -> R.string.share_popup_access_custom_filter
         ApiContract.ShareCode.EDITOR -> R.string.share_access_room_editor
         ApiContract.ShareCode.FILL_FORMS -> R.string.share_access_room_form_filler
         ApiContract.ShareCode.REVIEW -> R.string.share_access_room_reviewer
