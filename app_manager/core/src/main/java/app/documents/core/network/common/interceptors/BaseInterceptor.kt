@@ -13,9 +13,14 @@ enum class HeaderType(val header: String) {
     REQUEST_TOKEN("Request-Token")
 }
 
-class BaseInterceptor(private val token: String?, private val context: Context, private val type: HeaderType = HeaderType.AUTHORIZATION) : Interceptor {
+class BaseInterceptor(
+    private val token: String?,
+    private val context: Context,
+    private val type: HeaderType = HeaderType.AUTHORIZATION
+) : Interceptor {
 
     companion object {
+
         private const val KEY_AUTH = "Bearer "
     }
 
@@ -31,14 +36,13 @@ class BaseInterceptor(private val token: String?, private val context: Context, 
                 token
             }
         }
-        return chain.proceed(
-            chain.request()
-                .newBuilder().apply {
-                    if (chain.request().headers()[ApiContract.HEADER_AUTHORIZATION] == null)
-                        addHeader(type.header, token.orEmpty())
-                }
-                .build()
-        )
+        val newBuilder = chain.request().newBuilder().apply {
+            if (chain.request().headers()[ApiContract.HEADER_AUTHORIZATION] == null) {
+                addHeader(type.header, token.orEmpty())
+            }
+        }
+        val response = chain.proceed(newBuilder.build())
+        return response
     }
 
     @Throws(NoConnectivityException::class)

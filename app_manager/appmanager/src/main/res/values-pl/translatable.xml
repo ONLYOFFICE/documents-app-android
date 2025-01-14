@@ -515,7 +515,7 @@
     <string name="dialog_create_room">Utwórz pokój</string>
     <string name="dialog_create_room_value">Nowy pokój</string>
     <string name="invite_by_email">Zaproś użytkowników poprzez e-mail</string>
-    <string name="share_access_room_admin">Admin pokoju</string>
+    <string name="share_user_type_room_admin">Admin pokoju</string>
     <string name="share_access_room_editor">Edytujący</string>
     <string name="share_access_room_form_filler">Wypełniający formularze</string>
     <string name="share_access_room_reviewer">Recenzujący</string>
@@ -554,7 +554,6 @@
         <item quantity="one">Pozycja została nieodwracalnie usunięta</item>
         <item quantity="other">Pozycje zostały nieodwracalnie usunięte</item>
     </plurals>
-    <string name="share_access_room_power_user">Użytkownik z większą liczbą uprawnień</string>
     <string name="share_expected_member">Oczekiwanie na członków</string>
     <string name="app_settings_main_help">Pomoc</string>
     <string name="clear_recents">"Wyczyścić ostatnie?"</string>
@@ -611,9 +610,7 @@
     <string name="rooms_info_create_link_complete">Link został pomyślnie utworzony i skopiowany do schowka</string>
     <string name="rooms_info_delete_link">Usuń link</string>
     <string name="rooms_info_delete_link_complete">Link został usunięty</string>
-    <string name="rooms_info_delete_link_desc">Link zostanie trwale usunięty. Nie będziesz w stanie cofnąć tego działania.</string>
     <string name="rooms_info_revoke_link">Unieważnij link</string>
-    <string name="rooms_info_revoke_link_desc">Poprzedni link stanie się niedostępny. Zostanie utworzony nowy link główny.</string>
     <string name="rooms_info_revoke_link_complete">Link został unieważniony</string>
     <string name="rooms_info_revoke">Unieważnij</string>
     <string name="rooms_info_copy_link">Kopiuj link</string>

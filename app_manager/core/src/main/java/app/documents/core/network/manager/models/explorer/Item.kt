@@ -1,7 +1,6 @@
 package app.documents.core.network.manager.models.explorer
 
-import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.contracts.ApiContract.ShareType.getCode
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.base.ItemProperties
 import com.google.gson.annotations.Expose
@@ -21,7 +20,7 @@ open class Item : ItemProperties(), Serializable {
 
     @SerializedName("access")
     @Expose
-    var access = ApiContract.ShareType.NONE
+    private var _access = Access.None.type
 
     @SerializedName("shared")
     @Expose
@@ -67,20 +66,32 @@ open class Item : ItemProperties(), Serializable {
     @Expose
     var etag = ""
 
-    val intAccess: Int
-        get() {
-            val access = access
-            return try {
-                access.toInt()
-            } catch (error: NumberFormatException) {
-                getCode(access)
-            }
+    @SerializedName("order")
+    @Expose
+    var order: String = ""
+
+    var index: Int
+        get() = order.split(".").lastOrNull()?.toInt() ?: 0
+        set(value) {
+            val indices = order.split(".").toMutableList()
+            indices[indices.lastIndex] = value.toString()
+            order = if (indices.size > 1) indices.joinToString(".") else indices[0]
+        }
+
+    var access: Access
+        get() = runCatching {
+            Access.get(_access.toInt())
+        }.getOrElse {
+            Access.get(_access)
+        }
+        set(value) {
+            _access = value.code.toString()
         }
 
     fun setItem(item: Item) {
         id = item.id
         title = item.title
-        access = item.access
+        _access = item._access
         shared = item.shared
         rootFolderType = item.rootFolderType
         updatedBy = item.updatedBy

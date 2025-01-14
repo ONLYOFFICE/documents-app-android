@@ -2,6 +2,7 @@ package app.editors.manager.ui.dialogs.explorer
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -21,8 +22,8 @@ data class ExplorerContextState(
     val section: ApiContract.Section
         get() = ApiContract.Section.getSection(sectionType)
 
-    val access: ApiContract.Access
-        get() = ApiContract.Access.get(item.intAccess)
+    val access: Access
+        get() = item.access
 
     val pinned: Boolean
         get() = (item as? CloudFolder)?.pinned == true

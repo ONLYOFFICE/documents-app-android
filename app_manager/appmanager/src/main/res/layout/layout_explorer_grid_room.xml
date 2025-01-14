@@ -17,12 +17,23 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/badge"
-            style="@style/ExplorerItemLayout.RoomBadge"
+            style="@style/ExplorerItemLayout.RoomPublicBadge"
             android:layout_width="22dp"
             android:layout_height="22dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/cardImageLayout"
             app:layout_constraintEnd_toEndOf="@id/cardImageLayout"
             tools:src="@drawable/ic_storage_dropbox" />
+
+        <ImageView
+            android:id="@+id/externalBadge"
+            style="@style/ExplorerItemLayout.RoomExternalBadge"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_room_external_badge"
+            app:layout_constraintBottom_toBottomOf="@id/cardImageLayout"
+            app:layout_constraintEnd_toEndOf="@id/cardImageLayout"
+            tools:ignore="ContentDescription" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardImageLayout"
@@ -75,10 +86,12 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title"
             style="@style/GridItemLayout.Title"
+            android:layout_width="wrap_content"
             android:maxLines="2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cardImageLayout"
+            tools:drawableEnd="@drawable/ic_expiring"
             tools:text="Room name" />
 
         <TextView

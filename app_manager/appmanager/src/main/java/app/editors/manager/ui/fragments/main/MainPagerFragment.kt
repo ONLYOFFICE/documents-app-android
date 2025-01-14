@@ -40,6 +40,7 @@ import moxy.presenter.InjectPresenter
 interface IMainPagerFragment {
 
     fun setPagerPosition(sectionType: Int, onPageChanged: () -> Unit = {})
+    fun setToolbarInfo(title: String?, drawable: Int? = null)
 }
 
 class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView, View.OnClickListener,
@@ -380,6 +381,12 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     private val activeFragment: Fragment?
         get() = runCatching { adapter?.getActiveFragment(viewBinding?.mainViewPager) }.getOrNull()
+
+    override fun setToolbarInfo(title: String?, drawable: Int?) {
+        viewBinding?.infoLayout?.root?.isVisible = title != null
+        viewBinding?.infoLayout?.infoText?.text = title
+        viewBinding?.infoLayout?.infoText?.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
+    }
 
     override fun onClick(view: View?) {
         activity?.onSwitchAccount()

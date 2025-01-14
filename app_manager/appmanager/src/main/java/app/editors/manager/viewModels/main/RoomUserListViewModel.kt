@@ -1,10 +1,8 @@
 package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.viewModelScope
-import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
-import app.documents.core.network.share.ShareService
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -13,55 +11,50 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.tools.ResourcesProvider
 
-sealed class UserListMode {
-    data object Invite : UserListMode()
-    data object ChangeOwner : UserListMode()
-}
-
 class RoomUserListViewModel(
-    roomType: Int? = null,
     private val roomId: String,
-    private val roomOwnerId: String = "",
     private val mode: UserListMode,
-    private val shareService: ShareService,
     private val roomProvider: RoomProvider,
-    private val resourcesProvider: ResourcesProvider,
+    private val roomOwnerId: String = "",
+    roomType: Int? = null,
+    resourcesProvider: ResourcesProvider,
 ) : UserListViewModel(
+    mode = mode,
     access = roomType?.let { RoomUtils.getAccessOptions(it, false).lastOrNull() },
-    shareService = shareService,
     resourcesProvider = resourcesProvider
 ) {
 
-    override var cachedMembersFlow: SharedFlow<List<Member>> =
-        flow { emit(getUsers() + getGroups()) }
-            .catch { error -> handleError(error) }
-            .onCompletion { updateListState() }
-            .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
+    override val cachedMembersFlow: SharedFlow<List<Member>> = flow {
+        emit(getMembers())
+    }
+        .onEach(::updateListState)
+        .catch { error -> handleError(error) }
+        .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
 
-    private suspend fun getUsers(): List<User> {
-        return shareService.getRoomUsers(roomId, getOptions())
-            .response
-            .filterNot {
-                when (mode) {
-                    UserListMode.Invite -> it.isOwner
-                    UserListMode.ChangeOwner -> it.isVisitor || it.id == roomOwnerId
+    private suspend fun getMembers(): List<Member> {
+        val portal = App.getApp().accountOnline?.portal?.urlWithScheme
+
+        val groups = roomProvider.getGroups(roomId, getOptions())
+
+        val users = roomProvider.getUsers(roomId, getOptions())
+            .map { user -> user.copy(avatarMedium = portal + user.avatarMedium) }
+            .run {
+                if (mode == UserListMode.ChangeOwner) {
+                    filter { it.isAdmin && it.id != roomOwnerId }
+                } else {
+                    this
                 }
             }
-            .map {
-                it.copy(
-                    avatarMedium = App.getApp().accountOnline?.portal?.urlWithScheme +
-                            it.avatarMedium
-                )
-            }
-    }
 
-    private suspend fun getGroups(): List<Group> {
-        return shareService.getRoomGroups(roomId, getOptions()).response
+        val guests = roomProvider.getGuests(roomId, getOptions())
+            .map { user -> user.copy(avatarMedium = portal + user.avatarMedium) }
+
+        return groups + users + guests
     }
 
     fun setOwner(userId: String, leave: Boolean) {

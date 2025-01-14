@@ -54,9 +54,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
-import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.share.ShareService
 import app.documents.core.network.share.models.Share
@@ -69,11 +69,12 @@ import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.ui.views.custom.AccessIconButton
 import app.editors.manager.ui.views.custom.SearchAppBar
 import app.editors.manager.ui.views.custom.UserListBottomContent
+import app.editors.manager.viewModels.main.CloudUserListViewModel
 import app.editors.manager.viewModels.main.InviteAccessViewModel
 import app.editors.manager.viewModels.main.ShareEffect
 import app.editors.manager.viewModels.main.ShareState
 import app.editors.manager.viewModels.main.ShareViewModel
-import app.editors.manager.viewModels.main.UserListViewModel
+import app.editors.manager.viewModels.main.UserListMode
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import kotlinx.serialization.encodeToString
@@ -135,9 +136,9 @@ fun ShareScreen(
             .orEmpty()
     }
 
-    val accessListWithOutRestricted = state.accessList.filter {
-        it != ApiContract.ShareCode.RESTRICT && it != ApiContract.ShareCode.NONE
-    }
+    val accessListWithOutRestricted = state
+        .accessList
+        .filter { access -> access !in listOf(Access.Restrict, Access.None) }
 
     fun onSnackBar(text: String) {
         UiUtils.getSnackBar(context as ComponentActivity)
@@ -204,7 +205,8 @@ fun ShareScreen(
         }
         composable(Screens.AddUsers.name) {
             val userListViewModel = viewModel {
-                UserListViewModel(
+                CloudUserListViewModel(
+                    mode = UserListMode.Invite,
                     access = accessListWithOutRestricted.last(),
                     resourcesProvider = ResourcesProvider(context),
                     shareService = shareApi,
@@ -216,8 +218,6 @@ fun ShareScreen(
                 title = R.string.share_invite_user,
                 onClick = userListViewModel::toggleSelect,
                 closeable = false,
-                withGroups = true,
-                disableInvited = true,
                 useTabletPaddings = useTabletPaddings,
                 onBack = navController::popBackStackWhenResumed,
                 onSnackBar = ::onSnackBar,
@@ -257,7 +257,7 @@ fun ShareScreen(
         ) {
             val inviteAccessViewModel = viewModel {
                 InviteAccessViewModel(
-                    access = it.arguments?.getInt("access") ?: 2,
+                    access = Access.get(it.arguments?.getInt("access")),
                     users = it.arguments?.getJsonString<List<User>>("users", true).orEmpty(),
                     groups = it.arguments?.getJsonString<List<Group>>("groups", true).orEmpty(),
                     isFolder = isFolder,
@@ -294,8 +294,8 @@ private fun MainScreen(
     onCopyExternalLink: () -> Unit,
     onSendExternalLink: () -> Unit,
     onSearch: (String) -> Unit,
-    onLinkAccess: (Int) -> Unit,
-    onMemberAccess: (String, Int, Boolean) -> Unit,
+    onLinkAccess: (Access) -> Unit,
+    onMemberAccess: (String, Access, Boolean) -> Unit,
     onAddUsers: () -> Unit,
     onBack: () -> Unit
 ) {
@@ -372,7 +372,7 @@ private fun MainScreen(
                         AnimatedVisibilityVerticalFade(visible = !searchState && !shareState.folder) {
                             ExternalLinkContent(
                                 externalLink = shareState.externalLink,
-                                accessList = shareState.accessList.filter { it != ApiContract.ShareCode.NONE },
+                                accessList = shareState.accessList.filter { it != Access.None },
                                 onAccess = onLinkAccess,
                                 onCopy = onCopyExternalLink,
                                 onSend = onSendExternalLink
@@ -404,8 +404,8 @@ private fun MainScreen(
 @Composable
 private fun ExternalLinkContent(
     externalLink: Share,
-    accessList: List<Int>,
-    onAccess: (Int) -> Unit,
+    accessList: List<Access>,
+    onAccess: (Access) -> Unit,
     onCopy: () -> Unit,
     onSend: () -> Unit,
 ) {
@@ -424,13 +424,13 @@ private fun ExternalLinkContent(
                 )
             }
             AccessIconButton(
-                access = externalLink.accessCode,
+                access = externalLink.access,
                 enabled = !externalLink.isLocked,
                 accessList = accessList,
                 onAccess = onAccess::invoke
             )
         }
-        AnimatedVisibilityVerticalFade(visible = externalLink.accessCode != ApiContract.ShareCode.RESTRICT) {
+        AnimatedVisibilityVerticalFade(visible = externalLink.access != Access.Restrict) {
             Row(
                 modifier = Modifier
                     .padding(horizontal = 16.dp),
@@ -456,8 +456,8 @@ private fun LazyListScope.ListContent(
     portalWithScheme: String,
     token: String,
     shareList: List<Share>,
-    accessList: List<Int>,
-    onAccess: (String, Int) -> Unit
+    accessList: List<Access>,
+    onAccess: (String, Access) -> Unit
 ) {
     if (shareList.isNotEmpty()) {
         item {
@@ -487,8 +487,8 @@ private fun UserItem(
     share: Share,
     portalWithScheme: String,
     token: String,
-    accessList: List<Int>,
-    onAccess: (String, Int) -> Unit
+    accessList: List<Access>,
+    onAccess: (String, Access) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -562,7 +562,7 @@ private fun UserItem(
                     }
                 }
                 AccessIconButton(
-                    access = share.accessCode,
+                    access = share.access,
                     enabled = !share.isLocked,
                     accessList = accessList,
                     onAccess = { access -> onAccess.invoke(share.sharedTo.id, access) }
@@ -585,7 +585,7 @@ private fun ShareScreenPreview() {
                 externalLink = Share("0"),
                 users = listOf(
                     Share(
-                        access = "1",
+                        _access = "1",
                         sharedTo = SharedTo(
                             displayName = "User name",
                             groups = listOf(
@@ -597,7 +597,7 @@ private fun ShareScreenPreview() {
                         )
                     ),
                     Share(
-                        access = "1",
+                        _access = "1",
                         isLocked = true,
                         sharedTo = SharedTo(
                             displayName = "User name",
@@ -612,7 +612,7 @@ private fun ShareScreenPreview() {
                 ),
                 groups = listOf(
                     Share(
-                        access = "1",
+                        _access = "1",
                         sharedTo = SharedTo(name = "1. Group name")
                     )
                 )

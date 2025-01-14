@@ -1,5 +1,6 @@
 package app.editors.manager.ui.adapters.holders.explorer
 
+import android.annotation.SuppressLint
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -10,6 +11,7 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerListFileBinding
 import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.ExplorerAdapter
 
 class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
@@ -39,12 +41,17 @@ class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
         return binding.image
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun bind(element: CloudFile) {
         super.bind(element)
         binding.image.setImageResource(ManagerUiUtils.getFileThumbnail(element.fileExst, false))
         binding.favorite.isVisible = element.isFavorite
         binding.badgeNewCard.isVisible = element.isNew
         binding.editing.isVisible = element.isEditing
+        setFileExpiring(element, binding.title)
+        if (adapter.pickerMode == PickerMode.Ordering) {
+            initOrderingMode(binding.dragIcon, binding.contextButtonLayout)
+        }
     }
 
     companion object {

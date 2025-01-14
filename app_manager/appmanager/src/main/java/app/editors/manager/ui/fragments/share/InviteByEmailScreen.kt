@@ -77,6 +77,7 @@ fun InviteByEmailScreen(onBack: () -> Unit, onNext: (List<String>) -> Unit) {
                     }
                 )
                 FlowRow(
+                    modifier = Modifier.padding(top = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {

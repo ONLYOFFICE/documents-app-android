@@ -515,7 +515,7 @@
     <string name="dialog_create_room">Creare stanza</string>
     <string name="dialog_create_room_value">Nuova stanza</string>
     <string name="invite_by_email">Invita gli utenti tramite e-mail</string>
-    <string name="share_access_room_admin">Amministratore della stanza</string>
+    <string name="share_user_type_room_admin">Amministratore della stanza</string>
     <string name="share_access_room_editor">Editore</string>
     <string name="share_access_room_form_filler">Compilatore di moduli</string>
     <string name="share_access_room_reviewer">Recensore</string>
@@ -558,7 +558,6 @@
         <item quantity="other">Elementi irrimediabilmente eliminati</item>
         <item quantity="many">Elementi irrimediabilmente eliminati</item>
     </plurals>
-    <string name="share_access_room_power_user">Utente esperto</string>
     <string name="share_expected_member">Aspetta i membri</string>
     <string name="app_settings_main_help">Aiuto</string>
     <string name="clear_recents">"Cancella recenti?"</string>
@@ -610,9 +609,7 @@
     <string name="rooms_info_create_link_complete">Link creato e copiato con successo negli appunti</string>
     <string name="rooms_info_delete_link">Elimina il link</string>
     <string name="rooms_info_delete_link_complete">Il link è stato eliminato</string>
-    <string name="rooms_info_delete_link_desc">Il link verrà eliminato definitivamente. Non potrai annullare questa azione.</string>
     <string name="rooms_info_revoke_link">Revoca il link</string>
-    <string name="rooms_info_revoke_link_desc">Il link precedente non sarà più disponibile. Verrà creato un nuovo link generale.</string>
     <string name="rooms_info_revoke_link_complete">Il link è stato revocato</string>
     <string name="rooms_info_revoke">Revoca</string>
     <string name="rooms_info_copy_link">Copia il link</string>

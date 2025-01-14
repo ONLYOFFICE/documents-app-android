@@ -657,7 +657,7 @@
     <string name="dialog_create_room">Vytvořit místnost</string>
     <string name="dialog_create_room_value">Nová místnost</string>
     <string name="invite_by_email">Pozvat uživatele e-mailem</string>
-    <string name="share_access_room_admin">Správce místnosti</string>
+    <string name="share_user_type_room_admin">Správce místnosti</string>
     <string name="share_access_room_editor">Editor</string>
     <string name="share_access_room_form_filler">Výplň formuláře</string>
     <string name="share_access_room_reviewer">Recenzent</string>
@@ -705,7 +705,6 @@
         <item quantity="few">Nenávratně odstraněné položky</item>
         <item quantity="many">Nenávratně odstraněné položky</item>
     </plurals>
-    <string name="share_access_room_power_user">Mocný uživatel</string>
     <string name="share_expected_member">Očekávaní členové</string>
     <string name="app_settings_main_help">Nápověda</string>
     <string name="clear_recents">"Vymazat poslední?"</string>
@@ -762,9 +761,7 @@
     <string name="rooms_info_create_link_complete">Odkaz úspěšně vytvořen a zkopírován do schránky</string>
     <string name="rooms_info_delete_link">Odstranit odkaz</string>
     <string name="rooms_info_delete_link_complete">Odkaz byl odstraněn</string>
-    <string name="rooms_info_delete_link_desc">Odkaz bude trvale odstraněn. Tuto akci nelze vrátit zpět.</string>
     <string name="rooms_info_revoke_link">Zrušit odkaz</string>
-    <string name="rooms_info_revoke_link_desc">Předchozí odkaz se stane nedostupným. Bude vytvořen nový obecný odkaz.</string>
     <string name="rooms_info_revoke_link_complete">Odkaz byl zrušen</string>
     <string name="rooms_info_revoke">Odvolat</string>
     <string name="rooms_info_copy_link">Kopírovat odkaz</string>
