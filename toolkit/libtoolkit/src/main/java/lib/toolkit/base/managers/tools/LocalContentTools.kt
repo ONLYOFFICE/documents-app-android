@@ -101,7 +101,7 @@ class LocalContentTools @Inject constructor(val context: Context) {
             File(getDir()).mkdirs()
         }
 
-        if (File(getDir()).exists()) {
+        if (!isFirstLaunch() && File(getDir()).exists()) {
             return File(getDir())
         }
 
