@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,18 +33,17 @@ import androidx.navigation.navArgument
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
-import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.toUi
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
-import app.editors.manager.ui.fragments.share.link.RoomAccessScreen
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.InviteUserState
 import app.editors.manager.viewModels.main.InviteUserViewModel
@@ -57,9 +57,12 @@ import lib.compose.ui.theme.colorTextPrimary
 import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppHeaderItem
+import lib.compose.ui.views.AppListItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppSwitchItem
 import lib.compose.ui.views.AppTopBar
+import lib.compose.ui.views.DropdownMenuButton
+import lib.compose.ui.views.DropdownMenuItem
 import lib.compose.ui.views.NestedColumn
 import lib.compose.ui.views.VerticalSpacer
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -106,7 +109,7 @@ class InviteUsersFragment : ComposeDialogFragment() {
 }
 
 private enum class Screens {
-    Main, Access, InviteByEmail, InviteAccess, UserList
+    Main, InviteByEmail, InviteAccess, UserList
 }
 
 @Composable
@@ -136,24 +139,14 @@ fun InviteUsersScreen(
             composable(Screens.Main.name) {
                 MainScreen(
                     state = state,
+                    roomType = roomType,
+                    onSetAccess = viewModel::setAccess,
                     onLinkEnable = viewModel::setInviteLinkEnabled,
-                    onAccessClick = { navController.navigate(Screens.Access.name) },
                     onCopyLink = { onCopyLink.invoke(state.externalLink?.sharedTo?.shareLink.orEmpty()) },
                     onShareLink = { onShareLink.invoke(state.externalLink?.sharedTo?.shareLink.orEmpty()) },
                     onInviteByEmailClick = { navController.navigate(Screens.InviteByEmail.name) },
                     onChooseFromListClick = { navController.navigate(Screens.UserList.name) },
                     onBack = onBack
-                )
-            }
-            composable(Screens.Access.name) {
-                RoomAccessScreen(
-                    roomType = roomType,
-                    currentAccess = Access.get(state.externalLink?.access),
-                    portal = remember { context.accountOnline?.portalUrl.orEmpty() },
-                    ownerOrAdmin = false,
-                    isRemove = false,
-                    onChangeAccess = viewModel::setAccess,
-                    onBack = navController::popBackStackWhenResumed
                 )
             }
             composable(Screens.InviteByEmail.name) {
@@ -254,10 +247,11 @@ fun InviteUsersScreen(
 @Composable
 private fun MainScreen(
     state: InviteUserState,
+    roomType: Int,
     onLinkEnable: (Boolean) -> Unit,
     onCopyLink: () -> Unit,
     onShareLink: () -> Unit,
-    onAccessClick: () -> Unit,
+    onSetAccess: (Access) -> Unit,
     onInviteByEmailClick: () -> Unit,
     onChooseFromListClick: () -> Unit,
     onBack: () -> Unit
@@ -284,10 +278,32 @@ private fun MainScreen(
                     onCheck = onLinkEnable
                 )
                 if (state.externalLink != null) {
-                    AppArrowItem(
-                        title = R.string.rooms_share_access_rights,
-                        option = stringResource(id = Access.get(state.externalLink.access).toUi().title),
-                        onClick = onAccessClick
+                    val accessDropDownState = remember { mutableStateOf(false) }
+                    AppListItem(
+                        title = stringResource(R.string.rooms_share_access_rights),
+                        endContent = {
+                            DropdownMenuButton(
+                                state = accessDropDownState,
+                                icon = ImageVector.vectorResource(Access.get(state.externalLink.access).toUi().icon),
+                                items = {
+                                    RoomUtils.getAccessOptions(roomType, false).forEach { access ->
+                                        val accessUi = access.toUi()
+                                        DropdownMenuItem(
+                                            title = stringResource(accessUi.title),
+                                            selected = access.code == state.externalLink.access,
+                                            startIcon = accessUi.icon,
+                                            onClick = {
+                                                onSetAccess(access)
+                                                accessDropDownState.value = false
+                                            }
+                                        )
+                                    }
+                                },
+                                onDismiss = { accessDropDownState.value = false }
+                            ) {
+                                accessDropDownState.value = true
+                            }
+                        }
                     )
                     Row(modifier = Modifier.padding(start = 16.dp, end = 8.dp)) {
                         BasicTextField(
@@ -335,9 +351,29 @@ private fun InviteUsersScreenPreview() {
                 requestLoading = true,
                 externalLink = ExternalLink(
                     access = 4,
-                    sharedTo = ExternalLinkSharedTo("", "", "https://...", 0, null, null, false, false, false, "", null)
+                    sharedTo = ExternalLinkSharedTo(
+                        "",
+                        "",
+                        "https://...",
+                        0,
+                        null,
+                        null,
+                        false,
+                        false,
+                        false,
+                        "",
+                        null
+                    )
                 )
-            ), {}, {}, {}, {}, {}, {}, {}
+            ),
+            ApiContract.RoomType.VIRTUAL_ROOM,
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {}
         )
     }
 }
