@@ -167,7 +167,7 @@ private fun MainScreen(
     val tabs = remember {
         listOfNotNull(
             TabRowItem(
-                context.getString(app.editors.manager.R.string.share_goal_user)
+                context.getString(app.editors.manager.R.string.rooms_user_type_employees)
             ),
             TabRowItem(
                 context.getString(app.editors.manager.R.string.share_goal_group)
