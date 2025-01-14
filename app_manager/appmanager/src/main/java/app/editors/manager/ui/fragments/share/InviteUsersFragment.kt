@@ -65,7 +65,6 @@ import lib.compose.ui.views.DropdownMenuButton
 import lib.compose.ui.views.DropdownMenuItem
 import lib.compose.ui.views.NestedColumn
 import lib.compose.ui.views.VerticalSpacer
-import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getJsonString
 import lib.toolkit.base.managers.utils.openSendTextActivity
@@ -91,10 +90,6 @@ class InviteUsersFragment : ComposeDialogFragment() {
                 roomType = remember { arguments?.getInt(ROOM_TYPE_KEY) ?: -1 },
                 roomId = remember(arguments?.getString(ROOM_ID_KEY)::orEmpty),
                 roomProvider = requireContext().roomProvider,
-                onCopyLink = { link ->
-                    KeyboardUtils.setDataToClipboard(requireContext(), link)
-                    UiUtils.getSnackBar(requireView()).setText(R.string.rooms_info_copy_link_to_clipboard).show()
-                },
                 onShareLink = { link ->
                     requireContext().openSendTextActivity(
                         getString(R.string.toolbar_menu_main_share),
@@ -117,7 +112,6 @@ fun InviteUsersScreen(
     roomType: Int,
     roomId: String,
     roomProvider: RoomProvider,
-    onCopyLink: (String) -> Unit,
     onShareLink: (String) -> Unit,
     onSnackBar: (String) -> Unit,
     onBack: () -> Unit
@@ -142,7 +136,6 @@ fun InviteUsersScreen(
                     roomType = roomType,
                     onSetAccess = viewModel::setAccess,
                     onLinkEnable = viewModel::setInviteLinkEnabled,
-                    onCopyLink = { onCopyLink.invoke(state.externalLink?.sharedTo?.shareLink.orEmpty()) },
                     onShareLink = { onShareLink.invoke(state.externalLink?.sharedTo?.shareLink.orEmpty()) },
                     onInviteByEmailClick = { navController.navigate(Screens.InviteByEmail.name) },
                     onChooseFromListClick = { navController.navigate(Screens.UserList.name) },
@@ -249,7 +242,6 @@ private fun MainScreen(
     state: InviteUserState,
     roomType: Int,
     onLinkEnable: (Boolean) -> Unit,
-    onCopyLink: () -> Unit,
     onShareLink: () -> Unit,
     onSetAccess: (Access) -> Unit,
     onInviteByEmailClick: () -> Unit,
@@ -317,13 +309,6 @@ private fun MainScreen(
                             textStyle = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.colorTextPrimary),
                             singleLine = true
                         )
-                        IconButton(onClick = onCopyLink) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_list_context_external_link),
-                                tint = MaterialTheme.colors.primary,
-                                contentDescription = null
-                            )
-                        }
                         IconButton(onClick = onShareLink) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_list_context_share),
@@ -367,7 +352,6 @@ private fun InviteUsersScreenPreview() {
                 )
             ),
             ApiContract.RoomType.VIRTUAL_ROOM,
-            {},
             {},
             {},
             {},
