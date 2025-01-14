@@ -10,6 +10,7 @@ import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -122,6 +124,13 @@ fun InviteUsersScreen(
         val viewModel = viewModel { InviteUserViewModel(roomId, roomType, roomProvider) }
         val navController = rememberNavController()
         val state by viewModel.state.collectAsState()
+        val view = LocalView.current
+
+        LaunchedEffect(viewModel) {
+            viewModel.error.collect {
+                UiUtils.getSnackBar(view).setText(R.string.errors_unknown_error).show()
+            }
+        }
 
         NavHost(navController = navController, startDestination = Screens.Main.name) {
             composable(Screens.Main.name) {

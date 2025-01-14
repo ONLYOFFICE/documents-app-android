@@ -59,42 +59,29 @@ object RoomUtils {
     )
 
     fun getAccessOptions(roomType: Int, isRemove: Boolean, isAdmin: Boolean = false): List<Access> {
-        return when (roomType) {
-            ApiContract.RoomType.PUBLIC_ROOM -> {
-                mutableListOf<Access>(
-                    Access.ContentCreator
-                )
+        return buildList {
+            if (isAdmin) add(Access.RoomManager)
+            add(Access.ContentCreator)
+            when (roomType) {
+                ApiContract.RoomType.COLLABORATION_ROOM -> {
+                    add(Access.Editor)
+                    add(Access.Read)
+                }
+                ApiContract.RoomType.CUSTOM_ROOM -> {
+                    add(Access.Editor)
+                    add(Access.Review)
+                    add(Access.Comment)
+                    add(Access.Read)
+                }
+                ApiContract.RoomType.FILL_FORMS_ROOM -> {
+                    add(Access.FormFiller)
+                }
+                ApiContract.RoomType.VIRTUAL_ROOM -> {
+                    add(Access.Editor)
+                    add(Access.Read)
+                }
             }
-
-            ApiContract.RoomType.COLLABORATION_ROOM -> {
-                mutableListOf(
-                    Access.ContentCreator,
-                    Access.Editor,
-                    Access.Read
-                )
-            }
-
-            ApiContract.RoomType.CUSTOM_ROOM -> {
-                mutableListOf(
-                   Access.ContentCreator,
-                   Access.Editor,
-                   Access.Review,
-                   Access.Comment,
-                   Access.Read
-                )
-            }
-
-            ApiContract.RoomType.FILL_FORMS_ROOM -> {
-                mutableListOf(
-                    Access.ContentCreator,
-                    Access.FormFiller
-                )
-            }
-
-            else -> mutableListOf()
-        }.apply {
             if (isRemove) add(Access.None)
-            if (isAdmin) add(0, Access.RoomManager)
         }
     }
 
