@@ -320,7 +320,6 @@ dependencies {
     implementation(libs.compose.material)
     implementation(libs.compose.uiToolingPreview)
     implementation(libs.compose.navigation)
-    implementation(libs.compose.activity)
     implementation(libs.compose.livedata)
     debugImplementation(libs.compose.uiTooling)
 
