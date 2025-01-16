@@ -1682,17 +1682,17 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         }
     }
 
-    protected fun downloadTempFile(cloudFile: CloudFile, edit: Boolean, editType: EditType?) {
+    protected fun downloadTempFile(cloudFile: CloudFile, editType: EditType?) {
         disposable.add(
             context.cloudFileProvider
                 .getCachedFile(context, cloudFile, context.accountOnline?.accountName.orEmpty())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ file -> openFileFromPortal(file, cloudFile.id, edit, editType = editType) }, ::fetchError)
+                .subscribe({ file -> openFileFromPortal(file, cloudFile.id, editType = editType) }, ::fetchError)
         )
     }
 
-    private fun openFileFromPortal(file: File, fileId: String, edit: Boolean, editType: EditType?) {
+    private fun openFileFromPortal(file: File, fileId: String, editType: EditType?) {
         viewState.onDialogClose()
         viewState.onOpenLocalFile(CloudFile().apply {
             id = fileId
