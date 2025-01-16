@@ -7,7 +7,6 @@ buildscript {
 
     repositories {
         google()
-        maven { setUrl("https://mvnrepository.com/artifact/com.github.gundy/semver4j") }
         mavenCentral()
         maven { setUrl("https://maven.google.com") }
         gradlePluginPortal()
@@ -18,11 +17,8 @@ buildscript {
         classpath(libs.kotlin.gradle.plugin)
         classpath(libs.google.services)
         classpath(libs.firebase.crashlytics.gradle)
+//        classpath("org.owasp:dependency-check-gradle:6.5.0.1")
     }
-}
-
-plugins {
-    alias(libs.plugins.kotlin.serialization.plugin) apply false
 }
 
 allprojects {
@@ -32,14 +28,16 @@ allprojects {
         gradlePluginPortal()
         maven { setUrl("https://jitpack.io") }
     }
-
-    configurations.configureEach {
-        resolutionStrategy {
-            force("org.xerial:sqlite-jdbc:3.34.0")
-        }
+    configurations.all {
+        exclude(group = "io.netty")
+        exclude(group = "io.grpc")
     }
 }
 
+plugins {
+    alias(libs.plugins.kotlin.serialization.plugin) apply false
+}
+
 tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }
