@@ -24,6 +24,8 @@ def compare_strings(base_strings, compare_strings):
         if key not in compare_strings:
             missing_strings[key] = value
         elif isinstance(value, dict):
+            if key in compare_strings and isinstance(compare_strings[key], dict):
+                continue  # Skip if plurals already exist
             missing_plurals = {k: v for k, v in value.items() if k not in compare_strings[key]}
             if missing_plurals:
                 missing_strings[key] = missing_plurals
