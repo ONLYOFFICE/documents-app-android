@@ -183,7 +183,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                         if (isCheck) {
                             viewState.onOpenDocumentServer(/* file = */ file, /* info = */ info, /* type = */ null)
                         } else {
-                            downloadTempFile(file, false, null)
+                            downloadTempFile(file, null)
                         }
                     }
                 }
