@@ -238,7 +238,7 @@ fun ShareScreen(
                             "${Screens.InviteAccess.name}?" +
                                     "users=${URLEncoder.encode(users, Charsets.UTF_8.toString())}&" +
                                     "groups=${URLEncoder.encode(groups, Charsets.UTF_8.toString())}&" +
-                                    "access=$access"
+                                    "access=${access.code}"
                         )
                     }
                 }
@@ -430,7 +430,9 @@ private fun ExternalLinkContent(
                 onAccess = onAccess::invoke
             )
         }
-        AnimatedVisibilityVerticalFade(visible = externalLink.access != Access.Restrict) {
+        AnimatedVisibilityVerticalFade(
+            visible = externalLink.access !in arrayOf(Access.Restrict, Access.None)
+        ) {
             Row(
                 modifier = Modifier
                     .padding(horizontal = 16.dp),

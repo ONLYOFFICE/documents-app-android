@@ -181,7 +181,7 @@ object ManagerUiUtils {
         extension: StringUtils.Extension,
         removable: Boolean = false,
         isDocSpace: Boolean = false,
-    ): List<Int> {
+    ): List<Access> {
         return buildList {
             if (isDocSpace) {
                 add(Access.Editor)
@@ -209,7 +209,9 @@ object ManagerUiUtils {
                 else -> Unit
             }
             add(Access.Read)
-            add(Access.Restrict)
+            if (!isDocSpace) {
+                add(Access.Restrict)
+            }
             if (removable) {
                 add(Access.None)
             }
@@ -242,7 +244,7 @@ fun Access.toUi(): AccessUI {
             R.string.share_popup_access_custom_filter
         )
 
-        Access.Editor -> arrayOf(
+        Access.ReadWrite, Access.Editor -> arrayOf(
             R.drawable.ic_access_full,
             R.string.share_access_room_editor
         )
@@ -272,7 +274,12 @@ fun Access.toUi(): AccessUI {
             R.string.share_access_room_power_user
         )
 
-        else -> arrayOf(
+        Access.Restrict -> arrayOf(
+            R.drawable.ic_access_deny,
+            R.string.share_popup_access_deny_access
+        )
+
+        Access.None -> arrayOf(
             R.drawable.ic_access_deny,
             R.string.share_popup_access_deny_remove
         )

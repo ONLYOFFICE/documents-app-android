@@ -25,7 +25,7 @@ import app.documents.core.model.cloud.Access
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.editors.manager.R
-import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.toUi
 import app.editors.manager.viewModels.link.SharedLinkSettingsEffect
 import app.editors.manager.viewModels.link.SharedLinkSettingsViewModel
@@ -42,6 +42,7 @@ import lib.compose.ui.views.DropdownMenuButton
 import lib.compose.ui.views.DropdownMenuItem
 import lib.compose.ui.views.NestedColumn
 import lib.compose.ui.views.VerticalSpacer
+import lib.toolkit.base.managers.utils.StringUtils
 
 @Composable
 fun SharedLinkSettingsScreen(
@@ -77,6 +78,7 @@ fun SharedLinkSettingsScreen(
     NavHost(navController = navController, startDestination = Route.LinkSettingsScreen.name) {
         composable(Route.LinkSettingsScreen.name) {
             MainScreen(
+                fileExtension = fileExtension,
                 loading = loading,
                 state = state,
                 useTabletPadding = useTabletPadding,
@@ -93,6 +95,7 @@ fun SharedLinkSettingsScreen(
 
 @Composable
 private fun MainScreen(
+    fileExtension: String,
     loading: State<Boolean>,
     state: State<ExternalLink>,
     useTabletPadding: Boolean = false,
@@ -133,7 +136,10 @@ private fun MainScreen(
                                     state = accessDropDownState,
                                     icon = ImageVector.vectorResource(Access.get(state.value.access).toUi().icon),
                                     items = {
-                                        RoomUtils.getLinkAccessOptions().forEach { access ->
+                                        ManagerUiUtils.getAccessList(
+                                            extension = StringUtils.getExtension(fileExtension),
+                                            isDocSpace = true
+                                        ).forEach { access ->
                                             val accessUi = access.toUi()
                                             DropdownMenuItem(
                                                 title = stringResource(accessUi.title),
@@ -226,6 +232,7 @@ private fun ShareSettingsScreenPreview() {
 
     ManagerTheme {
         MainScreen(
+            fileExtension = "docx",
             useTabletPadding = false,
             loading = remember { mutableStateOf(false) },
             state = remember { mutableStateOf(link) },
