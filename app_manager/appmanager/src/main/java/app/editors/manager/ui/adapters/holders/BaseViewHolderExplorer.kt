@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -49,6 +51,7 @@ abstract class BaseViewHolderExplorer<T>(
         val selectable = when (adapter.pickerMode) {
             is PickerMode.Files.Any -> element is CloudFile
             is PickerMode.Files.PDFForm -> element is CloudFile && element.isPdfForm
+            is PickerMode.Ordering -> false
             else -> adapter.isSelectMode
         }
 
@@ -71,6 +74,16 @@ abstract class BaseViewHolderExplorer<T>(
     protected fun setElementClickable(element: T) {
         val pickerMode = adapter.pickerMode
         if (pickerMode == PickerMode.None) {
+            return
+        }
+
+        if (pickerMode == PickerMode.Ordering) {
+            root?.let { root ->
+                root.isClickable = false
+                root.isFocusable = false
+                root.setOnClickListener(null)
+                root.foreground = null
+            }
             return
         }
 
@@ -110,38 +123,39 @@ abstract class BaseViewHolderExplorer<T>(
         }
     }
 
-    protected fun bindFolderImage(
+    protected fun bindFolderStorageImage(
         folder: CloudFolder,
-        overlayImage: ImageView,
-        storageImage: ImageView
+        storageImageView: ImageView
     ) {
         with(folder) {
-            storageImage.isVisible = false
-            overlayImage.isVisible = false
-            when {
-                providerItem && providerKey.isNotEmpty() && adapter.isRoot -> {
-                    storageImage.isVisible = true
-                    StorageUtils.getStorageIconLarge(providerKey)
-                        ?.let(storageImage::setImageResource)
-                }
-
-                folder.shared -> {
-                    overlayImage.isVisible = true
-                    overlayImage.setImageResource(R.drawable.ic_list_item_share_user_icon)
-                }
-
-                folder.type == 26 -> {
-                    overlayImage.isVisible = true
-                    overlayImage.setImageResource(R.drawable.ic_access_fill_form)
-                }
-
-                folder.type == 25 -> {
-                    overlayImage.isVisible = true
-                    overlayImage.setImageResource(R.drawable.ic_list_select_done_white)
-                }
-
-                else -> Unit
+            storageImageView.isVisible = false
+            if (providerItem && providerKey.isNotEmpty() && adapter.isRoot) {
+                storageImageView.isVisible = true
+                StorageUtils.getStorageIconLarge(providerKey)
+                    ?.let(storageImageView::setImageResource)
             }
+        }
+    }
+
+    protected fun setRoomExpiring(element: T, textView: TextView) {
+        if (adapter.pickerMode == PickerMode.Folders) {
+            textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                null,
+                null,
+                AppCompatResources.getDrawable(
+                    textView.context,
+                    lib.toolkit.base.R.drawable.ic_expiring
+                ).takeIf { element is CloudFolder && element.lifetime != null },
+                null
+            )
+        }
+    }
+
+    protected fun setFileExpiring(element: CloudFile, textView: TextView) {
+        if (element.isExpiringSoon) {
+            textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_small_clock, 0)
+        } else {
+            textView.setCompoundDrawables(null, null, null, null)
         }
     }
 }

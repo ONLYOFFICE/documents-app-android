@@ -20,6 +20,8 @@ import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.ExportIndexOperation
+import app.documents.core.network.manager.models.explorer.Lifetime
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
@@ -45,6 +47,9 @@ import app.editors.manager.ui.dialogs.fragments.FormCompletedDialogFragment
 import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_TYPE
+import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
+import app.editors.manager.ui.fragments.room.add.AddRoomFragment
+import app.editors.manager.ui.fragments.room.add.EditRoomFragment
 import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
 import app.editors.manager.ui.fragments.share.ShareFragment
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
@@ -56,6 +61,7 @@ import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.DialogUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.managers.utils.getSerializable
@@ -382,6 +388,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     when {
                         presenter.itemClicked?.security?.editRoom != true -> PlaceholderViews.Type.VISITOR_EMPTY_ROOM
                         roomType == ApiContract.RoomType.FILL_FORMS_ROOM -> PlaceholderViews.Type.EMPTY_FORM_FILLING_ROOM
+                        roomType == ApiContract.RoomType.VIRTUAL_ROOM -> PlaceholderViews.Type.EMPTY_VIRTUAL_ROOM
                         else -> PlaceholderViews.Type.EMPTY_ROOM
                     }
                 }
@@ -524,7 +531,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun showEditRoomFragment(room: CloudFolder) {
-        AddRoomFragment.show(activity = requireActivity(), room = room) { onRefresh() }
+        EditRoomFragment.show(activity = requireActivity(), room.id) { onRefresh() }
     }
 
     override fun showFillFormChooserFragment() {
@@ -532,6 +539,43 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             activity = requireActivity(),
             onFillForm = cloudPresenter::fillPdfForm,
             onSelectRoom = { cloudPresenter.moveCopyOperation(OperationType.COPY_TO_FILL_FORM_ROOM) }
+        )
+    }
+
+    override fun onRoomLifetime(lifetime: Lifetime?) {
+         (activity as? IMainActivity)?.let { activity ->
+            if (lifetime != null) {
+                activity.setToolbarInfo(
+                    title = getString(
+                        R.string.rooms_vdr_lifetime_info,
+                        lifetime.value,
+                        when (lifetime.period) {
+                            Lifetime.PERIOD_DAYS -> lib.toolkit.base.R.plurals.days
+                            Lifetime.PERIOD_MONTHS -> lib.toolkit.base.R.plurals.months
+                            Lifetime.PERIOD_YEARS ->lib.toolkit.base.R.plurals.years
+                            else -> return@let
+                        }.let { resources.getQuantityText(it, lifetime.value) }
+                    ),
+                    drawable = lib.toolkit.base.R.drawable.ic_expiring
+                )
+            } else {
+                activity.setToolbarInfo(null)
+            }
+        }
+    }
+
+    override fun onRoomFileIndexing(indexing: Boolean) {
+        explorerAdapter?.isIndexing = indexing
+    }
+
+    override fun onRoomExportIndex(operation: ExportIndexOperation) {
+        UiUtils.showQuestionDialog(
+            requireContext(),
+            title = getString(R.string.rooms_index_reorder_complete_title),
+            description = getString(R.string.rooms_index_reorder_complete_desc, operation.resultFileName),
+            cancelTitle = getString(R.string.dialogs_common_close),
+            acceptTitle = getString(R.string.rooms_index_reorder_open_file),
+            acceptListener = { cloudPresenter.openFileById(operation.resultFileId) }
         )
     }
 
@@ -546,7 +590,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    protected fun showRoomInfoFragment() {
+    override fun onRoomViaLinkPasswordRequired(error: Boolean, tag: String) { }
+
+    override fun showRoomInfoFragment() {
+        if (presenter.roomClicked?.passwordProtected == true) {
+            onRoomViaLinkPasswordRequired(false, TAG_PROTECTED_ROOM_SHOW_INFO)
+            return
+        }
         RoomInfoFragment.newInstance(presenter.roomClicked ?: error("room can not be null"))
             .show(requireActivity().supportFragmentManager, RoomInfoFragment.TAG)
     }

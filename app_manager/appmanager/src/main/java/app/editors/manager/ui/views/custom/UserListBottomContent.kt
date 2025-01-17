@@ -18,6 +18,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import app.documents.core.model.cloud.Access
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppDivider
@@ -28,9 +29,9 @@ import lib.toolkit.base.R
 fun UserListBottomContent(
     nextButtonTitle: Int,
     count: Int? = null,
-    access: Int? = null,
-    accessList: List<Int> = emptyList(),
-    onAccess: (Int) -> Unit = {},
+    access: Access? = null,
+    accessList: List<Access> = emptyList(),
+    onAccess: (Access) -> Unit = {},
     onDelete: (() -> Unit)? = null,
     onNext: () -> Unit
 ) {
@@ -79,8 +80,8 @@ private fun UserListBottomContentPreview() {
             UserListBottomContent(
                 nextButtonTitle = R.string.common_next,
                 count = 1,
-                access = 1,
-                accessList = listOf(1, 2, 3),
+                access = Access.Read,
+                accessList = listOf(Access.None, Access.Restrict, Access.Read),
                 onAccess = {},
                 onDelete = {},
                 onNext = {}

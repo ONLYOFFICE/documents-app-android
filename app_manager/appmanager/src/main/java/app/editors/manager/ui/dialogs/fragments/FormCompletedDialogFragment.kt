@@ -216,8 +216,7 @@ fun FormCompletedScreen(
             subtitle = StringUtils.getCloudItemInfo(
                 context = context,
                 item = fillResult.completedForm,
-                userId = null,
-                sortBy = null
+                state = null
             ).orEmpty(),
             divider = true,
             image = {

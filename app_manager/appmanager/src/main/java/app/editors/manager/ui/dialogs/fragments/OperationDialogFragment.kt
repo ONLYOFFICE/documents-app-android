@@ -282,4 +282,9 @@ class OperationDialogFragment : BaseDialogFragment() {
         actionClickListener = onActionClickListener
     }
 
+    fun setToolbarInfo(title: String?, drawable: Int? = 0) {
+        binding?.infoLayout?.root?.isVisible = title != null
+        binding?.infoLayout?.infoText?.text = title
+        binding?.infoLayout?.infoText?.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
+    }
 }

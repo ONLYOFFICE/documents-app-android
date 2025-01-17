@@ -12,8 +12,10 @@ import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
+import app.editors.manager.ui.fragments.room.order.RoomOrderDialogFragment
 import app.editors.manager.ui.fragments.share.InviteUsersFragment
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 class DocsRoomFragment : DocsCloudFragment() {
@@ -94,15 +96,19 @@ class DocsRoomFragment : DocsCloudFragment() {
             ActionMenuItem.EditRoom -> cloudPresenter.editRoom()
             ActionMenuItem.Invite -> showInviteUsersDialog()
             ActionMenuItem.LeaveRoom -> cloudPresenter.checkRoomOwner()
+            ActionMenuItem.EditIndex -> showEditIndexDialog()
+            ActionMenuItem.ExportIndex -> cloudPresenter.exportIndex()
+            ActionMenuItem.Download -> presenter.createDownloadFile()
             else -> super.actionMenuClickListener.invoke(item)
         }
     }
 
     override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
         when (tag) {
-            TAG_LEAVE_ROOM -> {
-                cloudPresenter.leaveRoom()
-            }
+            TAG_LEAVE_ROOM -> cloudPresenter.leaveRoom()
+            TAG_PROTECTED_ROOM_OPEN_FOLDER,
+            TAG_PROTECTED_ROOM_SHOW_INFO,
+            TAG_PROTECTED_ROOM_DOWNLOAD -> cloudPresenter.authRoomViaLink(value.orEmpty(), tag)
             else -> super.onAcceptClick(dialogs, value, tag)
         }
     }
@@ -115,6 +121,20 @@ class DocsRoomFragment : DocsCloudFragment() {
                     filter.tags.isNotEmpty() ||
                     filter.provider != null
         } else super.getFilters()
+    }
+
+    override fun onRoomViaLinkPasswordRequired(error: Boolean, tag: String) {
+        (requireActivity() as? BaseActivity)?.showEditDialog(
+            title = getString(R.string.rooms_protected_room),
+            value = "",
+            editHint = getString(lib.editors.gbase.R.string.dialog_edit_hint),
+            acceptTitle = getString(lib.editors.gbase.R.string.dialog_edit_accept),
+            cancelTitle = getString(lib.toolkit.base.R.string.common_cancel),
+            isPassword = true,
+            error = getString(R.string.rooms_invalid_password).takeIf { error },
+            tag = tag,
+            bottomTitle = null
+        )
     }
 
     private fun reconnectStorage() {
@@ -134,12 +154,25 @@ class DocsRoomFragment : DocsCloudFragment() {
         }
     }
 
+    private fun showEditIndexDialog() {
+        presenter.currentFolder?.id?.let { id ->
+            RoomOrderDialogFragment.show(
+                activity = requireActivity(),
+                folderId = id,
+                onSuccess = presenter::refresh
+            )
+        }
+    }
+
     companion object {
 
         val TAG: String = DocsRoomFragment::class.java.simpleName
         const val KEY_RESULT_ROOM_ID = "key_result_room_id"
         const val KEY_RESULT_ROOM_TYPE = "key_result_room_type"
         const val TAG_LEAVE_ROOM = "tag_leave_room"
+        const val TAG_PROTECTED_ROOM_OPEN_FOLDER = "tag_protected_room_open"
+        const val TAG_PROTECTED_ROOM_SHOW_INFO = "tag_protected_room_info"
+        const val TAG_PROTECTED_ROOM_DOWNLOAD = "tag_protected_room_download"
 
         fun newInstance(section: Int, rootPath: String): DocsCloudFragment {
             return DocsRoomFragment().apply {

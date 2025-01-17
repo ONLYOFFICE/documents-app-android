@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.GroupShare
@@ -91,7 +92,7 @@ internal fun ShareUsersList(
                                 ShareUserItem(share = share, portal = portal, key = type) {
                                     onClick.invoke(
                                         share.sharedTo.id,
-                                        share.accessCode,
+                                        share.access.code,
                                         share.sharedTo.isOwner || share.sharedTo.isAdmin
                                     )
                                 }
@@ -100,7 +101,7 @@ internal fun ShareUsersList(
                                 ShareUserItem(share = share, portal = portal, key = type) {
                                     onClick.invoke(
                                         share.sharedTo.id,
-                                        share.accessCode,
+                                        share.access.code,
                                         share.sharedTo.isOwner || share.sharedTo.isAdmin
                                     )
                                 }
@@ -154,10 +155,12 @@ private fun ShareUserItem(share: ShareEntity, portal: String?, key: ShareType, o
             Text(
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.body1,
-                text = if (key != ShareType.Group) share.sharedTo.displayNameHtml else share.sharedTo.nameHtml
+                text = if (key != ShareType.Group) share.sharedTo.displayNameHtml else share.sharedTo.nameHtml,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = stringResource(id = RoomUtils.getAccessTitleOrOwner(share.isOwner, share.accessCode)),
+                text = stringResource(id = RoomUtils.getAccessTitleOrOwner(share.isOwner, share.access.code)),
                 style = MaterialTheme.typography.body2,
                 color = if (share.canEditAccess)
                     MaterialTheme.colors.colorTextSecondary else

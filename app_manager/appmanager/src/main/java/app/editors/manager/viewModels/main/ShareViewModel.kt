@@ -2,7 +2,7 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.share.ShareService
 import app.documents.core.network.share.models.Share
@@ -32,7 +32,7 @@ data class ShareState(
     val externalLink: Share = Share(),
     val webUrl: String? = null,
     val folder: Boolean = false,
-    val accessList: List<Int> = ManagerUiUtils.getAccessList(StringUtils.Extension.UNKNOWN, true)
+    val accessList: List<Access> = ManagerUiUtils.getAccessList(StringUtils.Extension.UNKNOWN, true)
 )
 
 sealed class ShareEffect {
@@ -153,19 +153,19 @@ class ShareViewModel(
         searchFlow.tryEmit(value)
     }
 
-    fun setExternalLinkAccess(access: Int) {
+    fun setExternalLinkAccess(access: Access) {
         request {
-            shareApi.getExternalLink(itemId, RequestExternal(share = access.toString()))
-            _state.update { it.copy(externalLink = it.externalLink.copy(access = access.toString())) }
+            shareApi.getExternalLink(itemId, RequestExternal(share = access.code))
+            _state.update { it.copy(externalLink = it.externalLink.copy(_access = access.code.toString())) }
         }
     }
 
-    fun setMemberAccess(userId: String, access: Int, isGroup: Boolean) {
+    fun setMemberAccess(userId: String, access: Access, isGroup: Boolean) {
         request {
             val request = RequestShare(listOf(RequestShareItem(userId, access.toString())))
             if (!folder) shareApi.setFileAccess(itemId, request) else shareApi.setFolderAccess(itemId, request)
             _state.update { state ->
-                if (access == ApiContract.ShareCode.NONE) {
+                if (access == Access.None) {
                     if (isGroup) {
                         state.copy(
                             groups = state.groups
@@ -185,7 +185,7 @@ class ShareViewModel(
                         state.copy(
                             groups = state.groups.map { group ->
                                 if (group.sharedTo.id == userId)
-                                    group.copy(access = access.toString()) else
+                                    group.copy(_access = access.toString()) else
                                     group
                             }
                         )
@@ -193,7 +193,7 @@ class ShareViewModel(
                         state.copy(
                             users = state.users.map { user ->
                                 if (user.sharedTo.id == userId)
-                                    user.copy(access = access.toString()) else
+                                    user.copy(_access = access.toString()) else
                                     user
                             }
                         )

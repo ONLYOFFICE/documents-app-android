@@ -10,6 +10,7 @@ enum class RoomFilterType(val title: Int, val filterVal: Int) : ChipItem {
     Collaboration(R.string.rooms_filter_type_collaboration, ApiContract.RoomType.COLLABORATION_ROOM),
     Public(R.string.rooms_filter_type_public, ApiContract.RoomType.PUBLIC_ROOM),
     FormFilling(R.string.rooms_filter_type_filling_forms, ApiContract.RoomType.FILL_FORMS_ROOM),
+    Virtual(R.string.rooms_filter_type_virtual_room, ApiContract.RoomType.VIRTUAL_ROOM),
     None(-1, -1);
 
     override val chipTitle: Int = title

@@ -52,7 +52,11 @@ fun BaseAppTheme(
 
     MaterialTheme(
         colors = primaryColor?.let { colors.copy(primary = it) } ?: colors,
-        typography = Typography.copy(caption = Typography.caption.copy(color = MaterialTheme.colors.colorTextSecondary)),
+        typography = with(Typography) {
+            copy(
+                caption = caption.copy(color = MaterialTheme.colors.colorTextSecondary)
+            )
+        },
         shapes = Shapes,
         content = content
     )

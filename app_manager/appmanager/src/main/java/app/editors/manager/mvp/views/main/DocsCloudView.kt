@@ -3,6 +3,8 @@ package app.editors.manager.mvp.views.main
 import androidx.annotation.StringRes
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.ExportIndexOperation
+import app.documents.core.network.manager.models.explorer.Lifetime
 import app.editors.manager.viewModels.main.CopyItems
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
@@ -37,4 +39,19 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showFillFormChooserFragment()
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onRoomLifetime(lifetime: Lifetime?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onRoomFileIndexing(indexing: Boolean)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onRoomExportIndex(operation: ExportIndexOperation)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onRoomViaLinkPasswordRequired(error: Boolean, tag: String)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showRoomInfoFragment()
 }

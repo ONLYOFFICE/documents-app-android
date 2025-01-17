@@ -515,7 +515,7 @@
     <string name="dialog_create_room">Crear sala</string>
     <string name="dialog_create_room_value">Nueva sala</string>
     <string name="invite_by_email">Invitar usuarios por correo electrónico</string>
-    <string name="share_access_room_admin">Administrador de sala</string>
+    <string name="share_user_type_room_admin">Administrador de sala</string>
     <string name="share_access_room_editor">Editor</string>
     <string name="share_access_room_form_filler">Rellenador de formularios</string>
     <string name="share_access_room_reviewer">Revisor</string>
@@ -558,7 +558,6 @@
         <item quantity="other">Se han eliminado los elementos de forma irrecuperable</item>
         <item quantity="many">Se han eliminado los elementos de forma irrecuperable</item>
     </plurals>
-    <string name="share_access_room_power_user">Usuario avanzado</string>
     <string name="share_expected_member">Esperar miembros</string>
     <string name="app_settings_main_help">Ayuda</string>
     <string name="clear_recents">"¿Limpiar recientes?"</string>
@@ -612,9 +611,7 @@
     <string name="rooms_info_create_link_complete">Enlace creado y copiado correctamente en el portapapeles</string>
     <string name="rooms_info_delete_link">Eliminar enlace</string>
     <string name="rooms_info_delete_link_complete">El enlace se ha eliminado</string>
-    <string name="rooms_info_delete_link_desc">El enlace se eliminará de forma permanente. No podrá deshacer esta acción.</string>
     <string name="rooms_info_revoke_link">Revocar enlace</string>
-    <string name="rooms_info_revoke_link_desc">El enlace anterior dejará de estar disponible. Se creará un nuevo enlace general.</string>
     <string name="rooms_info_revoke_link_complete">El enlace se ha revocado</string>
     <string name="rooms_info_revoke">Revocar</string>
     <string name="rooms_info_copy_link">Copiar enlace</string>

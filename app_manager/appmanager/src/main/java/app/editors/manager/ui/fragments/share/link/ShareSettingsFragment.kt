@@ -16,8 +16,6 @@ sealed class Route(val name: String) {
 
     data object SettingsScreen : Route("settings")
     data object LinkSettingsScreen : Route("link_settings")
-    data object AccessScreen : Route("access")
-    data object LifeTimeScreen : Route("life_time")
 }
 
 class ShareSettingsFragment : ComposeDialogFragment() {

@@ -51,10 +51,10 @@ import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
 import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.WebDavLoginActivity
-import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.activities.main.PasscodeActivity
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.MediaAdapter
+import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.login.AuthPagerFragment
 import app.editors.manager.ui.fragments.login.CountriesCodesFragment
 import app.editors.manager.ui.fragments.login.EnterprisePhoneFragment
@@ -70,6 +70,8 @@ import app.editors.manager.ui.fragments.media.MediaImageFragment
 import app.editors.manager.ui.fragments.media.MediaVideoFragment
 import app.editors.manager.ui.fragments.onboarding.OnBoardingPagerFragment
 import app.editors.manager.ui.fragments.operations.DocsOperationSectionFragment
+import app.editors.manager.ui.fragments.room.order.RoomOrderDialogFragment
+import app.editors.manager.ui.fragments.room.order.RoomOrderFragment
 import app.editors.manager.ui.fragments.storage.ConnectFragment
 import app.editors.manager.ui.fragments.storage.SelectFragment
 import app.editors.manager.ui.fragments.storage.WebDavStorageFragment
@@ -80,6 +82,7 @@ import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import app.editors.manager.viewModels.login.RemoteUrlViewModel
 import app.editors.manager.viewModels.main.ExplorerContextViewModel
+import app.editors.manager.viewModels.room.RoomOrderHelper
 import dagger.BindsInstance
 import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
@@ -123,6 +126,7 @@ interface AppComponent {
 
     val accountHelper: AddAccountHelper
     val migrationHelper: MigrationHelper
+    val roomOrderHelper: RoomOrderHelper
 
     val shareService: ShareService
     val managerService: ManagerService
@@ -216,4 +220,6 @@ interface AppComponent {
     fun inject(passcodeActivity: PasscodeActivity?)
     fun inject(baseFilterPresenter: BaseFilterPresenter)
     fun inject(filterAuthorPresenter: FilterAuthorPresenter)
+    fun inject(roomOrderDialogFragment: RoomOrderDialogFragment)
+    fun inject(roomOrderFragment: RoomOrderFragment)
 }

@@ -37,6 +37,7 @@ object StringUtils {
     val PATTERN_ALPHA_NUMERIC = "^[a-zA-Z0-9-]*$"
     val PATTERN_R7_CLOUDS = ".*(\\.r7-).*"
     val PATTERN_CREATE_PORTAL = "^[\\p{L}\\p{M}' \\.\\-]+$"
+    val PASSWORD_FORBIDDEN_SYMBOLS = """^[a-zA-Z0-9!\"#%&'()*+,-./:;<=>?@\\^_`\{\|\}\]]+$"""
 
     private val EXT_VIDEO_SUPPORT = "3gp|mp4|ts|webm|mkv"
     private val EXT_VIDEO = "$EXT_VIDEO_SUPPORT|3g2|3gpp|asf|avi|divx|f4v|flv|h264|ifo|m2ts|m4v|mod|mov|mpeg|mpg|mswmm|mts|mxf|ogv|rm|swf|ts|vep|vob|wlmp|wmv"
