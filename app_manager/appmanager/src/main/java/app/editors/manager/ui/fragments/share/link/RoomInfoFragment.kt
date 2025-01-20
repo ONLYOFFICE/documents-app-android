@@ -373,6 +373,12 @@ class RoomInfoFragment : ComposeDialogFragment() {
                     )
                     ShareUsersList(
                         portal = portal,
+                        shareList = groupedShareList.getOrElse(ShareType.Guests, ::emptyList),
+                        type = ShareType.Guests,
+                        onClick = onSetUserAccess
+                    )
+                    ShareUsersList(
+                        portal = portal,
                         shareList = groupedShareList.getOrElse(ShareType.Expected, ::emptyList),
                         type = ShareType.Expected,
                         onClick = onSetUserAccess
@@ -427,10 +433,8 @@ class RoomInfoFragment : ComposeDialogFragment() {
                     shareList = listOf(
                         Share(_access = "1", sharedTo = SharedTo(displayName = "User 1"), isOwner = true),
                         Share(_access = "5", sharedTo = SharedTo(name = "Group 2"), subjectType = 2),
-                        Share(_access = "9", sharedTo = SharedTo(displayName = "User 2")),
-                        Share(_access = "11", sharedTo = SharedTo(displayName = "User 3")),
                         Share(_access = "10", sharedTo = SharedTo(displayName = "User 4")),
-                        Share(_access = "10", sharedTo = SharedTo(displayName = "User 4", activationStatus = 2)),
+                        Share(_access = "10", sharedTo = SharedTo(displayName = "User 4", activationStatus = 1, isVisitor = true)),
                     )
                 ),
                 onBackClick = {},
