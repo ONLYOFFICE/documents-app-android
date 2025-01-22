@@ -1,5 +1,7 @@
 package app.editors.manager.mvp.models.ui
 
+import android.content.Context
+
 data class StorageQuota(
     val value: Long = 0,
     val unit: SizeUnit = SizeUnit.MB,
@@ -19,6 +21,10 @@ data class StorageQuota(
                 SizeUnit.TB -> value * 1024 * 1024 * 1024 * 1024
             }
         }
+
+    fun toString(context: Context): String {
+        return "$value ${context.getString(unit.title)}"
+    }
 
     companion object {
 

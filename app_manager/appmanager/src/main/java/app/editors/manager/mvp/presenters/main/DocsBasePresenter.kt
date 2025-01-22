@@ -50,6 +50,7 @@ import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.mvp.models.ui.StorageQuota
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -1422,11 +1423,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                                 throwable.suppressed[0].message
                             )
                         )
-                    } else if (response.code() >= ApiContract.HttpCodes.CLIENT_ERROR && response.code() < ApiContract.HttpCodes.SERVER_ERROR) {
-                        if (!isRoot) {
-                            modelExplorerStack.previous()
-                            getItemsById(modelExplorerStack.currentId)
-                        }
                     } else if (response.code() >= ApiContract.HttpCodes.SERVER_ERROR) {
                         setPlaceholderType(PlaceholderViews.Type.ACCESS)
                         viewState.onError(throwable.message)
@@ -1482,26 +1478,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                         viewState.onError(context.getString(R.string.errors_client_forbidden))
                         return
                     }
-
-                    when {
-                        ApiContract.Errors.DISK_SPACE_QUOTA in message -> {
-                            viewState.onError(errorMessage)
-                        }
-                        ApiContract.Errors.STORAGE_NOT_AVAILABLE in message -> {
-                            viewState.onError(context.getString(R.string.room_storage_not_availabale))
-                            setPlaceholderType(PlaceholderViews.Type.NONE)
-                        }
-                        ApiContract.Errors.PINNED_ROOM_LIMIT in message -> {
-                            viewState.onDialogWarning(
-                                context.getString(R.string.dialogs_warning_title),
-                                context.getString(R.string.dialogs_warning_pinned_room_limit),
-                                null
-                            )
-                        }
-                        else -> {
-                            viewState.onError(context.getString(R.string.errors_client_forbidden))
-                        }
-                    }
+                    handleErrorMessage(message)
                 }
 
                 ApiContract.HttpCodes.CLIENT_NOT_FOUND -> {
@@ -1536,6 +1513,36 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         //        } else {
         //            getViewState().onError(errorMessage);
         //        }
+    }
+
+    protected open fun handleErrorMessage(message: String) {
+        when {
+            ApiContract.Errors.DISK_SPACE_QUOTA in message -> {
+                viewState.onError(message)
+            }
+            ApiContract.Errors.STORAGE_NOT_AVAILABLE in message -> {
+                viewState.onError(context.getString(R.string.room_storage_not_availabale))
+                setPlaceholderType(PlaceholderViews.Type.NONE)
+            }
+            ApiContract.Errors.PINNED_ROOM_LIMIT in message -> {
+                viewState.onDialogWarning(
+                    context.getString(R.string.dialogs_warning_title),
+                    context.getString(R.string.dialogs_warning_pinned_room_limit),
+                    null
+                )
+            }
+            ApiContract.Errors.EXCEED_ROOM_SPACE_QUOTA in message -> {
+                val spaceQuota = StorageQuota.fromBytes(roomClicked?.quotaLimit).toString(context)
+                viewState.onDialogWarning(
+                    context.getString(R.string.dialogs_warning_title),
+                    context.getString(R.string.dialogs_warning_room_space_quota_exceed, spaceQuota),
+                    null
+                )
+            }
+            else -> {
+                viewState.onError(context.getString(R.string.errors_client_forbidden))
+            }
+        }
     }
 
     /**
