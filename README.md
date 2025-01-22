@@ -1,5 +1,5 @@
 ![Platforms](https://img.shields.io/badge/platforms-android-lightgrey.svg)
-[![Google Play: ONLYOFFICE Documents](https://img.shields.io/badge/version-8.1.1-blue.svg?style=flat)](https://play.google.com/store/apps/details?id=com.onlyoffice.documents)
+[![Google Play: ONLYOFFICE Documents](https://img.shields.io/badge/version-8.2.1-blue.svg?style=flat)](https://play.google.com/store/apps/details?id=com.onlyoffice.documents)
 
 ## ONLYOFFICE Documents for Android
 

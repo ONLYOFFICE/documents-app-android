@@ -398,7 +398,15 @@ interface ManagerService {
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/openedit")
     fun openFile(
         @Path(value = "id") id: String,
-        @Query("version") version: Int
+        @Query("version") version: Int,
+        @Query("fill") fill: Boolean? = null,
+        @Query("edit") edit: Boolean? = null,
+        @Query("view") view: Boolean? = null
+    ): Single<Response<ResponseBody>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/openedit")
+    fun openFile(
+        @Path(value = "id") id: String,
     ): Single<Response<ResponseBody>>
 
     @Headers(

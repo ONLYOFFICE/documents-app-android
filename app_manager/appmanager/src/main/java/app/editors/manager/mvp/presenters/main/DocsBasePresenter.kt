@@ -16,6 +16,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -61,6 +62,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Job
 import lib.toolkit.base.managers.utils.ContentResolverUtils
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -82,6 +84,8 @@ sealed class PickerMode {
     data object None : PickerMode()
 
     data object Folders : PickerMode()
+
+    data object Ordering : PickerMode()
 
     sealed class Files(
         open val selectedIds: MutableList<String> = mutableListOf(),
@@ -216,11 +220,17 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     protected var currentSectionType = ApiContract.SectionType.UNKNOWN
 
-    val currentFolderAccess: ApiContract.Access
-        get() = ApiContract.Access.get(modelExplorerStack.currentFolderAccess)
+    val currentFolderAccess: Access
+        get() = Access.get(modelExplorerStack.currentFolderAccess)
 
     val currentFolder: Current?
         get() = modelExplorerStack.last()?.current
+
+    var isIndexing: Boolean = false
+        get() {
+            return (modelExplorerStack.last()?.pathParts?.find { it.id == roomClicked?.id } != null &&
+                    roomClicked?.indexing == true) || currentFolder?.indexing == true || field
+        }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
@@ -248,7 +258,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             setPlaceholderType(PlaceholderViews.Type.LOAD)
             fileProvider?.let { provider ->
                 disposable.add(
-                    provider.getFiles(id, mapOf<String, String>().putFilters())
+                    provider.getFiles(id, getArgs(filteringValue).putFilters())
                         .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
                         .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)
                 )
@@ -256,7 +266,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         }
     }
 
-    open fun refresh(): Boolean {
+    open fun refresh(onRefresh: () -> Unit = {}): Boolean {
         //        setPlaceholderType(PlaceholderViews.Type.LOAD)
         modelExplorerStack.currentId?.let { id ->
             fileProvider?.let { provider ->
@@ -270,6 +280,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                         .subscribe({ explorer ->
                             updateViewsState()
                             viewState.onDocsRefresh(explorer)
+                            onRefresh()
                         }, this::fetchError)
                 )
                 viewState.onSwipeEnable(true)
@@ -968,7 +979,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     protected fun getListWithHeaders(explorer: Explorer?, isResetHeaders: Boolean): List<Entity> {
         if (explorer == null) return emptyList()
-        val entities = explorer.folders + explorer.files
+
+        val entities = (explorer.folders + explorer.files).run {
+            if (isIndexing) sortedBy(Item::index) else this
+        }
+
         val placeholderType = if (entities.isEmpty()) {
             if (isFilteringMode) {
                 PlaceholderViews.Type.SEARCH
@@ -1218,12 +1233,12 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     protected fun getIconContext(ext: String): Int {
         return when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC -> R.drawable.ic_type_text_document
-            StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet
-            StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation
-            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_type_image
-            StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.PDF -> R.drawable.ic_type_pdf
-            StringUtils.Extension.VIDEO_SUPPORT -> R.drawable.ic_type_video
+            StringUtils.Extension.DOC -> R.drawable.ic_type_document_row
+            StringUtils.Extension.SHEET -> R.drawable.ic_spreadsheet_secure_row
+            StringUtils.Extension.PRESENTATION -> R.drawable.ic_presentation_secure_row
+            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF -> R.drawable.ic_type_picture_row
+            StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.PDF -> R.drawable.ic_type_pdf_row
+            StringUtils.Extension.VIDEO_SUPPORT -> R.drawable.ic_type_video_row
             StringUtils.Extension.UNKNOWN -> R.drawable.ic_type_file
             else -> R.drawable.ic_type_folder
         }
@@ -1298,7 +1313,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
     }
 
     val isRoot: Boolean
-        get() = modelExplorerStack.isRoot
+        get() = if (ApiContract.SectionType.isRoom(modelExplorerStack.rootFolderType)) {
+            modelExplorerStack.last()?.pathParts.orEmpty().size < 2
+        } else {
+            modelExplorerStack.isRoot
+        }
 
     private val isBackStackEmpty: Boolean
         get() = modelExplorerStack.isStackEmpty
@@ -1572,13 +1591,14 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         get() = modelExplorerStack.currentId
 
     private fun setAccess(explorer: Explorer?): Explorer {
-        return explorer?.also {
-            explorer.files.map { file ->
-                file.also { it.access = "0" }
-            }
-            explorer.folders.map { folder ->
-                folder.also { it.access = "0" }
-            }
+        return explorer?.apply {
+            files = files
+                .map { file -> file.also { it.access = Access.None } }
+                .toMutableList()
+
+            folders = folders
+                .map { folder -> folder.also { it.access = Access.None } }
+                .toMutableList()
         } ?: Explorer()
     }
 
@@ -1665,17 +1685,17 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         }
     }
 
-    protected fun downloadTempFile(cloudFile: CloudFile, edit: Boolean) {
+    protected fun downloadTempFile(cloudFile: CloudFile, editType: EditType?) {
         disposable.add(
             context.cloudFileProvider
                 .getCachedFile(context, cloudFile, context.accountOnline?.accountName.orEmpty())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ file -> openFileFromPortal(file, cloudFile.id, edit) }, ::fetchError)
+                .subscribe({ file -> openFileFromPortal(file, cloudFile.id, editType = editType) }, ::fetchError)
         )
     }
 
-    private fun openFileFromPortal(file: File, fileId: String, edit: Boolean) {
+    private fun openFileFromPortal(file: File, fileId: String, editType: EditType?) {
         viewState.onDialogClose()
         viewState.onOpenLocalFile(CloudFile().apply {
             id = fileId
@@ -1683,7 +1703,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
             title = file.name
             viewUrl = file.absolutePath
-        })
+        }, editType)
     }
 
     fun isRecentViaLinkSection(): Boolean {

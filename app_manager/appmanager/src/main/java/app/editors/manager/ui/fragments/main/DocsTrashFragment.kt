@@ -18,6 +18,13 @@ class DocsTrashFragment : DocsCloudFragment() {
 
     private val isArchive: Boolean get() = section == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
 
+    private val mainPagerFragment: IMainPagerFragment? by lazy {
+        requireActivity().supportFragmentManager
+            .fragments
+            .filterIsInstance<IMainPagerFragment>()
+            .firstOrNull()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
@@ -41,7 +48,7 @@ class DocsTrashFragment : DocsCloudFragment() {
             )
             cloudPresenter.checkBackStack()
         }
-        explorerAdapter?.isTrash = true
+        explorerAdapter?.isTrash = !isArchive
     }
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
@@ -54,6 +61,7 @@ class DocsTrashFragment : DocsCloudFragment() {
                     cloudPresenter.moveCopyOperation(OperationsState.OperationType.RESTORE)
                 }
             }
+
             is ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             else -> super.onContextButtonClick(contextItem)
         }
@@ -78,7 +86,10 @@ class DocsTrashFragment : DocsCloudFragment() {
             } else {
                 getString(R.string.dialogs_question_delete_all_title)
             },
-            description = resources.getQuantityString(R.plurals.dialogs_question_message_delete, count),
+            description = resources.getQuantityString(
+                R.plurals.dialogs_question_message_delete,
+                count
+            ),
             acceptTitle = getString(R.string.dialogs_question_accept_delete),
             cancelTitle = getString(R.string.dialogs_common_cancel_button),
             acceptErrorTint = true,
@@ -94,11 +105,15 @@ class DocsTrashFragment : DocsCloudFragment() {
     override fun onResume() {
         super.onResume()
         cloudPresenter.isTrashMode = true
+        if (!isArchive) {
+            mainPagerFragment?.setToolbarInfo(getString(R.string.trash_toolbar_info))
+        }
     }
 
     override fun onPause() {
         super.onPause()
         cloudPresenter.isTrashMode = false
+        mainPagerFragment?.setToolbarInfo(null)
     }
 
     override fun getFilters(): Boolean {
@@ -118,13 +133,13 @@ class DocsTrashFragment : DocsCloudFragment() {
                 }
             }
 
-            ActionMenuItem.Delete -> presenter.delete()
+            ActionMenuItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
             else -> super.actionMenuClickListener(item)
         }
     }
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {
-        if (type == PlaceholderViews.Type.EMPTY) {
+        if (type == PlaceholderViews.Type.EMPTY && isRoot) {
             super.onPlaceholder(if (isArchive) PlaceholderViews.Type.EMPTY_ARCHIVE else PlaceholderViews.Type.EMPTY_TRASH)
         } else {
             super.onPlaceholder(type)

@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -60,7 +61,7 @@ class CloudFileProvider @Inject constructor(
 
     companion object {
         private const val KEY_RESPONSE = "response"
-        private const val STATIC_DOC_URL = "/web-apps/apps/api/documents/api.js"
+        const val STATIC_DOC_URL = "/web-apps/apps/api/documents/api.js"
     }
 
     interface RoomCallback {
@@ -385,9 +386,16 @@ class CloudFileProvider @Inject constructor(
     }
 
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-    fun opeEdit(cloudFile: CloudFile, canShareable: Boolean? = null): Single<String?> {
+    fun opeEdit(cloudFile: CloudFile, canShareable: Boolean? = null, editType: EditType?): Single<String?> {
         return Single.fromCallable { runBlocking { managerRepository.updateDocumentServerVersion() } }
-            .flatMap { managerService.openFile(cloudFile.id, cloudFile.version) }
+            .flatMap {
+                when (editType) {
+                    EditType.EDIT -> managerService.openFile(cloudFile.id, cloudFile.version, edit = true)
+                    EditType.VIEW -> managerService.openFile(cloudFile.id, cloudFile.version, view = true)
+                    EditType.FILL -> managerService.openFile(cloudFile.id, cloudFile.version, fill = true)
+                    null -> managerService.openFile(cloudFile.id, cloudFile.version)
+                }
+            }
             .map { response ->
                 val json = JSONObject(managerService.getDocService().blockingGet().body()?.string())
                 val docService = if (json.optJSONObject(KEY_RESPONSE) != null) {
@@ -435,7 +443,7 @@ class CloudFileProvider @Inject constructor(
     }
 
     @SuppressLint("CheckResult")
-    fun openDocument(cloudFile: CloudFile, token: String?, canShareable: Boolean): Single<OpenDocumentResult> {
+    fun openDocument(cloudFile: CloudFile, token: String?, canShareable: Boolean, editType: EditType?): Single<OpenDocumentResult> {
         return Single.fromCallable { StringUtils.getExtension(cloudFile.fileExst) == StringUtils.Extension.PDF }
             .flatMap { isPdf ->
                 if (isPdf) {
@@ -443,13 +451,13 @@ class CloudFileProvider @Inject constructor(
                         .subscribeOn(Schedulers.io())
                         .flatMap { response ->
                             if (checkOformPdf(response.body()?.byteStream())) {
-                                opeEdit(cloudFile, canShareable).map { info -> OpenDocumentResult(info = info) }
+                                opeEdit(cloudFile, canShareable, editType).map { info -> OpenDocumentResult(info = info) }
                             } else {
                                 Single.just(OpenDocumentResult(isPdf = true))
                             }
                         }
                 } else {
-                    opeEdit(cloudFile, canShareable).map { info -> OpenDocumentResult(info = info) }
+                    opeEdit(cloudFile, canShareable, editType).map { info -> OpenDocumentResult(info = info) }
                 }
             }
     }

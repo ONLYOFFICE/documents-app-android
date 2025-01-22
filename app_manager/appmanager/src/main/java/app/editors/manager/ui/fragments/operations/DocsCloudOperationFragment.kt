@@ -4,16 +4,17 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.contracts.ApiContract.Access
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Lifetime
 import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
-import app.editors.manager.ui.fragments.main.AddRoomFragment
 import app.editors.manager.ui.fragments.main.DocsCloudFragment
+import app.editors.manager.ui.fragments.room.add.AddRoomFragment
 import app.editors.manager.viewModels.main.CopyItems
 import lib.toolkit.base.managers.utils.getIntExt
 import lib.toolkit.base.managers.utils.getSerializableExt
@@ -124,7 +125,7 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
                 setEnabledActionButton(security.editAccess || security.editRoom)
                 operationDialogFragment?.setEnabledCreateFolderButton(security.create, isRoomsRoot)
             } else {
-                val editable = current.access in arrayOf(Access.ReadWrite.type, Access.RoomAdmin.type)
+                val editable = current.access in arrayOf(Access.ReadWrite, Access.RoomManager)
                 setEnabledActionButton(editable)
                 operationDialogFragment?.setEnabledCreateFolderButton(editable, isRoomsRoot)
             }
@@ -218,6 +219,26 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
             operationDialogFragment?.setEnabledActionButton(mode.selectedIds.isNotEmpty())
         } else {
             operationDialogFragment?.setEnabledActionButton(enabled)
+        }
+    }
+
+    override fun onRoomLifetime(lifetime: Lifetime?) {
+        if (lifetime != null) {
+            operationDialogFragment?.setToolbarInfo(
+                title = getString(
+                    R.string.rooms_vdr_lifetime_info,
+                    lifetime.value,
+                    when (lifetime.period) {
+                        Lifetime.PERIOD_DAYS -> lib.toolkit.base.R.plurals.days
+                        Lifetime.PERIOD_MONTHS -> lib.toolkit.base.R.plurals.months
+                        Lifetime.PERIOD_YEARS ->lib.toolkit.base.R.plurals.years
+                        else -> return
+                    }.let { resources.getQuantityText(it, lifetime.value) }
+                ),
+                drawable = lib.toolkit.base.R.drawable.ic_expiring
+            )
+        } else {
+            operationDialogFragment?.setToolbarInfo(null)
         }
     }
 }

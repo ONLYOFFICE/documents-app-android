@@ -77,7 +77,9 @@ fun AppListItem(
                 .fillMaxHeight()
                 .padding(start = 16.dp, end = paddingEnd)
                 .addIf(!singleLine) { padding(vertical = 8.dp) }
-                .weight(1f),
+                .weight(1f)
+                .enabled(enabled)
+            ,
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -87,8 +89,7 @@ fun AppListItem(
                         Icon(
                             modifier = Modifier
                                 .padding(end = 16.dp)
-                                .size(24.dp)
-                                .enabled(enabled),
+                                .size(24.dp),
                             painter = painterResource(id = startIcon),
                             tint = startIconTint,
                             contentDescription = null
@@ -97,8 +98,7 @@ fun AppListItem(
                         Image(
                             modifier = Modifier
                                 .padding(end = 16.dp)
-                                .size(24.dp)
-                                .enabled(enabled),
+                                .size(24.dp),
                             painter = painterResource(id = startIcon),
                             contentDescription = null
                         )

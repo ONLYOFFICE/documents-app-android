@@ -53,6 +53,8 @@ sealed class ActionMenuItem(override val title: Int) : IActionMenuItem {
     data object Invite : None(R.string.share_invite_user)
     data object CreateRoom : None(R.string.dialog_create_room)
     data object LeaveRoom : None(R.string.leave_room_title)
+    data object EditIndex : None(R.string.rooms_index_edit)
+    data object ExportIndex : None(R.string.rooms_index_export)
     data class CopyLink(val isRoom: Boolean) : None(R.string.rooms_info_copy_link)
 
     data object ManageRoom : Arrow(R.string.room_manage_room)
@@ -89,12 +91,25 @@ object ActionMenuItemsFactory {
         asc: Boolean,
         security: Security,
         sortBy: String?,
-        isGridView: Boolean
+        isGridView: Boolean,
+        isIndexing: Boolean
     ): List<ActionMenuItem> {
         return if (root) {
             getRoomRootItems(section, selected, allSelected, asc, sortBy, isGridView)
         } else {
-            getRoomFolderItems(selected, provider, empty, allSelected, asc, sortBy, currentRoom, security, isGridView)
+            getRoomFolderItems(
+                section = section,
+                selected = selected,
+                provider = provider,
+                empty = empty,
+                allSelected = allSelected,
+                asc = asc,
+                sortBy = sortBy,
+                currentRoom = currentRoom,
+                security = security,
+                isGridView = isGridView,
+                isIndexing = isIndexing
+            )
         }
     }
 
@@ -118,7 +133,8 @@ object ActionMenuItemsFactory {
             )
 
             // sort block
-            if (section == SectionType.ONEDRIVE) {
+            if (provider is PortalProvider.Storage) {
+                add(ActionMenuItem.Divider)
                 add(ActionMenuItem.Title.get(asc, sortBy))
             } else {
                 add(
@@ -210,6 +226,7 @@ object ActionMenuItemsFactory {
     }
 
     private fun getRoomFolderItems(
+        section: Int,
         selected: Boolean,
         provider: PortalProvider?,
         empty: Boolean,
@@ -218,8 +235,10 @@ object ActionMenuItemsFactory {
         sortBy: String?,
         currentRoom: Boolean,
         security: Security,
-        isGridView: Boolean
+        isGridView: Boolean,
+        isIndexing: Boolean
     ) = mutableListOf<ActionMenuItem>().apply {
+        val isArchive = section == SectionType.CLOUD_ARCHIVE_ROOM
         if (!selected) {
             add(
                 ActionMenuItem.ManageRoom.get(
@@ -229,9 +248,14 @@ object ActionMenuItemsFactory {
                         ActionMenuItem.Invite.takeIf { security.editRoom },
                         ActionMenuItem.CopyLink(true),
                         ActionMenuItem.Divider,
+                        ActionMenuItem.EditIndex.takeIf { isIndexing },
+                        ActionMenuItem.ExportIndex.takeIf { isIndexing && security.indexExport },
+                        ActionMenuItem.Divider.takeIf { isIndexing },
                         ActionMenuItem.Archive.takeIf { security.editRoom },
                         ActionMenuItem.Download,
-                        ActionMenuItem.LeaveRoom
+                        ActionMenuItem.Restore.takeIf { isArchive },
+                        ActionMenuItem.Delete.takeIf { isArchive },
+                        ActionMenuItem.LeaveRoom.takeIf { !isArchive }
                     )
                 )
             )
@@ -250,24 +274,31 @@ object ActionMenuItemsFactory {
                         )
                     )
                 )
-                add(
-                    ActionMenuItem.SortBy.get(
-                        listOf(
-                            ActionMenuItem.Title,
-                            ActionMenuItem.Type,
-                            ActionMenuItem.Size,
-                            ActionMenuItem.Author,
-                            ActionMenuItem.Date
-                        ).map { it.get(asc, sortBy) }
+                if (!isIndexing) {
+                    add(
+                        ActionMenuItem.SortBy.get(
+                            listOf(
+                                ActionMenuItem.Title,
+                                ActionMenuItem.Type,
+                                ActionMenuItem.Size,
+                                ActionMenuItem.Author,
+                                ActionMenuItem.Date
+                            ).map { it.get(asc, sortBy) }
+                        )
                     )
-                )
+                }
             }
             if (selected) {
-                if (provider == PortalProvider.Cloud.DocSpace) add(ActionMenuItem.CreateRoom)
-                add(ActionMenuItem.Download)
-                add(ActionMenuItem.Move)
-                add(ActionMenuItem.Copy)
-                add(ActionMenuItem.Delete)
+                 if (isArchive) {
+                     add(ActionMenuItem.Download)
+                     add(ActionMenuItem.Copy)
+                 } else {
+                     if (provider == PortalProvider.Cloud.DocSpace) add(ActionMenuItem.CreateRoom)
+                     add(ActionMenuItem.Download)
+                     add(ActionMenuItem.Move)
+                     add(ActionMenuItem.Copy)
+                     add(ActionMenuItem.Delete)
+                 }
             }
             addAll(getSelectItems(selected, allSelected))
         }

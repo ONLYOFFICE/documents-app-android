@@ -56,6 +56,54 @@ open class CloudFolder : Item(), Serializable {
     @Expose
     val type: Int? = null
 
+    @SerializedName("mute")
+    @Expose
+    var mute: Boolean = false
+
+    @SerializedName("indexing")
+    @Expose
+    var indexing: Boolean = false
+
+    @SerializedName("denyDownload")
+    @Expose
+    var denyDownload: Boolean = false
+
+    @SerializedName("inRoom")
+    @Expose
+    var inRoom: Boolean = false
+
+    @SerializedName("usedSpace")
+    @Expose
+    var usedSpace: Long = 0
+
+    @SerializedName("lifetime")
+    @Expose
+    var lifetime: Lifetime? = null
+
+    @SerializedName("watermark")
+    @Expose
+    var watermark: Watermark? = null
+
+    @SerializedName("quotaLimit")
+    @Expose
+    var quotaLimit: Long? = null
+
+    @SerializedName("external")
+    @Expose
+    var external: Boolean = false
+
+    @SerializedName("expired")
+    @Expose
+    var expired: Boolean = false
+
+    @SerializedName("passwordProtected")
+    @Expose
+    var passwordProtected: Boolean = false
+
+    @SerializedName("requestToken")
+    @Expose
+    var requestToken: String? = null
+
     fun setFolder(folder: CloudFolder) {
         setItem(folder)
         parentId = folder.parentId

@@ -16,7 +16,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_document_column" />
+            tools:src="@drawable/ic_type_document_column" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/badgeNewCard"
@@ -103,10 +103,14 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title"
+            android:layout_width="wrap_content"
             style="@style/GridItemLayout.Title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/image"
+            tools:drawableEnd="@drawable/ic_small_clock"
+            android:drawablePadding="4dp"
+            android:drawableTint="@color/colorSecondary"
             tools:text="@tools:sample/lorem[1:3]" />
 
         <TextView

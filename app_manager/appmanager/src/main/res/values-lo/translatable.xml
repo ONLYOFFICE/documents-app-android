@@ -559,8 +559,6 @@
     <string name="snackbar_undo">ຍົກເລີກ</string>
     <string name="errors_server_auth_too_many_attempts">ຜິດຫຼາຍຄັ້ງເກີນໄປ. ລອງໃໝ່ໃນພາຍຫຼັງ</string>
     <string name="share_snackbar_remove_user">ຜູ້ໃຊ້ຖືກລຶບອອກ</string>
-    <string name="share_group_admin">ຄຸ້ມຄອງ</string>
-    <string name="share_group_everyone">ທຸກຄົນ</string>
     <string name="storage_onedrive_error_opened">ໄຟລ໌ຖືກເປີດຢູ່ໃນເວັບແລ້ວ</string>
     <string name="storage_onedrive_error_exist">ໄຟລ໌ທີ່ມີຊື່ດຽວກັນແມ່ນມີຢູ່ໃນໂຟນເດີນີ້ແລ້ວ</string>
     <string name="operation_panel_restore_button">ເກັບກູ້ໄວ້ທີ່ນີ້</string>
@@ -670,7 +668,7 @@
     <string name="dialog_create_room">ສ້າງຫ້ອງ</string>
     <string name="dialog_create_room_value">ຫ້ອງໃໝ່</string>
     <string name="invite_by_email">ເຊີນຜູ້ໃຊ້ທາງອີເມວ</string>
-    <string name="share_access_room_admin">ຜູ້ເບິ່ງແຍງຫ້ອງ</string>
+    <string name="share_user_type_room_admin">ຜູ້ເບິ່ງແຍງຫ້ອງ</string>
     <string name="share_access_room_editor">ຜູ້ມີສິດແກ້ໄຂ</string>
     <string name="share_access_room_form_filler">ຕົວຕື່ມແບບຟອມ</string>
     <string name="share_access_room_reviewer">ຜູ້ກວດ</string>
@@ -711,7 +709,6 @@
         <item quantity="one">ລາຍ​ການ​ຖືກ​ລົບ​ອອກ​ໂດຍ​ຖາວອນ​</item>
         <item quantity="other">ລາຍ​ການ​ຖືກ​ລົບ​ອອກ​ໂດຍ​ຖາວອນ​</item>
     </plurals>
-    <string name="share_access_room_power_user">ຜູ້ໃຊ້ທີ່ມູສິດສູງ</string>
     <string name="share_expected_member">ຄາດໝາຍສະມາຊິກ</string>
     <string name="app_settings_main_help">ຊ່ວຍເຫຼືອ</string>
     <string name="clear_recents">"ລຶບເມື່ອບໍ່ດົນມານີ້?"</string>
@@ -760,9 +757,7 @@
     <string name="rooms_info_create_link_complete">ສ້າງລິ້ງສຳເລັດ ແລະສຳເນົາໄປໃສ່ຄລິບບອດແລ້ວ</string>
     <string name="rooms_info_delete_link">ລຶບລິ້ງ</string>
     <string name="rooms_info_delete_link_complete">ລິ້ງຖືກລຶບແລ້ວ</string>
-    <string name="rooms_info_delete_link_desc">ລິ້ງຈະຖືກລຶບອອກຖາວອນ. ທ່ານຈະບໍ່ສາມາດຍົກເລີກຄຳສັ່ງນີ້ໄດ້.</string>
     <string name="rooms_info_revoke_link">ຖອນການເຊື່ອມຕໍ່</string>
-    <string name="rooms_info_revoke_link_desc">ລິ້ງກ່ອນໜ້ານີ້ຈະບໍ່ສາມາດໃຊ້ໄດ້. ການເຊື່ອມໂຍງທົ່ວໄປໃຫມ່ຈະຖືກສ້າງຂື້ນ.</string>
     <string name="rooms_info_revoke_link_complete">ລິ້ງຖືກຖອນຄືນ</string>
     <string name="rooms_info_revoke">ຖອນຄືນ</string>
     <string name="rooms_info_copy_link">ສຳເນົາລິ້ງ</string>
@@ -858,6 +853,6 @@
     <string name="room_storage_not_availabale">ເນື້ອຫາຂອງໂຟນເດີພາກສ່ວນທີສາມ ບໍ່ ສາມາດໃຊ້ໄດ້. ພະຍາຍາມເຊື່ອມຕໍ່ບັນຊີຄືນໃໝ່.</string>
     <string name="personal_portal_end_button">ສ້າງບັນຊີຟຣີໄດ້ເລີຍ</string>
     <string name="personal_portal_end_title">ONLYOFFICE Personal ກຳລັງປິດຕົວລົງ</string>
-    <string name="personal_portal_end_text">ONLYOFFICE Personal ຈະຢຸດໃຫ້ບໍລິການຕັ້ງແຕ່ວັນທີ 1 ກັນຍາ 2024.\nພວກເຮົາຂໍແນະນຳໃຫ້ທ່ານຍ້າຍໄປໃຊ້ ONLYOFFICE DocSpace Cloud ຟຣີ.
-</string>
+    <string name="personal_portal_end_text">ONLYOFFICE Personal ຈະຢຸດໃຫ້ບໍລິການຕັ້ງແຕ່ວັນທີ 1 ກັນຍາ 2024.\nພວກເຮົາຂໍແນະນຳໃຫ້ທ່ານຍ້າຍໄປໃຊ້ ONLYOFFICE DocSpace Cloud ຟຣີ.</string>\
+    <string name="list_action_delete_image">ລຶບຮູບ</string>
 </resources>

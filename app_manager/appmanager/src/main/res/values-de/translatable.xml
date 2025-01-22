@@ -415,8 +415,6 @@
     <string name="snackbar_undo">RÜCKGÄNGIG MACHEN</string>
     <string name="errors_server_auth_too_many_attempts">Zu viele Versuche. Bitte versuchen Sie es später erneut.</string>
     <string name="share_snackbar_remove_user">Benutzer wurde entfernt</string>
-    <string name="share_group_admin">Administrator</string>
-    <string name="share_group_everyone">Alle</string>
     <string name="storage_onedrive_error_opened">Die Datei ist auf dem Portal geöffnet</string>
     <string name="storage_onedrive_error_exist">In diesem Ordner gibt es schon eine Datei mit demselben Namen</string>
     <string name="operation_panel_restore_button">Hier wiederherstellen</string>
@@ -526,7 +524,7 @@
     <string name="dialog_create_room">Raum erstellen</string>
     <string name="dialog_create_room_value">Neuer Raum</string>
     <string name="invite_by_email">Benutzer per E-Mail einladen</string>
-    <string name="share_access_room_admin">Admin des Raums</string>
+    <string name="share_user_type_room_admin">Admin des Raums</string>
     <string name="share_access_room_editor">Bearbeitung</string>
     <string name="share_access_room_form_filler">Ausfüllen von Formularen</string>
     <string name="share_access_room_reviewer">Überprüfung</string>
@@ -564,7 +562,6 @@
         <item quantity="one">Artikel endgültig gelöscht</item>
         <item quantity="other">Artikel endgültig gelöscht</item>
     </plurals>
-    <string name="share_access_room_power_user">Power user</string>
     <string name="share_expected_member">Mitglieder erwarten</string>
     <string name="app_settings_main_help">Hilfe</string>
     <string name="clear_recents">"Zuletzt verwendete löschen?"</string>
@@ -615,9 +612,7 @@
     <string name="rooms_info_create_link_complete">Link erfolgreich erstellt und in die Zwischenablage kopiert</string>
     <string name="rooms_info_delete_link">Link löschen</string>
     <string name="rooms_info_delete_link_complete">Link wurde gelöscht</string>
-    <string name="rooms_info_delete_link_desc">Der Link wird endgültig gelöscht. Sie können diese Aktion nicht mehr rückgängig machen.</string>
     <string name="rooms_info_revoke_link">Link widerrufen</string>
-    <string name="rooms_info_revoke_link_desc">Der vorherige Link ist nicht mehr verfügbar. Es wird ein neuer allgemeiner Link erstellt.</string>
     <string name="rooms_info_revoke_link_complete">Link wurde widerrufen</string>
     <string name="rooms_info_revoke">Widerrufen</string>
     <string name="rooms_info_copy_link">Link kopieren</string>
@@ -715,4 +710,42 @@
     <string name="personal_portal_end_title">ONLYOFFICE Personal schließt ab</string>
     <string name="personal_portal_end_text">Bitte beachten Sie: ONLYOFFICE Personal wird am 1. September 2024 auslaufen.\n
 Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</string>
+    <string name="dialogs_question_delete_all_fonts">Alle Schriftarten löschen?</string>
+    <string name="dialogs_question_delete_font">Diese Schriftart löschen?</string>
+    <string name="dialogs_warning_title">Warnung</string>
+    <string name="dialogs_warning_only_pdf_form_message">Die Datei kann nicht in diesen Raum verschoben werden. Bitte versuchen Sie, das ONLYOFFICE PDF-Formular zu verschieben.</string>
+    <string name="dialogs_warning_pinned_room_limit">Sie können nicht mehr als 10 Räume oben anheften. Entpinnen Sie einige, die derzeit angeheftet sind.</string>
+    <string name="dialogs_warning_fill_forms_room_create">Für diesen Raumtyp ist die Erstellung auf Basis mehrerer Dateien und Ordner nicht möglich. Um einen solchen Raum zu erstellen, gehen Sie in den Bereich Räume oder verwenden Sie eines der PDF-Formulare.</string>
+    <string name="toolbar_menu_view">Ansicht</string>
+    <string name="toolbar_menu_view_list">Liste</string>
+    <string name="toolbar_menu_view_grid">Raster</string>
+    <string name="list_context_duplicate">Duplizieren</string>
+    <string name="list_context_fill">Ausfüllen</string>
+    <string name="placeholder_no_fonts">Keine Schriftarten</string>
+    <string name="share_popup_access_custom_filter">Benutzerdefinierter Filter</string>
+    <string name="operation_select_room_title">Raum auswählen</string>
+    <string name="room_duplicate_progress_title">Duplizierung im Gange</string>
+    <string name="room_duplicate_complete">Duplizierung abgeschlossen</string>
+    <string name="room_duplicate_error">Duplizierungsfehler</string>
+    <string name="room_duplicate_progress_hide_button">Ausblenden</string>
+    <string name="rooms_add_fill_forms">Raum zum Ausfüllen von Formularen</string>
+    <string name="rooms_add_fill_forms_des">Laden Sie PDF-Formulare in den Raum hoch. Fordern Sie Benutzer auf, ein PDF-Formular auszufüllen. Überprüfen Sie ausgefüllte Formulare und analysieren Sie automatisch erfasste Daten in einer Tabelle.</string>
+    <string name="room_placeholder_created_filling_form_room_title">Willkommen im Raum zum Ausfüllen von Formularen</string>
+    <string name="room_placeholder_created_filling_form_room_subtitle">Laden Sie ein fertiges PDF-Formular hoch oder erstellen Sie neue Ordner, um Ihre Dateien zu organisieren</string>
+    <string name="context_protection_title">Schutz</string>
+    <string name="rooms_upload_pdf_from_docspace">PDF-Formular aus DocSpace hochladen</string>
+    <string name="rooms_upload_pdf_from_device">PDF-Formular vom Gerät hochladen</string>
+    <string name="rooms_fill_in_as_title">Ausfüllen als</string>
+    <string name="rooms_fill_out_form_yourself">Füllen Sie das Formular selbst aus</string>
+    <string name="rooms_fill_out_form_yourself_desc">Füllen Sie die Felder des Originalformulars im Editorfenster aus.</string>
+    <string name="rooms_share_and_collect">Teilen &amp; sammeln</string>
+    <string name="rooms_share_and_collect_desc">Teilen Sie Ihr Formular und sammeln Sie Antworten über einen Raum zum Ausfüllen von Formularen.</string>
+    <string name="rooms_fill_form_complete_desc">Das ausgefüllte PDF-Formular wird gespeichert und steht Ihnen im Ordner "Komplett" zur Verfügung. Um den Status zu überprüfen, wenden Sie sich an den Formularbesitzer und geben Sie die zugewiesene Nummer an.</string>
+    <string name="rooms_fill_form_complete_number_title">Formularnummer</string>
+    <string name="rooms_fill_form_complete_owner_title">Formularbesitzer </string>
+    <string name="rooms_fill_form_complete_toolbar_title">Formular erfolgreich ausgefüllt</string>
+    <string name="rooms_fill_form_complete_back_to_room">Zurück zum Raum</string>
+    <string name="rooms_fill_form_complete_check_forms">Fertige Formulare prüfen</string>
+    <string name="errors_sign_in_account_not_found">Konto nicht gefunden</string>
+    <string name="list_action_delete_image">Bild löschen</string>
 </resources>

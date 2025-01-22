@@ -8,18 +8,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import app.documents.core.model.cloud.Access
+import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppTextButton
@@ -29,9 +29,9 @@ import lib.toolkit.base.R
 fun UserListBottomContent(
     nextButtonTitle: Int,
     count: Int? = null,
-    access: Int? = null,
-    accessList: List<Int> = emptyList(),
-    onAccess: (Int) -> Unit = {},
+    access: Access? = null,
+    accessList: List<Access> = emptyList(),
+    onAccess: (Access) -> Unit = {},
     onDelete: (() -> Unit)? = null,
     onNext: () -> Unit
 ) {
@@ -69,5 +69,23 @@ fun UserListBottomContent(
             title = nextButtonTitle,
             onClick = onNext
         )
+    }
+}
+
+@Composable
+@Preview
+private fun UserListBottomContentPreview() {
+    ManagerTheme {
+        Surface {
+            UserListBottomContent(
+                nextButtonTitle = R.string.common_next,
+                count = 1,
+                access = Access.Read,
+                accessList = listOf(Access.None, Access.Restrict, Access.Read),
+                onAccess = {},
+                onDelete = {},
+                onNext = {}
+            )
+        }
     }
 }

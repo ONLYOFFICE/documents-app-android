@@ -7,6 +7,9 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.ContextWrapper
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -28,6 +31,32 @@ fun Modifier.visible(visible: Boolean) = addIf(!visible) { alpha(0f) }
 
 @Composable
 fun Modifier.enabled(enabled: Boolean) = addIf(!enabled) { alpha(0.4f) }
+
+@Composable
+fun TouchDisable(
+    modifier: Modifier = Modifier,
+    disableTouch: Boolean,
+    content: @Composable () -> Unit
+) {
+    Box(
+        modifier = modifier.enabled(!disableTouch)
+    ) {
+        content()
+        Box(
+            modifier = Modifier.matchParentSize().then(
+                if (disableTouch) {
+                    Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = {}
+                    )
+                } else {
+                    Modifier
+                }
+            )
+        )
+    }
+}
 
 @Composable
 fun LockScreenOrientation(orientation: Int) {

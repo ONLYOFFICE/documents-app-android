@@ -36,6 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -53,6 +55,7 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import lib.compose.ui.addIfNotNull
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextPrimary
 import lib.compose.ui.theme.colorTextSecondary
@@ -61,7 +64,8 @@ import lib.toolkit.base.R
 @Composable
 fun AppTextField(
     modifier: Modifier = Modifier,
-    state: MutableState<String>,
+    value: String,
+    onValueChange: (String) -> Unit,
     hint: String = "",
     singleLine: Boolean = true,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -71,8 +75,8 @@ fun AppTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     focusManager: FocusManager? = null,
+    focusRequester: FocusRequester? = null,
     errorState: MutableState<String?>? = null,
-    onValueChange: ((String) -> Unit)? = null,
     onDone: (() -> Unit)? = null
 ) {
     val errorAnimation = remember { Animatable(0f) }
@@ -86,16 +90,11 @@ fun AppTextField(
 
     Column(modifier = modifier.fillMaxWidth()) {
         TextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = state.value,
-            onValueChange = { value ->
-                onValueChange?.let {
-                    onValueChange(value)
-                } ?: run {
-                    state.value = value
-                    errorState?.value = null
-                }
-            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .addIfNotNull(focusRequester) { focusRequester(it) },
+            value = value,
+            onValueChange = onValueChange,
             singleLine = singleLine,
             isError = errorState?.value != null,
             label = { label?.let { Text(stringResource(id = label)) } },
@@ -105,7 +104,7 @@ fun AppTextField(
             visualTransformation = visualTransformation,
             keyboardActions = KeyboardActions(
                 onDone = { onDone?.invoke() },
-                onNext = { if (state.value.isNotEmpty()) focusManager?.moveFocus(FocusDirection.Down) }
+                onNext = { if (value.isNotEmpty()) focusManager?.moveFocus(FocusDirection.Down) }
             ),
             keyboardOptions = keyboardOptions ?: KeyboardOptions(
                 imeAction = onDone?.let { ImeAction.Done } ?: ImeAction.Next,
@@ -121,22 +120,72 @@ fun AppTextField(
                 focusedLabelColor = MaterialTheme.colors.primary
             ),
         )
-        Text(
-            modifier = Modifier
-                .alpha(alpha = errorAnimation.value)
-                .padding(top = 4.dp, bottom = 8.dp),
-            text = errorState?.value.orEmpty(),
-            color = MaterialTheme.colors.error,
-            style = MaterialTheme.typography.caption,
-        )
+        AnimatedVisibilityVerticalFade(visible = !errorState?.value.isNullOrEmpty()) {
+            Text(
+                modifier = Modifier
+                    .alpha(alpha = errorAnimation.value)
+                    .padding(top = 4.dp, start = 16.dp, bottom = 8.dp),
+                text = errorState?.value.orEmpty(),
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+            )
+        }
     }
+
+    focusRequester?.let {
+        LaunchedEffect(Unit) { it.requestFocus() }
+    }
+}
+
+@Composable
+fun AppTextField(
+    modifier: Modifier = Modifier,
+    state: MutableState<String>,
+    hint: String = "",
+    singleLine: Boolean = true,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    keyboardOptions: KeyboardOptions? = null,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    label: Int? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    focusManager: FocusManager? = null,
+    focusRequester: FocusRequester? = null,
+    errorState: MutableState<String?>? = null,
+    onValueChange: ((String) -> Unit)? = null,
+    onDone: (() -> Unit)? = null
+) {
+    AppTextField(
+        modifier = modifier,
+        value = state.value,
+        onValueChange = { value ->
+            onValueChange?.let {
+                onValueChange(value)
+            } ?: run {
+                state.value = value
+                errorState?.value = null
+            }
+        },
+        hint = hint,
+        singleLine = singleLine,
+        keyboardType = keyboardType,
+        keyboardOptions = keyboardOptions,
+        visualTransformation = visualTransformation,
+        label = label,
+        trailingIcon = trailingIcon,
+        leadingIcon = leadingIcon,
+        focusManager = focusManager,
+        focusRequester = focusRequester,
+        errorState = errorState,
+        onDone = onDone
+    )
 }
 
 @Composable
 fun AppPasswordTextField(
     modifier: Modifier = Modifier,
     state: MutableState<String>,
-    label: Int,
+    label: Int?,
     focusManager: FocusManager,
     onDone: (() -> Unit)? = null,
     errorState: MutableState<String?>? = null,
@@ -179,7 +228,8 @@ fun AppPasswordTextField(
 @Composable
 fun AppTextFieldListItem(
     modifier: Modifier = Modifier,
-    state: MutableState<String>,
+    value: String,
+    onValueChange: (String) -> Unit,
     hint: String = "",
     isPassword: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -199,7 +249,7 @@ fun AppTextFieldListItem(
             var focused by remember { mutableStateOf(false) }
 
             Box(modifier = Modifier.weight(1f)) {
-                if (state.value.isEmpty()) {
+                if (value.isEmpty()) {
                     Text(
                         text = hint,
                         color = MaterialTheme.colors.colorTextSecondary
@@ -208,8 +258,8 @@ fun AppTextFieldListItem(
                 BasicTextField(
                     modifier = Modifier
                         .onFocusChanged { focused = it.isFocused },
-                    value = state.value,
-                    onValueChange = { state.value = it },
+                    value = value,
+                    onValueChange = { onValueChange(it) },
                     singleLine = true,
                     cursorBrush = SolidColor(MaterialTheme.colors.primary),
                     textStyle = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.colorTextPrimary),
@@ -218,7 +268,11 @@ fun AppTextFieldListItem(
                         VisualTransformation.None,
                     keyboardActions = KeyboardActions(
                         onDone = { onDone?.invoke() },
-                        onNext = { if (state.value.isNotEmpty()) focusManager?.moveFocus(FocusDirection.Down) }
+                        onNext = {
+                            if (value.isNotEmpty()) focusManager?.moveFocus(
+                                FocusDirection.Down
+                            )
+                        }
                     ),
                     keyboardOptions = keyboardOptions ?: KeyboardOptions(
                         imeAction = onDone?.let { ImeAction.Done } ?: ImeAction.Next,
@@ -247,6 +301,31 @@ fun AppTextFieldListItem(
         }
         AppDivider()
     }
+}
+
+@Composable
+fun AppTextFieldListItem(
+    modifier: Modifier = Modifier,
+    state: MutableState<String>,
+    onValueChange: ((String) -> Unit) = {},
+    hint: String = "",
+    isPassword: Boolean = false,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    keyboardOptions: KeyboardOptions? = null,
+    focusManager: FocusManager? = null,
+    onDone: (() -> Unit)? = null
+) {
+    AppTextFieldListItem(
+        modifier = modifier,
+        value = state.value,
+        onValueChange = { state.value = it; onValueChange(it) },
+        hint = hint,
+        isPassword = isPassword,
+        keyboardType = keyboardType,
+        keyboardOptions = keyboardOptions,
+        focusManager = focusManager,
+        onDone = onDone,
+    )
 }
 
 class SuffixTransformation(private val suffix: String) : VisualTransformation {

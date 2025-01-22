@@ -39,6 +39,10 @@ abstract class GridBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
     }
 
     private fun initListeners() {
+        if (adapter.pickerMode is PickerMode.Ordering) {
+            return
+        }
+
         with(rootLayout) {
             setOnClickListener {
                 if (adapter.isTrash && !adapter.isSelectMode) {
@@ -60,9 +64,7 @@ abstract class GridBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
         return StringUtils.getCloudItemInfo(
             context = adapter.context,
             item = element,
-            userId = adapter.accountId,
-            sortBy = adapter.preferenceTool.sortBy,
-            isSectionMy = adapter.isSectionMy
+            state = adapter
         )
     }
 }

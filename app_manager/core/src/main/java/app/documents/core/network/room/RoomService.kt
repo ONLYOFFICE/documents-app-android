@@ -1,26 +1,36 @@
 package app.documents.core.network.room
 
+import app.documents.core.model.login.Group
+import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.ExportIndexOperation
 import app.documents.core.network.manager.models.explorer.Operation
+import app.documents.core.network.manager.models.explorer.Quota
 import app.documents.core.network.manager.models.request.RequestBatchOperation
+import app.documents.core.network.manager.models.request.RequestRoomNotifications
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.manager.models.response.ResponseExplorer
+import app.documents.core.network.manager.models.response.ResponseRoomNotifications
 import app.documents.core.network.room.models.RequestAddTags
 import app.documents.core.network.room.models.RequestArchive
 import app.documents.core.network.room.models.RequestCreateExternalLink
 import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
-import app.documents.core.network.room.models.RequestRenameRoom
+import app.documents.core.network.room.models.RequestEditRoom
+import app.documents.core.network.room.models.RequestOrder
+import app.documents.core.network.room.models.RequestRoomAuthViaLink
 import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSendLinks
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
+import app.documents.core.network.room.models.ResponseRoomAuthViaLink
 import app.documents.core.network.room.models.ResponseRoomShare
 import app.documents.core.network.room.models.ResponseTags
 import app.documents.core.network.room.models.ResponseUpdateExternalLink
+import app.documents.core.network.room.models.ResponseUploadLogo
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.request.RequestAddInviteLink
@@ -55,6 +65,7 @@ interface RoomService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/rooms/")
     fun getAllRooms(@QueryMap options: Map<String, String>?): Observable<Response<ResponseExplorer>>
+
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
@@ -84,7 +95,10 @@ interface RoomService {
         path = "api/" + ApiContract.API_VERSION + "/files/rooms/{id}",
         hasBody = true
     )
-    fun deleteRoom(@Path(value = "id") id: String, @Body body: RequestDeleteRoom): Observable<Response<BaseResponse>>
+    fun deleteRoom(
+        @Path(value = "id") id: String,
+        @Body body: RequestDeleteRoom,
+    ): Observable<Response<BaseResponse>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -105,7 +119,10 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}")
-    suspend fun renameRoom(@Path(value = "id") id: String, @Body body: RequestRenameRoom): Response<BaseResponse>
+    suspend fun editRoom(
+        @Path(value = "id") id: String,
+        @Body body: RequestEditRoom,
+    ): Response<BaseResponse>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -119,7 +136,10 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/links/send")
-    fun sendLink(@Path("id") id: String, @Body body: RequestSendLinks): Observable<Response<BaseResponse>>
+    fun sendLink(
+        @Path("id") id: String,
+        @Body body: RequestSendLinks,
+    ): Observable<Response<BaseResponse>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -160,7 +180,10 @@ interface RoomService {
         path = "api/" + ApiContract.API_VERSION + "/files/rooms/{id}/tags",
         hasBody = true
     )
-    suspend fun deleteTagsFromRoom(@Path("id") id: String, @Body body: RequestAddTags): Response<ResponseBody>
+    suspend fun deleteTagsFromRoom(
+        @Path("id") id: String,
+        @Body body: RequestAddTags,
+    ): Response<ResponseBody>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -191,7 +214,7 @@ interface RoomService {
     @POST("api/" + ApiContract.API_VERSION + "/files/logos")
     suspend fun uploadLogo(
         @Part part: MultipartBody.Part,
-    ): Response<ResponseBody>
+    ): app.documents.core.network.BaseResponse<ResponseUploadLogo>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -293,7 +316,10 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/share")
-    suspend fun setRoomUserAccess(@Path("id") id: String, @Body body: RequestRoomShare): Response<ResponseRoomShare>
+    suspend fun setRoomUserAccess(
+        @Path("id") id: String,
+        @Body body: RequestRoomShare,
+    ): Response<ResponseRoomShare>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -345,4 +371,57 @@ interface RoomService {
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/duplicate")
     suspend fun duplicate(@Body body: RequestBatchOperation): app.documents.core.network.BaseResponse<List<Operation>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/settings/notification/rooms")
+    suspend fun muteNotifications(@Body body: RequestRoomNotifications): app.documents.core.network.BaseResponse<ResponseRoomNotifications>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/portal/payment/quota")
+    suspend fun getQuota(): app.documents.core.network.BaseResponse<Quota>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{roomId}")
+    suspend fun getRoomInfo(
+        @Path("roomId") roomId: String,
+    ): app.documents.core.network.BaseResponse<CloudFolder>
+
+    @PUT("api/" + ApiContract.API_VERSION + "/files/order")
+    suspend fun order(@Body body: RequestOrder): Response<ResponseBody>
+
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{roomId}/reorder")
+    suspend fun reorder(
+        @Path("roomId") roomId: String,
+    ): Response<ResponseBody>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/indexexport")
+    suspend fun getIndexExportProgress(): app.documents.core.network.BaseResponse<ExportIndexOperation>
+
+    @POST("api/" + ApiContract.API_VERSION + "/files/rooms/{roomId}/indexexport")
+    suspend fun startIndexExport(
+        @Path("roomId") roomId: String,
+    ): Response<ResponseBody>
+
+    @POST("api/" + ApiContract.API_VERSION + "/files/share/{token}/password")
+    suspend fun authRoomViaLink(
+        @Path("token") requestToken: String,
+        @Body body: RequestRoomAuthViaLink,
+    ): app.documents.core.network.BaseResponse<ResponseRoomAuthViaLink>
+
+    @GET("api/" + ApiContract.API_VERSION + "/people/room/{roomId}")
+    suspend fun getUsers(
+        @Path("roomId") roomId: String,
+        @QueryMap options: Map<String, String> = mapOf(),
+    ): app.documents.core.network.BaseResponse<List<User>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/group/room/{roomId}")
+    suspend fun getGroups(
+        @Path("roomId") roomId: String,
+        @QueryMap options: Map<String, String> = mapOf(),
+    ): app.documents.core.network.BaseResponse<List<Group>>
 }

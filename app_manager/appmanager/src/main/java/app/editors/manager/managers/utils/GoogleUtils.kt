@@ -8,9 +8,8 @@ import com.google.firebase.messaging.FirebaseMessaging
 object GoogleUtils {
 
     fun isGooglePlayServicesAvailable(context: Context): Boolean {
-        val googleApiAvailability = GoogleApiAvailability.getInstance()
-        val resultCode = googleApiAvailability.isGooglePlayServicesAvailable(context)
-        return resultCode == ConnectionResult.SUCCESS
+        val services = GoogleApiAvailability.getInstance()
+        return services.isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
     }
 
     fun getDeviceToken(result: (resultListener: String) -> Unit, errorListener: (error: Throwable) -> Unit) {

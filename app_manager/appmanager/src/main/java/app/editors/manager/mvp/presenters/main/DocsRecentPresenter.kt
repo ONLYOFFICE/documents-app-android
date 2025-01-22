@@ -15,7 +15,6 @@ import app.documents.core.network.manager.models.explorer.allowShare
 import app.documents.core.providers.DropboxFileProvider
 import app.documents.core.providers.GoogleDriveFileProvider
 import app.documents.core.providers.OneDriveFileProvider
-import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.cloudFileProvider
@@ -33,6 +32,7 @@ import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getName
 import lib.toolkit.base.managers.utils.EditorsType
+import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FileUtils.asyncDeletePath
 import lib.toolkit.base.managers.utils.PermissionUtils.checkReadWritePermission
 import lib.toolkit.base.managers.utils.StringUtils
@@ -52,7 +52,7 @@ sealed class OpenState(val uri: Uri?, val type: EditorsType?) {
     class Docs(uri: Uri) : OpenState(uri, EditorsType.DOCS)
     class Cells(uri: Uri) : OpenState(uri, EditorsType.CELLS)
     class Slide(uri: Uri) : OpenState(uri, EditorsType.PRESENTATION)
-    class Pdf(uri: Uri) : OpenState(uri, EditorsType.PDF)
+    class Pdf(uri: Uri, val isForm: Boolean) : OpenState(uri, EditorsType.PDF)
     class Media(val explorer: Explorer, val isWebDav: Boolean) : OpenState(null, null)
 }
 
@@ -144,7 +144,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                     fileProvider.fileInfo(CloudFile().apply {
                         id = recent.fileId
                     }).flatMap { cloudFile ->
-                        fileProvider.opeEdit(cloudFile, cloudFile.allowShare && !account.isVisitor).toObservable()
+                        fileProvider.opeEdit(cloudFile, cloudFile.allowShare && !account.isVisitor, null).toObservable()
                             .zipWith(Observable.fromCallable { cloudFile }) { info, file ->
                                 return@zipWith arrayOf(file, info)
                             }
@@ -181,12 +181,13 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                 StringUtils.Extension.VIDEO_SUPPORT, StringUtils.Extension.PDF -> {
                     checkSdkVersion { isCheck ->
                         if (isCheck) {
-                            viewState.onOpenDocumentServer(file, info, false)
+                            viewState.onOpenDocumentServer(/* file = */ file, /* info = */ info, /* type = */ null)
                         } else {
-                            downloadTempFile(file, false)
+                            downloadTempFile(file, null)
                         }
                     }
                 }
+
                 else -> viewState.onError(context.getString(R.string.error_unsupported_format))
             }
         } else {
@@ -358,7 +359,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
                     { file: CloudFile? ->
                         viewState.onDialogClose()
                         file?.let { addRecent(it) }
-                        viewState.onOpenLocalFile(file)
+                        viewState.onOpenLocalFile(file, null)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }
         } ?: run {
@@ -366,21 +367,16 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         }
     }
 
-    @Suppress("KotlinConstantConditions")
     private fun openLocalFile(uri: Uri) {
         val name = getName(context, uri)
-        when (val ext = StringUtils.getExtension(StringUtils.getExtensionFromPath(name.lowercase(Locale.ROOT)))) {
+        when (StringUtils.getExtension(StringUtils.getExtensionFromPath(name.lowercase(Locale.ROOT)))) {
             StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
-                if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && ext == StringUtils.Extension.FORM) {
-                    viewState.onError(context.getString(R.string.error_unsupported_format))
-                } else {
-                    viewState.onOpenFile(OpenState.Docs(uri))
-                }
+                viewState.onOpenFile(OpenState.Docs(uri))
             }
 
             StringUtils.Extension.SHEET -> viewState.onOpenFile(OpenState.Cells(uri))
             StringUtils.Extension.PRESENTATION -> viewState.onOpenFile(OpenState.Slide(uri))
-            StringUtils.Extension.PDF -> viewState.onOpenFile(OpenState.Pdf(uri))
+            StringUtils.Extension.PDF -> viewState.onOpenFile(OpenState.Pdf(uri, FileUtils.isOformPdf(context.contentResolver.openInputStream(uri))))
             StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
                 viewState.onOpenFile(OpenState.Media(getImages(uri), false))
             }

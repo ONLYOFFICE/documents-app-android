@@ -1,5 +1,6 @@
 package app.editors.manager.ui.dialogs.explorer
 
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -26,12 +27,15 @@ interface ExplorerContextItemVisible {
             ExplorerContextItem.Upload -> upload
             ExplorerContextItem.CreateRoom -> createRoom
             ExplorerContextItem.Reconnect -> reconnect
+            is ExplorerContextItem.Fill -> item is CloudFile && item.isPdfForm
             is ExplorerContextItem.Edit -> edit
+            is ExplorerContextItem.View -> false
             is ExplorerContextItem.ExternalLink -> externalLink
             is ExplorerContextItem.Restore -> restore
             is ExplorerContextItem.Header -> true
             is ExplorerContextItem.Pin -> pin
             is ExplorerContextItem.Delete -> delete
+            is ExplorerContextItem.Notifications -> notifications
             is ExplorerContextItem.Favorites -> favorites(contextItem.enabled)
         }
     }
@@ -48,6 +52,9 @@ interface ExplorerContextItemVisible {
     private val ExplorerContextState.duplicate: Boolean
         get() = item.security?.duplicate == true
 
+    private val ExplorerContextState.notifications: Boolean
+        get() = section.isRoom && item is CloudFolder && item.isRoom
+
     private val ExplorerContextState.download: Boolean
         get() = !section.isLocal
 
@@ -63,12 +70,12 @@ interface ExplorerContextItemVisible {
                     ApiContract.Section.User,
                     ApiContract.Section.Device -> true
 
-                ApiContract.Section.Trash,
-                ApiContract.Section.Room.Archive -> false
-                else -> access != ApiContract.Access.Read || item.security?.editAccess == true
-            }
-        } else section.isRoom && isRoot && item.security?.editRoom == true
-    }
+                    ApiContract.Section.Trash,
+                    ApiContract.Section.Room.Archive -> false
+                    else -> access != Access.Read || item.security?.editAccess == true
+                }
+            } else section.isRoom && isRoot && item.security?.editRoom == true
+        }
 
     private val ExplorerContextState.move: Boolean
         get() = if (!section.isRoom) {
@@ -86,7 +93,7 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.rename: Boolean
         get() = if (!section.isRoom) {
-            access == ApiContract.Access.ReadWrite || section in listOf(
+            access == Access.ReadWrite || section in listOf(
                 ApiContract.Section.User,
                 ApiContract.Section.Device
             )
@@ -109,7 +116,10 @@ interface ExplorerContextItemVisible {
         get() = if (provider is PortalProvider.Cloud.DocSpace) {
             section == ApiContract.Section.User && item is CloudFile
         } else if (item is CloudFile) {
-            !item.isDenySharing && access in arrayOf(ApiContract.Access.ReadWrite, ApiContract.Access.None)
+            !item.isDenySharing && access in arrayOf(
+                Access.ReadWrite,
+                Access.None
+            )
         } else {
             isShareVisible(access, section)
         }
@@ -134,13 +144,19 @@ interface ExplorerContextItemVisible {
         }
 
     private val ExplorerContextState.createRoom: Boolean
-        get() = item.security?.create == true || item is CloudFile
+        get() {
+            if (section is ApiContract.Section.Room.Archive) return false
+            return item.security?.create == true || item is CloudFile
+        }
 
     private val ExplorerContextState.location: Boolean
         get() = isSearching
 
     private fun ExplorerContextState.favorites(enabled: Boolean): Boolean =
-        enabled && !isFolder && !listOf(ApiContract.Section.Trash, ApiContract.Section.Webdav).contains(section)
+        enabled && !isFolder && !listOf(
+            ApiContract.Section.Trash,
+            ApiContract.Section.Webdav
+        ).contains(section)
 
     private fun isExtensionEditable(ext: String): Boolean {
         return StringUtils.getExtension(ext) in listOf(
@@ -151,10 +167,10 @@ interface ExplorerContextItemVisible {
         )
     }
 
-    private fun isShareVisible(access: ApiContract.Access, section: ApiContract.Section): Boolean =
+    private fun isShareVisible(access: Access, section: ApiContract.Section): Boolean =
         section == ApiContract.Section.User || access in listOf(
-            ApiContract.Access.Comment,
-            ApiContract.Access.ReadWrite
+            Access.Comment,
+            Access.ReadWrite
         )
 
 }

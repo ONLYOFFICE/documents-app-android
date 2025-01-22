@@ -18,7 +18,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.CryptUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
@@ -135,6 +134,10 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
                 Json.decodeFromString(CryptUtils.decodeUri(fileData?.query))
             }
             preferenceTool.fileData = ""
+            if (dataModel.share.isNotEmpty()) {
+                viewState.setFileData(Json.encodeToString(dataModel))
+                return
+            }
             if (dataModel.getPortalWithoutScheme()?.equals(
                     account?.portal?.url,
                     ignoreCase = true
@@ -145,21 +148,13 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
             ) {
                 viewState.setFileData(Json.encodeToString(dataModel))
             } else {
-                val isToken = checkAccountLogin(dataModel)
                 preferenceTool.fileData = Json.encodeToString(dataModel)
                 withContext(Dispatchers.Main) {
-                    viewState.onSwitchAccount(dataModel, isToken)
+                    viewState.onSwitchAccount(dataModel)
                 }
 
             }
         }
-    }
-
-    private suspend fun checkAccountLogin(data: OpenDataModel): Boolean {
-        val account = cloudDataSource.getAccountByLogin(data.email?.lowercase() ?: "")
-        if (account == null) return true
-        val token = AccountUtils.getToken(context, account.accountName)
-        return !token.isNullOrEmpty()
     }
 
     fun onRemoveFileData() {

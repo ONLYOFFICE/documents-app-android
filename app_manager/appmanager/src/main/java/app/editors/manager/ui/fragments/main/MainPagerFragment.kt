@@ -40,6 +40,7 @@ import moxy.presenter.InjectPresenter
 interface IMainPagerFragment {
 
     fun setPagerPosition(sectionType: Int, onPageChanged: () -> Unit = {})
+    fun setToolbarInfo(title: String?, drawable: Int? = null)
 }
 
 class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView, View.OnClickListener,
@@ -347,16 +348,17 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         }, 250)
     }
 
-    override fun onSwitchAccount(data: OpenDataModel, isToken: Boolean) {
+    override fun onSwitchAccount(data: OpenDataModel) {
         UiUtils.showQuestionDialog(
             context = requireContext(),
             title = getString(R.string.switch_account_title),
             description = getString(R.string.switch_account_description, data.portal),
             acceptListener = {
-                activity?.showAccountsActivity(isToken)
+                activity?.showAccountsActivity()
             },
             cancelListener = {
                 presenter.onRemoveFileData()
+                requireActivity().intent.clearIntent()
             },
             acceptTitle = getString(R.string.switch_account_open_project_file)
         )
@@ -379,6 +381,12 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     private val activeFragment: Fragment?
         get() = runCatching { adapter?.getActiveFragment(viewBinding?.mainViewPager) }.getOrNull()
+
+    override fun setToolbarInfo(title: String?, drawable: Int?) {
+        viewBinding?.infoLayout?.root?.isVisible = title != null
+        viewBinding?.infoLayout?.infoText?.text = title
+        viewBinding?.infoLayout?.infoText?.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
+    }
 
     override fun onClick(view: View?) {
         activity?.onSwitchAccount()

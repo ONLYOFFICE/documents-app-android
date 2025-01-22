@@ -9,20 +9,17 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
-import app.editors.manager.app.appComponent
 import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
 import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.presenters.main.RecentState
@@ -38,6 +35,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
@@ -70,7 +68,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             headerInfo = (recent.source ?: getString(R.string.this_device)) +
                     getString(R.string.placeholder_point) +
                     TimeUtils.formatDate(Date(recent.date)),
-            headerIcon = thumbnail
+            headerIcon = thumbnail.toByteArray()
         )
         presenter.onContextClick(recent, position)
         showExplorerContextBottomDialog(state)
@@ -167,23 +165,8 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                 requestReadWritePermission()
             }
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                requestAccessStorage()
+                presenter.getRecentFiles()
             }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    private fun requestAccessStorage() {
-        if (!Environment.isExternalStorageManager() && requireContext().appComponent.preference.isShowStorageAccess) {
-            showQuestionDialog(
-                getString(R.string.app_manage_files_title),
-                getString(R.string.app_manage_files_description),
-                getString(R.string.dialogs_common_ok_button),
-                getString(R.string.dialogs_common_cancel_button),
-                TAG_STORAGE_ACCESS
-            )
-        } else {
-            presenter.getRecentFiles()
         }
     }
 
@@ -226,9 +209,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun openFile(response: CloudFile) {
         val ext = response.fileExst
         if (StringUtils.isVideoSupport(ext) || StringUtils.isImage(ext)) {
-            showMediaActivity(getExplorer(response), false) {
-                // Stub
-            }
+            showMediaActivity(getExplorer(response), false)
         } else if (StringUtils.isDocument(ext)) {
             activity?.showWebViewer(response)
         } else {
@@ -300,13 +281,12 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
                             }
                         }
                     },
-                    getEditorsIntent(state.uri, checkNotNull(state.type))
+                    getEditorsIntent(state.uri, checkNotNull(state.type), isForm = state is OpenState.Pdf && state.isForm)
                 ).show()
             }
+
             is OpenState.Media -> {
-                showMediaActivity(state.explorer, state.isWebDav) {
-                    // Stub
-                }
+                showMediaActivity(state.explorer, state.isWebDav)
             }
         }
     }
@@ -354,8 +334,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     companion object {
         var TAG: String = DocsRecentFragment::class.java.simpleName
-
-        private const val TAG_STORAGE_ACCESS = "TAG_STORAGE_ACCESS"
 
         fun newInstance(): DocsRecentFragment {
             return DocsRecentFragment()

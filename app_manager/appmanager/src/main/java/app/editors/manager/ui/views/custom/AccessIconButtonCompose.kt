@@ -2,6 +2,7 @@ package app.editors.manager.ui.views.custom
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -16,17 +17,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import app.documents.core.model.cloud.Access
 import app.editors.manager.R
-import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.toUi
 import lib.compose.ui.theme.colorTextSecondary
+import lib.compose.ui.visible
 
 @Composable
 fun AccessIconButton(
     modifier: Modifier = Modifier,
-    access: Int,
+    access: Access,
     enabled: Boolean,
-    accessList: List<Int>,
-    onAccess: (Int) -> Unit
+    accessList: List<Access>,
+    onAccess: (Access) -> Unit
 ) {
     var dropdown by remember { mutableStateOf(false) }
 
@@ -41,17 +44,17 @@ fun AccessIconButton(
             horizontalArrangement = Arrangement.End
         ) {
             Icon(
-                imageVector = ImageVector.vectorResource(ManagerUiUtils.getAccessIcon(access)),
+                imageVector = ImageVector.vectorResource(access.toUi().icon),
                 contentDescription = null,
                 tint = MaterialTheme.colors.colorTextSecondary
             )
-            if (enabled) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_drawer_menu_header_arrow),
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.colorTextSecondary
-                )
-            }
+            Spacer(modifier = Modifier.padding(end = 4.dp))
+            Icon(
+                modifier = Modifier.visible(enabled),
+                imageVector = ImageVector.vectorResource(R.drawable.ic_drawer_menu_header_arrow),
+                contentDescription = null,
+                tint = MaterialTheme.colors.colorTextSecondary
+            )
             AccessDropdownMenu(
                 onDismissRequest = { dropdown = false },
                 expanded = dropdown,

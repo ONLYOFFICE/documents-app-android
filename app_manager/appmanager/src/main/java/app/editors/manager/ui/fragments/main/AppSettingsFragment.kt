@@ -11,7 +11,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -485,7 +484,6 @@ class AppSettingsFragment : BaseFragment() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FontsScreen(fonts: List<File>, onBack: () -> Unit, onFontClick: (File) -> Unit = {}) {
     AppScaffold {
@@ -499,7 +497,7 @@ private fun FontsScreen(fonts: List<File>, onBack: () -> Unit, onFontClick: (Fil
             LazyColumn {
                 items(items = fonts, key = { it.name }) { font ->
                     AppListItem(
-                        modifier = Modifier.animateItemPlacement(),
+                        modifier = Modifier.animateItem(),
                         title = font.nameWithoutExtension,
                         dividerVisible = false,
                         onClick = { onFontClick.invoke(font) }

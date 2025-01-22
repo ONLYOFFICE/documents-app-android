@@ -5,7 +5,7 @@
         <item name="android:windowBackground">@drawable/drawable_launcher</item>
     </style>
 
-    <style name="FullScreenDialog" parent="Theme.AppCompat.DayNight.Dialog">
+    <style name="FullScreenDialog" parent="AppTheme">
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:padding">0dp</item>
@@ -15,6 +15,7 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowCloseOnTouchOutside">false</item>
         <item name="android:theme">@style/AppTheme</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
     <style name="PasscodeActivityTheme" parent="NoActionBarTheme">
@@ -34,7 +35,7 @@
     <style name="GridItemLayout.ConstraintLayout" parent="AppTheme">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_gravity">top</item>
         <item name="android:clipToPadding">false</item>
         <item name="android:paddingHorizontal">4dp</item>
         <item name="android:paddingTop">12dp</item>
@@ -71,12 +72,17 @@
         <item name="android:importantForAccessibility">no</item>
     </style>
 
-    <style name="ExplorerItemLayout.RoomBadge" parent="AppTheme">
+    <style name="ExplorerItemLayout.RoomPublicBadge" parent="AppTheme">
         <item name="android:background">@color/colorBackground</item>
         <item name="android:translationX">@dimen/default_margin_medium</item>
         <item name="android:translationY">@dimen/default_margin_medium</item>
         <item name="shapeAppearance">@style/ShapeAppearance.Material3.Corner.Full</item>
         <item name="contentPadding">@dimen/default_margin_micro</item>
+    </style>
+
+    <style name="ExplorerItemLayout.RoomExternalBadge" parent="AppTheme">
+        <item name="android:translationX">@dimen/default_margin_small</item>
+        <item name="android:translationY">@dimen/default_margin_small</item>
     </style>
 
 </resources>

@@ -32,5 +32,5 @@
     <item quantity="many">godzin</item>
     <item quantity="other">godzin</item>
   </plurals>
-
+  <string name="settings_view">Widok</string>
 </resources>

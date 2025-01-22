@@ -184,6 +184,7 @@
     <!-- Common -->
     <string name="dialogs_common_ok_button">ACCEPT</string>
     <string name="dialogs_common_cancel_button" tools:ignore="ButtonCase">CANCEL</string>
+    <string name="dialogs_common_close">Close</string>
     <string name="dialogs_check_portal_header_text">Check portal capabilities</string>
     <string name="dialogs_sign_in_portal_header_text">Sign in to portal</string>
     <string name="dialogs_sign_in_register_portal">Registering portal</string>
@@ -236,7 +237,7 @@
     <string name="dialogs_warning_title">Warning</string>
     <string name="dialogs_warning_only_pdf_form_message">The file cannot be moved to this room. Please try to move the ONLYOFFICE PDF form.</string>
     <string name="dialogs_warning_pinned_room_limit">You can’t pin more than 10 rooms to the top. Unpin some that are currently pinned.</string>
-    <string name="dialogs_warning_fill_forms_room_create">Сreation based on several files and folders is not available for this type of room. To create such a room, go to the Rooms section or use one of the PDF forms.</string>
+    <string name="dialogs_warning_fill_forms_room_create">Creation based on several files and folders is not available for this type of room. To create such a room, go to the Rooms section or use one of the PDF forms.</string>
 
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">Rename</string>
@@ -329,6 +330,8 @@
     <string name="list_context_move">Move</string>
     <string name="list_context_create_copy">Copy</string>
     <string name="list_context_duplicate">Duplicate</string>
+    <string name="list_context_notification_enable">Enable notifications</string>
+    <string name="list_context_notification_disable">Disable notifications</string>
     <string name="list_context_create_download">Download</string>
     <string name="list_context_open_location">Open location</string>
     <string name="list_context_rename">Rename</string>
@@ -357,6 +360,8 @@
     <string name="list_action_import">Import file</string>
     <string name="list_action_image_from_library">Picture from Library</string>
     <string name="list_action_delete_link">Delete link</string>
+    <string name="list_action_delete_image">Delete image</string>
+
     <!-- Dialog info -->
 
     <!-- Pager -->
@@ -425,6 +430,7 @@
 
     <string name="share_goal_user">Users</string>
     <string name="share_goal_group">Groups</string>
+    <string name="share_goal_guest">Guests</string>
     <string name="share_main_external_access">External access by link</string>
     <string name="share_main_external_access_info">Provide access for everyone who has link</string>
     <string name="share_main_external_copy_button">COPY LINK</string>
@@ -440,9 +446,6 @@
     <string name="share_popup_access_custom_filter">Custom filter</string>
 
     <string name="share_snackbar_remove_user">User is removed</string>
-
-    <string name="share_group_admin">Admin</string>
-    <string name="share_group_everyone">Everyone</string>
 
     <!-- External link -->
     <string name="share_access_success">External access successful</string>
@@ -772,6 +775,7 @@
     <string name="rooms_error_name">Room name cannot be empty</string>
     <string name="rooms_error_create">Error create room</string>
     <string name="rooms_error_edit">Error edit room</string>
+    <string name="rooms_error_logo_size_exceed">The maximum image size is exceeded (1 MB)</string>
     <string name="leave_room_title">Leave the room</string>
     <string name="leave_room_owner_desc">You are the owner of this room. Before you leave the room, you must transfer the owner’s role to another user.</string>
     <string name="leave_room_desc">Do you really want to leave this room? You will be able to join it again via new invitation by a room admin.</string>
@@ -784,6 +788,8 @@
     <string name="room_placeholder_created_room_subtitle">Create new folders to organize your files.</string>
     <string name="room_placeholder_created_filling_form_room_title">Welcome to the Form filling room</string>
     <string name="room_placeholder_created_filling_form_room_subtitle">Upload a ready PDF form or create new folders to organize your files</string>
+    <string name="room_placeholder_created_virtual_room_title">Welcome to the Virtual Data Room</string>
+    <string name="room_placeholder_created_virtual_room_subtitle">Get started with quick actions:\nCreate a new file</string>
     <string name="room_recent_via_link">Accessible via link</string>
     <string name="room_manage_room">Manage room</string>
 
@@ -808,11 +814,12 @@
     <string name="rooms_info_additional_links">"Additional links (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Create and copy</string>
     <string name="rooms_info_create_link_complete">Link successfully created and copied to clipboard</string>
+    <string name="rooms_info_create_maximum_exceed">The maximum number of links has been exceeded</string>
     <string name="rooms_info_delete_link">Delete link</string>
     <string name="rooms_info_delete_link_complete">Link was deleted</string>
-    <string name="rooms_info_delete_link_desc">The link will be deleted permanently. You will not be able to undo this action.</string>
+    <string name="rooms_info_delete_link_desc">Links to all files in the room will be deleted. Previous links to room files and embedded documents will become unavailable.\n\nThis action cannot be undone. Are you sure you want to continue?</string>
     <string name="rooms_info_revoke_link">Revoke link</string>
-    <string name="rooms_info_revoke_link_desc">The previous link will become unavailable. A new general link will be created.</string>
+    <string name="rooms_info_revoke_link_desc">Links to all files in the room will be re-generated. Previous links to room files and embedded documents will become unavailable.\n\nThis action cannot be undone. Are you sure you want to continue?</string>
     <string name="rooms_info_revoke_link_complete">Link was revoked</string>
     <string name="rooms_info_revoke">Revoke</string>
     <string name="rooms_info_copy_link">Copy link</string>
@@ -826,6 +833,8 @@
     <string name="rooms_info_link_expired_full">The link has expired and has been disabled</string>
     <string name="rooms_info_link_name">Link name</string>
     <string name="rooms_info_password_access">Password access</string>
+    <string name="rooms_info_password_allowed_symbols">Allowed characters: a–z, A–Z, 0–9, !"#%&amp;'()*+,-./:;\u003C=>?@[]^_`{|}</string>
+    <string name="rooms_info_password_minimum_length">Minimum length: 8 characters</string>
     <string name="rooms_info_file_rectrict">Restrict file content copy, file download and printing</string>
     <string name="rooms_info_file_rectrict_desc">Enable this setting to disable downloads of files and folders from this room shared via a link</string>
     <string name="rooms_info_time_limit_title">Time limit</string>
@@ -854,6 +863,7 @@
     <string name="rooms_share_link_life_time">Link life time</string>
 
     <string name="rooms_filter_type_filling_forms">Filling form</string>
+    <string name="rooms_filter_type_virtual_room">Virtual data room</string>
     <string name="rooms_filter_type_collaboration">Collaboration</string>
     <string name="rooms_filter_type_review">Review</string>
     <string name="rooms_filter_type_public">Public</string>
@@ -873,8 +883,11 @@
     <string name="share_access_room_type">Access type</string>
     <string name="share_access_room_group_desc">Access rights for all users in the group</string>
     <string name="share_access_room_owner">Owner</string>
-    <string name="share_access_room_admin">Room admin</string>
-    <string name="share_access_room_power_user">Power user</string>
+    <string name="share_user_type_room_docspace_admin">DocSpace admin</string>
+    <string name="share_user_type_room_docspace_owner">DocSpace Owner</string>
+    <string name="share_user_type_room_admin">Room admin</string>
+    <string name="share_access_room_manager">Room manager</string>
+    <string name="share_access_room_power_user">Content creator</string>
     <string name="share_access_room_editor">Editor</string>
     <string name="share_access_room_form_filler">Form filler</string>
     <string name="share_access_room_reviewer">Reviewer</string>
@@ -921,7 +934,6 @@
 
     <string name="rooms_upload_pdf_from_docspace">Upload PDF Form from DocSpace</string>
     <string name="rooms_upload_pdf_from_device">Upload PDF Form from device</string>
-
     <string name="rooms_fill_in_as_title">Fill in as</string>
     <string name="rooms_fill_out_form_yourself">Fill out the form yourself</string>
     <string name="rooms_fill_out_form_yourself_desc">Fill in the fields of the original form in the editor window.</string>
@@ -934,4 +946,75 @@
     <string name="rooms_fill_form_complete_back_to_room">Back to room</string>
     <string name="rooms_fill_form_complete_check_forms">Check ready forms</string>
     <string name="errors_sign_in_account_not_found">Account not found</string>
+    <string name="rooms_notifications_disabled">Room notifications disabled</string>
+    <string name="rooms_notifications_enabled">Room notifications enabled</string>
+
+    <string name="rooms_vdr">Virtual Data Room</string>
+    <string name="rooms_vdr_desc">Use VDR for advanced file security and transparency while filling and signing documents step-by-step. Set watermarks, automatically index and track all content, restrict downloading and copying.</string>
+
+    <string name="file_lifetime_desc">"Set file lifetime to automatically delete the files in this room after a defined period. Lifetime begins on the date of upload/creation of the file."</string>
+    <string name="file_lifetime_title">File lifetime</string>
+    <string name="file_lifetime_hint">Files older than</string>
+    <string name="file_lifetime_warning_title">Older files with exceeded lifetime will be deleted</string>
+    <string name="file_lifetime_warning_desc">Lifetime countdown begins at the file creation date. Some files in this room exceed the proposed lifetime and will be deleted once you enable the setting.</string>
+
+    <string name="file_lifetime_action">Action on files</string>
+    <string name="file_lifetime_action_delete">Delete permanently</string>
+    <string name="file_lifetime_action_move_to_trash">Move to trash</string>
+
+    <string name="file_lifetime_time_period">Time period</string>
+    <string name="file_lifetime_period_days">Days</string>
+    <string name="file_lifetime_period_months">Months</string>
+    <string name="file_lifetime_period_years">Years</string>
+
+    <string name="rooms_vdr_file_restrict_desc">Enable this setting to disable downloads, printing, and content copying for users with the “Viewer” role</string>
+    <string name="rooms_vdr_watermark_title">Add watermarks to documents</string>
+    <string name="rooms_vdr_watermark_desc">Protect all documents in this room with watermarks. If a document already contains one, it will not be replaced.</string>
+    <string name="rooms_vdr_indexing_title">Automatic indexing</string>
+    <string name="rooms_vdr_indexing_desc">Enable automatic indexing to index files and folders by serial number. Sorting by number will be set as default for all users.</string>
+
+    <string name="rooms_vdr_storage_quota_title">Storage quota</string>
+    <string name="rooms_vdr_storage_quota_desc">Storage quota set per room. You can change this value or turn off storage limit.</string>
+    <string name="rooms_vdr_size_quota">Size quota</string>
+    <string name="rooms_vdr_measurement_unit">Measurement unit</string>
+
+    <string name="rooms_vdr_watermark_type">Time Watermark type</string>
+    <string name="rooms_vdr_watermark_type_info">Viewer info</string>
+    <string name="rooms_vdr_watermark_type_image">Image</string>
+    <string name="rooms_vdr_watermark_static_text">Static text</string>
+    <string name="rooms_vdr_watermark_position">Position</string>
+    <string name="rooms_vdr_watermark_position_diagonal">Diagonal</string>
+    <string name="rooms_vdr_watermark_position_horizontal">Horizontal</string>
+    <string name="rooms_vdr_watermark_info_username">User Name</string>
+    <string name="rooms_vdr_watermark_info_email">User Email</string>
+    <string name="rooms_vdr_watermark_info_ip_address">Use IP Address</string>
+    <string name="rooms_vdr_watermark_info_current_date">Current Date</string>
+    <string name="rooms_vdr_watermark_info_room_name">Room Name</string>
+    <string name="rooms_vdr_watermark_image_select">Select image</string>
+    <string name="rooms_vdr_watermark_image_scale">Scale</string>
+    <string name="rooms_vdr_watermark_image_rotate">Rotate</string>
+    <string name="rooms_vdr_watermark_image_desc">This image preview roughly shows how the watermark will be displayed in your files.</string>
+
+    <!-- example: The file lifetime is set to 12 days in this room -->
+    <string name="rooms_vdr_lifetime_info">The file lifetime is set to %1d %2s in this room</string>
+
+    <string name="trash_toolbar_info">Items in Trash are automatically deleted after 30 days</string>
+    <string name="rooms_expire_context_info">The file will be deleted on %s</string>
+    <string name="rooms_index_subtitle">Index %s</string>
+    <string name="rooms_index_edit">Edit index</string>
+    <string name="rooms_index_export">Export room index</string>
+    <string name="rooms_index_title">Sorting index</string>
+    <string name="rooms_index_reorder">Reorder</string>
+    <string name="rooms_index_apply">Apply</string>
+    <string name="rooms_index_exit_no_saving">Exit without saving?\nYou have made changes in the index. If you proceed without saving, those changes will not be applied.</string>
+    <string name="rooms_index_reorder_desc">The Reorder action will remove spaces in the indexes. The files will be re-indexed in order with offset to fill in missing indexes.</string>
+    <string name="rooms_index_reorder_complete_title">File exported</string>
+    <string name="rooms_index_reorder_complete_desc">%s file exported to Documents</string>
+    <string name="rooms_index_reorder_open_file">Open file</string>
+    
+    <string name="rooms_protected_room">Protected room</string>
+    <string name="rooms_invalid_password">Invalid password</string>
+
+    <string name="rooms_invite_access_description">Guests, Users and Groups cannot be assigned as Room managers. Only Room and DocSpace admins are suitable for the specified role.</string>
+    <string name="rooms_user_type_employees">Employees</string>
 </resources>

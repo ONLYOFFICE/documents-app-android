@@ -3,8 +3,10 @@ package app.editors.manager.ui.fragments.share.link
 import android.view.View
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -26,6 +28,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.share.models.ExternalLink
@@ -43,12 +46,11 @@ import app.editors.manager.viewModels.link.RoomAccessViewModel
 import app.editors.manager.viewModels.link.RoomInfoEffect
 import app.editors.manager.viewModels.link.RoomInfoState
 import app.editors.manager.viewModels.link.RoomInfoViewModel
-import kotlinx.coroutines.delay
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import lib.compose.ui.rememberWaitingDialog
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.utils.popBackStackWhenResumed
+import lib.compose.ui.views.AnimatedVisibilityVerticalFade
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.TopAppBarAction
@@ -90,10 +92,6 @@ class RoomInfoFragment : ComposeDialogFragment() {
                 }
             }
             val state by viewModel.state.collectAsState()
-            val waitingDialog = rememberWaitingDialog(
-                title = R.string.dialogs_wait_title,
-                onCancel = viewModel::cancelOperation
-            )
 
             BackHandler {
                 dismiss()
@@ -103,20 +101,13 @@ class RoomInfoFragment : ComposeDialogFragment() {
                 viewModel.effect.collect { effect ->
                     when (effect) {
                         is RoomInfoEffect.Create -> {
-                            copyLinkToClipboard(requireView(), effect.url, true)
-                            waitingDialog.dismiss()
+                            copyLinkToClipboard(requireView(), effect.url)
                         }
                         is RoomInfoEffect.Error -> {
                             UiUtils.getShortSnackBar(requireView())
                                 .setText(effect.message)
                                 .show()
                         }
-                        RoomInfoEffect.ShowOperationDialog -> {
-                            keyboardController?.hide()
-                            waitingDialog.show()
-                            delay(500)
-                        }
-                        RoomInfoEffect.CloseDialog -> waitingDialog.dismiss()
                     }
                 }
             }
@@ -153,12 +144,12 @@ class RoomInfoFragment : ComposeDialogFragment() {
                             },
                             onLinkClick = { link ->
                                 val json = Json.encodeToString(link.sharedTo)
-                                navController.navigate("${RoomInfoScreens.LinkSettings.name}?link=$json")
+                                navController.navigate("${RoomInfoScreens.LinkSettings.name}?link=$json&access=${link.access}")
                             },
                         )
                     }
                     composable(
-                        route = "${RoomInfoScreens.LinkSettings.name}?link={link}&create={create}",
+                        route = "${RoomInfoScreens.LinkSettings.name}?link={link}&create={create}&access={access}",
                         arguments = listOf(
                             navArgument("link") {
                                 type = NavType.StringType
@@ -180,11 +171,16 @@ class RoomInfoFragment : ComposeDialogFragment() {
                             navArgument("create") {
                                 type = NavType.BoolType
                                 defaultValue = false
+                            },
+                            navArgument("access") {
+                                type = NavType.IntType
+                                defaultValue = Access.Editor.code
                             }
                         )
                     ) { backStackEntry ->
                         ExternalLinkSettingsScreen(
                             link = backStackEntry.arguments?.getString("link")?.let(Json::decodeFromString),
+                            access = Access.get(backStackEntry.arguments?.getInt("access")),
                             isCreate = backStackEntry.arguments?.getBoolean("create") == true,
                             roomId = room.id,
                             roomType = room.roomType,
@@ -206,7 +202,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
                     ) { backStackEntry ->
                         RoomAccessScreen(
                             roomType = room.roomType,
-                            currentAccess = backStackEntry.arguments?.getInt("access") ?: -1,
+                            currentAccess = Access.get(backStackEntry.arguments?.getInt("access")),
                             ownerOrAdmin = backStackEntry.arguments?.getBoolean("ownerOrAdmin") == true,
                             portal = remember { requireContext().accountOnline?.portalUrl.orEmpty() },
                             isRemove = backStackEntry.arguments?.getBoolean("removable") == true,
@@ -248,7 +244,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
 
                         RoomAccessScreen(
                             roomType = room.roomType,
-                            currentAccess = backStackEntry.arguments?.getInt("access") ?: -1,
+                            currentAccess = Access.get(backStackEntry.arguments?.getInt("access")),
                             ownerOrAdmin = false,
                             portal = remember { requireContext().accountOnline?.portalUrl.orEmpty() },
                             isRemove = true,
@@ -279,11 +275,6 @@ class RoomInfoFragment : ComposeDialogFragment() {
                             roomId = room.id,
                             roomProvider = requireContext().roomProvider,
                             onSnackBar = { UiUtils.getSnackBar(requireView()).setText(it).show() },
-                            onCopyLink = { link ->
-                                KeyboardUtils.setDataToClipboard(requireContext(), link)
-                                UiUtils.getSnackBar(requireView())
-                                    .setText(R.string.rooms_info_copy_link_to_clipboard).show()
-                            },
                             onShareLink = { link ->
                                 requireContext().openSendTextActivity(
                                     getString(R.string.toolbar_menu_main_share),
@@ -320,27 +311,32 @@ class RoomInfoFragment : ComposeDialogFragment() {
         AppScaffold(
             useTablePaddings = false,
             topBar = {
-                AppTopBar(
-                    title = {
-                        Column {
-                            Text(text = roomTitle ?: stringResource(id = R.string.list_context_info))
-                            roomType?.let { type ->
-                                Text(
-                                    text = stringResource(id = RoomUtils.getRoomInfo(type).title),
-                                    style = MaterialTheme.typography.caption
-                                )
+                Column {
+                    AppTopBar(
+                        title = {
+                            Column {
+                                Text(text = roomTitle ?: stringResource(id = R.string.list_context_info))
+                                roomType?.let { type ->
+                                    Text(
+                                        text = stringResource(id = RoomUtils.getRoomInfo(type).title),
+                                        style = MaterialTheme.typography.caption
+                                    )
+                                }
                             }
-                        }
-                    },
-                    actions = {
-                        TopAppBarAction(
-                            icon = R.drawable.ic_add_users,
-                            onClick = onAddUsers,
-                            enabled = canEditRoom
-                        )
-                    },
-                    backListener = onBackClick
-                )
+                        },
+                        actions = {
+                            TopAppBarAction(
+                                icon = R.drawable.ic_add_users,
+                                onClick = onAddUsers,
+                                enabled = canEditRoom
+                            )
+                        },
+                        backListener = onBackClick
+                    )
+                    AnimatedVisibilityVerticalFade(visible = state.requestLoading) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
+                }
             }
         ) {
             if (state.isLoading) {
@@ -351,10 +347,10 @@ class RoomInfoFragment : ComposeDialogFragment() {
                     if (ApiContract.RoomType.hasExternalLink(roomType)) {
                         ExternalLinkBlock(
                             sharedLinks = state.sharedLinks,
+                            roomType = roomType,
                             canEditRoom = canEditRoom,
                             onLinkClick = onLinkClick,
-                            onSharedLinkCreate = onSharedLinkCreate,
-                            onCopyLinkClick = { url -> copyLinkToClipboard(requireView(), url, false) }
+                            onSharedLinkCreate = onSharedLinkCreate
                         )
                     }
                     ShareUsersList(
@@ -386,13 +382,11 @@ class RoomInfoFragment : ComposeDialogFragment() {
         }
     }
 
-    private fun copyLinkToClipboard(rootView: View, url: String, isCreate: Boolean) {
+    private fun copyLinkToClipboard(rootView: View, url: String) {
         KeyboardUtils.setDataToClipboard(requireContext(), url)
-        UiUtils.getSnackBar(rootView).setText(
-            if (!isCreate)
-                R.string.rooms_info_copy_link_to_clipboard else
-                R.string.rooms_info_create_link_complete
-        ).show()
+        UiUtils.getSnackBar(rootView)
+            .setText(R.string.rooms_info_create_link_complete)
+            .show()
     }
 
     @Preview
@@ -431,12 +425,12 @@ class RoomInfoFragment : ComposeDialogFragment() {
                         link.copy(sharedTo = link.sharedTo.copy(title = "Shared link 3", isExpired = true)),
                     ),
                     shareList = listOf(
-                        Share(access = "1", sharedTo = SharedTo(displayName = "User 1"), isOwner = true),
-                        Share(access = "5", sharedTo = SharedTo(name = "Group 2"), subjectType = 2),
-                        Share(access = "9", sharedTo = SharedTo(displayName = "User 2")),
-                        Share(access = "11", sharedTo = SharedTo(displayName = "User 3")),
-                        Share(access = "10", sharedTo = SharedTo(displayName = "User 4")),
-                        Share(access = "10", sharedTo = SharedTo(displayName = "User 4", activationStatus = 2)),
+                        Share(_access = "1", sharedTo = SharedTo(displayName = "User 1"), isOwner = true),
+                        Share(_access = "5", sharedTo = SharedTo(name = "Group 2"), subjectType = 2),
+                        Share(_access = "9", sharedTo = SharedTo(displayName = "User 2")),
+                        Share(_access = "11", sharedTo = SharedTo(displayName = "User 3")),
+                        Share(_access = "10", sharedTo = SharedTo(displayName = "User 4")),
+                        Share(_access = "10", sharedTo = SharedTo(displayName = "User 4", activationStatus = 2)),
                     )
                 ),
                 onBackClick = {},

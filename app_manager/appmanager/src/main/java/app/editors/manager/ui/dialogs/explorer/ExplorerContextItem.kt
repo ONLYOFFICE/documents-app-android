@@ -1,8 +1,7 @@
 package app.editors.manager.ui.dialogs.explorer
 
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import lib.toolkit.base.managers.utils.TimeUtils
 
@@ -21,24 +20,28 @@ sealed class ExplorerContextItem(
     }
 
     class Edit(state: ExplorerContextState) : ExplorerContextItem(
-        icon = getIcon(state.item),
+        icon = R.drawable.ic_list_context_edit,
         title = getTitle(state)
     ), ExplorerContextBlockOrder.Common {
 
         companion object {
 
-            fun getIcon(item: Item) = when {
-                (item as? CloudFile)?.isPdfForm == true -> R.drawable.ic_access_fill_form
-                else -> R.drawable.ic_list_context_edit
-            }
-
             fun getTitle(state: ExplorerContextState) = when {
                 state.section.isRoom && state.isRoot -> R.string.list_context_edit_room
-                (state.item as? CloudFile)?.isPdfForm == true -> R.string.list_context_fill
                 else -> R.string.list_context_edit
             }
         }
     }
+
+    class Fill : ExplorerContextItem(
+        icon = R.drawable.ic_access_fill_form,
+        title =  R.string.list_context_fill
+    ), ExplorerContextBlockOrder.Common
+
+    class View : ExplorerContextItem(
+        icon = R.drawable.ic_access_read,
+        title =  lib.toolkit.base.R.string.settings_view
+    ), ExplorerContextBlockOrder.Common
 
     object Share : ExplorerContextItem(
         icon = lib.toolkit.base.R.drawable.ic_list_context_share,
@@ -53,6 +56,7 @@ sealed class ExplorerContextItem(
         companion object {
 
             fun getTitle(state: ExplorerContextState) = when {
+                state.section.isRoom && state.isRoot && state.item is CloudFolder && state.item.roomType == ApiContract.RoomType.VIRTUAL_ROOM -> R.string.rooms_info_copy_link
                 state.section.isRoom && state.isRoot -> R.string.list_context_copy_general_link
                 else -> R.string.list_context_get_external_link
             }
@@ -125,6 +129,27 @@ sealed class ExplorerContextItem(
         icon = R.drawable.ic_list_context_duplicate,
         title = R.string.list_context_duplicate
     ), ExplorerContextBlockOrder.Common
+
+    class Notifications(val muted: Boolean) : ExplorerContextItem(
+        icon = getIcon(muted),
+        title = getTitle(muted)
+    ), ExplorerContextBlockOrder.Common {
+
+        companion object {
+
+            fun getTitle(muted: Boolean) = if (muted) {
+                R.string.list_context_notification_enable
+            } else {
+                R.string.list_context_notification_disable
+            }
+
+            fun getIcon(muted: Boolean) = if (muted) {
+                R.drawable.ic_notification_on
+            } else {
+                R.drawable.ic_notification_off
+            }
+        }
+    }
 
     object Upload : ExplorerContextItem(
         icon = R.drawable.ic_list_action_upload,

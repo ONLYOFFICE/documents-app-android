@@ -56,8 +56,10 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.CreateDocument
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.EditorsType
+import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
@@ -244,12 +246,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         val item = explorerAdapter?.getItem(position) as? Item
         if (item != null && !isFastClick) {
             val state = ExplorerContextState(
-                headerIcon = icon,
+                headerIcon = icon?.toByteArray(),
                 item = item,
                 headerInfo = app.editors.manager.managers.utils.StringUtils.getCloudItemInfo(
                     context = requireContext(),
                     item = item,
-                    userId = requireContext().accountOnline?.id
+                    state = explorerAdapter
                 ),
                 sectionType = if (presenter.isRecentViaLinkSection()) {
                     ApiContract.SectionType.CLOUD_RECENT
@@ -302,24 +304,24 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         show(requireContext())
     }
 
-    override fun onOpenLocalFile(file: CloudFile) {
+    override fun onOpenLocalFile(file: CloudFile, editType: EditType?) {
         val uri = Uri.parse(file.webUrl)
         when (getExtension(file.fileExst)) {
             StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
                 presenter.addRecent(file)
-                showEditors(uri, EditorsType.DOCS)
+                showEditors(uri, EditorsType.DOCS, editType = editType)
             }
             StringUtils.Extension.SHEET -> {
                 presenter.addRecent(file)
-                showEditors(uri, EditorsType.CELLS)
+                showEditors(uri, EditorsType.CELLS, editType = editType)
             }
             StringUtils.Extension.PRESENTATION -> {
                 presenter.addRecent(file)
-                showEditors(uri, EditorsType.PRESENTATION)
+                showEditors(uri, EditorsType.PRESENTATION, editType = editType)
             }
             StringUtils.Extension.PDF -> {
                 presenter.addRecent(file)
-                showEditors(uri, EditorsType.PDF)
+                showEditors(uri, EditorsType.PDF, editType = editType)
             }
             StringUtils.Extension.VIDEO_SUPPORT -> {
                 presenter.addRecent(file)
@@ -330,9 +332,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 val explorer = Explorer().apply {
                     files = mutableListOf(videoFile)
                 }
-                showMediaActivity(explorer, true) {
-                    // Stub
-                }
+                showMediaActivity(explorer, true)
             }
             StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH,
             StringUtils.Extension.VIDEO, StringUtils.Extension.HTML,
@@ -360,6 +360,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 suffix = presenter.itemExtension
             )
             is ExplorerContextItem.Edit -> presenter.getFileInfo()
+            is ExplorerContextItem.Fill -> presenter.getFileInfo()
             is ExplorerContextItem.Delete -> {
                 if (presenter.isRecentViaLinkSection()) {
                     presenter.deleteItems()
@@ -732,9 +733,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {
         hideDialog()
-        showMediaActivity(explorer, isWebDAv) {
-            // Stub
-        }
+        showMediaActivity(explorer, isWebDAv)
     }
 
     override fun onFileDownloadPermission() {
@@ -1073,22 +1072,22 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onOpenDocumentServer(file: CloudFile?, info: String?, isEdit: Boolean) {
+    override fun onOpenDocumentServer(file: CloudFile?, info: String?, editType: EditType?) {
         when (getExtension(file?.fileExst ?: "")) {
             StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
-                showEditors(null, EditorsType.DOCS, info, viewMode = !isEdit)
+                showEditors(null, EditorsType.DOCS, info, editType)
             }
 
             StringUtils.Extension.SHEET -> {
-                showEditors(null, EditorsType.CELLS, info, false)
+                showEditors(null, EditorsType.CELLS, info, editType)
             }
 
             StringUtils.Extension.PRESENTATION -> {
-                showEditors(null, EditorsType.PRESENTATION, info, false)
+                showEditors(null, EditorsType.PRESENTATION, info, editType)
             }
 
             StringUtils.Extension.PDF -> {
-                showEditors(null, EditorsType.PDF, info)
+                showEditors(null, EditorsType.PDF, info, editType)
             }
 
             else -> {
@@ -1096,13 +1095,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun showEditors(uri: Uri?, type: EditorsType, info: String? = null, viewMode: Boolean = true) {
+    protected open fun showEditors(uri: Uri?, type: EditorsType, info: String? = null, editType: EditType? = null) {
         try {
             val intent = Intent().apply {
                 data = uri
                 info?.let { putExtra(EditorsContract.KEY_DOC_SERVER, info) }
                 putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-                putExtra(EditorsContract.KEY_VIEW_MODE, viewMode)
+                putExtra(EditorsContract.KEY_EDIT_TYPE, editType)
                 action = Intent.ACTION_VIEW
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
@@ -1133,26 +1132,30 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, viewMode: Boolean = false): Intent {
+    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, isForm: Boolean = false): Intent {
         val intent = Intent().apply {
             data = uri
             putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-            putExtra(EditorsContract.KEY_VIEW_MODE, viewMode)
             action = Intent.ACTION_VIEW
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
         when (type) {
-            EditorsType.DOCS, EditorsType.PDF -> {
+            EditorsType.DOCS -> {
                 intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
-                if (type == EditorsType.PDF) {
-                    intent.extras?.putBoolean("pdf", true)
-                }
             }
             EditorsType.CELLS -> {
                 intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS)
             }
             EditorsType.PRESENTATION -> {
                 intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
+            }
+            EditorsType.PDF -> {
+                if (isForm) {
+                    intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
+                    intent.extras?.putBoolean("pdf", true)
+                } else {
+                    intent.setClassName(requireContext(), EditorsContract.PDF)
+                }
             }
         }
         return intent
@@ -1190,7 +1193,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     asc = presenter.preferenceTool.sortOrder.equals(
                         ApiContract.Parameters.VAL_SORT_ORDER_ASC,
                         ignoreCase = true
-                    )
+                    ),
+                    isIndexing = presenter.roomClicked?.indexing == true
                 )
             } else {
                 ActionMenuItemsFactory.getDocsItems(

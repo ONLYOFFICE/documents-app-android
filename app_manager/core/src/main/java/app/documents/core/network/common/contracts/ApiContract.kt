@@ -91,102 +91,6 @@ object ApiContract {
         const val PINNED_ROOM_LIMIT = "You can't pin a room"
         const val FILLING_FORM_ROOM_UPLOAD = "Please try to upload the ONLYOFFICE PDF form"
     }
-    object ShareType {
-        const val NONE = "None"
-        const val READ_WRITE = "ReadWrite"
-        const val READ = "Read"
-        const val RESTRICT = "Restrict"
-        const val VARIES = "Varies"
-        const val REVIEW = "Review"
-        const val COMMENT = "Comment"
-        const val FILL_FORMS = "FillForms"
-        const val CUSTOM_FILTER = "CustomFilter"
-        const val ROOM_ADMIN = "RoomAdmin"
-        const val EDITOR = "Editor"
-
-        fun getCode(type: String?): Int {
-            return when (type) {
-                NONE -> ShareCode.NONE
-                READ_WRITE -> ShareCode.READ_WRITE
-                READ -> ShareCode.READ
-                RESTRICT -> ShareCode.RESTRICT
-                VARIES -> ShareCode.VARIES
-                REVIEW -> ShareCode.REVIEW
-                COMMENT -> ShareCode.COMMENT
-                FILL_FORMS -> ShareCode.FILL_FORMS
-                CUSTOM_FILTER -> ShareCode.CUSTOM_FILTER
-                EDITOR -> ShareCode.EDITOR
-                ROOM_ADMIN -> ShareCode.ROOM_ADMIN
-                else -> ShareCode.NONE
-            }
-        }
-    }
-
-    sealed class Access(val type: String, val code: Int) {
-        object None : Access(ShareType.NONE, ShareCode.NONE)
-        object ReadWrite : Access(ShareType.READ_WRITE, ShareCode.READ_WRITE)
-        object Read : Access(ShareType.READ, ShareCode.READ)
-        object Restrict : Access(ShareType.RESTRICT, ShareCode.RESTRICT)
-        object Varies : Access(ShareType.VARIES, ShareCode.VARIES)
-        object Review : Access(ShareType.REVIEW, ShareCode.REVIEW)
-        object Comment : Access(ShareType.COMMENT, ShareCode.COMMENT)
-        object FillForms : Access(ShareType.FILL_FORMS, ShareCode.FILL_FORMS)
-        object CustomFiller : Access(ShareType.CUSTOM_FILTER, ShareCode.CUSTOM_FILTER)
-        object Editor : Access(ShareType.EDITOR, ShareCode.EDITOR)
-        object RoomAdmin : Access(ShareType.ROOM_ADMIN, ShareCode.ROOM_ADMIN)
-
-        companion object {
-
-            fun get(code: Int): Access =
-                when (code) {
-                    ShareCode.READ_WRITE -> ReadWrite
-                    ShareCode.READ -> Read
-                    ShareCode.RESTRICT -> Restrict
-                    ShareCode.VARIES -> Varies
-                    ShareCode.REVIEW -> Review
-                    ShareCode.COMMENT -> Comment
-                    ShareCode.FILL_FORMS -> FillForms
-                    ShareCode.CUSTOM_FILTER -> CustomFiller
-                    ShareCode.ROOM_ADMIN -> Editor
-                    ShareCode.EDITOR -> RoomAdmin
-                    else -> None
-                }
-
-            fun get(type: String): Access = get(ShareType.getCode(type))
-
-        }
-    }
-
-    object ShareCode {
-
-        const val NONE = 0
-        const val READ_WRITE = 1
-        const val READ = 2
-        const val RESTRICT = 3
-        const val VARIES = 4
-        const val REVIEW = 5
-        const val COMMENT = 6
-        const val FILL_FORMS = 7
-        const val CUSTOM_FILTER = 8
-        const val ROOM_ADMIN = 9
-        const val EDITOR = 10
-        const val POWER_USER = 11
-
-        fun getType(code: Int): String {
-            return when (code) {
-                NONE -> ShareType.NONE
-                READ_WRITE -> ShareType.READ_WRITE
-                READ -> ShareType.READ
-                RESTRICT -> ShareType.RESTRICT
-                VARIES -> ShareType.VARIES
-                REVIEW -> ShareType.REVIEW
-                CUSTOM_FILTER -> ShareType.CUSTOM_FILTER
-                EDITOR -> ShareType.EDITOR
-                ROOM_ADMIN -> ShareType.ROOM_ADMIN
-                else -> ShareType.NONE
-            }
-        }
-    }
 
     object ActivationStatus {
         const val Activate = 1
@@ -198,6 +102,8 @@ object ApiContract {
         const val ARG_COUNT = "count"
         const val ARG_START_INDEX = "startIndex"
         const val ARG_SORT_BY = "sortBy"
+        const val ARG_AREA = "area"
+        const val ARG_INVITER_ID = "inviterId"
         const val ARG_SORT_ORDER = "sortOrder"
         const val ARG_FILTER_BY = "filterBy"
         const val ARG_FILTER_OP = "filterOp"
@@ -241,6 +147,8 @@ object ApiContract {
         const val VAL_SORT_BY_DISPLAY_NAME = "displayName"
         const val VAL_SORT_BY_ROOM_TYPE = "roomType"
         const val VAL_SORT_BY_TAGS = "Tags"
+        const val VAL_AREA_GUESTS = "guests"
+        const val VAL_AREA_PEOPLE = "people"
     }
 
     object SectionType {
@@ -323,8 +231,10 @@ object ApiContract {
         const val COLLABORATION_ROOM = 2
         const val CUSTOM_ROOM = 5
         const val PUBLIC_ROOM = 6
+        const val VIRTUAL_ROOM = 8
 
-        fun hasExternalLink(roomType: Int?): Boolean = roomType != CUSTOM_ROOM
+        fun hasExternalLink(roomType: Int?): Boolean =
+            roomType !in arrayOf(CUSTOM_ROOM, VIRTUAL_ROOM)
     }
 
     object FolderType {

@@ -12,6 +12,7 @@
         android:id="@+id/app_bar_layout"
         style="@style/Widget.Common.AppBarLayout"
         android:layout_width="match_parent"
+        android:animateLayoutChanges="true"
         android:layout_height="wrap_content">
 
         <app.editors.manager.ui.views.custom.MainToolbar
@@ -19,6 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:minHeight="?attr/actionBarSize" />
+
+        <include android:id="@+id/infoLayout" layout="@layout/include_toolbar_info" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -33,9 +36,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_insetEdge="bottom"
         android:layout_gravity="bottom"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_insetEdge="bottom">
 
         <View
             android:layout_width="match_parent"
@@ -65,7 +68,7 @@
         android:clickable="true"
         android:focusable="true"
         android:scaleType="center"
-        android:src="@drawable/ic_action_button_docs_add"
+        android:src="@drawable/ic_default_add"
         app:fabSize="normal"
         app:layout_anchorGravity="bottom|right|end"
         tools:ignore="ContentDescription" />

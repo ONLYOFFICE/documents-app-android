@@ -66,9 +66,9 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         }
     }
 
-    fun signInWithProvider(accessToken: String?, provider: String) {
+    fun signInWithProvider(accessToken: String?, provider: String, smsCode: String? = null) {
         signInJob = presenterScope.launch {
-            loginRepository.signInWithProvider(accessToken, provider)
+            loginRepository.signInWithProvider(accessToken, provider, smsCode)
                 .collect { result ->
                     when (result) {
                         is LoginResult.Success -> onAccountCreateSuccess(result.cloudAccount)

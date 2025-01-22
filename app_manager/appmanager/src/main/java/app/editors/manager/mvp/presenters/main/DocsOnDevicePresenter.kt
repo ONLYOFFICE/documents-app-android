@@ -15,7 +15,6 @@ import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.WebDavFileProvider
-import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -27,7 +26,10 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.ContentResolverUtils
+import lib.toolkit.base.managers.utils.EditType
+import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
 import lib.toolkit.base.managers.utils.PathUtils
@@ -71,17 +73,9 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                     .subscribe({ file: CloudFile ->
                         addFile(file)
                         addRecent(file)
-                        openFile(file, true)
+                        openFile(file, null)
                     }) { viewState.onError(context.getString(R.string.errors_create_local_file)) })
             }
-        }
-    }
-
-    override fun getFileInfo() {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            addRecent(file)
-            openFile(file)
         }
     }
 
@@ -172,9 +166,11 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                     preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context) -> {
                         viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
                     }
+
                     ContentResolverUtils.getSize(context, uri) > FileUtils.STRICT_SIZE -> {
                         viewState.onSnackBar(context.getString(R.string.upload_manager_error_file_size))
                     }
+
                     else -> {
                         if (!account.isWebDav) {
                             val workData = Data.Builder()
@@ -265,7 +261,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
 
         addRecent(uri)
-        openFile(uri, ext)
+        openFile(uri, ext, EditType.EDIT)
     }
 
     fun import(uri: Uri) {
@@ -300,32 +296,6 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     }
 
-    private fun openFile(file: CloudFile, viewMode: Boolean = true) {
-        val path = file.id
-        val uri = Uri.fromFile(File(path))
-        val ext = StringUtils.getExtensionFromPath(file.id.lowercase())
-        openFile(uri, ext, viewMode)
-    }
-
-    @Suppress("KotlinConstantConditions")
-    private fun openFile(uri: Uri, ext: String, viewMode: Boolean = true) {
-        when (val enumExt = StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> {
-                if (BuildConfig.APPLICATION_ID != "com.onlyoffice.documents" && enumExt == StringUtils.Extension.FORM) {
-                    viewState.onError(context.getString(R.string.error_unsupported_format))
-                } else {
-                    viewState.onShowDocs(uri, viewMode)
-                }
-            }
-            StringUtils.Extension.SHEET -> viewState.onShowCells(uri)
-            StringUtils.Extension.PRESENTATION -> viewState.onShowSlides(uri)
-            StringUtils.Extension.PDF -> viewState.onShowPdf(uri)
-            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(
-                uri
-            )
-            else -> viewState.onError(context.getString(R.string.error_unsupported_format))
-        }
-    }
 
     private fun moveSelection(path: String?, isCopy: Boolean) {
         if (modelExplorerStack.countSelectedItems > 0) {
@@ -452,11 +422,54 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         updateViewsState()
     }
 
-    fun getFileInfo(viewMode: Boolean) {
+    override fun getFileInfo() {
         if (itemClicked != null && itemClicked is CloudFile) {
             val file = itemClicked as CloudFile
             addRecent(file)
-            openFile(file, viewMode)
+            openFile(file, null)
+        }
+    }
+
+    fun getFileInfo(editType: EditType?) {
+        if (itemClicked != null && itemClicked is CloudFile) {
+            val file = itemClicked as CloudFile
+            addRecent(file)
+            openFile(file, editType)
+        }
+    }
+
+    private fun openFile(file: CloudFile, editType: EditType?) {
+        val path = file.id
+        val uri = Uri.fromFile(File(path))
+        val ext = StringUtils.getExtensionFromPath(file.id.lowercase())
+        openFile(uri, ext, editType)
+    }
+
+    private fun openFile(uri: Uri, ext: String, editType: EditType?) {
+        when (StringUtils.getExtension(ext)) {
+            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM-> {
+                if (ext.contains(LocalContentTools.HWP_EXTENSION) || ext.contains(LocalContentTools.HWPX_EXTENSION)) {
+                    viewState.onShowEditors(uri, EditorsType.DOCS, EditType.VIEW)
+                } else {
+                    viewState.onShowEditors(uri, EditorsType.DOCS, editType)
+                }
+            }
+            StringUtils.Extension.SHEET -> {
+                viewState.onShowEditors(uri, EditorsType.CELLS, editType)
+            }
+            StringUtils.Extension.PRESENTATION -> {
+                viewState.onShowEditors(uri, EditorsType.PRESENTATION, editType)
+            }
+            StringUtils.Extension.PDF -> {
+                if (FileUtils.isOformPdf(context.contentResolver.openInputStream(uri))) {
+                    viewState.onShowEditors(uri, EditorsType.DOCS, editType ?: EditType.FILL)
+                } else {
+                    viewState.onShowPdf(uri)
+                }
+            }
+
+            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(uri)
+            else -> viewState.onError(context.getString(R.string.error_unsupported_format))
         }
     }
 }

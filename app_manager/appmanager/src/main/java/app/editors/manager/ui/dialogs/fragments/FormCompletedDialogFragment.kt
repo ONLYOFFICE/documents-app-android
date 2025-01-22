@@ -22,8 +22,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -151,7 +149,7 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
             ManagerTheme {
                 AppScaffold(topBar = {
                     AppTopBar(title = R.string.rooms_fill_form_complete_toolbar_title)
-                }) {
+                }, useTablePaddings = false) {
                     when (response) {
                         is FormCompleteState.Error -> {
                             //TODO add placeholder
@@ -218,15 +216,14 @@ fun FormCompletedScreen(
             subtitle = StringUtils.getCloudItemInfo(
                 context = context,
                 item = fillResult.completedForm,
-                userId = null,
-                sortBy = null
+                state = null
             ).orEmpty(),
             divider = true,
             image = {
                 Image(
                     modifier = Modifier.size(24.dp),
                     imageVector = ImageVector.vectorResource(
-                        R.drawable.ic_type_pdf
+                        R.drawable.ic_type_pdf_row
                     ),
                     contentDescription = null
                 )
@@ -252,7 +249,7 @@ fun FormCompletedScreen(
         ) {
             IconButton(onClick = onSendEmailClick) {
                 Icon(
-                    imageVector = Icons.Default.Email,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_email),
                     contentDescription = null,
                     tint = MaterialTheme.colors.primary
                 )

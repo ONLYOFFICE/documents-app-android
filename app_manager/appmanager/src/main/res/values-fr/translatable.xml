@@ -406,8 +406,6 @@
     <string name="snackbar_undo">ANNULER</string>
     <string name="errors_server_auth_too_many_attempts">Trop de tentatives. Réessayez plus tard</string>
     <string name="share_snackbar_remove_user">L\'utilisateur est supprimé</string>
-    <string name="share_group_admin">Admin</string>
-    <string name="share_group_everyone">Tout le monde</string>
     <string name="storage_onedrive_error_opened">Le fichier est ouvert sur le portail</string>
     <string name="storage_onedrive_error_exist">Le fichier avec le même nom existe déjà dans ce dossier.</string>
     <string name="operation_panel_restore_button">Restaurer ici</string>
@@ -517,7 +515,7 @@
     <string name="dialog_create_room">Créer une salle</string>
     <string name="dialog_create_room_value">Nouvelle salle</string>
     <string name="invite_by_email">Inviter des utilisateurs par e-mail</string>
-    <string name="share_access_room_admin">Administrateur de salle</string>
+    <string name="share_user_type_room_admin">Administrateur de salle</string>
     <string name="share_access_room_editor">Éditeur</string>
     <string name="share_access_room_form_filler">Remplisseur de formulaires</string>
     <string name="share_access_room_reviewer">Réviseur</string>
@@ -562,7 +560,6 @@
         <item quantity="other">Éléments définitivement supprimés</item>
         <item quantity="many">Éléments définitivement supprimés</item>
     </plurals>
-    <string name="share_access_room_power_user">Utilisateur avancé</string>
     <string name="share_expected_member">Membres attendus</string>
     <string name="app_settings_main_help">Aide</string>
     <string name="clear_recents">"Supprimer les récents ?"</string>
@@ -617,9 +614,7 @@
     <string name="rooms_info_create_link_complete">Lien créé avec succès et copié dans le presse-papiers</string>
     <string name="rooms_info_delete_link">Supprimer le lien</string>
     <string name="rooms_info_delete_link_complete">Lien supprimé</string>
-    <string name="rooms_info_delete_link_desc">Le lien sera définitivement supprimé. Vous ne pourrez pas annuler cette action.</string>
     <string name="rooms_info_revoke_link">Révoquer le lien</string>
-    <string name="rooms_info_revoke_link_desc">Le lien précédent devient indisponible. Un nouveau lien général sera créé.</string>
     <string name="rooms_info_revoke_link_complete">Le lien a été révoqué</string>
     <string name="rooms_info_revoke">Révoquer</string>
     <string name="rooms_info_copy_link">Copier le lien</string>
@@ -717,4 +712,42 @@
     <string name="personal_portal_end_title">ONLYOFFICE Personal se termine</string>
     <string name="personal_portal_end_text">Veuillez noter: ONLYOFFICE Personal sera arrêté le 1er septembre 2024.\n
 Nous vous recommandons de passer au service gratuit ONLYOFFICE DocSpace Cloud.</string>
+    <string name="dialogs_question_delete_all_fonts">Supprimer toutes les polices ?</string>
+    <string name="dialogs_question_delete_font">Supprimer cette police ?</string>
+    <string name="dialogs_warning_title">Attention</string>
+    <string name="dialogs_warning_only_pdf_form_message">Le fichier ne peut pas être déplacé dans cette salle. Veuillez essayer de déplacer le formulaire PDF ONLYOFFICE.</string>
+    <string name="dialogs_warning_pinned_room_limit">Vous ne pouvez pas épingler plus de 10 salles en haut de la page. Désépinglez celles qui sont déjà épinglées.</string>
+    <string name="dialogs_warning_fill_forms_room_create">La création à partir de plusieurs fichiers et dossiers n\'est pas disponible pour ce type de salle. Pour créer une telle salle, rendez-vous dans la section Salles ou utilisez l\'un des formulaires PDF.</string>
+    <string name="toolbar_menu_view">Affichage</string>
+    <string name="toolbar_menu_view_list">Liste</string>
+    <string name="toolbar_menu_view_grid">Grille</string>
+    <string name="list_context_duplicate">Dupliquer</string>
+    <string name="list_context_fill">Remplir</string>
+    <string name="placeholder_no_fonts">Aucune police</string>
+    <string name="share_popup_access_custom_filter">Filtre personnalisé</string>
+    <string name="operation_select_room_title">Sélectionner une salle</string>
+    <string name="room_duplicate_progress_title">Dupliquer en cours</string>
+    <string name="room_duplicate_complete">Dupliquer Complet</string>
+    <string name="room_duplicate_error">Erreur de duplication</string>
+    <string name="room_duplicate_progress_hide_button">Cacher</string>
+    <string name="rooms_add_fill_forms">Salle de rempplissage de formulaires</string>
+    <string name="rooms_add_fill_forms_des">Téléchargez des formulaires PDF dans la salle. Invitez les utilisateurs à remplir un formulaire PDF. Examinez les formulaires remplis et analysez les données collectées automatiquement dans une feuille de calcul.</string>
+    <string name="room_placeholder_created_filling_form_room_title">Bienvenue dans la salle de remplissage de formulaires</string>
+    <string name="room_placeholder_created_filling_form_room_subtitle">Téléchargez un formulaire PDF prêt à l\'emploi ou créez de nouveaux dossiers pour organiser vos fichiers</string>
+    <string name="context_protection_title">Protection</string>
+    <string name="rooms_upload_pdf_from_docspace">Télécharger le formulaire PDF depuis DocSpace</string>
+    <string name="rooms_upload_pdf_from_device">Télécharger un formulaire PDF à partir d\'un appareil</string>
+    <string name="rooms_fill_in_as_title">Remplir en tant que</string>
+    <string name="rooms_fill_out_form_yourself">Remplir le formulaire vous-même</string>
+    <string name="rooms_fill_out_form_yourself_desc">Remplir les champs du formulaire original dans la fenêtre de l\'éditeur.</string>
+    <string name="rooms_share_and_collect">Partager et collecter</string>
+    <string name="rooms_share_and_collect_desc">Partagez votre formulaire et collectez les réponses via une salle de remplissage de formulaires.</string>
+    <string name="rooms_fill_form_complete_desc">Le formulaire PDF rempli est sauvegardé et mis à votre disposition dans le dossier Complet. Pour vérifier l\'état du formulaire, contactez le propriétaire du formulaire en lui communiquant le numéro qui lui a été attribué.</string>
+    <string name="rooms_fill_form_complete_number_title">Numéro du formulaire</string>
+    <string name="rooms_fill_form_complete_owner_title">Propriétaire du formulaire</string>
+    <string name="rooms_fill_form_complete_toolbar_title">Formulaire rempli avec succès</string>
+    <string name="rooms_fill_form_complete_back_to_room">Retour à la salle</string>
+    <string name="rooms_fill_form_complete_check_forms">Vérifier les formulaires prêts</string>
+    <string name="errors_sign_in_account_not_found">Compte non trouvé</string>
+    <string name="list_action_delete_image">Supprimer l\'image</string>
 </resources>

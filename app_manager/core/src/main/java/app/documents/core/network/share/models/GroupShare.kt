@@ -1,5 +1,6 @@
 package app.documents.core.network.share.models
 
+import app.documents.core.model.cloud.Access
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
@@ -13,6 +14,9 @@ data class GroupShare(
     val overridden: Boolean = false,
 ) : ShareEntity {
 
-    override val accessCode: Int
-        get() = userAccess ?: groupAccess
+    override val access: Access
+        get() {
+            val access = userAccess ?: groupAccess
+            return Access.get(access)
+        }
 }

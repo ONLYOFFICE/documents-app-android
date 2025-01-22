@@ -83,7 +83,11 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     override fun onDestroy() {
         super.onDestroy()
         exportReceiver.onExportReceiver = null
-        context.unregisterReceiver(exportReceiver)
+        try {
+            context.unregisterReceiver(exportReceiver)
+        } catch (error: IllegalArgumentException) {
+            error.printStackTrace()
+        }
     }
 
     override fun getNextList() {
@@ -102,7 +106,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                             addFile(file)
                             setPlaceholderType(PlaceholderViews.Type.NONE)
                             viewState.onDialogClose()
-                            viewState.onOpenLocalFile(file)
+                            viewState.onOpenLocalFile(file, null)
                         }, ::fetchError)
                 )
             }
@@ -129,7 +133,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                     { file: CloudFile? ->
                         tempFile = file
                         viewState.onDialogClose()
-                        viewState.onOpenLocalFile(file)
+                        viewState.onOpenLocalFile(file, null)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }
         }

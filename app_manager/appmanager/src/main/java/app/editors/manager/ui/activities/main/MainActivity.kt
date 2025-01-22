@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
@@ -25,12 +26,10 @@ import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.RoomDuplicateReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.utils.InAppUpdateUtils
-import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter.Companion.PERSONAL_DUE_DATE
 import app.editors.manager.mvp.views.main.MainActivityView
 import app.editors.manager.ui.activities.base.BaseAppActivity
-import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.compose.personal.PersonalPortalMigrationFragment
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
 import app.editors.manager.ui.fragments.main.AppSettingsFragment
@@ -56,7 +55,6 @@ import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.RequestPermission
 import lib.toolkit.base.managers.utils.TimeUtils
-import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -75,12 +73,12 @@ interface IMainActivity {
     fun setAppBarStates(isVisible: Boolean)
     fun onSwitchAccount()
     fun showOnCloudFragment()
-    fun showAccountsActivity(isSwitch: Boolean = false)
+    fun showAccountsActivity()
     fun showWebViewer(file: CloudFile, isEditMode: Boolean = false, callback: (() -> Unit)? = null)
     fun onLogOut()
     fun showPersonalMigrationFragment()
+    fun setToolbarInfo(title: String?, drawable: Int? = null)
 }
-
 
 class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBottomDialogCloseListener,
     CommonDialog.OnCommonDialogClose, IMainActivity, View.OnClickListener {
@@ -166,10 +164,6 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
             when (requestCode) {
                 REQUEST_ACTIVITY_PORTAL -> {
                     presenter.init(true)
-                }
-
-                REQUEST_ACTIVITY_ACCOUNTS -> {
-                    presenter.onRemoveFileData()
                 }
             }
             if (data != null && data.extras != null) {
@@ -378,25 +372,6 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
                 showSnackBar(message)
             }
         }
-    }
-
-    override fun onSwitchAccount(data: OpenDataModel, isToken: Boolean) {
-        UiUtils.showQuestionDialog(
-            context = this,
-            title = getString(R.string.switch_account_title),
-            description = getString(R.string.switch_account_description, data.portal),
-            acceptListener = {
-                if (isToken) {
-                    showAccountsActivity(true)
-                } else {
-                    SignInActivity.showPortalSignIn(this, data.portal, data.email, arrayOf())
-                }
-            },
-            cancelListener = {
-                presenter.onRemoveFileData()
-            },
-            acceptTitle = getString(R.string.switch_account_open_project_file)
-        )
     }
 
     override fun showWebViewer(file: CloudFile, isEditMode: Boolean, callback: (() -> Unit)?) {
@@ -614,16 +589,17 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         showNavigationButton(false)
     }
 
-    override fun showAccountsActivity(isSwitch: Boolean) {
+    override fun showAccountsActivity() {
         if (!isTablet) {
-            AccountsActivity.show(this, isSwitch)
+            AccountsActivity.show(this)
         } else {
-            CloudAccountDialogFragment.newInstance(isSwitch)
+            CloudAccountDialogFragment.newInstance()
                 .show(supportFragmentManager, CloudAccountDialogFragment.TAG)
         }
     }
 
     override fun setAppBarStates(isVisible: Boolean) {
+        setToolbarInfo(null)
         setAppBarMode(isVisible)
         showAccount(isVisible)
         showNavigationButton(!isVisible)
@@ -633,6 +609,12 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         if (!TimeUtils.isDateAfter(PERSONAL_DUE_DATE)) {
             PersonalPortalMigrationFragment.newInstance().show(supportFragmentManager, "")
         }
+    }
+
+    override fun setToolbarInfo(title: String?, drawable: Int?) {
+        viewBinding.infoLayout.root.isVisible = title != null
+        viewBinding.infoLayout.infoText.text = title
+        viewBinding.infoLayout.infoText.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
     }
 
     private fun isNotification(): Boolean =

@@ -15,6 +15,7 @@ plugins {
     kotlin("android")
     kotlin("kapt")
     alias(libs.plugins.kotlin.ksp)
+//    id("org.owasp.dependencycheck")
 }
 
 // Onlyoffice
@@ -64,8 +65,8 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 576
-        versionName = "8.2.0"
+        versionCode = 603
+        versionName = "8.3.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
@@ -130,7 +131,8 @@ android {
     buildTypes {
 
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
 
             signingConfig = signingConfigs.getByName("onlyoffice")
@@ -274,7 +276,7 @@ dependencies {
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
-    implementation(libs.retrofit.xml)
+    implementation(libs.retrofit.xml) { exclude(group="xpp3", module= "xpp3" )}
     implementation(libs.retrofit.rx)
     implementation(libs.retrofit.kotlin.serialization)
 
@@ -318,7 +320,6 @@ dependencies {
     implementation(libs.compose.material)
     implementation(libs.compose.uiToolingPreview)
     implementation(libs.compose.navigation)
-    implementation(libs.compose.activity)
     implementation(libs.compose.livedata)
     debugImplementation(libs.compose.uiTooling)
 
@@ -326,10 +327,6 @@ dependencies {
     implementation(libs.jackson)
     implementation(libs.jackson.annotations)
     implementation(libs.jackson.databind)
-
-    // For compose preview
-    debugApi(libs.customview)
-    debugApi(libs.customview.poolingcontainer)
 }
 
 apply(plugin = "com.google.gms.google-services")
