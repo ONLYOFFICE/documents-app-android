@@ -143,6 +143,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
     private var uploadUri: Uri? = null
     private var sendingFile: File? = null
 
+    protected var filters: Map<String, String> = mapOf()
+
     var destFolderId: String? = null
         protected set
 
@@ -880,6 +882,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                         put(ApiContract.Parameters.ARG_FILTER_BY_AUTHOR, filter.author.id)
                     }
                 }
+                putAll(filters)
             }
         )
     }

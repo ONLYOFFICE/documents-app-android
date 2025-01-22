@@ -30,6 +30,7 @@ import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.UserIdInvitation
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.CloudFileProvider.Companion.STATIC_DOC_URL
+import app.documents.core.providers.CloudFileProvider.RoomCallback
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -103,7 +104,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         api = context.api
         roomProvider = context.roomProvider
         fileProvider = context.cloudFileProvider.apply {
-            roomCallback = object : CloudFileProvider.RoomCallback {
+            roomCallback = object : RoomCallback {
 
                 override fun isRoomRoot(id: String?): Boolean {
                     val parts = modelExplorerStack.last()?.pathParts.orEmpty()
@@ -1174,6 +1175,23 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             )
         }
 
+    }
+
+    // use for operation in order to filter by room
+    fun setFilterByRoom(roomType: Int) {
+        filters = mapOf(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM to roomType.toString())
+        (fileProvider as CloudFileProvider).roomCallback = object : RoomCallback {
+            override fun isRoomRoot(id: String?): Boolean {
+                val parts = modelExplorerStack.last()?.pathParts.orEmpty()
+                return if (parts.isNotEmpty()) {
+                    parts[0].id == id
+                } else {
+                    modelExplorerStack.isStackEmpty || modelExplorerStack.isRoot
+                }
+            }
+            override fun isArchive(): Boolean = false
+            override fun isRecent(): Boolean = false
+        }
     }
 
     fun duplicateRoom() {
