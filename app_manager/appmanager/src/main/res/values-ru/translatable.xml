@@ -236,28 +236,8 @@
     <string name="navigation_drawer_menu_shared">Доступные мне</string>
     <string name="navigation_drawer_menu_trash">Корзина</string>
     <string name="navigation_drawer_open">Открыть панель навигации</string>
-    <string name="on_boarding_access_header">Делитесь документами</string>
-    <string name="on_boarding_access_info">
-        Предоставляйте права на чтение, рецензирование или полный доступ к файлу. Делитесь документами с помощью внешних ссылок.
-    </string>
-    <string name="on_boarding_collaborate_header">Работайте совместно</string>
-    <string name="on_boarding_collaborate_info">
-        Редактируйте документы с другими членами команды в режиме реального времени.
-    </string>
-    <string name="on_boarding_edit_header">Редактируйте документы</string>
-    <string name="on_boarding_edit_info">        Создавайте и редактируйте текстовые документы, таблицы и презентации в облаке ONLYOFFICE.
-    </string>
-    <string name="on_boarding_finish_button">ГОТОВО</string>
     <string name="on_boarding_next_button">ДАЛЕЕ</string>
     <string name="on_boarding_skip_button">ПРОПУСТИТЬ</string>
-    <string name="on_boarding_third_party_header">Подключите сторонние сервисы</string>
-    <string name="on_boarding_third_party_info">
-        Подключите приложение к другим облачным сервисам, например, Google Drive, Dropbox или Nextcloud.
-    </string>
-    <string name="on_boarding_welcome_header">Новая версия приложения ONLYOFFICE</string>
-    <string name="on_boarding_welcome_info">
-        Добро пожаловать в "ONLYOFFICE Документы" для Android. Смахните влево, чтобы узнать об обновлениях.
-    </string>
     <string name="operation_choose_section">Выбор раздела</string>
     <string name="operation_complete_message">Операция завершена</string>
     <string name="operation_delete_impossible">Невозможно удалить файл. Файл открыт на портале.</string>

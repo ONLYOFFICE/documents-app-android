@@ -593,31 +593,31 @@
     <string name="on_boarding_skip_button">SKIP</string>
     <string name="on_boarding_back_button">BACK</string>
     <string name="on_boarding_next_button">NEXT</string>
-    <string name="on_boarding_finish_button">DONE</string>
+    <string name="on_boarding_finish_button">Get Started</string>
 
-    <string name="on_boarding_welcome_header">Welcome to ONLYOFFICE</string>
+    <string name="on_boarding_welcome_header">Getting started</string>
     <string name="on_boarding_welcome_info">
-        We have significantly updated ONLYOFFICE Documents for Android. Swipe to learn more.
+        Welcome to ONLYOFFICE mobile editing suite! Swipe to learn more about the app.
     </string>
 
-    <string name="on_boarding_edit_header">Edit office documents</string>
+    <string name="on_boarding_edit_header">Work with office files</string>
     <string name="on_boarding_edit_info">
-        Create and edit text documents, spreadsheets and presentations on ONLYOFFICE portal.
+        Create and edit documents with our comprehensive toolbar: work with complex objects in text documents, perform extensive calculations in spreadsheets, create stunning presentations and view PDF files with no formatting loss.
     </string>
 
-    <string name="on_boarding_access_header">Grant access to docs</string>
-    <string name="on_boarding_access_info">
-        Share docs to your team granting full access, review or read only rights. Sharing via external link available as well.
+    <string name="on_boarding_locally_header">Edit documents locally</string>
+    <string name="on_boarding_locally_info">
+        Work with documents offline. Created files can later be uploaded to online portal and then accessed from any other device.
     </string>
 
-    <string name="on_boarding_collaborate_header">Collaborate</string>
+    <string name="on_boarding_collaborate_header">Collaborate with your team</string>
     <string name="on_boarding_collaborate_info">
-        Co-edit office documents with your teammates in real time.
+In online mode, use real-time co-editing features of ONLYOFFICE to work on documents together with your portal members, share documents and create common storage folders.
     </string>
 
-    <string name="on_boarding_third_party_header">Connect to third-party clouds</string>
+    <string name="on_boarding_third_party_header">Third-party storage</string>
     <string name="on_boarding_third_party_info">
-        Connect the app to other cloud storages you use: Google Drive, Dropbox, Nextcloud, etc.
+        Connect third-party storage like Nextcloud, ownCloud, Dropbox and others which use WebDAV protocol.
     </string>
 
     <!-- ======================================================================================= -->

@@ -550,32 +550,6 @@
     <string name="on_boarding_skip_button">ԲԱՑ ԹՈՂՆԵԼ</string>
     <string name="on_boarding_back_button">ՀԵՏ</string>
     <string name="on_boarding_next_button">ՀԱՋՈՐԴ</string>
-    <string name="on_boarding_finish_button">ԿԱՏԱՐՎԱԾ</string>
-
-    <string name="on_boarding_welcome_header">Բարի գալուստ ONLYOFFICE</string>
-    <string name="on_boarding_welcome_info">
-        Մենք զգալիորեն թարմացրել ենք ONLYOFFICE փաստաթղթերը Android-ի համար: Թերթեք՝ ավելին իմանալու համար:
-    </string>
-
-    <string name="on_boarding_edit_header">Գրասենյակային փաստաթղթերի խմբագրում</string>
-    <string name="on_boarding_edit_info">
-        Ստեղծեք և խմբագրեք տեքստային փաստաթղթեր, աղյուսակներ և ներկայացումներ ONLYOFFICE պորտալում:
-    </string>
-
-    <string name="on_boarding_access_header">Թույլատրելհասանելիություն փաստաթղթերին</string>
-    <string name="on_boarding_access_info">
-        Կիսվեք փաստաթղթերով ձեր թիմին՝ տրամադրելով ամբողջական մուտքի, վերանայման կամ միայն կարդալու իրավունքներ: Կիսվելը հասանելի է նաև արտաքին հղման միջոցով:
-    </string>
-
-    <string name="on_boarding_collaborate_header">Համագործակցել</string>
-    <string name="on_boarding_collaborate_info">
-        Ձեր թիմակիցների հետ համատեղ խմբագրեք գրասենյակային փաստաթղթերը իրական ժամանակում:
-    </string>
-
-    <string name="on_boarding_third_party_header">Միացեք երրորդ կողմի ամպերին</string>
-    <string name="on_boarding_third_party_info">
-        Հավելվածը միացրեք ձեր օգտագործած այլ ամպային պահեստներին՝ Google Drive, Dropbox, Nextcloud և այլն:
-    </string>
 
     <!-- ======================================================================================= -->
     <!-- Media -->
