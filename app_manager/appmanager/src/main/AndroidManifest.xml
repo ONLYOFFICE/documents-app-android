@@ -164,9 +164,7 @@
         <activity
             android:name="app.editors.manager.ui.activities.main.OnBoardingActivity"
             android:exported="true"
-            android:launchMode="standard"
-            android:theme="@style/AppTheme.Launcher"
-            android:windowSoftInputMode="adjustPan|stateHidden">
+            android:launchMode="singleTop">
         </activity>
         <activity
             android:name="app.editors.manager.ui.activities.main.StorageActivity"
