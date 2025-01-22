@@ -177,50 +177,45 @@ object ManagerUiUtils {
         }
     }
 
-    fun getAccessList(extension: StringUtils.Extension, removable: Boolean = false): List<Access> {
-        return when (extension) {
-            StringUtils.Extension.DOC, StringUtils.Extension.DOCXF -> {
-                listOf(
-                    Access.Editor,
-                    Access.Review,
-                    Access.Comment,
-                    Access.Read
-                )
+    fun getAccessList(
+        extension: StringUtils.Extension,
+        removable: Boolean = false,
+        isDocSpace: Boolean = false,
+    ): List<Access> {
+        return buildList {
+            if (isDocSpace) {
+                add(Access.Editor)
+            } else {
+                add(Access.ReadWrite)
             }
+            when (extension) {
+                StringUtils.Extension.DOC, StringUtils.Extension.DOCXF -> {
+                    add(Access.Review)
+                    add(Access.Comment)
+                }
 
-            StringUtils.Extension.PRESENTATION -> {
-                listOf(
-                    Access.ReadWrite,
-                    Access.Comment,
-                    Access.Read
-                )
-            }
+                StringUtils.Extension.PRESENTATION -> {
+                    add(Access.Comment)
+                }
 
-            StringUtils.Extension.SHEET -> {
-                listOf(
-                    Access.ReadWrite,
-                    Access.CustomFilter,
-                    Access.Comment,
-                    Access.Read
-                )
-            }
+                StringUtils.Extension.SHEET -> {
+                    add(Access.CustomFilter)
+                    add(Access.Comment)
+                }
 
-            StringUtils.Extension.PDF, StringUtils.Extension.OFORM -> {
-                listOf(
-                    Access.ReadWrite,
-                    Access.FormFiller,
-                    Access.Read
-                )
+                StringUtils.Extension.PDF, StringUtils.Extension.OFORM -> {
+                    add(Access.FormFiller)
+                }
+                else -> Unit
             }
-
-            else -> {
-                listOf(
-                    Access.ReadWrite,
-                    Access.Read,
-                    Access.None
-                )
+            add(Access.Read)
+            if (!isDocSpace) {
+                add(Access.Restrict)
             }
-        }.run { if (removable) plus(Access.None) else this }
+            if (removable) {
+                add(Access.None)
+            }
+        }
     }
 
     fun View.setMargins(left: Int, top: Int, right: Int, bottom: Int) {
@@ -249,7 +244,7 @@ fun Access.toUi(): AccessUI {
             R.string.share_popup_access_custom_filter
         )
 
-        Access.Editor -> arrayOf(
+        Access.ReadWrite, Access.Editor -> arrayOf(
             R.drawable.ic_access_full,
             R.string.share_access_room_editor
         )
@@ -279,7 +274,12 @@ fun Access.toUi(): AccessUI {
             R.string.share_access_room_power_user
         )
 
-        else -> arrayOf(
+        Access.Restrict -> arrayOf(
+            R.drawable.ic_access_deny,
+            R.string.share_popup_access_deny_access
+        )
+
+        Access.None -> arrayOf(
             R.drawable.ic_access_deny,
             R.string.share_popup_access_deny_remove
         )
