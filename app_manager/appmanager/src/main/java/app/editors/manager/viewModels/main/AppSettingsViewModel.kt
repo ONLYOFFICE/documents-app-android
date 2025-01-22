@@ -89,7 +89,8 @@ class AppSettingsViewModel(
 
     private val cache: Long
         get() = FileUtils.getSize(resourcesProvider.getCacheDir(true)) +
-                FileUtils.getSize(resourcesProvider.getCacheDir(false))
+                FileUtils.getSize(resourcesProvider.getCacheDir(false)) -
+                FileUtils.getSize(File(resourcesProvider.getCacheDir(false)?.absolutePath + "/assets"))
 
     private fun fetchFonts() {
         val fonts = File(FileUtils.getFontsDir(resourcesProvider.context)).listFiles()?.toList()

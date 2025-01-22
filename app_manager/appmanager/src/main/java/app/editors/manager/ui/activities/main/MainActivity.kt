@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
@@ -25,7 +26,6 @@ import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.RoomDuplicateReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.utils.InAppUpdateUtils
-import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter.Companion.PERSONAL_DUE_DATE
 import app.editors.manager.mvp.views.main.MainActivityView
@@ -77,8 +77,8 @@ interface IMainActivity {
     fun showWebViewer(file: CloudFile, isEditMode: Boolean = false, callback: (() -> Unit)? = null)
     fun onLogOut()
     fun showPersonalMigrationFragment()
+    fun setToolbarInfo(title: String?, drawable: Int? = null)
 }
-
 
 class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBottomDialogCloseListener,
     CommonDialog.OnCommonDialogClose, IMainActivity, View.OnClickListener {
@@ -599,6 +599,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
     }
 
     override fun setAppBarStates(isVisible: Boolean) {
+        setToolbarInfo(null)
         setAppBarMode(isVisible)
         showAccount(isVisible)
         showNavigationButton(!isVisible)
@@ -608,6 +609,12 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         if (!TimeUtils.isDateAfter(PERSONAL_DUE_DATE)) {
             PersonalPortalMigrationFragment.newInstance().show(supportFragmentManager, "")
         }
+    }
+
+    override fun setToolbarInfo(title: String?, drawable: Int?) {
+        viewBinding.infoLayout.root.isVisible = title != null
+        viewBinding.infoLayout.infoText.text = title
+        viewBinding.infoLayout.infoText.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
     }
 
     private fun isNotification(): Boolean =

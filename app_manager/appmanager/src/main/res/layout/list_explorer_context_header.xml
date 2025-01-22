@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/item_two_line_height">
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/icon"
@@ -17,30 +17,44 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/title"
-        style="@style/Widget.Common.TextView"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
-        app:layout_constraintBottom_toTopOf="@id/subtitle"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="12dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/icon"
-        app:layout_constraintTop_toTopOf="@id/icon"
-        app:layout_constraintVertical_chainStyle="packed"
-        tools:text="Report.docx" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/subtitle"
-        style="@style/Widget.Common.TextView.Small.Secondary"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/default_margin_small"
-        app:layout_constraintBottom_toBottomOf="@id/icon"
-        app:layout_constraintEnd_toEndOf="@id/title"
-        app:layout_constraintStart_toStartOf="@id/title"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        tools:text="23 Jan 2023 12:45 " />
+        <TextView
+            android:id="@+id/title"
+            style="@style/Widget.Common.TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/subtitle"
+            tools:text="Report.docx" />
+
+        <TextView
+            android:id="@+id/subtitle"
+            style="@style/Widget.Common.TextView.Small.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin_small"
+            tools:text="23 Jan 2023 12:45 " />
+
+        <TextView
+            android:id="@+id/info"
+            android:visibility="gone"
+            style="@style/Widget.Common.TextView.Small.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin_small"
+            tools:text="The file will be deleted 22.02 12:08 PM" />
+
+    </LinearLayout>
 
     <include
         layout="@layout/view_line_separator"

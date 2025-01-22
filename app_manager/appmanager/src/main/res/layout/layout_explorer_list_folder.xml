@@ -8,6 +8,7 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
+    android:background="@color/colorBackground"
     android:paddingBottom="@dimen/line_separator_height">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -113,6 +114,19 @@
             app:layout_constraintBottom_toBottomOf="@id/badgeNewCard"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/badgeNewCard"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
+            android:id="@+id/dragIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_dehaze"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/badgeNewCard"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/badgeNewCard"
+            app:tint="@color/colorTextTertiary"
             tools:ignore="ContentDescription" />
 
     </FrameLayout>

@@ -4,11 +4,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerContextHeaderBinding
 import app.editors.manager.databinding.ListExplorerContextItemBinding
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import lib.toolkit.base.managers.extensions.inflate
+import lib.toolkit.base.managers.utils.TimeUtils
 
 class ExplorerContextAdapter(
     private val onClickListener: (ExplorerContextItem) -> Unit,
@@ -51,6 +53,13 @@ class ExplorerContextAdapter(
                 icon.setImageBitmap(header.state.icon)
                 title.text = header.state.item.title
                 subtitle.text = header.info
+                if (header.state.item is CloudFile && header.state.item.expired != null) {
+                    info.isVisible = true
+                    info.text = info.context.getString(
+                        R.string.rooms_expire_context_info,
+                        TimeUtils.formatDate(header.state.item.expired)
+                    )
+                }
             }
         }
     }

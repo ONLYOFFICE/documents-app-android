@@ -251,7 +251,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 headerInfo = app.editors.manager.managers.utils.StringUtils.getCloudItemInfo(
                     context = requireContext(),
                     item = item,
-                    userId = requireContext().accountOnline?.id
+                    state = explorerAdapter
                 ),
                 sectionType = if (presenter.isRecentViaLinkSection()) {
                     ApiContract.SectionType.CLOUD_RECENT
@@ -1193,7 +1193,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     asc = presenter.preferenceTool.sortOrder.equals(
                         ApiContract.Parameters.VAL_SORT_ORDER_ASC,
                         ignoreCase = true
-                    )
+                    ),
+                    isIndexing = presenter.roomClicked?.indexing == true
                 )
             } else {
                 ActionMenuItemsFactory.getDocsItems(

@@ -46,7 +46,11 @@ class LocalContentTools @Inject constructor(val context: Context) {
         const val OTS_EXTENSION = "ots"
         const val CSV_EXTENSION = "csv"
         const val PDF_EXTENSION = "pdf"
-
+        const val PAGES_EXTENSION = "pages"
+        const val NUMBERS_EXTENSION = "numbers"
+        const val KEY_EXTENSION = "key"
+        const val HWP_EXTENSION = "hwp"
+        const val HWPX_EXTENSION = "hwpx"
         private const val ASSETS_TEMPLATES = "templates"
 
         const val MIME_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -64,16 +68,16 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         fun toOOXML(ext: String): String {
             return when (ext) {
-                ODT_EXTENSION, OTT_EXTENSION, DOC_EXTENSION -> DOCX_EXTENSION
-                ODS_EXTENSION, OTS_EXTENSION, XLS_EXTENSION -> XLSX_EXTENSION
-                ODP_EXTENSION, OTP_EXTENSION, PPT_EXTENSION -> PPTX_EXTENSION
+                ODT_EXTENSION, OTT_EXTENSION, DOC_EXTENSION, PAGES_EXTENSION -> DOCX_EXTENSION
+                ODS_EXTENSION, OTS_EXTENSION, XLS_EXTENSION, NUMBERS_EXTENSION -> XLSX_EXTENSION
+                ODP_EXTENSION, OTP_EXTENSION, PPT_EXTENSION, KEY_EXTENSION -> PPTX_EXTENSION
                 else -> throw IllegalArgumentException(".$ext can not be converted to OOXML extension")
             }
         }
 
         fun isOpenFormat(ext: String): Boolean {
             return when (ext) {
-                ODT_EXTENSION, OTT_EXTENSION, ODS_EXTENSION, OTS_EXTENSION, ODP_EXTENSION, OTP_EXTENSION, DOC_EXTENSION, XLS_EXTENSION, PPT_EXTENSION -> true
+                ODT_EXTENSION, OTT_EXTENSION, ODS_EXTENSION, OTS_EXTENSION, ODP_EXTENSION, OTP_EXTENSION, DOC_EXTENSION, XLS_EXTENSION, PPT_EXTENSION, PAGES_EXTENSION, NUMBERS_EXTENSION, KEY_EXTENSION -> true
                 else -> false
             }
         }
@@ -96,10 +100,16 @@ class LocalContentTools @Inject constructor(val context: Context) {
         if (!publicDir.exists()) {
             publicDir.mkdirs()
         }
+
         if (!File(getDir()).exists()) {
             File(getDir()).mkdirs()
         }
-        if (isFirstLaunch()) {
+
+        if (!isFirstLaunch() && File(getDir()).exists()) {
+            return File(getDir())
+        }
+
+        if (isFirstLaunch() && File(getDir()).canWrite()) {
             addSamples(File(getDir()))
             setFirstLaunchFlag()
         }
@@ -111,7 +121,12 @@ class LocalContentTools @Inject constructor(val context: Context) {
         samplesName?.let {
             it.forEach { name ->
                 val file = File(rootDir.absolutePath + "/" + name)
+                if (file.exists()) {
+                    MediaScannerConnection.scanFile(context, arrayOf(file.toString()), null, null)
+                    return@forEach
+                }
                 file.createNewFile()
+                file.setWritable(true)
                 val inputStream = context.assets.open("samples/$name")
                 val outputStream = FileOutputStream(file)
                 outputStream.write(inputStream.readBytes())

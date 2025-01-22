@@ -515,7 +515,7 @@
     <string name="dialog_create_room">Créer une salle</string>
     <string name="dialog_create_room_value">Nouvelle salle</string>
     <string name="invite_by_email">Inviter des utilisateurs par e-mail</string>
-    <string name="share_access_room_admin">Administrateur de salle</string>
+    <string name="share_user_type_room_admin">Administrateur de salle</string>
     <string name="share_access_room_editor">Éditeur</string>
     <string name="share_access_room_form_filler">Remplisseur de formulaires</string>
     <string name="share_access_room_reviewer">Réviseur</string>
@@ -560,7 +560,6 @@
         <item quantity="other">Éléments définitivement supprimés</item>
         <item quantity="many">Éléments définitivement supprimés</item>
     </plurals>
-    <string name="share_access_room_power_user">Utilisateur avancé</string>
     <string name="share_expected_member">Membres attendus</string>
     <string name="app_settings_main_help">Aide</string>
     <string name="clear_recents">"Supprimer les récents ?"</string>
@@ -615,9 +614,7 @@
     <string name="rooms_info_create_link_complete">Lien créé avec succès et copié dans le presse-papiers</string>
     <string name="rooms_info_delete_link">Supprimer le lien</string>
     <string name="rooms_info_delete_link_complete">Lien supprimé</string>
-    <string name="rooms_info_delete_link_desc">Le lien sera définitivement supprimé. Vous ne pourrez pas annuler cette action.</string>
     <string name="rooms_info_revoke_link">Révoquer le lien</string>
-    <string name="rooms_info_revoke_link_desc">Le lien précédent devient indisponible. Un nouveau lien général sera créé.</string>
     <string name="rooms_info_revoke_link_complete">Le lien a été révoqué</string>
     <string name="rooms_info_revoke">Révoquer</string>
     <string name="rooms_info_copy_link">Copier le lien</string>

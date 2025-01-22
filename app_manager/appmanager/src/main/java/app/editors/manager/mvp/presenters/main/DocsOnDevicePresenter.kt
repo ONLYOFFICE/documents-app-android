@@ -26,6 +26,7 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsType
@@ -447,7 +448,11 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     private fun openFile(uri: Uri, ext: String, editType: EditType?) {
         when (StringUtils.getExtension(ext)) {
             StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM-> {
-                viewState.onShowEditors(uri, EditorsType.DOCS, editType)
+                if (ext.contains(LocalContentTools.HWP_EXTENSION) || ext.contains(LocalContentTools.HWPX_EXTENSION)) {
+                    viewState.onShowEditors(uri, EditorsType.DOCS, EditType.VIEW)
+                } else {
+                    viewState.onShowEditors(uri, EditorsType.DOCS, editType)
+                }
             }
             StringUtils.Extension.SHEET -> {
                 viewState.onShowEditors(uri, EditorsType.CELLS, editType)

@@ -2,17 +2,18 @@ package app.editors.manager.ui.adapters
 
 import android.content.Context
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper.DOWN
+import androidx.recyclerview.widget.ItemTouchHelper.UP
 import androidx.recyclerview.widget.RecyclerView
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.UploadFile
-import app.editors.manager.R
+import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.list.Footer
-import app.editors.manager.mvp.models.list.Header
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.base.BaseAdapter
@@ -28,9 +29,70 @@ import app.editors.manager.ui.adapters.holders.explorer.ListRoomViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.RecentViaLinkViewHolder
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import lib.toolkit.base.ui.adapters.factory.inflate
+import java.util.Collections
 import javax.inject.Inject
 
-class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView: Boolean) : BaseAdapter<Entity>() {
+interface ExplorerTouchAdapter {
+
+    fun onMove(from: Int, to: Int): List<Item>
+    fun onMoveFinished()
+}
+
+interface AdapterState {
+
+    val accountId: String?
+    val sortBy: String?
+
+    var isRoot: Boolean
+    var isFooter: Boolean
+    var isSectionMy: Boolean
+    var isTrash: Boolean
+    var isIndexing: Boolean
+    var isGridView: Boolean
+}
+
+class ExplorerAdapter(
+    private val factory: TypeFactoryExplorer,
+    initialGridView: Boolean
+) : BaseAdapter<Entity>(), AdapterState, ExplorerTouchAdapter {
+
+    companion object {
+
+        fun getTouchHelperCallback(
+            adapter: ExplorerTouchAdapter,
+            onMove: (items: List<Item>) -> Unit
+        ): ItemTouchHelper.SimpleCallback {
+            return object : ItemTouchHelper.SimpleCallback(UP or DOWN, 0) {
+
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    val items = adapter.onMove(
+                        viewHolder.absoluteAdapterPosition,
+                        target.absoluteAdapterPosition
+                    )
+                    onMove(items)
+                    return false
+                }
+
+                override fun onSwiped(
+                    viewHolder: RecyclerView.ViewHolder,
+                    direction: Int
+                ) {
+                }
+
+                override fun clearView(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder
+                ) {
+                    super.clearView(recyclerView, viewHolder)
+                    adapter.onMoveFinished()
+                }
+            }
+        }
+    }
 
     @Inject
     lateinit var context: Context
@@ -38,12 +100,18 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
     @Inject
     lateinit var preferenceTool: PreferenceTool
 
-    val accountId: String? by lazy { context.accountOnline?.id }
+    override val accountId: String? by lazy { context.accountOnline?.id }
 
-    var isRoot: Boolean = false
-    var isFooter: Boolean = false
-    var isSectionMy: Boolean = false
-    var isTrash: Boolean = false
+    override var isRoot: Boolean = false
+    override var isFooter: Boolean = false
+    override var isSectionMy: Boolean = false
+    override var isTrash: Boolean = false
+    override var isIndexing: Boolean = false
+    override var isGridView: Boolean = initialGridView
+
+    override val sortBy: String? get() = preferenceTool.sortBy
+
+    var onDragStartListener: (RecyclerView.ViewHolder) -> Unit = {}
 
     var isSelectMode = false
         set(isSelectMode) {
@@ -57,7 +125,6 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
             notifyDataSetChanged()
         }
 
-    var isGridView: Boolean = initialGridView
 
     private val footer: Footer = Footer()
 
@@ -78,7 +145,11 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
         }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<*>) {
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+        payloads: List<*>
+    ) {
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
             return
@@ -123,31 +194,24 @@ class ExplorerAdapter(private val factory: TypeFactoryExplorer, initialGridView:
         notifyItemChanged(itemCount - 1)
     }
 
-    fun checkHeaders() {
-        try {
-            if (mList != null) {
-                for (i in mList.indices) {
-                    if (mList[i] is Header) {
-                        val header = mList[i] as Header
-                        val position = mList.indexOf(header)
-                        if (position + 1 < mList.size - 1) {
-                            if (mList[i + 1] is Header) {
-                                mList.remove(header)
-                                notifyItemRemoved(position)
-                            }
-                        } else if (mList.lastIndexOf(header) == mList.size - 1) {
-                            mList.remove(header)
-                            notifyItemRemoved(position)
-                        }
-                    }
-                }
-                if (mList.size == 1 && mList[0] is Header) {
-                    mList.clear()
-                }
-            }
-        } catch (error: Throwable) {
-            // stub
-        }
+    override fun onMove(from: Int, to: Int): List<Item> {
+        val lastIndex = itemList.lastIndex
+        if (from !in 0..lastIndex || to !in 0..lastIndex) return emptyList()
+        Collections.swap(itemList, from, to)
+        notifyItemMoved(from, to)
+        swapIndexes(from, to)
+        return listOf(itemList[from] as Item, itemList[to] as Item)
+    }
 
+    override fun onMoveFinished() {
+        notifyDataSetChanged()
+    }
+
+    private fun swapIndexes(from: Int, to: Int) {
+        val list = itemList
+        val indexFrom = (list[from] as Item).index
+        val indexTo = (list[to] as Item).index
+        (list[from] as Item).index = indexTo
+        (list[to] as Item).index = indexFrom
     }
 }

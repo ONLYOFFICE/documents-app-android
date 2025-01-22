@@ -533,7 +533,7 @@
     <string name="dialog_create_room">Создать комнату</string>
     <string name="dialog_create_room_value">Новая комната</string>
     <string name="invite_by_email">Пригласить пользователей по электронной почте</string>
-    <string name="share_access_room_admin">Администратор комнаты</string>
+    <string name="share_user_type_room_admin">Администратор комнаты</string>
     <string name="share_access_room_editor">Редактор</string>
     <string name="share_access_room_form_filler">Заполняющий форму</string>
     <string name="share_access_room_reviewer">Рецензент</string>
@@ -578,7 +578,6 @@
         <item quantity="many">Элементы безвозвратно удалены</item>
         <item quantity="few">Элементы безвозвратно удалены</item>
     </plurals>
-    <string name="share_access_room_power_user">Опытный пользователь</string>
     <string name="share_expected_member">Ожидайте участников</string>
     <string name="app_settings_main_help">Помощь</string>
     <string name="clear_recents">"Очистить последние?"</string>
@@ -633,9 +632,7 @@
     <string name="rooms_info_create_link_complete">Ссылка успешно создана и скопирована в буфер обмена</string>
     <string name="rooms_info_delete_link">Удалить ссылку</string>
     <string name="rooms_info_delete_link_complete">Ссылка удалена</string>
-    <string name="rooms_info_delete_link_desc">Ссылка будет удалена навсегда. Вы не сможете отменить это действие.</string>
     <string name="rooms_info_revoke_link">Отозвать ссылку</string>
-    <string name="rooms_info_revoke_link_desc">Предыдущая ссылка станет недоступной. Будет создана новая общая ссылка.</string>
     <string name="rooms_info_revoke_link_complete">Ссылка отозвана</string>
     <string name="rooms_info_revoke">Отозвать</string>
     <string name="rooms_info_copy_link">Скопировать ссылку</string>
@@ -743,7 +740,7 @@
     <string name="toolbar_menu_view_list">Список</string>
     <string name="toolbar_menu_view_grid">Сетка</string>
     <string name="list_context_duplicate">Дублирование</string>
-    <string name="list_context_fill">Заливка</string>
+    <string name="list_context_fill">Заполнить</string>
     <string name="placeholder_no_fonts">Шрифты отсутствуют</string>
     <string name="share_popup_access_custom_filter">Пользовательский фильтр</string>
     <string name="operation_select_room_title">Выбрать комнату</string>

@@ -1,6 +1,7 @@
 package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.providers.RoomProvider
@@ -9,7 +10,7 @@ import kotlinx.coroutines.launch
 class RoomInviteAccessViewModel(
     private val roomId: String,
     private val roomProvider: RoomProvider,
-    access: Int,
+    access: Access,
     users: List<User>,
     groups: List<Group>,
     emails: List<String>
@@ -22,7 +23,7 @@ class RoomInviteAccessViewModel(
                 if (state.value.emails.isNotEmpty()) {
                     roomProvider.inviteByEmail(
                         roomId,
-                        state.value.emails.associateWith { state.value.idAccessList[it] ?: 2 }
+                        state.value.emails.associateWith { state.value.idAccessList[it]?.code ?: 2 }
                     )
                 } else {
                     roomProvider.inviteById(
@@ -30,7 +31,7 @@ class RoomInviteAccessViewModel(
                         state.value.users
                             .map(User::id)
                             .plus(state.value.groups.map(Group::id))
-                            .associateWith { state.value.idAccessList[it] ?: 2 }
+                            .associateWith { state.value.idAccessList[it]?.code ?: 2 }
                     )
                 }
                 emitEffect(InviteAccessEffect.Success)

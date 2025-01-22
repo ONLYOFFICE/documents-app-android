@@ -6,6 +6,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.Recent
 import app.documents.core.model.cloud.isDocSpace
@@ -17,6 +18,7 @@ import app.documents.core.network.common.models.BaseResponse.Companion.KEY_RESPO
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.isFavorite
@@ -50,6 +52,9 @@ import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.MoveCopyDialog
+import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_DOWNLOAD
+import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_OPEN_FOLDER
+import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
 import io.reactivex.Observable
@@ -112,6 +117,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
             }
         }
+
+        if (folderId != null) {
+            modelExplorerStack.addStack(Explorer(current = Current().apply { id = folderId!! }))
+        }
     }
 
     override fun onFirstViewAttach() {
@@ -172,7 +181,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 ) { moveCopySelected(OperationsState.OperationType.RESTORE) }
             } else {
                 if (itemClicked is CloudFolder) {
-                    openFolder(itemClicked.id, position)
+                    if (itemClicked.isRoom && itemClicked.passwordProtected) {
+                        viewState.onRoomViaLinkPasswordRequired(false, TAG_PROTECTED_ROOM_OPEN_FOLDER)
+                    } else {
+                        openFolder(itemClicked.id, position)
+                    }
                 } else if (itemClicked is CloudFile) {
                     if (LocalContentTools.isOpenFormat(itemClicked.clearExt)) {
                         viewState.onConversionQuestion()
@@ -273,7 +286,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         addFile(cloudFile)
                         addRecent(cloudFile)
                         viewState.onDialogClose()
-                        onFileClickAction(cloudFile, isEdit = true, null)
+                        onFileClickAction(cloudFile, null)
                     }, ::fetchError))
             }
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
@@ -360,6 +373,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onStateAdapterRoot(true)
             viewState.onStateUpdateRoot(true)
         }
+        viewState.onRoomLifetime(modelExplorerStack.last()?.current?.lifetime)
+        viewState.onRoomFileIndexing(isIndexing)
     }
 
     override fun onActionClick() {
@@ -470,6 +485,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         super.openFolder(id, position, roomType)
     }
 
+    override fun createDownloadFile() {
+        if (isRoom && isRoot && roomClicked?.passwordProtected == true) {
+            viewState.onRoomViaLinkPasswordRequired(false, TAG_PROTECTED_ROOM_DOWNLOAD)
+            return
+        }
+        super.createDownloadFile()
+    }
+
     fun onContextClick(editType: EditType?) {
         when (val item = itemClicked) {
             is CloudFile -> {
@@ -478,7 +501,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     return
                 }
                 addRecent(item)
-                onFileClickAction(item, true, editType)
+                onFileClickAction(item, editType)
             }
             is CloudFolder -> editRoom()
         }
@@ -661,7 +684,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.showMoveCopyDialog(names, action, titleFolder)
     }
 
-    private fun onFileClickAction(cloudFile: CloudFile, isEdit: Boolean = false, editType: EditType?) {
+    private fun onFileClickAction(cloudFile: CloudFile, editType: EditType?) {
         if (cloudFile.isPdfForm && isUserSection && editType == null) {
             viewState.showFillFormChooserFragment()
             return
@@ -680,10 +703,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         if (cloudFile.isPdfForm && editType == null) {
                             fillPdfForm()
                         } else {
-                            openDocumentServer(cloudFile, isEdit, isItemShareable, editType)
+                            openDocumentServer(cloudFile, isItemShareable, editType)
                         }
                     } else {
-                        downloadTempFile(cloudFile, isEdit, editType)
+                        downloadTempFile(
+                            cloudFile = cloudFile,
+                            editType = editType ?:
+                                EditType.VIEW.takeIf { cloudFile.access == Access.Read }
+                        )
                     }
                 }
             }
@@ -698,14 +725,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, extension)
     }
 
-    private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean, canShareable: Boolean, editType: EditType?) {
+    private fun openDocumentServer(cloudFile: CloudFile, canShareable: Boolean, editType: EditType?) {
         with(fileProvider as CloudFileProvider) {
             val token = AccountUtils.getToken(context, account.accountName)
             disposable.add(
                 openDocument(cloudFile, token, canShareable, editType).subscribe({ result ->
                     viewState.onDialogClose()
                     if (result.isPdf) {
-                        downloadTempFile(cloudFile, false, null)
+                        downloadTempFile(cloudFile, null)
                     } else if (result.info != null) {
                         viewState.onOpenDocumentServer(cloudFile, result.info, editType)
                     }
@@ -728,11 +755,23 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (item is CloudFile && item.isPdfForm) {
             checkSdkVersion { result ->
                 if (result) {
-                    openDocumentServer(item, isEdit = true, canShareable = false, editType = EditType.FILL)
+                    openDocumentServer(item, canShareable = false, editType = EditType.FILL)
                 } else {
-                    downloadTempFile(item, true, editType = EditType.FILL)
+                    downloadTempFile(item, editType = EditType.FILL)
                 }
             }
+        }
+    }
+
+    fun openFileById(id: String) {
+        fileProvider?.let { provider ->
+            disposable.add(
+                provider.fileInfo(Item().apply { this.id = id })
+                    .subscribe(
+                        { file -> onFileClickAction(file, editType = null) },
+                        ::fetchError
+                    )
+            )
         }
     }
 
@@ -796,8 +835,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = StringUtils.equals(modelExplorerStack.currentFolderOwnerId, account.id)
 
     private val isContextReadWrite: Boolean
-        get() = isContextOwner || modelExplorerStack.currentFolderAccess == ApiContract.ShareCode.READ_WRITE ||
-                modelExplorerStack.currentFolderAccess == ApiContract.ShareCode.NONE
+        get() = isContextOwner || modelExplorerStack.currentFolderAccess == Access.Read.code ||
+                modelExplorerStack.currentFolderAccess == Access.None.code
 
     val isUserSection: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_USER
@@ -831,16 +870,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         get() = StringUtils.equals(itemClicked?.createdBy?.id, account.id)
 
     private val isItemReadWrite: Boolean
-        get() = itemClicked?.intAccess == ApiContract.ShareCode.READ_WRITE || isUserSection
+        get() = itemClicked?.access == Access.ReadWrite || isUserSection
 
     private val isItemEditable: Boolean
         get() = if (account.isDocSpace && currentSectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM) {
             itemClicked?.isCanEdit == true
         } else {
             !isVisitor && !isProjectsSection && (isItemOwner || isItemReadWrite ||
-                    itemClicked?.intAccess == ApiContract.ShareCode.REVIEW ||
-                    itemClicked?.intAccess == ApiContract.ShareCode.FILL_FORMS ||
-                    itemClicked?.intAccess == ApiContract.ShareCode.COMMENT)
+                    itemClicked?.access in listOf(Access.Review, Access.FormFiller, Access.Comment))
         }
 
     private val isItemShareable: Boolean
@@ -1078,7 +1115,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             invitations = listOf(
                                 UserIdInvitation(
                                     id = account.id,
-                                    access = ApiContract.Access.None.code
+                                    access = Access.None.code
                                 )
                             )
                         )
@@ -1273,6 +1310,58 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
             } catch (e: Exception) {
                 fetchError(e)
+            }
+        }
+    }
+
+    fun exportIndex() {
+        viewState.onDialogProgress(
+            context.getString(R.string.dialogs_wait_title),
+            false,
+            TAG_DIALOG_CANCEL_SINGLE_OPERATIONS
+        )
+        presenterScope.launch {
+            roomProvider?.exportIndex(roomClicked?.id.orEmpty())?.collect { result ->
+                when (result) {
+                    is Result.Error -> fetchError(result.exception)
+                    is Result.Success -> {
+                        val operation = result.result
+                        val progress = operation.percentage
+                        viewState.onDialogProgress(100, progress)
+                        if (progress == 100 || operation.isCompleted) {
+                            viewState.onDialogClose()
+                            viewState.onRoomExportIndex(operation)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun authRoomViaLink(password: String, tag: String) {
+        showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+        requestJob = presenterScope.launch {
+            val requestToken = roomClicked?.requestToken.orEmpty()
+            roomProvider?.authRoomViaLink(requestToken, password)?.collect { result ->
+                when (result) {
+                    is Result.Error -> fetchError(result.exception)
+                    is Result.Success -> {
+                        val roomId = result.result
+                        if (roomId == null) {
+                            viewState.onRoomViaLinkPasswordRequired(true, tag)
+                        } else {
+                            roomClicked?.passwordProtected = false
+                            refresh {
+                                viewState.onDialogClose()
+                                when (tag) {
+                                    TAG_PROTECTED_ROOM_OPEN_FOLDER -> openFolder(result.result, 0)
+                                    TAG_PROTECTED_ROOM_DOWNLOAD -> createDownloadFile()
+                                    TAG_PROTECTED_ROOM_SHOW_INFO -> viewState.showRoomInfoFragment()
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
