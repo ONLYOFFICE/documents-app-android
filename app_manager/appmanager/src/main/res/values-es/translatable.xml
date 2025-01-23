@@ -360,7 +360,6 @@
     <string name="cloud_account_description">Colabore en el entorno seguro y conecte los almacenamientos de terceros</string>
     <string name="cloud_account_start_button">Empiece</string>
     <string name="cloud_account_other_storages_button">Otros almacenamientos</string>
-    <string name="cloud_only_office">ONLYOFFICE Cloud</string>
     <string name="cloud_only_office_description">Guarde documentos en la nube y colabore en ellos</string>
     <string name="cloud_accounts_title">Cuentas</string>
     <string name="error_long_file_name">El nombre del archivo es demasiado largo</string>

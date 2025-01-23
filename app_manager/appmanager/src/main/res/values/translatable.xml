@@ -659,7 +659,7 @@
     <string name="cloud_account_description">Collaborate in secure environment and connect third-party storages</string>
     <string name="cloud_account_start_button">Get started</string>
     <string name="cloud_account_other_storages_button">Other storages</string>
-    <string name="cloud_only_office">ONLYOFFICE Cloud</string>
+    <string name="cloud_only_office" translatable="false">ONLYOFFICE DocSpace</string>
     <string name="cloud_only_office_description">Store documents in the cloud and collaborate on them</string>
     <string name="cloud_accounts_title">Accounts</string>
     <string name="error_long_file_name">File name is too long</string>

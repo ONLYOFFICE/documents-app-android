@@ -607,7 +607,6 @@
     <string name="cloud_account_description">التعاون في بيئة آمنة وربط مخازن الطرف الثالث</string>
     <string name="cloud_account_start_button">البدء</string>
     <string name="cloud_account_other_storages_button">مخازن أخرى</string>
-    <string name="cloud_only_office">سحابة ONLYOFFICE</string>
     <string name="cloud_only_office_description">قم بتخزين المستندات في السحابة والتعاون عليها</string>
     <string name="cloud_accounts_title">حسابات</string>
     <string name="error_long_file_name">اسم الملف طويل جدًا</string>

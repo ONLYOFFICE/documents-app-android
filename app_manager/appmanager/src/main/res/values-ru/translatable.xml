@@ -388,7 +388,6 @@
     <string name="cloud_account_description">Работайте совместно в защищенной среде и подключайте сторонние хранилища</string>
     <string name="cloud_account_start_button">Начать работу</string>
     <string name="cloud_account_other_storages_button">Другие хранилища</string>
-    <string name="cloud_only_office">Облако ONLYOFFICE</string>
     <string name="cloud_only_office_description">Храните документы в облаке и работайте над ними совместно</string>
     <string name="cloud_accounts_title">Аккаунты</string>
     <string name="error_long_file_name">Слишком длинное имя файла</string>
