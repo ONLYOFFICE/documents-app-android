@@ -77,7 +77,7 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         fun isOpenFormat(ext: String): Boolean {
             return when (ext) {
-                ODT_EXTENSION, OTT_EXTENSION, ODS_EXTENSION, OTS_EXTENSION, ODP_EXTENSION, OTP_EXTENSION, DOC_EXTENSION, XLS_EXTENSION, PPT_EXTENSION, PAGES_EXTENSION, NUMBERS_EXTENSION, KEY_EXTENSION -> true
+                ODT_EXTENSION, OTT_EXTENSION, ODS_EXTENSION, OTS_EXTENSION, ODP_EXTENSION, OTP_EXTENSION, DOC_EXTENSION, XLS_EXTENSION, PPT_EXTENSION -> true
                 else -> false
             }
         }

@@ -508,38 +508,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun removeShareSelected() {
-        if (modelExplorerStack.countSelectedItems > 0) {
-            val deleteShare = RequestDeleteShare()
-            deleteShare.folderIds = modelExplorerStack.selectedFoldersIds
-            deleteShare.fileIds = modelExplorerStack.selectedFilesIds
-            disposable.add(Observable
-                .fromCallable { api?.deleteShare(deleteShare)?.execute() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    modelExplorerStack.removeSelected()
-                    resetDatesHeaders()
-                    setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-                    viewState.onActionBarTitle("0")
-                    viewState.onDeleteBatch(getListWithHeaders(modelExplorerStack.last(), true))
-                    onBatchOperations()
-                }) { throwable: Throwable -> fetchError(throwable) })
-        }
-
-    }
-
-    fun removeShare() {
-        if (modelExplorerStack.countSelectedItems > 0) {
-            viewState.onDialogQuestion(
-                context.getString(R.string.dialogs_question_share_remove), null,
-                TAG_DIALOG_ACTION_REMOVE_SHARE
-            )
-        } else {
-            viewState.onSnackBar(context.getString(R.string.operation_empty_lists_data))
-        }
-    }
-
     fun saveExternalLinkToClipboard() {
         itemClicked?.let { item ->
             presenterScope.launch {
@@ -738,7 +706,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         viewState.onOpenDocumentServer(cloudFile, result.info, editType)
                     }
                 }) { error ->
-                    fetchError(error)
+//                    if (error is HttpException && error.code() == 415) {
+//                        downloadTempFile(cloudFile, EditType.VIEW)
+//                    } else {
+                        fetchError(error)
+//                    }
                 }
             )
         }

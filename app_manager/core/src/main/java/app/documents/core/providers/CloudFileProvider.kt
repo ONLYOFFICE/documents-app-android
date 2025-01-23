@@ -397,6 +397,9 @@ class CloudFileProvider @Inject constructor(
                 }
             }
             .map { response ->
+                if (!response.isSuccessful) {
+                    throw HttpException(response)
+                }
                 val json = JSONObject(managerService.getDocService().blockingGet().body()?.string())
                 val docService = if (json.optJSONObject(KEY_RESPONSE) != null) {
                     json.getJSONObject(KEY_RESPONSE).getString("docServiceUrlApi")

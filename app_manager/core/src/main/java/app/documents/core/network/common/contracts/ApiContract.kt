@@ -76,6 +76,7 @@ object ApiContract {
         const val CLIENT_PAYMENT_REQUIRED = 402
         const val CLIENT_FORBIDDEN = 403
         const val CLIENT_NOT_FOUND = 404
+        const val UNSUPPORTED_MEDIA_TYPE = 415
         const val SERVER_ERROR = 500
     }
 
