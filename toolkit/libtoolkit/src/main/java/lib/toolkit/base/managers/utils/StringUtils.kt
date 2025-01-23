@@ -49,7 +49,7 @@ object StringUtils {
     private val PATTERN_EXT_SHEET = "^(xlst|xlsx|xlsm|xls|xlt|xltm|xltx|ods|fods|ots|csv|numbers)$"
     private val PATTERN_EXT_PRESENTATION = "^(ppt|pptt|pptx|pps|odp|fodp|otp|pot|potm|potx|ppsm|ppsx|key)$"
     private val PATTERN_EXT_HTML = "^(mht|html|htm)$"
-    private val PATTERN_EXT_IMAGE = "^(png|jpeg|jpg|ico|bmp|heic)$"
+    private val PATTERN_EXT_IMAGE = "^(png|jpeg|jpg|ico|bmp|heic|webp)$"
     private val PATTERN_EXT_IMAGE_GIF = "^(gif)$"
     private val PATTERN_EXT_VIDEO_SUPPORT = "^($EXT_VIDEO_SUPPORT)$"
     private val PATTERN_EXT_VIDEO = "^($EXT_VIDEO)$"
