@@ -21,13 +21,14 @@
             android:src="@drawable/image_account_cloud"
             tools:ignore="ContentDescription" />
 
-        <ImageView
-            android:id="@+id/onlyOfficeLogoImage"
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_margin_xlarge"
-            android:src="@drawable/only_office_logo"
-            tools:ignore="ContentDescription" />
+            android:layout_marginTop="@dimen/default_margin_large"
+            android:drawablePadding="6dp"
+            android:text="@string/cloud_only_office"
+            style="@style/Widget.Common.TextView.Title"
+            app:drawableStartCompat="@drawable/ic_storage_onlyoffice" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/descriptionTextView"
@@ -35,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/default_margin_xlarge"
-            android:layout_marginTop="@dimen/default_margin_xlarge"
+            android:layout_marginTop="@dimen/default_margin_large"
             android:layout_marginEnd="@dimen/default_margin_xlarge"
             android:gravity="center"
             android:text="@string/cloud_account_description" />
@@ -43,8 +44,8 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/startButton"
             style="@style/Widget.Common.Button"
-            android:layout_marginTop="@dimen/default_margin_xlarge"
-            android:text="@string/cloud_account_start_button"
+            android:layout_marginTop="@dimen/default_margin_large"
+            android:text="@string/cloud_create_account"
             app:layout_constraintEnd_toEndOf="@id/descriptionTextView"
             app:layout_constraintStart_toStartOf="@id/descriptionTextView"
             app:layout_constraintTop_toBottomOf="@id/descriptionTextView" />
@@ -55,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_medium"
-            android:text="@string/cloud_account_other_storages_button"
+            android:text="@string/navigation_drawer_menu_sign_in"
             app:layout_constraintEnd_toEndOf="@id/startButton"
             app:layout_constraintStart_toStartOf="@id/startButton"
             app:layout_constraintTop_toBottomOf="@id/startButton" />
