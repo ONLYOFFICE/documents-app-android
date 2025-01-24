@@ -57,5 +57,6 @@
     kotlinx.serialization.KSerializer serializer(...);
 }
 
+-keep class app.editors.manager.ui.dialogs.** { *; }
 #-keep class lib.toolkit.base.managers.utils.JsonUtils { *; }
 #-keepclassmembers class lib.toolkit.base.managers.utils.JsonUtils { *; }

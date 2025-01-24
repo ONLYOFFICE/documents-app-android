@@ -7,7 +7,6 @@ import androidx.core.os.bundleOf
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
-import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Lifetime
 import app.editors.manager.R
@@ -94,17 +93,9 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
     }
 
     override fun onDocsGet(list: List<Entity>?) {
-        super.onDocsGet(list?.filterNotFillFormRooms())
+        super.onDocsGet(list)
         setEnabledOperationButtons()
         setCreateFolderClickListener()
-    }
-
-    override fun onDocsRefresh(list: List<Entity>?) {
-        super.onDocsRefresh(list?.filterNotFillFormRooms())
-    }
-
-    override fun onDocsNext(list: List<Entity>?) {
-        super.onDocsNext(list?.filterNotFillFormRooms())
     }
 
     private fun setCreateFolderClickListener() {
@@ -140,21 +131,6 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
             }
         }
         operationDialogFragment?.setCreateFolderVisible(true)
-    }
-
-    private fun List<Entity>.filterNotFillFormRooms(): List<Entity> {
-        if (operationType != OperationType.COPY_TO_FILL_FORM_ROOM) return this
-        return filter { item ->
-            if (item is CloudFolder) {
-                if (item.isRoom) {
-                    item.roomType == ApiContract.RoomType.FILL_FORMS_ROOM
-                } else {
-                    true
-                }
-            } else {
-                true
-            }
-        }
     }
 
     override fun onDocsBatchOperation() {
@@ -203,6 +179,10 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
         initViews()
         if (savedInstanceState == null) explorer?.let(presenter::setOperationExplorer)
         presenter.checkBackStack()
+
+        if (operationType == OperationType.COPY_TO_FILL_FORM_ROOM) {
+            cloudPresenter.setFilterByRoom(ApiContract.RoomType.FILL_FORMS_ROOM)
+        }
     }
 
     private fun initViews() {

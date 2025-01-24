@@ -30,6 +30,7 @@ import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.UserIdInvitation
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.CloudFileProvider.Companion.STATIC_DOC_URL
+import app.documents.core.providers.CloudFileProvider.RoomCallback
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -103,7 +104,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         api = context.api
         roomProvider = context.roomProvider
         fileProvider = context.cloudFileProvider.apply {
-            roomCallback = object : CloudFileProvider.RoomCallback {
+            roomCallback = object : RoomCallback {
 
                 override fun isRoomRoot(id: String?): Boolean {
                     val parts = modelExplorerStack.last()?.pathParts.orEmpty()
@@ -286,7 +287,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         addFile(cloudFile)
                         addRecent(cloudFile)
                         viewState.onDialogClose()
-                        onFileClickAction(cloudFile, isEdit = true, null)
+                        onFileClickAction(cloudFile, null)
                     }, ::fetchError))
             }
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
@@ -501,41 +502,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     return
                 }
                 addRecent(item)
-                onFileClickAction(item, true, editType)
+                onFileClickAction(item, editType)
             }
             is CloudFolder -> editRoom()
-        }
-    }
-
-    fun removeShareSelected() {
-        if (modelExplorerStack.countSelectedItems > 0) {
-            val deleteShare = RequestDeleteShare()
-            deleteShare.folderIds = modelExplorerStack.selectedFoldersIds
-            deleteShare.fileIds = modelExplorerStack.selectedFilesIds
-            disposable.add(Observable
-                .fromCallable { api?.deleteShare(deleteShare)?.execute() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    modelExplorerStack.removeSelected()
-                    resetDatesHeaders()
-                    setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-                    viewState.onActionBarTitle("0")
-                    viewState.onDeleteBatch(getListWithHeaders(modelExplorerStack.last(), true))
-                    onBatchOperations()
-                }) { throwable: Throwable -> fetchError(throwable) })
-        }
-
-    }
-
-    fun removeShare() {
-        if (modelExplorerStack.countSelectedItems > 0) {
-            viewState.onDialogQuestion(
-                context.getString(R.string.dialogs_question_share_remove), null,
-                TAG_DIALOG_ACTION_REMOVE_SHARE
-            )
-        } else {
-            viewState.onSnackBar(context.getString(R.string.operation_empty_lists_data))
         }
     }
 
@@ -684,7 +653,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.showMoveCopyDialog(names, action, titleFolder)
     }
 
-    private fun onFileClickAction(cloudFile: CloudFile, isEdit: Boolean = false, editType: EditType?) {
+    private fun onFileClickAction(cloudFile: CloudFile, editType: EditType?) {
         if (cloudFile.isPdfForm && isUserSection && editType == null) {
             viewState.showFillFormChooserFragment()
             return
@@ -703,10 +672,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         if (cloudFile.isPdfForm && editType == null) {
                             fillPdfForm()
                         } else {
-                            openDocumentServer(cloudFile, isEdit, isItemShareable, editType)
+                            openDocumentServer(cloudFile, isItemShareable, editType)
                         }
                     } else {
-                        downloadTempFile(cloudFile, isEdit, editType)
+                        downloadTempFile(
+                            cloudFile = cloudFile,
+                            editType = editType ?:
+                                EditType.VIEW.takeIf { cloudFile.access == Access.Read }
+                        )
                     }
                 }
             }
@@ -721,19 +694,23 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, extension)
     }
 
-    private fun openDocumentServer(cloudFile: CloudFile, isEdit: Boolean, canShareable: Boolean, editType: EditType?) {
+    private fun openDocumentServer(cloudFile: CloudFile, canShareable: Boolean, editType: EditType?) {
         with(fileProvider as CloudFileProvider) {
             val token = AccountUtils.getToken(context, account.accountName)
             disposable.add(
                 openDocument(cloudFile, token, canShareable, editType).subscribe({ result ->
                     viewState.onDialogClose()
                     if (result.isPdf) {
-                        downloadTempFile(cloudFile, false, null)
+                        downloadTempFile(cloudFile, null)
                     } else if (result.info != null) {
                         viewState.onOpenDocumentServer(cloudFile, result.info, editType)
                     }
                 }) { error ->
-                    fetchError(error)
+//                    if (error is HttpException && error.code() == 415) {
+//                        downloadTempFile(cloudFile, EditType.VIEW)
+//                    } else {
+                        fetchError(error)
+//                    }
                 }
             )
         }
@@ -751,9 +728,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (item is CloudFile && item.isPdfForm) {
             checkSdkVersion { result ->
                 if (result) {
-                    openDocumentServer(item, isEdit = true, canShareable = false, editType = EditType.FILL)
+                    openDocumentServer(item, canShareable = false, editType = EditType.FILL)
                 } else {
-                    downloadTempFile(item, true, editType = EditType.FILL)
+                    downloadTempFile(item, editType = EditType.FILL)
                 }
             }
         }
@@ -1170,6 +1147,23 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             )
         }
 
+    }
+
+    // use for operation in order to filter by room
+    fun setFilterByRoom(roomType: Int) {
+        filters = mapOf(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM to roomType.toString())
+        (fileProvider as CloudFileProvider).roomCallback = object : RoomCallback {
+            override fun isRoomRoot(id: String?): Boolean {
+                val parts = modelExplorerStack.last()?.pathParts.orEmpty()
+                return if (parts.isNotEmpty()) {
+                    parts[0].id == id
+                } else {
+                    modelExplorerStack.isStackEmpty || modelExplorerStack.isRoot
+                }
+            }
+            override fun isArchive(): Boolean = false
+            override fun isRecent(): Boolean = false
+        }
     }
 
     fun duplicateRoom() {

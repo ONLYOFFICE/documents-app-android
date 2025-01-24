@@ -24,6 +24,8 @@ def compare_strings(base_strings, compare_strings):
         if key not in compare_strings:
             missing_strings[key] = value
         elif isinstance(value, dict):
+            if key in compare_strings and isinstance(compare_strings[key], dict):
+                continue  # Skip if plurals already exist
             missing_plurals = {k: v for k, v in value.items() if k not in compare_strings[key]}
             if missing_plurals:
                 missing_strings[key] = missing_plurals
@@ -68,13 +70,16 @@ def copy_base_file(base_file, output_dir, base_file_name):
 
 def archive_output_dir(output_dir, archive_name):
     shutil.make_archive(archive_name, 'zip', output_dir)
+    shutil.rmtree(output_dir)
 
 def main():
     parser = argparse.ArgumentParser(description='Process XML files.')
     parser.add_argument('base_file_name', type=str, help='The base XML file name to compare against')
+    parser.add_argument('--name', type=str, default='out', help='The name of the output archive (default: out)')
     args = parser.parse_args()
 
     base_name = args.base_file_name
+    archive_name = args.name
     base_lang = 'values'
     base_file = f'src/main/res/{base_lang}/{base_name}.xml'
 
@@ -97,7 +102,7 @@ def main():
         output_dir = 'output'
         write_missing_strings_to_files(missing_strings_by_lang, output_dir, base_name)
         copy_base_file(base_file, output_dir, base_name)
-        archive_output_dir(output_dir, 'missing_strings')
+        archive_output_dir(output_dir, archive_name)
 
 if __name__ == '__main__':
     main()
