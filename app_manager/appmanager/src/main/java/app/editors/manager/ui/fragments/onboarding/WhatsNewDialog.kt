@@ -46,17 +46,17 @@ class WhatsNewDialog : ComposeDialogFragment() {
         Feature(
             title = R.string.whats_new_1,
             description = R.string.whats_new_1_desc,
-            icon = lib.editors.gbase.R.drawable.ic_new_onlyoffice
+            icon = R.drawable.ic_new_onlyoffice
         ),
         Feature(
             title = R.string.whats_new_2,
             description = R.string.whats_new_2_desc,
-            icon = lib.editors.gbase.R.drawable.ic_new_tabbed
+            icon = R.drawable.ic_new_tabbed
         ),
         Feature(
             title = R.string.whats_new_3,
             description = R.string.whats_new_3_desc,
-            icon = lib.editors.gbase.R.drawable.ic_new_review
+            icon = R.drawable.ic_new_review
         ),
     )
 
