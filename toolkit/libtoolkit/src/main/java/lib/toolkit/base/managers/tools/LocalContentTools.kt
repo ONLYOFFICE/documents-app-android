@@ -218,6 +218,8 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         if (file.exists()) {
             file = FileUtils.getNewFileName(file)
+        } else {
+            file.createNewFile()
         }
 
         context.assets.open("$ASSETS_TEMPLATES/$path").use { input ->
