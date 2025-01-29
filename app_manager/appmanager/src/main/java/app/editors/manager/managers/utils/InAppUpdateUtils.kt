@@ -88,12 +88,8 @@ object InAppUpdateUtils {
     }
 
     fun handleActivityResult(requestCode: Int, resultCode: Int, activity: Activity) {
-        if (requestCode == REQUEST_CODE_UPDATE) {
-            if (resultCode == Activity.RESULT_OK || resultCode == Activity.RESULT_CANCELED) {
-                if (shouldShowWhatsNew(activity)) {
-                    WhatsNewDialog.show(activity as FragmentActivity)
-                }
-            }
+        if (requestCode == REQUEST_CODE_UPDATE && resultCode != Activity.RESULT_OK) {
+            checkForUpdate(activity)
         }
     }
 }
