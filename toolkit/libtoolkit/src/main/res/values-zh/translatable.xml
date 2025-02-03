@@ -29,4 +29,12 @@
     </plurals>
     <string name="settings_fonts_title">字体</string>
     <string name="settings_view">查看</string>
+    <plurals name="months">
+        <item quantity="one">月</item>
+        <item quantity="other">月</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">年</item>
+        <item quantity="other">年</item>
+    </plurals>
 </resources>

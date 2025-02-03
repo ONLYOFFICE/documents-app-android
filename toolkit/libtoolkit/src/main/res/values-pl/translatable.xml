@@ -1,36 +1,44 @@
-<resources>
-  <string name="chooser_email_client">Wybierz klienta poczty …</string>
-  <string name="about_email_subject">Android Opinie ONLYOFFICE Documents</string>
-  <string name="about_feedback">Opinie i wsparcie</string>
-  <string name="text_hint_required">Wymagany</string>
-  <string name="export_send_copy">Wyślij kop</string>
-  <string name="dialogs_edit_forbidden_symbols">Nie używaj tych znaków\u0020</string>
-  <string name="dialogs_edit_forbidden_name">Nieprawidłowa nazwa</string>
-  <string name="sizes_bytes">bitów</string>
-  <string name="sizes_kilobytes">kB</string>
-  <string name="sizes_megabytes">MB</string>
-  <string name="sizes_gigabytes">GB</string>
-  <string name="sizes_terabytes">TB</string>
-  <string name="common_accept">Akceptuj</string>
-  <string name="common_cancel">Anuluj</string>
-  <string name="common_done">Ukończono</string>
-  <string name="common_next">Dalej</string>
-  <string name="common_ok">OK</string>
-  <string name="common_previous">Wróć</string>
-  <string name="settings_fonts_title">Czcionki</string>
-  
-  <plurals name="days">
-    <item quantity="one">dzień</item>
-    <item quantity="few">dni</item>
-    <item quantity="many">dni</item>
-    <item quantity="other">dni</item>
-  </plurals>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="chooser_email_client">Wybierz klienta poczty …</string>
+    <string name="about_email_subject">Android Opinie ONLYOFFICE Documents</string>
+    <string name="about_feedback">Opinie i wsparcie</string>
+    <string name="text_hint_required">Wymagany</string>
+    <string name="export_send_copy">Wyślij kop</string>
+    <string name="dialogs_edit_forbidden_symbols">Nie używaj tych znaków\u0020</string>
+    <string name="dialogs_edit_forbidden_name">Nieprawidłowa nazwa</string>
+    <string name="sizes_bytes">bitów</string>
+    <string name="sizes_kilobytes">kB</string>
+    <string name="sizes_megabytes">MB</string>
+    <string name="sizes_gigabytes">GB</string>
+    <string name="sizes_terabytes">TB</string>
+    <string name="common_accept">Akceptuj</string>
+    <string name="common_cancel">Anuluj</string>
+    <string name="common_done">Ukończono</string>
+    <string name="common_next">Dalej</string>
+    <string name="common_ok">OK</string>
+    <string name="common_previous">Wróć</string>
+    <string name="settings_fonts_title">Czcionki</string>
 
-  <plurals name="hours">
-    <item quantity="one">godzina</item>
-    <item quantity="few">godziny</item>
-    <item quantity="many">godzin</item>
-    <item quantity="other">godzin</item>
-  </plurals>
-  <string name="settings_view">Widok</string>
+    <plurals name="days">
+        <item quantity="one">dzień</item>
+        <item quantity="few">dni</item>
+        <item quantity="many">dni</item>
+        <item quantity="other">dni</item>
+    </plurals>
+
+    <plurals name="hours">
+        <item quantity="one">godzina</item>
+        <item quantity="few">godziny</item>
+        <item quantity="many">godzin</item>
+        <item quantity="other">godzin</item>
+    </plurals>
+    <string name="settings_view">Widok</string>
+    <plurals name="months" tools:ignore="MissingQuantity">
+        <item quantity="one">miesiąc</item>
+        <item quantity="other">miesiące(-cy)</item>
+    </plurals>
+    <plurals name="years" tools:ignore="MissingQuantity">
+        <item quantity="one">rok</item>
+        <item quantity="other">lat(a)</item>
+    </plurals>
 </resources>
