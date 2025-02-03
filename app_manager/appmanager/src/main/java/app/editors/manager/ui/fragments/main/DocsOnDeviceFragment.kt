@@ -1,15 +1,19 @@
 package app.editors.manager.ui.fragments.main
 
 import android.Manifest
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
@@ -36,6 +40,7 @@ import lib.toolkit.base.managers.utils.FolderChooser
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils.getHelpUrl
 import lib.toolkit.base.managers.utils.UiUtils
+import lib.toolkit.base.managers.utils.launchAfterResume
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
 import java.util.Locale
@@ -53,6 +58,22 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     private val openFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) { data: Uri? ->
         data?.let { presenter.openFromChooser(it) }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private val readStorage = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_CANCELED && Environment.isExternalStorageManager()) {
+            launchAfterResume {
+                swipeRefreshLayout?.isEnabled = true
+                preferenceTool?.isShowStorageAccess = false
+                presenter.recreateStack()
+                presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+            }
+        } else {
+            launchAfterResume {
+                setVisibilityActionButton(false)
+            }
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -89,11 +110,11 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         return true
     }
 
-    override fun onListEnd() { }
+    override fun onListEnd() {}
 
     override fun onSwipeRefresh(): Boolean {
         if (!super.onSwipeRefresh()) {
-            presenter.getItemsById(LocalContentTools.getDir())
+            presenter.getItemsById(LocalContentTools.getDir(requireContext()))
             return true
         }
         return false
@@ -120,7 +141,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onStateEmptyBackStack() {
         swipeRefreshLayout?.isRefreshing = true
-        presenter.getItemsById(LocalContentTools.getDir())
+        presenter.getItemsById(LocalContentTools.getDir(requireContext()))
     }
 
     override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
@@ -183,7 +204,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         if (tag == TAG_STORAGE_ACCESS) {
             preferenceTool?.isShowStorageAccess = false
             presenter.recreateStack()
-            presenter.getItemsById(LocalContentTools.getDir())
+            presenter.getItemsById(LocalContentTools.getDir(requireContext()))
         }
     }
 
@@ -270,9 +291,15 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun setVisibilityActionButton(isShow: Boolean) {
-        if (placeholderViews?.type == PlaceholderViews.Type.ACCESS){
+        if (placeholderViews?.type == PlaceholderViews.Type.ACCESS) {
             activity?.showActionButton(false)
         } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (!Environment.isExternalStorageManager()) {
+                    activity?.showActionButton(false)
+                    return
+                }
+            }
             activity?.showActionButton(isShow)
         }
     }
@@ -322,8 +349,38 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             }
 
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                presenter.checkBackStack()
+                if (!Environment.isExternalStorageManager()) {
+                    setActionBarTitle(getString(R.string.fragment_on_device_title))
+                    onStateUpdateRoot(true)
+                    swipeRefreshLayout?.isEnabled = false
+                    mainItem?.isVisible = false
+                    activity?.showActionButton(false)
+                    placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.EXTERNAL_STORAGE) {
+                        requestManage()
+                    }
+                } else {
+                    swipeRefreshLayout?.isEnabled = true
+                    presenter.checkBackStack()
+                }
             }
+        }
+    }
+
+    private fun requestManage() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                readStorage.launch(
+                    Intent(
+                        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                        Uri.parse("package:" + requireContext().packageName)
+                    )
+                )
+            }
+        } catch (e: ActivityNotFoundException) {
+            openItem?.isVisible = false
+            swipeRefreshLayout?.isEnabled = false
+            activity?.showActionButton(false)
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.ACCESS)
         }
     }
 
@@ -343,13 +400,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     private fun setPlaceholder(isEmpty: Boolean) {
         onPlaceholder(if (isEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-    }
-
-    fun showRoot() {
-        presenter.recreateStack()
-        presenter.getItemsById(LocalContentTools.getDir())
-        presenter.updateState()
-        onScrollToPosition(0)
     }
 
     private fun showFolderChooser(operation: OperationsState.OperationType) {

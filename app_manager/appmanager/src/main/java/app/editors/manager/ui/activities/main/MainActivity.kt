@@ -13,6 +13,7 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.work.WorkManager
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.WebdavProvider
@@ -224,7 +225,9 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
             delay(3000)
             InAppUpdateUtils.checkForUpdate(this@MainActivity)
             if (InAppUpdateUtils.shouldShowWhatsNew(this@MainActivity)) {
-                WhatsNewDialog.show(this@MainActivity)
+                lifecycle.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.RESUMED) {
+                    WhatsNewDialog.show(this@MainActivity)
+                }
             }
         }
 
