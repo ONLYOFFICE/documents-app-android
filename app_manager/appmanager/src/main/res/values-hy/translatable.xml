@@ -743,7 +743,7 @@
     <string name="rooms_info_access_desc">Այս սենյակը հասանելի է բոլորին, ովքեր ունեն հղումը: Արտաքին օգտատերերը բոլոր ֆայլերի համար միայն դիտելու թույլտվություն կունենան:</string>
     <string name="rooms_info_general_link">Ընդհանուր հղում</string>
     <string name="rooms_info_additional_link">Հավելյալ հղում</string>
-    <string name="rooms_info_additional_links">"Հավելյալ հղումներ (%d/%d)"</string>
+    <string name="rooms_info_additional_links">"Հավելյալ հղումներ (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Ստեղծել և պատճենել</string>
     <string name="rooms_info_create_link_complete">Հղումը հաջողությամբ ստեղծվեց և պատճենվեց սեղմատախտակում</string>
     <string name="rooms_info_delete_link">Ջնջել հղումը</string>
@@ -982,7 +982,7 @@
     <string name="rooms_vdr_watermark_image_scale">Սանդղակ</string>
     <string name="rooms_vdr_watermark_image_rotate">Պտտել</string>
     <string name="rooms_vdr_watermark_image_desc">Այս պատկերի նախադիտումը մոտավորապես ցույց է տալիս, թե ինչպես է ջրի մակարդակի նշագիծը կցուցադրվի ձեր ֆայլերում:</string>
-    <string name="rooms_vdr_lifetime_info">Այս սենյակում ֆայլի ժամկետը սահմանվել է %1d %2s</string>
+    <string name="rooms_vdr_lifetime_info">Այս սենյակում ֆայլի ժամկետը սահմանվել է %1$d %2$s</string>
     <string name="trash_toolbar_info">Աղբարկղում գտնվող տարրերն ավտոմատ կերպով ջնջվում են 30 օր հետո</string>
     <string name="rooms_expire_context_info">Ֆայլը կջնջվի %s-ում</string>
     <string name="rooms_index_subtitle">Ինդեքս %s</string>

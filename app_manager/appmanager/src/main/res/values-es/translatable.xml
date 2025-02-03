@@ -606,7 +606,7 @@
     <string name="rooms_info_access_desc">Esta sala está disponible para cualquier persona con el enlace. Los usuarios externos tendrán permiso Solo Ver para todos los archivos.</string>
     <string name="rooms_info_general_link">Enlace general</string>
     <string name="rooms_info_additional_link">Enlace adicional</string>
-    <string name="rooms_info_additional_links">"Enlaces adicionales (%1d/%2d)"</string>
+    <string name="rooms_info_additional_links">"Enlaces adicionales (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Crear y copiar</string>
     <string name="rooms_info_create_link_complete">Enlace creado y copiado correctamente en el portapapeles</string>
     <string name="rooms_info_delete_link">Eliminar enlace</string>
@@ -814,7 +814,7 @@
     <string name="rooms_vdr_watermark_image_scale">Escala</string>
     <string name="rooms_vdr_watermark_image_rotate">Girar</string>
     <string name="rooms_vdr_watermark_image_desc">Esta vista previa de la imagen muestra aproximadamente cómo se mostrará la marca de agua en sus archivos.</string>
-    <string name="rooms_vdr_lifetime_info">El tiempo de vida útil de archivo es %1d %2s en esta sala</string>
+    <string name="rooms_vdr_lifetime_info">El tiempo de vida útil de archivo es %1$d %2$s en esta sala</string>
     <string name="trash_toolbar_info">Los elementos de la papelera se eliminan automáticamente después de 30 días</string>
     <string name="rooms_expire_context_info">El archivo se eliminará el %s</string>
     <string name="rooms_index_subtitle">Índice %s</string>

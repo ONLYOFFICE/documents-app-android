@@ -664,7 +664,7 @@
     <string name="rooms_info_access_desc">所有拥有链接的人都能访问该房间。外部用户对所有文件只有查看权限。</string>
     <string name="rooms_info_general_link">通用链接</string>
     <string name="rooms_info_additional_link">附加链接</string>
-    <string name="rooms_info_additional_links">"附加链接 (%1d/%2d)"</string>
+    <string name="rooms_info_additional_links">"附加链接 (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">创建并复制</string>
     <string name="rooms_info_create_link_complete">链接已成功创建并复制到剪贴板</string>
     <string name="rooms_info_delete_link">删除链接</string>
@@ -870,7 +870,7 @@
     <string name="rooms_vdr_watermark_image_scale">缩放</string>
     <string name="rooms_vdr_watermark_image_rotate">旋转</string>
     <string name="rooms_vdr_watermark_image_desc">此图像预览将大致显示水印在您的文件中的显示效果。</string>
-    <string name="rooms_vdr_lifetime_info">文件在此房间中的有效期期设置为 %1d %2s</string>
+    <string name="rooms_vdr_lifetime_info">文件在此房间中的有效期期设置为 %1$d %2$s</string>
     <string name="trash_toolbar_info">回收站中的文件将在 30 天后自动删除</string>
     <string name="rooms_expire_context_info">文件将在 %s 后被删除</string>
     <string name="rooms_index_subtitle">索引 %s</string>

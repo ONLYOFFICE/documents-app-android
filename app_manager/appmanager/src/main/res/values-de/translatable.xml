@@ -814,7 +814,7 @@ Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</
     <string name="rooms_vdr_watermark_image_scale">Skalieren</string>
     <string name="rooms_vdr_watermark_image_rotate">Drehen</string>
     <string name="rooms_vdr_watermark_image_desc">Diese Bildvorschau zeigt grob, wie das Wasserzeichen in Ihren Dateien angezeigt wird.</string>
-    <string name="rooms_vdr_lifetime_info">Die Dateilebensdauer ist in diesem Raum auf %1d %2s festgelegt</string>
+    <string name="rooms_vdr_lifetime_info">Die Dateilebensdauer ist in diesem Raum auf %1$d %2$s festgelegt</string>
     <string name="trash_toolbar_info">Elemente im Papierkorb werden nach 30 Tagen automatisch gelöscht</string>
     <string name="rooms_expire_context_info">Die Datei wird am %s gelöscht</string>
     <string name="rooms_index_subtitle">Index %s</string>

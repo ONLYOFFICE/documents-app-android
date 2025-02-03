@@ -789,7 +789,7 @@
     <string name="file_lifetime_period_years">Anos</string>
     <string name="rooms_vdr_file_restrict_desc">Ative essa configuração para desativar downloads, impressão e cópia de conteúdo para usuários com a função “Viewer”</string>
     <string name="rooms_vdr_watermark_title">Adicionar marcas d\'água aos documentos</string>
-    <string name="rooms_vdr_watermark_desc">Proteja todos os documentos desta sala com marcas d\'água. Se um documento já contiver uma marca d'água, ela não será substituída.</string>
+    <string name="rooms_vdr_watermark_desc">Proteja todos os documentos desta sala com marcas d\'água. Se um documento já contiver uma marca d\'água, ela não será substituída.</string>
     <string name="rooms_vdr_indexing_title">Indexação automática</string>
     <string name="rooms_vdr_indexing_desc">Ative a indexação automática para indexar arquivos e pastas por número de série. A classificação por número será definida como padrão para todos os usuários.</string>
     <string name="rooms_vdr_storage_quota_title">Cota de armazenamento</string>
@@ -812,7 +812,7 @@
     <string name="rooms_vdr_watermark_image_scale">Escala</string>
     <string name="rooms_vdr_watermark_image_rotate">Girar</string>
     <string name="rooms_vdr_watermark_image_desc">Essa visualização de imagem mostra aproximadamente como a marca d\'água será exibida em seus arquivos.</string>
-    <string name="rooms_vdr_lifetime_info">A vida útil do arquivo está definida como %1d %2s nesta sala</string>
+    <string name="rooms_vdr_lifetime_info">A vida útil do arquivo está definida como %1$d %2$s nesta sala</string>
     <string name="trash_toolbar_info">Os itens na Lixeira são excluídos automaticamente após 30 dias</string>
     <string name="rooms_expire_context_info">O arquivo será excluído em %s</string>
     <string name="rooms_index_subtitle">Índice %s</string>

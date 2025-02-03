@@ -627,7 +627,7 @@
     <string name="rooms_info_access_desc">Эта комната доступна всем, у кого есть ссылка. Сторонние пользователи получат разрешение только на просмотр для всех файлов.</string>
     <string name="rooms_info_general_link">Общая ссылка</string>
     <string name="rooms_info_additional_link">Дополнительная ссылка</string>
-    <string name="rooms_info_additional_links">"Дополнительные ссылки (%1d/%2d)"</string>
+    <string name="rooms_info_additional_links">"Дополнительные ссылки (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Создать и скопировать</string>
     <string name="rooms_info_create_link_complete">Ссылка успешно создана и скопирована в буфер обмена</string>
     <string name="rooms_info_delete_link">Удалить ссылку</string>
@@ -835,7 +835,7 @@
     <string name="rooms_vdr_watermark_image_scale">Масштаб</string>
     <string name="rooms_vdr_watermark_image_rotate">Вращение</string>
     <string name="rooms_vdr_watermark_image_desc">Это изображение для предварительного просмотра ориентировочно показывает, как водяной знак будет отображаться в ваших файлах.</string>
-    <string name="rooms_vdr_lifetime_info">Срок действия файла в этой комнате установлен на %1d %2s</string>
+    <string name="rooms_vdr_lifetime_info">Срок действия файла в этой комнате установлен на %1$d %2$s</string>
     <string name="trash_toolbar_info">Элементы в корзине автоматически удаляются через 30 дней</string>
     <string name="rooms_expire_context_info">Файл будет удален %s</string>
     <string name="rooms_index_subtitle">Индекс %s</string>

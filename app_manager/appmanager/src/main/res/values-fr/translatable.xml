@@ -818,7 +818,7 @@ Nous vous recommandons de passer au service gratuit ONLYOFFICE DocSpace Cloud.</
     <string name="rooms_vdr_watermark_image_scale">Échelle</string>
     <string name="rooms_vdr_watermark_image_rotate">Faire pivoter</string>
     <string name="rooms_vdr_watermark_image_desc">Cet aperçu de l\'image montre grossièrement comment le filigrane sera affiché dans vos fichiers.</string>
-    <string name="rooms_vdr_lifetime_info">La durée de vie du fichier est fixée à %1d %2s dans cette salle</string>
+    <string name="rooms_vdr_lifetime_info">La durée de vie du fichier est fixée à %1$d %2$s dans cette salle</string>
     <string name="trash_toolbar_info">Les éléments placés dans la corbeille sont automatiquement supprimés au bout de 30 jours</string>
     <string name="rooms_expire_context_info">Le fichier sera supprimé le %s</string>
     <string name="rooms_index_subtitle">Index %s</string>
