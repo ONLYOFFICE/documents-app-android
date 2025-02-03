@@ -35,10 +35,11 @@ data class Feature(@StringRes val title: Int, @StringRes val description: Int, @
 class WhatsNewDialog : ComposeDialogFragment() {
 
     companion object {
-        fun show(
-            activity: FragmentActivity
-        ) {
-            WhatsNewDialog().show(activity.supportFragmentManager, TAG)
+        fun show(activity: FragmentActivity) {
+            val fragmentManager = activity.supportFragmentManager
+            val transaction = fragmentManager.beginTransaction()
+            transaction.add(WhatsNewDialog(), TAG)
+            transaction.commitAllowingStateLoss()
         }
     }
 
