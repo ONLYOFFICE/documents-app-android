@@ -1220,7 +1220,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private fun getInternalLink(folder: CloudFolder): String {
         return "${context.accountOnline?.portal?.urlWithScheme}" + if (folder.isRoom) {
-            "rooms/shared/filter?folder=${folder.id}"
+            "/rooms/shared/filter?folder=${folder.id}"
         } else {
             "rooms/shared/${folder.id}/filter?folder=${folder.id}"
         }
