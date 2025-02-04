@@ -13,7 +13,6 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.work.WorkManager
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.WebdavProvider
@@ -40,7 +39,6 @@ import app.editors.manager.ui.fragments.main.DocsRecentFragment
 import app.editors.manager.ui.fragments.main.DocsWebDavFragment
 import app.editors.manager.ui.fragments.main.MainPagerFragment
 import app.editors.manager.ui.fragments.main.OnlyOfficeCloudFragment
-import app.editors.manager.ui.fragments.onboarding.WhatsNewDialog
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
@@ -224,11 +222,6 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         lifecycleScope.launch {
             delay(3000)
             InAppUpdateUtils.checkForUpdate(this@MainActivity)
-            if (InAppUpdateUtils.shouldShowWhatsNew(this@MainActivity)) {
-                lifecycle.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.RESUMED) {
-                    WhatsNewDialog.show(this@MainActivity)
-                }
-            }
         }
 
     }

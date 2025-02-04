@@ -67,7 +67,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
                 swipeRefreshLayout?.isEnabled = true
                 preferenceTool?.isShowStorageAccess = false
                 presenter.recreateStack()
-                presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+                presenter.getItemsById(Environment.getExternalStorageDirectory().absolutePath)
             }
         } else {
             launchAfterResume {
@@ -141,7 +141,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onStateEmptyBackStack() {
         swipeRefreshLayout?.isRefreshing = true
-        presenter.getItemsById(LocalContentTools.getDir(requireContext()))
+        presenter.getItemsById(Environment.getExternalStorageDirectory().absolutePath)
     }
 
     override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
