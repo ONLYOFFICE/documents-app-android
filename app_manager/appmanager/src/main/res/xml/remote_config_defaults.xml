@@ -34,6 +34,6 @@
     </entry>
     <entry>
         <key>allow_google_drive</key>
-        <value>true</value>
+        <value>false</value>
     </entry>
 </defaultsMap>
