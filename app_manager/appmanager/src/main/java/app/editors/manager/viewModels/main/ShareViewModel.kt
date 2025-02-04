@@ -156,7 +156,7 @@ class ShareViewModel(
     fun setExternalLinkAccess(access: Access) {
         request {
             shareApi.getExternalLink(itemId, RequestExternal(share = access.code))
-            _state.update { it.copy(externalLink = it.externalLink.copy(_access = access.code.toString())) }
+            _state.update { it.copy(externalLink = it.externalLink.copy(_access = access.code)) }
         }
     }
 
@@ -185,7 +185,7 @@ class ShareViewModel(
                         state.copy(
                             groups = state.groups.map { group ->
                                 if (group.sharedTo.id == userId)
-                                    group.copy(_access = access.toString()) else
+                                    group.copy(_access = access.code) else
                                     group
                             }
                         )
@@ -193,7 +193,7 @@ class ShareViewModel(
                         state.copy(
                             users = state.users.map { user ->
                                 if (user.sharedTo.id == userId)
-                                    user.copy(_access = access.toString()) else
+                                    user.copy(_access = access.code) else
                                     user
                             }
                         )
