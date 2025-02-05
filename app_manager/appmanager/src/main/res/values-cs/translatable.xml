@@ -769,6 +769,7 @@
     <string name="rooms_info_copy_link_to_clipboard">Odkaz byl úspěšně zkopírován do schránky</string>
     <string name="rooms_info_admin_title">Správa (%d)</string>
     <string name="rooms_info_users_title">Uživatelé (%1d)</string>
+    <string name="rooms_info_guests_title">Hosté (%1d)</string>
     <string name="rooms_info_expected_title">Očekávaní uživatelé (%1d)</string>
     <string name="rooms_info_link_expired">Platnost odkazu vypršela</string>
     <string name="rooms_info_link_expired_full">Platnost odkazu vypršela a byl zakázán</string>
