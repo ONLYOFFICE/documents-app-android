@@ -612,6 +612,7 @@
     <string name="rooms_info_copy_link_to_clipboard">Линкът беше успешно копиран в клипборда</string>
     <string name="rooms_info_admin_title">Администрация (%d)</string>
     <string name="rooms_info_users_title">Потребители (%1d)</string>
+    <string name="rooms_info_guests_title">Гости (%1d)</string>
     <string name="rooms_info_expected_title">Очаквани потребители (%1d)</string>
     <string name="rooms_info_link_expired">Линкът изтече</string>
     <string name="rooms_info_link_expired_full">Линкът изтече и беше деактивиран</string>

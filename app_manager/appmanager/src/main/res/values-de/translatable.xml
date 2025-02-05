@@ -620,6 +620,7 @@
     <string name="rooms_info_copy_link_to_clipboard">Link erfolgreich in die Zwischenablage kopiert</string>
     <string name="rooms_info_admin_title">Verwaltung (%d)</string>
     <string name="rooms_info_users_title">Benutzer (%1d)</string>
+    <string name="rooms_info_guests_title">Gäste (%1d)</string>
     <string name="rooms_info_expected_title">Erwartete Benutzer (%1d)</string>
     <string name="rooms_info_link_expired">Der Link ist abgelaufen</string>
     <string name="rooms_info_link_expired_full">Der Link ist abgelaufen und wurde deaktiviert</string>

@@ -618,6 +618,7 @@
     <string name="rooms_info_copy_link_to_clipboard">Link został pomyślnie skopiowany do schowka</string>
     <string name="rooms_info_admin_title">Administracja (%d)</string>
     <string name="rooms_info_users_title">Użytkownicy (%1d)</string>
+    <string name="rooms_info_guests_title">Goście (%1d)</string>
     <string name="rooms_info_expected_title">Oczekiwani użytkownicy (%1d)</string>
     <string name="rooms_info_link_expired">Link wygasł</string>
     <string name="rooms_info_link_expired_full">Link wygasł i został wyłączony</string>

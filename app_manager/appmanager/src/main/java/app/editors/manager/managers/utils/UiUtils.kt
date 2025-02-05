@@ -289,8 +289,8 @@ fun Access.toUi(): AccessUI {
 
 val User.typeTitle: Int
     get() = when (type) {
-        UserType.DocSpaceOwner -> R.string.share_user_type_room_docspace_owner
-        UserType.DocSpaceAdmin -> R.string.share_user_type_room_docspace_admin
+        UserType.Owner -> R.string.share_user_type_room_docspace_owner
+        UserType.Admin -> R.string.share_user_type_room_docspace_admin
         UserType.RoomAdmin -> R.string.share_user_type_room_admin
         UserType.User -> R.string.profile_type_user
         UserType.Guest -> R.string.profile_type_visitor

@@ -677,6 +677,7 @@
     <string name="rooms_info_copy_link_to_clipboard">链接已成功复制到剪贴板</string>
     <string name="rooms_info_admin_title">管理 (%d)</string>
     <string name="rooms_info_users_title">用户 (%1d)</string>
+    <string name="rooms_info_guests_title">访客 (%1d)</string>
     <string name="rooms_info_expected_title">预期用户 (%1d)</string>
     <string name="rooms_info_link_expired">链接已过期</string>
     <string name="rooms_info_link_expired_full">链接已过期并已被禁用</string>
