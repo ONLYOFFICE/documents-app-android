@@ -831,4 +831,12 @@
     <string name="rooms_invalid_password">Senha inválida</string>
     <string name="rooms_invite_access_description">Convidados, usuários e grupos não podem ser designados como gerentes de sala. Somente os administradores da sala e do DocSpace são adequados para a função especificada.</string>
     <string name="rooms_user_type_employees">Funcionários</string>
+    <string name="whats_new_1">Integração aprimorada com o DocSpace v3.0</string>
+    <string name="whats_new_1_desc">Colabore em documentos com as últimas atualizações e melhorias para o ONLYOFFICE DocSpace v3.0.</string>
+    <string name="whats_new_2">nterface com guias para tablets e desktops</string>
+    <string name="whats_new_2_desc">Simplifique a navegação e a edição com a barra de ferramentas com guias em tablets e dispositivos de desktop.</string>
+    <string name="whats_new_3">Novos tipos de gráficos</string>
+    <string name="whats_new_3_desc">Adicione novos tipos de gráficos para visualizar seus dados para apresentações e análises detalhadas.</string>
+    <string name="whats_new_4">Visualize arquivos Apple Pages e HWP</string>
+    <string name="whats_new_4_desc">Abra e visualize documentos nos formatos Apple Pages e Hangul Word.</string>
 </resources>

@@ -889,4 +889,12 @@
     <string name="rooms_invalid_password">密码无效</string>
     <string name="rooms_invite_access_description">无法将访客、用户和群组指定为房间管理员。只有房间和协作空间管理员才适合指定角色。</string>
     <string name="rooms_user_type_employees">员工</string>
+    <string name="whats_new_1">增强与协作空间 3.0 版本的集成</string>
+    <string name="whats_new_1_desc">使用 ONLYOFFICE 协作空间 3.0 版本的最新更新和改进，高效协作处理文档。</string>
+    <string name="whats_new_2">适用于平板电脑和台式机的选项卡式界面</string>
+    <string name="whats_new_2_desc">使用平板电脑和台式机上的选项卡式工具栏简化导航和编辑过程。</string>
+    <string name="whats_new_3">新增图表类型</string>
+    <string name="whats_new_3_desc">新增图表类型，实现数据可视化，便于深入演示与分析。</string>
+    <string name="whats_new_4">查看 Apple Pages 和 HWP 文件</string>
+    <string name="whats_new_4_desc">支持打开并查看 Apple Pages 和 Hangul Word 格式的文档。</string>
 </resources>

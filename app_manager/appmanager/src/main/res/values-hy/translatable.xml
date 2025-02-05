@@ -1001,4 +1001,12 @@
     <string name="rooms_invalid_password">Անվավեր գաղտնաբառ</string>
     <string name="rooms_invite_access_description">Հյուրերը, օգտատերերը և խմբերը չեն կարող նշանակվել որպես Սենյակի մենեջերներ: Միայն Սենյակի և DocSpace-ի ադմինները հարմար են նշված դերի համար:</string>
     <string name="rooms_user_type_employees">Աշխատակիցներ</string>
+    <string name="whats_new_1">Ընդլայնված ինտեգրացիա DocSpace 3.0 տարբերակի հետ</string>
+    <string name="whats_new_1_desc">Համագործակցեք փաստաթղթերում՝ ONLYOFFICE DocSpace 3.0 տարբերակի վերջին թարմացումներով և բարելավումներով:</string>
+    <string name="whats_new_2">Ներդիրներով ինտերֆեյս պլանշետների և համակարգիչների համար</string>
+    <string name="whats_new_2_desc">Պարզեցրեք նավիգացիան և խմբագրումը ներդիրներով գործիքագոտու միջոցով՝ պլանշետների և համակարգչային սարքերի համար:</string>
+    <string name="whats_new_3">Գծապատկերների նոր տեսակներ</string>
+    <string name="whats_new_3_desc">Ավելացրեք գծապատկերների նոր տեսակներ՝ վիզուալիզացնելու ձեր տվյալները մանրամասն ներկայացումների և վերլուծությունների համար:</string>
+    <string name="whats_new_4">Դիտեք Apple էջերը և HWP ֆայլերը</string>
+    <string name="whats_new_4_desc">Բացեք և դիտեք փաստաթղթերը Apple Pages և Hangul Word ձևաչափերով:</string>
 </resources>

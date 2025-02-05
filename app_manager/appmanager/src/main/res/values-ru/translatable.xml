@@ -854,4 +854,12 @@
     <string name="rooms_invalid_password">Неверный пароль</string>
     <string name="rooms_invite_access_description">Гости, Пользователи и Группы не могут быть назначены менеджерами комнат. Для указанной роли подходят только администраторы комнат и DocSpace.</string>
     <string name="rooms_user_type_employees">Сотрудники</string>
+    <string name="whats_new_1">Улучшенная совместимость с DocSpace v3.0 </string>
+    <string name="whats_new_1_desc">Работайте с документами еще удобнее благодаря последним обновлениям и улучшениям в ONLYOFFICE DocSpace v3.0. </string>
+    <string name="whats_new_2">Интерфейс с вкладками для планшетов и настольных устройств</string>
+    <string name="whats_new_2_desc">Используйте более удобный интерфейс для редактирования для планшетов и настольных устройств.</string>
+    <string name="whats_new_3">Новые типы диаграмм</string>
+    <string name="whats_new_3_desc">Добавляйте новые типы диаграмм для визуализации данных в презентациях и аналитике.</string>
+    <string name="whats_new_4">Просмотр файлов Apple Pages и HWP</string>
+    <string name="whats_new_4_desc">Открывайте и просматривайте документы в форматах Apple Pages и Hangul Word.</string>
 </resources>

@@ -833,4 +833,12 @@ Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</
     <string name="rooms_invalid_password">Ungültiges Passwort</string>
     <string name="rooms_invite_access_description">Gäste, Benutzer und Gruppen können nicht als Raummanager zugewiesen werden. Nur Raum- und DocSpace-Admins sind für die angegebene Rolle geeignet.</string>
     <string name="rooms_user_type_employees">Mitarbeiter</string>
+    <string name="whats_new_1">Unterstützung für Apple Pages und HWP-Dateien</string>
+    <string name="whats_new_1_desc">Arbeiten Sie gemeinsam an Dokumenten mit den neuesten Verbesserungen für ONLYOFFICE DocSpace 3.0.</string>
+    <string name="whats_new_2">Oberfläche mit Registerkarten für Tablets und Desktops</string>
+    <string name="whats_new_2_desc">Vereinfachen Sie die Navigation und Bearbeitung mit der Symbolleiste mit Registerkarten auf Tablets und Desktop-Geräten.</string>
+    <string name="whats_new_3">Neue Diagrammtypen</string>
+    <string name="whats_new_3_desc">Fügen Sie neue Diagrammtypen hinzu, um Ihre Daten für detaillierte Präsentationen und Analysen zu visualisieren.</string>
+    <string name="whats_new_4">Unterstützung für Apple Pages und HWP-Dateien</string>
+    <string name="whats_new_4_desc">Öffnen Sie Dokumente in den Formaten Apple Pages und Hangul Word.</string>
 </resources>

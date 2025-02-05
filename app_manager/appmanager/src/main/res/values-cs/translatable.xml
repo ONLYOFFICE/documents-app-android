@@ -981,4 +981,12 @@
     <string name="rooms_invalid_password">Neplatné heslo</string>
     <string name="rooms_invite_access_description">Hosté, uživatelé a skupiny nemohou být přiřazeni jako správci místností. Pro zadanou roli jsou vhodní pouze správci místnosti a prostoru DocSpace.</string>
     <string name="rooms_user_type_employees">Zaměstnanci</string>
+    <string name="whats_new_1">Rozšířená integrace s DocSpace v3.0</string>
+    <string name="whats_new_1_desc">Spolupracujte na dokumentech díky nejnovějším aktualizacím a vylepšením pro ONLYOFFICE DocSpace v3.0.</string>
+    <string name="whats_new_2">Rozhraní s kartami pro tablety a stolní počítače</string>
+    <string name="whats_new_2_desc">Zjednodušte navigaci a úpravy pomocí panelu nástrojů s kartami na tabletech a stolních zařízeních.</string>
+    <string name="whats_new_3">Nové typy tabulek</string>
+    <string name="whats_new_3_desc">Přidejte nové typy grafů pro vizualizaci dat pro podrobné prezentace a analýzy.</string>
+    <string name="whats_new_4">Zobrazení souborů Apple Pages a HWP</string>
+    <string name="whats_new_4_desc">Otevírejte a prohlížejte si dokumenty ve formátech Apple Pages a Hangul Word.</string>
 </resources>

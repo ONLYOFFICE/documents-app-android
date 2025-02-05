@@ -52,12 +52,17 @@ class WhatsNewDialog : ComposeDialogFragment() {
         Feature(
             title = R.string.whats_new_2,
             description = R.string.whats_new_2_desc,
-            icon = R.drawable.ic_new_tabbed
+            icon = R.drawable.ic_new_2
         ),
         Feature(
             title = R.string.whats_new_3,
             description = R.string.whats_new_3_desc,
-            icon = R.drawable.ic_new_review
+            icon = R.drawable.ic_new_3
+        ),
+        Feature(
+            title = R.string.whats_new_4,
+            description = R.string.whats_new_4_desc,
+            icon = R.drawable.ic_new_4
         ),
     )
 
@@ -108,7 +113,7 @@ fun FeatureItem(feature: Feature) {
     }
 }
 
-@Preview
+@Preview(locale = "zh")
 @Composable
 private fun WhatsNewScreenPreview() {
     ManagerTheme {
@@ -116,24 +121,24 @@ private fun WhatsNewScreenPreview() {
            WhatsNewScreen(
                features = listOf(
                    Feature(
-                       title = lib.toolkit.base.R.string.app_title,
-                       description = lib.toolkit.base.R.string.app_title,
-                       icon = R.drawable.ic_vdr_room
+                       title = R.string.whats_new_1,
+                       description = R.string.whats_new_1_desc,
+                       icon = R.drawable.ic_new_onlyoffice
                    ),
                    Feature(
-                       title = lib.toolkit.base.R.string.app_title,
-                       description = lib.toolkit.base.R.string.app_title,
-                       icon = R.drawable.ic_collaboration_room
+                       title = R.string.whats_new_2,
+                       description = R.string.whats_new_2_desc,
+                       icon = R.drawable.ic_new_2
                    ),
                    Feature(
-                       title = lib.toolkit.base.R.string.app_title,
-                       description = lib.toolkit.base.R.string.app_title,
-                       icon = R.drawable.ic_public_room
+                       title = R.string.whats_new_3,
+                       description = R.string.whats_new_3_desc,
+                       icon = R.drawable.ic_new_3
                    ),
                    Feature(
-                       title = lib.toolkit.base.R.string.app_title,
-                       description = lib.toolkit.base.R.string.app_title,
-                       icon = R.drawable.ic_custom_room
+                       title = R.string.whats_new_4,
+                       description = R.string.whats_new_4_desc,
+                       icon = R.drawable.ic_new_4
                    )
                ),
                onDismiss = {}
