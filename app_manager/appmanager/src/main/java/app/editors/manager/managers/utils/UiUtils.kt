@@ -261,7 +261,7 @@ fun Access.toUi(): AccessUI {
 
         Access.Review -> arrayOf(
             R.drawable.ic_access_review,
-            R.string.share_access_room_viewer
+            R.string.share_access_room_reviewer
         )
 
         Access.RoomManager -> arrayOf(
