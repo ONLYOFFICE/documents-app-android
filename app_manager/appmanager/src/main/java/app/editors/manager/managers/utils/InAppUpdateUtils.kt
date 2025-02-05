@@ -3,6 +3,7 @@ package app.editors.manager.managers.utils
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.fragment.app.FragmentActivity
 import app.editors.manager.BuildConfig
 import app.editors.manager.ui.fragments.onboarding.WhatsNewDialog
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit
 object InAppUpdateUtils {
 
     private const val REQUEST_CODE_UPDATE = 100
-    private const val PREFS_NAME = "InAppUpdatePrefs"
+    const val PREFS_NAME = "InAppUpdatePrefs"
     private const val LAST_VERSION_KEY = "last_version"
     private const val UPDATE_COMPLETED_KEY = "update_completed"
     private const val LAST_UPDATE_PROMPT_KEY = "last_update_prompt"
@@ -49,7 +50,7 @@ object InAppUpdateUtils {
 
                 val appUpdateOptions = AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
                 appUpdateManager.startUpdateFlowForResult(appUpdateInfo, activity, appUpdateOptions, REQUEST_CODE_UPDATE)
-                prefs.edit().putLong(LAST_UPDATE_PROMPT_KEY, currentTime).apply()
+                prefs.edit { putLong(LAST_UPDATE_PROMPT_KEY, currentTime) }
             }
         }
 
@@ -69,9 +70,9 @@ object InAppUpdateUtils {
 
     private fun setUpdateCompleted(context: Context, completed: Boolean) {
         val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val editor = prefs.edit()
-        editor.putBoolean(UPDATE_COMPLETED_KEY, completed)
-        editor.apply()
+        prefs.edit {
+            putBoolean(UPDATE_COMPLETED_KEY, completed)
+        }
     }
 
     fun shouldShowWhatsNew(context: Context, currentVersion: String = BuildConfig.VERSION_NAME): Boolean {
@@ -79,7 +80,7 @@ object InAppUpdateUtils {
         val lastVersion = prefs.getString(LAST_VERSION_KEY, null)
         val updateCompleted = prefs.getBoolean(UPDATE_COMPLETED_KEY, false)
         return if (lastVersion != currentVersion || updateCompleted) {
-            prefs.edit().putString(LAST_VERSION_KEY, currentVersion).apply()
+            prefs.edit { putString(LAST_VERSION_KEY, currentVersion) }
             setUpdateCompleted(context, false)
             true
         } else {

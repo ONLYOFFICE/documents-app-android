@@ -63,10 +63,7 @@ class LocalContentTools @Inject constructor(val context: Context) {
         private const val PREFS_NAME = "sample_prefs"
         private const val KEY_FIRST_LAUNCH = "first_launch"
 
-        fun getDir(context: Context, isPublic: Boolean = true): String {
-            if (isPublic) {
-                return "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath}/${BuildConfig.ROOT_FOLDER}"
-            }
+        fun getDir(context: Context): String {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
                 "${context.filesDir.path}/${BuildConfig.ROOT_FOLDER}"
             } else {

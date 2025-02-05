@@ -373,6 +373,12 @@ class RoomInfoFragment : ComposeDialogFragment() {
                     )
                     ShareUsersList(
                         portal = portal,
+                        shareList = groupedShareList.getOrElse(ShareType.Guests, ::emptyList),
+                        type = ShareType.Guests,
+                        onClick = onSetUserAccess
+                    )
+                    ShareUsersList(
+                        portal = portal,
                         shareList = groupedShareList.getOrElse(ShareType.Expected, ::emptyList),
                         type = ShareType.Expected,
                         onClick = onSetUserAccess

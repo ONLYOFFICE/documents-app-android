@@ -617,6 +617,7 @@
     <string name="rooms_info_copy_link_to_clipboard">Link copiato con successo negli appunti</string>
     <string name="rooms_info_admin_title">Amministrazione (%d)</string>
     <string name="rooms_info_users_title">Utenti (%1d)</string>
+    <string name="rooms_info_guests_title">Ospiti (%1d)</string>
     <string name="rooms_info_expected_title">Utenti previsti (%1d)</string>
     <string name="rooms_info_link_expired">Il link è scaduto</string>
     <string name="rooms_info_link_expired_full">Il link è scaduto ed è stato disattivato</string>

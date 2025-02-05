@@ -58,7 +58,7 @@ fun PlaceholderView(
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = subtitle + subtitle,
+                    text = subtitle,
                     style = MaterialTheme.typography.subtitle1,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colors.colorTextSecondary

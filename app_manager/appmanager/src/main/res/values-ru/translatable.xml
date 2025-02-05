@@ -640,6 +640,7 @@
     <string name="rooms_info_copy_link_to_clipboard">Ссылка успешно скопирована в буфер обмена</string>
     <string name="rooms_info_admin_title">Администрация (%d)</string>
     <string name="rooms_info_users_title">Пользователи (%1d)</string>
+    <string name="rooms_info_guests_title">Гости (%1d)</string>
     <string name="rooms_info_expected_title">Ожидаемые пользователи (%1d)</string>
     <string name="rooms_info_link_expired">Срок действия ссылки истек</string>
     <string name="rooms_info_link_expired_full">Срок действия ссылки истек, и она была отключена</string>
