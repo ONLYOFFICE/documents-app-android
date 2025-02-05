@@ -159,7 +159,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        InAppUpdateUtils.handleActivityResult(requestCode, resultCode, this)  // Handle update result
+        InAppUpdateUtils.handleActivityResult(requestCode, resultCode, this)
         if (resultCode == RESULT_CANCELED) {
             when (requestCode) {
                 REQUEST_ACTIVITY_PORTAL -> {
@@ -220,7 +220,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         checkState(savedInstanceState)
 
         lifecycleScope.launch {
-            delay(5000)
+            delay(3000)
             InAppUpdateUtils.checkForUpdate(this@MainActivity)
         }
 

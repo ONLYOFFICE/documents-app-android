@@ -31,7 +31,7 @@ abstract class ListBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
     }
     override fun initSelecting(element: T): Boolean {
         val isSelected = super.initSelecting(element)
-        contextButton.isVisible = !adapter.isSelectMode
+        contextButton.isVisible = !adapter.isSelectMode && adapter.pickerMode != PickerMode.Folders
         return isSelected
     }
 

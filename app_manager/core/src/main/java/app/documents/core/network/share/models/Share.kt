@@ -1,7 +1,8 @@
 package app.documents.core.network.share.models
 
+import androidx.core.text.isDigitsOnly
 import app.documents.core.model.cloud.Access
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 enum class ShareType {
@@ -11,7 +12,7 @@ enum class ShareType {
 
 @Serializable
 data class Share(
-    @SerializedName("access") private val _access: String = Access.None.type,
+    @SerialName("access") private val _access: String = Access.None.type,
     override val sharedTo: SharedTo = SharedTo(),
     val isLocked: Boolean = false,
     override val isOwner: Boolean = false,
@@ -20,9 +21,9 @@ data class Share(
 ) : ShareEntity {
 
     override val access: Access
-        get() = runCatching {
+        get() = if (_access.isDigitsOnly()) {
             Access.get(_access.toInt())
-        }.getOrElse {
+        } else {
             Access.get(_access)
         }
 

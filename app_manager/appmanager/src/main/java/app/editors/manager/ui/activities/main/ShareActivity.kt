@@ -28,15 +28,17 @@ class ShareActivity : BaseAppActivity() {
 
     companion object {
         private const val KEY_SHARE_ITEM_ID: String = "KEY_SHARE_ITEM_ID"
+        private const val KEY_SHARE_ITEM_EXTENSION: String = "KEY_SHARE_ITEM_EXTENSION"
         private const val KEY_SHARE_IS_FOLDER: String = "KEY_SHARE_IS_FOLDER"
         private const val KEY_EDITOR_COLOR: String = "KEY_EDITOR_COLOR"
 
         @JvmStatic
-        fun show(fragment: Fragment, itemId: String, isFolder: Boolean) {
+        fun show(fragment: Fragment, itemId: String, isFolder: Boolean, extension: String) {
             fragment.startActivityForResult(
                 Intent(fragment.context, ShareActivity::class.java).apply {
                     putExtra(KEY_SHARE_ITEM_ID, itemId)
                     putExtra(KEY_SHARE_IS_FOLDER, isFolder)
+                    putExtra(KEY_SHARE_ITEM_EXTENSION, extension)
                 },
                 REQUEST_ACTIVITY_SHARE
             )
@@ -57,9 +59,10 @@ class ShareActivity : BaseAppActivity() {
                             viewModel = viewModel {
                                 ShareSettingsViewModel(
                                     roomProvider = roomProvider,
-                                    fileId = intent.getStringExtra(KEY_SHARE_ITEM_ID).orEmpty()
+                                    fileId = intent.getStringExtra(KEY_SHARE_ITEM_ID).orEmpty(),
                                 )
                             },
+                            fileExtension = intent.getStringExtra(KEY_SHARE_ITEM_EXTENSION).orEmpty(),
                             onSendLink = { link ->
                                 openSendTextActivity(
                                     title = getString(R.string.toolbar_menu_main_share),

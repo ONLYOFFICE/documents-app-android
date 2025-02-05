@@ -30,6 +30,7 @@ import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.UserIdInvitation
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.CloudFileProvider.Companion.STATIC_DOC_URL
+import app.documents.core.providers.CloudFileProvider.RoomCallback
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -103,7 +104,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         api = context.api
         roomProvider = context.roomProvider
         fileProvider = context.cloudFileProvider.apply {
-            roomCallback = object : CloudFileProvider.RoomCallback {
+            roomCallback = object : RoomCallback {
 
                 override fun isRoomRoot(id: String?): Boolean {
                     val parts = modelExplorerStack.last()?.pathParts.orEmpty()
@@ -507,38 +508,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun removeShareSelected() {
-        if (modelExplorerStack.countSelectedItems > 0) {
-            val deleteShare = RequestDeleteShare()
-            deleteShare.folderIds = modelExplorerStack.selectedFoldersIds
-            deleteShare.fileIds = modelExplorerStack.selectedFilesIds
-            disposable.add(Observable
-                .fromCallable { api?.deleteShare(deleteShare)?.execute() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    modelExplorerStack.removeSelected()
-                    resetDatesHeaders()
-                    setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-                    viewState.onActionBarTitle("0")
-                    viewState.onDeleteBatch(getListWithHeaders(modelExplorerStack.last(), true))
-                    onBatchOperations()
-                }) { throwable: Throwable -> fetchError(throwable) })
-        }
-
-    }
-
-    fun removeShare() {
-        if (modelExplorerStack.countSelectedItems > 0) {
-            viewState.onDialogQuestion(
-                context.getString(R.string.dialogs_question_share_remove), null,
-                TAG_DIALOG_ACTION_REMOVE_SHARE
-            )
-        } else {
-            viewState.onSnackBar(context.getString(R.string.operation_empty_lists_data))
-        }
-    }
-
     fun saveExternalLinkToClipboard() {
         itemClicked?.let { item ->
             presenterScope.launch {
@@ -737,7 +706,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         viewState.onOpenDocumentServer(cloudFile, result.info, editType)
                     }
                 }) { error ->
-                    fetchError(error)
+//                    if (error is HttpException && error.code() == 415) {
+//                        downloadTempFile(cloudFile, EditType.VIEW)
+//                    } else {
+                        fetchError(error)
+//                    }
                 }
             )
         }
@@ -1176,6 +1149,23 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     }
 
+    // use for operation in order to filter by room
+    fun setFilterByRoom(roomType: Int) {
+        filters = mapOf(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM to roomType.toString())
+        (fileProvider as CloudFileProvider).roomCallback = object : RoomCallback {
+            override fun isRoomRoot(id: String?): Boolean {
+                val parts = modelExplorerStack.last()?.pathParts.orEmpty()
+                return if (parts.isNotEmpty()) {
+                    parts[0].id == id
+                } else {
+                    modelExplorerStack.isStackEmpty || modelExplorerStack.isRoot
+                }
+            }
+            override fun isArchive(): Boolean = false
+            override fun isRecent(): Boolean = false
+        }
+    }
+
     fun duplicateRoom() {
         val workData = Data.Builder()
             .putString(RoomDuplicateWork.KEY_ROOM_ID, roomClicked?.id)
@@ -1230,7 +1220,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private fun getInternalLink(folder: CloudFolder): String {
         return "${context.accountOnline?.portal?.urlWithScheme}" + if (folder.isRoom) {
-            "rooms/shared/filter?folder=${folder.id}"
+            "/rooms/shared/filter?folder=${folder.id}"
         } else {
             "rooms/shared/${folder.id}/filter?folder=${folder.id}"
         }

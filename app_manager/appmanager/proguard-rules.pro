@@ -46,6 +46,8 @@
 -dontwarn android.content.res.XmlResourceParser
 -keep class org.xmlpull.v1.** { *; }
 -keep class android.content.res.XmlResourceParser { *; }
+-keep class org.simpleframework.xml.** { *; }
+-keepclassmembers class org.simpleframework.xml.** { *; }
 
 # Keep `INSTANCE.serializer()` of serializable objects.
 -keep @kotlinx.serialization.Serializable class * {*;}

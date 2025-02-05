@@ -40,6 +40,7 @@ import app.editors.manager.ui.activities.main.AboutScreen
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.compose.locale.AppLocalePickerScreen
 import app.editors.manager.ui.compose.passcode.PasscodeMainScreen
+import app.editors.manager.ui.fragments.onboarding.WhatsNewDialog
 import app.editors.manager.viewModels.main.AppSettingsEffect
 import app.editors.manager.viewModels.main.AppSettingsState
 import app.editors.manager.viewModels.main.AppSettingsViewModel
@@ -165,6 +166,7 @@ class AppSettingsFragment : BaseFragment() {
                     acceptListener = viewModel::clearFonts
                 )
             }
+
             R.id.add_font -> {
                 FontPicker(
                     activityResultRegistry = requireActivity().activityResultRegistry,
@@ -185,6 +187,7 @@ class AppSettingsFragment : BaseFragment() {
                 viewModel.cancelJob()
                 hideDialog()
             }
+
             else -> super.onCancelClick(dialogs, tag)
         }
     }
@@ -396,6 +399,14 @@ class AppSettingsFragment : BaseFragment() {
                     arrowVisible = true,
                     dividerVisible = false,
                     onClick = onAboutClick
+                )
+                AppArrowItem(
+                    title = R.string.whats_new_title,
+                    arrowVisible = true,
+                    dividerVisible = false,
+                    onClick = {
+                        WhatsNewDialog.show(requireActivity())
+                    }
                 )
                 AppArrowItem(
                     title = R.string.app_settings_main_help,

@@ -2,8 +2,9 @@ package app.documents.core.network.manager.models.explorer
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-class ExternalAccessRights {
+class ExternalAccessRights: Serializable {
     @SerializedName("Editing")
     @Expose
     var editing: Boolean = false
