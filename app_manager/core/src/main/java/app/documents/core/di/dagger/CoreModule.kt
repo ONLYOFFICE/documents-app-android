@@ -1,12 +1,12 @@
 package app.documents.core.di.dagger
 
 import android.content.Context
-import app.documents.core.account.AccountManager
 import app.documents.core.database.di.DatabaseModule
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.exception.CloudAccountNotFoundException
 import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.interceptors.BaseInterceptor
+import app.documents.core.network.common.interceptors.CookieInterceptor
 import app.documents.core.network.login.LoginInterceptor
 import app.documents.core.network.login.LoginOkHttpClient
 import app.documents.core.network.manager.models.explorer.PathPart
@@ -19,6 +19,7 @@ import lib.toolkit.base.managers.utils.TimeUtils
 import okhttp3.OkHttpClient
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Qualifier
+import javax.inject.Singleton
 
 @Qualifier
 annotation class Token
@@ -41,20 +42,41 @@ object CoreModule {
     fun provideJson(): Json = json
 
     @Provides
-    fun provideOkHttpClient(
+    @Singleton
+    fun provideCookieInterceptor(): CookieInterceptor {
+        return CookieInterceptor()
+    }
+
+    @Provides
+    fun provideBaseInterceptor(
+        @Token token: String,
         context: Context,
+    ): BaseInterceptor {
+        return BaseInterceptor(token, context)
+    }
+
+    @Provides
+    fun provideOkHttpClient(
         cloudAccount: CloudAccount?,
-        accountManager: AccountManager
+        baseInterceptor: BaseInterceptor,
+        cookieInterceptor: CookieInterceptor
     ): OkHttpClient {
-        if (cloudAccount == null) throw CloudAccountNotFoundException
-        val token = accountManager.getToken(cloudAccount.accountName)
-        return NetworkClient.getOkHttpBuilder(cloudAccount.portal.settings, BaseInterceptor(token, context)).build()
+        return NetworkClient
+            .getOkHttpBuilder(
+                cloudAccount?.portal?.settings ?: throw CloudAccountNotFoundException,
+                baseInterceptor,
+                cookieInterceptor
+            )
+            .build()
     }
 
     @Provides
     @LoginOkHttpClient
     fun provideLoginOkHttpClient(context: Context, cloudAccount: CloudAccount?): OkHttpClient {
-        return NetworkClient.getOkHttpBuilder(cloudAccount?.portal?.settings, LoginInterceptor(context)).build()
+        return NetworkClient.getOkHttpBuilder(
+            cloudAccount?.portal?.settings,
+            LoginInterceptor(context)
+        ).build()
     }
 
     @Provides

@@ -3,6 +3,7 @@ package lib.compose.ui.views
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.BasicTextField
@@ -22,9 +24,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -39,21 +40,28 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 
+@Immutable
+data class ChipList(
+    val list: List<String> = emptyList()
+)
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChipsTextField(
     modifier: Modifier = Modifier,
     label: String,
-    chips: List<ChipData>,
+    chips: ChipList,
     onChipAdd: (String) -> Unit,
-    onChipDelete: (ChipData) -> Unit
+    onChipDelete: (String) -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     var focused by remember { mutableStateOf(false) }
@@ -81,6 +89,13 @@ fun ChipsTextField(
             .widthIn(min = 48.dp)
             .heightIn(min = 56.dp)
             .height(IntrinsicSize.Min)
+            .pointerInput(Unit) {
+                detectTapGestures {
+                    focused = false
+                    typing = false
+                    typeValue = ""
+                }
+            }
     ) {
         Box(
             modifier = Modifier
@@ -95,13 +110,13 @@ fun ChipsTextField(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                chips.forEach { chipData ->
-                    key(chipData) {
+                chips.list.forEach { text ->
+                    key(text) {
                         AppSelectableChip(
                             selected = true,
-                            onClick = { onChipDelete.invoke(chipData) }
+                            onClick = { onChipDelete.invoke(text) }
                         ) {
-                            Text(text = chipData.text)
+                            Text(text = text, color = MaterialTheme.colors.onPrimary)
                         }
                     }
                 }
@@ -126,7 +141,7 @@ fun ChipsTextField(
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                             keyboardActions = KeyboardActions(
                                 onDone = {
-                                    if (chips.any { it.text == typeValue }) {
+                                    if (chips.list.any { it == typeValue }) {
                                         error = true
                                         return@KeyboardActions
                                     }
@@ -153,7 +168,8 @@ fun ChipsTextField(
                         onClick = { typing = true },
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Default.Add,
+                                modifier = Modifier.size(20.dp),
+                                imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_add_small),
                                 contentDescription = null
                             )
                         }
@@ -172,9 +188,9 @@ fun ChipsTextField(
 private fun Preview() {
     val list = remember {
         mutableStateListOf(
-            ChipData("one"),
-            ChipData("two"),
-            ChipData("threethreethreethree")
+            "one",
+            "two",
+            "threethreethreethree"
         )
     }
     ManagerTheme {
@@ -186,9 +202,9 @@ private fun Preview() {
         ) {
             ChipsTextField(
                 label = "add tag",
-                chips = list,
+                chips = ChipList(list),
                 onChipDelete = { list.remove(it) },
-                onChipAdd = { list.add(ChipData(it)) },
+                onChipAdd = { list.add(it) },
             )
         }
     }
@@ -198,9 +214,7 @@ private fun Preview() {
 @Composable
 private fun Preview2() {
     val list = remember {
-        mutableStateListOf(
-            ChipData("one"),
-        )
+        mutableStateListOf("one")
     }
     ManagerTheme {
         Surface(
@@ -211,9 +225,9 @@ private fun Preview2() {
         ) {
             ChipsTextField(
                 label = "add tag",
-                chips = list,
+                chips = ChipList(list),
                 onChipDelete = { list.remove(it) },
-                onChipAdd = { list.add(ChipData(it)) },
+                onChipAdd = { list.add(it) },
             )
         }
     }

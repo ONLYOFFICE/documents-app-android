@@ -4,17 +4,17 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.contracts.ApiContract.Access
 import app.documents.core.network.manager.models.base.Entity
-import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Lifetime
 import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
-import app.editors.manager.ui.fragments.main.AddRoomFragment
 import app.editors.manager.ui.fragments.main.DocsCloudFragment
+import app.editors.manager.ui.fragments.room.add.AddRoomFragment
 import app.editors.manager.viewModels.main.CopyItems
 import lib.toolkit.base.managers.utils.getIntExt
 import lib.toolkit.base.managers.utils.getSerializableExt
@@ -93,17 +93,9 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
     }
 
     override fun onDocsGet(list: List<Entity>?) {
-        super.onDocsGet(list?.filterNotFillFormRooms())
+        super.onDocsGet(list)
         setEnabledOperationButtons()
         setCreateFolderClickListener()
-    }
-
-    override fun onDocsRefresh(list: List<Entity>?) {
-        super.onDocsRefresh(list?.filterNotFillFormRooms())
-    }
-
-    override fun onDocsNext(list: List<Entity>?) {
-        super.onDocsNext(list?.filterNotFillFormRooms())
     }
 
     private fun setCreateFolderClickListener() {
@@ -133,27 +125,12 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
                 setEnabledActionButton(security.editAccess || security.editRoom)
                 operationDialogFragment?.setEnabledCreateFolderButton(security.create, isRoomsRoot)
             } else {
-                val editable = current.access in arrayOf(Access.ReadWrite.type, Access.RoomAdmin.type)
+                val editable = current.access in arrayOf(Access.ReadWrite, Access.RoomManager)
                 setEnabledActionButton(editable)
                 operationDialogFragment?.setEnabledCreateFolderButton(editable, isRoomsRoot)
             }
         }
         operationDialogFragment?.setCreateFolderVisible(true)
-    }
-
-    private fun List<Entity>.filterNotFillFormRooms(): List<Entity> {
-        if (operationType != OperationType.COPY_TO_FILL_FORM_ROOM) return this
-        return filter { item ->
-            if (item is CloudFolder) {
-                if (item.isRoom) {
-                    item.roomType == ApiContract.RoomType.FILL_FORMS_ROOM
-                } else {
-                    true
-                }
-            } else {
-                true
-            }
-        }
     }
 
     override fun onDocsBatchOperation() {
@@ -202,6 +179,10 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
         initViews()
         if (savedInstanceState == null) explorer?.let(presenter::setOperationExplorer)
         presenter.checkBackStack()
+
+        if (operationType == OperationType.COPY_TO_FILL_FORM_ROOM) {
+            cloudPresenter.setFilterByRoom(ApiContract.RoomType.FILL_FORMS_ROOM)
+        }
     }
 
     private fun initViews() {
@@ -238,6 +219,26 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
             operationDialogFragment?.setEnabledActionButton(mode.selectedIds.isNotEmpty())
         } else {
             operationDialogFragment?.setEnabledActionButton(enabled)
+        }
+    }
+
+    override fun onRoomLifetime(lifetime: Lifetime?) {
+        if (lifetime != null) {
+            operationDialogFragment?.setToolbarInfo(
+                title = getString(
+                    R.string.rooms_vdr_lifetime_info,
+                    lifetime.value,
+                    when (lifetime.period) {
+                        Lifetime.PERIOD_DAYS -> lib.toolkit.base.R.plurals.days
+                        Lifetime.PERIOD_MONTHS -> lib.toolkit.base.R.plurals.months
+                        Lifetime.PERIOD_YEARS ->lib.toolkit.base.R.plurals.years
+                        else -> return
+                    }.let { resources.getQuantityText(it, lifetime.value) }
+                ),
+                drawable = lib.toolkit.base.R.drawable.ic_expiring
+            )
+        } else {
+            operationDialogFragment?.setToolbarInfo(null)
         }
     }
 }

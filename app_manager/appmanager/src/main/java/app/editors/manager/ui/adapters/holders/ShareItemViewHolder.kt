@@ -4,9 +4,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
+import app.documents.core.model.cloud.Access
 import app.editors.manager.R
 import app.editors.manager.databinding.ListShareSettingsItemBinding
-import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.utils.toUi
 import app.editors.manager.mvp.models.ui.ShareUi
 import com.google.android.material.button.MaterialButton
 import lib.toolkit.base.ui.adapters.holder.BaseViewHolder
@@ -53,7 +54,7 @@ class ShareItemViewHolder(view: View, val listener: (view: View, position: Int) 
             contextButton.isVisible = !item.isOwner
             itemBinding.listShareSettingsOwner.isVisible = item.isOwner
             if (!item.isOwner) {
-                contextButton.setIconResource(ManagerUiUtils.getAccessIcon(item.access))
+                contextButton.setIconResource(Access.get(item.access).toUi().icon)
             }
         }
     }

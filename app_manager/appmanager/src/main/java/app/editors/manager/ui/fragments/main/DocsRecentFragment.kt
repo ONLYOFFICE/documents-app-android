@@ -164,7 +164,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
             Build.VERSION.SDK_INT < Build.VERSION_CODES.R -> {
                 requestReadWritePermission()
             }
-            else -> {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                 presenter.getRecentFiles()
             }
         }
@@ -334,8 +334,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     companion object {
         var TAG: String = DocsRecentFragment::class.java.simpleName
-
-        private const val TAG_STORAGE_ACCESS = "TAG_STORAGE_ACCESS"
 
         fun newInstance(): DocsRecentFragment {
             return DocsRecentFragment()

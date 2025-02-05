@@ -1,11 +1,15 @@
 package app.documents.core.network.manager.models.explorer
 
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import lib.toolkit.base.managers.utils.StringUtils.Extension
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
+import java.time.Duration
+import java.time.Instant
+import java.util.Date
 
 open class CloudFile : Item() {
 
@@ -73,9 +77,16 @@ open class CloudFile : Item() {
     @Expose
     var encrypted = false
 
+    @SerializedName("availableExternalRights")
+    @Expose
+    var availableExternalRights: ExternalAccessRights? = null
+
     @SerializedName("isForm")
     @Expose
     var isForm: Boolean = false
+
+    @SerializedName("expired")
+    val expired: Date? = null
 
     val nextVersion: Int
         get() = ++version
@@ -94,6 +105,14 @@ open class CloudFile : Item() {
 
     val isEditing: Boolean
         get() = (fileStatus and ApiContract.FileStatus.IS_EDITING) != 0
+
+    val isExpiringSoon: Boolean
+        get() {
+            if (expired == null) return false
+            val totalDuration = Duration.between(expired.toInstant(), created.toInstant()).abs()
+            val timePassed =  Duration.between(Instant.now(), created.toInstant()).abs()
+            return timePassed.toMillis() >= totalDuration.toMillis() * 0.9
+        }
 
     private fun String.toIntOrZero(): Int {
         return if (isNotEmpty()) toInt() else 0
@@ -117,17 +136,4 @@ open class CloudFile : Item() {
 }
 
 val CloudFile.allowShare: Boolean
-    get() = run {
-        if (isDenySharing) return@run false
-        if (intAccess in listOf(
-                ApiContract.ShareCode.RESTRICT,
-                ApiContract.ShareCode.VARIES,
-                ApiContract.ShareCode.REVIEW,
-                ApiContract.ShareCode.COMMENT,
-                ApiContract.ShareCode.FILL_FORMS
-            )
-        ) {
-            return false
-        }
-        return@run true
-    }
+    get() = access in listOf(Access.Editor, Access.Read) && !isDenySharing

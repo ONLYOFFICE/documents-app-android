@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.GroupShare
@@ -56,6 +57,7 @@ internal fun ShareUsersList(
     val title = when (type) {
         ShareType.Admin -> app.editors.manager.R.string.rooms_info_admin_title
         ShareType.User -> app.editors.manager.R.string.rooms_info_users_title
+        ShareType.Guests -> app.editors.manager.R.string.rooms_info_guests_title
         ShareType.Group -> app.editors.manager.R.string.rooms_info_groups_title
         ShareType.Expected -> app.editors.manager.R.string.rooms_info_expected_title
     }
@@ -91,7 +93,7 @@ internal fun ShareUsersList(
                                 ShareUserItem(share = share, portal = portal, key = type) {
                                     onClick.invoke(
                                         share.sharedTo.id,
-                                        share.accessCode,
+                                        share.access.code,
                                         share.sharedTo.isOwner || share.sharedTo.isAdmin
                                     )
                                 }
@@ -100,7 +102,7 @@ internal fun ShareUsersList(
                                 ShareUserItem(share = share, portal = portal, key = type) {
                                     onClick.invoke(
                                         share.sharedTo.id,
-                                        share.accessCode,
+                                        share.access.code,
                                         share.sharedTo.isOwner || share.sharedTo.isAdmin
                                     )
                                 }
@@ -145,7 +147,7 @@ private fun ShareUserItem(share: ShareEntity, portal: String?, key: ShareType, o
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = lib.toolkit.base.managers.utils.StringUtils.getAvatarName(share.sharedTo.name),
+                        text = lib.toolkit.base.managers.utils.StringUtils.getAvatarName(share.sharedTo.nameHtml),
                         style = MaterialTheme.typography.h6,
                         color = MaterialTheme.colors.colorTextSecondary
                     )
@@ -154,10 +156,12 @@ private fun ShareUserItem(share: ShareEntity, portal: String?, key: ShareType, o
             Text(
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.body1,
-                text = if (key != ShareType.Group) share.sharedTo.displayName else share.sharedTo.name
+                text = if (key != ShareType.Group) share.sharedTo.displayNameHtml else share.sharedTo.nameHtml,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = stringResource(id = RoomUtils.getAccessTitleOrOwner(share.isOwner, share.accessCode)),
+                text = stringResource(id = RoomUtils.getAccessTitleOrOwner(share.isOwner, share.access.code)),
                 style = MaterialTheme.typography.body2,
                 color = if (share.canEditAccess)
                     MaterialTheme.colors.colorTextSecondary else

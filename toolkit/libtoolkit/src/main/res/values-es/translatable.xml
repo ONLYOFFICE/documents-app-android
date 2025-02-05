@@ -28,4 +28,12 @@
     </plurals>
     <string name="settings_fonts_title">Fuentes</string>
     <string name="settings_view">Ver</string>
+    <plurals name="months">
+        <item quantity="one">mes</item>
+        <item quantity="other">meses</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">año</item>
+        <item quantity="other">años</item>
+    </plurals>
 </resources>

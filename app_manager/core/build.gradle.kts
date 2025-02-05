@@ -56,8 +56,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_17)
-        targetCompatibility(JavaVersion.VERSION_17)
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
@@ -106,9 +106,6 @@ dependencies {
     implementation(libs.retrofit.rx)
     implementation(libs.retrofit.kotlin.serialization)
 
-    // Dropbox
-    implementation(libs.dropboxSdk)
-
     // Rx
     implementation(libs.rx.java)
     implementation(libs.rx.relay)
@@ -119,9 +116,11 @@ dependencies {
     ksp(libs.room.compiler)
 
     //noinspection KaptUsageInsteadOfKsp
-    kapt("com.github.bumptech.glide:compiler:4.12.0")
+    ksp(libs.glideKsp)
     implementation(libs.glide)
     implementation(libs.glideOkhttp) { exclude("glide-parent") }
+
+    implementation(libs.jackson)
 
     testImplementation("junit:junit:4.+")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")

@@ -1,6 +1,7 @@
 package app.editors.manager.viewModels.link
 
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
@@ -15,19 +16,19 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 data class RoomInfoState(
     val isLoading: Boolean = true,
+    val requestLoading: Boolean = false,
     val sharedLinks: List<ExternalLink> = emptyList(),
     val shareList: List<Share> = emptyList()
 )
 
 sealed class RoomInfoEffect {
 
-    data object ShowOperationDialog : RoomInfoEffect()
-    data object CloseDialog : RoomInfoEffect()
     data class Error(val message: Int) : RoomInfoEffect()
     data class Create(val url: String) : RoomInfoEffect()
 }
@@ -56,21 +57,18 @@ class RoomInfoViewModel(private val roomProvider: RoomProvider, private val room
         }
     }
 
-    fun setUserAccess(roomId: String, userId: String, access: Int) {
-        _effect.tryEmit(RoomInfoEffect.ShowOperationDialog)
+    fun setUserAccess(roomId: String, userId: String, access: Access) {
+        _state.update { it.copy(requestLoading = true) }
         operationJob = viewModelScope.launch {
             try {
-                roomProvider.setRoomUserAccess(roomId, userId, access)
+                roomProvider.setRoomUserAccess(roomId, userId, access.code)
                 fetchRoomInfo()
-                _effect.tryEmit(RoomInfoEffect.CloseDialog)
             } catch (httpException: HttpException) {
                 onError(httpException)
+            } finally {
+                _state.update { it.copy(requestLoading = false) }
             }
         }
-    }
-
-    fun cancelOperation() {
-        operationJob?.cancel()
     }
 
     private fun onError(httpException: HttpException) {

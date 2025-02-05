@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import lib.toolkit.base.BuildConfig
@@ -45,7 +47,11 @@ class LocalContentTools @Inject constructor(val context: Context) {
         const val OTS_EXTENSION = "ots"
         const val CSV_EXTENSION = "csv"
         const val PDF_EXTENSION = "pdf"
-
+        const val PAGES_EXTENSION = "pages"
+        const val NUMBERS_EXTENSION = "numbers"
+        const val KEY_EXTENSION = "key"
+        const val HWP_EXTENSION = "hwp"
+        const val HWPX_EXTENSION = "hwpx"
         private const val ASSETS_TEMPLATES = "templates"
 
         const val MIME_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -54,15 +60,22 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         private const val URI_KEY = "external"
 
+        private const val PREFS_NAME = "sample_prefs"
+        private const val KEY_FIRST_LAUNCH = "first_launch"
+
         fun getDir(context: Context): String {
-            return "${context.filesDir.path}/${BuildConfig.ROOT_FOLDER}"
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+                "${context.filesDir.path}/${BuildConfig.ROOT_FOLDER}"
+            } else {
+                "${Environment.getExternalStorageDirectory().absolutePath}/${BuildConfig.ROOT_FOLDER}"
+            }
         }
 
         fun toOOXML(ext: String): String {
             return when (ext) {
-                ODT_EXTENSION, OTT_EXTENSION, DOC_EXTENSION -> DOCX_EXTENSION
-                ODS_EXTENSION, OTS_EXTENSION, XLS_EXTENSION -> XLSX_EXTENSION
-                ODP_EXTENSION, OTP_EXTENSION, PPT_EXTENSION -> PPTX_EXTENSION
+                ODT_EXTENSION, OTT_EXTENSION, DOC_EXTENSION, PAGES_EXTENSION -> DOCX_EXTENSION
+                ODS_EXTENSION, OTS_EXTENSION, XLS_EXTENSION, NUMBERS_EXTENSION -> XLSX_EXTENSION
+                ODP_EXTENSION, OTP_EXTENSION, PPT_EXTENSION, KEY_EXTENSION -> PPTX_EXTENSION
                 else -> throw IllegalArgumentException(".$ext can not be converted to OOXML extension")
             }
         }
@@ -78,19 +91,34 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
     private val contentResolver: ContentResolver = context.contentResolver
     private val uri: Uri = MediaStore.Files.getContentUri(URI_KEY)
-    private lateinit var rootDir: File
+
+    private fun isFirstLaunch(): Boolean {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).getBoolean(KEY_FIRST_LAUNCH, true)
+    }
+
+    private fun setFirstLaunchFlag() {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit().putBoolean(KEY_FIRST_LAUNCH, false).apply()
+    }
 
     fun createRootDir(): File {
-        val rootDir = File(getDir(context))
-        if (rootDir.exists()) {
-            this.rootDir = rootDir
-            return rootDir
+        val publicDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        if (!publicDir.exists()) {
+            publicDir.mkdirs()
         }
-        if (!rootDir.exists() && rootDir.mkdirs()) {
-            addSamples(rootDir)
+
+        if (!File(getDir(context)).exists()) {
+            File(getDir(context)).mkdirs()
         }
-        this.rootDir = rootDir
-        return rootDir
+
+        if (!isFirstLaunch() && File(getDir(context)).exists()) {
+            return File(getDir(context))
+        }
+
+        if (isFirstLaunch() && File(getDir(context)).canWrite()) {
+            addSamples(File(getDir(context)))
+            setFirstLaunchFlag()
+        }
+        return File(getDir(context))
     }
 
     private fun addSamples(rootDir: File) {
@@ -98,12 +126,18 @@ class LocalContentTools @Inject constructor(val context: Context) {
         samplesName?.let {
             it.forEach { name ->
                 val file = File(rootDir.absolutePath + "/" + name)
+                if (file.exists()) {
+                    MediaScannerConnection.scanFile(context, arrayOf(file.toString()), null, null)
+                    return@forEach
+                }
+                file.createNewFile()
+                file.setWritable(true)
                 val inputStream = context.assets.open("samples/$name")
                 val outputStream = FileOutputStream(file)
                 outputStream.write(inputStream.readBytes())
                 inputStream.close()
                 outputStream.close()
-                context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))
+                MediaScannerConnection.scanFile(context, arrayOf(file.toString()), null, null)
             }
         }
     }
@@ -189,6 +223,8 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         if (file.exists()) {
             file = FileUtils.getNewFileName(file)
+        } else {
+            file.createNewFile()
         }
 
         context.assets.open("$ASSETS_TEMPLATES/$path").use { input ->

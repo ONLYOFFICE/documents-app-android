@@ -2,6 +2,7 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.managers.utils.RoomUtils
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 data class InviteUserState(
     val screenLoading: Boolean = false,
     val requestLoading: Boolean = false,
-    val externalLink: ExternalLink?
+    val externalLink: ExternalLink?,
 )
 
 class InviteUserViewModel(
@@ -47,41 +48,40 @@ class InviteUserViewModel(
     fun setInviteLinkEnabled(enabled: Boolean) {
         viewModelScope.launch {
             _state.update { it.copy(requestLoading = true) }
-            if (enabled) {
-                try {
+            try {
+                if (enabled) {
                     val access = RoomUtils.getAccessOptions(roomType, false).last()
-                    val link = roomProvider.addRoomInviteLink(roomId, access)
+                    val link = roomProvider.addRoomInviteLink(roomId, access.code)
                     _state.value = InviteUserState(externalLink = link)
-                } catch (e: Exception) {
-                    _error.emit(e)
-                }
-            } else {
-                try {
+                } else {
                     roomProvider.removeRoomInviteLink(
                         roomId = roomId,
                         linkId = state.value.externalLink?.sharedTo?.id.orEmpty()
                     )
-
                     _state.value = InviteUserState(externalLink = null)
-                } catch (e: Exception) {
-                    _error.emit(e)
                 }
+            } catch (e: Exception) {
+                _error.emit(e)
+            } finally {
+                _state.update { it.copy(requestLoading = false) }
             }
         }
     }
 
-    fun setAccess(access: Int) {
+    fun setAccess(access: Access) {
         viewModelScope.launch {
             _state.update { it.copy(requestLoading = true) }
             try {
                 val link = roomProvider.setRoomInviteLinkAccess(
                     roomId = roomId,
                     linkId = state.value.externalLink?.sharedTo?.id.orEmpty(),
-                    access = access
+                    access = access.code
                 )
                 _state.value = InviteUserState(externalLink = link)
             } catch (e: Exception) {
                 _error.emit(e)
+            } finally {
+                _state.update { it.copy(requestLoading = false) }
             }
         }
     }

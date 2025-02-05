@@ -40,6 +40,7 @@ import moxy.presenter.InjectPresenter
 interface IMainPagerFragment {
 
     fun setPagerPosition(sectionType: Int, onPageChanged: () -> Unit = {})
+    fun setToolbarInfo(title: String?, drawable: Int? = null)
 }
 
 class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView, View.OnClickListener,
@@ -55,6 +56,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         private const val TAG_TITLES = "TAG_TITLES"
         private const val TAG_TYPE = "TAG_TYPE"
         private const val TAG_PERSONAL_END = "TAG_PERSONAL_END"
+        private const val TAG_PAYMENT_REQUIRED = "TAG_PAYMENT_REQUIRED"
         private const val OFFSCREEN_COUNT = 5
 
         fun newInstance(): MainPagerFragment {
@@ -132,6 +134,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             TAG_PERSONAL_END,
             placeholderViews?.type == PlaceholderViews.Type.PERSONAL_PORTAL_END
         )
+        outState.putBoolean(
+            TAG_PAYMENT_REQUIRED,
+            placeholderViews?.type == PlaceholderViews.Type.PAYMENT_REQUIRED
+        )
         outState.putInt(TAG_SELECTED_PAGE, selectedPage)
         outState.putStringArrayList(TAG_TITLES, tabTile)
         outState.putIntegerArrayList(TAG_TYPE, type)
@@ -184,6 +190,11 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         if (savedInstanceState.containsKey(TAG_PERSONAL_END)) {
             if (savedInstanceState.getBoolean(TAG_PERSONAL_END)) {
                 placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.PERSONAL_PORTAL_END)
+            }
+        }
+        if (savedInstanceState.containsKey(TAG_PAYMENT_REQUIRED)) {
+            if (savedInstanceState.getBoolean(TAG_PAYMENT_REQUIRED)) {
+                placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.PAYMENT_REQUIRED)
             }
         }
         if (savedInstanceState.containsKey(TAG_TITLES) && savedInstanceState.containsKey(TAG_TYPE)) {
@@ -380,6 +391,12 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     private val activeFragment: Fragment?
         get() = runCatching { adapter?.getActiveFragment(viewBinding?.mainViewPager) }.getOrNull()
+
+    override fun setToolbarInfo(title: String?, drawable: Int?) {
+        viewBinding?.infoLayout?.root?.isVisible = title != null
+        viewBinding?.infoLayout?.infoText?.text = title
+        viewBinding?.infoLayout?.infoText?.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
+    }
 
     override fun onClick(view: View?) {
         activity?.onSwitchAccount()

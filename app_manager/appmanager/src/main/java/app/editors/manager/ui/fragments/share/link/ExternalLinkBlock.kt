@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.ExternalLink
 import app.editors.manager.R
 import lib.compose.ui.views.AppDescriptionItem
@@ -23,9 +24,9 @@ import lib.toolkit.base.managers.utils.openSendTextActivity
 internal fun ExternalLinkBlock(
     sharedLinks: List<ExternalLink>,
     canEditRoom: Boolean,
+    roomType: Int?,
     onLinkClick: (ExternalLink) -> Unit,
-    onSharedLinkCreate: () -> Unit,
-    onCopyLinkClick: (String) -> Unit
+    onSharedLinkCreate: () -> Unit
 ) {
     val context = LocalContext.current
     if (sharedLinks.isNotEmpty()) {
@@ -36,10 +37,10 @@ internal fun ExternalLinkBlock(
 
         Row {
             AppHeaderItem(modifier = Modifier.weight(1f), title = R.string.rooms_share_shared_links)
-            if (canEditRoom) {
+            if (canEditRoom && roomType != ApiContract.RoomType.FILL_FORMS_ROOM) {
                 IconButton(onClick = onSharedLinkCreate) {
                     Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_action_button_docs_add),
+                        imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_default_add),
                         tint = MaterialTheme.colors.primary,
                         contentDescription = null
                     )
@@ -51,11 +52,11 @@ internal fun ExternalLinkBlock(
             ExternalLinkItem(
                 linkTitle = link.sharedTo.title,
                 access = link.access,
+                showAccess = roomType != ApiContract.RoomType.FILL_FORMS_ROOM,
                 hasPassword = !link.sharedTo.password.isNullOrEmpty(),
                 expiring = !link.sharedTo.expirationDate.isNullOrEmpty(),
                 isExpired = link.sharedTo.isExpired,
                 canEdit = canEditRoom,
-                onCopyLinkClick = { onCopyLinkClick.invoke(link.sharedTo.shareLink) },
                 onShareClick = {
                     context.openSendTextActivity(
                         context.getString(R.string.toolbar_menu_main_share),

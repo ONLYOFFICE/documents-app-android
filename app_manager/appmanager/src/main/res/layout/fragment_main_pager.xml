@@ -19,6 +19,8 @@
             style="@style/Widget.Common.TabLayout"
             android:visibility="gone" />
 
+        <include android:id="@+id/infoLayout" layout="@layout/include_toolbar_info" />
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <app.editors.manager.ui.views.pager.PagingViewPager
@@ -35,6 +37,7 @@
         layout="@layout/include_placeholders_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/default_bottom_panel_height"
         android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

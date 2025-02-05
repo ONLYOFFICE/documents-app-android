@@ -1,5 +1,6 @@
 package app.documents.core.model.login
 
+import app.documents.core.model.cloud.UserType
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -27,13 +28,28 @@ data class User(
     val avatar: String = "",
     val isOnline: Boolean = false,
     val isAdmin: Boolean = false,
+    val isRoomAdmin: Boolean = false,
+    val isGuest: Boolean = false,
     val isLDAP: Boolean = false,
     val listAdminModules: List<String> = emptyList(),
     val isOwner: Boolean = false,
     val cultureName: String = "",
     val isSSO: Boolean = false,
     val avatarSmall: String = "",
+    val hasAvatar: Boolean = false,
     val profileUrl: String = "",
     val mobilePhone: String = "",
+    val quotaLimit: Long = 0,
+    val usedSpace: Long = 0,
     override val shared: Boolean = false
-) : Member
+) : Member {
+
+    val type: UserType
+        get() = when {
+            isOwner -> UserType.Owner
+            isAdmin -> UserType.Admin
+            isRoomAdmin -> UserType.RoomAdmin
+            isGuest -> UserType.Guest
+            else -> UserType.User
+        }
+}

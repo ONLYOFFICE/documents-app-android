@@ -96,7 +96,7 @@ object UiUtils {
             } else {
                 deviceInfo["App code"] = info.versionCode.toString()
             }
-            deviceInfo["App name"] = info.versionName
+            deviceInfo["App name"] = info.versionName ?: ""
         }
         return deviceInfo
     }

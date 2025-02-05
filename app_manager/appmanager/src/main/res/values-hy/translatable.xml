@@ -1,0 +1,1012 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">ՓԱՍՏԱԹՂԹԵՐ</string>
+    <string name="app_name_full">ONLYOFFICE Documents</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Permissions -->
+    <string name="permission_account_write_label" translatable="false">Հաշվի գրելու թույլտվության պիտակ</string>
+    <string name="permission_account_write_description" translatable="false">Հաշվի գրելու թույլտվության նկարագրություն</string>
+    <string name="permission_account_read_label" translatable="false">Հաշվի գրելու թույլտվության պիտակ</string>
+    <string name="permission_account_read_description" translatable="false">Հաշվի գրելու թույլտվության նկարագրություն</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Versions -->
+    <string name="app_versions_title">Թողարկվել է 3.0 տարբերակը</string>
+    <string name="app_versions_cancel">Ավելի ուշ</string>
+    <string name="app_versions_without_release_accept">Տեղադրեք պաշտոնական հավելվածը</string>
+    <string name="app_versions_without_release_info">
+        Շնորհակալություն բետա փորձարկման համար: ONLYOFFICE Documents 3.0-ն այժմ թողարկված է, և բետա տարբերակն այլևս չի աջակցվում: Անցեք պաշտոնական հավելվածին՝ հետագա թարմացումներ ստանալու համար:
+    </string>
+    <string name="app_versions_update_accept">Թարմացնել պաշտոնական հավելվածը</string>
+    <string name="app_versions_update_info">
+        Շնորհակալություն բետա փորձարկման համար: ONLYOFFICE Documents 3.0-ն այժմ թողարկված է, և բետա տարբերակն այլևս չի աջակցվում: Խնդրում ենք անցնել պաշտոնական հավելվածին՝ հետագա թարմացումներ ստանալու համար:
+    </string>
+    <string name="app_versions_actual_release_accept">Բացել պաշտոնական հավելվածը</string>
+    <string name="app_versions_actual_release_info">
+        Շնորհակալություն բետա փորձարկման համար: ONLYOFFICE Documents 3.0-ն այժմ թողարկված է, և բետա տարբերակն այլևս չի աջակցվում: Խնդրում ենք անցնել պաշտոնական հավելվածին:
+    </string>
+
+    <!-- ======================================================================================= -->
+    <!-- Snackbar common -->
+    <string name="snackbar_copied">Պատճենվել է</string>
+    <string name="snackbar_undo">ՀԵՏԱՐԿԵԼ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- About -->
+    <string name="about_title">Մասին</string>
+    <string name="about_app_version">Տարբերակ %1$s, կառուցում %2$s, SDK %3$s</string>
+    <string name="about_terms">Օգտագործման պայմանները</string>
+    <string name="about_policy">Գաղտնիության քաղաքականություն</string>
+    <string name="about_license">Լիցենզային պայմանագիր</string>
+    <string name="about_website">ONLYOFFICE կայք</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Common errors -->
+    <string name="errors_unknown_error">Միացման սխալ։ Փորձեք ավելի ուշ:</string>
+    <string name="errors_ssl_error">SSL կապ հաստատելիս սխալ առաջացավ</string>
+    <string name="errors_connection_error">Ստուգեք ինտերնետ կապը</string>
+    <string name="errors_unknown_host_error">Անհայտ հյուր</string>
+    <string name="errors_redirect_error">Կոդի հետ վերահղման անհայտ սխալ՝\u0020</string>
+    <string name="errors_client_error">Հաճախորդի անհայտ սխալ կոդով՝\u0020</string>
+    <string name="errors_client_portal_exist">Նույն անունով պորտալ արդեն գոյություն ունի</string>
+    <string name="errors_client_portal_sms">Դուք չափազանց շատ տեքստային հաղորդագրություններ եք ուղարկել: Խնդրում ենք փորձել ավելի ուշ:</string>
+    <string name="errors_client_host_not_found">Հասցեն չի գտնվել</string>
+    <string name="errors_client_forbidden">Մուտքը մերժված է</string>
+    <string name="errors_client_unauthorized">Չլիազորված հարցում</string>
+    <string name="errors_client_payment_required"> Պահանջվում է վճարում</string>
+    <string name="errors_server_error">Անհայտ սերվերի սխալ կոդով՝\u0020</string>
+    <string name="errors_server_auth_error">Նույնականացման սխալ</string>
+    <string name="errors_server_auth_too_many_attempts">Չափազանց շատ փորձեր: Փորձեք ավելի ուշ</string>
+    <string name="errors_email_syntax_error">Անվավեր էլ․հասցե</string>
+    <string name="errors_viewer_download_name">Ներբեռնումը ձախողվեց</string>
+    <string name="errors_email_already_registered">Այս էլ․փոստով օգտվողն արդեն գրանցված է</string>
+    <string name="errors_path_url">Անվավեր URL</string>
+    <string name="errors_create_local_file">Չհաջողվեց ստեղծել ֆայլ</string>
+    <string name="errors_import_local_file_desc">Թույլտվությունը մերժվել է</string>
+    <string name="errors_import_local_file">Մուտքը մերժված է: Տվեք կարդալու և գրելու թույլտվություններ</string>
+    <string name="errors_web_viewr">Վեբ փաստաթուղթը խմբագրելիս սխալ է տեղի ունեցել</string>
+    <string name="errors_webdav_sign_in">Սխալ սերվեր, օգտանուն կամ գաղտնաբառ</string>
+    <string name="errors_webdav_username_password">Սխալ օգտանուն կամ գաղտնաբառ</string>
+    <string name="errors_webdav_server">Սխալ սերվեր</string>
+
+    <!-- SignIn -->
+    <string name="errors_sign_in_splash_error">Չհաջողվեց մուտք գործել պորտալ</string>
+    <string name="errors_sign_in_account_error">Մուտքը ձախողվեց</string>
+    <string name="errors_sign_in_account_already_use">Դուք արդեն օգտագործում եք այս հաշիվը</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Login -->
+    <string name="login_api_init_error">Ինիթ սխալ</string>
+    <string name="login_api_init_portal_error">Պորտալի անվան շարահյուսական սխալ</string>
+    <string name="login_api_portal_name">Պորտալի սխալ անվանումը։ Օրինակ՝ example.onlyoffice.com</string>
+    <string name="login_api_portal_name_length">Պորտալի անվանումը պետք է բաղկացած լինի առնվազն 6 նիշից</string>
+    <string name="login_api_portal_name_content">Պորտալի անվանումը պետք է բաղկացած լինի A–Z, a–z, 0–9</string>
+
+
+    <string name="login_retry">Նորից փորձեք միանալ</string>
+
+    <!-- Accounts -->
+    <string name="login_accounts_select_title">Ընտրել հաշիվ</string>
+    <string name="login_accounts_select_add">Ավելացնել հաշիվ</string>
+
+    <!-- Portal pager -->
+    <string name="login_pager_enterprise">ՊՈՐՏԱԼ</string>
+    <string name="login_pager_personal">ԱՆՁՆԱԿԱՆ</string>
+    <string name="login_pager_title">Միացնել ONLYOFFICE ամպը</string>
+
+    <!-- Portal enterprise-->
+    <string name="login_enterprise_edit_hint">Պորտալի հասցե</string>
+    <string name="login_enterprise_button_next">ՀԱՋՈՐԴ</string>
+    <string name="login_enterprise_edit_error_hint">Մուտքագրել վավեր հասցե</string>
+    <string name="login_enterprise_forgot_password">Մոռացե՞լ եք գաղտնաբառը</string>
+    <string name="login_enterprise_button_create">ՍՏԵՂԾԵԼ ՊՈՐՏԱԼ</string>
+    <string name="login_enterprise_button_select">ՀԱՇԻՎՆԵՐ</string>
+    <string name="login_enterprise_email_hint">Էլ․հասցե</string>
+    <string name="login_enterprise_password_hint">Գաղտնաբառ</string>
+    <string name="login_enterprise_signin_button">ՄՈՒՏՔ ԳՈՐԾԵԼ</string>
+    <string name="login_enterprise_single_sign_button">Մեկական մուտք</string>
+    <string name="login_enterprise_single_sign_button_login">Մուտք գործել %1$s-ով</string>
+    <string name="login_enterprise_single_sign_button_login_default">Մեկական մուտք</string>
+    <string name="login_enterprise_info">
+        ONLYOFFICE պորտալը թույլ է տալիս ֆայլեր պահել ամպի մեջ, կիսել այն գործընկերների հետ և համատեղ խմբագրել իրական ժամանակում:
+    </string>
+    <string name="login_not_authorization_info">Չհաջողվեց մուտք գործել %1$s %2$s-ում</string>
+    <string name="login_not_authorization_info_token">Նիստի ժամանակն ավարտվել է</string>
+    <string name="login_not_authorization_button">ԿՐԿԻՆ ՓՈՐՁԵԼ</string>
+    <string name="errors_first_name">Անունը վավեր չէ</string>
+    <string name="errors_last_name">Ազգանունը վավեր չէ</string>
+    <string name="login_password_recovery_hint">Մուտքագրեք էլ.փոստը, որն օգտագործել եք պորտալում գրանցման համար: Գաղտնաբառի վերականգնման հրահանգները կուղարկվեն այս էլ.հասցեյին</string>
+    <string name="login_password_recovery_button_text">ՎԵՐԱԴԱՌՆԱԼ ՄՈՒՏՔԻ ԷԿՐԱՆ</string>
+    <string name="login_password_recovery_success_hint">Եթե ​​%1$s էլ.փոստով օգտատեր կա, գաղտնաբառի փոփոխման հրահանգներն ուղարկվել են այս էլ.հասցեին</string>
+    <string name="login_password_recovery_toolbar_title">Գաղտնաբառի վերականգնում</string>
+    <!-- Portal personal -->
+    <string name="login_personal_edit_email_hint">Էլ․հասցե</string>
+    <string name="login_personal_edit_password_hint">Գաղտնաբառ</string>
+    <string name="login_personal_signin_button">ՄՈՒՏՔ</string>
+    <string name="login_personal_signup_button">ԳՐԱՆՑՈՒՄ</string>
+    <string name="login_personal_signup_title">Գրանցվել անձնական պորտալում</string>
+    <string name="login_personal_signup_edit_info">Հաստատման հղումը կուղարկվի այս հասցեով</string>
+    <string name="login_personal_signup_dialog_info">Հաստատման հղումն ուղարկվել է %1$s էլ.փոստին\nՇարունակելուց առաջ հետևեք փոստի հղմանը</string>
+    <string name="login_personal_info">
+        Միացրեք ONLYOFFICE Personal-ը՝ ֆայլերт ամպում պահելու համար
+    </string>
+    <string name="login_web_dav_title">Միացեք %1$s-ին</string>
+
+    <!-- Portal create-->
+    <string name="login_create_portal_title">Ստեղծել պորտալ կազմակերպության համար</string>
+    <string name="login_create_portal_address_hint">Պորտալի հասցե</string>
+    <string name="login_create_portal_email_hint">Էլ․հասցե</string>
+    <string name="login_create_signin_first_name_hint">Անուն</string>
+    <string name="login_create_signin_last_name_hint">Ազգանուն</string>
+    <string name="login_create_portal_next_button">ՀԱՋՈՐԴ</string>
+
+    <!-- Portal create sign in -->
+    <string name="login_create_signin_title">Սահմանել գաղտնաբառ</string>
+    <string name="login_create_signin_password">Գաղտնաբառ</string>
+    <string name="login_create_signin_repeat">Կրկնել գաղտնաբառը</string>
+    <string name="login_create_signin_create_button">ՍՏԵՂԾԵԼ</string>
+    <string name="login_create_signin_passwords_mismatch">Գաղտնաբառերի անհամապատասխանություն</string>
+    <string name="login_create_signin_passwords_length">Գաղտնաբառը պետք է պարունակի 8-ից 30 նիշ</string>
+    <string name="login_create_signin_info">
+        Սեղմելով այս կոճակը, դուք ընդունում եք մեր ծառայության պայմանները
+    </string>
+
+    <!-- Portal SMS -->
+    <string name="login_sms_code_label">Մենք ուղարկել ենք կոդով տեքստային հաղորդագրություն համարին</string>
+    <string name="login_sms_send_again">ՈՒՂԱՐԿԵԼ ԿՐԿԻՆ</string>
+    <string name="login_sms_send_again_after">ՀԵՏՈ ԿՐԿԻՆ ՈՒՂԱՐԿԵԼ</string>
+    <string name="login_sms_change_number">ՓՈՓՈԽԵԼ ՀԱՄԱՐԸ</string>
+    <string name="login_sms_phone_number_verification">Հեռախոսահամարի ստուգում</string>
+    <string name="login_sms_phone_header">Սահմանել հեռախոսահամար</string>
+    <string name="login_sms_phone_country_label">Երկիր</string>
+    <string name="login_sms_phone_number_label">Հեռախոսահամար</string>
+    <string name="login_sms_phone_send_button">ՈՒՂԱՐԿԵԼ ԿՈԴ</string>
+    <string name="login_sms_phone_error_format">Սխալ ֆորմատ</string>
+    <string name="login_sms_phone_send_code">Մենք հաստատման կոդը կուղարկենք տեքստային հաղորդագրության միջոցով</string>
+    <string name="login_sms_resend_ok">Տեքստային հաղորդագրության կոդը ուղարկվել է</string>
+
+    <!-- Countries codes -->
+    <string name="countries_codes_title">Ընտրել երկիր</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Dialogs -->
+    <string name="bottom_sheet_portal_title">Պորտալ</string>
+    <string name="bottom_sheet_cloud_title">Ամպեր</string>
+    <!--Move copy dialog-->
+    <string name="dialog_move_copy_title_files">Նույն անուններով %1$d փաստաթուղթ արդեն գոյություն ունի \"%2$s\" պանակում</string>
+    <string name="dialog_move_copy_title_one_file">\"%1$s\" անունով ֆայլն արդեն գոյություն ունի \"%2$s\" թղթապանակում</string>
+    <string name="dialog_move_copy_overwrite">Վերաշարադրել տարբերակի թարմացումով</string>
+    <string name="dialog_move_copy_copy">Ստեղծեք ֆայլի պատճեն</string>
+    <string name="dialog_move_copy_skip">Բաց թողնել</string>
+    <string name="dialog_move_copy_title">Նույն անունով ֆայլ</string>
+
+    <!-- Common -->
+    <string name="dialogs_common_ok_button">ԸՆԴՈՒՆԵԼ</string>
+    <string name="dialogs_common_cancel_button" tools:ignore="ButtonCase">ՉԵՂԱՐԿԵԼ</string>
+    <string name="dialogs_check_portal_header_text">Ստուգել պորտալի հնարավորությունները</string>
+    <string name="dialogs_sign_in_portal_header_text">Մուտք գործել պորտալ</string>
+    <string name="dialogs_sign_in_register_portal">Գրանցման պորտալ</string>
+
+    <!-- Waiting -->
+    <string name="dialogs_wait_title">Գործողությունն ընթացքի մեջ է…</string>
+    <string name="dialogs_wait_title_storage">Պահեստի միացում…</string>
+
+    <!-- Question -->
+    <string name="dialogs_question_accept_yes">ԱՅՈ</string>
+    <string name="dialogs_question_accept_no">ՈՉ</string>
+    <string name="dialogs_question_accept_delete">ՋՆՋԵԼ</string>
+    <string name="dialogs_question_accept_remove">ՀԵՌԱՑՆԵԼ</string>
+    <string name="dialogs_question_accept_not_really">ՈՉ ԱՅՆՔԱՆ</string>
+    <string name="dialogs_question_accept_sure">ԱՅՈ, ԻՀԱՐԿե</string>
+    <string name="dialogs_question_accept_no_thanks">ՈՉ, ՇՆՈՐՀԱԿԱԼՈՒԹՅՈՒՆ</string>
+    <string name="dialogs_question_share_remove">Հեռացնե՞լ ընտրված տարրը ցանկից:</string>
+    <string name="dialogs_question_http_title">Անվտանգության նախազգուշացում</string>
+    <string name="dialogs_question_http_question">HTTPS կապը հասանելի չէ, սակայն HTTP կապը կարող է օգտագործվել: Շարունակե՞լ</string>
+    <string name="dialogs_question_facebook_title">Facebook</string>
+    <string name="dialogs_question_facebook_question">Շարունակել հաշիվով՝\u0020</string>
+    <string name="dialogs_question_remove_account_title">Հեռացնե՞լ հաշիվը</string>
+    <string name="dialogs_question_remove_account_info">
+        %2$s պորտալից %1$s էլ․փոստով հաշիվը դուրս կգա և կհեռացվի ցուցակից
+    </string>
+    <string name="dialogs_question_personal_confirm_link_title">Հաստատել էլ․հասցեն</string>
+    <string name="dialogs_question_personal_confirm_cancel">ՓՈՐՁԵԼ ԿՐԿԻՆ</string>
+    <string name="dialogs_question_personal_confirm_accept">ՇԱՐՈՒՆԱԿԵԼ</string>
+    <string name="dialogs_question_rate_first_info">Ձեզ դու՞ր է գալիս ONLYOFFICE Documents-ի օգտագործումը:</string>
+    <string name="dialogs_question_rate_second_info">Դեմ չե՞ք լինի գնահատել հավելվածը Google Play-ում:</string>
+    <string name="dialogs_question_delete_all_title">Ջնջե՞լ բոլոր տարրերը։</string>
+
+    <plurals name="dialogs_question_message_delete">
+        <item quantity="one">Այն անդառնալիորեն կջնջվի:\Այս գործողությունն անշրջելի է:</item>
+        <item quantity="other">Դրանք անդառնալիորեն կջնջվեն:\Այս գործողությունն անշրջելի է:</item>
+    </plurals>
+
+    <plurals name="dialogs_question_message_to_trash">
+        <item quantity="one">Այն կտեղափոխվի աղբարկղ:</item>
+        <item quantity="other">Դրանք կտեղափոխվեն աղբարկղ:</item>
+    </plurals>
+
+    <plurals name="dialogs_question_delete_title">
+        <item quantity="one">Ջնջե՞լ այս տարրը:</item>
+        <item quantity="other">Ջնջե՞լ %1$d տարր:</item>
+    </plurals>
+
+    <!-- Edit -->
+    <string name="dialogs_edit_rename_title">Վերանվանել</string>
+    <string name="dialogs_edit_hint">Մուտքագրել վերնագիրը</string>
+    <string name="dialogs_edit_create_sheet">Նոր աղյուսակ</string>
+    <string name="dialogs_edit_create_presentation">Նոր ներկայացում</string>
+    <string name="dialogs_edit_create_docs">Նոր փաստաթուղթ</string>
+    <string name="dialogs_edit_create_folder">Նոր թղթապանակ</string>
+    <string name="dialogs_edit_forbidden_symbols">Մի օգտագործեք այս նշանները\u0020</string>
+    <string name="dialogs_edit_accept_create">ՍՏԵՂԾԵԼ</string>
+    <string name="dialogs_edit_accept_rename">ՎԵՐԱՆՎԱՆԵԼ</string>
+    <string name="dialogs_edit_feedback_title">Հետադարձ կապ</string>
+    <string name="dialogs_edit_feedback_rate_title">Դեմ չե՞ք լինի մեզ հետադարձ կապ ուղարկել:</string>
+    <string name="dialogs_edit_feedback_rate_hint">Ասեք մեզ, ինչ կցանկանաք բարելավենք</string>
+    <string name="dialogs_edit_feedback_rate_accept">ՈՒՂԱՐԿԵԼ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Activity chooser -->
+    <string name="chooser_web_browser">Ընտրեք բրաուզեր…</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Main -->
+    <!-- Title -->
+    <string name="actionbar_title_main">Փաստաթղթեր</string>
+    <string name="chooser_activity_not_found">Չհաջողվեց գտնել որևէ հավելված այս գործողության համար…</string>
+    <string name="fragment_clouds_title">Ամպեր</string>
+    <string name="fragment_clouds_portal_title">Միացնել պորտալին</string>
+    <string name="fragment_clouds_storage_title">Միացնել պահեստին</string>
+    <string name="fragment_clouds_onlyoffice_item">ONLYOFFICE</string>
+    <string name="fragment_recent_title">Վերջերս</string>
+    <string name="fragment_on_device_title">Սարքի վրա</string>
+    <string name="fragment_profile_title">Պրոֆիլ</string>
+
+    <!-- Drawer -->
+    <string name="navigation_drawer_open">Բացել նավիգացիոն վահանակը</string>
+    <string name="navigation_drawer_close">Փակել նավիգացիոն վահանակը</string>
+
+    <!-- Main drawer menu-->
+    <string name="navigation_drawer_menu_shared">Կիսվել են ինձ հետ</string>
+    <string name="navigation_drawer_menu_common">Ընդհանուր փաստաթղթեր</string>
+    <string name="navigation_drawer_menu_projects">Նախագծեր</string>
+    <string name="navigation_drawer_menu_trash">Աղբարկղ</string>
+    <string name="navigation_drawer_menu_help">Օգնություն</string>
+    <string name="navigation_drawer_menu_logout">Դուրս գալ</string>
+    <string name="navigation_drawer_menu_sign_in">Մուտք գործել</string>
+    <string name="settings_item_title">Կարգավորումներ</string>
+    <string name="settings_item_change_account">Փոխել հաշիվը</string>
+    <string name="settings_clear_cache">Մաքրել քեշը</string>
+    <string name="settings_title_common">Ընդհանուր</string>
+    <string name="setting_wifi">Վերբեռնեք ֆայլերը միայն օգտագործելով Wi-Fi</string>
+    <string name="setting_title_wifi">Wi-Fi</string>
+    <string name="setting_cache_cleared">Քեշը մաքրվեց</string>
+
+    <!-- Main toolbar menu -->
+    <string name="toolbar_menu_search_result">Որոնման արդյունք</string>
+    <string name="toolbar_menu_search_hint">Որոնում…</string>
+    <string name="toolbar_menu_search_view_hint">Մուտքագրեք ձեր հարցումը</string>
+    <string name="toolbar_menu_main_options">Ընտրանքներ</string>
+    <string name="toolbar_menu_main_share">Կիսվել</string>
+    <string name="toolbar_menu_main_move">Տեղափոխել</string>
+    <string name="toolbar_menu_main_copy">Պատճենել</string>
+    <string name="toolbar_menu_main_remove_from_list">Հեռացնել ցանկից</string>
+    <string name="toolbar_menu_main_rename">Վերանվանել</string>
+    <string name="toolbar_menu_main_delete">Ջնջել</string>
+    <string name="toolbar_menu_main_select">Ընտրել…</string>
+    <string name="toolbar_menu_main_select_all">Ընտրել բոլորը</string>
+    <string name="toolbar_menu_main_deselect">Ապաընտրել</string>
+    <string name="toolbar_menu_sort_by">Տեսակավորել ըստ</string>
+    <string name="toolbar_menu_sort_order">Տեսակավորելու կարգը</string>
+    <string name="toolbar_menu_sort_date_modified">Ամսաթիվ</string>
+    <string name="toolbar_menu_sort_title">Վերնագիր</string>
+    <string name="toolbar_menu_sort_type">Տեսակ</string>
+    <string name="toolbar_menu_sort_tags">Պիտակներ</string>
+    <string name="toolbar_menu_sort_size">Չափ</string>
+    <string name="toolbar_menu_sort_asc">Աճող</string>
+    <string name="toolbar_menu_sort_desc">Նվազող</string>
+    <string name="toolbar_menu_main_download">Ներբեռնել</string>
+    <string name="toolbar_menu_main_open">Բացել</string>
+    <string name="toolbar_menu_main_filter">Զտել</string>
+
+    <!-- List context menu -->
+    <string name="list_context_folder_name">Թղթապանակի անվանում</string>
+    <string name="list_context_folder_title">Թղթապանակի վերնագիր</string>
+    <string name="list_context_edit">Խմբագրել փաստաթուղթը</string>
+    <string name="list_context_share">Կիսվել</string>
+    <string name="list_context_external_link">Արտաքին մուտքը հղումով</string>
+    <string name="list_context_move">Տեղափոխել</string>
+    <string name="list_context_create_copy">Պատճենել</string>
+    <string name="list_context_create_download">Ներբեռնել</string>
+    <string name="list_context_open_location">Բացել լոկացիան</string>
+    <string name="list_context_rename">Վերանվանել</string>
+    <string name="list_context_rename_success">Հաջողությամբ վերանվանվեց</string>
+    <string name="list_context_delete">Ջնջել</string>
+    <string name="list_context_delete_storage">Անջատել պահեստը</string>
+    <string name="list_context_delete_success">Հաջողությամբ ջնջվեց</string>
+    <string name="list_context_remove_from_list">Գործիքադարակի_ընտրացանկ_հիմնական_հեռացնել_ցանկից</string>
+    <string name="list_context_delete_recent">Հեռացնել վերջինից</string>
+    <string name="list_context_upload_to_portal">Վերբեռնեք պորտալ</string>
+    <string name="list_context_add_to_favorite">Ավելացնել ընտրյալների մեջ</string>
+    <string name="list_context_delete_from_favorite">Ջնջել ընտրյալներից</string>
+    <string name="list_context_leave_room">Դուրս գալ սենյակից</string>
+    <string name="list_context_copy_general_link">Պատճենել ընդհանուր հղումը</string>
+    <string name="list_context_edit_room">Խմբագրել սենյակը</string>
+
+    <!-- List action menu -->
+    <string name="list_action_sheet">Աղյուսակ</string>
+    <string name="list_action_presentation">Ներկայացում</string>
+    <string name="list_action_doc">Տեքստային փաստաթուղթ</string>
+    <string name="list_action_folder">Թղթապանակ</string>
+    <string name="list_action_photo">Լուսանկարել</string>
+    <string name="list_action_upload">Վերբեռնել ֆայլը</string>
+    <string name="list_action_storage">Միացնել երրորդ կողմի պահեստը</string>
+    <string name="list_action_import">Ներմուծել ֆայլը</string>
+    <string name="list_action_image_from_library">Նկար գրադարանից</string>
+    <string name="list_action_delete_link">Ջնջել հղումը</string>
+    <!-- Dialog info -->
+
+    <!-- Pager -->
+    <string name="main_pager_docs_my">Իմ փաստաթուղթը</string>
+    <string name="main_pager_docs_common">Ընդհանուր</string>
+    <string name="main_pager_docs_share">Կիսվել են ինձ հետ</string>
+    <string name="main_pager_docs_projects">Նախագծեր</string>
+    <string name="main_pager_docs_trash">Աղբարկղ</string>
+    <string name="main_pager_docs_favorites">Ընտրվածներ</string>
+    <string name="main_pager_docs_virtual_room">Իմ սենյակները</string>
+    <string name="main_pager_docs_archive_room">Իմ արխիվը</string>
+
+    <!-- Placeholder -->
+    <string name="placeholder_connection">Միացման սխալ</string>
+    <string name="placeholder_empty">Դատարկ թղթապանակ</string>
+    <string name="placeholder_search">Ոչինչ չի գտնվել</string>
+    <string name="placeholder_share">Համօգտագործված չէ</string>
+    <string name="placeholder_access_denied">Մուտքը մերժված է</string>
+    <string name="placeholder_no_subfolders">Ենթաթղթապանակներ չկան</string>
+    <string name="placeholder_no_users">Օգտատերեր չկան</string>
+    <string name="placeholder_no_groups">Խմբեր չկան</string>
+    <string name="placeholder_no_users_groups">Օգտատերեր և խմբեր չկան</string>
+    <string name="placeholder_media_error">Չհաջողվեց բեռնել մեդիան</string>
+    <string name="placeholder_try_again">Փորձել կրկին</string>
+    <string name="placeholder_loading_files">Ֆայլերը բեռնվում են…</string>
+    <string name="placeholder_loading_users">Օգտատերերը բեռնվում են…</string>
+    <string name="placeholder_loading_groups">Խմբերը բեռնվում են…</string>
+    <string name="placeholder_other_accounts">Այլ հաշիվներ այստեղ դեռ չկան</string>
+
+    <!-- Time marks-->
+    <string name="list_headers_folder">Թղթապանակներ</string>
+    <string name="list_headers_files">Ֆայլեր</string>
+    <string name="list_headers_created">Հենց նոր է ստեղծվել</string>
+    <string name="list_headers_today">Այսօր</string>
+    <string name="list_headers_yesterday">Երեկ</string>
+    <string name="list_headers_week">Այս շաբաթ</string>
+    <string name="list_headers_month">Այս ամիս</string>
+    <string name="list_headers_year">Այս տարի</string>
+    <string name="list_headers_more_year">Ավելի քան մեկ տարի</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Share -->
+    <string name="share_title_main">Կիսվել կարգավորումներով</string>
+    <string name="share_title_add">Ավելացնել մարդկանց</string>
+    <string name="share_invite_user">Հրավիրել օգտատերերի</string>
+    <string name="share_title_search">Որոնել մարդկանց</string>
+
+    <string name="share_goal_user">Օգտատերեր</string>
+    <string name="share_goal_group">Խմբեր</string>
+    <string name="share_main_external_access">Արտաքին մուտքը հղումով</string>
+    <string name="share_main_external_access_info">Մուտք տրամադրեք բոլորին, ովքեր ունեն հղումը</string>
+    <string name="share_main_external_copy_button">ՊԱՏՃԱՆԵԼ ՀՂՈՒՄԸ</string>
+    <string name="list_context_get_external_link">Ստանալ հղում արտաքին մուտքի համար</string>
+
+    <string name="share_popup_access_full">Ամբողջական մուտք</string>
+    <string name="share_popup_access_review">Վերանայում</string>
+    <string name="share_popup_access_read_only">Միայն կարդալ</string>
+    <string name="share_popup_access_deny_access">Մերժել մուտքը</string>
+    <string name="share_popup_access_deny_remove">Հեռացնել օգտվողին</string>
+    <string name="share_popup_access_fill_forms">Լրացնել ձևերը</string>
+    <string name="share_popup_access_comment">Մեկնաբանություն</string>
+    <string name="share_popup_access_custom_filter">Հատուկ զտիչ</string>
+
+    <string name="share_snackbar_remove_user">Օգտատերը հեռացված է</string>
+
+    <!-- External link -->
+    <string name="share_access_success">Արտաքին մուտքը հաջողվեց</string>
+    <string name="share_access_denied">Արտաքին մուտքն արգելված է</string>
+    <string name="share_clipboard_external_copied">Գաղտնի հղումը պատճենվեց սեղմատախտակին</string>
+    <string name="share_clipboard_internal_copied">Հղում պորտալի օգտատերերի համար, որոնք պատճենվել են սեղմատախտակին</string>
+    <string name="share_clipboard_external_link_label">Արտաքին հղում</string>
+
+    <!-- Tabs -->
+    <string name="share_tab_users">ՕԳՏԱՏԵՐԵՐ</string>
+    <string name="share_tab_groups">ԽՄԲԵՐ</string>
+
+    <!-- List headers -->
+    <string name="share_add_common_header_users">Օգտատերեր</string>
+    <string name="share_add_common_header_groups">Խմբեր</string>
+
+    <!-- Panel -->
+    <string name="share_panel_message_notification">Մուտքագրեք հաղորդագրություն ծանուցման համար</string>
+    <string name="share_panel_button_add">ԱՎԵԼԱՑՆԵԼ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Storage -->
+    <string name="storage_select_title">Ընտրել ծառայություն</string>
+    <string name="storage_select_google_drive">Google Drive</string>
+    <string name="storage_select_drop_box">Dropbox</string>
+    <string name="storage_select_one_drive">OneDrive</string>
+    <string name="storage_select_next_cloud">Nextcloud</string>
+    <string name="storage_select_yandex">Yandex.Disk</string>
+    <string name="storage_select_box">Box</string>
+    <string name="storage_select_share_point">SharePoint</string>
+    <string name="storage_select_own_cloud">ownCloud</string>
+    <string name="storage_select_kdrive" translatable="false">KDrive</string>
+    <string name="krdive_password_helper_text">Եթե ​​դուք ակտիվացրել եք կրկնակի նույնականացում, խնդրում ենք ստեղծել CDM հավելված Infomaniak մենեջերից:</string>
+    <string name="kdrive_info_title">Այս ծառայությունից օգտվելու համար դուք պետք է ունենաք փլեյերի վճարովի տարբերակ:</string>
+    <string name="storage_email_connection">Էլ․փոստի միացում</string>
+    <string name="storage_select_web_dav">Այլ WebDAV պահեստավորում</string>
+
+    <string name="storage_connect_title">Թղթապանակի կարգավորումներ</string>
+    <string name="storage_connect_folder_name">Թղթապանակի անվանում</string>
+    <string name="storage_connect_save_button">ՊԱՀՊԱՆԵԼ</string>
+    <string name="storage_connect_empty_title">Մուտքագրման պահեստի անվանում</string>
+
+    <string name="storage_web_title">Միացնել ծառայությունը </string>
+    <string name="storage_connect_button">ՄԻԱՑՆԵԼ</string>
+
+    <string name="storage_web_dav_settings_login">Մուտք գործել</string>
+    <string name="storage_web_dav_settings_password">Գաղտնաբառ</string>
+    <string name="storage_web_dav_settings_title">Ծառայության համար մուտքագրված անվանում</string>
+    <string name="storage_web_dav_settings_hint" tools:ignore="MissingTranslation">https://cloud.yourdomain.com</string>
+    <string name="storage_web_dav_settings_server">Սերվեր</string>
+    <string name="storage_web_dav_settings_required">Պահանջվում է</string>
+
+    <string name="storage_onedrive_error_opened">Ֆայլը պորտալում բացված է </string>
+    <string name="storage_onedrive_error_exist">Նույն անունով ֆայլ արդեն գոյություն ունի այս թղթապանակում</string>
+    <string name="storage_google_drive_copy_folder_error">Թղթապանակները չեն կարող պատճենվել</string>
+    <string name="storage_dropbox_email_not_verified_error">Էլ․փոստը հաստատված չէ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Operations -->
+    <string name="operation_title">Ընտրել թղթապանակ</string>
+    <string name="operation_choose_section">Ընտրել բաժինը</string>
+    <string name="operation_complete_message">Գործողությունն ավարտված է</string>
+    <string name="operation_delete_impossible">Հնարավոր չէ ջնջել ֆայլը: Ֆայլը բացված է պորտալում:</string>
+    <string name="operation_delete_multiple">. Մեկ կամ ավելի ֆայլեր չեն ջնջվել՝ պորտալում բացվելու պատճառով</string>
+    <string name="operation_panel_move_button">Տեղափոխել այստեղ</string>
+    <string name="operation_panel_copy_button">Պատճենել այստեղ</string>
+    <string name="operation_panel_restore_button">Վերականգնել այստեղ</string>
+    <string name="operation_panel_cancel_button">Չեղարկել</string>
+    <string name="operation_empty_lists_data">Ընտրեք տարրեր շահագործման համար</string>
+    <string name="operation_error_move_to_same">Հնարավոր չէ տեղափոխել նույն թղթապանակ</string>
+    <string name="operation_error_move_to_same_subfolder">Հնարավոր չէ տեղափոխել նույն ենթաթղթապանակ</string>
+    <string name="operation_snackbar_send_link">ՈՒՂԱՐԿԵԼ ՀՂՈՒՄ</string>
+    <string name="operation_snackbar_return">ՎԵՐԱԴԱՐՁ</string>
+    <string name="operation_share_send_link">ՈՒՂԱՐԿԵԼ</string>
+    <string name="operation_add_to_favorites">Ավելացվեց ընտրյալների մեջ</string>
+    <string name="operation_remove_from_favorites">Հեռացված է ընտրյալներից</string>
+
+    <plurals name="operation_moved_to_trash">
+        <item quantity="one">Տարրը տեղափոխվեց աղբարկղ</item>
+        <item quantity="other">Տարրերը տեղափոխվեցին աղբարկղ</item>
+    </plurals>
+
+    <plurals name="operation_delete_irretrievably">
+        <item quantity="one">Տարրն անդառնալիորեն ջնջված է</item>
+        <item quantity="other">Տարրերն անդառնալիորեն ջնջված են</item>
+    </plurals>
+
+    <!-- ======================================================================================= -->
+    <!-- Trash -->
+    <string name="trash_dialog_empty_title">Դատարկել աղբը</string>
+    <string name="trash_snackbar_move_text">Դուք կարող եք վերականգնել ֆայլերը ԱՂԲԱՄԱՆԻՑ</string>
+    <string name="trash_snackbar_move_button">ՎԵՐԱԿԱՆԳՆԵԼ</string>
+    <string name="trash_popup_move">Վերականգնել՝</string>
+    <string name="trash_popup_delete">Ջնջել ընդմիշտ</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Managers load -->
+    <string name="download_manager_title">ONLYOFFICE ներբեռնումներ</string>
+    <string name="download_manager_progress_title">Ներբեռնումն ընթացքի մեջ է</string>
+    <string name="download_manager_archiving_progress">Արխիվի ստեղծում</string>
+    <string name="download_manager_complete">Ներբեռնումն ավարտված է</string>
+    <string name="download_manager_error">Ներբեռնման սխալ</string>
+    <string name="download_manager_error_free_space">Բավարար ազատ տարածք չկա</string>
+    <string name="download_manager_error_url">URL-ի շարահյուսության սխալ</string>
+    <string name="download_manager_cancel">Ներբեռնումը չեղարկվել է</string>
+    <string name="download_manager_repeat">Ֆայլն արդեն ներբեռնվում է</string>
+    <string name="download_manager_open">Բաց</string>
+    <string name="download_manager_downloading">Ներբեռնվում է…</string>
+    <string name="download_manager_notification_cancel_download">Չեղարկել ներբեռնումը</string>
+    <string name="download_manager_folders_download">Թղթապանակները հնարավոր չէ ներբեռնել</string>
+    <string name="download_manager_select_files">Ընտրել ֆայլեր</string>
+    <string name="download_manager_exceed_size_100">Գերազանցում է ֆայլի առավելագույն չափը (100MB)</string>
+    <string name="download_manager_exceed_size_25">Գերազանցում է ֆայլի առավելագույն չափը (25MB)</string>
+
+    <string name="upload_manager_file_picker_title">Ընտրել ֆայլ՝ վերբեռնելու համար</string>
+    <string name="upload_manager_progress_title">Վերբեռնումն ընթացքի մեջ է</string>
+    <string name="upload_manager_error">Վերբեռնման սխալ</string>
+    <string name="upload_manager_cancel">Վերբեռնումը չեղարկվել է</string>
+    <string name="upload_manager_repeat">Ֆայլն արդեն բեռնվում է</string>
+    <string name="upload_manager_complete">Վերբեռնումն ավարտված է</string>
+    <string name="upload_manager_error_url">URL-ի շարահյուսության սխալ</string>
+    <string name="upload_manager_error_number_files">Դուք չեք կարող միաժամանակ վերբեռնել ավելի քան 20 ֆայլ</string>
+    <string name="upload_manager_image_picker_title">Ընտրեք նկար՝ վերբեռնելու համար</string>
+    <string name="upload_manager_error_file_size">Ֆայլի չափը չի կարող լինել ավելի քան 100մբ</string>
+    <string name="upload_manager_notification_cancel_upload">Չեղարկել վերբեռնումը</string>
+    <string name="upload_manager_waiting_title">Սպասում է վերբեռնմանը</string>
+    <string name="upload_error_wifi">Դուք կարող եք վերբեռնել միայն այն դեպքում, երբ Wi-Fi-ը միացված է</string>
+
+    <!-- ======================================================================================= -->
+    <!-- Socials -->
+    <string name="socials_twitter_failed_auth">Չհաջողվեց մուտք գործել Twitter-ով</string>
+    <string name="socials_facebook_cancel_auth">Չեղարկել մուտքը Facebook-ով</string>
+    <string name="socials_facebook_failed_auth">Չհաջողվեց մուտք գործել Facebook-ով</string>
+    <string name="socials_google_failed_auth">Չհաջողվեց մուտք գործել Google-ով</string>
+    <string name="socials_google_cancel_auth">Չեղարկել մուտքը Google-ի միջոցով</string>
+
+    <!-- ======================================================================================= -->
+    <!-- On boarding -->
+    <string name="on_boarding_skip_button">ԲԱՑ ԹՈՂՆԵԼ</string>
+    <string name="on_boarding_back_button">ՀԵՏ</string>
+    <string name="on_boarding_next_button">ՀԱՋՈՐԴ</string>
+    <string name="on_boarding_finish_button">ԿԱՏԱՐՎԱԾ</string>
+
+    <string name="on_boarding_welcome_header">Բարի գալուստ ONLYOFFICE</string>
+    <string name="on_boarding_welcome_info">
+        Մենք զգալիորեն թարմացրել ենք ONLYOFFICE փաստաթղթերը Android-ի համար: Թերթեք՝ ավելին իմանալու համար:
+    </string>
+
+    <string name="on_boarding_edit_header">Գրասենյակային փաստաթղթերի խմբագրում</string>
+    <string name="on_boarding_edit_info">
+        Ստեղծեք և խմբագրեք տեքստային փաստաթղթեր, աղյուսակներ և ներկայացումներ ONLYOFFICE պորտալում:
+    </string>
+
+    <string name="on_boarding_access_header">Թույլատրելհասանելիություն փաստաթղթերին</string>
+    <string name="on_boarding_access_info">
+        Կիսվեք փաստաթղթերով ձեր թիմին՝ տրամադրելով ամբողջական մուտքի, վերանայման կամ միայն կարդալու իրավունքներ: Կիսվելը հասանելի է նաև արտաքին հղման միջոցով:
+    </string>
+
+    <string name="on_boarding_collaborate_header">Համագործակցել</string>
+    <string name="on_boarding_collaborate_info">
+        Ձեր թիմակիցների հետ համատեղ խմբագրեք գրասենյակային փաստաթղթերը իրական ժամանակում:
+    </string>
+
+    <string name="on_boarding_third_party_header">Միացեք երրորդ կողմի ամպերին</string>
+    <string name="on_boarding_third_party_info">
+        Հավելվածը միացրեք ձեր օգտագործած այլ ամպային պահեստներին՝ Google Drive, Dropbox, Nextcloud և այլն:
+    </string>
+
+    <!-- ======================================================================================= -->
+    <!-- Media -->
+    <string name="media_image_share_chooser">Ընտրեք հավելված՝ համօգտագործելու համար</string>
+    <string name="media_image_list_info">Մեդիա ֆայլեր՝ %1$s</string>
+    <string name="media_video_error">Նվագարկչի անհայտ սխալ՝ %1$s</string>
+
+    <string name="auth_header_screen_1">Ստեղծել երկգործոն նույնականացում</string>
+    <string name="auth_info_screen_1">Տեղադրեք վավերացնող հավելված՝ մուտքի կոդեր ստեղծելու համար (օրինակ՝ Google Authenticator, Authy), որպեսզի շարունակեք աշխատել ձեր պորտալի հետ։</string>
+    <string name="auth_header_screen_2">Գործարկեք նույնականացնող հավելվածը</string>
+    <string name="auth_info_screen_2">Գործարկեք հավելվածը և սեղմեք նոր հաշվի պատկերակին</string>
+    <string name="auth_header_screen_3">Ավելացնել գաղտնի բանալին</string>
+    <string name="auth_info_screen_3">Պատճենեք բանալին և տեղադրեք այն ձեր իսկորոշիչ հավելվածում </string>
+    <string name="auth_header_screen_4">Մուտքագրեք կոդը</string>
+    <string name="auth_info_screen_4">Մուտքագրեք կոդը ձեր իսկորոշիչ հավելվածից մուտքագրման դաշտում</string>
+    <string name="auth_step_title">Քայլ %1$d %2$d-ից</string>
+    <string name="auth_install_button">Տեղադրել</string>
+    <string name="auth_confirm_button">Հաստատեր</string>
+    <string name="auth_clipboard_key_copied">Բանալին պատճենվել է սեղմատախտակին</string>
+    <string name="auth_edit_hint">Կոդ</string>
+
+    <string name="rename_file_exist">Նույն անունով ֆայլ գոյություն ունի:</string>
+    <string name="device_path_file_error">Այս ֆայլը գոյություն չունի:</string>
+    <string name="device_trash_files_restore">Վերականգնել</string>
+    <string name="error_recent_account">Ֆայլը ջնջվել է կամ հասանելի չէ այս հաշվից:</string>
+    <string name="error_recent_enter_account">Խնդրում ենք մուտքագրել հաշիվը:</string>
+    <string name="error_open_project_file">Այս հաշիվը մուտք չունի նախագծին</string>
+    <string name="switch_account_open_project_file">Փոխել հաշիվը</string>
+    <string name="operation_move_file_existing">%1$s ֆայլ արդեն կա նպատակակետ գրացուցակում:</string>
+    <string name="upload_to_portal">Վերբեռնեք պորտալ</string>
+    <string name="this_device">Այս սարքը</string>
+    <string name="dialog_clear_cache">Մաքրե՞լ քեշը:\nԱյս գործողությունը ձեր սարքում տարածք կազատի՝ ջնջելով ժամանակավոր ֆայլերը: Ձեր անցանց ֆայլերը և անձնական տվյալները չեն հեռացվի:
+    </string>
+
+    <string name="error_unsupported_path">Չաջակցվող ուղի</string>
+    <string name="error_unsupported_format">Չաջակցվող ձևաչափ</string>
+
+    <string name="cloud_account_description">Համագործակցեք անվտանգ միջավայրում և միացրեք երրորդ կողմի պահեստները</string>
+    <string name="cloud_account_start_button">Սկսել</string>
+    <string name="cloud_account_other_storages_button">Այլ պահեստներ</string>
+    <string name="cloud_only_office">ONLYOFFICE Cloud</string>
+    <string name="cloud_only_office_description">Պահպանեք փաստաթղթերը ամպի մեջ և համագործակցեք դրանց շուրջ</string>
+    <string name="cloud_accounts_title">Հաշիվներ</string>
+    <string name="error_long_file_name">Ֆայլի անունը չափազանց երկար է</string>
+    <string name="dialog_remove_account_title">Ջնջել սարքից</string>
+    <string name="dialog_remove_account_description">
+        %2$s պորտալից %1$s ունեցող օգտատերը դուրս կգրվի և կհեռացվի հաշիվների ցանկից: \n\nԽնդրում ենք նկատի ունենալ՝ մուտք գործելու համար անհրաժեշտ է մուտքագրել պորտալի հասցեն, էլ.փոստը և գաղտնաբառը: Ձեր բոլոր ֆայլերը ապահով կլինեն
+    </string>
+    <string name="dialog_logout_account_title">Համոզվա՞ծ եք, որ դուրս եք գալիս:</string>
+    <string name="dialog_logout_account_description">
+        Դուրս գալուց հետո ձեզ հարկավոր չի լինի մուտքագրել ձեր պորտալի հասցեն կամ էլ․փոստը, այլ միայն գաղտնաբառը: Մի անհանգստացեք, բոլոր ֆայլերը ապահով կլինեն ամպի մեջ:
+    </string>
+    <string name="profile_username_title">Օգտատիրոջ անուն</string>
+    <string name="profile_portal_address">Պորտալի հասցե</string>
+    <string name="profile_type_admin">Ադմին</string>
+    <string name="profile_type_visitor">Հյուր</string>
+    <string name="profile_type_user">Օգտատեր</string>
+    <string name="profile_thirdparty_title">Միացված ծառայություններ</string>
+
+    <string name="app_settings_analytic_title">Օգնել բարելավել պրոդուկտը</string>
+    <string name="app_settings_analytic">Կիսվեք հավելվածի վերլուծությամբ</string>
+    <string name="app_manage_files_title">Մուտք գործել կառավարվող ֆայլեր</string>
+    <string name="app_manage_files_description">Ֆայլերին հասանելիություն տրամադրելու անհրաժեշտություն: Եթե ​​մուտքն արգելված է, կորցրած հավելվածներից հետո բոլոր ֆայլերը կջնջվեն:</string>
+    //ծածկագիր
+    <string name="app_settings_security">Անվտանգություն</string>
+    <string name="app_settings_passcode">Կողպում ծածկագրի միջոցով</string>
+    <string name="app_settings_disabled">Անջատել</string>
+    <string name="app_settings_enabled">Միացնել</string>
+    <string name="app_Settings_passcode_enable">Միացնել ծածկագիրը</string>
+    <string name="app_settings_passcode_change">Փոխել ծածկագիրը</string>
+    <string name="app_settings_passcode_fingerprint">Օգտագործեք մատնահետքը՝ ապակողպելու համար</string>
+    <string name="app_settings_passcode_enter_title">Մուտքագրեք ծածկագիրը</string>
+    <string name="app_settings_passscode_enter_full_title">Մուտքագրեք ծածկագիրը՝ հավելվածն ապակողպելու համար</string>
+    <string name="app_settings_passcode_enter_subtitle">Ընտրեք ծածկագիրը՝ հավելվածն ապակողպելու համար</string>
+    <string name="app_settings_passcode_confirm_title">Հաստատեք ծածկագիրը</string>
+    <string name="app_settings_passcode_confirm_subtitle">Մուտքագրեք ծածկագիրը ևս մեկ անգամ</string>
+    <string name="app_settings_passcode_confirm_error">Ծածկագրերը չեն համընկնում</string>
+    <string name="app_settings_passcode_change_disable_title">Մուտքագրեք ձեր ընթացիկ ծածկագիրը</string>
+    <string name="app_settings_passcode_change_disable_error">Մուտքագրվել է սխալ ծածկագիր</string>
+    <string name="app_settings_passcode_description"> - սա այն կոդը է, որը պահանջվել է հավելվածի սկզբում:\n\Ուշադրություն դարձրեք: Եթե ​​մոռանում եք ծածկագիրը, դուք պետք է հեռացնեք կամ տեղադրեք հավելվածը: Սարքի բոլոր փաստաթղթերը կկորչեն: </string>
+    <string name="app_settings_passcode_fingerprint_title">Փաստաթղթերի հասանելիություն</string>
+
+    <string name="app_internal_error">Ներքին սխալ</string>
+    <string name="app_fragment_crash_error">Փակեք այս հավելվածը և փորձեք կրկին</string>
+    <string name="item_owner_self">Ես</string>
+    <string name="sign_in_terms_and_policy_text">
+        <![CDATA[
+           By proceeding, you agree to the
+            <a href="%1$s">Privacy Policy</a>
+            and the
+            <a href="%2$s">Terms of Service</a>
+        ]]>
+    </string>
+    <string name="app_settings_color_theme">Ոճ</string>
+    <string name="app_settings_follow_the_system">Նույնը, ինչ համակարգը</string>
+    <string name="app_settings_light_theme">Բաց ոճ</string>
+    <string name="app_settings_dark_theme">Մուգ ոճ</string>
+
+    <string name="filter_toolbar_title">Ֆիլտրեր</string>
+    <string name="filter_toolbar_users_title">Ընտրել օգտատեր</string>
+    <string name="filter_toolbar_groups_title">Ընտրել խումբ</string>
+    <string name="filter_title_type">Տեսակ</string>
+    <string name="filter_title_author">Հեղինակ</string>
+    <string name="filter_title_search">Որոնել</string>
+    <string name="filter_type_documents">Փաստաթուղթ</string>
+    <string name="filter_type_presentations">Ներկայացում</string>
+    <string name="filter_type_spreadsheets">Աղյուսակ</string>
+    <string name="filter_type_images">Նկարներ</string>
+    <string name="filter_type_media">Մեդիա</string>
+    <string name="filter_type_archives">Արխիվներ</string>
+    <string name="filter_type_all">Բոլոր ֆայլերը</string>
+    <string name="filter_exclude_subfolders">Բացառել ենթաթղթապանակները</string>
+    <string name="filter_show_results">Ցույց տալ %1$s արդյունքները</string>
+    <string name="filter_button_reset">ՎԵՐԱԿԱՆԳՆԵԼ</string>
+
+    <string name="context_room_move_to_archive">Տեղափոխել արխիվ</string>
+    <string name="context_room_archive_message">Սենյակը տեղափոխվեց արխիվ</string>
+    <string name="context_rooms_archive_message">Սենյակները տեղափոխվեցին արխիվ</string>
+
+    <plurals name="context_rooms_unarchive_message">
+        <item quantity="one">Սենյակը հաջողությամբ վերականգնվեց</item>
+        <item quantity="other">Սենյակները հաջողությամբ վերականգնվեցին</item>
+    </plurals>
+
+    <string name="list_context_pin_to_top">Ամրացնել վերևում</string>
+    <string name="list_rooms_title">Սենյակներ</string>
+    <string name="list_context_unpin">Ապամրացնել</string>
+    <string name="list_context_info">Ինֆո․</string>
+    <string name="list_context_add_users">Ավելացնել օգտատերերի</string>
+
+    <string name="rooms_add_collaboration">Համագործակցության սենյակ</string>
+    <string name="rooms_add_collaboration_des">Համագործակցեք մեկ կամ մի քանի փաստաթղթերի վրա ձեր թիմի հետ</string>
+    <string name="rooms_add_public_room">Հանրային սենյակ</string>
+    <string name="rooms_add_public_room_des">Հրավիրեք օգտատերերին ընդհանուր հղումների միջոցով դիտել փաստաթղթերը առանց գրանցման: Դուք կարող եք նաև տեղադրել այս սենյակը ցանկացած վեբ ինտերֆեյսի մեջ:</string>
+    <string name="rooms_add_custom">Հարմարեցված սենյակ</string>
+    <string name="rooms_add_custom_des">Կիրառեք ձեր սեփական կարգավորումները՝ այս սենյակը ցանկացած հատուկ նպատակով օգտագործելու համար</string>
+    <string name="rooms_choose_room">Ընտրել սենյակի տեսակը</string>
+    <string name="room_name_hint">Սենյակի անուն</string>
+    <string name="room_add_tag_hint">Ավելացնել պիտակներ</string>
+    <string name="rooms_error_name">Սենյակի անունը չի կարող դատարկ լինել</string>
+    <string name="rooms_error_create">Սենյակ ստեղծելու սխալ</string>
+    <string name="rooms_error_edit">Սենյակի խմբագրման սխալ</string>
+    <string name="leave_room_title">Լքել սենյակը</string>
+    <string name="leave_room_owner_desc">Դուք այս սենյակի սեփականատերն եք: Նախքան սենյակից դուրս գալը, դուք պետք է սեփականատիրոջ դերը փոխանցեք մեկ այլ օգտատիրոջ:</string>
+    <string name="leave_room_desc">Իսկապե՞ս ցանկանում եք լքել այս սենյակը: Դուք կկարողանաք կրկին միանալ դրան՝ սենյակի ադմինիստրատորի նոր հրավերի միջոցով:</string>
+    <string name="leave_room_assign">Նշանակել Սեփականատիրոջը</string>
+    <string name="leave_room_message">Դուք դուրս եք եկել սենյակից</string>
+    <string name="room_set_owner_title">Փոխել Սենյակի սեփականատիրոջը</string>
+    <string name="room_search_not_found">Ոչ մի օգտատեր չի գտնվել</string>
+    <string name="room_search_not_found_desc">Այստեղ կհայտնվի նախկինում DocSpace կամ առանձին սենյակներ հրավիրված օգտատերերի ցանկը:</string>
+
+    <plurals name="rooms_restore_title">
+        <item quantity="one">Վերականգնե՞լ սենյակը:</item>
+        <item quantity="other">Վերականգնե՞լ սենյակները:</item>
+    </plurals>
+
+    <plurals name="rooms_restore_desc">
+        <item quantity="one">Սենյակի բոլոր ընդհանուր հղումները կակտիվանան, և դրա բովանդակությունը հասանելի կլինի բոլորին, ովքեր ունեն հղումը: Ցանկանու՞մ եք վերականգնել սենյակը:</item>
+        <item quantity="other">Սենյակների բոլոր ընդհանուր հղումները կակտիվանան, և դրա բովանդակությունը հասանելի կլինի բոլորին, ովքեր ունեն հղումը: Ցանկանու՞մ եք վերականգնել սենյակները:</item>
+    </plurals>
+
+    <string name="rooms_move_to_public_title">Տեղափոխել հանրային սենյակ</string>
+    <string name="rooms_move_to_public_title_desc">Այս սենյակը և դրա ողջ բովանդակությունը հասանելի են բոլորին, ովքեր ունեն հղումը: Ցանկանու՞մ եք շարունակել։</string>
+
+    <string name="rooms_info_access_desc">Այս սենյակը հասանելի է բոլորին, ովքեր ունեն հղումը: Արտաքին օգտատերերը բոլոր ֆայլերի համար միայն դիտելու թույլտվություն կունենան:</string>
+    <string name="rooms_info_general_link">Ընդհանուր հղում</string>
+    <string name="rooms_info_additional_link">Հավելյալ հղում</string>
+    <string name="rooms_info_additional_links">"Հավելյալ հղումներ (%1$d/%2$d)"</string>
+    <string name="rooms_info_create_link">Ստեղծել և պատճենել</string>
+    <string name="rooms_info_create_link_complete">Հղումը հաջողությամբ ստեղծվեց և պատճենվեց սեղմատախտակում</string>
+    <string name="rooms_info_delete_link">Ջնջել հղումը</string>
+    <string name="rooms_info_delete_link_complete">Հղումը ջնջվել է</string>
+    <string name="rooms_info_delete_link_desc">Հղումը ընդմիշտ կջնջվի: Դուք չեք կարողանա հետարկել այս գործողությունը:</string>
+    <string name="rooms_info_revoke_link">Չեղարկել հղումը</string>
+    <string name="rooms_info_revoke_link_desc">Նախորդ հղումն անհասանելի կդառնա: Նոր ընդհանուր հղում կստեղծվի։</string>
+    <string name="rooms_info_revoke_link_complete">Լինկը չեղյալ է համարվել</string>
+    <string name="rooms_info_revoke">Չեղյալ համարել</string>
+    <string name="rooms_info_copy_link">Պատճենել հղումը</string>
+    <string name="rooms_info_copy_link_and_password">Պատճենել հղումը և գաղտնաբառը</string>
+    <string name="rooms_info_copy_link_to_clipboard">Հղումը հաջողությամբ պատճենվեց սեղմատախտակին</string>
+    <string name="rooms_info_admin_title">Ադմինիստրացիա (%d)</string>
+    <string name="rooms_info_users_title">Օգտատերեր (%1d)</string>
+    <string name="rooms_info_guests_title">Հյուրեր (%1d)</string>
+    <string name="rooms_info_expected_title">Ակնկալվող օգտվողներ (%1d)</string>
+    <string name="rooms_info_link_expired">Հղման ժամկետը սպառվել է</string>
+    <string name="rooms_info_link_expired_full">Հղումը ժամկետանց է և անջատված է</string>
+    <string name="rooms_info_link_name">Հղման անուն</string>
+    <string name="rooms_info_password_access">Գաղտնաբառի հասանելիություն</string>
+    <string name="rooms_info_file_rectrict">Սահմանափակել ֆայլի բովանդակության պատճենումը, ֆայլի ներբեռնումը և տպումը</string>
+    <string name="rooms_info_file_rectrict_desc">Միացրեք այս կարգավորումը՝ այս սենյակից ֆայլերի և պանակների ներբեռնումն անջատելու համար, որոնք համօգտագործվում են հղման միջոցով</string>
+    <string name="rooms_info_time_limit_title">Ժամկետային սահմանափակում</string>
+    <string name="rooms_info_time_limit">Միացնել ժամանակի սահմանափակումը</string>
+    <string name="rooms_info_valid_through">Վավեր՝</string>
+    <string name="rooms_info_save_link_title">Պահպանել հղումը</string>
+    <string name="rooms_info_save_link_question">Իսկապե՞ս ուզում եք պահել և դուրս գալ:</string>
+    <string name="rooms_info_save_button">Պահպանել</string>
+    <string name="rooms_info_dont_save_button">Մի պահպանեք</string>
+
+    <string name="rooms_filter_type_filling_forms">Ձևի լրացում</string>
+    <string name="rooms_filter_type_collaboration">Համագործակցություն</string>
+    <string name="rooms_filter_type_review">Վերանայում</string>
+    <string name="rooms_filter_type_public">Հանրային</string>
+    <string name="rooms_filter_type_view_only">Միայն դիտելու համար</string>
+    <string name="rooms_filter_type_custom">Հատուկ</string>
+    <string name="rooms_filter_author_other_users">Այլ օգտվողներ…</string>
+    <string name="rooms_filter_third_party_title">Երրորդ կողմի ռեսուրս</string>
+
+    <string name="dialog_create_room">Ստեղծել սենյակ</string>
+    <string name="dialog_create_room_value">Նոր սենյակ</string>
+    <string name="invite_by_email">Հրավիրել օգտվողներին էլ․փոստով</string>
+    <string name="share_access_room_owner">Սեփականատեր</string>
+    <string name="share_access_room_power_user">Հզոր օգտագործող</string>
+    <string name="share_access_room_editor">Խմբագիր</string>
+    <string name="share_access_room_form_filler">Ձևերի լցոնիչ</string>
+    <string name="share_access_room_reviewer">Գրախոս</string>
+    <string name="share_access_room_commentator">Մեկնաբան</string>
+    <string name="share_access_room_viewer">Դիտող</string>
+    <string name="share_invite_error_empty">Խնդրում ենք մուտքագրել էլ․ հասցեն</string>
+    <string name="invite_link_send_success">Հրավերի հղումն ուղարկվել է</string>
+    <string name="share_choose_access_title">Ընտրել մուտքը</string>
+    <string name="share_invite_title">Հրավիրել</string>
+    <string name="room_create_success">Ստեղծվել է սենյակ</string>
+    <string name="room_delete_success">Սենյակը ջնջված է</string>
+    <string name="switch_account_title">Փոխե՞լ հաշիվը</string>
+    <string name="switch_account_description">Փաստաթուղթը բացելու համար մուտք գործեք %1$s պորտալի հաշիվ:</string>
+    <string name="share_expected_member">Ակնկալել անդամներ</string>
+    <string name="app_settings_main_help">Օգնություն</string>
+    <string name="settings_language">Լեզու</string>
+    <string name="clear_recents">"Մաքրե՞լ վերջին տվյալները:"</string>
+    <string name="context_protection_title">Պաշտպանություն</string>
+    <!--  TODO example  -->
+    <string name="settings_language_confirmation_message">
+        Այժմ հավելվածն օգտագործում է անգլերեն լեզուն, քանի որ համակարգի լեզուն փոխվել է
+    </string>
+    <string name="settings_language_confirmation_accept">Լավ</string>
+    <string name="settings_language_continue_using_app_language">Շարունակել օգտագործել %1$s-ը</string>
+
+
+    <!-- For example  -->
+    <string name="conversion_dialog_title">Փոխակերպել և բացել փաստաթուղթը</string>
+    <string name="conversion_dialog_message">Ձեր բացած փաստաթուղթը OOXML (Office Open XML) ֆայլ չէ: Փոխակերպեք այն OOXML ձևաչափի՝ ավելի արագ դիտելու և խմբագրելու համար:</string>
+    <string name="conversion_dialog_open_in_view_mode">Բացել դիտման ռեժիմում</string>
+    <string name="conversion_dialog_convert_to">Փոխարկել %1s</string>
+    <string name="conversion_dialog_converting_to">Փոխակերպվում է %1s-ի</string>
+
+    <string name="errors_sign_in_ldap_checkbox">Մուտք գործեl որպես LDAP Օգտատեր</string>
+    <string name="placeholder_empty_folder">Այստեղ դեռ փաստաթղթեր չկան</string>
+    <string name="placeholder_empty_trash_desc">Բոլոր ջնջված ֆայլերը տեղափոխվում են \'Աղբարկղ\': Վերականգնել սխալմամբ ջնջված ֆայլերը կամ ընդմիշտ ջնջել դրանք: \'Աղբարկղի\' ֆայլերն ավտոմատ կերպով ջնջվում են 30 օր հետո: Խնդրում ենք նկատի ունենալ, որ \'Աղբարկղից\' ջնջված ֆայլերն այլևս չեն կարող վերականգնվել</string>
+    <string name="placeholder_no_users_found">Ոչ մի օգտատեր չի գտնվել</string>
+    <string name="placeholder_no_users_found_desc">Ոչ մի օգտատեր չի համապատասխանում ձեր որոնմանը: Խնդրում ենք կարգավորել ձեր որոնման պարամետրերը կամ մաքրել որոնման դաշտը՝ օգտատերերի ամբողջական ցանկը դիտելու համար</string>
+    <string name="placeholder_no_members_found">Անդամները չեն գտնվել</string>
+    <string name="placeholder_no_members_found_desc">Դուք կարող եք ձեռքով ավելացնել թիմի նոր անդամներ կամ հրավիրել նրանց հղման միջոցով</string>
+    <string name="placeholder_no_rooms">Բարի գալուստ DocSpace:</string>
+    <string name="placeholder_no_rooms_desc">Խնդրում ենք ստեղծել առաջին սենյակը</string>
+    <string name="placeholder_no_rooms_visitor_desc">Ձեզ հետ կիսված սենյակները կհայտնվեն այստեղ</string>
+    <string name="placeholder_empty_archive">Այստեղ դեռ արխիվացված սենյակներ չկան</string>
+    <string name="placeholder_empty_archive_desc">Դուք կարող եք արխիվացնել այն սենյակները, որոնք չեք օգտագործում և ցանկացած պահի վերականգնել դրանք ձեր DocSpace-ում կամ ընդմիշտ ջնջել դրանք: Այս սենյակները կհայտնվեն այստեղ</string>
+    <string name="placeholder_no_search_result">Որոնման արդյունք չկա</string>
+    <string name="placeholder_no_search_result_desc">Ձեր որոնմանը համապատասխանող արդյունքներ չեն գտնվել: Խնդրում ենք փորձել մեկ այլ արտահայտություն</string>
+    <string name="placeholder_empty_room_visitor_desc">Ադմինիստրատորների կողմից վերբեռնված ֆայլերը և թղթապանակները կհայտնվեն այստեղ</string>
+    <string name="placeholder_empty_recent_via_link_desc">Այստեղ դուք կգտնեք վերջերս բացված ֆայլերի ցանկը, որոնցով ձեզ հետ կիսվել են արտաքին հղման միջոցով</string>
+    <string name="placeholder_payment_required">Բիզնես բաժանորդագրության ժամկետը սպառվել է</string>
+    <string name="placeholder_payment_required_desc">Ձեր ընթացիկ սակագնային «Բիզնես» պլանի ժամկետը լրացել է: Խնդրում ենք թարմացնել ձեր բաժանորդագրությունը հաշվի կարգավորումներում, որպեսզի կարողանաք օգտագործել ձեր DocSpace-ը: Եթե ​​ունեք հարցեր, կարող եք դիմել աջակցության ծառայությունը</string>
+    <string name="placeholder_payment_required_button">Բիզնես պլանի թարմացում</string>
+    <string name="filter_type_form_templates">Ձևերի ձևանմուշներ</string>
+    <string name="filter_type_forms">Ձևեր</string>
+    <string name="room_placeholder_created_room_title">Սենյակը ստեղծվեց:</string>
+    <string name="room_placeholder_created_room_subtitle">Ստեղծեք նոր թղթապանակներ՝ ձեր ֆայլերը հավաքագրելու համար:</string>
+    <string name="room_recent_via_link">Հասանելի է հղման միջոցով</string>
+    <string name="room_manage_room">Կառավարել սենյակը</string>
+    <string name="rooms_info_edit_link">Խմբագրել հղումը</string>
+    <string name="rooms_info_create_link_title">Ստեղծել հղում</string>
+    <string name="rooms_info_groups_title">Խմբեր (%1d)</string>
+    <string name="rooms_share_shared_links">Կիսված հղումներ</string>
+    <string name="rooms_share_shared_link_title">Կիսված հղում</string>
+    <string name="rooms_share_shared_desc">Տրամադրել մուտք դեպի փաստաթուղթ և սահմանել թույլտվության մակարդակները:</string>
+    <string name="rooms_share_lifetime_hours_12">12 ժամ</string>
+    <string name="rooms_share_lifetime_days_1">1 օր</string>
+    <string name="rooms_share_lifetime_days_7">7 օր</string>
+    <string name="rooms_share_lifetime_unlimited">Անսահմանափակ</string>
+    <string name="rooms_share_lifetime_custom">Հարմարեցված</string>
+    <string name="rooms_share_shared_to_docsspace_users">Միայն DosSpace օգտատերերը</string>
+    <string name="rooms_share_shared_to_anyone">Ցանկացած ոք, ով ունի հղումը</string>
+    <string name="rooms_share_expires_after">Սպառվում է %s-ից հետո</string>
+    <string name="rooms_share_valid_unlimited">Հղումը անսահմանափակ է</string>
+    <string name="rooms_share_access_rights">Մուտքի իրավունքներ</string>
+    <string name="rooms_share_regenerate_link">Վերականգնել հղումը</string>
+    <string name="rooms_share_general_header">Ընդհանուր</string>
+    <string name="rooms_share_link_life_time">Հղման ժամկետը</string>
+    <string name="invite_new_members">Նոր անդամներ</string>
+    <string name="invite_new_groups">Նոր խմբեր</string>
+    <string name="invite_add_manually">Ավելացնել ձեռքով</string>
+    <string name="invite_choose_from_list">Ընտրել ցանկից</string>
+    <string name="invite_already_invited">Հրավիրված</string>
+    <string name="share_access_room_type">Մուտքի տեսակը</string>
+    <string name="share_access_room_group_desc">Մուտքի իրավունքներ խմբի բոլոր օգտատերերի համար</string>
+    <string name="room_create_thirdparty_storage_title">Երրորդ կողմի պահեստավորում</string>
+    <string name="room_create_thirdparty_storage">Պահեստ</string>
+    <string name="room_create_thirdparty_location">Լոկացիա</string>
+    <string name="room_create_thirdparty_location_root">Արմատ</string>
+    <string name="room_create_thirdparty_new_folder">Ստեղծել նոր թղթապանակ</string>
+    <string name="room_create_thirdparty_desc">Օգտագործել երրորդ կողմի ծառայությունները՝ որպես այս սենյակի տվյալների պահեստ: Այս սենյակի տվյալները պահելու համար նոր թղթապանակ կստեղծվի միացված պահեստում</string>
+    <string name="room_storage_reconnect">Կրկին միացրեք պահեստը</string>
+    <string name="room_storage_not_availabale">Երրորդ կողմի թղթապանակի բովանդակությունը հասանելի չէ: Փորձեք նորից միացնել հաշիվը:</string>
+    <string name="dialogs_common_close">Փակել</string>
+    <string name="dialogs_question_delete_all_fonts">Ջնջե՞լ բոլոր տառատեսակները:</string>
+    <string name="dialogs_question_delete_font">Ջնջե՞լ այս տառատեսակը:</string>
+    <string name="dialogs_warning_title">Զգուշացում</string>
+    <string name="dialogs_warning_only_pdf_form_message">Ֆայլը չի կարող տեղափոխվել այս սենյակ: Խնդրում ենք փորձել տեղափոխել ONLYOFFICE PDF ձևը:</string>
+    <string name="dialogs_warning_pinned_room_limit">Դուք չեք կարող 10-ից ավելի սենյակ ամրացնել վերևում: Ապամրացրեք որոշները, որոնք ներկայումս ամրացված են:</string>
+    <string name="dialogs_warning_fill_forms_room_create">Մի քանի ֆայլերի և թղթապանակների վրա հիմնված ստեղծումը հասանելի չէ այս տեսակի սենյակների համար: Նման սենյակ ստեղծելու համար անցեք Սենյակներ բաժին կամ օգտագործեք PDF ձևերից մեկը։</string>
+    <string name="toolbar_menu_view">Դիտել</string>
+    <string name="toolbar_menu_view_list">Ցուցակ</string>
+    <string name="toolbar_menu_view_grid">Ցանց</string>
+    <string name="list_context_duplicate">Կրկնօրինակել</string>
+    <string name="list_context_notification_enable">Միացնել ծանուցումները</string>
+    <string name="list_context_notification_disable">Անջատել ծանուցումները</string>
+    <string name="list_context_fill">Լրացնել</string>
+    <string name="list_action_delete_image">Ջնջել նկարը</string>
+    <string name="placeholder_no_fonts">Տառատեսակներ չկան</string>
+    <string name="share_goal_guest">Հյուրեր</string>
+    <string name="operation_select_room_title">Ընտրել սենյակ</string>
+    <string name="room_duplicate_progress_title">Կրկնօրինակն ընթացքի մեջ է</string>
+    <string name="room_duplicate_complete">Կրկնօրինակն ավարտված է</string>
+    <string name="room_duplicate_error">Կրկնօրինակման սխալ</string>
+    <string name="room_duplicate_progress_hide_button">Թաքցնել</string>
+    <plurals name="app_settings_passcode_many_attempt_seconds">
+        <item quantity="one">Չափազանց շատ փորձեր:\nՓորձեք նորից %d վայրկյանից</item>
+        <item quantity="other">Չափազանց շատ փորձեր:\nՓորձեք նորից %d վայրկյանից</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_minutes">
+        <item quantity="one">Չափազանց շատ փորձեր:\nՓորձեք կրկին %a րոպեից</item>
+        <item quantity="other">Չափազանց շատ փորձեր:\nՓորձեք նորից %d րոպեից</item>
+    </plurals>
+    <string name="rooms_add_fill_forms">Ձևաթղթերի լրացման սենյակ</string>
+    <string name="rooms_add_fill_forms_des">Վերբեռնեք PDF ձևերը սենյակ: Հրավիրեք օգտատերերին լրացնել PDF ձևը: Վերանայեք լրացված ձևերը և վերլուծեք աղյուսակում ավտոմատ հավաքագրված տվյալները:</string>
+    <string name="rooms_error_logo_size_exceed">Նկարի առավելագույն չափը գերազանցված է (1 ՄԲ)</string>
+    <string name="room_placeholder_created_filling_form_room_title">Բարի գալուստ Ձևաթղթերի լրացման սենյակ</string>
+    <string name="room_placeholder_created_filling_form_room_subtitle">Վերբեռնեք պատրաստ PDF ձև կամ ստեղծեք նոր թղթապանակներ՝ ձեր ֆայլերը կազմակերպելու համար</string>
+    <string name="room_placeholder_created_virtual_room_title">Բարի գալուստ Վիրտուալ Տվյալների Սենյակ</string>
+    <string name="room_placeholder_created_virtual_room_subtitle">Սկսեք արագ գործողություններով.\nՍտեղծեք նոր ֆայլ</string>
+    <string name="rooms_info_create_maximum_exceed">Հղումների առավելագույն քանակը գերազանցվել է</string>
+    <string name="rooms_info_password_allowed_symbols">Թույլատրելի նշաններ՝ a–z, A–Z, 0–9, !"#%&amp;'()*+,-./:;\u003C=&gt;?@[]^_`{|}</string>
+    <string name="rooms_info_password_minimum_length">Նվազագույն երկարությունը՝ 8 նիշ</string>
+    <string name="rooms_filter_type_virtual_room">Վիրըուալ Տվյալների Սենյակ</string>
+    <string name="share_user_type_room_docspace_admin">DocSpace ադմին</string>
+    <string name="share_user_type_room_docspace_owner">DocSpace Սեփականատեր</string>
+    <string name="share_user_type_room_admin">Սենյակի ադմին</string>
+    <string name="share_access_room_manager">Սենյալի մենեջեր</string>
+    <string name="personal_portal_end_button">Ստեղծել անվճար հաշիվ</string>
+    <string name="personal_portal_end_title">ONLYOFFICE Personal-ը վերջացնում է աշխատանքը</string>
+    <string name="personal_portal_end_text">ONLYOFFICE Personal-ը կդադարեցվի 2024 թվականի սեպտեմբերի 1-ին:\nԽորհուրդ ենք տալիս տեղափոխվել անվճար ONLYOFFICE DocSpace Cloud:</string>
+    <string name="rooms_upload_pdf_from_docspace">Վերբեռնեք PDF ձևը DocSpace-ից</string>
+    <string name="rooms_upload_pdf_from_device">Վերբեռնեք PDF ձևը սարքից</string>
+    <string name="rooms_fill_in_as_title">Լրացնել որպես՝</string>
+    <string name="rooms_fill_out_form_yourself">Լրացրեք ձևը ինքներդ</string>
+    <string name="rooms_fill_out_form_yourself_desc">Խմբագրի պատուհանում լրացրեք բնօրինակ ձևի դաշտերը:</string>
+    <string name="rooms_share_and_collect">Կիսվել և հավաքել</string>
+    <string name="rooms_share_and_collect_desc">Կիսեք ձեր ձևը և հավաքեք պատասխանները Ձևաթղթերի լրացման սենյակի միջոցով:</string>
+    <string name="rooms_fill_form_complete_desc">Լրացված PDF ձևը պահվում է և հասանելի է ձեզ Ամբողջական  թղթապանակում: Կարգավիճակը ստուգելու համար դիմեք նշանակված համարը տրամադրող ձևատիրոջը:</string>
+    <string name="rooms_fill_form_complete_number_title">Ձևի համար</string>
+    <string name="rooms_fill_form_complete_owner_title">Ձևի սեփականատեր</string>
+    <string name="rooms_fill_form_complete_toolbar_title">Ձևը հաջողությամբ ավարտվեց</string>
+    <string name="rooms_fill_form_complete_back_to_room">Վերադարձ դեպի սենյակ</string>
+    <string name="rooms_fill_form_complete_check_forms">Ստուգեք պատրաստի ձևերը</string>
+    <string name="errors_sign_in_account_not_found">Հաշիվը չի գտնվել</string>
+    <string name="rooms_notifications_disabled">Սենյակի ծանուցումներն անջատված են</string>
+    <string name="rooms_notifications_enabled">Սենյակի ծանուցումները միացված են</string>
+    <string name="rooms_vdr">Վիրըուալ Տվյալների Սենյակ</string>
+    <string name="rooms_vdr_desc">Օգտագործեք ՎՏՍ ֆայլերի առաջադեմ անվտանգության և թափանցիկության համար փաստաթղթերը քայլ առ քայլ լրացնելիս և ստորագրելիս: Սահմանեք ջրանիշներ, ավտոմատ կերպով ինդեքսավորեք և հետևեք ամբողջ բովանդակությանը, սահմանափակեք ներբեռնումն ու պատճենումը:</string>
+    <string name="file_lifetime_desc">"Սահմանեք ֆայլի տևողությունը՝ որոշակի ժամանակահատվածից հետո այս սենյակի ֆայլերն ավտոմատ ջնջելու համար: Գործողության ժամկետը սկսվում է ֆայլի վերբեռնման/ստեղծման ամսաթվից:"</string>
+    <string name="file_lifetime_title">Ֆայլի տևողություն</string>
+    <string name="file_lifetime_hint">Ավելի հին ֆայլեր, քան՝</string>
+    <string name="file_lifetime_warning_title">Ավելի հին ֆայլերը, որոնց ժամկետը գերազանցել է, կջնջվեն</string>
+    <string name="file_lifetime_warning_desc">Տևողության ընթացքի հետհաշվարկը սկսվում է ֆայլի ստեղծման ամսաթվից: Այս սենյակի որոշ ֆայլեր գերազանցում են առաջարկվող ժամկետը և կջնջվեն, երբ միացնեք կարգավորումը:</string>
+    <string name="file_lifetime_action">Գործողություններ ֆայլերի վրա</string>
+    <string name="file_lifetime_action_delete">Ընդմիշտ ջնջել</string>
+    <string name="file_lifetime_action_move_to_trash">Տեղափոխել աղբարկղ</string>
+    <string name="file_lifetime_time_period">Ժամանակահատվածը</string>
+    <string name="file_lifetime_period_days">Օրեր</string>
+    <string name="file_lifetime_period_months">Ամիսներ</string>
+    <string name="file_lifetime_period_years">Տարիներ</string>
+    <string name="rooms_vdr_file_restrict_desc">Միացրեք այս կարգավորումը՝ «Դիտող» դեր ունեցող օգտատերերի համար ներբեռնումները, տպագրումը և բովանդակության պատճենումն անջատելու համար։</string>
+    <string name="rooms_vdr_watermark_title">Ավելացնել ջրանիշեր փաստաթղթերում</string>
+    <string name="rooms_vdr_watermark_desc">Պաշտպանեք այս սենյակի բոլոր փաստաթղթերը ջրանիշներով: Եթե ​​փաստաթուղթն արդեն պարունակում է այն, այն չի փոխարինվի:</string>
+    <string name="rooms_vdr_indexing_title">Ավտոմատ ինդեքսավորում</string>
+    <string name="rooms_vdr_indexing_desc">Միացնել ավտոմատ ինդեքսավորումը ֆայլերի և թղթապանակների ինդեքսավորման համար ըստ սերիական համարի: Ըստ թվերի դասակարգումը կսահմանվի որպես լռելյայն բոլոր օգտատերերի համար:</string>
+    <string name="rooms_vdr_storage_quota_title">Պահեստի քվոտա</string>
+    <string name="rooms_vdr_storage_quota_desc">Պահպանման քվոտան սահմանված է մեկ սենյակի համար: Դուք կարող եք փոխել այս արժեքը կամ անջատել պահեստի սահմանաչափը:</string>
+    <string name="rooms_vdr_size_quota">Քվոտայի չափ</string>
+    <string name="rooms_vdr_measurement_unit">Չափման միավոր</string>
+    <string name="rooms_vdr_watermark_type">Ժամանակի ջրանիշի տեսակ</string>
+    <string name="rooms_vdr_watermark_type_info">Դիտողի ինֆո․</string>
+    <string name="rooms_vdr_watermark_type_image">Նկար</string>
+    <string name="rooms_vdr_watermark_static_text">Ստատիկ տեքստ</string>
+    <string name="rooms_vdr_watermark_position">Դիրք</string>
+    <string name="rooms_vdr_watermark_position_diagonal">Շեղանկյուն</string>
+    <string name="rooms_vdr_watermark_position_horizontal">Հորիզոնական</string>
+    <string name="rooms_vdr_watermark_info_username">Օգտատիրոջ անում</string>
+    <string name="rooms_vdr_watermark_info_email">Օգտատիրոջ էլ․հասցե</string>
+    <string name="rooms_vdr_watermark_info_ip_address">Օգտագործել IP հասցե</string>
+    <string name="rooms_vdr_watermark_info_current_date">Ներկայիս ամսաթիվը</string>
+    <string name="rooms_vdr_watermark_info_room_name">Սենյակի անվանում</string>
+    <string name="rooms_vdr_watermark_image_select">Ընտրել նկար</string>
+    <string name="rooms_vdr_watermark_image_scale">Սանդղակ</string>
+    <string name="rooms_vdr_watermark_image_rotate">Պտտել</string>
+    <string name="rooms_vdr_watermark_image_desc">Այս պատկերի նախադիտումը մոտավորապես ցույց է տալիս, թե ինչպես է ջրի մակարդակի նշագիծը կցուցադրվի ձեր ֆայլերում:</string>
+    <string name="rooms_vdr_lifetime_info">Այս սենյակում ֆայլի ժամկետը սահմանվել է %1$d %2$s</string>
+    <string name="trash_toolbar_info">Աղբարկղում գտնվող տարրերն ավտոմատ կերպով ջնջվում են 30 օր հետո</string>
+    <string name="rooms_expire_context_info">Ֆայլը կջնջվի %s-ում</string>
+    <string name="rooms_index_subtitle">Ինդեքս %s</string>
+    <string name="rooms_index_edit">Խմբագրել ինդեքսը</string>
+    <string name="rooms_index_export">Արտահանման սենյակի ինդեքս</string>
+    <string name="rooms_index_title">Տեսակավորման ինդեքս</string>
+    <string name="rooms_index_reorder">Նորից պատվիրել</string>
+    <string name="rooms_index_apply">Դիմել</string>
+    <string name="rooms_index_exit_no_saving">Դուրս գա՞լ առանց պահելու:\nԴուք փոփոխություններ եք կատարել ինդեքսում: Եթե ​​շարունակեք առանց պահելու, այդ փոփոխությունները չեն կիրառվի:</string>
+    <string name="rooms_index_reorder_desc">Վերադասավորել գործողությունը կհեռացնի ինդեքսների բացատները: Ֆայլերը կվերինդեքսավորվեն, որպեսզի օֆսեթով լրացվեն բացակայող ինդեքսները:</string>
+    <string name="rooms_index_reorder_complete_title">ֆայլն արտահանվել է</string>
+    <string name="rooms_index_reorder_complete_desc">%s ֆայլն արտահանվել է Փաստաթղթեր</string>
+    <string name="rooms_index_reorder_open_file">Բացել ֆայլը</string>
+    <string name="rooms_protected_room">Պաշտպանված սենյակ</string>
+    <string name="rooms_invalid_password">Անվավեր գաղտնաբառ</string>
+    <string name="rooms_invite_access_description">Հյուրերը, օգտատերերը և խմբերը չեն կարող նշանակվել որպես Սենյակի մենեջերներ: Միայն Սենյակի և DocSpace-ի ադմինները հարմար են նշված դերի համար:</string>
+    <string name="rooms_user_type_employees">Աշխատակիցներ</string>
+    <string name="whats_new_1">Ընդլայնված ինտեգրացիա DocSpace 3.0 տարբերակի հետ</string>
+    <string name="whats_new_1_desc">Համագործակցեք փաստաթղթերում՝ ONLYOFFICE DocSpace 3.0 տարբերակի վերջին թարմացումներով և բարելավումներով:</string>
+    <string name="whats_new_2">Ներդիրներով ինտերֆեյս պլանշետների և համակարգիչների համար</string>
+    <string name="whats_new_2_desc">Պարզեցրեք նավիգացիան և խմբագրումը ներդիրներով գործիքագոտու միջոցով՝ պլանշետների և համակարգչային սարքերի համար:</string>
+    <string name="whats_new_3">Գծապատկերների նոր տեսակներ</string>
+    <string name="whats_new_3_desc">Ավելացրեք գծապատկերների նոր տեսակներ՝ վիզուալիզացնելու ձեր տվյալները մանրամասն ներկայացումների և վերլուծությունների համար:</string>
+    <string name="whats_new_4">Դիտեք Apple էջերը և HWP ֆայլերը</string>
+    <string name="whats_new_4_desc">Բացեք և դիտեք փաստաթղթերը Apple Pages և Hangul Word ձևաչափերով:</string>
+</resources>

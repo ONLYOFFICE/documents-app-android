@@ -35,6 +35,9 @@ data class SharedTo(
     val shareLink: String = ""
 ) {
 
+    val nameHtml: String
+        get() = StringUtils.getHtmlString(name)
+
     val displayNameHtml: String
         get() = StringUtils.getHtmlString(displayName)
 

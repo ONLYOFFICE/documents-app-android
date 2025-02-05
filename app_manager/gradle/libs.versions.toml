@@ -1,8 +1,9 @@
 [versions]
-compileSdk = "34"
+compileSdk = "35"
 minSdk = "26"
-targetSdk = "34"
+targetSdk = "35"
 ndk = "21.3.6528147"
+gradle = "8.7.3"
 
 #kotlin
 kotlin = "1.9.24"
@@ -12,87 +13,79 @@ coroutines = "1.8.1"
 
 #android
 androidx = "1.7.0"
-composeActivity = "1.9.0"
 cardView = "1.0.0"
 recyclerView = "1.3.2"
 recyclerViewSelection = "1.1.0"
-constraint = "2.1.4"
-ktx = "1.13.1"
-fragmentKtx = "1.8.1"
+constraint = "2.2.0"
+ktx = "1.15.0"
+fragmentKtx = "1.8.5"
 biometric = "1.1.0"
-androidWorkManager = "2.9.0"
+androidWorkManager = "2.10.0"
 androidDocumentFile = "1.0.1"
 
 #compose
-composeMaterial = "1.6.8"
-composeMaterial3 = "1.3.0"
-composeUi = "1.6.8"
-composeUiTooling = "1.6.8"
-composeUiToolingPreview = "1.6.8"
-composeNavigation = "2.7.7"
+composeMaterial = "1.7.6"
+composeMaterial3 = "1.3.1"
+composeUi = "1.7.6"
+composeUiTooling = "1.7.6"
+composeUiToolingPreview = "1.7.6"
+composeNavigation = "2.8.5"
 composeCompiler = "1.5.14"
-compose = "1.6.7"
+compose = "1.7.6"
 
 #dagger
-dagger = "2.48.1"
+dagger = "2.53.1"
 
 #room
-room = "2.5.1"
+room = "2.6.1"
 
 #moxy
 moxy = "2.2.2"
 
 #koin
-koin = "3.6.0-wasm-alpha2"
+koin = "4.0.0"
 
 #firebase
 firebaseCore = "21.1.1"
-firebaseConfig = "22.0.0"
-firebaseMessaging = "24.0.0"
-firebaseCrashlytics = "19.0.2"
+firebaseConfig = "22.0.1"
+firebaseMessaging = "24.1.0"
+firebaseCrashlytics = "19.3.0"
 
 #livedata
-lifecycle = "2.8.3"
+lifecycle = "2.8.7"
 
 #google
-playServieAuth = "21.2.0"
-playReview = "2.0.1"
+playServieAuth = "21.3.0"
+playReview = "2.0.2"
 material = "1.12.0"
-gson = "2.10.1"
+gson = "2.11.0"
 safetynet = "18.1.0"
+app-update = "2.1.0"
 
-jackson = "2.16.1"
+jackson = "2.18.2"
 
 rxjava = "2.1.1"
 
-retrofit = "2.9.0"
+retrofit = "2.11.0"
 retrofitKtSerialization = "1.0.0"
 
 firebaseCrashlyticsGradle = "3.0.2"
 googleServices = "4.4.2"
-gradle = "8.5.0"
-kotlinGradlePlugin = "1.9.24"
-
-customview = "1.2.0-alpha02"
-customviewPoolingcontainer = "1.0.0"
 
 #other
 phoneNumber = "8.13.28"
-facebookLogin = "16.2.0"
+facebookLogin = "17.0.1"
 pageIndicator = "v.1.0.3"
 glide = "4.16.0"
-glideKsp = "4.12.0"
 glideOkHttpIntegration = "4.0.0"
 glideCompose = "1.0.0-beta01"
 photoView = "2.3.0"
 pdfView = "3.1.0-beta.3"
 colorPicker = "2.3.0"
-dropboxSdk = "5.2.0"
 
 [libraries]
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx" }
 appcompat-resources = { module = "androidx.appcompat:appcompat-resources", version.ref = "androidx" }
-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "composeActivity" }
 recyclerView = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerView" }
 recyclerViewSelection = { module = "androidx.recyclerview:recyclerview-selection", version.ref = "recyclerViewSelection" }
 cardView = { module = "androidx.cardview:cardview", version.ref = "cardView" }
@@ -118,6 +111,7 @@ google-playReview = { module = "com.google.android.play:review", version.ref = "
 google-material = { module = "com.google.android.material:material", version.ref = "material" }
 google-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 google-safetynet = { module = "com.google.android.gms:play-services-safetynet", version.ref = "safetynet" }
+google-update = { module = "com.google.android.play:app-update-ktx", version.ref = "app-update" }
 
 #kotlin
 kotlin-core = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
@@ -170,32 +164,27 @@ rx-relay = { module = "com.jakewharton.rxrelay2:rxrelay", version.ref = "rxjava"
 lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
-
-customview-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version.ref = "customviewPoolingcontainer" }
-customview = { module = "androidx.customview:customview", version.ref = "customview" }
-
 firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebaseCrashlyticsGradle" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlinGradlePlugin" }
-kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlinGradlePlugin" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 
 #other
 phoneNumber = { module = "io.michaelrocks:libphonenumber-android", version.ref = "phoneNumber" }
 facebookLogin = { module = "com.facebook.android:facebook-login", version.ref = "facebookLogin" }
 pageIndicator = { module = "com.github.romandanylyk:pageindicatorview", version.ref = "pageIndicator" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
-glideKsp = { module = "com.github.bumptech.glide:ksp", version.ref = "glideKsp" }
+glideKsp = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
 glideOkhttp = { module = "com.github.bumptech.glide:okhttp3-integration", version.ref = "glideOkHttpIntegration" }
 glideCompose = { module = "com.github.bumptech.glide:compose", version.ref = "glideCompose" }
 photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoView" }
 pdfView = { module = "com.github.TalbotGooday:AndroidPdfViewer", version.ref = "pdfView" }
 colorPicker = { module = "com.github.skydoves:colorpickerview", version.ref = "colorPicker" }
-dropboxSdk = { module = "com.dropbox.core:dropbox-core-sdk", version.ref = "dropboxSdk" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "gradle" }
 android-application = { id = "com.android.application", version.ref = "gradle" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinGradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinKsp" }
-kotlin-serialization-plugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinGradlePlugin" }
+kotlin-serialization-plugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

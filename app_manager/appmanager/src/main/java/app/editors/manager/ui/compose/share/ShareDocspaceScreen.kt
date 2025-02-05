@@ -1,7 +1,6 @@
 package app.editors.manager.ui.compose.share
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,9 +62,10 @@ import java.net.URLEncoder
 @Composable
 fun ShareDocSpaceScreen(
     viewModel: ShareSettingsViewModel,
+    fileExtension: String,
     useTabletPadding: Boolean,
     onSendLink: (String) -> Unit,
-    onClose: () -> Unit
+    onClose: () -> Unit,
 ) {
     val context = LocalContext.current
     val snackBar = remember { UiUtils.getSnackBar(context as FragmentActivity) }
@@ -119,6 +119,7 @@ fun ShareDocSpaceScreen(
                         fileId = viewModel.fileId
                     )
                 },
+                fileExtension = fileExtension,
                 useTabletPadding = useTabletPadding,
                 onBack = navController::popBackStackWhenResumed,
                 onSnackBar = { text -> snackBar.setText(text).show() }
@@ -135,7 +136,7 @@ private fun MainScreen(
     onSnackBar: (String) -> Unit,
     onShare: (String) -> Unit,
     onLinkClick: (ExternalLink) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     val context = LocalContext.current
     var isCreateLoading by remember { mutableStateOf(false) }
@@ -148,6 +149,7 @@ private fun MainScreen(
                     KeyboardUtils.setDataToClipboard(context, effect.link)
                     onSnackBar(context.getString(R.string.rooms_info_create_link_complete))
                 }
+
                 is ShareSettingsEffect.Error -> {
                     onSnackBar(
                         effect.code?.let { code ->
@@ -155,6 +157,7 @@ private fun MainScreen(
                         } ?: context.getString(R.string.errors_unknown_error)
                     )
                 }
+
                 is ShareSettingsEffect.OnCreate -> {
                     isCreateLoading = effect.loading
                 }
@@ -173,7 +176,6 @@ private fun MainScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ShareSettingsScreen(
     isCreateLoading: Boolean,
@@ -182,7 +184,7 @@ private fun ShareSettingsScreen(
     onCreate: () -> Unit,
     onShareClick: (String) -> Unit,
     onLinkClick: (ExternalLink) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     AppScaffold(
         useTablePaddings = useTabletPaddings,
@@ -203,7 +205,7 @@ private fun ShareSettingsScreen(
                             if (state.links.isNotEmpty()) {
                                 IconButton(onClick = onCreate) {
                                     Icon(
-                                        imageVector = ImageVector.vectorResource(R.drawable.ic_action_button_docs_add),
+                                        imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_default_add),
                                         tint = MaterialTheme.colors.primary,
                                         contentDescription = null
                                     )
@@ -214,7 +216,7 @@ private fun ShareSettingsScreen(
                     if (state.links.isNotEmpty()) {
                         items(state.links, key = { it.sharedTo.id }) { link ->
                             SharedLinkItem(
-                                modifier = Modifier.animateItemPlacement(),
+                                modifier = Modifier.animateItem(),
                                 access = link.access,
                                 internal = link.sharedTo.internal == true,
                                 expirationDate = link.sharedTo.expirationDate,
@@ -245,7 +247,10 @@ private fun ShareSettingsScreen(
                         }
                     }
                     item {
-                        AppDescriptionItem(text = R.string.rooms_share_shared_desc)
+                        AppDescriptionItem(
+                            modifier = Modifier.padding(top = 8.dp),
+                            text = R.string.rooms_share_shared_desc
+                        )
                     }
                 }
             }
@@ -262,7 +267,7 @@ private fun ShareSettingsScreenPreview() {
         isOwner = false,
         canEditAccess = false,
         sharedTo = ExternalLinkSharedTo(
-            id = "",
+            id = "1",
             title = "",
             shareLink = "",
             linkType = 2,
@@ -272,7 +277,7 @@ private fun ShareSettingsScreenPreview() {
             primary = true,
             requestToken = "",
             password = "",
-            expirationDate = "2024-4-05T22:00:00.0000000+03:00"
+            expirationDate = null
         )
     )
 
@@ -281,8 +286,8 @@ private fun ShareSettingsScreenPreview() {
             state = ShareSettingsState.Success(
                 listOf(
                     link.copy(access = 1),
-                    link.copy(sharedTo = link.sharedTo.copy(expirationDate = null)),
-                    link.copy(sharedTo = link.sharedTo.copy(isExpired = true, internal = false))
+                    link.copy(sharedTo = link.sharedTo.copy(expirationDate = null, id = "2")),
+                    link.copy(sharedTo = link.sharedTo.copy(isExpired = true, internal = false, id = "3"))
                 )
             ),
             useTabletPaddings = false,

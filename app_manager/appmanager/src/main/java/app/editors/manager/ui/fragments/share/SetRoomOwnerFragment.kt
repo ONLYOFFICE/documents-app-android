@@ -12,7 +12,6 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
-import app.editors.manager.app.shareApi
 import app.editors.manager.ui.activities.main.ShareActivity
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
 import app.editors.manager.viewModels.main.RoomUserListViewModel
@@ -73,7 +72,6 @@ class SetRoomOwnerFragment : BaseDialogFragment() {
                         mode = UserListMode.ChangeOwner,
                         roomId = checkNotNull(arguments?.getSerializableExt<String>(ROOM_ID_KEY)),
                         roomOwnerId = checkNotNull(arguments?.getSerializableExt<String>(ROOM_CREATED_BY_ID_KEY)),
-                        shareService = requireContext().shareApi,
                         roomProvider = requireContext().roomProvider,
                         resourcesProvider = requireContext().appComponent.resourcesProvider,
                     )
@@ -82,7 +80,6 @@ class SetRoomOwnerFragment : BaseDialogFragment() {
                 UserListScreen(
                     viewModel = viewModel,
                     title = R.string.room_set_owner_title,
-                    disableInvited = false,
                     onClick = { userId -> viewModel.setOwner(userId, leave = true) },
                     onBack = ::onBackPressed,
                     onSuccess = {

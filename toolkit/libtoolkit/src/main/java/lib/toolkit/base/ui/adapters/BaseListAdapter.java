@@ -35,12 +35,7 @@ public abstract class BaseListAdapter<D> extends BaseAdapter {
             return;
         }
 
-        if (mList != null) {
-            mList.clear();
-        } else {
-            mList = new ArrayList<>();
-        }
-        mList.addAll(list);
+        mList = new ArrayList<>(list);
         notifyDataSetChanged();
     }
 

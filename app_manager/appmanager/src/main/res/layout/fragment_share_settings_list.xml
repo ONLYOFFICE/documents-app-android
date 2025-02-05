@@ -57,7 +57,7 @@
         android:layout_width="@dimen/default_action_bottom_size"
         android:layout_height="@dimen/default_action_bottom_size"
         android:layout_margin="@dimen/default_action_button_margin"
-        android:src="@drawable/ic_action_button_share_add"
+        android:src="@drawable/ic_add_users"
         app:fabSize="normal"
         app:layout_anchor="@+id/share_settings_list_swipe_refresh"
         app:layout_anchorGravity="bottom|right|end"
