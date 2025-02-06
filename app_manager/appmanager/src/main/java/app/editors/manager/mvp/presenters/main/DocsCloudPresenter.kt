@@ -381,7 +381,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     override fun onActionClick() {
         viewState.onActionDialog(
             isRoot && (isUserSection || isCommonSection && isAdmin),
-            !isVisitor,
+            !isVisitor || modelExplorerStack.last()?.current?.security?.create == true,
             roomClicked?.roomType
         )
     }
