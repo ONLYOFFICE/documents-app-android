@@ -845,4 +845,6 @@ Nous vous recommandons de passer au service gratuit ONLYOFFICE DocSpace Cloud.</
     <string name="whats_new_3_desc">Ajoutez de nouveaux types de graphiques pour visualiser vos données pour des présentations et des analyses détaillées.</string>
     <string name="whats_new_4">Affichage des fichiers Apple Pages et HWP</string>
     <string name="whats_new_4_desc">Ouvrez et visualisez des documents aux formats Apple Pages et Hangul Word.</string>
+    <string name="whats_new_title">Quoi de neuf ?</string>
+    <string name="whats_new_next">Commencer !</string>
 </resources>

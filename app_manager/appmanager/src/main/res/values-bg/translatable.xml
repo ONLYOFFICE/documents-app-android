@@ -832,4 +832,6 @@
     <string name="whats_new_3_desc">Добавете нови видове графики, за да визуализирате данните си за по-подробни презентации и анализи.</string>
     <string name="whats_new_4">Преглеждайте Apple Pages и HWP файлове</string>
     <string name="whats_new_4_desc">Отваряйте и четете документи в Apple Pages и формати Hangul Word.</string>
+    <string name="whats_new_title">Какво ново</string>
+    <string name="whats_new_next">Първи стъпки</string>
 </resources>
