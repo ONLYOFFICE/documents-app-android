@@ -672,7 +672,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         if (cloudFile.isPdfForm && editType == null) {
                             fillPdfForm()
                         } else {
-                            openDocumentServer(cloudFile, isItemShareable, editType)
+                            openDocumentServer(cloudFile, isItemShareable, editType = if (LocalContentTools.isOpenFormat(cloudFile.clearExt)) {
+                                    EditType.VIEW
+                                } else {
+                                    editType
+                                }
+                            )
                         }
                     } else {
                         downloadTempFile(
