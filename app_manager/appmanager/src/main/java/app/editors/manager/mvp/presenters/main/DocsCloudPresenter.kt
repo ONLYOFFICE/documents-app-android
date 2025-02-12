@@ -672,7 +672,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         if (cloudFile.isPdfForm && editType == null) {
                             fillPdfForm()
                         } else {
-                            openDocumentServer(cloudFile, isItemShareable, editType = if (LocalContentTools.isOpenFormat(cloudFile.clearExt)) {
+                            openDocumentServer(
+                                cloudFile = cloudFile,
+                                canShareable = isItemShareable,
+                                editType = if (LocalContentTools.isOpenFormat(cloudFile.clearExt) ||
+                                    cloudFile.access == Access.Read
+                                ) {
                                     EditType.VIEW
                                 } else {
                                     editType
@@ -682,8 +687,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     } else {
                         downloadTempFile(
                             cloudFile = cloudFile,
-                            editType = editType ?:
-                                EditType.VIEW.takeIf { cloudFile.access == Access.Read }
+                            editType = if (cloudFile.access == Access.Read) {
+                                EditType.VIEW
+                            } else {
+                                editType
+                            }
                         )
                     }
                 }
