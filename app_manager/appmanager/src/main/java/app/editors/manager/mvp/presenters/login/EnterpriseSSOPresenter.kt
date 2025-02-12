@@ -19,13 +19,17 @@ class EnterpriseSSOPresenter : BaseLoginPresenter<EnterpriseSSOView>() {
 
     fun signInWithSSO(token: String) {
         signInJob = presenterScope.launch {
-            loginRepository.signInWithSSO(token)
-                .collect { result ->
-                    when (result) {
-                        is Result.Success -> onAccountCreateSuccess(result.result)
-                        is Result.Error -> fetchError(result.exception)
+            try {
+                loginRepository.signInWithSSO(token)
+                    .collect { result ->
+                        when (result) {
+                            is Result.Success -> onAccountCreateSuccess(result.result)
+                            is Result.Error -> fetchError(result.exception)
+                        }
                     }
-                }
+            } catch (e: Exception) {
+                fetchError(e)
+            }
         }
     }
 
