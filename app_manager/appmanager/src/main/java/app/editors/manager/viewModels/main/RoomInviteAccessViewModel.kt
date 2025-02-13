@@ -22,16 +22,18 @@ class RoomInviteAccessViewModel(
                 updateState { it.copy(loading = true) }
                 if (state.value.emails.isNotEmpty()) {
                     roomProvider.inviteByEmail(
-                        roomId,
-                        state.value.emails.associateWith { state.value.idAccessList[it]?.code ?: 2 }
+                        roomId = roomId,
+                        emails = state.value
+                            .emails
+                            .map { (email, access) -> email.id to access.code }
+                            .toMap()
                     )
                 } else {
                     roomProvider.inviteById(
-                        roomId,
-                        state.value.users
-                            .map(User::id)
-                            .plus(state.value.groups.map(Group::id))
-                            .associateWith { state.value.idAccessList[it]?.code ?: 2 }
+                        roomId = roomId,
+                        users = (state.value.users + state.value.groups)
+                            .map { (member, access) -> member.id to access.code }
+                            .toMap()
                     )
                 }
                 emitEffect(InviteAccessEffect.Success)

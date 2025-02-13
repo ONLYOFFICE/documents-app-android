@@ -3,7 +3,9 @@ package app.editors.manager.viewModels.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.model.cloud.Access
+import app.documents.core.model.login.Email
 import app.documents.core.model.login.Group
+import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
 import app.documents.core.network.share.ShareService
 import app.documents.core.network.share.models.request.RequestShare
@@ -17,14 +19,27 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@Suppress("UNCHECKED_CAST")
 data class InviteAccessState(
     val loading: Boolean = false,
-    val access: Access,
-    val emails: List<String> = emptyList(),
-    val users: List<User> = emptyList(),
-    val groups: List<Group> = emptyList(),
-    val idAccessList: Map<String, Access> = emptyMap(),
-)
+    val commonAccess: Access,
+    val membersWithAccess: Map<Member, Access> = emptyMap(),
+) {
+
+    val emails: Map<Email, Access> =
+        membersWithAccess
+            .filter { (member, _) -> member is Email } as Map<Email, Access>
+
+    val users: Map<User, Access> =
+        membersWithAccess
+            .filter { (member, _) -> member is User } as Map<User, Access>
+
+    val groups: Map<Group, Access> =
+        membersWithAccess
+            .filter { (member, _) -> member is Group } as Map<Group, Access>
+
+    val canRemoveUser: Boolean = membersWithAccess.size > 1
+}
 
 sealed class InviteAccessEffect {
 
@@ -39,7 +54,7 @@ open class InviteAccessViewModel(
     emails: List<String> = emptyList(),
     private val shareService: ShareService? = null,
     private val itemId: String? = null,
-    private val isFolder: Boolean = false
+    private val isFolder: Boolean = false,
 ) : ViewModel() {
 
     companion object {
@@ -48,45 +63,82 @@ open class InviteAccessViewModel(
             access: Access,
             users: List<User>,
             groups: List<Group>,
-            emails: List<String>
+            emails: List<String>,
         ): InviteAccessState {
+
+            fun correctAccess(isAdmin: Boolean): Access {
+                return correctAccess(access, isAdmin)
+            }
+
             return InviteAccessState(
-                access = access,
-                emails = emails,
-                users = users,
-                groups = groups,
-                idAccessList = users.map(User::id)
-                    .plus(emails)
-                    .associateWith { access } +
-                        groups.map(Group::id)
-                            .associateWith {
-                                access.takeIf {
-                                    it != Access.RoomManager
-                                } ?: Access.ContentCreator
-                            }
+                commonAccess = access,
+                membersWithAccess = buildMap {
+                    putAll(emails.associate { email -> Email(email) to correctAccess(false) })
+                    putAll(groups.associateWith { group -> correctAccess(false) })
+                    putAll(users.associateWith { user -> correctAccess(user.isAdmin || user.isRoomAdmin) })
+                }
             )
+        }
+
+        fun correctAccess(access: Access, isAdmin: Boolean): Access {
+            return if (access == Access.RoomManager) {
+                if (isAdmin) {
+                    access
+                } else {
+                    Access.ContentCreator
+                }
+            } else {
+                access
+            }
         }
     }
 
-    private val _state: MutableStateFlow<InviteAccessState> = MutableStateFlow(initState(access, users, groups, emails))
+    private val _state: MutableStateFlow<InviteAccessState> =
+        MutableStateFlow(initState(access, users, groups, emails))
     val state: StateFlow<InviteAccessState> = _state.asStateFlow()
 
     private val _effect: MutableSharedFlow<InviteAccessEffect> = MutableSharedFlow(1)
     val effect: SharedFlow<InviteAccessEffect> = _effect.asSharedFlow()
 
     fun setAccess(emailOrId: String, access: Access) {
-        if (access == Access.None) {
-            _state.update { it.copy(idAccessList = it.idAccessList.minus(emailOrId)) }
-        } else {
-            _state.update { it.copy(idAccessList = it.idAccessList.toMutableMap().apply { this[emailOrId] = access }) }
+        val entry = state.value
+            .membersWithAccess
+            .entries.find { (member, _) -> member.id == emailOrId } ?: return
+
+        _state.update {
+            it.copy(
+                membersWithAccess = it.membersWithAccess
+                    .toMutableMap()
+                    .apply {
+                        if (access == Access.None) {
+                            remove(entry.key)
+                        } else {
+                            set(entry.key, access)
+                        }
+                    }
+            )
         }
     }
 
     fun setAllAccess(access: Access) {
         _state.update {
             it.copy(
-                access = access,
-                idAccessList = it.idAccessList.toMutableMap().mapValues { access }
+                commonAccess = access,
+                membersWithAccess = it.membersWithAccess
+                    .mapValues { (member, _) ->
+                        if (access == Access.RoomManager) {
+                            when (member) {
+                                is User -> correctAccess(
+                                    access,
+                                    member.isAdmin || member.isRoomAdmin
+                                )
+
+                                else -> correctAccess(access, false)
+                            }
+                        } else {
+                            access
+                        }
+                    }
             )
         }
     }
@@ -99,10 +151,14 @@ open class InviteAccessViewModel(
                 val itemId = checkNotNull(itemId) { "item id can't be null" }
 
                 val request = RequestShare(
-                    share = state.value.users.map(User::id)
-                        .plus(state.value.groups.map(Group::id))
-                        .associateWith { state.value.idAccessList[it] }
-                        .mapNotNull { (id, access) -> access?.let { RequestShareItem(id, it.toString()) } }
+                    share = state.value
+                        .membersWithAccess
+                        .map { (member, access) ->
+                            RequestShareItem(
+                                member.id,
+                                access.code.toString()
+                            )
+                        },
                 )
                 if (isFolder) {
                     api.setFolderAccess(itemId, request)
