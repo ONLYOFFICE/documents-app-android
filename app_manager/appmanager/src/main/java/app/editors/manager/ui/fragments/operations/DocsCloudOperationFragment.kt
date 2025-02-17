@@ -125,7 +125,7 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
                 setEnabledActionButton(security.editAccess || security.editRoom)
                 operationDialogFragment?.setEnabledCreateFolderButton(security.create, isRoomsRoot)
             } else {
-                val editable = current.access in arrayOf(Access.ReadWrite, Access.RoomManager)
+                val editable = current.access == Access.ReadWrite || cloudPresenter.isContextOwner
                 setEnabledActionButton(editable)
                 operationDialogFragment?.setEnabledCreateFolderButton(editable, isRoomsRoot)
             }

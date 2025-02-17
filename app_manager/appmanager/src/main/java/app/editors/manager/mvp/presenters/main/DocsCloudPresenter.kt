@@ -817,7 +817,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     val isContextItemEditable: Boolean
         get() = isContextEditable && (!isVisitor && !isShareSection || isCommonSection || isItemOwner)
 
-    private val isContextOwner: Boolean
+    val isContextOwner: Boolean
         get() = StringUtils.equals(modelExplorerStack.currentFolderOwnerId, account.id)
 
     private val isContextReadWrite: Boolean
