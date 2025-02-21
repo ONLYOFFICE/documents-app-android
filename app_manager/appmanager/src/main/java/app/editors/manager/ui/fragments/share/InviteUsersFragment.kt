@@ -178,7 +178,7 @@ fun InviteUsersScreen(
                         nextButtonTitle = lib.toolkit.base.R.string.common_next,
                         count = size,
                         access = access,
-                        accessList = RoomUtils.getAccessOptions(roomType, false),
+                        accessList = RoomUtils.getAccessOptions(roomType, false, true),
                         onAccess = userListViewModel::setAccess,
                         onDelete = userListViewModel::onDelete
                     ) {
@@ -218,7 +218,7 @@ fun InviteUsersScreen(
                     )
                 }
                 InviteAccessScreen(
-                    accessList = remember { RoomUtils.getAccessOptions(roomType, false) },
+                    accessList = remember { RoomUtils.getAccessOptions(roomType, true, true) },
                     description = stringResource(R.string.rooms_invite_access_description),
                     viewModel = inviteAccessViewModel,
                     onBack = navController::popBackStackWhenResumed,

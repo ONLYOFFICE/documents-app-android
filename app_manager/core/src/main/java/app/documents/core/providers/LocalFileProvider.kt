@@ -5,7 +5,12 @@ import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.manager.models.explorer.*
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Current
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.response.ResponseExternal
@@ -24,11 +29,9 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
-import kotlin.io.path.name
 
 class LocalFileProvider @Inject constructor(private val localContentTools: LocalContentTools) : BaseFileProvider {
 
@@ -246,13 +249,13 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
         val files: MutableList<File?> = mutableListOf()
         val resultExplorer = Explorer()
         var tempExplorer: Explorer?
-        Files.walk(Paths.get(id)).use { walkStream ->
-            walkStream.filter { item -> item.name.contains(value.toString(), true) }
-                .forEach { item ->
-                    files.add(item.toFile())
-                    tempExplorer = getExplorer(files, File(id))
-                    resultExplorer.add(tempExplorer!!)
-                }
+
+        File(id).walk().forEach { item ->
+            if (item.name.contains(value.toString(), true)) {
+                files.add(item)
+                tempExplorer = getExplorer(files, File(id))
+                resultExplorer.add(tempExplorer!!)
+            }
         }
 
         if (resultExplorer.count == 0) {

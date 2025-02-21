@@ -28,4 +28,12 @@
     </plurals>
     <string name="settings_fonts_title">Polices</string>
     <string name="settings_view">Affichage</string>
+    <plurals name="months">
+        <item quantity="one" tools:ignore="ImpliedQuantity">mois</item>
+        <item quantity="other">mois</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one" tools:ignore="ImpliedQuantity">année</item>
+        <item quantity="other">années</item>
+    </plurals>
 </resources>

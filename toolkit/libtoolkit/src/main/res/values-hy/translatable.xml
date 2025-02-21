@@ -29,4 +29,20 @@
         <item quantity="one">ժամ</item>
         <item quantity="other">ժամեր</item>
     </plurals>
+    <string name="common_accept">Ընդունել</string>
+    <string name="common_cancel">Չեղարկել</string>
+    <string name="common_next">Հաջորդ</string>
+    <string name="common_previous">Նախորդ</string>
+    <string name="common_done">Պատրաստ է</string>
+    <string name="common_ok">OK</string>
+    <plurals name="months">
+        <item quantity="one">ամիս</item>
+        <item quantity="other">ամիսներ</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">տարի</item>
+        <item quantity="other">տարիներ</item>
+    </plurals>
+    <string name="settings_fonts_title">Տառատեսակներ</string>
+    <string name="settings_view">Դիտել</string>
 </resources>

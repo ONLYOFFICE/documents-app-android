@@ -29,4 +29,12 @@
     </plurals>
     <string name="settings_fonts_title">Fonty</string>
     <string name="settings_view">Zobrazit</string>
+    <plurals name="months" tools:ignore="MissingQuantity">
+        <item quantity="one">měsíc</item>
+        <item quantity="other">měsíce</item>
+    </plurals>
+    <plurals name="years" tools:ignore="MissingQuantity">
+        <item quantity="one">rok</item>
+        <item quantity="other">roky</item>
+    </plurals>
 </resources>

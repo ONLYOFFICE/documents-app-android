@@ -57,6 +57,7 @@ internal fun ShareUsersList(
     val title = when (type) {
         ShareType.Admin -> app.editors.manager.R.string.rooms_info_admin_title
         ShareType.User -> app.editors.manager.R.string.rooms_info_users_title
+        ShareType.Guests -> app.editors.manager.R.string.rooms_info_guests_title
         ShareType.Group -> app.editors.manager.R.string.rooms_info_groups_title
         ShareType.Expected -> app.editors.manager.R.string.rooms_info_expected_title
     }

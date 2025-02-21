@@ -828,6 +828,7 @@
     <string name="rooms_info_admin_title">Administration (%d)</string>
     <string name="rooms_info_users_title">Users (%1d)</string>
     <string name="rooms_info_groups_title">Groups (%1d)</string>
+    <string name="rooms_info_guests_title">Guests (%1d)</string>
     <string name="rooms_info_expected_title">Expected users (%1d)</string>
     <string name="rooms_info_link_expired">The link has expired</string>
     <string name="rooms_info_link_expired_full">The link has expired and has been disabled</string>
@@ -996,7 +997,7 @@
     <string name="rooms_vdr_watermark_image_desc">This image preview roughly shows how the watermark will be displayed in your files.</string>
 
     <!-- example: The file lifetime is set to 12 days in this room -->
-    <string name="rooms_vdr_lifetime_info">The file lifetime is set to %1d %2s in this room</string>
+    <string name="rooms_vdr_lifetime_info">The file lifetime is set to %1$d %2$s in this room</string>
 
     <string name="trash_toolbar_info">Items in Trash are automatically deleted after 30 days</string>
     <string name="rooms_expire_context_info">The file will be deleted on %s</string>
@@ -1017,4 +1018,15 @@
 
     <string name="rooms_invite_access_description">Guests, Users and Groups cannot be assigned as Room managers. Only Room and DocSpace admins are suitable for the specified role.</string>
     <string name="rooms_user_type_employees">Employees</string>
+
+    <string name="whats_new_title">What\'s new</string>
+    <string name="whats_new_next">Get started</string>
+    <string name="whats_new_1">Enhanced integration with DocSpace v3.0</string>
+    <string name="whats_new_1_desc">Collaborate on docs with the latest updates and improvements for ONLYOFFICE DocSpace v3.0.</string>
+    <string name="whats_new_2">Tabbed interface for tablets and desktops</string>
+    <string name="whats_new_2_desc">Simplify navigation and editing with the tabbed toolbar on tablets and desktop devices.</string>
+    <string name="whats_new_3">New chart types</string>
+    <string name="whats_new_3_desc">Add new chart types to visualize your data for detailed presentations and analysis.</string>
+    <string name="whats_new_4">View Apple Pages and HWP files</string>
+    <string name="whats_new_4_desc">Open and view documents in Apple Pages and Hangul Word formats.</string>
 </resources>

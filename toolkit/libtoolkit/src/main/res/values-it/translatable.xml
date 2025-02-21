@@ -28,4 +28,12 @@
     </plurals>
     <string name="settings_fonts_title">Tipi di carattere</string>
     <string name="settings_view">Visualizzazione</string>
+    <plurals name="months">
+        <item quantity="one">mese</item>
+        <item quantity="other">mesi</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">anno</item>
+        <item quantity="other">anni</item>
+    </plurals>
 </resources>

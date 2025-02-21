@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
@@ -62,8 +63,12 @@ class LocalContentTools @Inject constructor(val context: Context) {
         private const val PREFS_NAME = "sample_prefs"
         private const val KEY_FIRST_LAUNCH = "first_launch"
 
-        fun getDir(): String {
-            return "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath}/${BuildConfig.ROOT_FOLDER}"
+        fun getDir(context: Context): String {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+                "${context.filesDir.path}/${BuildConfig.ROOT_FOLDER}"
+            } else {
+                "${Environment.getExternalStorageDirectory().absolutePath}/${BuildConfig.ROOT_FOLDER}"
+            }
         }
 
         fun toOOXML(ext: String): String {
@@ -101,19 +106,19 @@ class LocalContentTools @Inject constructor(val context: Context) {
             publicDir.mkdirs()
         }
 
-        if (!File(getDir()).exists()) {
-            File(getDir()).mkdirs()
+        if (!File(getDir(context)).exists()) {
+            File(getDir(context)).mkdirs()
         }
 
-        if (!isFirstLaunch() && File(getDir()).exists()) {
-            return File(getDir())
+        if (!isFirstLaunch() && File(getDir(context)).exists()) {
+            return File(getDir(context))
         }
 
-        if (isFirstLaunch() && File(getDir()).canWrite()) {
-            addSamples(File(getDir()))
+        if (isFirstLaunch() && File(getDir(context)).canWrite()) {
+            addSamples(File(getDir(context)))
             setFirstLaunchFlag()
         }
-        return File(getDir())
+        return File(getDir(context))
     }
 
     private fun addSamples(rootDir: File) {
@@ -218,6 +223,8 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         if (file.exists()) {
             file = FileUtils.getNewFileName(file)
+        } else {
+            file.createNewFile()
         }
 
         context.assets.open("$ASSETS_TEMPLATES/$path").use { input ->

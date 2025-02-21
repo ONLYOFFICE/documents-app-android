@@ -167,7 +167,11 @@ private fun MainScreen(
     val tabs = remember {
         listOfNotNull(
             TabRowItem(
-                context.getString(app.editors.manager.R.string.rooms_user_type_employees)
+                if (portal.isDocSpace) {
+                    context.getString(app.editors.manager.R.string.rooms_user_type_employees)
+                } else {
+                    context.getString(app.editors.manager.R.string.share_goal_user)
+                }
             ),
             TabRowItem(
                 context.getString(app.editors.manager.R.string.share_goal_group)
@@ -208,6 +212,7 @@ private fun MainScreen(
                         state = state,
                         token = token,
                         portal = portal?.urlWithScheme,
+                        isDocSpace = portal.isDocSpace,
                         onClick = onClick
                     )
                 } else {
@@ -217,7 +222,8 @@ private fun MainScreen(
                         state = state,
                         onClick = onClick,
                         portal = portal?.urlWithScheme,
-                        token = token
+                        token = token,
+                        isDocSpace = portal.isDocSpace
                     )
                 }
                 bottomContent(state.selected.size, state.access ?: Access.None)
@@ -233,6 +239,7 @@ private fun SearchListScreen(
     onClick: (id: String) -> Unit,
     token: String,
     portal: String?,
+    isDocSpace: Boolean
 ) {
     val members = mutableListOf<Member>()
 
@@ -267,6 +274,7 @@ private fun SearchListScreen(
                         mode = state.mode,
                         token = token,
                         portal = portal,
+                        isDocSpace = isDocSpace,
                         onClick = onClick
                     )
                 }
@@ -337,6 +345,7 @@ private fun PagerScreen(
     onClick: (id: String) -> Unit,
     token: String,
     portal: String?,
+    isDocSpace: Boolean
 ) {
     HorizontalPager(modifier = modifier, state = pagerState) {
         when (it) {
@@ -348,6 +357,7 @@ private fun PagerScreen(
                         selectedIdList = state.selected,
                         token = token,
                         portal = portal,
+                        isDocSpace = isDocSpace,
                         onClick = onClick
                     )
                 } else {
@@ -387,6 +397,7 @@ private fun PagerScreen(
                         selectedIdList = state.selected,
                         token = token,
                         portal = portal,
+                        isDocSpace = isDocSpace,
                         onClick = onClick
                     )
                 } else {
@@ -410,13 +421,20 @@ private fun LazyItemScope.UserItem(
     mode: UserListMode,
     token: String,
     portal: String?,
+    isDocSpace: Boolean,
     onClick: (String) -> Unit,
 ) {
+    val subtitle = if (isDocSpace) {
+        stringResource(user.typeTitle) + user.email?.let { " | $it" }
+    } else {
+        user.groups.joinToString { group -> group.name }
+    }
+
     ListItem(
         withLetter = withLetter,
         letter = letter,
         name = user.displayNameFromHtml,
-        subtitle = stringResource(user.typeTitle) + user.email?.let { " | $it" },
+        subtitle = subtitle,
         shared = mode == UserListMode.Invite && user.shared,
         selected = selected,
         onClick = { onClick.invoke(user.id) },
@@ -449,6 +467,7 @@ private fun UsersScreen(
     selectedIdList: List<String>,
     token: String,
     portal: String?,
+    isDocSpace: Boolean,
     onClick: (String) -> Unit,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -464,6 +483,7 @@ private fun UsersScreen(
                         mode = mode,
                         token = token,
                         portal = portal,
+                        isDocSpace = isDocSpace,
                         onClick = onClick
                     )
                 }

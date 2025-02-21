@@ -29,4 +29,12 @@
     </plurals>
     <string name="settings_fonts_title">Schriftarten</string>
     <string name="settings_view">Ansicht</string>
+    <plurals name="months">
+        <item quantity="one">Monat</item>
+        <item quantity="other">Monate</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">Jahr</item>
+        <item quantity="other">Jahre</item>
+    </plurals>
 </resources>

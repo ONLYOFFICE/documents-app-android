@@ -19,7 +19,7 @@ class PlaceholderViews(val view: View?) {
         NONE, CONNECTION, EMPTY, EMPTY_ROOM, EMPTY_FORM_FILLING_ROOM, EMPTY_VIRTUAL_ROOM, VISITOR_EMPTY_ROOM, SEARCH, SHARE, ACCESS,
         SUBFOLDER, USERS, GROUPS, COMMON, MEDIA, LOAD, LOAD_GROUPS, LOAD_USERS,
         OTHER_ACCOUNTS, EMPTY_TRASH, EMPTY_ARCHIVE, NO_ROOMS, VISITOR_NO_ROOMS,
-        EMPTY_RECENT_VIA_LINK, PAYMENT_REQUIRED, PERSONAL_PORTAL_END
+        EMPTY_RECENT_VIA_LINK, PAYMENT_REQUIRED, PERSONAL_PORTAL_END, EXTERNAL_STORAGE
     }
 
     interface OnClickListener {
@@ -58,7 +58,7 @@ class PlaceholderViews(val view: View?) {
             Type.EMPTY, Type.LOAD, Type.EMPTY_ROOM, Type.SEARCH, Type.EMPTY_TRASH,
             Type.EMPTY_ARCHIVE, Type.VISITOR_EMPTY_ROOM, Type.NO_ROOMS, Type.VISITOR_NO_ROOMS,
             Type.EMPTY_RECENT_VIA_LINK, Type.PAYMENT_REQUIRED, Type.EMPTY_FORM_FILLING_ROOM,
-            Type.EMPTY_VIRTUAL_ROOM -> {
+            Type.EMPTY_VIRTUAL_ROOM, Type.EXTERNAL_STORAGE -> {
                 setVisibility(true)
                 with(binding.composeView) {
                     isVisible = true
@@ -104,7 +104,7 @@ class PlaceholderViews(val view: View?) {
         when (type) {
             Type.LOAD -> ActivityIndicatorView(title = context.getString(R.string.placeholder_loading_files))
             else -> {
-                val image: Int
+                val image: Int?
                 val title: Int
                 val subtitle: Int?
 
@@ -169,6 +169,11 @@ class PlaceholderViews(val view: View?) {
                         title = R.string.placeholder_payment_required
                         subtitle = R.string.placeholder_payment_required_desc
                     }
+                    Type.EXTERNAL_STORAGE -> {
+                        image = null
+                        title = R.string.app_manage_files_title
+                        subtitle = R.string.app_manage_files_description
+                    }
                     else -> error("${type.name} is invalid type")
                 }
 
@@ -180,6 +185,12 @@ class PlaceholderViews(val view: View?) {
                     if (type == Type.PAYMENT_REQUIRED) {
                         AppButton(
                             title = R.string.placeholder_payment_required_button,
+                            onClick = onClick
+                        )
+                    }
+                    if (type == Type.EXTERNAL_STORAGE) {
+                        AppButton(
+                            title = R.string.settings_item_title,
                             onClick = onClick
                         )
                     }

@@ -24,7 +24,7 @@ import lib.compose.ui.theme.colorTextSecondary
 
 @Composable
 fun PlaceholderView(
-    image: Int,
+    image: Int?,
     title: String,
     subtitle: String,
     button: @Composable () -> Unit = {}
@@ -37,14 +37,16 @@ fun PlaceholderView(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Image(
-                modifier = Modifier
-                    .padding(top = 32.dp),
-                contentScale = ContentScale.None,
-                alignment = Alignment.BottomCenter,
-                imageVector = ImageVector.vectorResource(image),
-                contentDescription = null
-            )
+            image?.let {
+                Image(
+                    modifier = Modifier
+                        .padding(top = 32.dp),
+                    contentScale = ContentScale.None,
+                    alignment = Alignment.BottomCenter,
+                    imageVector = ImageVector.vectorResource(image),
+                    contentDescription = null
+                )
+            }
             Column(
                 modifier = Modifier.padding(vertical = 40.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -56,7 +58,7 @@ fun PlaceholderView(
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = subtitle + subtitle,
+                    text = subtitle,
                     style = MaterialTheme.typography.subtitle1,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colors.colorTextSecondary

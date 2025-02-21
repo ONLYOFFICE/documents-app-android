@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.documents.core.model.cloud.Access
+import app.documents.core.model.login.Email
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.editors.manager.R
@@ -133,51 +134,64 @@ private fun MainScreen(
                     }
                     items(state.emails.toList()) { email ->
                         InviteItem(
-                            title = email,
+                            title = email.first.id,
                             subtitle = null,
                             avatar = null,
-                            access = state.idAccessList[email] ?: Access.None,
-                            accessList = accessList,
+                            access = email.second,
                             onSetAccess = onSetAccess,
-                            value = email
+                            value = email.first.id,
+                            accessList = buildList {
+                                addAll(accessList)
+                                remove(Access.RoomManager)
+                                if (!state.canRemoveUser) {
+                                    remove(Access.None)
+                                }
+                            }
                         )
                     }
                 } else {
-                    val users = state.users
-                    if (users.isNotEmpty()) {
+                    if (state.users.isNotEmpty()) {
                         item {
                             AppHeaderItem(title = R.string.invite_new_members)
                         }
-                        items(users) { user ->
+                        items(state.users.toList()) { (user, access) ->
                             InviteItem(
                                 title = user.displayName,
                                 subtitle = stringResource(user.typeTitle) + user.email?.let { " | $it" },
                                 avatar = user.avatarMedium,
-                                access = state.idAccessList[user.id] ?: Access.None,
-                                accessList = accessList,
+                                access = access,
                                 onSetAccess = onSetAccess,
-                                value = user.id
+                                value = user.id,
+                                accessList = buildList {
+                                    addAll(accessList)
+                                    if (!(user.isAdmin || user.isRoomAdmin)) {
+                                        remove(Access.RoomManager)
+                                    }
+                                    if (!state.canRemoveUser) {
+                                        remove(Access.None)
+                                    }
+                                }
                             )
                         }
                     }
 
-                    val groups = state.groups
-                    if (groups.isNotEmpty()) {
+                    if (state.groups.isNotEmpty()) {
                         item {
                             AppHeaderItem(title = R.string.invite_new_groups)
                         }
-                        items(groups) { group ->
+                        items(state.groups.toList()) { (group, access) ->
                             InviteItem(
                                 title = group.name,
                                 subtitle = null,
                                 avatar = "",
-                                access = state.idAccessList[group.id] ?: Access.None,
-                                accessList = accessList.minus(
-                                    arrayOf(
-                                        Access.RoomManager,
-                                        Access.ContentCreator
-                                    ).toSet(),
-                                ),
+                                access = access,
+                                accessList = buildList {
+                                    addAll(accessList)
+                                    remove(Access.RoomManager)
+                                    if (!state.canRemoveUser) {
+                                        remove(Access.None)
+                                    }
+                                },
                                 onSetAccess = onSetAccess,
                                 value = group.id
                             )
@@ -187,16 +201,15 @@ private fun MainScreen(
             }
             UserListBottomContent(
                 nextButtonTitle = R.string.share_invite_title,
-                accessList = accessList.run {
-                    takeIf { state.groups.isEmpty() } ?: minus(
-                        listOf(
-                            Access.RoomManager,
-                            Access.ContentCreator
-                        ).toSet()
-                    )
+                accessList = buildList {
+                    addAll(accessList)
+                    remove(Access.None)
+                    if (state.emails.isNotEmpty()) {
+                        remove(Access.RoomManager)
+                    }
                 },
                 count = null,
-                access = state.access,
+                access = state.commonAccess,
                 onDelete = null,
                 onAccess = onSetAllAccess,
                 onNext = onNext
@@ -301,9 +314,8 @@ private fun InviteAccessScreenEmailPreview() {
         val emails = Array(5) { "email@email $it" }
         MainScreen(
             state = InviteAccessState(
-                access = Access.Read,
-                emails = emails.toList(),
-                idAccessList = emails.associateWith { Access.Read }
+                commonAccess = Access.Read,
+                membersWithAccess = emails.associate { Email(it) to Access.Read }
             ),
             accessList = listOf(),
             onSetAccess = { _, _ -> },
@@ -327,16 +339,12 @@ private fun InviteAccessScreenUsersPreview() {
             )
         }.toList()
         val groups = Array(5) { Group(name = "group $it") }.toList()
-        val accessList = users.map(User::id)
-            .plus(groups.map(Group::id))
-            .associateWith { Access.Read }
+        val accessList = (users + groups).associateWith { Access.Read }
 
         MainScreen(
             InviteAccessState(
-                access = Access.Read,
-                users = users,
-                groups = groups,
-                idAccessList = accessList
+                commonAccess = Access.Read,
+                membersWithAccess = accessList
             ),
             description = "Guests, Users and Groups cannot be assigned as Room managers. Only Room and DocSpace admins are suitable for the specified role.",
             accessList = listOf(),

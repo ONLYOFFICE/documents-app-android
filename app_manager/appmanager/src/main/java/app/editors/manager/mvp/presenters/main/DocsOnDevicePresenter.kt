@@ -2,6 +2,7 @@ package app.editors.manager.mvp.presenters.main
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.os.Environment
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
@@ -59,6 +60,29 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         }
     }
 
+    override fun getItemsById(id: String?) {
+        id?.let { path ->
+            disposable.add(
+                fileProvider?.getFiles(path, getArgs(filteringValue).putFilters())?.map {
+                    if (modelExplorerStack.isStackEmpty && id == Environment.getExternalStorageDirectory().absolutePath) {
+                        modelExplorerStack.addStack(it)
+                    }
+                }?.flatMap {
+                    if (id == Environment.getExternalStorageDirectory().absolutePath) {
+                        fileProvider?.getFiles(
+                            LocalContentTools.getDir(context),
+                            getArgs(filteringValue).putFilters()
+                        )
+                    } else {
+                        fileProvider?.getFiles(path, getArgs(filteringValue).putFilters())
+                    }
+                }
+                    ?.doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
+                    ?.subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)!!
+            )
+        }
+    }
+
     override fun getNextList() {
         // Stub to local
     }
@@ -69,7 +93,8 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             val requestCreate = RequestCreate()
             requestCreate.title = title
             fileProvider?.let { provider ->
-                disposable.add(provider.createFile(id, requestCreate)
+                disposable.add(
+                    provider.createFile(id, requestCreate)
                     .subscribe({ file: CloudFile ->
                         addFile(file)
                         addRecent(file)
@@ -265,7 +290,8 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     }
 
     fun import(uri: Uri) {
-        disposable.add((fileProvider as LocalFileProvider).import(
+        disposable.add(
+            (fileProvider as LocalFileProvider).import(
             context,
             modelExplorerStack.currentId ?: throw RuntimeException(),
             uri
@@ -447,7 +473,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     private fun openFile(uri: Uri, ext: String, editType: EditType?) {
         when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM-> {
+            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> {
                 if (ext.contains(LocalContentTools.HWP_EXTENSION) || ext.contains(LocalContentTools.HWPX_EXTENSION)) {
                     viewState.onShowEditors(uri, EditorsType.DOCS, EditType.VIEW)
                 } else {

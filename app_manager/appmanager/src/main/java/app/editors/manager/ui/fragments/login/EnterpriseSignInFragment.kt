@@ -188,7 +188,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     private fun onSignOnButtonClick() {
         showFragment(
-            SSOLoginFragment.newInstance(context?.accountOnline?.portal?.settings?.ssoUrl),
+            SSOLoginFragment.newInstance(App.getApp().loginComponent.currentPortal?.settings?.ssoUrl),
             SSOLoginFragment.TAG,
             true
         )
@@ -394,7 +394,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         }
 
     private fun restoreViews(savedInstanceState: Bundle?) {
-        val ssoUrl = context?.accountOnline?.portal?.settings?.ssoUrl
+        val ssoUrl = App.getApp().loginComponent.currentPortal?.settings?.ssoUrl
         if (!ssoUrl.isNullOrEmpty()) {
             viewBinding?.loginEnterpriseSignonButton?.apply {
                 visibility = View.VISIBLE
@@ -415,7 +415,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
     private fun setSSOButtonText() {
-        val ssoLabel = context?.accountOnline?.portal?.settings?.ssoLabel
+        val ssoLabel = App.getApp().loginComponent.currentPortal?.settings?.ssoLabel
         viewBinding?.loginEnterpriseSignonButton?.text = if (!ssoLabel.isNullOrEmpty()) getString(
             R.string.login_enterprise_single_sign_button_login,
             ssoLabel
