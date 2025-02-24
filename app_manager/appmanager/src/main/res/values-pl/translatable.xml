@@ -836,4 +836,6 @@ Aplikacja korzysta teraz z języka angielskiego, ponieważ zmieniono język syst
     <string name="rooms_invalid_password">Nieprawidłowe hasło</string>
     <string name="rooms_invite_access_description">Nie można przypisać roli menedżera pokoju gościom, użytkownikom ani grupom. Tylko administratorzy pokoi i DocSpace mogą pełnić daną funkcję.</string>
     <string name="rooms_user_type_employees">Pracownicy</string>
+    <string name="whats_new_title">Co nowego?</string>
+    <string name="whats_new_next">Rozpocznij</string>
 </resources>

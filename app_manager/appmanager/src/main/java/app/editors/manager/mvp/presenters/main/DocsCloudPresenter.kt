@@ -381,7 +381,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     override fun onActionClick() {
         viewState.onActionDialog(
             isRoot && (isUserSection || isCommonSection && isAdmin),
-            !isVisitor,
+            !isVisitor || modelExplorerStack.last()?.current?.security?.create == true,
             roomClicked?.roomType
         )
     }
@@ -672,13 +672,26 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         if (cloudFile.isPdfForm && editType == null) {
                             fillPdfForm()
                         } else {
-                            openDocumentServer(cloudFile, isItemShareable, editType)
+                            openDocumentServer(
+                                cloudFile = cloudFile,
+                                canShareable = isItemShareable,
+                                editType = if (LocalContentTools.isOpenFormat(cloudFile.clearExt) ||
+                                    cloudFile.access == Access.Read
+                                ) {
+                                    EditType.VIEW
+                                } else {
+                                    editType
+                                }
+                            )
                         }
                     } else {
                         downloadTempFile(
                             cloudFile = cloudFile,
-                            editType = editType ?:
-                                EditType.VIEW.takeIf { cloudFile.access == Access.Read }
+                            editType = if (cloudFile.access == Access.Read) {
+                                EditType.VIEW
+                            } else {
+                                editType
+                            }
                         )
                     }
                 }
@@ -804,7 +817,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     val isContextItemEditable: Boolean
         get() = isContextEditable && (!isVisitor && !isShareSection || isCommonSection || isItemOwner)
 
-    private val isContextOwner: Boolean
+    val isContextOwner: Boolean
         get() = StringUtils.equals(modelExplorerStack.currentFolderOwnerId, account.id)
 
     private val isContextReadWrite: Boolean

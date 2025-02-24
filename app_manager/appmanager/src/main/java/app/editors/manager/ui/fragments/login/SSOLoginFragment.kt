@@ -115,7 +115,7 @@ class SSOLoginFragment : BaseAppFragment(), EnterpriseSSOView {
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
             val args = url.split("=")
-            if (url.contains("token")) {
+            if (url.contains("token") && !url.contains("request")) {
                 enterpriseSSOPresenter.signInWithSSO(args[1])
             } else if (url.contains("error")) {
                 onError(args[1])

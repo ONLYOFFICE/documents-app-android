@@ -897,4 +897,6 @@
     <string name="whats_new_3_desc">新增图表类型，实现数据可视化，便于深入演示与分析。</string>
     <string name="whats_new_4">查看 Apple Pages 和 HWP 文件</string>
     <string name="whats_new_4_desc">支持打开并查看 Apple Pages 和 Hangul Word 格式的文档。</string>
+    <string name="whats_new_title">新增功能</string>
+    <string name="whats_new_next">开始</string>
 </resources>

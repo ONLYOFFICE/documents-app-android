@@ -834,7 +834,7 @@ private fun QuotaBlock(
                     modifier = Modifier.padding(start = 16.dp),
                     value = state.quota.value.toString(),
                     onValueChange = { value ->
-                        if (!value.isDigitsOnly()) return@AppTextField
+                        if (!value.isDigitsOnly() || value.length > 18) return@AppTextField
                         val digitValue = if (value.isEmpty()) 0 else value.toLong()
                         onSetValue(digitValue)
                     },

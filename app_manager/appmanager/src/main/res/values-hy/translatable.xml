@@ -1009,4 +1009,6 @@
     <string name="whats_new_3_desc">Ավելացրեք գծապատկերների նոր տեսակներ՝ վիզուալիզացնելու ձեր տվյալները մանրամասն ներկայացումների և վերլուծությունների համար:</string>
     <string name="whats_new_4">Դիտեք Apple էջերը և HWP ֆայլերը</string>
     <string name="whats_new_4_desc">Բացեք և դիտեք փաստաթղթերը Apple Pages և Hangul Word ձևաչափերով:</string>
+    <string name="whats_new_title">Ինչ նորություն կա</string>
+    <string name="whats_new_next">Սկսել!</string>
 </resources>

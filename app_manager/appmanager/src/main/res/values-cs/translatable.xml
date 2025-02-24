@@ -989,4 +989,6 @@
     <string name="whats_new_3_desc">Přidejte nové typy grafů pro vizualizaci dat pro podrobné prezentace a analýzy.</string>
     <string name="whats_new_4">Zobrazení souborů Apple Pages a HWP</string>
     <string name="whats_new_4_desc">Otevírejte a prohlížejte si dokumenty ve formátech Apple Pages a Hangul Word.</string>
+    <string name="whats_new_title">Co je nového</string>
+    <string name="whats_new_next">Začít</string>
 </resources>
