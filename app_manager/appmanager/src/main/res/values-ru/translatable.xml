@@ -862,4 +862,6 @@
     <string name="whats_new_3_desc">Добавляйте новые типы диаграмм для визуализации данных в презентациях и аналитике.</string>
     <string name="whats_new_4">Просмотр файлов Apple Pages и HWP</string>
     <string name="whats_new_4_desc">Открывайте и просматривайте документы в форматах Apple Pages и Hangul Word.</string>
+    <string name="whats_new_title">Новые возможности</string>
+    <string name="whats_new_next">Начать</string>
 </resources>

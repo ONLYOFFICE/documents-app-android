@@ -925,7 +925,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             modelExplorerStack.clone()?.let { clonedStack ->
                 clonedStack.removeUnselected()
                 viewState.onBatchMoveCopy(operationsState, clonedStack.explorer)
-                getBackStack()
+//                getBackStack()
             }
         } else {
             viewState.onError(context.getString(R.string.operation_empty_lists_data))

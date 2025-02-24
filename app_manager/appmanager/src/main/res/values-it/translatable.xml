@@ -838,4 +838,6 @@
     <string name="whats_new_3_desc">Aggiungi nuovi tipi di grafici per visualizzare i tuoi dati per presentazioni e analisi dettagliate.</string>
     <string name="whats_new_4">Visualizza file Apple Pages e HWP</string>
     <string name="whats_new_4_desc">Apri e visualizza documenti nei formati Apple Pages e Hangul Word.</string>
+    <string name="whats_new_title">Novità</string>
+    <string name="whats_new_next">Primi passi</string>
 </resources>

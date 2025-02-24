@@ -841,4 +841,6 @@ Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</
     <string name="whats_new_3_desc">Fügen Sie neue Diagrammtypen hinzu, um Ihre Daten für detaillierte Präsentationen und Analysen zu visualisieren.</string>
     <string name="whats_new_4">Unterstützung für Apple Pages und HWP-Dateien</string>
     <string name="whats_new_4_desc">Öffnen Sie Dokumente in den Formaten Apple Pages und Hangul Word.</string>
+    <string name="whats_new_title">Was gibt\'s Neues</string>
+    <string name="whats_new_next">Erste Schritte</string>
 </resources>

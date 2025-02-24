@@ -583,7 +583,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         OperationDialogFragment.show(requireActivity(), operation, explorer) { bundle ->
             if (OperationDialogFragment.KEY_OPERATION_RESULT_COMPLETE in bundle) {
                 showSnackBar(R.string.operation_complete_message)
-                onRefresh()
+                presenter.getBackStack()
             } else if (OperationDialogFragment.KEY_OPERATION_RESULT_OPEN_FOLDER in bundle) {
                 openRoom(bundle.getString(OperationDialogFragment.KEY_OPERATION_RESULT_OPEN_FOLDER))
             }
