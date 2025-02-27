@@ -392,9 +392,9 @@ class CloudFileProvider @Inject constructor(
             .flatMap { file ->
                 when (editType) {
                     EditType.EDIT -> managerService.openFile(file.id, file.version, edit = true)
-                    EditType.VIEW -> managerService.openFile(cloudFile.id, cloudFile.version, view = true)
-                    EditType.FILL -> managerService.openFile(cloudFile.id, cloudFile.version, fill = true)
-                    null -> managerService.openFile(cloudFile.id, cloudFile.version)
+                    EditType.VIEW -> managerService.openFile(file.id, file.version, view = true)
+                    EditType.FILL -> managerService.openFile(file.id, file.version, fill = true)
+                    null -> managerService.openFile(file.id, file.version)
                 }
             }
             .map { response ->
