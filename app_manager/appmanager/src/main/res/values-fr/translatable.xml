@@ -349,7 +349,6 @@
     <string name="cloud_account_description">Collaborez dans un environnement sécurisé et connectez-vous aux services cloud tiers</string>
     <string name="cloud_account_start_button">Commencer</string>
     <string name="cloud_account_other_storages_button">Autres stockages</string>
-    <string name="cloud_only_office">Cloud ONLYOFFICE</string>
     <string name="cloud_only_office_description">Stockez les documents dans le cloud et co-éditez-les</string>
     <string name="cloud_accounts_title">Comptes</string>
     <string name="error_long_file_name">Le nom de fichier est trop long</string>

@@ -418,7 +418,6 @@
     <string name="cloud_account_description">在安全环境中协作并连接第三方存储</string>
     <string name="cloud_account_start_button">开始</string>
     <string name="cloud_account_other_storages_button">其他存储</string>
-    <string name="cloud_only_office">ONLYOFFICE云</string>
     <string name="cloud_only_office_description">将文档存储与云端并就其展开协作</string>
     <string name="cloud_accounts_title">账户</string>
     <string name="error_long_file_name">文件名过长</string>

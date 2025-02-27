@@ -590,7 +590,6 @@
     <string name="cloud_account_description">Համագործակցեք անվտանգ միջավայրում և միացրեք երրորդ կողմի պահեստները</string>
     <string name="cloud_account_start_button">Սկսել</string>
     <string name="cloud_account_other_storages_button">Այլ պահեստներ</string>
-    <string name="cloud_only_office">ONLYOFFICE Cloud</string>
     <string name="cloud_only_office_description">Պահպանեք փաստաթղթերը ամպի մեջ և համագործակցեք դրանց շուրջ</string>
     <string name="cloud_accounts_title">Հաշիվներ</string>
     <string name="error_long_file_name">Ֆայլի անունը չափազանց երկար է</string>

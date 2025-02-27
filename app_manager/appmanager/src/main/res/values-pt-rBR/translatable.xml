@@ -349,7 +349,6 @@
     <string name="cloud_account_description">Colabore em ambiente seguro e conecte armazenamentos de terceiros</string>
     <string name="cloud_account_start_button">Começar</string>
     <string name="cloud_account_other_storages_button">Outros armazenamentos</string>
-    <string name="cloud_only_office">ONLYOFFICE Cloud</string>
     <string name="cloud_only_office_description">Armazene documentos na nuvem e colabore neles</string>
     <string name="cloud_accounts_title">Contas</string>
     <string name="error_long_file_name">O nome do arquivo é muito longo</string>

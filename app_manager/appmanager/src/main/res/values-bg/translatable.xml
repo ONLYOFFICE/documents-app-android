@@ -349,7 +349,6 @@
     <string name="cloud_account_description">Сътрудничество в сигурна среда и свързване на хранилище на трети страни</string>
     <string name="cloud_account_start_button">Начало</string>
     <string name="cloud_account_other_storages_button">Други хранилища</string>
-    <string name="cloud_only_office">ONLYOFFICE Cloud</string>
     <string name="cloud_only_office_description">Запазете документи в облака и работете по тях</string>
     <string name="cloud_accounts_title">Профили</string>
     <string name="error_long_file_name">Името на файла е твърде дълго</string>

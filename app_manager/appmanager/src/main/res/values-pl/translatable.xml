@@ -349,7 +349,6 @@
     <string name="cloud_account_description">Współpracuj w bezpiecznym środowisku i podłączaj inne pamięci masowe</string>
     <string name="cloud_account_start_button">Rozpocznij</string>
     <string name="cloud_account_other_storages_button">Inne pamięci masowe</string>
-    <string name="cloud_only_office">ONLYOFFICE Cloud</string>
     <string name="cloud_only_office_description">Przechowuj dokumenty i współpracuj nad nimi w chmurze</string>
     <string name="cloud_accounts_title">Konta</string>
     <string name="error_long_file_name">Nazwa pliku jest zbyt długa</string>

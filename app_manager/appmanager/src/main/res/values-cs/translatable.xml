@@ -480,7 +480,6 @@
     <string name="cloud_account_description">Spolupracujte v bezpečném prostředí a připojujte úložiště třetích stran</string>
     <string name="cloud_account_start_button">Začínáme</string>
     <string name="cloud_account_other_storages_button">Ostatní úložiště</string>
-    <string name="cloud_only_office">ONLYOFFICE Cloud</string>
     <string name="cloud_only_office_description">Ukládejte dokumenty v cloudu a spolupracujte na nich</string>
     <string name="cloud_accounts_title">Účty</string>
     <string name="error_long_file_name">Název souboru je příliš dlouhý</string>

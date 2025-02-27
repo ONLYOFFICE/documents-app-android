@@ -484,7 +484,6 @@
     <string name="cloud_account_description">ຮ່ວມມືໃນສະພາບແວດລ້ອມທີ່ປອດໄພແລະເຊື່ອມຕໍ່ບັນດາເຄື່ອງຂອງຂອງພາກສ່ວນທີສາມ </string>
     <string name="cloud_account_start_button">ເລີ່ມຕົ້ນ</string>
     <string name="cloud_account_other_storages_button">ຖານເກັບຂໍ້ມູນອຶ່ນໆ</string>
-    <string name="cloud_only_office">ພຽງແຕ່ CloudONLYOFFICE </string>
     <string name="cloud_only_office_description">ເກັບຮັກສາເອກະສານໄວ້ໃນເມຄແລະຮ່ວມມືກັບພວກມັນ</string>
     <string name="cloud_accounts_title">ບັນຊີ</string>
     <string name="error_long_file_name">ຊື່ແຟ້ມຍາວເກີນໄປ </string>
