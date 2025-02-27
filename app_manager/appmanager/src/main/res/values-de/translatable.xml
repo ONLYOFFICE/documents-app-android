@@ -336,17 +336,6 @@
     <string name="socials_google_failed_auth">Anmeldung über Google fehlgeschlagen</string>
     <string name="on_boarding_skip_button">ÜBERSPRINGEN</string>
     <string name="on_boarding_next_button">WEITER</string>
-    <string name="on_boarding_finish_button">FERTIG</string>
-    <string name="on_boarding_welcome_header">Willkommen bei ONLYOFFICE</string>
-    <string name="on_boarding_welcome_info">Wir haben umfangreiche Veränderungen an ONLYOFFICE Documents für Android vorgenommen. Antippen um mehr zu erfahren. </string>
-    <string name="on_boarding_edit_header">Office-Dokumente bearbeiten</string>
-    <string name="on_boarding_edit_info">Erstellen und bearbeiten Sie Textdokumente, Tabellen und Präsentationen im ONLYOFFICE-Portal. </string>
-    <string name="on_boarding_access_header">Zugriff auf Dokumente gewähren</string>
-    <string name="on_boarding_access_info">Teilen Sie Dokumente mit Ihrem Team und gewähren Sie Zugriffsberechtigungen: Vollständiger Zugriff, Bearbeitung und Schreibgeschützt. Auch die Freigabe über einen externen Link ist möglich. </string>
-    <string name="on_boarding_collaborate_header">Zusammenarbeit</string>
-    <string name="on_boarding_collaborate_info">Bearbeiten Sie Office-Dokumente gemeinsam mit Ihren Teamkollegen in Echtzeit. </string>
-    <string name="on_boarding_third_party_header">Verbindung zu Clouds von Drittanbietern herstellen</string>
-    <string name="on_boarding_third_party_info">Verbinden Sie die App mit anderen gängigen Cloud-Speichern: Google Drive, Dropbox, Nextcloud, usw. </string>
     <string name="media_image_share_chooser">Wählen Sie eine App zur Freigabe aus</string>
     <string name="media_image_list_info">Mediendateien: %1$S</string>
     <string name="media_video_error">Unbekannte Fehlermeldung beim Player: %1$s</string>

@@ -47,7 +47,6 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     companion object {
         protected val TAG: String = BaseActivity::class.java.simpleName
 
-        const val REQUEST_ACTIVITY_ONBOARDING = 101
         const val REQUEST_ACTIVITY_ACCOUNTS = 102
         const val REQUEST_ACTIVITY_MEDIA = 103
         const val REQUEST_ACTIVITY_SHARE = 105
