@@ -67,6 +67,7 @@
     <string name="errors_web_viewr">An error occurred while editing a web document</string>
     <string name="errors_webdav_sign_in">Wrong server, username or password</string>
     <string name="errors_webdav_username_password">Wrong username or password</string>
+    <string name="errors_webdav_2fa_code">Wrong verification code</string>
     <string name="errors_webdav_server">Wrong server</string>
 
     <!-- SignIn -->
