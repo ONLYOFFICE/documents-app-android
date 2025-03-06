@@ -127,8 +127,8 @@ class DocsRoomFragment : DocsCloudFragment() {
         (requireActivity() as? BaseActivity)?.showEditDialog(
             title = getString(R.string.rooms_protected_room),
             value = "",
-            editHint = getString(lib.editors.gbase.R.string.dialog_edit_hint),
-            acceptTitle = getString(lib.editors.gbase.R.string.dialog_edit_accept),
+            editHint = getString(R.string.login_enterprise_password_hint),
+            acceptTitle = getString(lib.toolkit.base.R.string.common_ok),
             cancelTitle = getString(lib.toolkit.base.R.string.common_cancel),
             isPassword = true,
             error = getString(R.string.rooms_invalid_password).takeIf { error },

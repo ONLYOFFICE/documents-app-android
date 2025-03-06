@@ -98,7 +98,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                     .subscribe({ file: CloudFile ->
                         addFile(file)
                         addRecent(file)
-                        openFile(file, null)
+                        openFile(file, EditType.EDIT)
                     }) { viewState.onError(context.getString(R.string.errors_create_local_file)) })
             }
         }
