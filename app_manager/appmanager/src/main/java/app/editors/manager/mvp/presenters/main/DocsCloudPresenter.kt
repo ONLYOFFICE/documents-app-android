@@ -1198,7 +1198,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         (fileProvider as? CloudFileProvider)?.let { provider ->
             disposable.add(
                 provider.getRecentViaLink()
-                    .subscribe(::loadSuccess, ::fetchError)
+                    .subscribe({ explorer ->
+                        explorer.current.title = context.getString(R.string.room_access_via_link_title)
+                        loadSuccess(explorer)
+                    }, ::fetchError)
             )
         }
     }

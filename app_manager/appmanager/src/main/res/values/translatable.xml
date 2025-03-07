@@ -791,6 +791,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="room_placeholder_created_virtual_room_title">Welcome to the Virtual Data Room</string>
     <string name="room_placeholder_created_virtual_room_subtitle">Get started with quick actions:\nCreate a new file</string>
     <string name="room_recent_via_link">Accessible via link</string>
+    <string name="room_access_via_link_title">Access via link</string>
     <string name="room_manage_room">Manage room</string>
 
     <plurals name="rooms_restore_title">
