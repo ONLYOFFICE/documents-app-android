@@ -51,7 +51,9 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
                                 is HttpException -> {
                                     val errorMessage = exception.response()?.errorBody()?.string().orEmpty()
                                     if (exception.code() in arrayOf(401, 500) && errorMessage.contains("failed")) {
-                                        viewState.onError(context.getString(R.string.errors_webdav_username_password))
+                                        val errMsgId = if (smsCode != null) R.string.errors_webdav_2fa_code
+                                                       else R.string.errors_webdav_username_password
+                                        viewState.onError(context.getString(errMsgId))
                                     } else {
                                         fetchError(exception)
                                     }
