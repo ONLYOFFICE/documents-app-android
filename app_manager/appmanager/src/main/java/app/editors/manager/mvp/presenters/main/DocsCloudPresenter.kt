@@ -287,7 +287,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         addFile(cloudFile)
                         addRecent(cloudFile)
                         viewState.onDialogClose()
-                        onFileClickAction(cloudFile, null)
+                        onFileClickAction(cloudFile, EditType.EDIT)
                     }, ::fetchError))
             }
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
