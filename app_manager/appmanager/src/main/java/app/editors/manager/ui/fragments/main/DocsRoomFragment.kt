@@ -78,6 +78,7 @@ class DocsRoomFragment : DocsCloudFragment() {
             ExplorerContextItem.Reconnect -> reconnectStorage()
             ExplorerContextItem.Archive -> cloudPresenter.archiveRooms(true)
             ExplorerContextItem.AddUsers -> showInviteUsersDialog()
+            ExplorerContextItem.EditIndex -> showEditIndexDialog()
             is ExplorerContextItem.Notifications -> cloudPresenter.muteRoomNotifications(!contextItem.muted)
             is ExplorerContextItem.ExternalLink -> cloudPresenter.copyLinkFromContextMenu()
             is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()

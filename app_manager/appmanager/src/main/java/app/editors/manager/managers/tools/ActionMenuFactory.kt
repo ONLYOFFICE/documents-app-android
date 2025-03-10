@@ -248,7 +248,7 @@ object ActionMenuItemsFactory {
                         ActionMenuItem.Invite.takeIf { security.editRoom },
                         ActionMenuItem.CopyLink(true),
                         ActionMenuItem.Divider,
-                        ActionMenuItem.EditIndex.takeIf { isIndexing },
+                        ActionMenuItem.EditIndex.takeIf { isIndexing && security.editRoom },
                         ActionMenuItem.ExportIndex.takeIf { isIndexing && security.indexExport },
                         ActionMenuItem.Divider.takeIf { isIndexing },
                         ActionMenuItem.Archive.takeIf { security.editRoom },

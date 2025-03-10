@@ -94,6 +94,11 @@ sealed class ExplorerContextItem(
         title = R.string.list_context_create_download
     ), ExplorerContextBlockOrder.Common
 
+    object EditIndex : ExplorerContextItem(
+        icon = R.drawable.ic_list_context_edit_index,
+        title = R.string.list_context_edit_index
+    ), ExplorerContextBlockOrder.Common
+
     class Favorites(val enabled: Boolean, val favorite: Boolean) : ExplorerContextItem(
         icon = getIcon(favorite),
         title = getTitle(favorite)
