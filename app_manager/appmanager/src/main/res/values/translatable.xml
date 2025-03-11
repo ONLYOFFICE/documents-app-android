@@ -334,6 +334,7 @@
     <string name="list_context_notification_enable">Enable notifications</string>
     <string name="list_context_notification_disable">Disable notifications</string>
     <string name="list_context_create_download">Download</string>
+    <string name="list_context_edit_index">Edit index</string>
     <string name="list_context_open_location">Open location</string>
     <string name="list_context_rename">Rename</string>
     <string name="list_context_rename_success">Renamed successfully</string>
