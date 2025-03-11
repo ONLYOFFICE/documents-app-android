@@ -56,7 +56,9 @@ interface ExplorerContextItemVisible {
         get() = section.isRoom && item is CloudFolder && item.isRoom
 
     private val ExplorerContextState.download: Boolean
-        get() = !section.isLocal
+        get() = if (provider == PortalProvider.Cloud.DocSpace)
+            item.security?.download == true
+        else true
 
     private val ExplorerContextState.reconnect: Boolean
         get() = item is CloudFolder && item.providerItem
