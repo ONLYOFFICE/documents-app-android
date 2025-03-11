@@ -1199,8 +1199,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             disposable.add(
                 provider.getRecentViaLink()
                     .subscribe({ explorer ->
-                        explorer.current.title = context.getString(R.string.room_access_via_link_title)
-                        loadSuccess(explorer)
+                        loadSuccess(explorer.apply { current.title = context.getString(R.string.room_access_via_link_title) })
                     }, ::fetchError)
             )
         }
