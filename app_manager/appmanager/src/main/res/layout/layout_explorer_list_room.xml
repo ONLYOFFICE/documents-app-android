@@ -97,8 +97,8 @@
     <ImageView
         android:id="@+id/iconPinned"
         style="@style/Widget.Common.ImageView.Secondary"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:src="@drawable/ic_pin_to_top"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/contextButtonLayout"
