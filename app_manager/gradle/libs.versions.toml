@@ -13,7 +13,6 @@ coroutines = "1.8.1"
 
 #android
 androidx = "1.7.0"
-composeActivity = "1.9.3"
 cardView = "1.0.0"
 recyclerView = "1.3.2"
 recyclerViewSelection = "1.1.0"
@@ -87,7 +86,6 @@ colorPicker = "2.3.0"
 [libraries]
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx" }
 appcompat-resources = { module = "androidx.appcompat:appcompat-resources", version.ref = "androidx" }
-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "composeActivity" }
 recyclerView = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerView" }
 recyclerViewSelection = { module = "androidx.recyclerview:recyclerview-selection", version.ref = "recyclerViewSelection" }
 cardView = { module = "androidx.cardview:cardview", version.ref = "cardView" }

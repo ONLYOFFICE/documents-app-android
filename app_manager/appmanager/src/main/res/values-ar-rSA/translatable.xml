@@ -540,32 +540,6 @@
     <string name="on_boarding_skip_button">تخطي</string>
     <string name="on_boarding_back_button">خلف</string>
     <string name="on_boarding_next_button">التالي</string>
-    <string name="on_boarding_finish_button">تم</string>
-
-    <string name="on_boarding_welcome_header">مرحبًا بك في ONLYOFFICE</string>
-    <string name="on_boarding_welcome_info">
-      لقد قمنا بتحديث مستندات ONLYOFFICE لنظام Android بشكل
-    </string>
-
-    <string name="on_boarding_edit_header">تحرير المستندات المكتبية</string>
-    <string name="on_boarding_edit_info">
-      قم بإنشاء وتحرير المستندات النصية وجداول البيانات والعروض
-    </string>
-
-    <string name="on_boarding_access_header">منح حق الوصول إلى المستندات</string>
-    <string name="on_boarding_access_info">
-      قم بمشاركة المستندات مع فريقك ومنحهم حقوق الوصول الكامل أو المراجعة أو القراءة فقط. المشاركة
-    </string>
-
-    <string name="on_boarding_collaborate_header">تعاون</string>
-    <string name="on_boarding_collaborate_info">
-      شارك في تحرير مستندات المكتب مع زملائك في الفريق في الوقت
-    </string>
-
-    <string name="on_boarding_third_party_header">الاتصال بسحابات الطرف الثالث</string>
-    <string name="on_boarding_third_party_info">
-      قم بتوصيل التطبيق بوحدات التخزين السحابية الأخرى التي تستخدمها: Google Drive، وDropbox،
-    </string>
 
     <!-- ======================================================================================= -->
     <!-- Media -->
@@ -607,7 +581,6 @@
     <string name="cloud_account_description">التعاون في بيئة آمنة وربط مخازن الطرف الثالث</string>
     <string name="cloud_account_start_button">البدء</string>
     <string name="cloud_account_other_storages_button">مخازن أخرى</string>
-    <string name="cloud_only_office">سحابة ONLYOFFICE</string>
     <string name="cloud_only_office_description">قم بتخزين المستندات في السحابة والتعاون عليها</string>
     <string name="cloud_accounts_title">حسابات</string>
     <string name="error_long_file_name">اسم الملف طويل جدًا</string>
@@ -919,4 +892,6 @@
     <string name="rooms_fill_form_complete_check_forms">تحقق من النماذج الجاهزة</string>
     <string name="errors_sign_in_account_not_found">لم يتم العثور على الحساب</string>
     <string name="list_action_delete_image">حذف الصورة</string>
+    <string name="whats_new_title">ما الجديد</string>
+    <string name="whats_new_next">إبدء الآن</string>
 </resources>

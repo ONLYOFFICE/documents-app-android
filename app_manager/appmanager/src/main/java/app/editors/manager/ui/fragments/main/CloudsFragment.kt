@@ -60,7 +60,10 @@ class CloudsFragment : BaseAppFragment() {
     fun init() {
         setActionBarTitle(getString(R.string.fragment_clouds_title))
 
-        viewBinding?.cloudsItemOnlyOffice?.setOnClickListener {
+        viewBinding?.cloudsItemOnlyOffice?.bind(
+            R.drawable.ic_storage_onlyoffice,
+            R.string.cloud_only_office
+        ) {
             PortalsActivity.show(requireActivity())
         }
 

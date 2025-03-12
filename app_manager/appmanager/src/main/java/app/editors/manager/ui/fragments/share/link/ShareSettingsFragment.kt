@@ -23,13 +23,15 @@ class ShareSettingsFragment : ComposeDialogFragment() {
     companion object {
 
         private const val KEY_FILE_ID = "KEY_FILE_ID"
+        private const val KEY_FILE_EXTENSION = "KEY_FILE_EXTENSION"
         private val TAG = ShareSettingsFragment::class.simpleName
 
         private fun newInstance(): ShareSettingsFragment = ShareSettingsFragment()
 
-        fun show(activity: FragmentActivity, fileId: String?) {
+        fun show(activity: FragmentActivity, fileId: String?, extension: String) {
             newInstance()
                 .putArgs(KEY_FILE_ID to fileId)
+                .putArgs(KEY_FILE_EXTENSION to extension)
                 .show(activity.supportFragmentManager, TAG)
         }
     }
@@ -40,10 +42,11 @@ class ShareSettingsFragment : ComposeDialogFragment() {
             ShareDocSpaceScreen(
                 viewModel = viewModel {
                     ShareSettingsViewModel(
-                        requireContext().roomProvider,
-                        arguments?.getString(KEY_FILE_ID).orEmpty()
+                        roomProvider = requireContext().roomProvider,
+                        fileId = arguments?.getString(KEY_FILE_ID).orEmpty(),
                     )
                 },
+                fileExtension = arguments?.getString(KEY_FILE_EXTENSION).orEmpty(),
                 onSendLink = { link ->
                     requireContext().openSendTextActivity(
                         getString(R.string.toolbar_menu_main_share),

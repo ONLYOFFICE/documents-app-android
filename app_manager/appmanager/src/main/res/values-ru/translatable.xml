@@ -236,28 +236,8 @@
     <string name="navigation_drawer_menu_shared">Доступные мне</string>
     <string name="navigation_drawer_menu_trash">Корзина</string>
     <string name="navigation_drawer_open">Открыть панель навигации</string>
-    <string name="on_boarding_access_header">Делитесь документами</string>
-    <string name="on_boarding_access_info">
-        Предоставляйте права на чтение, рецензирование или полный доступ к файлу. Делитесь документами с помощью внешних ссылок.
-    </string>
-    <string name="on_boarding_collaborate_header">Работайте совместно</string>
-    <string name="on_boarding_collaborate_info">
-        Редактируйте документы с другими членами команды в режиме реального времени.
-    </string>
-    <string name="on_boarding_edit_header">Редактируйте документы</string>
-    <string name="on_boarding_edit_info">        Создавайте и редактируйте текстовые документы, таблицы и презентации в облаке ONLYOFFICE.
-    </string>
-    <string name="on_boarding_finish_button">ГОТОВО</string>
     <string name="on_boarding_next_button">ДАЛЕЕ</string>
     <string name="on_boarding_skip_button">ПРОПУСТИТЬ</string>
-    <string name="on_boarding_third_party_header">Подключите сторонние сервисы</string>
-    <string name="on_boarding_third_party_info">
-        Подключите приложение к другим облачным сервисам, например, Google Drive, Dropbox или Nextcloud.
-    </string>
-    <string name="on_boarding_welcome_header">Новая версия приложения ONLYOFFICE</string>
-    <string name="on_boarding_welcome_info">
-        Добро пожаловать в "ONLYOFFICE Документы" для Android. Смахните влево, чтобы узнать об обновлениях.
-    </string>
     <string name="operation_choose_section">Выбор раздела</string>
     <string name="operation_complete_message">Операция завершена</string>
     <string name="operation_delete_impossible">Невозможно удалить файл. Файл открыт на портале.</string>
@@ -388,7 +368,6 @@
     <string name="cloud_account_description">Работайте совместно в защищенной среде и подключайте сторонние хранилища</string>
     <string name="cloud_account_start_button">Начать работу</string>
     <string name="cloud_account_other_storages_button">Другие хранилища</string>
-    <string name="cloud_only_office">Облако ONLYOFFICE</string>
     <string name="cloud_only_office_description">Храните документы в облаке и работайте над ними совместно</string>
     <string name="cloud_accounts_title">Аккаунты</string>
     <string name="error_long_file_name">Слишком длинное имя файла</string>
@@ -627,7 +606,7 @@
     <string name="rooms_info_access_desc">Эта комната доступна всем, у кого есть ссылка. Сторонние пользователи получат разрешение только на просмотр для всех файлов.</string>
     <string name="rooms_info_general_link">Общая ссылка</string>
     <string name="rooms_info_additional_link">Дополнительная ссылка</string>
-    <string name="rooms_info_additional_links">"Дополнительные ссылки (%1d/%2d)"</string>
+    <string name="rooms_info_additional_links">"Дополнительные ссылки (%1$d/%2$d)"</string>
     <string name="rooms_info_create_link">Создать и скопировать</string>
     <string name="rooms_info_create_link_complete">Ссылка успешно создана и скопирована в буфер обмена</string>
     <string name="rooms_info_delete_link">Удалить ссылку</string>
@@ -640,6 +619,7 @@
     <string name="rooms_info_copy_link_to_clipboard">Ссылка успешно скопирована в буфер обмена</string>
     <string name="rooms_info_admin_title">Администрация (%d)</string>
     <string name="rooms_info_users_title">Пользователи (%1d)</string>
+    <string name="rooms_info_guests_title">Гости (%1d)</string>
     <string name="rooms_info_expected_title">Ожидаемые пользователи (%1d)</string>
     <string name="rooms_info_link_expired">Срок действия ссылки истек</string>
     <string name="rooms_info_link_expired_full">Срок действия ссылки истек, и она была отключена</string>
@@ -740,7 +720,7 @@
     <string name="toolbar_menu_view_list">Список</string>
     <string name="toolbar_menu_view_grid">Сетка</string>
     <string name="list_context_duplicate">Дублирование</string>
-    <string name="list_context_fill">Заливка</string>
+    <string name="list_context_fill">Заполнить</string>
     <string name="placeholder_no_fonts">Шрифты отсутствуют</string>
     <string name="share_popup_access_custom_filter">Пользовательский фильтр</string>
     <string name="operation_select_room_title">Выбрать комнату</string>
@@ -768,4 +748,99 @@
     <string name="rooms_fill_form_complete_check_forms">Проверить готовые формы</string>
     <string name="errors_sign_in_account_not_found">Аккаунт не найден</string>
     <string name="list_action_delete_image">Удалить изображение</string>
+    <string name="dialogs_common_close">Закрыть</string>
+    <string name="list_context_notification_enable">Включить уведомления</string>
+    <string name="list_context_notification_disable">Отключить уведомления</string>
+    <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
+    <string name="share_goal_guest">Гости</string>
+    <plurals name="app_settings_passcode_many_attempt_seconds" tools:ignore="MissingQuantity">
+        <item quantity="one">Слишком много попыток.\nПопробуйте снова через %d секунду</item>
+        <item quantity="other">Слишком много попыток.\nПопробуйте снова через %d секунд</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_minutes" tools:ignore="MissingQuantity">
+        <item quantity="one">Слишком много попыток.\nПопробуйте снова через %d минуту</item>
+        <item quantity="other">Слишком много попыток.\nПопробуйте снова через %d минут</item>
+    </plurals>
+    <string name="rooms_error_logo_size_exceed">Превышен максимальный размер изображения (1 MB)</string>
+    <string name="room_placeholder_created_virtual_room_title">Добро пожаловать в виртуальную комнату данных</string>
+    <string name="room_placeholder_created_virtual_room_subtitle">Начните с быстрых действий:\nСоздайте новый файл</string>
+    <string name="rooms_info_create_maximum_exceed">Превышено максимальное количество ссылок</string>
+    <string name="rooms_info_delete_link_desc">Ссылки на все файлы в комнате будут удалены. Предыдущие ссылки на файлы в комнате и встроенные документы станут недоступны.\n\nЭто действие не может быть отменено. Хотите продолжить?</string>
+    <string name="rooms_info_revoke_link_desc">Ссылки на все файлы в комнате будут сгенерированы повторно. Предыдущие ссылки на файлы в комнате и встроенные документы станут недоступны.\n\nЭто действие не может быть отменено. Хотите продолжить?</string>
+    <string name="rooms_info_password_allowed_symbols">Допустимые символы: а–я, А–Я, 0–9, !"#%&amp;'()*+,-./:;\u003C=&gt;?@[]^_`{|}</string>
+    <string name="rooms_info_password_minimum_length">Минимальная длина: 8 символов</string>
+    <string name="rooms_filter_type_virtual_room">Виртуальная комната данных</string>
+    <string name="share_user_type_room_docspace_admin">администратор DocSpace</string>
+    <string name="share_user_type_room_docspace_owner">Владелец DocSpace</string>
+    <string name="share_access_room_manager">Менеджер комнаты</string>
+    <string name="share_access_room_power_user">Создатель контента</string>
+    <string name="rooms_notifications_disabled">Уведомления в комнате отключены</string>
+    <string name="rooms_notifications_enabled">Уведомления в комнате включены</string>
+    <string name="rooms_vdr">Виртуальная комната данных</string>
+    <string name="rooms_vdr_desc">Используйте виртуальную комнату данных, чтобы обеспечить эффективный контроль и прозрачность при работе с документами. Добавьте водяные знаки, индексируйте и отслеживайте весь контент автоматически, ограничьте загрузку и копирование.</string>
+    <string name="file_lifetime_desc">"Установите срок действия файла, чтобы автоматически удалять файлы в этой комнате после определенного периода. Срок действия начинается с даты загрузки/создания файла."</string>
+    <string name="file_lifetime_title">Срок действия файла</string>
+    <string name="file_lifetime_hint">Срок действия файлов превышает</string>
+    <string name="file_lifetime_warning_title">Файлы с истекшим сроком действия будут удалены</string>
+    <string name="file_lifetime_warning_desc">Отсчет срока действия начинается с даты создания файла. Срок действия некоторых файлов в этой комнате превышает предлагаемый срок, и они будут удалены после включения этой настройки.</string>
+    <string name="file_lifetime_action">Действия с файлами</string>
+    <string name="file_lifetime_action_delete">Удалить навсегда</string>
+    <string name="file_lifetime_action_move_to_trash">Переместить в Корзину</string>
+    <string name="file_lifetime_time_period">Период</string>
+    <string name="file_lifetime_period_days">Дней</string>
+    <string name="file_lifetime_period_months">Месяцев</string>
+    <string name="file_lifetime_period_years">Лет</string>
+    <string name="rooms_vdr_file_restrict_desc">Включите этот параметр, чтобы отключить загрузку, печать и копирование контента для пользователей с ролью «Зритель»</string>
+    <string name="rooms_vdr_watermark_title">Добавление водяных знаков в документы</string>
+    <string name="rooms_vdr_watermark_desc">Защитите все документы в этой комнате водяными знаками. Если в документе уже есть водяной знак, он не будет заменен.</string>
+    <string name="rooms_vdr_indexing_title">Автоматическая индексация</string>
+    <string name="rooms_vdr_indexing_desc">Включить автоматическую индексацию для индексации файлов и папок по серийному номеру. Сортировка по номеру будет установлена ​​по умолчанию для всех пользователей.</string>
+    <string name="rooms_vdr_storage_quota_title">Квота хранилища</string>
+    <string name="rooms_vdr_storage_quota_desc">Квота хранилища установлена ​​на комнату. Вы можете изменить это значение или отключить ограничение хранилища.</string>
+    <string name="rooms_vdr_size_quota">Квота размера</string>
+    <string name="rooms_vdr_measurement_unit">Единица измерения</string>
+    <string name="rooms_vdr_watermark_type">Время</string>
+    <string name="rooms_vdr_watermark_type_info">Информация о зрителе</string>
+    <string name="rooms_vdr_watermark_type_image">Изображение</string>
+    <string name="rooms_vdr_watermark_static_text">Статический текст</string>
+    <string name="rooms_vdr_watermark_position">Положение</string>
+    <string name="rooms_vdr_watermark_position_diagonal">По диагонали</string>
+    <string name="rooms_vdr_watermark_position_horizontal">По горизонтали</string>
+    <string name="rooms_vdr_watermark_info_username">Имя пользователя</string>
+    <string name="rooms_vdr_watermark_info_email">Электронная почта пользователя</string>
+    <string name="rooms_vdr_watermark_info_ip_address">IP-адрес пользователя</string>
+    <string name="rooms_vdr_watermark_info_current_date">Текущая дата</string>
+    <string name="rooms_vdr_watermark_info_room_name">Имя комнаты</string>
+    <string name="rooms_vdr_watermark_image_select">Выбрать изображение</string>
+    <string name="rooms_vdr_watermark_image_scale">Масштаб</string>
+    <string name="rooms_vdr_watermark_image_rotate">Вращение</string>
+    <string name="rooms_vdr_watermark_image_desc">Это изображение для предварительного просмотра ориентировочно показывает, как водяной знак будет отображаться в ваших файлах.</string>
+    <string name="rooms_vdr_lifetime_info">Срок действия файла в этой комнате установлен на %1$d %2$s</string>
+    <string name="trash_toolbar_info">Элементы в корзине автоматически удаляются через 30 дней</string>
+    <string name="rooms_expire_context_info">Файл будет удален %s</string>
+    <string name="rooms_index_subtitle">Индекс %s</string>
+    <string name="rooms_index_edit">Редактировать индекс</string>
+    <string name="rooms_index_export">Экспорт индекса комнат</string>
+    <string name="rooms_index_title">Индекс сортировки</string>
+    <string name="rooms_index_reorder">Переместить</string>
+    <string name="rooms_index_apply">Применить</string>
+    <string name="rooms_index_exit_no_saving">Выйти без сохранения?\nВы внесли изменения в индекс. Если вы продолжите без сохранения, эти изменения не будут применены.</string>
+    <string name="rooms_index_reorder_desc">Действие "Переместить" удалит пробелы в индексах. Файлы будут переиндексированы в порядке со смещением для заполнения отсутствующих индексов.</string>
+    <string name="rooms_index_reorder_complete_title">Файл экспортирован</string>
+    <string name="rooms_index_reorder_complete_desc">Файл %s экспортирован в Документы</string>
+    <string name="rooms_index_reorder_open_file">Открыть файл</string>
+    <string name="rooms_protected_room">Защищенная комната</string>
+    <string name="rooms_invalid_password">Неверный пароль</string>
+    <string name="rooms_invite_access_description">Гости, Пользователи и Группы не могут быть назначены менеджерами комнат. Для указанной роли подходят только администраторы комнат и DocSpace.</string>
+    <string name="rooms_user_type_employees">Сотрудники</string>
+    <string name="whats_new_1">Улучшенная совместимость с DocSpace v3.0 </string>
+    <string name="whats_new_1_desc">Работайте с документами еще удобнее благодаря последним обновлениям и улучшениям в ONLYOFFICE DocSpace v3.0. </string>
+    <string name="whats_new_2">Интерфейс с вкладками для планшетов и настольных устройств</string>
+    <string name="whats_new_2_desc">Используйте более удобный интерфейс для редактирования для планшетов и настольных устройств.</string>
+    <string name="whats_new_3">Новые типы диаграмм</string>
+    <string name="whats_new_3_desc">Добавляйте новые типы диаграмм для визуализации данных в презентациях и аналитике.</string>
+    <string name="whats_new_4">Просмотр файлов Apple Pages и HWP</string>
+    <string name="whats_new_4_desc">Открывайте и просматривайте документы в форматах Apple Pages и Hangul Word.</string>
+    <string name="whats_new_title">Новые возможности</string>
+    <string name="whats_new_next">Начать</string>
 </resources>

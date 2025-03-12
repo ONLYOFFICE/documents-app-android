@@ -2,8 +2,7 @@ package lib.compose.ui.views
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
@@ -16,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.UiMode
 import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.R
@@ -39,26 +38,36 @@ private fun AppBaseButton(
         modifier = modifier
             .padding(top = 16.dp)
             .width(dimensionResource(id = R.dimen.default_button_width))
-            .height(dimensionResource(id = R.dimen.default_button_height))
+            .heightIn(min = dimensionResource(id = R.dimen.default_button_height))
     ) {
         content()
     }
 }
 
 @Composable
-fun AppButton(modifier: Modifier = Modifier, title: String, enabled: Boolean = true, onClick: () -> Unit) {
+fun AppButton(
+    modifier: Modifier = Modifier,
+    title: String,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
     AppBaseButton(
         onClick = onClick,
         enabled = enabled,
         modifier = modifier,
         content = {
-            Text(text = title)
+            Text(textAlign = TextAlign.Center, text = title)
         }
     )
 }
 
 @Composable
-fun AppButton(modifier: Modifier = Modifier, title: Int, enabled: Boolean = true, onClick: () -> Unit) {
+fun AppButton(
+    modifier: Modifier = Modifier,
+    title: Int,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
     AppButton(
         modifier = modifier,
         enabled = enabled,
@@ -68,7 +77,12 @@ fun AppButton(modifier: Modifier = Modifier, title: Int, enabled: Boolean = true
 }
 
 @Composable
-fun AppErrorButton(modifier: Modifier = Modifier, title: String, enabled: Boolean = true, onClick: () -> Unit) {
+fun AppErrorButton(
+    modifier: Modifier = Modifier,
+    title: String,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
     AppBaseButton(
         onClick = onClick,
         enabled = enabled,
@@ -81,7 +95,12 @@ fun AppErrorButton(modifier: Modifier = Modifier, title: String, enabled: Boolea
 }
 
 @Composable
-fun AppErrorButton(modifier: Modifier = Modifier, title: Int, enabled: Boolean = true, onClick: () -> Unit) {
+fun AppErrorButton(
+    modifier: Modifier = Modifier,
+    title: Int,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
     AppErrorButton(
         modifier = modifier,
         enabled = enabled,

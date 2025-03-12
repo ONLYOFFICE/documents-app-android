@@ -50,6 +50,7 @@ import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.mvp.models.ui.StorageQuota
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.ui.views.custom.PlaceholderViews
@@ -142,6 +143,8 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
     protected var operationStack: ExplorerStackMap? = null
     private var uploadUri: Uri? = null
     private var sendingFile: File? = null
+
+    protected var filters: Map<String, String> = mapOf()
 
     var destFolderId: String? = null
         protected set
@@ -880,6 +883,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                         put(ApiContract.Parameters.ARG_FILTER_BY_AUTHOR, filter.author.id)
                     }
                 }
+                putAll(filters)
             }
         )
     }
@@ -922,7 +926,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             modelExplorerStack.clone()?.let { clonedStack ->
                 clonedStack.removeUnselected()
                 viewState.onBatchMoveCopy(operationsState, clonedStack.explorer)
-                getBackStack()
+//                getBackStack()
             }
         } else {
             viewState.onError(context.getString(R.string.operation_empty_lists_data))
@@ -1414,6 +1418,11 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             viewState.onDialogClose()
             if (throwable is HttpException) {
                 throwable.response()?.let { response ->
+                    if (response.code() == ApiContract.HttpCodes.UNSUPPORTED_MEDIA_TYPE) {
+                        //TODO Add Unsupported type localize message
+                        viewState.onError(throwable.message)
+                        return
+                    }
                     onErrorHandle(response.errorBody(), response.code())
                     if (response.code() == 412) {
                         viewState.onError(
@@ -1422,11 +1431,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                                 throwable.suppressed[0].message
                             )
                         )
-                    } else if (response.code() >= ApiContract.HttpCodes.CLIENT_ERROR && response.code() < ApiContract.HttpCodes.SERVER_ERROR) {
-                        if (!isRoot) {
-                            modelExplorerStack.previous()
-                            getItemsById(modelExplorerStack.currentId)
-                        }
                     } else if (response.code() >= ApiContract.HttpCodes.SERVER_ERROR) {
                         setPlaceholderType(PlaceholderViews.Type.ACCESS)
                         viewState.onError(throwable.message)
@@ -1482,26 +1486,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                         viewState.onError(context.getString(R.string.errors_client_forbidden))
                         return
                     }
-
-                    when {
-                        ApiContract.Errors.DISK_SPACE_QUOTA in message -> {
-                            viewState.onError(errorMessage)
-                        }
-                        ApiContract.Errors.STORAGE_NOT_AVAILABLE in message -> {
-                            viewState.onError(context.getString(R.string.room_storage_not_availabale))
-                            setPlaceholderType(PlaceholderViews.Type.NONE)
-                        }
-                        ApiContract.Errors.PINNED_ROOM_LIMIT in message -> {
-                            viewState.onDialogWarning(
-                                context.getString(R.string.dialogs_warning_title),
-                                context.getString(R.string.dialogs_warning_pinned_room_limit),
-                                null
-                            )
-                        }
-                        else -> {
-                            viewState.onError(context.getString(R.string.errors_client_forbidden))
-                        }
-                    }
+                    handleErrorMessage(message)
                 }
 
                 ApiContract.HttpCodes.CLIENT_NOT_FOUND -> {
@@ -1536,6 +1521,36 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         //        } else {
         //            getViewState().onError(errorMessage);
         //        }
+    }
+
+    protected open fun handleErrorMessage(message: String) {
+        when {
+            ApiContract.Errors.DISK_SPACE_QUOTA in message -> {
+                viewState.onError(message)
+            }
+            ApiContract.Errors.STORAGE_NOT_AVAILABLE in message -> {
+                viewState.onError(context.getString(R.string.room_storage_not_availabale))
+                setPlaceholderType(PlaceholderViews.Type.NONE)
+            }
+            ApiContract.Errors.PINNED_ROOM_LIMIT in message -> {
+                viewState.onDialogWarning(
+                    context.getString(R.string.dialogs_warning_title),
+                    context.getString(R.string.dialogs_warning_pinned_room_limit),
+                    null
+                )
+            }
+            ApiContract.Errors.EXCEED_ROOM_SPACE_QUOTA in message -> {
+                val spaceQuota = StorageQuota.fromBytes(roomClicked?.quotaLimit).toString(context)
+                viewState.onDialogWarning(
+                    context.getString(R.string.dialogs_warning_title),
+                    context.getString(R.string.dialogs_warning_room_space_quota_exceed, spaceQuota),
+                    null
+                )
+            }
+            else -> {
+                viewState.onError(context.getString(R.string.errors_client_forbidden))
+            }
+        }
     }
 
     /**
@@ -1682,17 +1697,17 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         }
     }
 
-    protected fun downloadTempFile(cloudFile: CloudFile, edit: Boolean, editType: EditType?) {
+    protected fun downloadTempFile(cloudFile: CloudFile, editType: EditType?) {
         disposable.add(
             context.cloudFileProvider
                 .getCachedFile(context, cloudFile, context.accountOnline?.accountName.orEmpty())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ file -> openFileFromPortal(file, cloudFile.id, edit, editType = editType) }, ::fetchError)
+                .subscribe({ file -> openFileFromPortal(file, cloudFile.id, editType = editType) }, ::fetchError)
         )
     }
 
-    private fun openFileFromPortal(file: File, fileId: String, edit: Boolean, editType: EditType?) {
+    private fun openFileFromPortal(file: File, fileId: String, editType: EditType?) {
         viewState.onDialogClose()
         viewState.onOpenLocalFile(CloudFile().apply {
             id = fileId

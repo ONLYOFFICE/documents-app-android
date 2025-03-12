@@ -118,6 +118,8 @@ public interface DocsBaseView extends BaseViewExt {
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogWarning(String title, String question, @Nullable String tag);
     @StateStrategyType(OneExecutionStateStrategy.class)
+    void onDialogWarning(String question);
+    @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogDelete(int count, boolean toTrash, String tag);
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onDialogProgress(@Nullable String title, boolean isHideButtons, @Nullable String tag);

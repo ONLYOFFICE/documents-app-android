@@ -238,7 +238,7 @@ fun ShareScreen(
                             "${Screens.InviteAccess.name}?" +
                                     "users=${URLEncoder.encode(users, Charsets.UTF_8.toString())}&" +
                                     "groups=${URLEncoder.encode(groups, Charsets.UTF_8.toString())}&" +
-                                    "access=$access"
+                                    "access=${access.code}"
                         )
                     }
                 }
@@ -430,7 +430,9 @@ private fun ExternalLinkContent(
                 onAccess = onAccess::invoke
             )
         }
-        AnimatedVisibilityVerticalFade(visible = externalLink.access != Access.Restrict) {
+        AnimatedVisibilityVerticalFade(
+            visible = externalLink.access !in arrayOf(Access.Restrict, Access.None)
+        ) {
             Row(
                 modifier = Modifier
                     .padding(horizontal = 16.dp),
@@ -582,10 +584,10 @@ private fun ShareScreenPreview() {
             portalWithScheme = "",
             useTabletPaddings = false,
             shareState = ShareState(
-                externalLink = Share("0"),
+                externalLink = Share(Access.Read.code),
                 users = listOf(
                     Share(
-                        _access = "1",
+                        _access = Access.Read.code,
                         sharedTo = SharedTo(
                             displayName = "User name",
                             groups = listOf(
@@ -597,7 +599,7 @@ private fun ShareScreenPreview() {
                         )
                     ),
                     Share(
-                        _access = "1",
+                        _access = Access.Editor.code,
                         isLocked = true,
                         sharedTo = SharedTo(
                             displayName = "User name",
@@ -612,7 +614,7 @@ private fun ShareScreenPreview() {
                 ),
                 groups = listOf(
                     Share(
-                        _access = "1",
+                        _access = Access.Editor.code,
                         sharedTo = SharedTo(name = "1. Group name")
                     )
                 )

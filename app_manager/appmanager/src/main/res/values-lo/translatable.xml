@@ -454,32 +454,6 @@
     <!-- On boarding -->
     <string name="on_boarding_skip_button">ຂ້າມໄປ</string>
     <string name="on_boarding_next_button">ທັດໄປ</string>
-    <string name="on_boarding_finish_button">ສຳເລັດ</string>
-
-    <string name="on_boarding_welcome_header"> ຍິນດີຕ້ອນຮັບ ONLYOFFICE</string>
-    <string name="on_boarding_welcome_info">
-       ພວກເຮົາໄດ້ປັບປຸງເອກະສານ ONLYOFFICE ສຳ ລັບ Android ແລ້ວ. ປັດເພື່ອຮຽນຮູ້ເພີ່ມເຕີມ.
-    </string>
-
-    <string name="on_boarding_edit_header">ແກ້ໄຂເອກະສານອອັບລາຍ</string>
-    <string name="on_boarding_edit_info">
-        ສ້າງແລະແກ້ໄຂເອກະສານຂໍ້ຄວາມ, ຕາຕະລາງແລະການນຳສະເໜີກ່ຽວກັບປະຕູ ONLYOFFICE ເທົ່ານັ້ນ.
-    </string>
-
-    <string name="on_boarding_access_header">ການເຂົ້າເຖິງເອກະສານ</string>
-    <string name="on_boarding_access_info">
-        ແບ່ງປັນເອກະສານໃຫ້ທີມງານຂອງທ່ານໃຫ້ການເຂົ້າເຖິງ, ສິດກວດກາ ຫຼື ອ່ານພຽງແຕ່ທ່ານເທົ່ານັ້ນ. ການແລກປ່ຽນຜ່ານທາງເຊື່ອມຕໍ່ພາຍນອກທີ່ມີຢູ່ເຊັ່ນກັນ.
-    </string>
-
-    <string name="on_boarding_collaborate_header">ຮ່ວມມື</string>
-    <string name="on_boarding_collaborate_info">
-      ແກ້ໄຂເອກະສານຫ້ອງການກັບເພື່ອນຮ່ວມທີມຂອງທ່ານໃນເວລາຈິງ.
-    </string>
-
-    <string name="on_boarding_third_party_header">ເຊື່ອມຕໍ່ກັບເມຄຂອງພາກສ່ວນທີສາມ  clouds</string>
-    <string name="on_boarding_third_party_info">
-        ເຊື່ອມຕໍ່ແອັບກັບຟັງຊັ້ນອື່ນໆທີ່ທ່ານໃຊ້: Google Drive, Dropbox, Nextcloud, ແລະ ອື່ນໆ.
-    </string>
 
     <!-- ======================================================================================= -->
     <!-- Media -->
@@ -510,7 +484,6 @@
     <string name="cloud_account_description">ຮ່ວມມືໃນສະພາບແວດລ້ອມທີ່ປອດໄພແລະເຊື່ອມຕໍ່ບັນດາເຄື່ອງຂອງຂອງພາກສ່ວນທີສາມ </string>
     <string name="cloud_account_start_button">ເລີ່ມຕົ້ນ</string>
     <string name="cloud_account_other_storages_button">ຖານເກັບຂໍ້ມູນອຶ່ນໆ</string>
-    <string name="cloud_only_office">ພຽງແຕ່ CloudONLYOFFICE </string>
     <string name="cloud_only_office_description">ເກັບຮັກສາເອກະສານໄວ້ໃນເມຄແລະຮ່ວມມືກັບພວກມັນ</string>
     <string name="cloud_accounts_title">ບັນຊີ</string>
     <string name="error_long_file_name">ຊື່ແຟ້ມຍາວເກີນໄປ </string>

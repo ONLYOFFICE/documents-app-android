@@ -51,7 +51,6 @@ dependencies {
 
     implementation(libs.kotlin.core)
 
-    implementation(libs.compose.activity)
 
     implementation(libs.compose.ui)
     implementation(libs.compose.material)

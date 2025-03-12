@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Dokumenty</string>
     <string name="app_name_full">Dokumenty ONLYOFFICE</string>
 
@@ -451,32 +451,6 @@
     <!-- On boarding -->
     <string name="on_boarding_skip_button">PŘESKOČIT</string>
     <string name="on_boarding_next_button">DALŠÍ</string>
-    <string name="on_boarding_finish_button">HOTOVO</string>
-
-    <string name="on_boarding_welcome_header">Vítejte v aplikaci ONLYOFFICE</string>
-    <string name="on_boarding_welcome_info">
-        Aplikace Dokumenty ONLYOFFICE pro Android prošla zásadními vylepšeními. Více informací získáte potažením.
-    </string>
-
-    <string name="on_boarding_edit_header">Úprava kancelářských dokumentů</string>
-    <string name="on_boarding_edit_info">
-        Vytvářejte a upravujte textové dokumenty, tabulky a prezentace na portálu ONLYOFFICE.
-    </string>
-
-    <string name="on_boarding_access_header">Udílení přístupu k dokumentům</string>
-    <string name="on_boarding_access_info">
-        Sdílejte dokumenty se členy týmu a mějte pod kontrolou oprávnění k přístupu. K dispozici je také sdílení prostřednictvím externího odkazu.
-    </string>
-
-    <string name="on_boarding_collaborate_header">Spolupráce</string>
-    <string name="on_boarding_collaborate_info">
-        Upravujte společně s kolegy dokumenty v reálném čase.
-    </string>
-
-    <string name="on_boarding_third_party_header">Připojení ke cloudovým úložištím třetích stran</string>
-    <string name="on_boarding_third_party_info">
-        Aplikaci lze propojit s dalšími cloudovými úložišti: Google Drive, Dropbox, Nextcloud aj.
-    </string>
 
     <!-- ======================================================================================= -->
     <!-- Media -->
@@ -506,7 +480,6 @@
     <string name="cloud_account_description">Spolupracujte v bezpečném prostředí a připojujte úložiště třetích stran</string>
     <string name="cloud_account_start_button">Začínáme</string>
     <string name="cloud_account_other_storages_button">Ostatní úložiště</string>
-    <string name="cloud_only_office">ONLYOFFICE Cloud</string>
     <string name="cloud_only_office_description">Ukládejte dokumenty v cloudu a spolupracujte na nich</string>
     <string name="cloud_accounts_title">Účty</string>
     <string name="error_long_file_name">Název souboru je příliš dlouhý</string>
@@ -769,6 +742,7 @@
     <string name="rooms_info_copy_link_to_clipboard">Odkaz byl úspěšně zkopírován do schránky</string>
     <string name="rooms_info_admin_title">Správa (%d)</string>
     <string name="rooms_info_users_title">Uživatelé (%1d)</string>
+    <string name="rooms_info_guests_title">Hosté (%1d)</string>
     <string name="rooms_info_expected_title">Očekávaní uživatelé (%1d)</string>
     <string name="rooms_info_link_expired">Platnost odkazu vypršela</string>
     <string name="rooms_info_link_expired_full">Platnost odkazu vypršela a byl zakázán</string>
@@ -896,4 +870,98 @@
     <string name="rooms_fill_form_complete_check_forms">Kontrola připravených formulářů</string>
     <string name="errors_sign_in_account_not_found">Účet nebyl nalezen</string>
     <string name="list_action_delete_image">Odstranit obrázek</string>
+    <string name="dialogs_common_close">Zavřít</string>
+    <string name="list_context_notification_enable">Povolení oznámení</string>
+    <string name="list_context_notification_disable">Zakázat oznámení</string>
+    <string name="share_goal_guest">Hosté</string>
+    <plurals name="app_settings_passcode_many_attempt_seconds" tools:ignore="MissingQuantity">
+        <item quantity="one">Příliš mnoho pokusů.\nZkuste to znovu za %d sekund</item>
+        <item quantity="other">Příliš mnoho pokusů.\nZkuste to znovu za %d sekund</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_minutes" tools:ignore="MissingQuantity">
+        <item quantity="one">Příliš mnoho pokusů.\nZkuste to znovu za %d minutu</item>
+        <item quantity="other">Příliš mnoho pokusů.\nZkuste to znovu za %d minut</item>
+    </plurals>
+    <string name="rooms_error_logo_size_exceed">Je překročena maximální velikost obrázku (1 MB)</string>
+    <string name="room_placeholder_created_virtual_room_title">Vítejte ve virtuální datové místnosti</string>
+    <string name="room_placeholder_created_virtual_room_subtitle">Začněte s rychlými akcemi:\nVytvořit nový soubor</string>
+    <string name="rooms_info_create_maximum_exceed">Byl překročen maximální počet odkazů</string>
+    <string name="rooms_info_delete_link_desc">Odkazy na všechny soubory v místnosti budou odstraněny. Předchozí odkazy na soubory v místnosti a vložené dokumenty se stanou nedostupnými.\n\nTuto akci nelze vrátit zpět. Určitě chcete pokračovat?</string>
+    <string name="rooms_info_revoke_link_desc">Odkazy na všechny soubory v místnosti budou znovu vytvořeny. Předchozí odkazy na soubory v místnosti a vložené dokumenty se stanou nedostupnými.\n\nTuto akci nelze vrátit zpět. Určitě chcete pokračovat?</string>
+    <string name="rooms_info_password_allowed_symbols">Povolené znaky: a–z, A–Z, 0–9, !"#%&amp;'()*+,-./:;\u003C=&gt;?@[]^_`{|}</string>
+    <string name="rooms_info_password_minimum_length">Minimální délka: 8 znaků</string>
+    <string name="rooms_filter_type_virtual_room">Virtuální datová místnost</string>
+    <string name="share_user_type_room_docspace_admin">Správce DocSpace</string>
+    <string name="share_user_type_room_docspace_owner">Vlastník prostoru DocSpace</string>
+    <string name="share_access_room_manager">Správce místnosti</string>
+    <string name="share_access_room_power_user">Tvůrce obsahu</string>
+    <string name="rooms_notifications_disabled">Vypnutá oznámení o místnosti</string>
+    <string name="rooms_notifications_enabled">Oznámení o místnosti povolena</string>
+    <string name="rooms_vdr">Virtuální datová místnost</string>
+    <string name="rooms_vdr_desc">Použijte VDR pro pokročilé zabezpečení a transparentnost souborů při vyplňování a podepisování dokumentů krok za krokem. Nastavte vodoznaky, automaticky indexujte a sledujte veškerý obsah, omezte stahování a kopírování.</string>
+    <string name="file_lifetime_desc">"Nastavte životnost souborů, aby se soubory v této místnosti po uplynutí definované doby automaticky odstranily. Životnost začíná dnem nahrání/vytvoření souboru."</string>
+    <string name="file_lifetime_title">Životnost souboru</string>
+    <string name="file_lifetime_hint">Soubory starší než</string>
+    <string name="file_lifetime_warning_title">Starší soubory s překročenou dobou životnosti budou odstraněny</string>
+    <string name="file_lifetime_warning_desc">Odpočet životnosti začíná datem vytvoření souboru. Některé soubory v této místnosti překročí navrhovanou dobu životnosti a budou odstraněny, jakmile toto nastavení povolíte.</string>
+    <string name="file_lifetime_action">Akce u souborů</string>
+    <string name="file_lifetime_action_delete">Trvale odstranit</string>
+    <string name="file_lifetime_action_move_to_trash">Přesunout do koše</string>
+    <string name="file_lifetime_time_period">Doba trvání</string>
+    <string name="file_lifetime_period_days">Dny</string>
+    <string name="file_lifetime_period_months">Měsíce</string>
+    <string name="file_lifetime_period_years">Roky</string>
+    <string name="rooms_vdr_file_restrict_desc">Povolením tohoto nastavení zakážete stahování, tisk a kopírování obsahu pro uživatele s rolí „Prohlížeč”.</string>
+    <string name="rooms_vdr_watermark_title">Přidávání vodoznaků do dokumentů</string>
+    <string name="rooms_vdr_watermark_desc">Chraňte všechny dokumenty v této místnosti vodoznaky. Pokud dokument již vodoznak obsahuje, nebude nahrazen.</string>
+    <string name="rooms_vdr_indexing_title">Automatické indexování</string>
+    <string name="rooms_vdr_indexing_desc">Povolte automatické indexování pro indexování souborů a složek podle sériového čísla. Řazení podle čísla bude nastaveno jako výchozí pro všechny uživatele.</string>
+    <string name="rooms_vdr_storage_quota_title">Kvóta úložiště</string>
+    <string name="rooms_vdr_storage_quota_desc">Nastavení kvóty úložiště pro jednotlivé místnosti. Tuto hodnotu můžete změnit nebo limit úložiště vypnout.</string>
+    <string name="rooms_vdr_size_quota">Velikostní kvóta</string>
+    <string name="rooms_vdr_measurement_unit">Jednotka měření</string>
+    <string name="rooms_vdr_watermark_type">Čas</string>
+    <string name="rooms_vdr_watermark_type_info">Informace o prohlížeči</string>
+    <string name="rooms_vdr_watermark_type_image">Obrázek</string>
+    <string name="rooms_vdr_watermark_static_text">Statický text</string>
+    <string name="rooms_vdr_watermark_position">Poloha</string>
+    <string name="rooms_vdr_watermark_position_diagonal">Diagonální</string>
+    <string name="rooms_vdr_watermark_position_horizontal">Horizontální</string>
+    <string name="rooms_vdr_watermark_info_username">Jméno uživatele</string>
+    <string name="rooms_vdr_watermark_info_email">E-mail uživatele</string>
+    <string name="rooms_vdr_watermark_info_ip_address">IP adresa uživatele</string>
+    <string name="rooms_vdr_watermark_info_current_date">Aktuální datum</string>
+    <string name="rooms_vdr_watermark_info_room_name">Název místnosti</string>
+    <string name="rooms_vdr_watermark_image_select">Zvolte obrázek</string>
+    <string name="rooms_vdr_watermark_image_scale">Měřítko</string>
+    <string name="rooms_vdr_watermark_image_rotate">Otáčení</string>
+    <string name="rooms_vdr_watermark_image_desc">Tento náhled obrázku zhruba ukazuje, jak se vodoznak zobrazí ve vašich souborech.</string>
+    <string name="rooms_vdr_lifetime_info">Životnost souboru je v této místnosti nastavena na %1$d %2$s</string>
+    <string name="trash_toolbar_info">Položky v koši se automaticky odstraní po 30 dnech</string>
+    <string name="rooms_expire_context_info">Soubor bude odstraněn dne %s</string>
+    <string name="rooms_index_subtitle">Index %s</string>
+    <string name="rooms_index_edit">Upravit index</string>
+    <string name="rooms_index_export">Exportovat index místnosti</string>
+    <string name="rooms_index_title">Index třídění</string>
+    <string name="rooms_index_reorder">Změna pořadí</string>
+    <string name="rooms_index_apply">Použít</string>
+    <string name="rooms_index_exit_no_saving">Ukončit bez uložení?\nProvedli jste změny v indexu. Pokud budete pokračovat bez uložení, tyto změny nebudou použity.</string>
+    <string name="rooms_index_reorder_desc">Akce Změna pořadí odstraní mezery v indexech. Soubory budou znovu indexovány v pořadí s odsazením, aby se doplnily chybějící indexy.</string>
+    <string name="rooms_index_reorder_complete_title">Exportovaný soubor</string>
+    <string name="rooms_index_reorder_complete_desc">Soubor %s exportován do Dokumentů</string>
+    <string name="rooms_index_reorder_open_file">Otevřít soubor</string>
+    <string name="rooms_protected_room">Chráněná místnost</string>
+    <string name="rooms_invalid_password">Neplatné heslo</string>
+    <string name="rooms_invite_access_description">Hosté, uživatelé a skupiny nemohou být přiřazeni jako správci místností. Pro zadanou roli jsou vhodní pouze správci místnosti a prostoru DocSpace.</string>
+    <string name="rooms_user_type_employees">Zaměstnanci</string>
+    <string name="whats_new_1">Rozšířená integrace s DocSpace v3.0</string>
+    <string name="whats_new_1_desc">Spolupracujte na dokumentech díky nejnovějším aktualizacím a vylepšením pro ONLYOFFICE DocSpace v3.0.</string>
+    <string name="whats_new_2">Rozhraní s kartami pro tablety a stolní počítače</string>
+    <string name="whats_new_2_desc">Zjednodušte navigaci a úpravy pomocí panelu nástrojů s kartami na tabletech a stolních zařízeních.</string>
+    <string name="whats_new_3">Nové typy tabulek</string>
+    <string name="whats_new_3_desc">Přidejte nové typy grafů pro vizualizaci dat pro podrobné prezentace a analýzy.</string>
+    <string name="whats_new_4">Zobrazení souborů Apple Pages a HWP</string>
+    <string name="whats_new_4_desc">Otevírejte a prohlížejte si dokumenty ve formátech Apple Pages a Hangul Word.</string>
+    <string name="whats_new_title">Co je nového</string>
+    <string name="whats_new_next">Začít</string>
 </resources>

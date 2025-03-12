@@ -94,6 +94,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Copy,
                 ExplorerContextItem.Download,
                 ExplorerContextItem.Upload,
+                ExplorerContextItem.EditIndex,
                 ExplorerContextItem.Rename,
                 ExplorerContextItem.Restore,
                 ExplorerContextItem.ShareDelete,

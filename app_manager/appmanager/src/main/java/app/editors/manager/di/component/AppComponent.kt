@@ -68,7 +68,6 @@ import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.main.WebViewerFragment
 import app.editors.manager.ui.fragments.media.MediaImageFragment
 import app.editors.manager.ui.fragments.media.MediaVideoFragment
-import app.editors.manager.ui.fragments.onboarding.OnBoardingPagerFragment
 import app.editors.manager.ui.fragments.operations.DocsOperationSectionFragment
 import app.editors.manager.ui.fragments.room.order.RoomOrderDialogFragment
 import app.editors.manager.ui.fragments.room.order.RoomOrderFragment
@@ -199,7 +198,6 @@ interface AppComponent {
     /*
     * On boarding
     * */
-    fun inject(onBoardingPagerFragment: OnBoardingPagerFragment?)
     fun inject(portalsActivity: PortalsActivity?)
 
     /*

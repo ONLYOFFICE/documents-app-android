@@ -42,7 +42,9 @@ sealed class Access(val type: String, val code: Int) {
 
         fun get(code: Int?): Access =
             when (code) {
+                CODE_READ_WRITE -> ReadWrite
                 CODE_READ -> Read
+                CODE_RESTRICT -> Restrict
                 CODE_REVIEW -> Review
                 CODE_COMMENT -> Comment
                 CODE_FILL_FORMS -> FormFiller
@@ -55,7 +57,9 @@ sealed class Access(val type: String, val code: Int) {
 
         fun get(type: String): Access =
             when (type) {
+                TYPE_READ_WRITE -> ReadWrite
                 TYPE_READ -> Read
+                TYPE_RESTRICT -> Restrict
                 TYPE_REVIEW -> Review
                 TYPE_COMMENT -> Comment
                 TYPE_FILL_FORMS -> FormFiller

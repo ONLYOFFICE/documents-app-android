@@ -29,4 +29,12 @@
     </plurals>
     <string name="settings_fonts_title">Шрифтове</string>
     <string name="settings_view">Преглед</string>
+    <plurals name="months">
+        <item quantity="one">месец</item>
+        <item quantity="other">месеци</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">година</item>
+        <item quantity="other">години</item>
+    </plurals>
 </resources>

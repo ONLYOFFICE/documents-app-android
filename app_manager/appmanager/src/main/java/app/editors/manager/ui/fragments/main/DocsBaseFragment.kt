@@ -245,6 +245,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onItemContextClick(position: Int, icon: Bitmap?) {
         val item = explorerAdapter?.getItem(position) as? Item
         if (item != null && !isFastClick) {
+            val roomSecurity = presenter.roomClicked?.security
             val state = ExplorerContextState(
                 headerIcon = icon?.toByteArray(),
                 item = item,
@@ -260,6 +261,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 },
                 provider = context?.accountOnline?.portal?.provider ?: PortalProvider.default,
                 isSearching = presenter.isFilteringMode,
+                editIndex = presenter.isIndexing && roomSecurity?.editRoom == true,
                 isRoot = presenter.isRoot
             )
             presenter.onClickEvent(item, position, true)
@@ -800,12 +802,22 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onDialogWarning(title: String, message: String, tag: String?) {
         if (isActivePage) {
-            getInfoDialog(
-                title = title,
-                info = message,
-                cancelTitle = getString(lib.toolkit.base.R.string.common_ok)
-            )?.show(requireActivity().supportFragmentManager)
+            view?.post {
+                getInfoDialog(
+                    title = title,
+                    info = message,
+                    cancelTitle = getString(lib.toolkit.base.R.string.common_ok)
+                )?.show(requireActivity().supportFragmentManager)
+            }
         }
+    }
+
+    override fun onDialogWarning(message: String) {
+        onDialogWarning(
+            title = getString(R.string.dialogs_warning_title),
+            message = message,
+            tag = null
+        )
     }
 
     override fun onDialogProgress(title: String?, isHideButtons: Boolean, tag: String?) {

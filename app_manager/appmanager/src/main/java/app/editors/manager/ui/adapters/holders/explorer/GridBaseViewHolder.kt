@@ -52,7 +52,9 @@ abstract class GridBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
                 }
             }
             setOnLongClickListener {
-                adapter.mOnItemContextListener?.onItemContextClick(layoutPosition, icon)
+                if (adapter.pickerMode != PickerMode.Folders) {
+                    adapter.mOnItemContextListener?.onItemContextClick(layoutPosition, icon)
+                }
                 return@setOnLongClickListener false
             }
         }

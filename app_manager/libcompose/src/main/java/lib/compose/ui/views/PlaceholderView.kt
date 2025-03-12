@@ -3,6 +3,7 @@ package lib.compose.ui.views
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,46 +15,40 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
-import lib.toolkit.base.managers.utils.UiUtils
 
 @Composable
 fun PlaceholderView(
-    image: Int,
+    image: Int?,
     title: String,
     subtitle: String,
     button: @Composable () -> Unit = {}
 ) {
-    val notUseWeight = with(LocalContext.current) {
-        !UiUtils.isTablet(this) && UiUtils.isLandscape(this)
-    }
-
     Surface(color = MaterialTheme.colors.background) {
         NestedColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 40.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Image(
-                modifier = Modifier
-                    .run { if (!notUseWeight) Modifier.weight(1f) else Modifier }
-                    .padding(top = 32.dp),
-                contentScale = ContentScale.None,
-                alignment = Alignment.BottomCenter,
-                imageVector = ImageVector.vectorResource(image),
-                contentDescription = null
-            )
+            image?.let {
+                Image(
+                    modifier = Modifier
+                        .padding(top = 32.dp),
+                    contentScale = ContentScale.None,
+                    alignment = Alignment.BottomCenter,
+                    imageVector = ImageVector.vectorResource(image),
+                    contentDescription = null
+                )
+            }
             Column(
-                modifier = Modifier
-                    .run { if (!notUseWeight) Modifier.weight(1f) else Modifier }
-                    .padding(vertical = 40.dp),
+                modifier = Modifier.padding(vertical = 40.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -92,7 +87,7 @@ private fun Preview() {
     }
 }
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
+@Preview(uiMode = UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
 private fun Preview2() {
     ManagerTheme {

@@ -1,9 +1,7 @@
 package app.editors.manager.ui.dialogs.explorer
 
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
-import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import lib.toolkit.base.managers.utils.TimeUtils
 
@@ -94,6 +92,11 @@ sealed class ExplorerContextItem(
     object Download : ExplorerContextItem(
         icon = R.drawable.ic_list_context_download,
         title = R.string.list_context_create_download
+    ), ExplorerContextBlockOrder.Common
+
+    object EditIndex : ExplorerContextItem(
+        icon = R.drawable.ic_list_context_edit_index,
+        title = R.string.list_context_edit_index
     ), ExplorerContextBlockOrder.Common
 
     class Favorites(val enabled: Boolean, val favorite: Boolean) : ExplorerContextItem(

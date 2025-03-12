@@ -245,14 +245,16 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     private fun showShareFragment() {
-        if (requireContext().accountOnline.isDocSpace) {
-            ShareSettingsFragment.show(requireActivity(), cloudPresenter.itemClicked?.id)
-        } else {
-            ShareFragment.show(
-                requireActivity(),
-                presenter.itemClicked?.id.orEmpty(),
-                presenter.itemClicked is CloudFolder
-            )
+        presenter.itemClicked?.let { item ->
+            if (requireContext().accountOnline.isDocSpace && item is CloudFile) {
+                ShareSettingsFragment.show(requireActivity(), item.id, item.fileExst)
+            } else {
+                ShareFragment.show(
+                    activity = requireActivity(),
+                    itemId = item.id,
+                    isFolder = item is CloudFolder
+                )
+            }
         }
     }
 
@@ -581,7 +583,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         OperationDialogFragment.show(requireActivity(), operation, explorer) { bundle ->
             if (OperationDialogFragment.KEY_OPERATION_RESULT_COMPLETE in bundle) {
                 showSnackBar(R.string.operation_complete_message)
-                onRefresh()
+                presenter.getBackStack()
             } else if (OperationDialogFragment.KEY_OPERATION_RESULT_OPEN_FOLDER in bundle) {
                 openRoom(bundle.getString(OperationDialogFragment.KEY_OPERATION_RESULT_OPEN_FOLDER))
             }

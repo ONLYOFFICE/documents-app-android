@@ -46,8 +46,8 @@ data class User(
 
     val type: UserType
         get() = when {
-            isOwner -> UserType.DocSpaceOwner
-            isAdmin -> UserType.DocSpaceAdmin
+            isOwner -> UserType.Owner
+            isAdmin -> UserType.Admin
             isRoomAdmin -> UserType.RoomAdmin
             isGuest -> UserType.Guest
             else -> UserType.User

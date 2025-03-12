@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
@@ -46,7 +47,11 @@ class LocalContentTools @Inject constructor(val context: Context) {
         const val OTS_EXTENSION = "ots"
         const val CSV_EXTENSION = "csv"
         const val PDF_EXTENSION = "pdf"
-
+        const val PAGES_EXTENSION = "pages"
+        const val NUMBERS_EXTENSION = "numbers"
+        const val KEY_EXTENSION = "key"
+        const val HWP_EXTENSION = "hwp"
+        const val HWPX_EXTENSION = "hwpx"
         private const val ASSETS_TEMPLATES = "templates"
 
         const val MIME_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -58,15 +63,19 @@ class LocalContentTools @Inject constructor(val context: Context) {
         private const val PREFS_NAME = "sample_prefs"
         private const val KEY_FIRST_LAUNCH = "first_launch"
 
-        fun getDir(): String {
-            return "${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath}/${BuildConfig.ROOT_FOLDER}"
+        fun getDir(context: Context): String {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
+                "${context.filesDir.path}/${BuildConfig.ROOT_FOLDER}"
+            } else {
+                "${Environment.getExternalStorageDirectory().absolutePath}/${BuildConfig.ROOT_FOLDER}"
+            }
         }
 
         fun toOOXML(ext: String): String {
             return when (ext) {
-                ODT_EXTENSION, OTT_EXTENSION, DOC_EXTENSION -> DOCX_EXTENSION
-                ODS_EXTENSION, OTS_EXTENSION, XLS_EXTENSION -> XLSX_EXTENSION
-                ODP_EXTENSION, OTP_EXTENSION, PPT_EXTENSION -> PPTX_EXTENSION
+                ODT_EXTENSION, OTT_EXTENSION, DOC_EXTENSION, PAGES_EXTENSION -> DOCX_EXTENSION
+                ODS_EXTENSION, OTS_EXTENSION, XLS_EXTENSION, NUMBERS_EXTENSION -> XLSX_EXTENSION
+                ODP_EXTENSION, OTP_EXTENSION, PPT_EXTENSION, KEY_EXTENSION -> PPTX_EXTENSION
                 else -> throw IllegalArgumentException(".$ext can not be converted to OOXML extension")
             }
         }
@@ -97,19 +106,19 @@ class LocalContentTools @Inject constructor(val context: Context) {
             publicDir.mkdirs()
         }
 
-        if (!File(getDir()).exists()) {
-            File(getDir()).mkdirs()
+        if (!File(getDir(context)).exists()) {
+            File(getDir(context)).mkdirs()
         }
 
-        if (!isFirstLaunch() && File(getDir()).exists()) {
-            return File(getDir())
+        if (!isFirstLaunch() && File(getDir(context)).exists()) {
+            return File(getDir(context))
         }
 
-        if (isFirstLaunch() && File(getDir()).canWrite()) {
-            addSamples(File(getDir()))
+        if (isFirstLaunch() && File(getDir(context)).canWrite()) {
+            addSamples(File(getDir(context)))
             setFirstLaunchFlag()
         }
-        return File(getDir())
+        return File(getDir(context))
     }
 
     private fun addSamples(rootDir: File) {
@@ -117,7 +126,10 @@ class LocalContentTools @Inject constructor(val context: Context) {
         samplesName?.let {
             it.forEach { name ->
                 val file = File(rootDir.absolutePath + "/" + name)
-                if (file.exists()) return@forEach
+                if (file.exists()) {
+                    MediaScannerConnection.scanFile(context, arrayOf(file.toString()), null, null)
+                    return@forEach
+                }
                 file.createNewFile()
                 file.setWritable(true)
                 val inputStream = context.assets.open("samples/$name")
@@ -211,6 +223,8 @@ class LocalContentTools @Inject constructor(val context: Context) {
 
         if (file.exists()) {
             file = FileUtils.getNewFileName(file)
+        } else {
+            file.createNewFile()
         }
 
         context.assets.open("$ASSETS_TEMPLATES/$path").use { input ->

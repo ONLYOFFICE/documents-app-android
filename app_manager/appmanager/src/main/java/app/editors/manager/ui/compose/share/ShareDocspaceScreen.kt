@@ -62,6 +62,7 @@ import java.net.URLEncoder
 @Composable
 fun ShareDocSpaceScreen(
     viewModel: ShareSettingsViewModel,
+    fileExtension: String,
     useTabletPadding: Boolean,
     onSendLink: (String) -> Unit,
     onClose: () -> Unit,
@@ -118,6 +119,7 @@ fun ShareDocSpaceScreen(
                         fileId = viewModel.fileId
                     )
                 },
+                fileExtension = fileExtension,
                 useTabletPadding = useTabletPadding,
                 onBack = navController::popBackStackWhenResumed,
                 onSnackBar = { text -> snackBar.setText(text).show() }

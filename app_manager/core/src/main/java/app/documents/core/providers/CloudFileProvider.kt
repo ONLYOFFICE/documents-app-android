@@ -388,15 +388,19 @@ class CloudFileProvider @Inject constructor(
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     fun opeEdit(cloudFile: CloudFile, canShareable: Boolean? = null, editType: EditType?): Single<String?> {
         return Single.fromCallable { runBlocking { managerRepository.updateDocumentServerVersion() } }
-            .flatMap {
+            .map { managerService.getFileInfo(cloudFile.id).blockingSingle().body()?.response }
+            .flatMap { file ->
                 when (editType) {
-                    EditType.EDIT -> managerService.openFile(cloudFile.id, cloudFile.version, edit = true)
-                    EditType.VIEW -> managerService.openFile(cloudFile.id, cloudFile.version, view = true)
-                    EditType.FILL -> managerService.openFile(cloudFile.id, cloudFile.version, fill = true)
-                    null -> managerService.openFile(cloudFile.id, cloudFile.version)
+                    EditType.EDIT -> managerService.openFile(file.id, file.version, edit = true)
+                    EditType.VIEW -> managerService.openFile(file.id, file.version, view = true)
+                    EditType.FILL -> managerService.openFile(file.id, file.version, fill = true)
+                    null -> managerService.openFile(file.id, file.version)
                 }
             }
             .map { response ->
+                if (!response.isSuccessful) {
+                    throw HttpException(response)
+                }
                 val json = JSONObject(managerService.getDocService().blockingGet().body()?.string())
                 val docService = if (json.optJSONObject(KEY_RESPONSE) != null) {
                     json.getJSONObject(KEY_RESPONSE).getString("docServiceUrlApi")

@@ -76,6 +76,7 @@ object ApiContract {
         const val CLIENT_PAYMENT_REQUIRED = 402
         const val CLIENT_FORBIDDEN = 403
         const val CLIENT_NOT_FOUND = 404
+        const val UNSUPPORTED_MEDIA_TYPE = 415
         const val SERVER_ERROR = 500
     }
 
@@ -90,6 +91,7 @@ object ApiContract {
         const val STORAGE_NOT_AVAILABLE = "The content of third party folder are not available. Try to reconnect the account"
         const val PINNED_ROOM_LIMIT = "You can't pin a room"
         const val FILLING_FORM_ROOM_UPLOAD = "Please try to upload the ONLYOFFICE PDF form"
+        const val EXCEED_ROOM_SPACE_QUOTA = "Room space quota exceeded"
     }
 
     object ActivationStatus {
@@ -234,7 +236,7 @@ object ApiContract {
         const val VIRTUAL_ROOM = 8
 
         fun hasExternalLink(roomType: Int?): Boolean =
-            roomType !in arrayOf(CUSTOM_ROOM, VIRTUAL_ROOM)
+            roomType in arrayOf(PUBLIC_ROOM, FILL_FORMS_ROOM, CUSTOM_ROOM)
     }
 
     object FolderType {

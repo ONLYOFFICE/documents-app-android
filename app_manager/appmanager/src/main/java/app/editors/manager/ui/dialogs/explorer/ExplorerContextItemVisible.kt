@@ -27,6 +27,7 @@ interface ExplorerContextItemVisible {
             ExplorerContextItem.Upload -> upload
             ExplorerContextItem.CreateRoom -> createRoom
             ExplorerContextItem.Reconnect -> reconnect
+            ExplorerContextItem.EditIndex -> editIndex
             is ExplorerContextItem.Fill -> item is CloudFile && item.isPdfForm
             is ExplorerContextItem.Edit -> edit
             is ExplorerContextItem.View -> false
