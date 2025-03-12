@@ -348,6 +348,8 @@
     <string name="list_context_copy_general_link">Copy general link</string>
     <string name="list_context_edit_room">Edit room</string>
     <string name="list_context_fill">Fill</string>
+    <string name="list_context_lock">Lock</string>
+    <string name="list_context_unlock">Unlock</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">Spreadsheet</string>
