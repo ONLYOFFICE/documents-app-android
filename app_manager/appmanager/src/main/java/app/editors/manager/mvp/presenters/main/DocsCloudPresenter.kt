@@ -978,6 +978,23 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    fun lockFile(){
+        val roomProvider = roomProvider ?: return
+        val file = itemClicked as? CloudFile ?: return
+        presenterScope.launch {
+            roomProvider.lockFile(id = file.id, lock = !file.isLocked)
+                .collect { result ->
+                    when(result){
+                        is Result.Success -> {
+                            file.isLocked = !file.isLocked
+                            viewState.onUpdateItemState()
+                        }
+                        is Result.Error -> fetchError(result.exception)
+                    }
+                }
+        }
+    }
+
     fun createRoom(roomType: Int) {
         val files = modelExplorerStack.selectedFiles.toMutableList()
         val folders = modelExplorerStack.selectedFolders.toMutableList()
