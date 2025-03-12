@@ -3,7 +3,9 @@ package app.editors.manager.ui.views.custom
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludePlaceholdersTextBinding
@@ -185,13 +187,15 @@ class PlaceholderViews(val view: View?) {
                     if (type == Type.PAYMENT_REQUIRED) {
                         AppButton(
                             title = R.string.placeholder_payment_required_button,
-                            onClick = onClick
+                            onClick = onClick,
+                            modifier = Modifier.testTag(type.name)
                         )
                     }
                     if (type == Type.EXTERNAL_STORAGE) {
                         AppButton(
                             title = R.string.settings_item_title,
-                            onClick = onClick
+                            onClick = onClick,
+                            modifier = Modifier.testTag(type.name)
                         )
                     }
                 }
