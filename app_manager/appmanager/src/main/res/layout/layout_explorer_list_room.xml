@@ -81,19 +81,6 @@
         app:layout_constraintEnd_toEndOf="@id/cardImageLayout"
         tools:ignore="ContentDescription" />
 
-    <ImageView
-        android:id="@+id/iconPinned"
-        style="@style/Widget.Common.ImageView.Secondary"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="@dimen/default_margin_medium"
-        android:src="@drawable/ic_grid_pinned"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toBottomOf="@+id/title"
-        app:layout_constraintEnd_toStartOf="@+id/contextButtonLayout"
-        app:layout_constraintTop_toTopOf="@+id/title"
-        tools:ignore="ContentDescription" />
-
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/subtitle"
         style="@style/Widget.Common.TextView.Small.Secondary"
@@ -102,10 +89,21 @@
         android:layout_marginTop="2dp"
         android:layout_marginEnd="@dimen/default_margin_medium"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/contextButtonLayout"
+        app:layout_constraintEnd_toStartOf="@id/iconPinned"
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@+id/title"
         tools:text="Room type" />
+
+    <ImageView
+        android:id="@+id/iconPinned"
+        style="@style/Widget.Common.ImageView.Secondary"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_pin_to_top"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/contextButtonLayout"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <FrameLayout
         android:id="@+id/contextButtonLayout"
