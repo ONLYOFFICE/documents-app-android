@@ -542,7 +542,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         } else {
                             item.fileStatus -= ApiContract.FileStatus.FAVORITE
                         }
-                        viewState.onUpdateFavoriteItem()
+                        viewState.onUpdateItemState()
                         viewState.onSnackBar(
                             if (isAdd) {
                                 context.getString(R.string.operation_add_to_favorites)
@@ -969,7 +969,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             .subscribe({ response ->
                                 if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
                                     folder.pinned = !folder.pinned
-                                    viewState.onUpdateFavoriteItem()
+                                    viewState.onUpdateItemState()
                                 }
                             }, ::fetchError)
                     )

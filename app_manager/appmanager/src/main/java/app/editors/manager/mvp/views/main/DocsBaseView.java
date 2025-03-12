@@ -137,7 +137,7 @@ public interface DocsBaseView extends BaseViewExt {
     void onCreateDownloadFile(String name);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onUpdateFavoriteItem();
+    void onUpdateItemState();
 
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onFinishDownload(Uri uri);
