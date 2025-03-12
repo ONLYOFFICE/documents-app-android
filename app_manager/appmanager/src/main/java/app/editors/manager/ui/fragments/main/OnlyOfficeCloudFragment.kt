@@ -2,12 +2,17 @@ package app.editors.manager.ui.fragments.main
 
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentCloudLayoutBinding
 import app.editors.manager.mvp.presenters.login.OnlyOfficeCloudPresenter
 import app.editors.manager.mvp.views.login.OnlyOfficeCloudView
 import app.editors.manager.ui.activities.login.PortalsActivity
+import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.main.CloudsActivity
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
@@ -75,7 +80,7 @@ class OnlyOfficeCloudFragment : BaseAppFragment(), OnlyOfficeCloudView {
     private fun initListeners() {
         viewBinding?.let {
             it.startButton.setOnClickListener {
-                presenter.getAccounts()
+                SignInActivity.showPortalCreate(requireContext())
             }
             it.otherStorageButton.setOnClickListener {
                 CloudsActivity.show(requireContext())

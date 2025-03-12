@@ -663,6 +663,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="cloud_account_start_button">Get started</string>
     <string name="cloud_account_other_storages_button">Other storages</string>
     <string name="cloud_only_office" translatable="false">ONLYOFFICE DocSpace</string>
+    <string name="cloud_create_account">Create free account</string>
     <string name="cloud_only_office_description">Store documents in the cloud and collaborate on them</string>
     <string name="cloud_accounts_title">Accounts</string>
     <string name="error_long_file_name">File name is too long</string>

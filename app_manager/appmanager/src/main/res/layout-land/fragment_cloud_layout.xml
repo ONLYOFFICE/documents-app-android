@@ -52,21 +52,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/default_margin_xlarge"
-                android:layout_marginTop="@dimen/default_margin_xlarge"
+                android:layout_marginTop="@dimen/default_margin_large"
                 android:layout_marginEnd="@dimen/default_margin_xlarge"
-                android:text="@string/cloud_account_description" />
+                android:text="@string/cloud_account_description"
+                android:textAlignment="center" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/startButton"
                 style="@style/Widget.Common.Button"
-                android:layout_marginTop="@dimen/default_margin_xlarge"
-                android:text="@string/cloud_account_start_button" />
+                android:layout_marginTop="@dimen/default_margin_large"
+                android:text="@string/cloud_create_account" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/otherStorageButton"
                 style="@style/Widget.Common.Button.TextButton"
                 android:layout_marginTop="@dimen/default_margin_medium"
-                android:text="@string/cloud_account_other_storages_button" />
+                android:text="@string/navigation_drawer_menu_sign_in" />
 
         </LinearLayout>
 
