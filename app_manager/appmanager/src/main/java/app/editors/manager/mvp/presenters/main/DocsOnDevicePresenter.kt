@@ -442,18 +442,9 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         }
     }
 
-    fun updateState() {
-        setSelection(false)
-        setFiltering(false)
-        updateViewsState()
-    }
-
-    override fun getFileInfo() {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            addRecent(file)
-            openFile(file, null)
-        }
+    override fun getFileInfo(file: CloudFile) {
+        addRecent(file)
+        openFile(file, null)
     }
 
     fun getFileInfo(editType: EditType?) {

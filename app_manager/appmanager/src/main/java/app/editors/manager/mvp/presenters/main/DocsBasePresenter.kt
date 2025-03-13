@@ -1166,27 +1166,32 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         isContextClick = isContext
     }
 
-    open fun onItemClick(item: Item, position: Int) {
+    fun onItemClick(item: Item, position: Int) {
         onClickEvent(item, position)
-        isContextClick = false
-        itemClicked?.let { itemClicked ->
-            if (isSelectionMode) {
-                modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
-                if (!isSelectedItemsEmpty) {
-                    viewState.onStateUpdateSelection(true)
-                    viewState.onItemSelected(position, modelExplorerStack.countSelectedItems.toString())
-                }
-            } else {
-                if (itemClicked is CloudFolder) {
-                    openFolder(itemClicked.id, position)
-                } else if (itemClicked is CloudFile) {
-                    getFileInfo()
-                }
-            }
+        if (isSelectionMode) {
+            setSelectionItem(item, position)
+            return
+        }
+
+        if (item is CloudFolder) {
+            openFolder(item.id, position)
+            return
+        }
+
+        if (item is CloudFile) {
+            getFileInfo(item)
         }
     }
 
-    protected val isSelectedItemsEmpty: Boolean
+    private fun setSelectionItem(item: Item, position: Int) {
+        modelExplorerStack.setSelectById(item, !item.isSelected)
+        if (!isSelectedItemsEmpty) {
+            viewState.onStateUpdateSelection(true)
+            viewState.onItemSelected(position, modelExplorerStack.countSelectedItems.toString())
+        }
+    }
+
+    private val isSelectedItemsEmpty: Boolean
         get() = modelExplorerStack.let { stack ->
             if (stack.countSelectedItems <= 0) {
                 getBackStack()
@@ -1741,7 +1746,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     abstract fun getNextList()
 
-    abstract fun getFileInfo()
+    abstract fun getFileInfo(file: CloudFile)
 
     abstract fun createDocs(title: String)
 
@@ -1750,6 +1755,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
     abstract fun onActionClick()
 
     abstract fun updateViewsState()
+
 
     companion object {
 

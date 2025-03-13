@@ -128,7 +128,7 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
         }
     }
 
-    override fun getFileInfo() {
+    override fun getFileInfo(file: CloudFile) {
         downloadDisposable = fileProvider?.fileInfo(itemClicked)
             ?.subscribeOn(Schedulers.io())
             ?.observeOn(AndroidSchedulers.mainThread())

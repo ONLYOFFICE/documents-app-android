@@ -420,7 +420,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 }
                 .setNegativeButton(R.string.conversion_dialog_open_in_view_mode) { dialog, _ ->
                     dialog.dismiss()
-                    cloudPresenter.getFileInfo()
+                    cloudPresenter.getFileInfo(file)
                 }
                 .create()
                 .apply {

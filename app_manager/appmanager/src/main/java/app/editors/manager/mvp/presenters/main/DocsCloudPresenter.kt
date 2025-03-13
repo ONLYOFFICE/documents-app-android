@@ -48,9 +48,7 @@ import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.works.RoomDuplicateWork
 import app.editors.manager.mvp.models.filter.Filter
-import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.models.OpenDataModel
-import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_DOWNLOAD
@@ -148,57 +146,57 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         LocalBroadcastManager.getInstance(context).unregisterReceiver(downloadReceiver)
     }
 
-    override fun onItemClick(item: Item, position: Int) {
-        onClickEvent(item, position)
-        itemClicked?.let { itemClicked ->
-            if (isSelectionMode) {
-                val pickerMode = this.pickerMode
-                if (pickerMode is PickerMode.Files) {
-                    if (itemClicked is CloudFolder) {
-                        openFolder(itemClicked.id, position)
-                    } else if (itemClicked is CloudFile) {
-                        if (itemClicked.isPdfForm) pickerMode.selectId(itemClicked.id)
-                        modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
-                        viewState.onStateUpdateSelection(true)
-                        viewState.onItemSelected(
-                            position,
-                            pickerMode.selectedIds.size.toString()
-                        )
-                    }
-                    return
-                }
-                modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
-                if (!isSelectedItemsEmpty) {
-                    viewState.onStateUpdateSelection(true)
-                    viewState.onItemSelected(
-                        position,
-                        modelExplorerStack.countSelectedItems.toString()
-                    )
-                }
-            } else if (isTrashMode && currentSectionType != ApiContract.SectionType.CLOUD_ARCHIVE_ROOM) {
-                viewState.onSnackBarWithAction(
-                    context.getString(R.string.trash_snackbar_move_text),
-                    context.getString(R.string.trash_snackbar_move_button)
-                ) { moveCopySelected(OperationsState.OperationType.RESTORE) }
-            } else {
-                if (itemClicked is CloudFolder) {
-                    if (itemClicked.isRoom && itemClicked.passwordProtected) {
-                        viewState.onRoomViaLinkPasswordRequired(false, TAG_PROTECTED_ROOM_OPEN_FOLDER)
-                    } else {
-                        openFolder(itemClicked.id, position)
-                    }
-                } else if (itemClicked is CloudFile) {
-                    if (LocalContentTools.isOpenFormat(itemClicked.clearExt)) {
-                        viewState.onConversionQuestion()
-                    } else {
-                        getFileInfo()
-                    }
-                } else if (itemClicked is RecentViaLink) {
-                    openRecentViaLink()
-                }
-            }
-        }
-    }
+//    override fun onItemClick(item: Item, position: Int) {
+//        onClickEvent(item, position)
+//        itemClicked?.let { itemClicked ->
+//            if (isSelectionMode) {
+//                val pickerMode = this.pickerMode
+//                if (pickerMode is PickerMode.Files) {
+//                    if (itemClicked is CloudFolder) {
+//                        openFolder(itemClicked.id, position)
+//                    } else if (itemClicked is CloudFile) {
+//                        if (itemClicked.isPdfForm) pickerMode.selectId(itemClicked.id)
+//                        modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
+//                        viewState.onStateUpdateSelection(true)
+//                        viewState.onItemSelected(
+//                            position,
+//                            pickerMode.selectedIds.size.toString()
+//                        )
+//                    }
+//                    return
+//                }
+//                modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
+//                if (!isSelectedItemsEmpty) {
+//                    viewState.onStateUpdateSelection(true)
+//                    viewState.onItemSelected(
+//                        position,
+//                        modelExplorerStack.countSelectedItems.toString()
+//                    )
+//                }
+//            } else if (isTrashMode && currentSectionType != ApiContract.SectionType.CLOUD_ARCHIVE_ROOM) {
+//                viewState.onSnackBarWithAction(
+//                    context.getString(R.string.trash_snackbar_move_text),
+//                    context.getString(R.string.trash_snackbar_move_button)
+//                ) { moveCopySelected(OperationsState.OperationType.RESTORE) }
+//            } else {
+//                if (itemClicked is CloudFolder) {
+//                    if (itemClicked.isRoom && itemClicked.passwordProtected) {
+//                        viewState.onRoomViaLinkPasswordRequired(false, TAG_PROTECTED_ROOM_OPEN_FOLDER)
+//                    } else {
+//                        openFolder(itemClicked.id, position)
+//                    }
+//                } else if (itemClicked is CloudFile) {
+//                    if (LocalContentTools.isOpenFormat(itemClicked.clearExt)) {
+//                        viewState.onConversionQuestion()
+//                    } else {
+//                        getFileInfo()
+//                    }
+//                } else if (itemClicked is RecentViaLink) {
+//                    openRecentViaLink()
+//                }
+//            }
+//        }
+//    }
 
     override fun copy(): Boolean {
         if (!checkFillFormsRoom()) {
@@ -294,7 +292,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    override fun getFileInfo() {
+    override fun getFileInfo(file: CloudFile) {
         val item = itemClicked
         if (item != null && item is CloudFile) {
             fileProvider?.let { provider ->

@@ -30,7 +30,7 @@ interface ExplorerContextItemVisible {
             ExplorerContextItem.EditIndex -> editIndex
             is ExplorerContextItem.Fill -> item is CloudFile && item.isPdfForm
             is ExplorerContextItem.Edit -> edit
-            is ExplorerContextItem.View -> false
+            is ExplorerContextItem.View -> true
             is ExplorerContextItem.ExternalLink -> externalLink
             is ExplorerContextItem.Restore -> restore
             is ExplorerContextItem.Header -> true

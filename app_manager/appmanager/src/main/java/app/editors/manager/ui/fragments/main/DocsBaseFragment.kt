@@ -361,8 +361,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 cancelButton = getString(R.string.dialogs_common_cancel_button),
                 suffix = presenter.itemExtension
             )
-            is ExplorerContextItem.Edit -> presenter.getFileInfo()
-            is ExplorerContextItem.Fill -> presenter.getFileInfo()
+//            is ExplorerContextItem.Edit -> presenter.getFileInfo()
+//            is ExplorerContextItem.Fill -> presenter.getFileInfo()
             is ExplorerContextItem.Delete -> {
                 if (presenter.isRecentViaLinkSection()) {
                     presenter.deleteItems()

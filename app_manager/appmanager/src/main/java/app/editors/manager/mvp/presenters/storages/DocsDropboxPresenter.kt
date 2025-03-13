@@ -155,7 +155,7 @@ class DocsDropboxPresenter : BaseStorageDocsPresenter<BaseStorageDocsView>() {
         }
     }
 
-    override fun getFileInfo() {
+    override fun getFileInfo(file: CloudFile) {
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
         fileProvider?.let { provider ->
             downloadDisposable = provider.fileInfo(itemClicked)

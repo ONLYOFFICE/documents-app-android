@@ -128,10 +128,10 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         }
     }
 
-    override fun getFileInfo() {
+    override fun getFileInfo(file: CloudFile) {
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
         fileProvider?.let { provider ->
-            downloadDisposable = provider.fileInfo(itemClicked)
+            downloadDisposable = provider.fileInfo(file)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ file: CloudFile? ->

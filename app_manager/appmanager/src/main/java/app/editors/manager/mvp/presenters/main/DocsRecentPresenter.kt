@@ -433,7 +433,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
         // stub
     }
 
-    override fun getFileInfo() {
+    override fun getFileInfo(file: CloudFile) {
         // stub
     }
 

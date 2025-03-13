@@ -114,15 +114,11 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         }
     }
 
-    override fun getFileInfo() {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            val extension = file.fileExst
-            if (StringUtils.isImage(extension)) {
-                addRecent(file)
-                viewState.onFileMedia(removeVideo(getListMedia(file.id)), true)
-                return
-            }
+    override fun getFileInfo(file: CloudFile) {
+        if (StringUtils.isImage(file.fileExst)) {
+            addRecent(file)
+            viewState.onFileMedia(removeVideo(getListMedia(file.id)), true)
+            return
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
         fileProvider?.let { provider ->
