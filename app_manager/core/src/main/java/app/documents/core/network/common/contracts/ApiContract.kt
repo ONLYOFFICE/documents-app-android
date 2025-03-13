@@ -189,13 +189,13 @@ object ApiContract {
         object Device : Section(SectionType.DEVICE_DOCUMENTS)
         object Favorites : Section(SectionType.CLOUD_FAVORITES)
         object Recent : Section(SectionType.CLOUD_RECENT)
+        object LocalRecent : Section(SectionType.LOCAL_RECENT)
         object Webdav : Section(SectionType.WEB_DAV)
 
         sealed class Room(type: Int) : Section(type) {
             object Private : Room(SectionType.CLOUD_PRIVATE_ROOM)
             object Virtual : Room(SectionType.CLOUD_VIRTUAL_ROOM)
             object Archive : Room(SectionType.CLOUD_ARCHIVE_ROOM)
-
         }
 
         sealed class Storage(type: Int) : Section(type) {
@@ -206,7 +206,10 @@ object ApiContract {
 
         val isRoom: Boolean get() = this is Room
         val isArchive: Boolean get() = this == Room.Archive
-        val isLocal: Boolean get() = this in listOf(Device, Recent)
+        val isLocal: Boolean get() = this in listOf(Device, Recent, LocalRecent)
+        val isLocalRecent: Boolean get() = this == LocalRecent
+        val isDevice: Boolean get() = this == Device
+        val isTrash: Boolean get() = this == Trash
 
         companion object {
 
@@ -223,6 +226,7 @@ object ApiContract {
                     SectionType.CLOUD_PRIVATE_ROOM -> Room.Private
                     SectionType.CLOUD_VIRTUAL_ROOM -> Room.Virtual
                     SectionType.CLOUD_ARCHIVE_ROOM -> Room.Archive
+                    SectionType.LOCAL_RECENT -> LocalRecent
                     else -> Common
                 }
         }

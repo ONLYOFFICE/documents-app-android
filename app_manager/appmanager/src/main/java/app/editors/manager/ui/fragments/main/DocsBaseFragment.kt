@@ -1184,15 +1184,14 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     protected open fun showActionBarMenu() {
-        val section = presenter.getSectionType()
-        val isRoom = ApiContract.SectionType.isRoom(section) || ApiContract.SectionType.isArchive(section)
+        val section = if (presenter.isRecentViaLinkSection()) ApiContract.Section.Recent else getSection()
 
         ActionBarMenu(
             context = requireContext(),
             adapter = ActionMenuAdapter(actionMenuClickListener),
-            items = if (isRoom) {
+            items = if (section.isRoom) {
                 ActionMenuItemsFactory.getRoomItems(
-                    section = presenter.getSectionType(),
+                    section = section,
                     provider = context?.accountOnline?.portal?.provider,
                     root = presenter.isRoot,
                     selected = presenter.isSelectionMode,
@@ -1210,7 +1209,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 )
             } else {
                 ActionMenuItemsFactory.getDocsItems(
-                    section = presenter.getSectionType(),
+                    section = section,
                     provider = context?.accountOnline?.portal?.provider,
                     selected = presenter.isSelectionMode,
                     allSelected = presenter.isSelectedAll,
