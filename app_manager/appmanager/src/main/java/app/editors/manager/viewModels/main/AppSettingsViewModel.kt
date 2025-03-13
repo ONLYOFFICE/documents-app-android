@@ -31,6 +31,7 @@ data class AppSettingsState(
     val themeMode: Int = 0,
     val analytics: Boolean = false,
     val wifi: Boolean = false,
+    val keepScreenOn: Boolean = false,
     val passcodeEnabled: Boolean = false,
     val fonts: List<File> = emptyList()
 )
@@ -70,6 +71,7 @@ class AppSettingsViewModel(
                 cache = cache,
                 analytics = preferenceTool.isAnalyticEnable,
                 wifi = preferenceTool.uploadWifiState,
+                keepScreenOn = preferenceTool.keepScreenOn,
                 passcodeEnabled = preferenceTool.passcodeLock.enabled,
                 themeMode = themePrefs.mode,
                 fonts = File(FileUtils.getFontsDir(resourcesProvider.context)).listFiles()?.toList().orEmpty()
@@ -105,6 +107,11 @@ class AppSettingsViewModel(
     fun setWifiState(isEnable: Boolean) {
         preferenceTool.setWifiState(isEnable)
         _settingsState.value = _settingsState.value.copy(wifi = isEnable)
+    }
+
+    fun setScreenOnState(isEnable: Boolean) {
+        preferenceTool.setScreenOnState(isEnable)
+        _settingsState.value = _settingsState.value.copy(keepScreenOn = isEnable)
     }
 
     fun setThemeMode(mode: Int) {

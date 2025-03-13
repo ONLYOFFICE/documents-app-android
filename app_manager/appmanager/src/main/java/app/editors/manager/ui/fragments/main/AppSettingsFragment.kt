@@ -235,6 +235,7 @@ class AppSettingsFragment : BaseFragment() {
                                 context = requireContext(),
                                 settingsState = settingsState,
                                 onWifiState = viewModel::setWifiState,
+                                onScreenOnState = viewModel::setScreenOnState,
                                 onAnalytics = viewModel::setAnalytic,
                                 onCacheClear = viewModel::clearCache,
                                 onThemeClick = { navController.navigate(Screen.Theme.route) },
@@ -326,6 +327,7 @@ class AppSettingsFragment : BaseFragment() {
         onLocaleClick: () -> Unit,
         onAboutClick: () -> Unit,
         onWifiState: (Boolean) -> Unit,
+        onScreenOnState: (Boolean) -> Unit,
         onAnalytics: (Boolean) -> Unit,
         onCacheClear: () -> Unit,
         onFontsClick: () -> Unit
@@ -345,6 +347,14 @@ class AppSettingsFragment : BaseFragment() {
                     title = R.string.setting_wifi,
                     checked = settingsState.wifi,
                     onCheck = onWifiState,
+                    dividerVisible = false
+                )
+                AppDivider()
+                AppHeaderItem(title = R.string.setting_title_sreen_on)
+                AppSwitchItem(
+                    title = R.string.setting_screen_on,
+                    checked = settingsState.keepScreenOn,
+                    onCheck = onScreenOnState,
                     dividerVisible = false
                 )
                 AppDivider()
@@ -484,6 +494,7 @@ class AppSettingsFragment : BaseFragment() {
                 ),
                 onThemeClick = {},
                 onWifiState = {},
+                onScreenOnState = {},
                 onAnalytics = {},
                 onPasscodeClick = {},
                 onLocaleClick = {},
