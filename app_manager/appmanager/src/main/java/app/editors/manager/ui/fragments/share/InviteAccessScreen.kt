@@ -30,11 +30,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.documents.core.model.cloud.Access
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.login.Email
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.editors.manager.R
-import app.editors.manager.managers.utils.typeTitle
+import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.utils.getTypeTitle
 import app.editors.manager.ui.views.custom.AccessIconButton
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.InviteAccessEffect
@@ -65,6 +67,7 @@ fun InviteAccessScreen(
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
+    val portal = context.accountOnline?.portal
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -84,6 +87,7 @@ fun InviteAccessScreen(
     MainScreen(
         state = state,
         description = description,
+        provider = portal?.provider,
         accessList = accessList,
         onSetAccess = viewModel::setAccess,
         onBack = onBack,
@@ -96,6 +100,7 @@ fun InviteAccessScreen(
 private fun MainScreen(
     state: InviteAccessState,
     description: String? = null,
+    provider: PortalProvider?,
     accessList: List<Access>,
     onSetAccess: (String, Access) -> Unit,
     onSetAllAccess: (Access) -> Unit,
@@ -157,7 +162,7 @@ private fun MainScreen(
                         items(state.users.toList()) { (user, access) ->
                             InviteItem(
                                 title = user.displayName,
-                                subtitle = stringResource(user.typeTitle) + user.email?.let { " | $it" },
+                                subtitle = stringResource(user.getTypeTitle(provider)) + user.email?.let { " | $it" },
                                 avatar = user.avatarMedium,
                                 access = access,
                                 onSetAccess = onSetAccess,
@@ -317,6 +322,7 @@ private fun InviteAccessScreenEmailPreview() {
                 commonAccess = Access.Read,
                 membersWithAccess = emails.associate { Email(it) to Access.Read }
             ),
+            provider = null,
             accessList = listOf(),
             onSetAccess = { _, _ -> },
             onBack = {},
@@ -347,6 +353,7 @@ private fun InviteAccessScreenUsersPreview() {
                 membersWithAccess = accessList
             ),
             description = "Guests, Users and Groups cannot be assigned as Room managers. Only Room and DocSpace admins are suitable for the specified role.",
+            provider = null,
             accessList = listOf(),
             onSetAccess = { _, _ -> },
             onBack = {},
