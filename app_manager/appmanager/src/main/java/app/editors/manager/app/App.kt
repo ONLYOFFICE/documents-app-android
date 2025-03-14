@@ -176,9 +176,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        ThemePreferencesTools(this).also { pref ->
-            AppCompatDelegate.setDefaultNightMode(pref.mode)
-        }
+        AppCompatDelegate.setDefaultNightMode(appComponent.themePreferencesTools.mode)
         init()
     }
 
