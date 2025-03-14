@@ -24,6 +24,7 @@ import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.mutableStateIn
 import java.io.File
+import javax.inject.Inject
 
 data class AppSettingsState(
     val cache: Long = 0,
@@ -42,7 +43,7 @@ sealed class AppSettingsEffect {
     data object HideDialog : AppSettingsEffect()
 }
 
-class AppSettingsViewModelFactory(
+class AppSettingsViewModelFactory @Inject constructor(
     private val themePrefs: ThemePreferencesTools,
     private val resourcesProvider: ResourcesProvider,
     private val preferenceTool: PreferenceTool,

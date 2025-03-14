@@ -104,15 +104,10 @@ class AppSettingsFragment : BaseFragment() {
 
     private var navController: NavHostController by Delegates.notNull()
 
-    private val viewModel by viewModels<AppSettingsViewModel> {
-        val resourcesProvider = ResourcesProvider(requireContext())
-        AppSettingsViewModelFactory(
-            themePrefs = ThemePreferencesTools(requireContext()),
-            resourcesProvider = resourcesProvider,
-            preferenceTool = preferenceTool,
-            fontManager = FontManager(resourcesProvider)
-        )
-    }
+    @Inject
+    lateinit var injectFactory: AppSettingsViewModelFactory
+
+    private val viewModel by viewModels<AppSettingsViewModel> { injectFactory }
 
     private val passcodeViewModel by viewModels<PasscodeViewModel> {
         PasscodeViewModelFactory(preferenceTool = preferenceTool)

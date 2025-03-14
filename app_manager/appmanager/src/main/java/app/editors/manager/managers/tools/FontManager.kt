@@ -6,8 +6,9 @@ import kotlinx.coroutines.delay
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.FileUtils
 import java.io.File
+import javax.inject.Inject
 
-class FontManager(private val resourcesProvider: ResourcesProvider){
+class FontManager @Inject constructor(private val resourcesProvider: ResourcesProvider){
 
     private val fontsDir: String
         get() = FileUtils.getFontsDir(resourcesProvider.context)
