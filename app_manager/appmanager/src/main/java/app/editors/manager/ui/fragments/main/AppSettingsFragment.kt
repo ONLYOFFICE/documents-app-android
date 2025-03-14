@@ -35,6 +35,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.managers.tools.FontManager
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.activities.main.AboutScreen
 import app.editors.manager.ui.activities.main.IMainActivity
@@ -104,10 +105,12 @@ class AppSettingsFragment : BaseFragment() {
     private var navController: NavHostController by Delegates.notNull()
 
     private val viewModel by viewModels<AppSettingsViewModel> {
+        val resourcesProvider = ResourcesProvider(requireContext())
         AppSettingsViewModelFactory(
             themePrefs = ThemePreferencesTools(requireContext()),
-            resourcesProvider = ResourcesProvider(requireContext()),
-            preferenceTool = preferenceTool
+            resourcesProvider = resourcesProvider,
+            preferenceTool = preferenceTool,
+            fontManager = FontManager(resourcesProvider)
         )
     }
 
