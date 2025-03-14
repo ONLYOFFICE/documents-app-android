@@ -3,7 +3,7 @@ compileSdk = "35"
 minSdk = "26"
 targetSdk = "35"
 ndk = "21.3.6528147"
-gradle = "8.7.3"
+gradle = "8.9.0"
 
 #kotlin
 kotlin = "1.9.24"
@@ -61,6 +61,7 @@ material = "1.12.0"
 gson = "2.11.0"
 safetynet = "18.1.0"
 app-update = "2.1.0"
+text-recognition = "16.0.1"
 
 jackson = "2.18.2"
 
@@ -82,6 +83,7 @@ glideCompose = "1.0.0-beta01"
 photoView = "2.3.0"
 pdfView = "3.1.0-beta.3"
 colorPicker = "2.3.0"
+visionCommon = "17.3.0"
 
 [libraries]
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx" }
@@ -112,6 +114,7 @@ google-material = { module = "com.google.android.material:material", version.ref
 google-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 google-safetynet = { module = "com.google.android.gms:play-services-safetynet", version.ref = "safetynet" }
 google-update = { module = "com.google.android.play:app-update-ktx", version.ref = "app-update" }
+google-ml-text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "text-recognition" }
 
 #kotlin
 kotlin-core = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
@@ -181,6 +184,7 @@ glideCompose = { module = "com.github.bumptech.glide:compose", version.ref = "gl
 photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoView" }
 pdfView = { module = "com.github.TalbotGooday:AndroidPdfViewer", version.ref = "pdfView" }
 colorPicker = { module = "com.github.skydoves:colorpickerview", version.ref = "colorPicker" }
+vision-common = { group = "com.google.mlkit", name = "vision-common", version.ref = "visionCommon" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "gradle" }
