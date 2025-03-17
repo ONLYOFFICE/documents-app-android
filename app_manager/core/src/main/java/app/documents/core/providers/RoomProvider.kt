@@ -444,11 +444,13 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 lifetime = lifetime?.copy(value = lifetime.value.takeIf { it != 0 } ?: 1) ?: Lifetime(enabled = false, value = 1),
                 denyDownload = denyDownload,
                 indexing = indexing,
-                watermark = if (watermark?.type == WatermarkType.ViewerInfo) {
-                    watermark.copy(imageUrl = null)
-                } else {
-                    watermark
-                }
+                watermark = watermark
+//                watermark = watermark?.let {
+//                    when (it.type) {
+//                        WatermarkType.Image -> watermark.copy(additions = 0)
+//                        WatermarkType.ViewerInfo -> watermark.copy(imageUrl = null)
+//                    }
+//                }
             )
         )
         if (!response.isSuccessful) throw HttpException(response)

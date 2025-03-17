@@ -744,7 +744,7 @@ private fun WatermarkImageBlock(
             }
         }
         AppListItem(
-            title = stringResource(R.string.rooms_vdr_watermark_image_select),
+            title = stringResource(R.string.rooms_vdr_watermark_image_scale),
             endContent = {
                 val popupVisible = remember { mutableStateOf(false) }
 
