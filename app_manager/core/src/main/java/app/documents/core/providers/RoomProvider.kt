@@ -445,12 +445,6 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 denyDownload = denyDownload,
                 indexing = indexing,
                 watermark = watermark
-//                watermark = watermark?.let {
-//                    when (it.type) {
-//                        WatermarkType.Image -> watermark.copy(additions = 0)
-//                        WatermarkType.ViewerInfo -> watermark.copy(imageUrl = null)
-//                    }
-//                }
             )
         )
         if (!response.isSuccessful) throw HttpException(response)
