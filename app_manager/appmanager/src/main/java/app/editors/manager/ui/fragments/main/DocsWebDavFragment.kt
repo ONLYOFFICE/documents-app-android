@@ -50,8 +50,8 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         init()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onEditorActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_CANCELED) {
             if (isActivePage && (requestCode == BaseActivity.REQUEST_ACTIVITY_MEDIA ||
                         requestCode == REQUEST_PDF)
