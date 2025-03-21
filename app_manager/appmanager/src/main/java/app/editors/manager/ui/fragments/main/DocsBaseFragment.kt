@@ -150,12 +150,16 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_DOCS,
-                REQUEST_SHEETS,
-                REQUEST_PRESENTATION,
-                -> removeCommonDialog()
+        when(resultCode){
+            Activity.RESULT_OK -> {
+                when (requestCode) {
+                    REQUEST_DOCS,
+                    REQUEST_SHEETS,
+                    REQUEST_PRESENTATION, -> removeCommonDialog()
+                }
+            }
+            Activity.RESULT_CANCELED -> {
+                showSnackBar(R.string.errors_open_document)
             }
         }
     }
