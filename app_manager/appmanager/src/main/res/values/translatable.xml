@@ -344,7 +344,7 @@
     <string name="list_context_delete_success">Deleted successfully</string>
     <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">Remove from recent</string>
-    <string name="list_context_upload_to_portal">Upload to portal</string>
+    <string name="list_context_upload_to_cloud">Upload to cloud</string>
     <string name="list_context_add_to_favorite">Add to Favorites</string>
     <string name="list_context_delete_from_favorite">Delete from Favorites</string>
     <string name="list_context_leave_room">Leave the room</string>

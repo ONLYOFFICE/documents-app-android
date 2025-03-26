@@ -158,7 +158,7 @@ sealed class ExplorerContextItem(
 
     object Upload : ExplorerContextItem(
         icon = R.drawable.ic_list_action_upload,
-        title = R.string.list_context_upload_to_portal
+        title = R.string.list_context_upload_to_cloud
     ), ExplorerContextBlockOrder.Common
 
     object Rename : ExplorerContextItem(
