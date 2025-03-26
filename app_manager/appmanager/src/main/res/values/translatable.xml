@@ -379,6 +379,8 @@
 
     <!-- Placeholder -->
     <string name="placeholder_connection">Connection error</string>
+    <string name="placeholder_connection_desc">No network connection detected. Please check your connection and try again</string>
+    <string name="placeholder_connection_button">Reload</string>
     <string name="placeholder_empty">Empty folder</string>
     <string name="placeholder_search">Nothing found</string>
     <string name="placeholder_share">Not shared</string>
