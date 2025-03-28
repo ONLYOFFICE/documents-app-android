@@ -155,7 +155,7 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/tags")
-    suspend fun getTags(): ResponseTags
+    suspend fun getTags(): Response<ResponseTags>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
