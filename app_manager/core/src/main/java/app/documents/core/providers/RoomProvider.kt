@@ -21,6 +21,7 @@ import app.documents.core.network.manager.models.explorer.WatermarkType
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestRoomNotifications
 import app.documents.core.network.room.RoomService
+import app.documents.core.network.room.models.LockFileRequest
 import app.documents.core.network.room.models.RequestAddTags
 import app.documents.core.network.room.models.RequestArchive
 import app.documents.core.network.room.models.RequestCreateExternalLink
@@ -83,6 +84,14 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .observeOn(AndroidSchedulers.mainThread())
             .flatMap { if (it.isSuccessful) Observable.just(it.body()) else throw HttpException(it) }
     }
+
+    fun lockFile(id: String, lock: Boolean): Flow<Result<Unit>> = flow {
+        val response = roomService.lockFile(id = id, body = LockFileRequest(lock))
+        if (!response.isSuccessful) throw HttpException(response)
+        emit(Unit)
+    }
+        .flowOn(Dispatchers.IO)
+        .asResult()
 
     suspend fun createRoom(
         title: String,

@@ -26,6 +26,10 @@ class Security : Serializable {
     @Expose
     var rename: Boolean = false
 
+    @SerializedName("Lock")
+    @Expose
+    var lock: Boolean = false
+
     @SerializedName("CopyTo")
     @Expose
     var copyTo: Boolean = false

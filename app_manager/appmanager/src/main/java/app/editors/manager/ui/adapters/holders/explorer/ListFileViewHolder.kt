@@ -48,6 +48,7 @@ class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
         binding.favorite.isVisible = element.isFavorite
         binding.badgeNewCard.isVisible = element.isNew
         binding.editing.isVisible = element.isEditing
+        binding.locked.isVisible = element.isLocked
         setFileExpiring(element, binding.title)
         if (adapter.pickerMode == PickerMode.Ordering) {
             initOrderingMode(binding.dragIcon, binding.contextButtonLayout)

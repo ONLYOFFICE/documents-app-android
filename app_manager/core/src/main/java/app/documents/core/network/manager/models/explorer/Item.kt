@@ -128,3 +128,6 @@ open class Item : ItemProperties(), Serializable {
 
 val Item?.isFavorite: Boolean
     get() = (this as? CloudFile)?.isFavorite == true
+
+val Item?.isLocked: Boolean
+    get() = (this as? CloudFile)?.isLocked == true

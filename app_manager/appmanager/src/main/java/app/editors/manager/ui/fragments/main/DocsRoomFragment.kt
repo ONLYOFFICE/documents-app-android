@@ -83,6 +83,7 @@ class DocsRoomFragment : DocsCloudFragment() {
             is ExplorerContextItem.ExternalLink -> cloudPresenter.copyLinkFromContextMenu()
             is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()
             is ExplorerContextItem.Delete -> if (presenter.isRoot) cloudPresenter.checkRoomOwner() else super.onContextButtonClick(contextItem)
+            is ExplorerContextItem.Lock -> cloudPresenter.lockFile()
             else -> super.onContextButtonClick(contextItem)
         }
     }

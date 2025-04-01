@@ -6,6 +6,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.isFavorite
+import app.documents.core.network.manager.models.explorer.isLocked
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
@@ -98,7 +99,8 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Rename,
                 ExplorerContextItem.Restore,
                 ExplorerContextItem.ShareDelete,
-                ExplorerContextItem.Delete(state)
+                ExplorerContextItem.Delete(state),
+                ExplorerContextItem.Lock(state.item.isLocked)
             )
         }.filterNotNull()
             .mapNotNull { item -> item.get(state) }

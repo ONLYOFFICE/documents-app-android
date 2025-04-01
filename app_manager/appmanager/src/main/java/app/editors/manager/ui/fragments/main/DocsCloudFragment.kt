@@ -399,9 +399,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         super.onPlaceholder(placeholder)
     }
 
-    override fun onUpdateFavoriteItem() {
+    override fun onUpdateItemState() {
         if (section == ApiContract.SectionType.CLOUD_FAVORITES) explorerAdapter?.removeItem(presenter.itemClicked)
-        else super.onUpdateFavoriteItem()
+        else super.onUpdateItemState()
     }
 
     override fun onConversionQuestion() {

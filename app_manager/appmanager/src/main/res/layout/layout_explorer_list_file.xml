@@ -62,6 +62,16 @@
             tools:ignore="ContentDescription" />
 
         <ImageView
+            android:id="@+id/locked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/default_margin_medium"
+            android:src="@drawable/ic_file_lock"
+            android:visibility="gone"
+            app:tint="@color/colorPrimary"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
             android:id="@+id/editing"
             android:layout_width="16dp"
             android:layout_height="16dp"

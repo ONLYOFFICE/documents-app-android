@@ -89,6 +89,11 @@ sealed class ExplorerContextItem(
         title = if (!pinned) R.string.list_context_pin_to_top else R.string.list_context_unpin
     ), ExplorerContextBlockOrder.Common
 
+    class Lock(locked: Boolean) : ExplorerContextItem(
+        icon = if (!locked) R.drawable.ic_list_context_lock else R.drawable.ic_list_context_unlock,
+        title = if (!locked) R.string.list_context_lock else R.string.list_context_unlock
+    ), ExplorerContextBlockOrder.Common
+
     object Download : ExplorerContextItem(
         icon = R.drawable.ic_list_context_download,
         title = R.string.list_context_create_download
