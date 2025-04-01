@@ -150,6 +150,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         protected set
 
     /**
+     * SharedPreferences Settings
+     * */
+
+    val keepScreenOnSetting: Boolean
+        get() = preferenceTool.keepScreenOn
+
+    /**
      * Modes
      * */
 
