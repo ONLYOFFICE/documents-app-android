@@ -11,7 +11,6 @@ import app.editors.manager.R
 import app.editors.manager.databinding.FragmentCloudLayoutBinding
 import app.editors.manager.mvp.presenters.login.OnlyOfficeCloudPresenter
 import app.editors.manager.mvp.views.login.OnlyOfficeCloudView
-import app.editors.manager.ui.activities.login.PortalsActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.activities.main.CloudsActivity
 import app.editors.manager.ui.activities.main.IMainActivity
@@ -83,10 +82,20 @@ class OnlyOfficeCloudFragment : BaseAppFragment(), OnlyOfficeCloudView {
                 SignInActivity.showPortalCreate(requireContext())
             }
             it.otherStorageButton.setOnClickListener {
-                CloudsActivity.show(requireContext())
+                presenter.getAccounts()
             }
         }
     }
+
+    override fun checkAccounts(isEmpty: Boolean) {
+        if (isEmpty) {
+            CloudsActivity.show(requireContext())
+        } else {
+            mainActivity?.showAccountsActivity()
+        }
+    }
+
+    override fun onError(message: String?) {}
 
     companion object {
         val TAG = OnlyOfficeCloudFragment::class.java.simpleName
@@ -99,14 +108,4 @@ class OnlyOfficeCloudFragment : BaseAppFragment(), OnlyOfficeCloudView {
                 }
             }
     }
-
-    override fun checkAccounts(isEmpty: Boolean) {
-        if (isEmpty) {
-            PortalsActivity.show(requireActivity())
-        } else {
-            mainActivity?.showAccountsActivity()
-        }
-    }
-
-    override fun onError(message: String?) {}
 }
