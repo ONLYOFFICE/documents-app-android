@@ -244,7 +244,6 @@
     <string name="list_context_delete_success">删除成功</string>
     <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">从最近中移除</string>
-    <string name="list_context_upload_to_portal">上传到门户</string>
     <!-- List action menu -->
     <string name="list_action_sheet">电子表格</string>
     <string name="list_action_presentation">演示文稿</string>

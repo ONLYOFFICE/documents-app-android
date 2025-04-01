@@ -209,7 +209,6 @@
     <string name="list_context_delete_success">Löschen erfolgreich</string>
     <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">Aus aktuell entfernen</string>
-    <string name="list_context_upload_to_portal">In Portal hochladen</string>
     <!-- List action menu -->
     <string name="list_action_sheet">Tabelle</string>
     <string name="list_action_presentation">Präsentation</string>
