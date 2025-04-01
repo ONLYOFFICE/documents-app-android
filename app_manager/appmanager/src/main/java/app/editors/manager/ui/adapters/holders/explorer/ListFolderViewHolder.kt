@@ -1,6 +1,7 @@
 package app.editors.manager.ui.adapters.holders.explorer
 
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -30,6 +31,9 @@ class ListFolderViewHolder(view: View, adapter: ExplorerAdapter) :
 
     override val contextButton: Button
         get() = binding.contextButton
+
+    override val contextButtonLayout: ViewGroup
+        get() = binding.contextButtonLayout
 
     override val selectIcon: ImageView
         get() = binding.selectIcon
