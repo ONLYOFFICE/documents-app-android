@@ -121,6 +121,14 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return checkNotNull(response.body()?.response?.id)
     }
 
+    suspend fun getTags(): kotlin.Result<Array<String>> {
+        return runCatching {
+            val response = roomService.getTags()
+            if (!response.isSuccessful) throw HttpException(response)
+            checkNotNull(response.body()?.tags)
+        }
+    }
+
     suspend fun createThirdPartyRoom(
         folderId: String,
         title: String,
@@ -157,14 +165,15 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
     }
 
     suspend fun addTags(roomId: String, tags: List<String>): Boolean {
-        val existTags = roomService.getTags().tags
-        withContext(Dispatchers.IO) {
-            tags.mapNotNull { newTag ->
-                async { roomService.createTag(RequestCreateTag(newTag)) }
-                    .takeIf { !existTags.contains(newTag) }
-            }
-        }.awaitAll()
-        return roomService.addTags(roomId, RequestAddTags(tags.toTypedArray())).isSuccessful
+        return getTags().mapCatching { existTags ->
+            withContext(Dispatchers.IO) {
+                tags.mapNotNull { newTag ->
+                    async { roomService.createTag(RequestCreateTag(newTag)) }
+                        .takeIf { !existTags.contains(newTag) }
+                }
+            }.awaitAll()
+            return roomService.addTags(roomId, RequestAddTags(tags.toTypedArray())).isSuccessful
+        }.getOrDefault(false)
     }
 
     suspend fun deleteTags(id: String, tag: List<String>): Boolean {

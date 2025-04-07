@@ -14,6 +14,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
@@ -130,11 +131,16 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         uri?.let { presenter.download(uri) }
     }
 
+    private val editorLaunchers = mutableMapOf<Int, ActivityResultLauncher<Intent>>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(lifecycleEventObserver)
         isGridView = presenter.preferenceTool.isGridView
         setHasOptionsMenu(true)
+        registerEditorLauncher(REQUEST_DOCS)
+        registerEditorLauncher(REQUEST_SHEETS)
+        registerEditorLauncher(REQUEST_PRESENTATION)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -148,16 +154,26 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         moveCopyDialog = null
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_DOCS,
-                REQUEST_SHEETS,
-                REQUEST_PRESENTATION,
-                -> removeCommonDialog()
+    protected open fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
+        when(resultCode){
+            Activity.RESULT_OK -> {
+                when (requestCode) {
+                    REQUEST_DOCS,
+                    REQUEST_SHEETS,
+                    REQUEST_PRESENTATION, -> removeCommonDialog()
+                }
+            }
+            Activity.RESULT_CANCELED -> {
+                showSnackBar(R.string.errors_open_document)
             }
         }
+    }
+
+    private fun registerEditorLauncher(requestCode: Int){
+        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+            onEditorActivityResult(requestCode, result.resultCode, result.data)
+        }
+        editorLaunchers[requestCode] = launcher
     }
 
     @SuppressLint("MissingPermission")
@@ -1124,15 +1140,15 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     if (type == EditorsType.PDF) {
                         intent.putExtra(EditorsContract.KEY_PDF, true)
                     }
-                    startActivityForResult(intent, REQUEST_DOCS)
+                    editorLaunchers[REQUEST_DOCS]?.launch(intent)
                 }
                 EditorsType.CELLS -> {
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS)
-                    startActivityForResult(intent, REQUEST_SHEETS)
+                    editorLaunchers[REQUEST_SHEETS]?.launch(intent)
                 }
                 EditorsType.PRESENTATION -> {
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
-                    startActivityForResult(intent, REQUEST_PRESENTATION)
+                    editorLaunchers[REQUEST_PRESENTATION]?.launch(intent)
                 }
                 //                EditorsType.PDF -> {
                 //                    intent.setClassName(requireContext(), EditorsContract.PDF)

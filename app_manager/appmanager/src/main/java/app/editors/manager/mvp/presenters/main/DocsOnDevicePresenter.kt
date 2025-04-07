@@ -173,13 +173,12 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         fileProvider?.let { provider ->
             disposable.add(
                 provider.delete(items, null)
-                    .doOnComplete {
+                    .subscribe({ }, ::fetchError){
                         modelExplorerStack.removeSelected()
                         getBackStack()
                         setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
                         viewState.onRemoveItems(*items.toTypedArray())
                     }
-                    .subscribe()
             )
         }
     }
@@ -356,11 +355,10 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.delete(listOf(item), null)
-                        .doOnComplete {
+                        .subscribe({ }, ::fetchError){
                             modelExplorerStack.removeItemById(item.id)
                             viewState.onRemoveItems(item)
                         }
-                        .subscribe()
                 )
             }
         }
