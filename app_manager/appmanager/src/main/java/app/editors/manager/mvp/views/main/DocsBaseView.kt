@@ -1,156 +1,196 @@
-package app.editors.manager.mvp.views.main;
+package app.editors.manager.mvp.views.main
 
-import android.net.Uri;
-import android.view.View;
+import android.net.Uri
+import android.view.View
+import androidx.annotation.NonNull
+import androidx.annotation.Nullable
+import app.documents.core.network.manager.models.base.Entity
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Item
+import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.mvp.views.base.BaseViewExt
+import app.editors.manager.ui.views.custom.PlaceholderViews
+import lib.toolkit.base.managers.utils.EditType
+import moxy.viewstate.strategy.OneExecutionStateStrategy
+import moxy.viewstate.strategy.StateStrategyType
+import java.io.File
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import java.io.File;
-import java.util.List;
-
-import app.documents.core.network.manager.models.base.Entity;
-import app.documents.core.network.manager.models.explorer.CloudFile;
-import app.documents.core.network.manager.models.explorer.Explorer;
-import app.documents.core.network.manager.models.explorer.Item;
-import app.editors.manager.mvp.models.states.OperationsState;
-import app.editors.manager.mvp.views.base.BaseViewExt;
-import app.editors.manager.ui.views.custom.PlaceholderViews;
-import lib.toolkit.base.managers.utils.EditType;
-import moxy.viewstate.strategy.OneExecutionStateStrategy;
-import moxy.viewstate.strategy.StateStrategyType;
-
-
-@StateStrategyType(OneExecutionStateStrategy.class)
-public interface DocsBaseView extends BaseViewExt {
+@StateStrategyType(OneExecutionStateStrategy::class)
+interface DocsBaseView : BaseViewExt {
 
     /*
      * Get docs
-     * */
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDocsGet(@Nullable List<Entity> list);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDocsRefresh(@Nullable List<Entity> list);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDocsFilter(@Nullable List<Entity> list);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDocsNext(@Nullable List<Entity> list);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDocsBatchOperation();
+     */
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDocsGet(@Nullable list: List<Entity>?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDocsRefresh(@Nullable list: List<Entity>?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDocsFilter(@Nullable list: List<Entity>?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDocsNext(@Nullable list: List<Entity>?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDocsBatchOperation()
 
     /*
      * States for update
-     * */
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onStateUpdateRoot(boolean isRoot);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onStateUpdateFilter(boolean isFilter, @Nullable String value);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onStateUpdateSelection(boolean isSelection);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onStateAdapterRoot(boolean isRoot);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onStateMenuDefault(@NonNull String sortBy, boolean isAsc);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onStateMenuSelection();
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onStateMenuEnabled(boolean isEnabled);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onStateActionButton(boolean isVisible);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onStateEmptyBackStack();
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onClearMenu();
+     */
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onStateUpdateRoot(isRoot: Boolean)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onStateUpdateFilter(isFilter: Boolean, @Nullable value: String?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onStateUpdateSelection(isSelection: Boolean)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onStateAdapterRoot(isRoot: Boolean)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onStateMenuDefault(@NonNull sortBy: String, isAsc: Boolean)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onStateMenuSelection()
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onStateMenuEnabled(isEnabled: Boolean)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onStateActionButton(isVisible: Boolean)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onStateEmptyBackStack()
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onClearMenu()
 
     /*
      * Change docs
-     * */
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onCreateFile(CloudFile file);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDeleteBatch(List<Entity> list);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDeleteMessage(int count);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onRename(Item item, int position);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onBatchMoveCopy(@NonNull OperationsState.OperationType operation, @NonNull Explorer explorer);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onPickCloudFile(String destFolderId);
+     */
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onCreateFile(file: CloudFile)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDeleteBatch(list: List<Entity>)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDeleteMessage(count: Int)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onRename(item: Item, position: Int)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onBatchMoveCopy(
+        @NonNull operation: OperationsState.OperationType,
+        @NonNull explorer: Explorer
+    )
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onPickCloudFile(destFolderId: String)
 
     /*
      * On click
-     * */
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onActionBarTitle(String title);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onItemsSelection(String countSelected);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onItemSelected(int position, String countSelected);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onActionDialog(boolean isThirdParty, boolean isShowDocs, Integer roomType);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDownloadActivity(Uri uri);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onFileMedia(Explorer explorer, boolean isWebDav);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onFileDownloadPermission();
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onFileUploadPermission(@Nullable String extension);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onScrollToPosition(int position);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onSwipeEnable(boolean isSwipeEnable);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onPlaceholder(PlaceholderViews.Type type);
+     */
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onActionBarTitle(title: String = "")
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onItemsSelection(countSelected: String)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onItemSelected(position: Int, countSelected: String)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onActionDialog(isThirdParty: Boolean, isShowDocs: Boolean, roomType: Int?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDownloadActivity(uri: Uri?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onFileMedia(explorer: Explorer, isWebDav: Boolean)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onFileDownloadPermission()
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onFileUploadPermission(@Nullable extension: String?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onScrollToPosition(position: Int)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onSwipeEnable(isSwipeEnable: Boolean)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onPlaceholder(type: PlaceholderViews.Type)
 
     /*
      * On views
-     * */
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDialogClose();
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDialogWaiting(@Nullable String title, @Nullable String tag);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDialogDownloadWaiting();
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDialogQuestion(@Nullable String title, @Nullable String question, @Nullable String tag);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDialogWarning(String title, String question, @Nullable String tag);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDialogDelete(int count, boolean toTrash, String tag);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDialogProgress(@Nullable String title, boolean isHideButtons, @Nullable String tag);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onDialogProgress(int total, int progress);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onSnackBar(String message);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onSnackBarWithAction(@NonNull String message, @NonNull String button, @NonNull View.OnClickListener action);
+     */
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDialogClose()
 
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onOpenLocalFile(CloudFile file, @Nullable EditType editType);
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onNoProvider();
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDialogWaiting(@Nullable title: String?, @Nullable tag: String?)
 
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onCreateDownloadFile(String name);
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDialogDownloadWaiting()
 
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onUpdateFavoriteItem();
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDialogQuestion(@Nullable title: String?, @Nullable question: String?, @Nullable tag: String?)
 
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onFinishDownload(Uri uri);
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDialogWarning(title: String, question: String, @Nullable tag: String?)
 
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onShowCamera(Uri photoUri);
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDialogDelete(count: Int, toTrash: Boolean, tag: String)
 
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onSendCopy(@NonNull File file);
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDialogProgress(@Nullable title: String?, isHideButtons: Boolean, @Nullable tag: String?)
 
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onOpenDocumentServer(@Nullable CloudFile file, @Nullable String info, @Nullable EditType type);
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onDialogProgress(total: Int, progress: Int)
 
-    @StateStrategyType(OneExecutionStateStrategy.class)
-    void onSetGridView(boolean isGrid);
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onSnackBar(message: String? = "")
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onSnackBarWithAction(
+        @NonNull message: String,
+        @NonNull button: String,
+        @NonNull action: View.OnClickListener
+    )
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onOpenLocalFile(file: CloudFile, @Nullable editType: EditType?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onNoProvider()
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onCreateDownloadFile(name: String)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onUpdateFavoriteItem()
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onFinishDownload(uri: Uri?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onShowCamera(@NonNull photoUri: Uri, @NonNull isOCR: Boolean)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onSendCopy(@NonNull file: File)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onOpenDocumentServer(@Nullable file: CloudFile?, @Nullable info: String?, @Nullable type: EditType?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onSetGridView(isGrid: Boolean)
 }

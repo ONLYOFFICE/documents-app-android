@@ -91,7 +91,7 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
             val requestCreate = RequestCreate()
             requestCreate.title = title
             fileProvider?.let { provider ->
-                disposable.add(provider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
+                disposable.add(provider.createFile(id, requestCreate).subscribe({ file: CloudFile ->
                     itemClicked = file
                     addFile(file)
                     setPlaceholderType(PlaceholderViews.Type.NONE)
@@ -158,7 +158,7 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
-            viewState.onActionBarTitle(currentTitle.ifEmpty { itemClicked?.title })
+            viewState.onActionBarTitle(currentTitle.ifEmpty { itemClicked?.title ?: "" })
         } else {
             if (pickerMode == PickerMode.Folders) {
                 viewState.onActionBarTitle(context.getString(R.string.operation_title))

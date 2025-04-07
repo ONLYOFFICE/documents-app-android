@@ -53,6 +53,8 @@ import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.CreateDocument
@@ -414,22 +416,32 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             ActionBottomDialog.Buttons.PHOTO -> {
                 presenter.createPhoto()
             }
+            ActionBottomDialog.Buttons.CREATE_FROM_PHOTO -> {
+                presenter.createPhoto(withOCR = true)
+            }
             else -> {}
         }
     }
 
-    override fun onShowCamera(photoUri: Uri) {
+    override fun onShowCamera(photoUri: Uri, isOCR: Boolean) {
         RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
             if (permissions[Manifest.permission.CAMERA] == true) {
                 CameraPicker(requireActivity().activityResultRegistry, { isCreate ->
-                    if (isCreate) {
-                        if (this is DocsOnDeviceFragment) {
-                            onRefresh()
-                        } else {
-                            presenter.upload(photoUri, null)
+                    if (isOCR) {
+                        lifecycleScope.launch {
+                            delay(300)
+                            onActionButtonClick(ActionBottomDialog.Buttons.DOC)
                         }
                     } else {
-                        presenter.deletePhoto()
+                        if (isCreate) {
+                            if (this is DocsOnDeviceFragment) {
+                                onRefresh()
+                            } else {
+                                presenter.upload(photoUri, null)
+                            }
+                        } else {
+                            presenter.deletePhoto()
+                        }
                     }
                 }, photoUri).show()
             } else {
@@ -727,8 +739,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onDownloadActivity(uri: Uri) {
-        showDownloadFolderActivity(uri)
+    override fun onDownloadActivity(uri: Uri?) {
+        showDownloadFolderActivity(uri ?: Uri.EMPTY)
     }
 
     override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {
@@ -848,9 +860,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         )
     }
 
-    override fun onSnackBar(message: String) {
+    override fun onSnackBar(message: String?) {
         if (isActivePage) {
-            showSnackBar(message)
+            showSnackBar(message ?: "")
         }
     }
 
