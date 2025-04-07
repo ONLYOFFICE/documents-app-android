@@ -3,7 +3,7 @@ compileSdk = "35"
 minSdk = "26"
 targetSdk = "35"
 ndk = "21.3.6528147"
-gradle = "8.7.3"
+gradle = "8.9.0"
 
 #kotlin
 kotlin = "1.9.24"
@@ -83,6 +83,7 @@ glideCompose = "1.0.0-beta01"
 photoView = "2.3.0"
 pdfView = "3.1.0-beta.3"
 colorPicker = "2.3.0"
+visionCommon = "17.3.0"
 
 [libraries]
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx" }
@@ -184,6 +185,7 @@ glideCompose = { module = "com.github.bumptech.glide:compose", version.ref = "gl
 photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoView" }
 pdfView = { module = "com.github.TalbotGooday:AndroidPdfViewer", version.ref = "pdfView" }
 colorPicker = { module = "com.github.skydoves:colorpickerview", version.ref = "colorPicker" }
+vision-common = { group = "com.google.mlkit", name = "vision-common", version.ref = "visionCommon" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "gradle" }

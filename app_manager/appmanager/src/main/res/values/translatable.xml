@@ -67,7 +67,9 @@
     <string name="errors_web_viewr">An error occurred while editing a web document</string>
     <string name="errors_webdav_sign_in">Wrong server, username or password</string>
     <string name="errors_webdav_username_password">Wrong username or password</string>
+    <string name="errors_webdav_2fa_code">Wrong verification code</string>
     <string name="errors_webdav_server">Wrong server</string>
+    <string name="errors_open_document">Failed open document</string>
 
     <!-- SignIn -->
     <string name="errors_sign_in_splash_error">Failed to access the portal</string>
@@ -238,6 +240,7 @@
     <string name="dialogs_warning_only_pdf_form_message">The file cannot be moved to this room. Please try to move the ONLYOFFICE PDF form.</string>
     <string name="dialogs_warning_pinned_room_limit">You can’t pin more than 10 rooms to the top. Unpin some that are currently pinned.</string>
     <string name="dialogs_warning_fill_forms_room_create">Creation based on several files and folders is not available for this type of room. To create such a room, go to the Rooms section or use one of the PDF forms.</string>
+    <string name="dialogs_warning_room_space_quota_exceed">Room space quota exceeded (%s).</string>
 
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">Rename</string>
@@ -288,7 +291,9 @@
     <string name="settings_clear_cache">Clear cache</string>
     <string name="settings_title_common">Common</string>
     <string name="setting_wifi">Upload files only using Wi-Fi</string>
+    <string name="setting_screen_on">While viewing documents</string>
     <string name="setting_title_wifi">Wi-Fi</string>
+    <string name="setting_title_sreen_on">Keep Screen On</string>
     <string name="setting_cache_cleared">Cache cleared</string>
 
     <!-- Main toolbar menu -->
@@ -333,6 +338,7 @@
     <string name="list_context_notification_enable">Enable notifications</string>
     <string name="list_context_notification_disable">Disable notifications</string>
     <string name="list_context_create_download">Download</string>
+    <string name="list_context_edit_index">Edit index</string>
     <string name="list_context_open_location">Open location</string>
     <string name="list_context_rename">Rename</string>
     <string name="list_context_rename_success">Renamed successfully</string>
@@ -341,13 +347,15 @@
     <string name="list_context_delete_success">Deleted successfully</string>
     <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">Remove from recent</string>
-    <string name="list_context_upload_to_portal">Upload to portal</string>
+    <string name="list_context_upload_to_cloud">Upload to cloud</string>
     <string name="list_context_add_to_favorite">Add to Favorites</string>
     <string name="list_context_delete_from_favorite">Delete from Favorites</string>
     <string name="list_context_leave_room">Leave the room</string>
     <string name="list_context_copy_general_link">Copy general link</string>
     <string name="list_context_edit_room">Edit room</string>
     <string name="list_context_fill">Fill</string>
+    <string name="list_context_lock">Lock</string>
+    <string name="list_context_unlock">Unlock</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">Spreadsheet</string>
@@ -377,6 +385,8 @@
 
     <!-- Placeholder -->
     <string name="placeholder_connection">Connection error</string>
+    <string name="placeholder_connection_desc">No network connection detected. Please check your connection and try again</string>
+    <string name="placeholder_connection_button">Reload</string>
     <string name="placeholder_empty">Empty folder</string>
     <string name="placeholder_search">Nothing found</string>
     <string name="placeholder_share">Not shared</string>
@@ -661,6 +671,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="cloud_account_start_button">Get started</string>
     <string name="cloud_account_other_storages_button">Other storages</string>
     <string name="cloud_only_office" translatable="false">ONLYOFFICE DocSpace</string>
+    <string name="cloud_create_account">Create free account</string>
     <string name="cloud_only_office_description">Store documents in the cloud and collaborate on them</string>
     <string name="cloud_accounts_title">Accounts</string>
     <string name="error_long_file_name">File name is too long</string>
@@ -792,6 +803,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="room_placeholder_created_virtual_room_title">Welcome to the Virtual Data Room</string>
     <string name="room_placeholder_created_virtual_room_subtitle">Get started with quick actions:\nCreate a new file</string>
     <string name="room_recent_via_link">Accessible via link</string>
+    <string name="room_access_via_link_title">Access via link</string>
     <string name="room_manage_room">Manage room</string>
 
     <plurals name="rooms_restore_title">

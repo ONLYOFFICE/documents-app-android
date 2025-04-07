@@ -47,8 +47,7 @@ fun PasscodeMainScreen(
                     }
                 },
                 onFingerprintEnable = viewModel::onFingerprintEnable,
-                onChangePassword = { navController.navigate(PasscodeScreen.Change.route) },
-                onBackClick = onBackClick,
+                onChangePassword = { navController.navigate(PasscodeScreen.Change.route) }
             )
         }
         composable(route = PasscodeScreen.Unlock.route) {

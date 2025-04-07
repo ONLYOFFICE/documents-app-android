@@ -14,6 +14,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Lifecycle
@@ -132,11 +133,16 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         uri?.let { presenter.download(uri) }
     }
 
+    private val editorLaunchers = mutableMapOf<Int, ActivityResultLauncher<Intent>>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(lifecycleEventObserver)
         isGridView = presenter.preferenceTool.isGridView
         setHasOptionsMenu(true)
+        registerEditorLauncher(REQUEST_DOCS)
+        registerEditorLauncher(REQUEST_SHEETS)
+        registerEditorLauncher(REQUEST_PRESENTATION)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -150,16 +156,26 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         moveCopyDialog = null
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_DOCS,
-                REQUEST_SHEETS,
-                REQUEST_PRESENTATION,
-                -> removeCommonDialog()
+    protected open fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
+        when(resultCode){
+            Activity.RESULT_OK -> {
+                when (requestCode) {
+                    REQUEST_DOCS,
+                    REQUEST_SHEETS,
+                    REQUEST_PRESENTATION, -> removeCommonDialog()
+                }
+            }
+            Activity.RESULT_CANCELED -> {
+                showSnackBar(R.string.errors_open_document)
             }
         }
+    }
+
+    private fun registerEditorLauncher(requestCode: Int){
+        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+            onEditorActivityResult(requestCode, result.resultCode, result.data)
+        }
+        editorLaunchers[requestCode] = launcher
     }
 
     @SuppressLint("MissingPermission")
@@ -247,6 +263,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onItemContextClick(position: Int, icon: Bitmap?) {
         val item = explorerAdapter?.getItem(position) as? Item
         if (item != null && !isFastClick) {
+            val roomSecurity = presenter.roomClicked?.security
             val state = ExplorerContextState(
                 headerIcon = icon?.toByteArray(),
                 item = item,
@@ -262,6 +279,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 },
                 provider = context?.accountOnline?.portal?.provider ?: PortalProvider.default,
                 isSearching = presenter.isFilteringMode,
+                editIndex = presenter.isIndexing && roomSecurity?.editRoom == true,
                 isRoot = presenter.isRoot
             )
             presenter.onClickEvent(item, position, true)
@@ -812,12 +830,22 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onDialogWarning(title: String, message: String, tag: String?) {
         if (isActivePage) {
-            getInfoDialog(
-                title = title,
-                info = message,
-                cancelTitle = getString(lib.toolkit.base.R.string.common_ok)
-            )?.show(requireActivity().supportFragmentManager)
+            view?.post {
+                getInfoDialog(
+                    title = title,
+                    info = message,
+                    cancelTitle = getString(lib.toolkit.base.R.string.common_ok)
+                )?.show(requireActivity().supportFragmentManager)
+            }
         }
+    }
+
+    override fun onDialogWarning(message: String) {
+        onDialogWarning(
+            title = getString(R.string.dialogs_warning_title),
+            message = message,
+            tag = null
+        )
     }
 
     override fun onDialogProgress(title: String?, isHideButtons: Boolean, tag: String?) {
@@ -1023,7 +1051,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onUpdateFavoriteItem() {
+    override fun onUpdateItemState() {
         fragmentListBinding?.listSwipeRefresh?.isRefreshing = false
         explorerAdapter?.updateItem(presenter.itemClicked)
     }
@@ -1114,6 +1142,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 info?.let { putExtra(EditorsContract.KEY_DOC_SERVER, info) }
                 putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
                 putExtra(EditorsContract.KEY_EDIT_TYPE, editType)
+                putExtra(EditorsContract.KEY_KEEP_SCREEN_ON, presenter.keepScreenOnSetting)
                 action = Intent.ACTION_VIEW
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
@@ -1123,15 +1152,15 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     if (type == EditorsType.PDF) {
                         intent.putExtra(EditorsContract.KEY_PDF, true)
                     }
-                    startActivityForResult(intent, REQUEST_DOCS)
+                    editorLaunchers[REQUEST_DOCS]?.launch(intent)
                 }
                 EditorsType.CELLS -> {
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS)
-                    startActivityForResult(intent, REQUEST_SHEETS)
+                    editorLaunchers[REQUEST_SHEETS]?.launch(intent)
                 }
                 EditorsType.PRESENTATION -> {
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
-                    startActivityForResult(intent, REQUEST_PRESENTATION)
+                    editorLaunchers[REQUEST_PRESENTATION]?.launch(intent)
                 }
                 //                EditorsType.PDF -> {
                 //                    intent.setClassName(requireContext(), EditorsContract.PDF)
@@ -1184,15 +1213,14 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     protected open fun showActionBarMenu() {
-        val section = presenter.getSectionType()
-        val isRoom = ApiContract.SectionType.isRoom(section) || ApiContract.SectionType.isArchive(section)
+        val section = if (presenter.isRecentViaLinkSection()) ApiContract.Section.Recent else getSection()
 
         ActionBarMenu(
             context = requireContext(),
             adapter = ActionMenuAdapter(actionMenuClickListener),
-            items = if (isRoom) {
+            items = if (section.isRoom) {
                 ActionMenuItemsFactory.getRoomItems(
-                    section = presenter.getSectionType(),
+                    section = section,
                     provider = context?.accountOnline?.portal?.provider,
                     root = presenter.isRoot,
                     selected = presenter.isSelectionMode,
@@ -1210,7 +1238,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 )
             } else {
                 ActionMenuItemsFactory.getDocsItems(
-                    section = presenter.getSectionType(),
+                    section = section,
                     provider = context?.accountOnline?.portal?.provider,
                     selected = presenter.isSelectionMode,
                     allSelected = presenter.isSelectedAll,

@@ -283,7 +283,6 @@
     <string name="list_context_delete_success">ຖືກລຶບອອກສຳເລັດ</string>
     <string name="list_context_remove_from_list" translatable="false">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">ເອົາອອກຈາກຫຼ້າສຸດ</string>
-    <string name="list_context_upload_to_portal">ອັບໂຫລດໃສ່ portal</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">ວ່າງຕາຕະລາງ</string>

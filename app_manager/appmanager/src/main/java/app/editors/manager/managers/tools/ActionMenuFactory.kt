@@ -1,8 +1,8 @@
 package app.editors.manager.managers.tools
 
 import app.documents.core.model.cloud.PortalProvider
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.contracts.ApiContract.Parameters
-import app.documents.core.network.common.contracts.ApiContract.SectionType
 import app.documents.core.network.manager.models.explorer.Security
 import app.editors.manager.R
 import app.editors.manager.mvp.models.states.OperationsState
@@ -81,7 +81,7 @@ sealed class ActionMenuItem(override val title: Int) : IActionMenuItem {
 object ActionMenuItemsFactory {
 
     fun getRoomItems(
-        section: Int,
+        section: ApiContract.Section,
         provider: PortalProvider?,
         root: Boolean,
         empty: Boolean,
@@ -114,7 +114,7 @@ object ActionMenuItemsFactory {
     }
 
     fun getDocsItems(
-        section: Int,
+        section: ApiContract.Section,
         provider: PortalProvider?,
         selected: Boolean,
         allSelected: Boolean,
@@ -143,7 +143,7 @@ object ActionMenuItemsFactory {
                             ActionMenuItem.Title,
                             ActionMenuItem.Type,
                             ActionMenuItem.Size,
-                            ActionMenuItem.Author.takeIf { section != SectionType.DEVICE_DOCUMENTS },
+                            ActionMenuItem.Author.takeIf { !section.isDevice },
                             ActionMenuItem.Date
                         ).map { it.get(asc, sortBy) }
                     )
@@ -151,29 +151,29 @@ object ActionMenuItemsFactory {
             }
 
             // empty trash
-            if (section == SectionType.CLOUD_TRASH) {
+            if (section.isTrash) {
                 add(ActionMenuItem.Divider)
                 add(ActionMenuItem.EmptyTrash)
             }
-        } else if (section == SectionType.CLOUD_TRASH) {
+        } else if (section.isTrash) {
             // trash action block
             add(ActionMenuItem.Restore)
             add(ActionMenuItem.Delete)
-        } else if (section == SectionType.CLOUD_ARCHIVE_ROOM) {
+        } else if (section.isArchive) {
             // archive action block
             add(ActionMenuItem.Restore)
             add(ActionMenuItem.Download)
             add(ActionMenuItem.Delete)
         } else {
             // common action block
-            if (provider == PortalProvider.Cloud.DocSpace) add(ActionMenuItem.CreateRoom)
-            if (section != SectionType.DEVICE_DOCUMENTS) add(ActionMenuItem.Download)
+            if (!section.isLocal && provider == PortalProvider.Cloud.DocSpace) add(ActionMenuItem.CreateRoom)
+            if (!section.isDevice) add(ActionMenuItem.Download)
             add(ActionMenuItem.Move)
             add(ActionMenuItem.Copy)
             add(ActionMenuItem.Delete)
         }
         // select block
-        if (section != SectionType.LOCAL_RECENT) addAll(getSelectItems(selected, allSelected))
+        if (!section.isLocalRecent) addAll(getSelectItems(selected, allSelected))
     }
 
     private fun getSelectItems(selected: Boolean, allSelected: Boolean, divider: Boolean = true) =
@@ -188,7 +188,7 @@ object ActionMenuItemsFactory {
         }
 
     private fun getRoomRootItems(
-        section: Int,
+        section: ApiContract.Section,
         selected: Boolean,
         allSelected: Boolean,
         asc: Boolean,
@@ -216,17 +216,17 @@ object ActionMenuItemsFactory {
                     ).map { it.get(asc, sortBy) }
                 )
             )
-        } else if (section == SectionType.CLOUD_ARCHIVE_ROOM) {
+        } else if (section.isArchive) {
             // archive action block
             add(ActionMenuItem.Restore)
             add(ActionMenuItem.Delete)
         }
         // select block
-        addAll(getSelectItems(selected, allSelected, !selected || section == SectionType.CLOUD_ARCHIVE_ROOM))
+        addAll(getSelectItems(selected, allSelected, !selected || section.isArchive))
     }
 
     private fun getRoomFolderItems(
-        section: Int,
+        section: ApiContract.Section,
         selected: Boolean,
         provider: PortalProvider?,
         empty: Boolean,
@@ -238,7 +238,7 @@ object ActionMenuItemsFactory {
         isGridView: Boolean,
         isIndexing: Boolean
     ) = mutableListOf<ActionMenuItem>().apply {
-        val isArchive = section == SectionType.CLOUD_ARCHIVE_ROOM
+        val isArchive = section.isArchive
         if (!selected) {
             add(
                 ActionMenuItem.ManageRoom.get(
@@ -248,7 +248,7 @@ object ActionMenuItemsFactory {
                         ActionMenuItem.Invite.takeIf { security.editRoom },
                         ActionMenuItem.CopyLink(true),
                         ActionMenuItem.Divider,
-                        ActionMenuItem.EditIndex.takeIf { isIndexing },
+                        ActionMenuItem.EditIndex.takeIf { isIndexing && security.editRoom },
                         ActionMenuItem.ExportIndex.takeIf { isIndexing && security.indexExport },
                         ActionMenuItem.Divider.takeIf { isIndexing },
                         ActionMenuItem.Archive.takeIf { security.editRoom },

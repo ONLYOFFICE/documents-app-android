@@ -147,7 +147,6 @@
     <string name="list_context_rename">Переименовать</string>
     <string name="list_context_rename_success">Успешно переименовано</string>
     <string name="list_context_share">Поделиться</string>
-    <string name="list_context_upload_to_portal">Загрузить на портал</string>
     <string name="list_context_add_to_favorite">Добавить в Избранное</string>
     <string name="list_context_delete_from_favorite">Удалить из Избранного</string>
     <string name="list_headers_created">Только что созданные</string>

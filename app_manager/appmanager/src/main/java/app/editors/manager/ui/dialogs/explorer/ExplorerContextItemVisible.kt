@@ -27,6 +27,7 @@ interface ExplorerContextItemVisible {
             ExplorerContextItem.Upload -> upload
             ExplorerContextItem.CreateRoom -> createRoom
             ExplorerContextItem.Reconnect -> reconnect
+            ExplorerContextItem.EditIndex -> editIndex
             is ExplorerContextItem.Fill -> item is CloudFile && item.isPdfForm
             is ExplorerContextItem.Edit -> edit
             is ExplorerContextItem.View -> false
@@ -37,6 +38,7 @@ interface ExplorerContextItemVisible {
             is ExplorerContextItem.Delete -> delete
             is ExplorerContextItem.Notifications -> notifications
             is ExplorerContextItem.Favorites -> favorites(contextItem.enabled)
+            is ExplorerContextItem.Lock -> lock
         }
     }
 
@@ -56,7 +58,9 @@ interface ExplorerContextItemVisible {
         get() = section.isRoom && item is CloudFolder && item.isRoom
 
     private val ExplorerContextState.download: Boolean
-        get() = !section.isLocal
+        get() = if (provider == PortalProvider.Cloud.DocSpace)
+            item.security?.download == true
+        else true
 
     private val ExplorerContextState.reconnect: Boolean
         get() = item is CloudFolder && item.providerItem
@@ -151,6 +155,9 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.location: Boolean
         get() = isSearching
+
+    private val ExplorerContextState.lock: Boolean
+        get() = (item is CloudFile) && item.security?.lock == true
 
     private fun ExplorerContextState.favorites(enabled: Boolean): Boolean =
         enabled && !isFolder && !listOf(

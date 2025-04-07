@@ -542,7 +542,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         } else {
                             item.fileStatus -= ApiContract.FileStatus.FAVORITE
                         }
-                        viewState.onUpdateFavoriteItem()
+                        viewState.onUpdateItemState()
                         viewState.onSnackBar(
                             if (isAdd) {
                                 context.getString(R.string.operation_add_to_favorites)
@@ -969,12 +969,29 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             .subscribe({ response ->
                                 if (response.statusCode.toInt() == ApiContract.HttpCodes.SUCCESS) {
                                     folder.pinned = !folder.pinned
-                                    viewState.onUpdateFavoriteItem()
+                                    viewState.onUpdateItemState()
                                 }
                             }, ::fetchError)
                     )
                 }
             }
+        }
+    }
+
+    fun lockFile(){
+        val roomProvider = roomProvider ?: return
+        val file = itemClicked as? CloudFile ?: return
+        presenterScope.launch {
+            roomProvider.lockFile(id = file.id, lock = !file.isLocked)
+                .collect { result ->
+                    when(result){
+                        is Result.Success -> {
+                            file.isLocked = !file.isLocked
+                            viewState.onUpdateItemState()
+                        }
+                        is Result.Error -> fetchError(result.exception)
+                    }
+                }
         }
     }
 
@@ -1198,7 +1215,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         (fileProvider as? CloudFileProvider)?.let { provider ->
             disposable.add(
                 provider.getRecentViaLink()
-                    .subscribe(::loadSuccess, ::fetchError)
+                    .subscribe({ explorer ->
+                        loadSuccess(explorer.apply { current.title = context.getString(R.string.room_access_via_link_title) })
+                    }, ::fetchError)
             )
         }
     }

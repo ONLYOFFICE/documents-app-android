@@ -91,8 +91,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onEditorActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 BaseActivity.REQUEST_ACTIVITY_STORAGE -> {
@@ -399,9 +399,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         super.onPlaceholder(placeholder)
     }
 
-    override fun onUpdateFavoriteItem() {
+    override fun onUpdateItemState() {
         if (section == ApiContract.SectionType.CLOUD_FAVORITES) explorerAdapter?.removeItem(presenter.itemClicked)
-        else super.onUpdateFavoriteItem()
+        else super.onUpdateItemState()
     }
 
     override fun onConversionQuestion() {

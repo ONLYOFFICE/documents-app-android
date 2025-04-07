@@ -89,7 +89,7 @@ data class Watermark(
 
     @SerializedName("additions")
     @Expose
-    val additions: Int = MASK_USERNAME,
+    val additions: Int = 0,
 
     @SerializedName("rotate")
     @Expose

@@ -327,7 +327,6 @@
     <string name="list_context_delete_success">Հաջողությամբ ջնջվեց</string>
     <string name="list_context_remove_from_list">Գործիքադարակի_ընտրացանկ_հիմնական_հեռացնել_ցանկից</string>
     <string name="list_context_delete_recent">Հեռացնել վերջինից</string>
-    <string name="list_context_upload_to_portal">Վերբեռնեք պորտալ</string>
     <string name="list_context_add_to_favorite">Ավելացնել ընտրյալների մեջ</string>
     <string name="list_context_delete_from_favorite">Ջնջել ընտրյալներից</string>
     <string name="list_context_leave_room">Դուրս գալ սենյակից</string>

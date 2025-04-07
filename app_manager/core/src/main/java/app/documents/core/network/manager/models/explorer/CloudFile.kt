@@ -57,6 +57,10 @@ open class CloudFile : Item() {
     @Expose
     var comment = ""
 
+    @SerializedName("locked")
+    @Expose
+    var isLocked = false
+
     @SerializedName("canWebRestrictedEditing")
     @Expose
     var isCanWebRestrictedEditing = true

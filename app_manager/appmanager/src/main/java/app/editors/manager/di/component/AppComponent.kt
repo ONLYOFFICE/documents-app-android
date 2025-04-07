@@ -23,6 +23,7 @@ import app.editors.manager.managers.tools.AppLocaleHelper
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.ErrorHandler
+import app.editors.manager.managers.tools.FontManager
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.filter.BaseFilterPresenter
@@ -87,6 +88,7 @@ import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.tools.ResourcesProvider
+import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import javax.inject.Singleton
 
 @Component(modules = [CoreModule::class])
@@ -118,6 +120,8 @@ interface AppComponent {
     val accountOnline: CloudAccount?
     val appLocaleHelper: AppLocaleHelper
     val resourcesProvider: ResourcesProvider
+    val fontManager: FontManager
+    val themePreferencesTools: ThemePreferencesTools
     val errorHandler: ErrorHandler
 
     val cloudDataSource: CloudDataSource

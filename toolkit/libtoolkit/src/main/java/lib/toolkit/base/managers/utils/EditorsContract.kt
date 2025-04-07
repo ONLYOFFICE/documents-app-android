@@ -12,6 +12,7 @@ object EditorsContract {
     const val KEY_DOC_SERVER = "KEY_DOC_SERVER"
     const val KEY_PDF = "KEY_PDF"
     const val KEY_EDIT_TYPE = "KEY_EDIT_TYPE"
+    const val KEY_KEEP_SCREEN_ON = "KEY_KEEP_SCREEN_ON"
 
     const val EDITOR_DOCUMENTS = "lib.editors.gdocs.ui.activities.DocsActivity"
     const val EDITOR_CELLS = "lib.editors.gcells.ui.activities.CellsActivity"
