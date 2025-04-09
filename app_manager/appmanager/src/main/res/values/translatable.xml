@@ -898,6 +898,8 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="share_access_room_owner">Owner</string>
     <string name="share_user_type_room_docspace_admin">DocSpace admin</string>
     <string name="share_user_type_room_docspace_owner">DocSpace Owner</string>
+    <string name="share_user_type_room_workspace_owner">Workspace Owner</string>
+    <string name="share_user_type_room_portal_owner">Portal Owner</string>
     <string name="share_user_type_room_admin">Room admin</string>
     <string name="share_access_room_manager">Room manager</string>
     <string name="share_access_room_power_user">Content creator</string>

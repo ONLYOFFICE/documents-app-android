@@ -287,11 +287,18 @@ fun Access.toUi(): AccessUI {
     return AccessUI(this, title, icon)
 }
 
-val User.typeTitle: Int
-    get() = when (type) {
-        UserType.Owner -> R.string.share_user_type_room_docspace_owner
+fun User.getTypeTitle(provider: PortalProvider?): Int {
+    return when (type) {
+        UserType.Owner -> {
+            when(provider) {
+                is PortalProvider.Cloud.Workspace -> R.string.share_user_type_room_workspace_owner
+                is PortalProvider.Cloud.DocSpace -> R.string.share_user_type_room_docspace_owner
+                else -> R.string.share_user_type_room_portal_owner
+            }
+        }
         UserType.Admin -> R.string.share_user_type_room_docspace_admin
         UserType.RoomAdmin -> R.string.share_user_type_room_admin
         UserType.User -> R.string.profile_type_user
         UserType.Guest -> R.string.profile_type_visitor
     }
+}
