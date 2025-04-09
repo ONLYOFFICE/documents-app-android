@@ -31,7 +31,7 @@ class ExplorerContextViewModel : ViewModel() {
 
             state.section == ApiContract.Section.Recent -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Edit(state),
+                ExplorerContextItem.View,
                 ExplorerContextItem.Delete(state)
             )
 
@@ -54,6 +54,7 @@ class ExplorerContextViewModel : ViewModel() {
             state.section is ApiContract.Section.Storage -> listOf(
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.Edit(state),
+                ExplorerContextItem.View,
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Move,
                 ExplorerContextItem.Copy,
@@ -63,8 +64,9 @@ class ExplorerContextViewModel : ViewModel() {
 
             state.section is ApiContract.Section.Device -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Fill().takeIf { ((state.item is CloudFile) && state.item.isPdfForm) },
+                ExplorerContextItem.Fill(),
                 ExplorerContextItem.Edit(state),
+                ExplorerContextItem.View,
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Move,
                 ExplorerContextItem.Copy,
@@ -81,8 +83,9 @@ class ExplorerContextViewModel : ViewModel() {
 
             else -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Fill().takeIf { ((state.item is CloudFile) && state.item.isPdfForm) },
+                ExplorerContextItem.Fill(),
                 ExplorerContextItem.Edit(state),
+                ExplorerContextItem.View,
                 ExplorerContextItem.Share.takeIf {
                     state.provider != PortalProvider.Cloud.DocSpace || state.section == ApiContract.Section.User && !((state.item is CloudFile) && state.item.isPdfForm)
                 },

@@ -5,6 +5,7 @@ import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Item
 import lib.toolkit.base.managers.utils.StringUtils
 
 
@@ -28,9 +29,9 @@ interface ExplorerContextItemVisible {
             ExplorerContextItem.CreateRoom -> createRoom
             ExplorerContextItem.Reconnect -> reconnect
             ExplorerContextItem.EditIndex -> editIndex
-            is ExplorerContextItem.Fill -> item is CloudFile && item.isPdfForm
             is ExplorerContextItem.Edit -> edit
-            is ExplorerContextItem.View -> false
+            is ExplorerContextItem.Fill -> fill
+            is ExplorerContextItem.View -> view
             is ExplorerContextItem.ExternalLink -> externalLink
             is ExplorerContextItem.Restore -> restore
             is ExplorerContextItem.Header -> true
@@ -65,20 +66,42 @@ interface ExplorerContextItemVisible {
     private val ExplorerContextState.reconnect: Boolean
         get() = item is CloudFolder && item.providerItem
 
+    private val ExplorerContextState.fill: Boolean
+        get() {
+            val file = item as? CloudFile ?: return false
+            return when (section) {
+                is ApiContract.Section.Device -> file.isPdfForm
+                else -> when (provider) {
+                    PortalProvider.Cloud.DocSpace -> file.security?.fillForms == true
+                    else -> item.isPdfForm
+                }
+            }
+        }
+
+    private val ExplorerContextState.view: Boolean
+        get() = item is CloudFile
+
     private val ExplorerContextState.edit: Boolean
         get() {
             val item = this.item
-            return if (item is CloudFile && (isExtensionEditable(item.fileExst) || item.isPdfForm)) {
-                when (section) {
-                    ApiContract.Section.Recent,
-                    ApiContract.Section.User,
-                    ApiContract.Section.Device -> true
-
-                    ApiContract.Section.Trash,
-                    ApiContract.Section.Room.Archive -> false
-                    else -> access != Access.Read || item.security?.editAccess == true
+            return when (section) {
+                ApiContract.Section.Device -> isExtensionEditable(item)
+                else -> {
+                    if (provider == PortalProvider.Cloud.DocSpace) {
+                        with(item.security ?: return false) {
+                            when (item) {
+                                is CloudFile -> {
+                                    edit && (isExtensionEditable(item) || item.isPdfForm)
+                                }
+                                is CloudFolder -> editRoom && item.isRoom
+                                else -> false
+                            }
+                        }
+                    } else {
+                        isExtensionEditable(item) && access == Access.ReadWrite
+                    }
                 }
-            } else section.isRoom && isRoot && item.security?.editRoom == true
+            }
         }
 
     private val ExplorerContextState.move: Boolean
@@ -164,6 +187,14 @@ interface ExplorerContextItemVisible {
             ApiContract.Section.Trash,
             ApiContract.Section.Webdav
         ).contains(section)
+
+    private fun isExtensionEditable(item: Item): Boolean {
+        return if (item is CloudFile) {
+            isExtensionEditable(item.fileExst)
+        } else {
+            false
+        }
+    }
 
     private fun isExtensionEditable(ext: String): Boolean {
         return StringUtils.getExtension(ext) in listOf(

@@ -22,7 +22,7 @@ sealed class ExplorerContextItem(
     class Edit(state: ExplorerContextState) : ExplorerContextItem(
         icon = R.drawable.ic_list_context_edit,
         title = getTitle(state)
-    ), ExplorerContextBlockOrder.Common {
+    ), ExplorerContextBlockOrder.Open {
 
         companion object {
 
@@ -36,12 +36,12 @@ sealed class ExplorerContextItem(
     class Fill : ExplorerContextItem(
         icon = R.drawable.ic_access_fill_form,
         title =  R.string.list_context_fill
-    ), ExplorerContextBlockOrder.Common
+    ), ExplorerContextBlockOrder.Open
 
-    class View : ExplorerContextItem(
+    object View : ExplorerContextItem(
         icon = R.drawable.ic_access_read,
         title =  lib.toolkit.base.R.string.settings_view
-    ), ExplorerContextBlockOrder.Common
+    ), ExplorerContextBlockOrder.Open
 
     object Share : ExplorerContextItem(
         icon = lib.toolkit.base.R.drawable.ic_list_context_share,
