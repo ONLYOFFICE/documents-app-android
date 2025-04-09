@@ -12,8 +12,6 @@ import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestCreate
-import app.documents.core.network.manager.models.request.RequestExternal
-import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.providers.ProviderError.Companion.throwErrorCreate
 import app.documents.core.providers.ProviderError.Companion.throwExistException
@@ -33,7 +31,9 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
-class LocalFileProvider @Inject constructor(private val localContentTools: LocalContentTools) : BaseFileProvider {
+class LocalFileProvider @Inject constructor(
+    private val localContentTools: LocalContentTools
+) : BaseFileProvider {
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.just(localContentTools.createRootDir())
@@ -80,8 +80,6 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
                 .map { throw throwErrorCreate() }
         }
     }
-
-    override fun search(query: String?): Observable<String>? = null
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
         val parentFile = File(folderId)
@@ -154,19 +152,11 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
     // Stub to local
     override fun getStatusOperation(): ResponseOperation? = null
 
-    override fun download(items: List<Item>): Observable<Int>? = null
-    override fun share(
-        id: String,
-        requestExternal: RequestExternal
-    ): Observable<ResponseExternal>? = null
-
     override fun terminate(): Observable<List<Operation>>? = null
 
     override fun getDownloadResponse(cloudFile: CloudFile, token: String?): Single<Response<ResponseBody>> {
         return Single.error(RuntimeException("Stub"))
     }
-
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? = null
 
     @SuppressLint("MissingPermission")
     fun import(context: Context, folderId: String, uri: Uri?): Observable<Int> {

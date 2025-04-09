@@ -8,8 +8,6 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
-import app.documents.core.network.manager.models.request.RequestExternal
-import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.storages.IStorageHelper
 import app.documents.core.network.storages.dropbox.api.DropboxProvider
@@ -198,10 +196,6 @@ class DropboxFileProvider(
         file.title = title
         file.fileExst = title.split(".")[1]
         return Observable.just(file)
-    }
-
-    override fun search(query: String?): Observable<String>? {
-        TODO("Not yet implemented")
     }
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
@@ -423,19 +417,8 @@ class DropboxFileProvider(
         return responseOperation
     }
 
-    override fun download(items: List<Item>): Observable<Int>? {
-        TODO("Not yet implemented")
-    }
-
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
+    fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
         return helper.upload(folderId, uris)
-    }
-
-    override fun share(
-        id: String,
-        requestExternal: RequestExternal
-    ): Observable<ResponseExternal>? {
-        TODO("Not yet implemented")
     }
 
     fun share(id: String): Observable<ExternalLinkResponse>? {
@@ -455,9 +438,7 @@ class DropboxFileProvider(
             }
     }
 
-    override fun terminate(): Observable<List<Operation>>? {
-        TODO("Not yet implemented")
-    }
+    override fun terminate(): Observable<List<Operation>>? = null
 
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {

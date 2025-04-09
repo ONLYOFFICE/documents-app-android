@@ -8,8 +8,6 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
-import app.documents.core.network.manager.models.request.RequestExternal
-import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.storages.IStorageHelper
 import app.documents.core.network.storages.onedrive.api.OneDriveProvider
@@ -169,8 +167,6 @@ class OneDriveFileProvider(
                 }
             }
     }
-
-    override fun search(query: String?): Observable<String>? = null
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
         val request = CreateFolderRequest(
@@ -349,8 +345,6 @@ class OneDriveFileProvider(
         return responseOperation
     }
 
-    override fun download(items: List<Item>): Observable<Int>? = null
-
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
         val response = api.download((item as CloudFile).id).blockingGet()
@@ -379,14 +373,9 @@ class OneDriveFileProvider(
         return api.download(cloudFile.id)
     }
 
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
+    fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
         return helper.upload(folderId, uris)
     }
-
-    override fun share(
-        id: String,
-        requestExternal: RequestExternal
-    ): Observable<ResponseExternal>? = null
 
     fun share(
         id: String,

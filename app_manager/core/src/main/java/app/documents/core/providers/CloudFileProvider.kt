@@ -1,7 +1,6 @@
 package app.documents.core.providers
 
 import android.annotation.SuppressLint
-import android.net.Uri
 import app.documents.core.manager.ManagerRepository
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
@@ -15,14 +14,12 @@ import app.documents.core.network.manager.models.request.RequestBatchBase
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDeleteRecent
-import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
 import app.documents.core.network.manager.models.request.RequestTitle
 import app.documents.core.network.manager.models.response.ResponseCreateFile
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.manager.models.response.ResponseExplorer
-import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseFile
 import app.documents.core.network.manager.models.response.ResponseFolder
 import app.documents.core.network.manager.models.response.ResponseOperation
@@ -84,21 +81,6 @@ class CloudFileProvider @Inject constructor(
                         return@map responseExplorerResponse.body()?.response
                     } else {
                         throw HttpException(responseExplorerResponse)
-                    }
-                }
-        }
-    }
-
-    override fun search(query: String?): Observable<String>? {
-        return query?.let {
-            managerService.search(it)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { responseSearchResponse ->
-                    if (responseSearchResponse.isSuccessful && responseSearchResponse.body() != null) {
-                        return@map responseSearchResponse.body()!!.string()
-                    } else {
-                        throw HttpException(responseSearchResponse)
                     }
                 }
         }
@@ -229,14 +211,6 @@ class CloudFileProvider @Inject constructor(
             }.subscribe()
     }
 
-    override fun download(items: List<Item>): Observable<Int>? {
-        return null
-    }
-
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? {
-        return null
-    }
-
     override fun transfer(
         items: List<Item>,
         to: CloudFolder,
@@ -320,19 +294,6 @@ class CloudFileProvider @Inject constructor(
     override fun getStatusOperation(): ResponseOperation {
         return managerService.status()
             .blockingGet()
-    }
-
-    override fun share(id: String, requestExternal: RequestExternal): Observable<ResponseExternal> {
-        return managerService.getExternalLink(id, requestExternal)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { responseExternal: Response<ResponseExternal> ->
-                if (responseExternal.isSuccessful) {
-                    return@map responseExternal.body()
-                } else {
-                    throw HttpException(responseExternal)
-                }
-            }
     }
 
     override fun terminate(): Observable<List<Operation>> {

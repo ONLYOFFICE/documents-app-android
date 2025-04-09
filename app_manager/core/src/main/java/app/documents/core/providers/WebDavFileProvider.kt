@@ -8,8 +8,6 @@ import app.documents.core.manager.ProgressRequestBody
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
-import app.documents.core.network.manager.models.request.RequestExternal
-import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.webdav.WebDavService
 import app.documents.core.network.webdav.models.WebDavModel
@@ -88,10 +86,6 @@ class WebDavFileProvider @Inject constructor(
             file.fileExst = getExtensionFromPath(body.title)
             file
         }
-    }
-
-    override fun search(query: String?): Observable<String> {
-        TODO("Not yet implemented")
     }
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
@@ -369,7 +363,7 @@ class WebDavFileProvider @Inject constructor(
         return file
     }
 
-    override fun download(items: List<Item>): Observable<Int> {
+    fun download(items: List<Item>): Observable<Int> {
         return Observable.fromIterable(items)
             .filter { item: Item? -> item is CloudFile }
             .flatMap { item: Item -> startDownload(item) }
@@ -410,7 +404,7 @@ class WebDavFileProvider @Inject constructor(
         }
     }
 
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
+    fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
         return Observable.fromIterable(uris)
             .map { uri: Uri -> addUploadsFile(folderId, uri) }
             .flatMap { uri: Uri -> startUpload(folderId, uri) }
@@ -460,8 +454,6 @@ class WebDavFileProvider @Inject constructor(
         responseOperation.response = ArrayList()
         return responseOperation
     }
-
-    override fun share(id: String, requestExternal: RequestExternal): Observable<ResponseExternal>? = null
 
     override fun terminate(): Observable<List<Operation>>?  = null
 

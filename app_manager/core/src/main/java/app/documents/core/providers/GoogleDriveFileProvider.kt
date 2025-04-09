@@ -6,10 +6,14 @@ import android.net.Uri
 import android.os.Environment
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.GoogleDriveUtils
-import app.documents.core.network.manager.models.explorer.*
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Current
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.GoogleDriveFolder
+import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestCreate
-import app.documents.core.network.manager.models.request.RequestExternal
-import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.storages.IStorageHelper
 import app.documents.core.network.storages.googledrive.api.GoogleDriveProvider
@@ -35,7 +39,8 @@ import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class GoogleDriveFileProvider(
     private val context: Context,
@@ -200,10 +205,6 @@ class GoogleDriveFileProvider(
                 file.fileExst = body.title.split(".")[1]
                 return@map file
             }
-    }
-
-    override fun search(query: String?): Observable<String>? {
-        TODO("Not yet implemented")
     }
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
@@ -437,19 +438,8 @@ class GoogleDriveFileProvider(
         return responseOperation
     }
 
-    override fun download(items: List<Item>): Observable<Int>? {
-        TODO("Not yet implemented")
-    }
-
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
+    fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
         return helper.upload(folderId, uris)
-    }
-
-    override fun share(
-        id: String,
-        requestExternal: RequestExternal
-    ): Observable<ResponseExternal>? {
-        TODO("Not yet implemented")
     }
 
     fun share(fileId: String, request: ShareRequest): Observable<Boolean> {
@@ -461,9 +451,7 @@ class GoogleDriveFileProvider(
             }
     }
 
-    override fun terminate(): Observable<List<Operation>>? {
-        TODO("Not yet implemented")
-    }
+    override fun terminate(): Observable<List<Operation>>? = null
 
     override fun getDownloadResponse(cloudFile: CloudFile, token: String?): Single<Response<ResponseBody>> {
         return if (cloudFile is GoogleDriveCloudFile && googleMimeTypes.contains(cloudFile.mimeType)) {
