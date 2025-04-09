@@ -134,10 +134,10 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             downloadDisposable = provider.fileInfo(itemClicked)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ file: CloudFile? ->
+                .subscribe({ file: CloudFile ->
                         tempFile = file
                         viewState.onDialogClose()
-                        file?.let { addRecent(it) }
+                        addRecent(file)
                         viewState.onOpenLocalFile(file, null)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }

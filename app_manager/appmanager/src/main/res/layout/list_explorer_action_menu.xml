@@ -84,6 +84,23 @@
                     android:text="@string/list_action_folder" />
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/list_explorer_action_docs_from_photo"
+                style="@style/ContextListItemLayout">
+
+                <ImageView
+                    style="@style/Widget.Common.ImageView.ActionBottomMenu"
+                    app:srcCompat="@drawable/ic_default_add"
+                    tools:ignore="ContentDescription" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/Widget.Common.TextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/list_action_doc_from_photo" />
+
+            </LinearLayout>
+
             <include
                 layout="@layout/view_line_separator"
                 android:layout_width="match_parent"

@@ -361,6 +361,7 @@
     <string name="list_action_sheet">Spreadsheet</string>
     <string name="list_action_presentation">Presentation</string>
     <string name="list_action_doc">Text document</string>
+    <string name="list_action_doc_from_photo">Text document from photo</string>
     <string name="list_action_folder">Folder</string>
     <string name="list_action_photo">Make photo</string>
     <string name="list_action_upload">Upload file</string>
