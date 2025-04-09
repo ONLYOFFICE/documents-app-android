@@ -19,8 +19,6 @@ import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.dropbox.DownloadWork
 import app.editors.manager.managers.works.dropbox.UploadWork
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import moxy.presenterScope
@@ -152,23 +150,6 @@ class DocsDropboxPresenter : BaseStorageDocsPresenter<BaseStorageDocsView>() {
             true
         } else {
             false
-        }
-    }
-
-    override fun getFileInfo() {
-        showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
-        fileProvider?.let { provider ->
-            downloadDisposable = provider.fileInfo(itemClicked)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { file: CloudFile? ->
-                        tempFile = file
-                        viewState.onDialogClose()
-                        file?.let { addRecent(it) }
-                        viewState.onOpenLocalFile(file, null)
-                    }
-                ) { throwable: Throwable -> fetchError(throwable) }
         }
     }
 

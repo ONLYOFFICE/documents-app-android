@@ -5,6 +5,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
+import java.io.Serializable
 
 object EditorsContract {
 
@@ -30,8 +31,10 @@ enum class EditorsType {
     DOCS, CELLS, PRESENTATION, PDF
 }
 
-enum class EditType {
-    EDIT, FILL, VIEW
+sealed class EditType : Serializable {
+    class Edit(val initialView: Boolean = true) : EditType()
+    class View : EditType()
+    class Fill : EditType()
 }
 
 class EditorsForResult(

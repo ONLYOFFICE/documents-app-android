@@ -225,9 +225,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 acceptErrorTint = true
             )
 
-            is ExplorerContextItem.Edit -> cloudPresenter.onContextClick(EditType.EDIT)
-            is ExplorerContextItem.Fill -> cloudPresenter.onContextClick(EditType.FILL)
-            is ExplorerContextItem.View -> cloudPresenter.onContextClick(EditType.VIEW)
+            is ExplorerContextItem.Edit -> cloudPresenter.openFile(EditType.Edit(false))
+            is ExplorerContextItem.Fill -> cloudPresenter.onContextClick(EditType.Fill())
+            is ExplorerContextItem.View -> cloudPresenter.onContextClick(EditType.View())
             is ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
@@ -420,7 +420,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 }
                 .setNegativeButton(R.string.conversion_dialog_open_in_view_mode) { dialog, _ ->
                     dialog.dismiss()
-                    cloudPresenter.getFileInfo()
+                    cloudPresenter.openFile(EditType.View())
                 }
                 .create()
                 .apply {
@@ -537,7 +537,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun showFillFormChooserFragment() {
         FillFormChooserFragment.show(
             activity = requireActivity(),
-            onFillForm = cloudPresenter::fillPdfForm,
+            onFillForm = { presenter.openFile(EditType.Fill()) },
             onSelectRoom = { cloudPresenter.moveCopyOperation(OperationType.COPY_TO_FILL_FORM_ROOM) }
         )
     }
@@ -575,7 +575,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             description = getString(R.string.rooms_index_reorder_complete_desc, operation.resultFileName),
             cancelTitle = getString(R.string.dialogs_common_close),
             acceptTitle = getString(R.string.rooms_index_reorder_open_file),
-            acceptListener = { cloudPresenter.openFileById(operation.resultFileId) }
+            acceptListener = { cloudPresenter.openFileById(operation.resultFileId, EditType.Edit()) }
         )
     }
 

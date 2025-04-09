@@ -213,9 +213,9 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             ExplorerContextItem.Upload -> presenter.upload()
             ExplorerContextItem.Copy -> showFolderChooser(OperationsState.OperationType.COPY)
             ExplorerContextItem.Move -> showFolderChooser(OperationsState.OperationType.MOVE)
-            is ExplorerContextItem.Edit -> presenter.getFileInfo(EditType.EDIT)
-            is ExplorerContextItem.Fill -> presenter.getFileInfo(EditType.FILL)
-            is ExplorerContextItem.View -> presenter.getFileInfo(EditType.VIEW)
+            is ExplorerContextItem.Edit -> presenter.openFile(EditType.Edit(false))
+            is ExplorerContextItem.Fill -> presenter.openFile(EditType.Fill())
+            is ExplorerContextItem.View -> presenter.openFile(EditType.View())
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT)
             else -> super.onContextButtonClick(contextItem)
         }

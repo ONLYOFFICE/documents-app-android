@@ -16,6 +16,8 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
+import app.documents.core.manager.FileOpenRepository
+import app.documents.core.manager.FileOpenResult
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
@@ -36,9 +38,7 @@ import app.documents.core.providers.WebDavFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.DownloadWork
@@ -62,6 +62,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
@@ -70,6 +71,7 @@ import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import moxy.MvpPresenter
+import moxy.presenterScope
 import okhttp3.ResponseBody
 import org.json.JSONException
 import retrofit2.HttpException
@@ -125,6 +127,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     @Inject
     lateinit var recentDataSource: RecentDataSource
+
+    @Inject
+    lateinit var fileOpenRepository: FileOpenRepository
 
     /**
      * Handler for some common job
@@ -240,6 +245,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                     roomClicked?.indexing == true) || currentFolder?.indexing == true || field
         }
 
+    init {
+        collectFileOpenResult()
+    }
+
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
             PreferenceTool.KEY_IS_GRID_VIEW -> {
@@ -259,6 +268,19 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         disposable.clear()
         disposable.dispose()
         fileProvider = null
+    }
+
+    private fun collectFileOpenResult() {
+        presenterScope.launch {
+            fileOpenRepository.resultFlow.collect(::onFileOpenResult)
+        }
+    }
+
+    protected open fun onFileOpenResult(result: FileOpenResult) {
+        when (result) {
+            is FileOpenResult.Success -> TODO()
+            is FileOpenResult.Loading -> TODO()
+        }
     }
 
     open fun getItemsById(id: String?) {
@@ -490,13 +512,16 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             if (itemClicked is CloudFile) {
                 fileProvider?.let { provider ->
                     disposable.add(
-                        getFileInfo(provider, itemClicked as CloudFile).subscribe({ response ->
-                            if (response.isEditing) {
-                                onFileDeleteProtected()
-                            } else {
-                                deleteItems()
+                        provider.fileInfo(itemClicked)
+                            .doOnError(::fetchError)
+                            .doOnNext { file ->
+                                if (file.isEditing) {
+                                    onFileDeleteProtected()
+                                } else {
+                                    deleteItems()
+                                }
                             }
-                        }, this::fetchError)
+                            .subscribe()
                     )
                 }
             } else {
@@ -506,11 +531,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             viewState.onSnackBar(context.getString(R.string.operation_empty_lists_data))
         }
         return true
-    }
-
-    private fun getFileInfo(provider: BaseFileProvider, itemClicked: CloudFile): Observable<CloudFile> {
-        return if (provider is WebDavFileProvider) provider.fileInfo(itemClicked, false) else
-            provider.fileInfo(itemClicked)
     }
 
     private fun isFileDeleteProtected(item: Item): Observable<Boolean>? {
@@ -1187,7 +1207,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                 if (itemClicked is CloudFolder) {
                     openFolder(itemClicked.id, position)
                 } else if (itemClicked is CloudFile) {
-                    getFileInfo()
+                    fileOpenRepository.openLocalFile(itemClicked, EditType.Edit())
                 }
             }
         }
@@ -1671,49 +1691,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         disposable.clear()
     }
 
-    protected fun checkSdkVersion(version: String? = null, result: (isCoauthoring: Boolean) -> Unit) {
-        FirebaseUtils.getSdk { pair ->
-            if (!pair.first) {
-                result(false)
-                return@getSdk
-            }
-            val webSdk = version?.replace(".", "") ?: context.accountOnline
-                ?.portal?.version?.documentServerVersion?.replace(".", "")
-
-            if (webSdk.isNullOrEmpty()) {
-                result(false)
-                return@getSdk
-            }
-
-            val localSdk = FileUtils.readSdkVersion(context).replace(".", "")
-
-            var maxVersionIndex = 2
-
-            if (!pair.second) {
-                maxVersionIndex = 1
-            }
-
-            for (i in 0..maxVersionIndex) {
-                if (webSdk[i] != localSdk[i]) {
-                    result(false)
-                    return@getSdk
-                }
-            }
-
-            result(true)
-        }
-    }
-
-    protected fun downloadTempFile(cloudFile: CloudFile, editType: EditType?) {
-        disposable.add(
-            context.cloudFileProvider
-                .getCachedFile(context, cloudFile, context.accountOnline?.accountName.orEmpty())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ file -> openFileFromPortal(file, cloudFile.id, editType = editType) }, ::fetchError)
-        )
-    }
-
     private fun openFileFromPortal(file: File, fileId: String, editType: EditType?) {
         viewState.onDialogClose()
         viewState.onOpenLocalFile(CloudFile().apply {
@@ -1741,14 +1718,18 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         destFolderId = id
     }
 
-
     fun setGridView(isGrid: Boolean) {
         preferenceTool.isGridView = isGrid
     }
 
-    abstract fun getNextList()
+    open fun openFile(editType: EditType) {
+        val item = itemClicked
+        if (item != null && item is CloudFile) {
+            fileOpenRepository.openLocalFile(item, editType)
+        }
+    }
 
-    abstract fun getFileInfo()
+    abstract fun getNextList()
 
     abstract fun createDocs(title: String)
 

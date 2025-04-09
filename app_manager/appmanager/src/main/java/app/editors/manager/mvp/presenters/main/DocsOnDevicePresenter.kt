@@ -30,7 +30,6 @@ import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
-import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
 import lib.toolkit.base.managers.utils.PathUtils
@@ -95,11 +94,15 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.createFile(id, requestCreate)
-                    .subscribe({ file: CloudFile ->
-                        addFile(file)
-                        addRecent(file)
-                        openFile(file, EditType.EDIT)
-                    }) { viewState.onError(context.getString(R.string.errors_create_local_file)) })
+                        .doOnNext { file ->
+                            addFile(file)
+                            fileOpenRepository.openLocalFile(file, EditType.Edit(false))
+                        }
+                        .doOnError {
+                            viewState.onError(context.getString(R.string.errors_create_local_file))
+                        }
+                        .subscribe()
+                )
             }
         }
     }
@@ -119,15 +122,13 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     private fun addRecent(uri: Uri) {
         presenterScope.launch {
             DocumentFile.fromSingleUri(context, uri)?.let { file ->
-                presenterScope.launch {
-                    recentDataSource.add(
-                        Recent(
-                            path = uri.toString(),
-                            name = file.name.toString(),
-                            size = file.length()
-                        )
+                recentDataSource.add(
+                    Recent(
+                        path = uri.toString(),
+                        name = file.name.toString(),
+                        size = file.length()
                     )
-                }
+                )
             }
         }
     }
@@ -223,6 +224,10 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         }
     }
 
+    override fun openFile(editType: EditType) {
+        fileOpenRepository.openLocalFile(itemClicked as? CloudFile ?: return, editType)
+    }
+
     private fun uploadWebDav(id: String, uriList: List<Uri>) {
         var uploadId = id
         if (uploadId[uploadId.length - 1] != '/') {
@@ -284,8 +289,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         val fileName = ContentResolverUtils.getName(context, uri)
         val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
 
-        addRecent(uri)
-        openFile(uri, ext, EditType.EDIT)
+        fileOpenRepository.openLocalFile(uri, ext, EditType.Edit())
     }
 
     fun import(uri: Uri) {
@@ -444,56 +448,5 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         setSelection(false)
         setFiltering(false)
         updateViewsState()
-    }
-
-    override fun getFileInfo() {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            addRecent(file)
-            openFile(file, null)
-        }
-    }
-
-    fun getFileInfo(editType: EditType?) {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            addRecent(file)
-            openFile(file, editType)
-        }
-    }
-
-    private fun openFile(file: CloudFile, editType: EditType?) {
-        val path = file.id
-        val uri = Uri.fromFile(File(path))
-        val ext = StringUtils.getExtensionFromPath(file.id.lowercase())
-        openFile(uri, ext, editType)
-    }
-
-    private fun openFile(uri: Uri, ext: String, editType: EditType?) {
-        when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> {
-                if (ext.contains(LocalContentTools.HWP_EXTENSION) || ext.contains(LocalContentTools.HWPX_EXTENSION)) {
-                    viewState.onShowEditors(uri, EditorsType.DOCS, EditType.VIEW)
-                } else {
-                    viewState.onShowEditors(uri, EditorsType.DOCS, editType)
-                }
-            }
-            StringUtils.Extension.SHEET -> {
-                viewState.onShowEditors(uri, EditorsType.CELLS, editType)
-            }
-            StringUtils.Extension.PRESENTATION -> {
-                viewState.onShowEditors(uri, EditorsType.PRESENTATION, editType)
-            }
-            StringUtils.Extension.PDF -> {
-                if (FileUtils.isOformPdf(context.contentResolver.openInputStream(uri))) {
-                    viewState.onShowEditors(uri, EditorsType.DOCS, editType ?: EditType.FILL)
-                } else {
-                    viewState.onShowPdf(uri)
-                }
-            }
-
-            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(uri)
-            else -> viewState.onError(context.getString(R.string.error_unsupported_format))
-        }
     }
 }

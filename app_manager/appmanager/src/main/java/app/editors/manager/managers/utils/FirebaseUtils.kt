@@ -119,18 +119,22 @@ object FirebaseUtils {
     /**
      * @param block First allow_coauthoring, second check_sdk_fully
      */
-    fun getSdk(block: (config: Pair<Boolean, Boolean>) -> Unit)  {
+    fun getSdk(block: (allowCoauthoring: Boolean, checkSdkFully: Boolean) -> Unit)  {
         getRemoteConfig()?.let { config ->
-            config.fetch(if (BuildConfig.DEBUG) 0 else TIME_FETCH).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    config.activate()
-                    block(Pair(first = config.getBoolean(KEY_ALLOW_COAUTHORING), second = config.getBoolean(KEY_SDK_FULLY)))
-                } else {
-                    block(Pair(true, false))
+            config.fetch(if (BuildConfig.DEBUG) 0 else TIME_FETCH)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        config.activate()
+                        block(
+                            config.getBoolean(KEY_ALLOW_COAUTHORING),
+                            config.getBoolean(KEY_SDK_FULLY)
+                        )
+                    } else {
+                        block(true, false)
+                    }
                 }
-            }
         } ?: {
-            block(Pair(true, false))
+            block(true, false)
         }
     }
 

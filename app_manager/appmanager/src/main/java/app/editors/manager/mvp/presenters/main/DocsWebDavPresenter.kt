@@ -114,31 +114,6 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         }
     }
 
-    override fun getFileInfo() {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            val extension = file.fileExst
-            if (StringUtils.isImage(extension)) {
-                addRecent(file)
-                viewState.onFileMedia(removeVideo(getListMedia(file.id)), true)
-                return
-            }
-        }
-        showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
-        fileProvider?.let { provider ->
-            downloadDisposable = provider.fileInfo(itemClicked)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { file: CloudFile? ->
-                        tempFile = file
-                        viewState.onDialogClose()
-                        viewState.onOpenLocalFile(file, null)
-                    }
-                ) { throwable: Throwable -> fetchError(throwable) }
-        }
-    }
-
     override fun addRecent(file: CloudFile) {
         presenterScope.launch {
             context.accountOnline?.let {

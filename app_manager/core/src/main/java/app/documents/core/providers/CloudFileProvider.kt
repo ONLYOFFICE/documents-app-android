@@ -386,15 +386,14 @@ class CloudFileProvider @Inject constructor(
     }
 
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-    fun opeEdit(cloudFile: CloudFile, canShareable: Boolean? = null, editType: EditType?): Single<String?> {
+    fun opeEdit(cloudFile: CloudFile, canShareable: Boolean? = null, editType: EditType): Single<String?> {
         return Single.fromCallable { runBlocking { managerRepository.updateDocumentServerVersion() } }
             .map { managerService.getFileInfo(cloudFile.id).blockingSingle().body()?.response }
             .flatMap { file ->
                 when (editType) {
-                    EditType.EDIT -> managerService.openFile(file.id, file.version, edit = true)
-                    EditType.VIEW -> managerService.openFile(file.id, file.version, view = true)
-                    EditType.FILL -> managerService.openFile(file.id, file.version, fill = true)
-                    null -> managerService.openFile(file.id, file.version)
+                    is EditType.Edit -> managerService.openFile(file.id, file.version, edit = true)
+                    is EditType.Fill -> managerService.openFile(file.id, file.version, view = true)
+                    is EditType.View -> managerService.openFile(file.id, file.version, fill = true)
                 }
             }
             .map { response ->
@@ -447,7 +446,7 @@ class CloudFileProvider @Inject constructor(
     }
 
     @SuppressLint("CheckResult")
-    fun openDocument(cloudFile: CloudFile, token: String?, canShareable: Boolean, editType: EditType?): Single<OpenDocumentResult> {
+    fun openDocument(cloudFile: CloudFile, token: String?, canShareable: Boolean, editType: EditType): Single<OpenDocumentResult> {
         return Single.fromCallable { StringUtils.getExtension(cloudFile.fileExst) == StringUtils.Extension.PDF }
             .flatMap { isPdf ->
                 if (isPdf) {

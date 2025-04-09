@@ -10,18 +10,15 @@ import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.Recent
 import app.documents.core.model.cloud.isDocSpace
-import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
-import app.documents.core.network.common.models.BaseResponse.Companion.KEY_RESPONSE
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
-import app.documents.core.network.manager.models.explorer.isFavorite
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDeleteShare
@@ -29,7 +26,6 @@ import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.UserIdInvitation
 import app.documents.core.providers.CloudFileProvider
-import app.documents.core.providers.CloudFileProvider.Companion.STATIC_DOC_URL
 import app.documents.core.providers.CloudFileProvider.RoomCallback
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
@@ -70,7 +66,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.tools.LocalContentTools
-import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
@@ -81,7 +76,6 @@ import moxy.presenterScope
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import org.json.JSONObject
 import java.io.File
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -191,7 +185,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     if (LocalContentTools.isOpenFormat(itemClicked.clearExt)) {
                         viewState.onConversionQuestion()
                     } else {
-                        getFileInfo()
+                        fileOpenRepository.openCloudFile(itemClicked, EditType.Edit())
                     }
                 } else if (itemClicked is RecentViaLink) {
                     openRecentViaLink()
@@ -287,22 +281,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         addFile(cloudFile)
                         addRecent(cloudFile)
                         viewState.onDialogClose()
-                        onFileClickAction(cloudFile, EditType.EDIT)
+                        fileOpenRepository.openCloudFile(cloudFile, EditType.Edit(false))
                     }, ::fetchError))
             }
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
-        }
-    }
-
-    override fun getFileInfo() {
-        val item = itemClicked
-        if (item != null && item is CloudFile) {
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.fileInfo(item)
-                        .subscribe({ onFileClickAction(item, editType = null) }, ::fetchError)
-                )
-            }
         }
     }
 
@@ -494,16 +476,16 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         super.createDownloadFile()
     }
 
-    fun onContextClick(editType: EditType?) {
+    override fun openFile(editType: EditType) {
+        val item = itemClicked
+        if (item != null && item is CloudFile) {
+            fileOpenRepository.openCloudFile(item, editType)
+        }
+    }
+
+    fun onContextClick(editType: EditType) {
         when (val item = itemClicked) {
-            is CloudFile -> {
-                if (LocalContentTools.isOpenFormat(item.clearExt)) {
-                    viewState.onConversionQuestion()
-                    return
-                }
-                addRecent(item)
-                onFileClickAction(item, editType)
-            }
+            is CloudFile -> fileOpenRepository.openCloudFile(item, editType)
             is CloudFolder -> editRoom()
         }
     }
@@ -653,135 +635,34 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.showMoveCopyDialog(names, action, titleFolder)
     }
 
-    private fun onFileClickAction(cloudFile: CloudFile, editType: EditType?) {
-        if (cloudFile.isPdfForm && isUserSection && editType == null) {
-            viewState.showFillFormChooserFragment()
-            return
-        }
-
-        showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE)
-        val extension = cloudFile.fileExst
-        when (StringUtils.getExtension(extension)) {
-            StringUtils.Extension.DOC,
-            StringUtils.Extension.SHEET,
-            StringUtils.Extension.PRESENTATION,
-            StringUtils.Extension.FORM,
-            StringUtils.Extension.PDF -> {
-                checkSdkVersion { result ->
-                    if (result) {
-                        if (cloudFile.isPdfForm && editType == null) {
-                            fillPdfForm()
-                        } else {
-                            openDocumentServer(
-                                cloudFile = cloudFile,
-                                canShareable = isItemShareable,
-                                editType = if (LocalContentTools.isOpenFormat(cloudFile.clearExt) ||
-                                    cloudFile.access == Access.Read
-                                ) {
-                                    EditType.VIEW
-                                } else {
-                                    editType
-                                }
-                            )
-                        }
-                    } else {
-                        downloadTempFile(
-                            cloudFile = cloudFile,
-                            editType = if (cloudFile.access == Access.Read) {
-                                EditType.VIEW
-                            } else {
-                                editType
-                            }
-                        )
-                    }
-                }
-            }
-
-            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> {
-                addRecent(itemClicked as CloudFile)
-                viewState.onFileMedia(getListMedia(cloudFile.id), false)
-            }
-
-            else -> viewState.onFileDownloadPermission()
-        }
-        FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, extension)
-    }
-
-    private fun openDocumentServer(cloudFile: CloudFile, canShareable: Boolean, editType: EditType?) {
-        with(fileProvider as CloudFileProvider) {
-            val token = AccountUtils.getToken(context, account.accountName)
-            disposable.add(
-                openDocument(cloudFile, token, canShareable, editType).subscribe({ result ->
-                    viewState.onDialogClose()
-                    if (result.isPdf) {
-                        downloadTempFile(cloudFile, null)
-                    } else if (result.info != null) {
-                        viewState.onOpenDocumentServer(cloudFile, result.info, editType)
-                    }
-                }) { error ->
-//                    if (error is HttpException && error.code() == 415) {
-//                        downloadTempFile(cloudFile, EditType.VIEW)
-//                    } else {
-                        fetchError(error)
-//                    }
-                }
-            )
-        }
-        addRecent(cloudFile)
-    }
-
     private fun resetFilters() {
         preferenceTool.filter = Filter()
         viewState.onStateUpdateFilterMenu()
     }
 
-    fun fillPdfForm() {
-        showDialogWaiting(TAG_DIALOG_CLEAR_DISPOSABLE)
-        val item = itemClicked
-        if (item is CloudFile && item.isPdfForm) {
-            checkSdkVersion { result ->
-                if (result) {
-                    openDocumentServer(item, canShareable = false, editType = EditType.FILL)
-                } else {
-                    downloadTempFile(item, editType = EditType.FILL)
-                }
-            }
-        }
-    }
-
-    fun openFileById(id: String) {
-        fileProvider?.let { provider ->
-            disposable.add(
-                provider.fileInfo(Item().apply { this.id = id })
-                    .subscribe(
-                        { file -> onFileClickAction(file, editType = null) },
-                        ::fetchError
-                    )
-            )
-        }
+    fun openFileById(id: String, editType: EditType) {
+        fileOpenRepository.openCloudFile(id, editType)
     }
 
     fun openFile(data: String) {
         val model = Json.decodeFromString<OpenDataModel>(data)
-        if (model.file?.id == null && model.folder?.id != null) {
-            openFolder(model.folder.id, 0)
-            return
-        }
-        if (model.share.isNotEmpty()) {
-            openFromLink(model)
-            return
-        }
-        fileProvider?.let { provider ->
-            disposable.add(provider.fileInfo(CloudFile().apply {
-                id = model.file?.id.toString()
-            }).subscribe({ cloudFile ->
-                itemClicked = cloudFile
-                onFileClickAction(cloudFile, editType = null)
-            }, { error ->
-                fetchError(error)
-            }))
-        }
+        val fileId = model.file?.id
+        val folderId = model.folder?.id
 
+        if (fileId == null && folderId != null) {
+            openFolder(folderId, 0)
+            return
+        }
+        if (model.share.isNotEmpty() && !model.portal.isNullOrEmpty()) {
+            fileOpenRepository.openCloudFile(
+                id = fileId.orEmpty(),
+                portal = model.portal,
+                token = model.share,
+                editType = EditType.Edit()
+            )
+            return
+        }
+        fileOpenRepository.openCloudFile(fileId.orEmpty(), EditType.Edit())
     }
 
     fun openLocation() {
@@ -845,12 +726,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private val isRoom: Boolean
         get() = currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM
-
-    private val isClickedItemShared: Boolean
-        get() = itemClicked?.shared == true
-
-    private val isClickedItemFavorite: Boolean
-        get() = itemClicked.isFavorite
 
     private val isItemOwner: Boolean
         get() = StringUtils.equals(itemClicked?.createdBy?.id, account.id)
@@ -1279,59 +1154,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         )
                     }
                 }
-            }
-        }
-    }
-
-    // TODO For hotfix
-    private fun openFromLink(model: OpenDataModel) {
-        if (model.portal.isNullOrEmpty()) return
-        showDialogWaiting(null)
-        presenterScope.launch {
-            val api = NetworkClient.getRetrofit<ManagerService>(model.portal, model.share, context)
-
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    JSONObject(api.openFile(model.file?.id ?: "").blockingGet().body()?.string()).getJSONObject(
-                        KEY_RESPONSE
-                    )
-
-                }
-
-                val json = withContext(Dispatchers.IO) {
-                    JSONObject(api.getDocService().blockingGet().body()?.string())
-                }
-
-                val docService = if (json.optJSONObject(KEY_RESPONSE) != null) {
-                    json.getJSONObject(KEY_RESPONSE).getString("docServiceUrlApi")
-                        .replace(STATIC_DOC_URL, "")
-                } else {
-                    json.getString(KEY_RESPONSE)
-                        .replace(STATIC_DOC_URL, "")
-                }
-
-                val result = withContext(Dispatchers.IO) {
-                    response
-                        .put("url", docService)
-                        .put("fileId", model.file?.id)
-                        .put("canShareable", false)
-                }
-
-                withContext(Dispatchers.Main) {
-                    viewState.onDialogClose()
-                    delay(50)
-                    viewState.onOpenDocumentServer(
-                        /* file = */ CloudFile().apply {
-                            id = model.file?.id.toString()
-                            title = model.file?.title ?: ""
-                            fileExst = model.file?.extension ?: ""
-                        },
-                        /* info = */ result.toString(),
-                        /* type = */ null
-                    )
-                }
-            } catch (e: Exception) {
-                fetchError(e)
             }
         }
     }

@@ -21,8 +21,6 @@ import app.editors.manager.managers.works.googledrive.DownloadWork
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.base.DocsGoogleDriveView
 import app.editors.manager.ui.views.custom.PlaceholderViews
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -126,20 +124,6 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
                 )
             }
         }
-    }
-
-    override fun getFileInfo() {
-        downloadDisposable = fileProvider?.fileInfo(itemClicked)
-            ?.subscribeOn(Schedulers.io())
-            ?.observeOn(AndroidSchedulers.mainThread())
-            ?.subscribe(
-                { file: CloudFile? ->
-                    tempFile = file
-                    viewState.onDialogClose()
-                    file?.let { addRecent(it) }
-                    viewState.onOpenLocalFile(file, null)
-                }
-            ) { throwable: Throwable -> fetchError(throwable) }
     }
 
     override fun startDownload(downloadTo: Uri, item: Item?) {

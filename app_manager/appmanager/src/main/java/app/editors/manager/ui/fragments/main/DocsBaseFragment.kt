@@ -17,6 +17,7 @@ import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
@@ -160,7 +161,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 when (requestCode) {
                     REQUEST_DOCS,
                     REQUEST_SHEETS,
-                    REQUEST_PRESENTATION, -> removeCommonDialog()
+                    REQUEST_PRESENTATION,
+                        -> removeCommonDialog()
                 }
             }
             Activity.RESULT_CANCELED -> {
@@ -323,28 +325,23 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onOpenLocalFile(file: CloudFile, editType: EditType?) {
-        val uri = Uri.parse(file.webUrl)
+        val uri = file.webUrl.toUri()
         when (getExtension(file.fileExst)) {
             StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
-                presenter.addRecent(file)
                 showEditors(uri, EditorsType.DOCS, editType = editType)
             }
             StringUtils.Extension.SHEET -> {
-                presenter.addRecent(file)
                 showEditors(uri, EditorsType.CELLS, editType = editType)
             }
             StringUtils.Extension.PRESENTATION -> {
-                presenter.addRecent(file)
                 showEditors(uri, EditorsType.PRESENTATION, editType = editType)
             }
             StringUtils.Extension.PDF -> {
-                presenter.addRecent(file)
                 showEditors(uri, EditorsType.PDF, editType = editType)
             }
             StringUtils.Extension.VIDEO_SUPPORT -> {
-                presenter.addRecent(file)
                 val videoFile = file.clone().apply {
-                    webUrl = uri?.path.orEmpty()
+                    webUrl = uri.path.orEmpty()
                     id = ""
                 }
                 val explorer = Explorer().apply {
@@ -352,13 +349,14 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 }
                 showMediaActivity(explorer, true)
             }
-            StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH,
-            StringUtils.Extension.VIDEO, StringUtils.Extension.HTML,
-            -> {
+            StringUtils.Extension.UNKNOWN,
+            StringUtils.Extension.EBOOK,
+            StringUtils.Extension.ARCH,
+            StringUtils.Extension.VIDEO,
+            StringUtils.Extension.HTML, -> {
                 onSnackBar(getString(R.string.download_manager_complete))
             }
-            else -> {
-            }
+            else -> Unit
         }
     }
 
@@ -377,8 +375,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 cancelButton = getString(R.string.dialogs_common_cancel_button),
                 suffix = presenter.itemExtension
             )
-            is ExplorerContextItem.Edit -> presenter.getFileInfo()
-            is ExplorerContextItem.Fill -> presenter.getFileInfo()
+            is ExplorerContextItem.Edit -> presenter.openFile(EditType.Edit(false))
+            is ExplorerContextItem.Fill -> presenter.openFile(EditType.Fill())
             is ExplorerContextItem.Delete -> {
                 if (presenter.isRecentViaLinkSection()) {
                     presenter.deleteItems()
@@ -1150,10 +1148,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
                     editorLaunchers[REQUEST_PRESENTATION]?.launch(intent)
                 }
-                //                EditorsType.PDF -> {
-                //                    intent.setClassName(requireContext(), EditorsContract.PDF)
-                //                    startActivity(intent)
-                //                }
             }
         } catch (e: ActivityNotFoundException) {
             e.printStackTrace()

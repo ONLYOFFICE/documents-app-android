@@ -6,7 +6,6 @@ import androidx.work.OneTimeWorkRequest
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.OneDriveUtils
-import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.storages.onedrive.models.request.ExternalLinkRequest
@@ -19,8 +18,6 @@ import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.onedrive.DownloadWork
 import app.editors.manager.managers.works.onedrive.UploadWork
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import moxy.InjectViewState
@@ -125,22 +122,6 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
                     }) { throwable: Throwable -> fetchError(throwable) })
                 }
             }
-        }
-    }
-
-    override fun getFileInfo() {
-        showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
-        fileProvider?.let { provider ->
-            downloadDisposable = provider.fileInfo(itemClicked)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ file: CloudFile? ->
-                        tempFile = file
-                        viewState.onDialogClose()
-                        file?.let { addRecent(it) }
-                        viewState.onOpenLocalFile(file, null)
-                    }
-                ) { throwable: Throwable -> fetchError(throwable) }
         }
     }
 
