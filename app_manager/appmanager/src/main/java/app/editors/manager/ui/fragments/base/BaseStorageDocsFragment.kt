@@ -38,6 +38,8 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     var activity: IMainActivity? = null
 
+    abstract val storagePresenter: BaseStorageDocsPresenter<*, *>
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
@@ -81,7 +83,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     }
 
     private fun loadFiles() {
-        presenter.getProvider()
+        storagePresenter.getItems()
     }
 
     override fun onStateEmptyBackStack() {
@@ -101,7 +103,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            is ExplorerContextItem.ExternalLink -> presenter.externalLink
+            is ExplorerContextItem.ExternalLink -> storagePresenter.externalLink
             else -> super.onContextButtonClick(contextItem)
         }
     }
@@ -164,7 +166,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     override fun onError(message: String?) {
         when(message) {
             context?.getString(R.string.errors_client_unauthorized) -> {
-                presenter.refreshToken()
+                storagePresenter.refreshToken()
             }
             else -> {
                 message?.let { showSnackBar(it) }
@@ -172,9 +174,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         }
 
     }
-
-    override val presenter: BaseStorageDocsPresenter<out BaseStorageDocsView>
-        get() = getDocsPresenter()
 
     override fun onFileUploadPermission(extension: String?) {
         showMultipleFilePickerActivity(extension) { uris ->
@@ -187,7 +186,4 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
             }
         }
     }
-
-    abstract fun getDocsPresenter(): BaseStorageDocsPresenter<out BaseStorageDocsView>
-
 }

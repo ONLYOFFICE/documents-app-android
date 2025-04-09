@@ -81,7 +81,7 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 @InjectViewState
-class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
+class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView, CloudFileProvider>(),
     OnDownloadListener, OnUploadListener, RoomDuplicateReceiver.Listener {
 
     private val downloadReceiver: DownloadReceiver = DownloadReceiver()
@@ -221,14 +221,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun copyFilesToCurrent() {
-        (fileProvider as? CloudFileProvider)?.let { provider ->
-            val pickerMode = this.pickerMode
-            if (pickerMode is PickerMode.Files) {
-                val request = RequestBatchOperation(destFolderId = pickerMode.destFolderId).apply {
-                    fileIds = pickerMode.selectedIds
-                }
-                disposable.add(provider.copyFiles(request).subscribe({ onBatchOperations() }, ::fetchError))
+        val pickerMode = this.pickerMode
+        if (pickerMode is PickerMode.Files) {
+            val request = RequestBatchOperation(destFolderId = pickerMode.destFolderId).apply {
+                fileIds = pickerMode.selectedIds
             }
+            disposable.add(fileProvider.copyFiles(request).subscribe({ onBatchOperations() }, ::fetchError))
         }
     }
 
@@ -253,15 +251,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (id != null && loadPosition > 0) {
             val args = getArgs(filteringValue).toMutableMap()
             args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
-            fileProvider?.let { provider ->
-                disposable.add(provider.getFiles(id, args.putFilters()).subscribe({ explorer: Explorer? ->
-                    modelExplorerStack.addOnNext(explorer)
-                    val last = modelExplorerStack.last()
-                    if (last != null) {
-                        viewState.onDocsNext(getListWithHeaders(last, true))
-                    }
-                }) { throwable: Throwable -> fetchError(throwable) })
-            }
+            disposable.add(fileProvider.getFiles(id, args.putFilters()).subscribe({ explorer: Explorer? ->
+                modelExplorerStack.addOnNext(explorer)
+                val last = modelExplorerStack.last()
+                if (last != null) {
+                    viewState.onDocsNext(getListWithHeaders(last, true))
+                }
+            }) { throwable: Throwable -> fetchError(throwable) })
         }
     }
 
@@ -275,15 +271,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         modelExplorerStack.currentId?.let { id ->
             val requestCreate = RequestCreate()
             requestCreate.title = title
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.createFile(id, requestCreate).subscribe({ cloudFile ->
-                        addFile(cloudFile)
-                        addRecent(cloudFile)
-                        viewState.onDialogClose()
-                        fileOpenRepository.openCloudFile(cloudFile, EditType.Edit(false))
-                    }, ::fetchError))
-            }
+            disposable.add(
+                fileProvider.createFile(id, requestCreate).subscribe({ cloudFile ->
+                    addFile(cloudFile)
+                    addRecent(cloudFile)
+                    viewState.onDialogClose()
+                    fileOpenRepository.openCloudFile(cloudFile, EditType.Edit(false))
+                }, ::fetchError))
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         }
     }
@@ -513,27 +507,25 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun addToFavorite() {
         val requestFavorites = RequestFavorites()
         requestFavorites.fileIds = listOf(itemClicked?.id!!)
-        (fileProvider as CloudFileProvider).let { provider ->
-            val item = itemClicked
-            if (item != null && item is CloudFile) {
-                val isAdd = !item.isFavorite
-                disposable.add(provider.addToFavorites(requestFavorites, isAdd)
-                    .subscribe({
+        val item = itemClicked
+        if (item != null && item is CloudFile) {
+            val isAdd = !item.isFavorite
+            disposable.add(fileProvider.addToFavorites(requestFavorites, isAdd)
+                .subscribe({
+                    if (isAdd) {
+                        item.fileStatus += ApiContract.FileStatus.FAVORITE
+                    } else {
+                        item.fileStatus -= ApiContract.FileStatus.FAVORITE
+                    }
+                    viewState.onUpdateItemState()
+                    viewState.onSnackBar(
                         if (isAdd) {
-                            item.fileStatus += ApiContract.FileStatus.FAVORITE
+                            context.getString(R.string.operation_add_to_favorites)
                         } else {
-                            item.fileStatus -= ApiContract.FileStatus.FAVORITE
+                            context.getString(R.string.operation_remove_from_favorites)
                         }
-                        viewState.onUpdateItemState()
-                        viewState.onSnackBar(
-                            if (isAdd) {
-                                context.getString(R.string.operation_add_to_favorites)
-                            } else {
-                                context.getString(R.string.operation_remove_from_favorites)
-                            }
-                        )
-                    }) { throwable: Throwable -> fetchError(throwable) })
-            }
+                    )
+                }) { throwable: Throwable -> fetchError(throwable) })
         }
     }
 
@@ -567,9 +559,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun emptyTrash() {
         val explorer = modelExplorerStack.last()
         if (explorer != null) {
-            val provider = fileProvider as CloudFileProvider
             showDialogProgress(true, TAG_DIALOG_CANCEL_BATCH_OPERATIONS)
-            batchDisposable = provider.clearTrash()
+            batchDisposable = fileProvider.clearTrash()
                 .switchMap { status }
                 .subscribe(
                     { progress: Int? ->
@@ -948,26 +939,24 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun convertToOOXML() {
         val extension = LocalContentTools.toOOXML((itemClicked as? CloudFile)?.clearExt.orEmpty())
         viewState.onConversionProgress(0, extension)
-        (fileProvider as? CloudFileProvider)?.let { fileProvider ->
-            conversionJob = presenterScope.launch {
-                try {
-                    fileProvider.convertToOOXML(itemClicked?.id.orEmpty()).collectLatest {
-                        withContext(Dispatchers.Main) {
-                            viewState.onConversionProgress(it, extension)
-                            if (it == 100) {
-                                delay(300L)
-                                viewState.onDialogClose()
-                                refresh()
-                                viewState.onScrollToPosition(0)
-                                conversionJob?.cancel()
-                            }
+        conversionJob = presenterScope.launch {
+            try {
+                fileProvider.convertToOOXML(itemClicked?.id.orEmpty()).collectLatest {
+                    withContext(Dispatchers.Main) {
+                        viewState.onConversionProgress(it, extension)
+                        if (it == 100) {
+                            delay(300L)
+                            viewState.onDialogClose()
+                            refresh()
+                            viewState.onScrollToPosition(0)
+                            conversionJob?.cancel()
                         }
                     }
-                } catch (error: Throwable) {
-                    if (conversionJob?.isCancelled == true) return@launch
-                    viewState.onDialogClose()
-                    fetchError(error)
                 }
+            } catch (error: Throwable) {
+                if (conversionJob?.isCancelled == true) return@launch
+                viewState.onDialogClose()
+                fetchError(error)
             }
         }
     }
@@ -1034,14 +1023,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun updateDocument(data: Uri) {
         if (data.path?.isEmpty() == true) return
         context.contentResolver.openInputStream(data).use {
-            val file = File(data.path)
+            val file = File(data.path.orEmpty())
             val body = MultipartBody.Part.createFormData(
                 file.name, file.name, RequestBody.create(
                     MediaType.parse(ContentResolverUtils.getMimeType(context, data)), file
                 )
             )
             disposable.add(
-                (fileProvider as CloudFileProvider).updateDocument(itemClicked?.id.orEmpty(), body)
+                fileProvider.updateDocument(itemClicked?.id.orEmpty(), body)
                     .subscribe({
                         FileUtils.deletePath(file)
                         viewState.onDialogClose()
@@ -1057,7 +1046,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     // use for operation in order to filter by room
     fun setFilterByRoom(roomType: Int) {
         filters = mapOf(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM to roomType.toString())
-        (fileProvider as CloudFileProvider).roomCallback = object : RoomCallback {
+        fileProvider.roomCallback = object : RoomCallback {
             override fun isRoomRoot(id: String?): Boolean {
                 val parts = modelExplorerStack.last()?.pathParts.orEmpty()
                 return if (parts.isNotEmpty()) {

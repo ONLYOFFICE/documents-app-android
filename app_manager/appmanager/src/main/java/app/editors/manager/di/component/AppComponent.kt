@@ -17,8 +17,10 @@ import app.documents.core.network.webdav.WebDavService
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.OneDriveFileProvider
+import app.documents.core.providers.RecentFileProvider
 import app.documents.core.providers.RoomProvider
 import app.documents.core.providers.WebDavFileProvider
+import app.editors.manager.di.module.StoragesModule
 import app.editors.manager.managers.tools.AppLocaleHelper
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
@@ -91,7 +93,7 @@ import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import javax.inject.Singleton
 
-@Component(modules = [CoreModule::class])
+@Component(modules = [CoreModule::class, StoragesModule::class])
 @Singleton
 interface AppComponent {
 
@@ -141,6 +143,7 @@ interface AppComponent {
     val localFileProvider: LocalFileProvider
     val roomProvider: RoomProvider
     val webDavFileProvider: WebDavFileProvider
+    val recentFileProvider: RecentFileProvider
 
     /*
    * Login

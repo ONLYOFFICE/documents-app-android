@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import androidx.core.net.toUri
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
@@ -15,7 +16,6 @@ import app.documents.core.providers.WebDavFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.webDavFileProvider
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.WebDavDownloadWork
 import app.editors.manager.mvp.views.main.DocsWebDavView
@@ -39,7 +39,7 @@ import moxy.presenterScope
 
 
 @InjectViewState
-class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
+class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView, WebDavFileProvider>() {
 
     companion object {
         val TAG: String = DocsWebDavPresenter::class.java.simpleName
@@ -53,14 +53,9 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         App.getApp().appComponent.inject(this)
     }
 
-    fun getProvider() {
+    fun getItems() {
         val path = (context.accountOnline?.portal?.provider as? PortalProvider.Webdav)?.path
-        fileProvider?.let {
-            getItemsById(path)
-        } ?: run {
-            fileProvider = context.webDavFileProvider
-            getItemsById(path)
-        }
+        getItemsById(path)
     }
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -99,17 +94,15 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         if (id != null) {
             val requestCreate = RequestCreate()
             requestCreate.title = title
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.createFile(id, requestCreate)
-                        .subscribe({ file: CloudFile? ->
-                            addFile(file)
-                            setPlaceholderType(PlaceholderViews.Type.NONE)
-                            viewState.onDialogClose()
-                            viewState.onOpenLocalFile(file, null)
-                        }, ::fetchError)
-                )
-            }
+            disposable.add(
+                fileProvider.createFile(id, requestCreate)
+                    .subscribe({ file: CloudFile? ->
+                        addFile(file)
+                        setPlaceholderType(PlaceholderViews.Type.NONE)
+                        viewState.onDialogClose()
+                        viewState.onOpenLocalFile(file, null)
+                    }, ::fetchError)
+            )
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         }
     }
@@ -194,7 +187,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             if (uri != null) {
                 uploadUris.add(uri)
             }
-            if (uris != null && uris.isNotEmpty()) {
+            if (!uris.isNullOrEmpty()) {
                 for (i in uris.indices) {
                     uploadUris.add(uris[i])
                 }
@@ -241,13 +234,13 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             uploadId = "$uploadId/"
         }
         showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
-        uploadDisposable = fileProvider?.upload(uploadId, uriList)!!
+        uploadDisposable = fileProvider.upload(uploadId, uriList)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ }, { throwable: Throwable ->
                 fetchError(throwable)
                 if (tempFile != null && tempFile!!.webUrl != "") {
-                    asyncDeletePath(Uri.parse(tempFile!!.webUrl).path!!)
+                    asyncDeletePath(tempFile?.webUrl?.toUri()?.path.orEmpty())
                 }
             }
             ) {
@@ -255,7 +248,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                 deleteTempFile()
                 viewState.onDialogClose()
                 viewState.onSnackBar(context.getString(R.string.upload_manager_complete))
-                (fileProvider as WebDavFileProvider).uploadsFile.clear()
+                fileProvider.uploadsFile.clear()
             }
     }
 
@@ -269,9 +262,9 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     @SuppressLint("MissingPermission")
     fun deleteTempFile() {
         if (tempFile != null && checkReadWritePermission(context)) {
-            val uri = Uri.parse(tempFile?.webUrl)
-            if (uri.path != null) {
-                asyncDeletePath(uri.path ?: "")
+            val uri = tempFile?.webUrl?.toUri()
+            if (uri?.path != null) {
+                asyncDeletePath(uri.path.orEmpty())
             }
         }
     }

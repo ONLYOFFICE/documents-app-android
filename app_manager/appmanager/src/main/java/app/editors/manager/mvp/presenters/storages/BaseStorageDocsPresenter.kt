@@ -10,6 +10,7 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.providers.BaseFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -23,7 +24,7 @@ import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.presenterScope
 
-abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePresenter<V>(),
+abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView, FP : BaseFileProvider> : DocsBasePresenter<V, FP>(),
     UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
 
     abstract val externalLink: Unit
@@ -42,7 +43,7 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
 
     abstract fun refreshToken()
 
-    abstract fun getProvider()
+    abstract fun getItems()
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -90,15 +91,13 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
         id?.let {
             val requestCreate = RequestCreate()
             requestCreate.title = title
-            fileProvider?.let { provider ->
-                disposable.add(provider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
-                    itemClicked = file
-                    addFile(file)
-                    setPlaceholderType(PlaceholderViews.Type.NONE)
-                    viewState.onDialogClose()
-                    viewState.onOpenLocalFile(file, null)
-                }) { throwable: Throwable -> fetchError(throwable) })
-            }
+            disposable.add(fileProvider.createFile(id, requestCreate).subscribe({ file: CloudFile? ->
+                itemClicked = file
+                addFile(file)
+                setPlaceholderType(PlaceholderViews.Type.NONE)
+                viewState.onDialogClose()
+                viewState.onOpenLocalFile(file, null)
+            }) { throwable: Throwable -> fetchError(throwable) })
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         }
     }

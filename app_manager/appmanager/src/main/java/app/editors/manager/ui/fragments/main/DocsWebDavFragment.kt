@@ -9,9 +9,7 @@ import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
-import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
-import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.mvp.views.main.DocsWebDavView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
@@ -26,7 +24,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
     protected var provider: WebdavProvider? = null
 
     @InjectPresenter
-    lateinit var webDavPresenter: DocsWebDavPresenter
+    override lateinit var presenter: DocsWebDavPresenter
 
     private var mainActivity: IMainActivity? = null
 
@@ -56,17 +54,17 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
             if (isActivePage && (requestCode == BaseActivity.REQUEST_ACTIVITY_MEDIA ||
                         requestCode == REQUEST_PDF)
             ) {
-                webDavPresenter.deleteTempFile()
+                presenter.deleteTempFile()
             }
         } else if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    webDavPresenter.upload(cameraUri, null)
+                    presenter.upload(cameraUri, null)
                 }
                 REQUEST_PRESENTATION, REQUEST_PDF, REQUEST_DOCS, REQUEST_SHEETS -> {
                     if (data?.data != null) {
                         if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
-                            webDavPresenter.upload(data.data, null)
+                            presenter.upload(data.data, null)
                         }
                     }
                 }
@@ -121,7 +119,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
 
     override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {
         showMediaActivity(explorer, isWebDAv) {
-            webDavPresenter.deleteTempFile()
+            presenter.deleteTempFile()
         }
     }
 
@@ -129,16 +127,12 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         mainActivity?.showActionButton(isShow)
     }
 
-
-    override val presenter: DocsBasePresenter<out DocsBaseView>
-        get() = webDavPresenter
-
     private fun loadFiles() {
-        webDavPresenter.getProvider()
+        presenter.getItems()
     }
 
     private fun init() {
-        webDavPresenter.checkBackStack()
+        presenter.checkBackStack()
     }
 
     companion object {

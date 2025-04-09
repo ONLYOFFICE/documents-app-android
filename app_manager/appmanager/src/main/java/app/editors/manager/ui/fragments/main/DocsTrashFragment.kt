@@ -46,7 +46,7 @@ class DocsTrashFragment : DocsCloudFragment() {
                 it.paddingLeft, it.paddingTop,
                 it.paddingLeft, 0
             )
-            cloudPresenter.checkBackStack()
+            presenter.checkBackStack()
         }
         explorerAdapter?.isTrash = !isArchive
     }
@@ -58,7 +58,7 @@ class DocsTrashFragment : DocsCloudFragment() {
                 if (isArchive) {
                     showRestoreDialog()
                 } else {
-                    cloudPresenter.moveCopyOperation(OperationsState.OperationType.RESTORE)
+                    presenter.moveCopyOperation(OperationsState.OperationType.RESTORE)
                 }
             }
 
@@ -95,7 +95,7 @@ class DocsTrashFragment : DocsCloudFragment() {
             acceptErrorTint = true,
             acceptListener = {
                 if (isResumed && isArchive) {
-                    cloudPresenter.deleteRoom()
+                    presenter.deleteRoom()
                 } else if (isResumed && section == ApiContract.SectionType.CLOUD_TRASH) {
                     super.onAcceptClick(CommonDialog.Dialogs.QUESTION, null, tag)
                 }
@@ -104,7 +104,7 @@ class DocsTrashFragment : DocsCloudFragment() {
 
     override fun onResume() {
         super.onResume()
-        cloudPresenter.isTrashMode = true
+        presenter.isTrashMode = true
         if (!isArchive) {
             mainPagerFragment?.setToolbarInfo(getString(R.string.trash_toolbar_info))
         }
@@ -112,7 +112,7 @@ class DocsTrashFragment : DocsCloudFragment() {
 
     override fun onPause() {
         super.onPause()
-        cloudPresenter.isTrashMode = false
+        presenter.isTrashMode = false
         mainPagerFragment?.setToolbarInfo(null)
     }
 
@@ -129,7 +129,7 @@ class DocsTrashFragment : DocsCloudFragment() {
                 if (isArchive) {
                     showRestoreDialog()
                 } else {
-                    cloudPresenter.moveCopySelected(OperationsState.OperationType.RESTORE)
+                    presenter.moveCopySelected(OperationsState.OperationType.RESTORE)
                 }
             }
 
@@ -147,13 +147,13 @@ class DocsTrashFragment : DocsCloudFragment() {
     }
 
     private fun showRestoreDialog() {
-        val count = cloudPresenter.getSelectedItemsCount() or 1
+        val count = presenter.getSelectedItemsCount() or 1
         UiUtils.showQuestionDialog(
             context = requireContext(),
             title = resources.getQuantityString(R.plurals.rooms_restore_title, count),
             description = resources.getQuantityString(R.plurals.rooms_restore_desc, count),
             acceptTitle = getString(R.string.trash_snackbar_move_button),
-            acceptListener = { cloudPresenter.archiveRooms(false) }
+            acceptListener = { presenter.archiveRooms(false) }
         )
     }
 

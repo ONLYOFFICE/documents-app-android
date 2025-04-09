@@ -26,7 +26,7 @@ import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import moxy.presenterScope
 
-class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>(),
+class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView, GoogleDriveFileProvider>(),
     GoogleDriveUploadReceiver.OnGoogleDriveUploadListener {
 
     private var uploadGoogleDriveReceiver: GoogleDriveUploadReceiver = GoogleDriveUploadReceiver()
@@ -91,38 +91,29 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView>()
 
     }
 
-    override fun getProvider() {
-        fileProvider?.let {
-            getItemsById("root")
-        } ?: run {
-            fileProvider = googleDriveFileProvider
-            getItemsById("root")
-        }
+    override fun getItems() {
+        getItemsById("root")
     }
 
     override fun getNextList() {
-        fileProvider?.let { provider ->
-            val nextPage =
-                GoogleDriveUtils.GOOGLE_DRIVE_NEXT_PAGE_TOKEN to modelExplorerStack.last()?.current?.parentId.orEmpty()
-            disposable.add(
-                provider.getFiles(modelExplorerStack.currentId, getArgs(filteringValue).plus(nextPage))
-                    .doOnNext(modelExplorerStack::addOnNext)
-                    .map { it.folders + it.files }
-                    .subscribe(viewState::onDocsNext, ::fetchError)
-            )
-        }
+        val nextPage =
+            GoogleDriveUtils.GOOGLE_DRIVE_NEXT_PAGE_TOKEN to modelExplorerStack.last()?.current?.parentId.orEmpty()
+        disposable.add(
+            fileProvider.getFiles(modelExplorerStack.currentId, getArgs(filteringValue).plus(nextPage))
+                .doOnNext(modelExplorerStack::addOnNext)
+                .map { it.folders + it.files }
+                .subscribe(viewState::onDocsNext, ::fetchError)
+        )
     }
 
     override fun getItemsById(id: String?) {
         id?.let {
             setPlaceholderType(PlaceholderViews.Type.LOAD)
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.getFiles(id, getArgs(filteringValue).putFilters())
-                        .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
-                        .subscribe(::loadSuccess, ::fetchError)
-                )
-            }
+            disposable.add(
+                fileProvider.getFiles(id, getArgs(filteringValue).putFilters())
+                    .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
+                    .subscribe(::loadSuccess, ::fetchError)
+            )
         }
     }
 

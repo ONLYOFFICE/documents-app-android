@@ -25,7 +25,7 @@ import moxy.presenterScope
 import retrofit2.HttpException
 
 @InjectViewState
-class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
+class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView, OneDriveFileProvider>() {
 
     override val externalLink : Unit
         get() {
@@ -63,19 +63,13 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
         App.getApp().appComponent.inject(this)
     }
 
-    override fun getProvider() {
+    override fun getItems() {
         if (preferenceTool.sortBy != ApiContract.Parameters.VAL_SORT_BY_TITLE) {
             preferenceTool.sortBy = ApiContract.Parameters.VAL_SORT_BY_TITLE
         }
-        fileProvider?.let {
-            getItemsById("")
-        } ?: run {
-            fileProvider = oneDriveFileProvider
-            getItemsById("")
-        }
+        getItemsById("")
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun refreshToken() {
         presenterScope.launch {
             App.getApp().refreshLoginComponent(null)
@@ -113,14 +107,12 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView>() {
             if (loadPosition > 0) {
                 val args = getArgs(filteringValue).toMutableMap()
                 args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
-                fileProvider?.let { provider ->
-                    disposable.add(provider.getFiles(id, args).subscribe({ explorer: Explorer? ->
-                        modelExplorerStack.addOnNext(explorer)
-                        modelExplorerStack.last()?.let {
-                            viewState.onDocsNext(getListWithHeaders(it, true))
-                        }
-                    }) { throwable: Throwable -> fetchError(throwable) })
-                }
+                disposable.add(fileProvider.getFiles(id, args).subscribe({ explorer: Explorer? ->
+                    modelExplorerStack.addOnNext(explorer)
+                    modelExplorerStack.last()?.let {
+                        viewState.onDocsNext(getListWithHeaders(it, true))
+                    }
+                }) { throwable: Throwable -> fetchError(throwable) })
             }
         }
     }

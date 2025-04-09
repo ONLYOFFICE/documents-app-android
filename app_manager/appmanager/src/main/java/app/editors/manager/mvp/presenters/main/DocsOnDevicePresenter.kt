@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
 import app.documents.core.model.cloud.PortalProvider
@@ -39,7 +40,7 @@ import moxy.presenterScope
 import java.io.File
 
 @InjectViewState
-class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
+class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvider>() {
 
     companion object {
         val TAG: String = DocsOnDevicePresenter::class.java.simpleName
@@ -62,23 +63,27 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     override fun getItemsById(id: String?) {
         id?.let { path ->
             disposable.add(
-                fileProvider?.getFiles(path, getArgs(filteringValue).putFilters())?.map {
-                    if (modelExplorerStack.isStackEmpty && id == Environment.getExternalStorageDirectory().absolutePath) {
-                        modelExplorerStack.addStack(it)
+                fileProvider.getFiles(path, getArgs(filteringValue).putFilters())
+                    .map {
+                        if (modelExplorerStack.isStackEmpty && id == Environment.getExternalStorageDirectory().absolutePath) {
+                            modelExplorerStack.addStack(it)
+                        }
                     }
-                }?.flatMap {
-                    if (id == Environment.getExternalStorageDirectory().absolutePath) {
-                        fileProvider?.getFiles(
-                            LocalContentTools.getDir(context),
-                            getArgs(filteringValue).putFilters()
-                        )
-                    } else {
-                        fileProvider?.getFiles(path, getArgs(filteringValue).putFilters())
+                    .flatMap {
+                        if (id == Environment.getExternalStorageDirectory().absolutePath) {
+                            fileProvider.getFiles(
+                                LocalContentTools.getDir(context),
+                                getArgs(filteringValue).putFilters()
+                            )
+                        } else {
+                            fileProvider.getFiles(path, getArgs(filteringValue).putFilters())
+                        }
                     }
-                }
-                    ?.doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
-                    ?.subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)!!
-            )
+                    .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
+                    .doOnNext(::loadSuccess)
+                    .doOnError(::fetchError)
+                    .subscribe()
+                )
         }
     }
 
@@ -91,19 +96,17 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         if (id != null) {
             val requestCreate = RequestCreate()
             requestCreate.title = title
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.createFile(id, requestCreate)
-                        .doOnNext { file ->
-                            addFile(file)
-                            fileOpenRepository.openLocalFile(file, EditType.Edit(false))
-                        }
-                        .doOnError {
-                            viewState.onError(context.getString(R.string.errors_create_local_file))
-                        }
-                        .subscribe()
-                )
-            }
+            disposable.add(
+                fileProvider.createFile(id, requestCreate)
+                    .doOnNext { file ->
+                        addFile(file)
+                        fileOpenRepository.openLocalFile(file, EditType.Edit(false))
+                    }
+                    .doOnError {
+                        viewState.onError(context.getString(R.string.errors_create_local_file))
+                    }
+                    .subscribe()
+            )
         }
     }
 
@@ -171,17 +174,17 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     override fun deleteItems() {
         val items = modelExplorerStack.selectedFiles + modelExplorerStack.selectedFolders
-        fileProvider?.let { provider ->
-            disposable.add(
-                provider.delete(items, null)
-                    .subscribe({ }, ::fetchError){
-                        modelExplorerStack.removeSelected()
-                        getBackStack()
-                        setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-                        viewState.onRemoveItems(*items.toTypedArray())
-                    }
-            )
-        }
+        disposable.add(
+            fileProvider.delete(items, null)
+                .doOnComplete {
+                    modelExplorerStack.removeSelected()
+                    getBackStack()
+                    setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                    viewState.onRemoveItems(*items.toTypedArray())
+                }
+                .doOnError(::fetchError)
+                .subscribe()
+        )
     }
 
     override fun uploadToMy(uri: Uri) {
@@ -240,10 +243,10 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             ) {
                 viewState.onDialogClose()
                 viewState.onSnackBar(context.getString(R.string.upload_manager_complete))
-                for (file in (fileProvider as WebDavFileProvider).uploadsFile) {
+                for (file in webDavFileProvider?.uploadsFile.orEmpty()) {
                     addFile(file)
                 }
-                (fileProvider as WebDavFileProvider).uploadsFile.clear()
+                webDavFileProvider?.uploadsFile?.clear()
             }
     }
 
@@ -274,7 +277,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             return
         }
         try {
-            if ((fileProvider as LocalFileProvider).transfer(path, itemClicked, isCopy)) {
+            if (fileProvider.transfer(path, itemClicked, isCopy)) {
                 refresh()
                 viewState.onSnackBar(context.getString(R.string.operation_complete_message))
             } else {
@@ -294,7 +297,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     fun import(uri: Uri) {
         disposable.add(
-            (fileProvider as LocalFileProvider).import(
+            fileProvider.import(
             context,
             modelExplorerStack.currentId ?: throw RuntimeException(),
             uri
@@ -318,7 +321,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         uri?.let {
             val parentFile = File(modelExplorerStack.currentId ?: return)
             val path = PathUtils.getPath(context, uri)
-            Uri.parse(path).path?.let { filePath -> File(filePath) }?.let { file ->
+            path?.toUri()?.path?.let { filePath -> File(filePath) }?.let { file ->
                 FileUtils.deletePath(File(parentFile, file.name))
             }
         }
@@ -328,27 +331,25 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     private fun moveSelection(path: String?, isCopy: Boolean) {
         if (modelExplorerStack.countSelectedItems > 0) {
-            if (fileProvider is LocalFileProvider) {
-                val provider = fileProvider as LocalFileProvider
-                val items: MutableList<Item> = ArrayList()
-                val files = modelExplorerStack.selectedFiles
-                val folders = modelExplorerStack.selectedFolders
-                items.addAll(folders)
-                items.addAll(files)
-                for (item in items) {
-                    try {
-                        if (!provider.transfer(path, item, isCopy)) {
-                            viewState.onError(context.getString(R.string.operation_error_move_to_same))
-                            break
-                        }
-                    } catch (e: Exception) {
-                        catchTransferError(e)
+            val provider = fileProvider
+            val items: MutableList<Item> = ArrayList()
+            val files = modelExplorerStack.selectedFiles
+            val folders = modelExplorerStack.selectedFolders
+            items.addAll(folders)
+            items.addAll(files)
+            for (item in items) {
+                try {
+                    if (!provider.transfer(path, item, isCopy)) {
+                        viewState.onError(context.getString(R.string.operation_error_move_to_same))
+                        break
                     }
+                } catch (e: Exception) {
+                    catchTransferError(e)
                 }
-                getBackStack()
-                refresh()
-                viewState.onSnackBar(context.getString(R.string.operation_complete_message))
             }
+            getBackStack()
+            refresh()
+            viewState.onSnackBar(context.getString(R.string.operation_complete_message))
         } else {
             viewState.onError(context.getString(R.string.operation_empty_lists_data))
         }
@@ -356,15 +357,15 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     fun deleteFile() {
         itemClicked?.let { item ->
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.delete(listOf(item), null)
-                        .subscribe({ }, ::fetchError){
-                            modelExplorerStack.removeItemById(item.id)
-                            viewState.onRemoveItems(item)
-                        }
-                )
-            }
+            disposable.add(
+                fileProvider.delete(listOf(item), null)
+                    .doOnComplete {
+                        modelExplorerStack.removeItemById(item.id)
+                        viewState.onRemoveItems(item)
+                    }
+                    .doOnError(::fetchError)
+                    .subscribe()
+            )
         }
     }
 

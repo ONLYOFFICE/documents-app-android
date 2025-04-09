@@ -9,6 +9,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.providers.RecentFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.webDavFileProvider
@@ -42,7 +43,7 @@ sealed class OpenState(val uri: Uri?, val type: EditorsType?) {
 }
 
 @InjectViewState
-class DocsRecentPresenter : DocsBasePresenter<DocsRecentView>() {
+class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider>() {
 
     companion object {
         val TAG: String = DocsRecentPresenter::class.java.simpleName

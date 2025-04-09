@@ -9,11 +9,14 @@ import androidx.work.WorkManager
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.manager.models.base.Entity
+import app.documents.core.providers.BaseFileProvider
 import app.editors.manager.R
 import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.googledrive.UploadWork
+import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.storages.DocsGoogleDrivePresenter
 import app.editors.manager.mvp.views.base.DocsGoogleDriveView
+import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import app.editors.manager.ui.fragments.base.StorageLoginFragment
@@ -30,11 +33,12 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
     }
 
     @InjectPresenter
-    override lateinit var presenter: DocsGoogleDrivePresenter
+    override lateinit var storagePresenter: DocsGoogleDrivePresenter
+
+    override val presenter: DocsBasePresenter<out DocsBaseView, out BaseFileProvider>
+        get() = storagePresenter
 
     override fun getSection(): ApiContract.Section = ApiContract.Section.Storage.GoogleDrive
-
-    override fun getDocsPresenter() = presenter
 
     override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onEditorActivityResult(requestCode, resultCode, data)

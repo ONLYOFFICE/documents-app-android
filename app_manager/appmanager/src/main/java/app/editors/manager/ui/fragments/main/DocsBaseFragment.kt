@@ -30,6 +30,7 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.Security
+import app.documents.core.providers.BaseFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.ActionMenuAdapter
@@ -116,7 +117,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     private var lastClickTime: Long = 0
     private var selectItem: MenuItem? = null
 
-    protected abstract val presenter: DocsBasePresenter<out DocsBaseView>
+    protected abstract val presenter: DocsBasePresenter<out DocsBaseView, out BaseFileProvider>
 
     private val lifecycleEventObserver = LifecycleEventObserver { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
