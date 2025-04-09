@@ -177,7 +177,7 @@ interface DocsBaseView : BaseViewExt {
     fun onCreateDownloadFile(name: String)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onUpdateFavoriteItem()
+    fun onUpdateItemState()
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onFinishDownload(uri: Uri?)

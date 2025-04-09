@@ -840,13 +840,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onDialogWarning(message: String) {
-        onDialogWarning(
-            title = getString(R.string.dialogs_warning_title),
-            message = message,
-            tag = null
-        )
-    }
+//    override fun onDialogWarning(message: String) {
+//        onDialogWarning(
+//            title = getString(R.string.dialogs_warning_title),
+//            message = message,
+//            tag = null
+//        )
+//    }
 
     override fun onDialogProgress(title: String?, isHideButtons: Boolean, tag: String?) {
         if (isActivePage) {
