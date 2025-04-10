@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
@@ -11,6 +12,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import lib.toolkit.base.managers.utils.FileUtils
 import retrofit2.HttpException
 
 object FirebaseUtils {
@@ -114,6 +116,47 @@ object FirebaseUtils {
             }
         }
         return liveData
+    }
+
+    fun checkSdkVersion(
+        context: Context,
+        account: CloudAccount,
+        onResult: (isCoauthoring: Boolean) -> Unit
+    ) {
+        getSdk { allowCoauthoring, checkSdkFully ->
+            if (allowCoauthoring) {
+                onResult(false)
+                return@getSdk
+            }
+
+            val webSdk = account
+                .portal
+                .version
+                .documentServerVersion
+                .replace(".", "")
+
+            if (webSdk.isEmpty()) {
+                onResult(false)
+                return@getSdk
+            }
+
+            val localSdk = FileUtils.readSdkVersion(context).replace(".", "")
+
+            var maxVersionIndex = 2
+
+            if (!checkSdkFully) {
+                maxVersionIndex = 1
+            }
+
+            for (i in 0..maxVersionIndex) {
+                if (webSdk[i] != localSdk[i]) {
+                    onResult(false)
+                    return@getSdk
+                }
+            }
+
+            onResult(true)
+        }
     }
 
     /**

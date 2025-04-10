@@ -25,6 +25,8 @@ import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FileUtils.createCacheFile
 import lib.toolkit.base.managers.utils.FileUtils.createFile
@@ -41,9 +43,13 @@ class OneDriveFileProvider(
     private val context: Context,
     private val helper: IStorageHelper<OneDriveProvider>
 ) : BaseFileProvider {
+
     companion object {
         private const val PATH_TEMPLATES = "templates/"
     }
+
+    override val fileOpenResultFlow: Flow<FileOpenResult>
+        get() = flowOf()
 
     private val api: OneDriveProvider get() = helper.api
 

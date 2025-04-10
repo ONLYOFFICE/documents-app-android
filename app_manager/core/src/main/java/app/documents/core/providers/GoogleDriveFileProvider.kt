@@ -30,6 +30,8 @@ import io.reactivex.ObservableEmitter
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -90,6 +92,9 @@ class GoogleDriveFileProvider(
         }
 
     }
+
+    override val fileOpenResultFlow: Flow<FileOpenResult>
+        get() = flowOf()
 
     private val api: GoogleDriveProvider get() = helper.api
 

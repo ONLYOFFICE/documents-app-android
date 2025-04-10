@@ -6,6 +6,7 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.ExportIndexOperation
 import app.documents.core.network.manager.models.explorer.Lifetime
 import app.editors.manager.viewModels.main.CopyItems
+import lib.toolkit.base.managers.utils.EditType
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
@@ -54,4 +55,7 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showRoomInfoFragment()
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onOpenDocumentServer(file: CloudFile, info: String, type: EditType)
 }

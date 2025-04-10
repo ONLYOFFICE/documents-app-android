@@ -378,6 +378,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             )
             is ExplorerContextItem.Edit -> presenter.openFile(EditType.Edit(false))
             is ExplorerContextItem.Fill -> presenter.openFile(EditType.Fill())
+            is ExplorerContextItem.View -> presenter.openFile(EditType.View())
             is ExplorerContextItem.Delete -> {
                 if (presenter.isRecentViaLinkSection()) {
                     presenter.deleteItems()
@@ -1096,29 +1097,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         val fragment = parentFragment
         if (fragment is MainPagerFragment) {
             fragment.setAccountEnable(isEnable)
-        }
-    }
-
-    override fun onOpenDocumentServer(file: CloudFile?, info: String?, editType: EditType?) {
-        when (getExtension(file?.fileExst ?: "")) {
-            StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
-                showEditors(null, EditorsType.DOCS, info, editType)
-            }
-
-            StringUtils.Extension.SHEET -> {
-                showEditors(null, EditorsType.CELLS, info, editType)
-            }
-
-            StringUtils.Extension.PRESENTATION -> {
-                showEditors(null, EditorsType.PRESENTATION, info, editType)
-            }
-
-            StringUtils.Extension.PDF -> {
-                showEditors(null, EditorsType.PDF, info, editType)
-            }
-
-            else -> {
-            }
         }
     }
 

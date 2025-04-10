@@ -20,6 +20,8 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
@@ -34,6 +36,9 @@ import javax.inject.Inject
 class LocalFileProvider @Inject constructor(
     private val localContentTools: LocalContentTools
 ) : BaseFileProvider {
+
+    override val fileOpenResultFlow: Flow<FileOpenResult>
+        get() = flowOf()
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.just(localContentTools.createRootDir())

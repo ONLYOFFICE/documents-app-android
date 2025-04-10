@@ -17,7 +17,6 @@ import androidx.work.WorkManager
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.manager.FileOpenRepository
-import app.documents.core.manager.FileOpenResult
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
@@ -31,6 +30,7 @@ import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.providers.BaseFileProvider
 import app.documents.core.providers.CloudFileProvider
+import app.documents.core.providers.FileOpenResult
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.ProviderError.Companion.throwInterruptException
@@ -61,8 +61,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
@@ -219,6 +221,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
 
     protected var disposable = CompositeDisposable()
     protected var requestJob: Job? = null
+    protected var openFileJob: Job? = null
     protected var batchDisposable: Disposable? = null
     protected var uploadDisposable: Disposable? = null
     protected var downloadDisposable: Disposable? = null
@@ -273,15 +276,40 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
 
     private fun collectFileOpenResult() {
         presenterScope.launch {
-            fileOpenRepository.resultFlow.collect(::onFileOpenResult)
+            fileProvider.fileOpenResultFlow.collect { result ->
+                if (openFileJob?.isActive == true) {
+                    withContext(Dispatchers.Main) {
+                        onFileOpenResult(result)
+                    }
+                }
+            }
         }
     }
 
     protected open fun onFileOpenResult(result: FileOpenResult) {
+        if (result !is FileOpenResult.Loading) viewState.onDialogClose()
         when (result) {
-            is FileOpenResult.Success -> TODO()
-            is FileOpenResult.Loading -> TODO()
+            is FileOpenResult.DownloadNotSupportedFile -> viewState.onFileDownloadPermission()
+            is FileOpenResult.Loading -> showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+            is FileOpenResult.OpenLocally -> {
+                openFileFromPortal(result.file, result.fileId, result.editType)
+            }
+            is FileOpenResult.OpenMedia -> {
+                viewState.onFileMedia(getListMedia(result.fileId), false)
+            }
+            is FileOpenResult.Failed -> fetchError(result.throwable)
+            else -> Unit
         }
+    }
+
+    private fun openFileFromPortal(file: File, fileId: String, editType: EditType?) {
+        viewState.onOpenLocalFile(CloudFile().apply {
+            id = fileId
+            webUrl = Uri.fromFile(file).toString()
+            fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
+            title = file.name
+            viewUrl = file.absolutePath
+        }, editType)
     }
 
     open fun getItemsById(id: String?) {
@@ -900,11 +928,13 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     private fun cancelGetRequests() {
         disposable.clear()
         requestJob?.cancel()
+        openFileJob?.cancel()
     }
 
     fun cancelSingleOperationsRequests() {
         disposable.clear()
         requestJob?.cancel()
+        openFileJob?.cancel()
     }
 
     fun resetDatesHeaders() {
@@ -1667,17 +1697,6 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
 
     fun clearDisposable() {
         disposable.clear()
-    }
-
-    private fun openFileFromPortal(file: File, fileId: String, editType: EditType?) {
-        viewState.onDialogClose()
-        viewState.onOpenLocalFile(CloudFile().apply {
-            id = fileId
-            webUrl = Uri.fromFile(file).toString()
-            fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
-            title = file.name
-            viewUrl = file.absolutePath
-        }, editType)
     }
 
     fun isRecentViaLinkSection(): Boolean {

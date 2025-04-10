@@ -79,7 +79,7 @@ interface ExplorerContextItemVisible {
         }
 
     private val ExplorerContextState.view: Boolean
-        get() = item is CloudFile
+        get() = item is CloudFile && !item.isPdfForm
 
     private val ExplorerContextState.edit: Boolean
         get() {

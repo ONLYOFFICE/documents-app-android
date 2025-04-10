@@ -1,7 +1,10 @@
 package app.documents.core.providers
 
 import android.annotation.SuppressLint
+import android.content.Context
+import app.documents.core.account.AccountRepository
 import app.documents.core.manager.ManagerRepository
+import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.ManagerService
@@ -24,6 +27,7 @@ import app.documents.core.network.manager.models.response.ResponseFile
 import app.documents.core.network.manager.models.response.ResponseFolder
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.room.RoomService
+import app.documents.core.utils.FirebaseTool
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -31,8 +35,9 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.StringUtils
@@ -53,7 +58,9 @@ data class OpenDocumentResult(
 class CloudFileProvider @Inject constructor(
     private val managerService: ManagerService,
     private val roomService: RoomService,
-    private val managerRepository: ManagerRepository
+    private val managerRepository: ManagerRepository,
+    private val accountRepository: AccountRepository,
+    private val firebaseTool: FirebaseTool
 ) : BaseFileProvider, CacheFileHelper {
 
     companion object {
@@ -68,6 +75,9 @@ class CloudFileProvider @Inject constructor(
     }
 
     var roomCallback: RoomCallback? = null
+
+    private val _fileOpenResultFlow: MutableSharedFlow<FileOpenResult> = MutableSharedFlow(1)
+    override val fileOpenResultFlow: Flow<FileOpenResult> = _fileOpenResultFlow.asSharedFlow()
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return when {
@@ -258,7 +268,10 @@ class CloudFileProvider @Inject constructor(
             }
     }
 
-    fun getRooms(filters: Map<String, String>?, isArchive: (() -> Boolean)? = null): Observable<Explorer> {
+    fun getRooms(
+        filters: Map<String, String>?,
+        isArchive: (() -> Boolean)? = null
+    ): Observable<Explorer> {
         val roomFilter = filters?.toMutableMap()?.apply {
             remove(ApiContract.Parameters.ARG_FILTER_BY_TYPE)
             remove(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS)
@@ -311,7 +324,10 @@ class CloudFileProvider @Inject constructor(
             }
     }
 
-    fun addToFavorites(requestFavorites: RequestFavorites, isAdd: Boolean): Observable<BaseResponse> {
+    fun addToFavorites(
+        requestFavorites: RequestFavorites,
+        isAdd: Boolean
+    ): Observable<BaseResponse> {
         return if (isAdd) {
             managerService.addToFavorites(requestFavorites)
                 .subscribeOn(Schedulers.io())
@@ -339,47 +355,24 @@ class CloudFileProvider @Inject constructor(
     }
 
     @SuppressLint("MissingPermission")
-    override fun getDownloadResponse(cloudFile: CloudFile, token: String?): Single<Response<ResponseBody>> {
+    override fun getDownloadResponse(
+        cloudFile: CloudFile,
+        token: String?
+    ): Single<Response<ResponseBody>> {
         return managerService.downloadFile(
             url = cloudFile.viewUrl,
             cookie = ApiContract.COOKIE_HEADER + token
         )
     }
 
-    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-    fun opeEdit(cloudFile: CloudFile, canShareable: Boolean? = null, editType: EditType): Single<String?> {
-        return Single.fromCallable { runBlocking { managerRepository.updateDocumentServerVersion() } }
-            .map { managerService.getFileInfo(cloudFile.id).blockingSingle().body()?.response }
-            .flatMap { file ->
-                when (editType) {
-                    is EditType.Edit -> managerService.openFile(file.id, file.version, edit = true)
-                    is EditType.Fill -> managerService.openFile(file.id, file.version, view = true)
-                    is EditType.View -> managerService.openFile(file.id, file.version, fill = true)
-                }
-            }
-            .map { response ->
-                if (!response.isSuccessful) {
-                    throw HttpException(response)
-                }
-                val json = JSONObject(managerService.getDocService().blockingGet().body()?.string())
-                val docService = if (json.optJSONObject(KEY_RESPONSE) != null) {
-                    json.getJSONObject(KEY_RESPONSE).getString("docServiceUrlApi")
-                        .replace(STATIC_DOC_URL, "")
-                } else {
-                    json.getString(KEY_RESPONSE)
-                        .replace(STATIC_DOC_URL, "")
-                }
-                return@map JSONObject(response.body()?.string()).getJSONObject(KEY_RESPONSE)
-                    .put("url", docService)
-                    .put("size", cloudFile.pureContentLength)
-                    .put("updated", cloudFile.updated.time)
-                    .put("fileId", cloudFile.id)
-                    .put("canShareable", canShareable)
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread()).map { response ->
-                return@map response.toString()
-            }
+    override suspend fun suspendGetDownloadResponse(
+        cloudFile: CloudFile,
+        token: String?
+    ): Response<ResponseBody> {
+        return managerService.suspendDownloadFile(
+            url = managerService.getDownloadFileLink(cloudFile.id).response,
+            cookie = ApiContract.COOKIE_HEADER + token
+        )
     }
 
     suspend fun convertToOOXML(id: String): Flow<Int> = withContext(Dispatchers.IO) {
@@ -406,33 +399,6 @@ class CloudFileProvider @Inject constructor(
             }
     }
 
-    @SuppressLint("CheckResult")
-    fun openDocument(cloudFile: CloudFile, token: String?, canShareable: Boolean, editType: EditType): Single<OpenDocumentResult> {
-        return Single.fromCallable { StringUtils.getExtension(cloudFile.fileExst) == StringUtils.Extension.PDF }
-            .flatMap { isPdf ->
-                if (isPdf) {
-                    getDownloadResponse(cloudFile, token)
-                        .subscribeOn(Schedulers.io())
-                        .flatMap { response ->
-                            if (checkOformPdf(response.body()?.byteStream())) {
-                                opeEdit(cloudFile, canShareable, editType).map { info -> OpenDocumentResult(info = info) }
-                            } else {
-                                Single.just(OpenDocumentResult(isPdf = true))
-                            }
-                        }
-                } else {
-                    opeEdit(cloudFile, canShareable, editType).map { info -> OpenDocumentResult(info = info) }
-                }
-            }
-    }
-
-    private fun checkOformPdf(inputStream: InputStream?): Boolean {
-        return ByteArray(110)
-            .apply { inputStream?.use { stream -> stream.read(this, 0, size) } }
-            .decodeToString()
-            .contains("/ONLYOFFICEFORM")
-    }
-
     fun getRecentViaLink(filter: Map<String, String> = mapOf()): Single<Explorer> {
         val params = filter.plus("searchArea" to "3")
         return managerService.getRecentViaLink(params)
@@ -445,5 +411,194 @@ class CloudFileProvider @Inject constructor(
         return managerService.deleteRecent(RequestDeleteRecent(fileIds))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    suspend fun openFile(
+        context: Context,
+        portal: String,
+        token: String,
+        id: String,
+        title: String,
+        extension: String,
+    ) = withContext(Dispatchers.IO) {
+        try {
+            val api = NetworkClient.getRetrofit<ManagerService>(portal, token, context)
+            val fileJson = JSONObject(api.suspendOpenFile(id).body()?.string().toString())
+                .getJSONObject(KEY_RESPONSE)
+
+            val docServiceJson = JSONObject(
+                api.suspendGetDocService().body()?.string().toString()
+            )
+
+            val docService = if (docServiceJson.optJSONObject(KEY_RESPONSE) != null) {
+                docServiceJson.getJSONObject(KEY_RESPONSE)
+                    .getString("docServiceUrlApi")
+                    .replace(STATIC_DOC_URL, "")
+            } else {
+                docServiceJson.getString(KEY_RESPONSE)
+                    .replace(STATIC_DOC_URL, "")
+            }
+
+            val result = withContext(Dispatchers.IO) {
+                fileJson
+                    .put("url", docService)
+                    .put("fileId", id)
+                    .put("canShareable", false)
+            }
+
+            _fileOpenResultFlow.emit(
+                FileOpenResult.OpenDocumentServer(
+                    cloudFile = CloudFile().apply {
+                        this.id = id
+                        this.title = title
+                        this.fileExst = extension
+                    },
+                    info = result.toString(),
+                    editType = EditType.Edit()
+                )
+            )
+        } catch (e: Exception) {
+            _fileOpenResultFlow.emit(FileOpenResult.Failed(e))
+        }
+    }
+
+    suspend fun openFile(
+        context: Context,
+        cloudFile: CloudFile,
+        editType: EditType,
+        canShareable: Boolean
+    ) = withContext(Dispatchers.IO) {
+        try {
+            _fileOpenResultFlow.emit(FileOpenResult.Loading())
+            val token = checkNotNull(accountRepository.getOnlineToken())
+            when {
+                StringUtils.isDocument(cloudFile.fileExst) -> {
+                    if (firebaseTool.isCoauthoring()) {
+                        val document = openDocument(
+                            cloudFile = cloudFile,
+                            token = token,
+                            canShareable = canShareable,
+                            editType = editType
+                        )
+
+                        if (document.isPdf) {
+                            val cachedFile = suspendGetCachedFile(context, cloudFile, token)
+                            _fileOpenResultFlow.emit(
+                                FileOpenResult.OpenLocally(
+                                    file = cachedFile,
+                                    fileId = cloudFile.id,
+                                    editType = editType
+                                )
+                            )
+                        } else {
+                            _fileOpenResultFlow.emit(
+                                FileOpenResult.OpenDocumentServer(
+                                    cloudFile = cloudFile,
+                                    info = checkNotNull(document.info),
+                                    editType = editType
+                                )
+                            )
+                        }
+                    } else {
+                        val cachedFile = suspendGetCachedFile(context, cloudFile, token)
+                        _fileOpenResultFlow.emit(
+                            FileOpenResult.OpenLocally(
+                                file = cachedFile,
+                                fileId = cloudFile.id,
+                                editType = editType
+                            )
+                        )
+                    }
+                }
+
+                StringUtils.isMedia(cloudFile.fileExst) -> _fileOpenResultFlow.emit(
+                    FileOpenResult.OpenMedia(
+                        fileId = cloudFile.id
+                    )
+                )
+
+                else -> _fileOpenResultFlow.emit(FileOpenResult.DownloadNotSupportedFile())
+            }
+        } catch (throwable: Throwable) {
+            _fileOpenResultFlow.emit(FileOpenResult.Failed(throwable))
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    private suspend fun openDocument(
+        cloudFile: CloudFile,
+        token: String?,
+        canShareable: Boolean,
+        editType: EditType
+    ): OpenDocumentResult {
+        return if (StringUtils.getExtension(cloudFile.fileExst) == StringUtils.Extension.PDF) {
+            val fileResponse = managerService.suspendDownloadFile(
+                url = cloudFile.viewUrl,
+                cookie = ApiContract.COOKIE_HEADER + token
+            )
+            if (!fileResponse.isSuccessful) throw HttpException(fileResponse)
+
+            if (checkOFORMPdf(fileResponse.body()?.byteStream())) {
+                val info = openEdit(
+                    cloudFile = cloudFile,
+                    canShareable = canShareable,
+                    editType = editType
+                )
+                OpenDocumentResult(info = info)
+            } else {
+                OpenDocumentResult(isPdf = false)
+            }
+        } else {
+            val info = openEdit(
+                cloudFile = cloudFile,
+                canShareable = canShareable,
+                editType = editType
+            )
+            OpenDocumentResult(info = info)
+        }
+    }
+
+    private fun checkOFORMPdf(inputStream: InputStream?): Boolean {
+        return ByteArray(110)
+            .apply { inputStream?.use { stream -> stream.read(this, 0, size) } }
+            .decodeToString()
+            .contains("/ONLYOFFICEFORM")
+    }
+
+    private suspend fun openEdit(
+        cloudFile: CloudFile,
+        canShareable: Boolean? = null,
+        editType: EditType
+    ): String {
+        managerRepository.updateDocumentServerVersion()
+        val file = checkNotNull(managerService.suspendGetFileInfo(cloudFile.id).body()?.response)
+        val response = when (editType) {
+            is EditType.Edit -> managerService.suspendOpenFile(file.id, file.version, edit = true)
+            is EditType.Fill -> managerService.suspendOpenFile(file.id, file.version, view = true)
+            is EditType.View -> managerService.suspendOpenFile(file.id, file.version, fill = true)
+        }
+        if (!response.isSuccessful) throw HttpException(response)
+
+        val docServiceResponse = managerService.suspendGetDocService()
+        if (!docServiceResponse.isSuccessful) throw HttpException(response)
+
+        val docServiceJson = JSONObject(docServiceResponse.body()?.string().orEmpty())
+        val docService = if (docServiceJson.optJSONObject(KEY_RESPONSE) != null) {
+            docServiceJson.getJSONObject(KEY_RESPONSE)
+                .getString("docServiceUrlApi")
+                .replace(STATIC_DOC_URL, "")
+        } else {
+            docServiceJson.getString(KEY_RESPONSE)
+                .replace(STATIC_DOC_URL, "")
+        }
+
+        return JSONObject(response.body()?.string().orEmpty())
+            .getJSONObject(KEY_RESPONSE)
+            .put("url", docService)
+            .put("size", cloudFile.pureContentLength)
+            .put("updated", cloudFile.updated.time)
+            .put("fileId", cloudFile.id)
+            .put("canShareable", canShareable)
+            .toString()
     }
 }

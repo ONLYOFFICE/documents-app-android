@@ -4,31 +4,17 @@ import android.content.Context
 import android.net.Uri
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.Recent
-import app.documents.core.network.common.NetworkClient
-import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.providers.CloudFileProvider
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.StringUtils
 import java.io.File
-
-sealed class FileOpenResult {
-
-    class Loading : FileOpenResult()
-    class Success : FileOpenResult()
-}
 
 class FileOpenRepositoryImpl(
     private val context: Context,
     private val cloudAccount: CloudAccount?,
     private val cloudFileProvider: CloudFileProvider
 ) : FileOpenRepository {
-
-    private val _resultFlow: MutableSharedFlow<FileOpenResult> = MutableSharedFlow(1)
-    override val resultFlow: SharedFlow<FileOpenResult> = _resultFlow.asSharedFlow()
 
     override fun openLocalFile(uri: Uri, extension: String, editType: EditType) {
         TODO("Not yet implemented")
@@ -265,180 +251,6 @@ class FileOpenRepositoryImpl(
 //            }
 //        } else {
 //            viewState.onError(context.getString(R.string.error_recent_account))
-//        }
-    }
-
-    // refactor with serialization
-    override fun openCloudFile(id: String, portal: String, token: String, editType: EditType) {
-        try {
-            val api = NetworkClient.getRetrofit<ManagerService>(portal, token, context)
-//            val response = withContext(Dispatchers.IO) {
-//                JSONObject(
-//                    api.openFile(id).blockingGet().body()?.string()
-//                ).getJSONObject(
-//                    KEY_RESPONSE
-//                )
-//
-//            }
-//
-//            val json = withContext(Dispatchers.IO) {
-//                JSONObject(api.getDocService().blockingGet().body()?.string())
-//            }
-//
-//            val docService = if (json.optJSONObject(KEY_RESPONSE) != null) {
-//                json.getJSONObject(KEY_RESPONSE).getString("docServiceUrlApi")
-//                    .replace(STATIC_DOC_URL, "")
-//            } else {
-//                json.getString(KEY_RESPONSE)
-//                    .replace(STATIC_DOC_URL, "")
-//            }
-//
-//            val result = withContext(Dispatchers.IO) {
-//                response
-//                    .put("url", docService)
-//                    .put("fileId", id)
-//                    .put("canShareable", false)
-//            }
-//
-//            withContext(Dispatchers.Main) {
-//                viewState.onDialogClose()
-//                delay(50)
-//                viewState.onOpenDocumentServer(
-//                    /* file = */ CloudFile().apply {
-//                        id = model.file?.id.toString()
-//                        title = model.file?.title ?: ""
-//                        fileExst = model.file?.extension ?: ""
-//                    },
-//                    /* info = */ result.toString(),
-//                    /* type = */ null
-//                )
-//            }
-        } catch (e: Exception) {
-//            fetchError(e)
-        }
-    }
-
-    override fun openCloudFile(cloudFile: CloudFile, editType: EditType) {
-//        if (cloudFile.isPdfForm && editType == EditType.Fill()) {
-//            if (isUserSection) {
-//                viewState.showFillFormChooserFragment()
-//            } else {
-//                fillPdfForm()
-//            }
-//            return
-//        }
-//
-//        val extension = cloudFile.fileExst
-//        when (StringUtils.getExtension(extension)) {
-//            StringUtils.Extension.DOC,
-//            StringUtils.Extension.SHEET,
-//            StringUtils.Extension.PRESENTATION,
-//            StringUtils.Extension.FORM,
-//            StringUtils.Extension.PDF -> {
-//                checkSdkVersion { result ->
-//                    if (result) {
-//                        openDocumentServer(
-//                            cloudFile = cloudFile,
-//                            canShareable = isItemShareable,
-//                            editType = if (LocalContentTools.isOpenFormat(cloudFile.clearExt) ||
-//                                cloudFile.access == Access.Read
-//                            ) {
-//                                EditType.View
-//                            } else {
-//                                editType
-//                            }
-//                        )
-//                    } else {
-//                        downloadTempFile(
-//                            cloudFile = cloudFile,
-//                            editType = if (cloudFile.access == Access.Read) {
-//                                EditType.View
-//                            } else {
-//                                editType
-//                            }
-//                        )
-//                    }
-//                }
-//            }
-//
-//            StringUtils.Extension.IMAGE,
-//            StringUtils.Extension.IMAGE_GIF,
-//            StringUtils.Extension.VIDEO_SUPPORT -> {
-//                viewState.onFileMedia(getListMedia(cloudFile.id), false)
-//            }
-//
-//            else -> viewState.onFileDownloadPermission()
-//        }
-//        FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, extension)
-    }
-
-    private fun openDocumentServer(
-        cloudFile: CloudFile,
-        canShareable: Boolean,
-        editType: EditType?
-    ) {
-//        with(fileProvider as CloudFileProvider) {
-//            val token = AccountUtils.getToken(context, account.accountName)
-//            disposable.add(
-//                openDocument(cloudFile, token, canShareable, editType).subscribe({ result ->
-//                    viewState.onDialogClose()
-//                    if (result.isPdf) {
-//                        downloadTempFile(cloudFile, null)
-//                    } else if (result.info != null) {
-//                        viewState.onOpenDocumentServer(cloudFile, result.info, editType)
-//                    }
-//                }) { error ->
-//                    fetchError(error)
-//                }
-//            )
-//        }
-//        addRecent(cloudFile)
-    }
-
-    private fun downloadTempFile(cloudFile: CloudFile, editType: EditType?)/*: Single<File> */{
-//        return context.cloudFileProvider
-//            .getCachedFile(context, cloudFile, account.accountName)
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-    }
-
-    private fun checkSdkVersion(
-        version: String? = null,
-        onResult: (isCoauthoring: Boolean) -> Unit
-    ) {
-//        FirebaseUtils.getSdk { allowCoauthoring, checkSdkFully ->
-//            if (allowCoauthoring) {
-//                onResult(false)
-//                return@getSdk
-//            }
-//
-//            val webSdk = account
-//                .portal
-//                .version
-//                .documentServerVersion
-//                .replace(".", "")
-//
-//            if (webSdk.isEmpty()) {
-//                onResult(false)
-//                return@getSdk
-//            }
-//
-//            val localSdk = FileUtils.readSdkVersion(context).replace(".", "")
-//
-//            var maxVersionIndex = 2
-//
-//            if (!checkSdkFully) {
-//                maxVersionIndex = 1
-//            }
-//
-//            for (i in 0..maxVersionIndex) {
-//                if (webSdk[i] != localSdk[i]) {
-//                    onResult(false)
-//                    return@getSdk
-//                }
-//            }
-//
-//            onResult(true)
 //        }
     }
 }

@@ -23,6 +23,8 @@ import io.reactivex.ObservableEmitter
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.ResponseBody
@@ -44,6 +46,9 @@ class DropboxFileProvider(
         private const val TAG_FOLDER = "folder"
         private const val TAG_COMPLETE_OPERATION = "complete"
     }
+
+    override val fileOpenResultFlow: Flow<FileOpenResult>
+        get() = flowOf()
 
     private val api: DropboxProvider get() = helper.api
 

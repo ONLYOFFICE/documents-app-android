@@ -18,6 +18,8 @@ import io.reactivex.ObservableSource
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import lib.toolkit.base.BuildConfig
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getName
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getSize
@@ -52,6 +54,9 @@ class WebDavFileProvider @Inject constructor(
         private const val PATH_TEMPLATES = "templates/"
         private val PATH_DOWNLOAD = Environment.getExternalStorageDirectory().absolutePath + "/${BuildConfig.ROOT_FOLDER}"
     }
+
+    override val fileOpenResultFlow: Flow<FileOpenResult>
+        get() = flowOf()
 
     private var batchItems: List<Item>? = null
     val uploadsFile: MutableList<CloudFile> = Collections.synchronizedList(ArrayList())

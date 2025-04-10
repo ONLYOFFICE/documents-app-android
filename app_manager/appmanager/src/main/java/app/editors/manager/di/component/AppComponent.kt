@@ -20,7 +20,7 @@ import app.documents.core.providers.OneDriveFileProvider
 import app.documents.core.providers.RecentFileProvider
 import app.documents.core.providers.RoomProvider
 import app.documents.core.providers.WebDavFileProvider
-import app.editors.manager.di.module.StoragesModule
+import app.editors.manager.di.module.AppModule
 import app.editors.manager.managers.tools.AppLocaleHelper
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
@@ -93,7 +93,7 @@ import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import javax.inject.Singleton
 
-@Component(modules = [CoreModule::class, StoragesModule::class])
+@Component(modules = [CoreModule::class, AppModule::class])
 @Singleton
 interface AppComponent {
 

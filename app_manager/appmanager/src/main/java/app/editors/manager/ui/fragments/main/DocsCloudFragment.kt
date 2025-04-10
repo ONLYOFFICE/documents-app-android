@@ -60,6 +60,9 @@ import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.DialogUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
+import lib.toolkit.base.managers.utils.EditorsType
+import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.contains
@@ -223,10 +226,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 tag = DocsBasePresenter.TAG_DIALOG_CONTEXT_SHARE_DELETE,
                 acceptErrorTint = true
             )
-
-            is ExplorerContextItem.Edit -> presenter.openFile(EditType.Edit(false))
-            is ExplorerContextItem.Fill -> presenter.onContextClick(EditType.Fill())
-            is ExplorerContextItem.View -> presenter.onContextClick(EditType.View())
+            is ExplorerContextItem.Fill -> presenter.openFillFormFile()
             is ExplorerContextItem.ExternalLink -> presenter.saveExternalLinkToClipboard()
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> presenter.addToFavorite()
@@ -622,6 +622,21 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             }
         }
         AddRoomBottomDialog().show(parentFragmentManager, AddRoomBottomDialog.TAG)
+    }
+
+    override fun onOpenDocumentServer(file: CloudFile, info: String, editType: EditType) {
+        showEditors(
+            uri = null,
+            type = when (getExtension(file.fileExst)) {
+                StringUtils.Extension.DOC, StringUtils.Extension.FORM -> EditorsType.DOCS
+                StringUtils.Extension.SHEET -> EditorsType.CELLS
+                StringUtils.Extension.PRESENTATION -> EditorsType.PRESENTATION
+                StringUtils.Extension.PDF -> EditorsType.PDF
+                else -> return
+            },
+            info = info,
+            editType = editType
+        )
     }
 
     val isRoot: Boolean

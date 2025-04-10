@@ -8,8 +8,28 @@ import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.response.ResponseOperation
 import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
+import lib.toolkit.base.managers.utils.EditType
+import java.io.File
+
+sealed class FileOpenResult {
+
+    class Loading : FileOpenResult()
+    class Failed(val throwable: Throwable) : FileOpenResult()
+    class DownloadNotSupportedFile : FileOpenResult()
+    class OpenMedia(val fileId: String) : FileOpenResult()
+    class OpenDocumentServer(
+        val cloudFile: CloudFile,
+        val info: String,
+        val editType: EditType
+    ) : FileOpenResult()
+    class OpenLocally(val file: File, val fileId: String, val editType: EditType) : FileOpenResult()
+}
 
 interface BaseFileProvider : CacheFileHelper {
+
+    val fileOpenResultFlow: Flow<FileOpenResult>
+
     fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer>
     fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile>
     fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder>

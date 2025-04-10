@@ -148,6 +148,12 @@ interface ManagerService {
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}")
     fun getFileInfo(@Path(value = "file_id") fileId: String?): Observable<Response<ResponseFile>>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}")
+    suspend fun suspendGetFileInfo(@Path(value = "file_id") fileId: String?): Response<ResponseFile>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -314,7 +320,22 @@ interface ManagerService {
      * */
     @Streaming
     @GET
-    fun downloadFile(@Url url: String, @Header("Cookie") cookie: String): Single<Response<ResponseBody>>
+    fun downloadFile(
+        @Url url: String,
+        @Header("Cookie") cookie: String
+    ): Single<Response<ResponseBody>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/presigneduri")
+    suspend fun getDownloadFileLink(
+        @Path(value = "file_id") fileId: String
+    ): app.documents.core.network.BaseResponse<String>
+
+    @Streaming
+    @GET
+    suspend fun suspendDownloadFile(
+        @Url url: String,
+        @Header("Cookie") cookie: String
+    ): Response<ResponseBody>
 
     @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/bulkdownload")
     fun downloadFiles(@Body requestDownload: RequestDownload): Single<ResponseDownload>
@@ -404,10 +425,28 @@ interface ManagerService {
         @Query("view") view: Boolean? = null
     ): Single<Response<ResponseBody>>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/openedit")
+    suspend fun suspendOpenFile(
+        @Path(value = "id") id: String,
+        @Query("version") version: Int,
+        @Query("fill") fill: Boolean? = null,
+        @Query("edit") edit: Boolean? = null,
+        @Query("view") view: Boolean? = null
+    ): Response<ResponseBody>
+
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/openedit")
     fun openFile(
         @Path(value = "id") id: String,
     ): Single<Response<ResponseBody>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/openedit")
+    suspend fun suspendOpenFile(
+        @Path(value = "id") id: String,
+    ): Response<ResponseBody>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -415,6 +454,13 @@ interface ManagerService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/docservice")
     fun getDocService(): Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/docservice")
+    suspend fun suspendGetDocService(): Response<ResponseBody>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

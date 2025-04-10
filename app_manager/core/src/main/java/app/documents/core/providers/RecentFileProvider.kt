@@ -9,11 +9,17 @@ import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.response.ResponseOperation
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import okhttp3.ResponseBody
 import retrofit2.Response
 import javax.inject.Inject
 
 class RecentFileProvider @Inject constructor() : BaseFileProvider {
+
+    override val fileOpenResultFlow: Flow<FileOpenResult>
+        get() = flowOf()
+
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         TODO("Not yet implemented")
     }

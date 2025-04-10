@@ -27,6 +27,7 @@ import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.UserIdInvitation
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.CloudFileProvider.RoomCallback
+import app.documents.core.providers.FileOpenResult
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -185,7 +186,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     if (LocalContentTools.isOpenFormat(itemClicked.clearExt)) {
                         viewState.onConversionQuestion()
                     } else {
-                        fileOpenRepository.openCloudFile(itemClicked, EditType.Edit())
+                        if (itemClicked.isPdfForm) {
+                            openFillFormFile()
+                        } else {
+                            openFile(EditType.Edit())
+                        }
                     }
                 } else if (itemClicked is RecentViaLink) {
                     openRecentViaLink()
@@ -470,10 +475,34 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         super.createDownloadFile()
     }
 
+    fun openFillFormFile() {
+        if (isUserSection) {
+            viewState.showFillFormChooserFragment()
+            return
+        }
+        openFile(EditType.Fill())
+    }
+
     override fun openFile(editType: EditType) {
-        val item = itemClicked
-        if (item != null && item is CloudFile) {
-            fileOpenRepository.openCloudFile(item, editType)
+        openFileJob?.cancel()
+        openFileJob = presenterScope.launch {
+            fileProvider.openFile(
+                context = context,
+                cloudFile = itemClicked as? CloudFile ?: return@launch,
+                editType = editType,
+                canShareable = isItemShareable
+            )
+        }
+    }
+
+    override fun onFileOpenResult(result: FileOpenResult) {
+        if (result !is FileOpenResult.Loading) viewState.onDialogClose()
+        when (result) {
+            is FileOpenResult.OpenDocumentServer -> {
+                viewState.onOpenDocumentServer(result.cloudFile, result.info, result.editType)
+                FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, result.cloudFile.fileExst)
+            }
+            else -> super.onFileOpenResult(result)
         }
     }
 
@@ -644,16 +673,27 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             openFolder(folderId, 0)
             return
         }
-        if (model.share.isNotEmpty() && !model.portal.isNullOrEmpty()) {
-            fileOpenRepository.openCloudFile(
-                id = fileId.orEmpty(),
-                portal = model.portal,
-                token = model.share,
-                editType = EditType.Edit()
-            )
-            return
+
+        openFileJob?.cancel()
+        openFileJob = presenterScope.launch {
+            if (model.share.isNotEmpty() && !model.portal.isNullOrEmpty()) {
+                fileProvider.openFile(
+                    context = context,
+                    portal = model.portal,
+                    token = model.share,
+                    id = fileId.orEmpty(),
+                    title = model.file?.title.orEmpty(),
+                    extension = model.file?.extension.orEmpty(),
+                )
+            } else {
+                fileProvider.openFile(
+                    context = context,
+                    cloudFile = CloudFile().apply { this.id = fileId.orEmpty() },
+                    editType = EditType.Edit(),
+                    canShareable = false
+                )
+            }
         }
-        fileOpenRepository.openCloudFile(fileId.orEmpty(), EditType.Edit())
     }
 
     fun openLocation() {
