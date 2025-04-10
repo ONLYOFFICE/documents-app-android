@@ -44,14 +44,44 @@
         tools:drawableEnd="@drawable/ic_small_clock"
         tools:text="File name" />
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/badgeVersionCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin_small"
+        android:visibility="gone"
+        app:cardBackgroundColor="@color/colorOnBottomBarInActive"
+        app:cardCornerRadius="4dp"
+        app:layout_constraintBottom_toBottomOf="@id/title"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/title"
+        app:layout_constraintTop_toTopOf="@id/title"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/badgeVersion"
+            style="@style/Widget.Common.TextView.Micro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:paddingHorizontal="@dimen/default_margin_small"
+            android:paddingVertical="@dimen/default_margin_micro"
+            android:textColor="@color/colorOnPrimary"
+            tools:text="V.5" />
+
+    </androidx.cardview.widget.CardView>
+
     <LinearLayout
         android:id="@+id/statusLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constrainedWidth="true"
+        android:layout_marginStart="@dimen/default_margin_small"
+        app:layout_constraintStart_toEndOf="@id/badgeVersionCard"
         app:layout_constraintBottom_toBottomOf="@+id/title"
         app:layout_constraintEnd_toStartOf="@+id/contextButtonLayout"
-        app:layout_constraintTop_toTopOf="@+id/title">
+        app:layout_constraintTop_toTopOf="@+id/title"
+        app:layout_constraintHorizontal_bias="1.0">
 
         <ImageView
             android:id="@+id/favorite"
