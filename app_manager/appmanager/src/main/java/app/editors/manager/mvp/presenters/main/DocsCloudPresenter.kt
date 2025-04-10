@@ -85,12 +85,14 @@ import org.json.JSONObject
 import java.io.File
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @InjectViewState
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
     OnDownloadListener, OnUploadListener, RoomDuplicateReceiver.Listener {
 
-    private val downloadReceiver: DownloadReceiver = DownloadReceiver()
+    @Inject
+    lateinit var downloadReceiver: DownloadReceiver
     private val uploadReceiver: UploadReceiver = UploadReceiver()
     private var duplicateRoomReceiver: RoomDuplicateReceiver = RoomDuplicateReceiver()
 
@@ -126,26 +128,23 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        downloadReceiver.setOnDownloadListener(this)
+        downloadReceiver.addListener(this)
         uploadReceiver.setOnUploadListener(this)
         duplicateRoomReceiver.setListener(this)
         LocalBroadcastManager.getInstance(context)
             .registerReceiver(duplicateRoomReceiver, RoomDuplicateReceiver.getFilters())
         LocalBroadcastManager.getInstance(context)
             .registerReceiver(uploadReceiver, uploadReceiver.filter)
-        LocalBroadcastManager.getInstance(context)
-            .registerReceiver(downloadReceiver, downloadReceiver.filter)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         interruptConversion()
-        downloadReceiver.setOnDownloadListener(null)
+        downloadReceiver.removeListener(this)
         uploadReceiver.setOnUploadListener(null)
         duplicateRoomReceiver.setListener(null)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(duplicateRoomReceiver)
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(downloadReceiver)
     }
 
     override fun onItemClick(item: Item, position: Int) {
