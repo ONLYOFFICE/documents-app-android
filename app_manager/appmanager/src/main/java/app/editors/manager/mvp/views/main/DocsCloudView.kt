@@ -54,4 +54,7 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showRoomInfoFragment()
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showVersionHistoryFragment(fileId: String)
 }

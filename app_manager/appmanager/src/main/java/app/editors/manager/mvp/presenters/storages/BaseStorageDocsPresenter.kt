@@ -56,6 +56,7 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
     override fun onDestroy() {
         super.onDestroy()
         LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
+        downloadReceiver.removeListener(this)
     }
 
     override fun createDownloadFile() {

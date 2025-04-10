@@ -994,6 +994,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    fun showVersionHistory(){
+        (itemClicked as? CloudFile)?.let {
+            viewState.showVersionHistoryFragment(it.id)
+        }
+    }
+
     fun createRoom(roomType: Int) {
         val files = modelExplorerStack.selectedFiles.toMutableList()
         val folders = modelExplorerStack.selectedFolders.toMutableList()

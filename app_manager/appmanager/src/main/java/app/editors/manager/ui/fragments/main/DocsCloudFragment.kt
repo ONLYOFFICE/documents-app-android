@@ -231,6 +231,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
+            is ExplorerContextItem.VersionHistory -> cloudPresenter.showVersionHistory()
             else -> super.onContextButtonClick(contextItem)
         }
     }
@@ -626,6 +627,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             }
         }
         AddRoomBottomDialog().show(parentFragmentManager, AddRoomBottomDialog.TAG)
+    }
+
+    override fun showVersionHistoryFragment(fileId: String) {
+        //VersionHistoryFragment.show(requireActivity(), fileId) { onRefresh() }
     }
 
     val isRoot: Boolean
