@@ -18,6 +18,8 @@ plugins {
 //    id("org.owasp.dependencycheck")
 }
 
+val withEditors: Boolean = project.findProperty("withEditors")?.toString()?.toBoolean() ?: true
+
 // Onlyoffice
 val appId = "com.onlyoffice.documents"
 val appName = "onlyoffice-manager"
@@ -233,15 +235,17 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":libcompose"))
     implementation(project(":libtoolkit"))
-    implementation(project(":libx2t"))
-    implementation(project(":libeditors"))
-    implementation(project(":libslides"))
-    implementation(project(":libdocs"))
-    implementation(project(":libcells"))
-    implementation(project(":libgeditors"))
-    implementation(project(":libgslides"))
-    implementation(project(":libgdocs"))
-    implementation(project(":libgcells"))
+    if (withEditors) {
+        implementation(project(":libx2t"))
+        implementation(project(":libeditors"))
+        implementation(project(":libslides"))
+        implementation(project(":libdocs"))
+        implementation(project(":libcells"))
+        implementation(project(":libgeditors"))
+        implementation(project(":libgslides"))
+        implementation(project(":libgdocs"))
+        implementation(project(":libgcells"))
+    }
 
     // Firebase
     implementation(libs.firebase.crashlytics)
