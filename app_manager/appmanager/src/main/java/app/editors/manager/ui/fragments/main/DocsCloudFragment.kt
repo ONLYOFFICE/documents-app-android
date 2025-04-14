@@ -48,6 +48,7 @@ import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_TYPE
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
+import app.editors.manager.ui.fragments.main.versionhistory.VersionHistoryFragment
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment
 import app.editors.manager.ui.fragments.room.add.EditRoomFragment
 import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
@@ -56,6 +57,7 @@ import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
+import app.editors.manager.viewModels.main.VersionViewer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.DialogUtils
@@ -630,7 +632,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun showVersionHistoryFragment(fileId: String) {
-        //VersionHistoryFragment.show(requireActivity(), fileId) { onRefresh() }
+        VersionHistoryFragment.show(
+            parentFragmentManager,
+            viewLifecycleOwner,
+            fileId,
+            ::onRefresh,
+            presenter as VersionViewer
+        )
     }
 
     val isRoot: Boolean

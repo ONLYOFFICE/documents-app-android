@@ -58,6 +58,7 @@ import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROT
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
+import app.editors.manager.viewModels.main.VersionViewer
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -89,7 +90,7 @@ import javax.inject.Inject
 
 @InjectViewState
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView>(),
-    OnDownloadListener, OnUploadListener, RoomDuplicateReceiver.Listener {
+    OnDownloadListener, OnUploadListener, RoomDuplicateReceiver.Listener, VersionViewer {
 
     @Inject
     lateinit var downloadReceiver: DownloadReceiver
@@ -290,6 +291,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     }, ::fetchError))
             }
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+        }
+    }
+
+    override fun openFileVersion(file: CloudFile, onError: (Throwable) -> Unit){
+        fileProvider?.let { provider ->
+            disposable.add(
+                provider.fileInfo(file)
+                    .subscribe({ doc -> onFileClickAction(doc, editType = null) }, onError)
+            )
         }
     }
 
