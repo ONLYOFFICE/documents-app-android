@@ -1,19 +1,15 @@
 package app.documents.core.manager
 
-import android.content.Context
 import android.net.Uri
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.providers.CloudFileProvider
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.StringUtils
 import java.io.File
 
 class FileOpenRepositoryImpl(
-    private val context: Context,
-    private val cloudAccount: CloudAccount?,
-    private val cloudFileProvider: CloudFileProvider
+
 ) : FileOpenRepository {
 
     override fun openLocalFile(uri: Uri, extension: String, editType: EditType) {

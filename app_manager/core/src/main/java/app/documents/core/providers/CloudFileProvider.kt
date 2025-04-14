@@ -56,6 +56,7 @@ data class OpenDocumentResult(
 )
 
 class CloudFileProvider @Inject constructor(
+    private val context: Context,
     private val managerService: ManagerService,
     private val roomService: RoomService,
     private val managerRepository: ManagerRepository,
@@ -97,8 +98,8 @@ class CloudFileProvider @Inject constructor(
     }
 
     //TODO Rework the creation for collaboration
-    override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
-        return managerService.createDocs(folderId, body)
+    override fun createFile(folderId: String, title: String): Observable<CloudFile> {
+        return managerService.createDocs(folderId, RequestCreate(title))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseCreateFile: Response<ResponseCreateFile> ->
@@ -414,7 +415,6 @@ class CloudFileProvider @Inject constructor(
     }
 
     suspend fun openFile(
-        context: Context,
         portal: String,
         token: String,
         id: String,
@@ -462,11 +462,10 @@ class CloudFileProvider @Inject constructor(
         }
     }
 
-    suspend fun openFile(
-        context: Context,
+    override suspend fun openFile(
         cloudFile: CloudFile,
         editType: EditType,
-        canShareable: Boolean
+        canBeShared: Boolean
     ) = withContext(Dispatchers.IO) {
         try {
             _fileOpenResultFlow.emit(FileOpenResult.Loading())
@@ -477,7 +476,7 @@ class CloudFileProvider @Inject constructor(
                         val document = openDocument(
                             cloudFile = cloudFile,
                             token = token,
-                            canShareable = canShareable,
+                            canShareable = canBeShared,
                             editType = editType
                         )
 

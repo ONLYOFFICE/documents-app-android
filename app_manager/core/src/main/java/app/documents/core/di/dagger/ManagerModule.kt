@@ -1,6 +1,5 @@
 package app.documents.core.di.dagger
 
-import android.content.Context
 import app.documents.core.account.AccountManager
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.manager.FileOpenRepository
@@ -15,7 +14,6 @@ import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.webdav.ConverterFactory
 import app.documents.core.network.webdav.WebDavService
-import app.documents.core.providers.CloudFileProvider
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -40,16 +38,8 @@ class ManagerModule {
     }
 
     @Provides
-    fun provideFileOpenRepository(
-        context: Context,
-        cloudFileProvider: CloudFileProvider,
-        cloudAccount: CloudAccount?
-    ): FileOpenRepository {
-        return FileOpenRepositoryImpl(
-            context = context,
-            cloudFileProvider = cloudFileProvider,
-            cloudAccount = cloudAccount,
-        )
+    fun provideFileOpenRepository(): FileOpenRepository {
+        return FileOpenRepositoryImpl()
     }
 
     @Provides

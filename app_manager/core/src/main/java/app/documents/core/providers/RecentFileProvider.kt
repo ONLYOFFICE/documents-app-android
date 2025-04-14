@@ -11,6 +11,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import lib.toolkit.base.managers.utils.EditType
 import okhttp3.ResponseBody
 import retrofit2.Response
 import javax.inject.Inject
@@ -20,11 +21,15 @@ class RecentFileProvider @Inject constructor() : BaseFileProvider {
     override val fileOpenResultFlow: Flow<FileOpenResult>
         get() = flowOf()
 
+    override suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
+        TODO("Not yet implemented")
+    }
+
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         TODO("Not yet implemented")
     }
 
-    override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
+    override fun createFile(folderId: String, title: String): Observable<CloudFile> {
         TODO("Not yet implemented")
     }
 

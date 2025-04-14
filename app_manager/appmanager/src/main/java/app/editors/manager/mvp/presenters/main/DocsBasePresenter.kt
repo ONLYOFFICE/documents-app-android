@@ -1719,16 +1719,61 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         preferenceTool.isGridView = isGrid
     }
 
-    open fun openFile(editType: EditType) {
-        val item = itemClicked
-        if (item != null && item is CloudFile) {
-            fileOpenRepository.openLocalFile(item, editType)
+    open fun openFile(editType: EditType, canBeShared: Boolean = false) {
+        val cloudFile = itemClicked as? CloudFile ?: return
+        openFileJob?.cancel()
+        openFileJob = presenterScope.launch {
+            suspendOpenFile(
+                file = cloudFile,
+                editType = editType,
+                canBeShared = canBeShared
+            )
         }
     }
 
-    abstract fun getNextList()
+    open fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean = false) {
+        openFileJob?.cancel()
+        openFileJob = presenterScope.launch {
+            suspendOpenFile(
+                file = cloudFile,
+                editType = editType,
+                canBeShared = canBeShared
+            )
+        }
+    }
 
-    abstract fun createDocs(title: String)
+    open fun createDocs(title: String) {
+        modelExplorerStack.currentId?.let { folderId ->
+            disposable.add(
+                fileProvider.createFile(
+                    folderId = folderId,
+                    title = title
+                )
+                    .doOnNext { file ->
+                        viewState.onDialogClose()
+                        openFile(file, EditType.Edit(false), true)
+                    }
+                    .doOnError {
+                        viewState.onError(context.getString(R.string.errors_create_local_file))
+                    }
+                    .subscribe()
+            )
+        }
+    }
+
+    private suspend fun suspendOpenFile(
+        file: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean = false
+    ) {
+        fileProvider.openFile(
+            cloudFile = file,
+            editType = editType,
+            canBeShared = canBeShared
+        )
+    }
+
+    abstract fun getNextList()
 
     abstract fun addRecent(file: CloudFile)
 

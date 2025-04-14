@@ -27,6 +27,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FileUtils.createCacheFile
 import lib.toolkit.base.managers.utils.FileUtils.createFile
@@ -52,6 +53,10 @@ class OneDriveFileProvider(
         get() = flowOf()
 
     private val api: OneDriveProvider get() = helper.api
+
+    override suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
+
+    }
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         val searchValue = filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE)?.trim().orEmpty()
@@ -134,11 +139,11 @@ class OneDriveFileProvider(
     }
 
     @SuppressLint("MissingPermission")
-    override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
+    override fun createFile(folderId: String, title: String): Observable<CloudFile> {
         return Observable.fromCallable {
             api.createFile(
                 folderId,
-                body.title,
+                title,
                 mapOf(OneDriveUtils.KEY_CONFLICT_BEHAVIOR to OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME)
             ).blockingGet()
         }
@@ -165,7 +170,7 @@ class OneDriveFileProvider(
                             pureContentLength = temp?.length() ?: 0
                             updated = Date()
                             id = item.id
-                            title = item.name
+                            this.title = item.name
                             fileExst = item.name.split(".")[1]
                         }
                     }

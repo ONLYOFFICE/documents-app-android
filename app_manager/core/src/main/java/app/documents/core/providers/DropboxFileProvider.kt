@@ -25,6 +25,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.ResponseBody
@@ -49,6 +50,10 @@ class DropboxFileProvider(
 
     override val fileOpenResultFlow: Flow<FileOpenResult>
         get() = flowOf()
+
+    override suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
+
+    }
 
     private val api: DropboxProvider get() = helper.api
 
@@ -179,8 +184,7 @@ class DropboxFileProvider(
         return Observable.just(explorer)
     }
 
-    override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
-        val title = body.title
+    override fun createFile(folderId: String, title: String): Observable<CloudFile> {
         val path = PATH_TEMPLATES + FileUtils.getTemplates(
             context = context,
             locale = Locale.getDefault().language,

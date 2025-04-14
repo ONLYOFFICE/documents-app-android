@@ -10,7 +10,6 @@ import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.providers.WebDavFileProvider
 import app.editors.manager.R
@@ -19,7 +18,6 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.WebDavDownloadWork
 import app.editors.manager.mvp.views.main.DocsWebDavView
-import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
@@ -87,24 +85,6 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView, WebDavFileProvider
 
     override fun getNextList() {
         // Stub
-    }
-
-    override fun createDocs(title: String) {
-        val id = modelExplorerStack.currentId
-        if (id != null) {
-            val requestCreate = RequestCreate()
-            requestCreate.title = title
-            disposable.add(
-                fileProvider.createFile(id, requestCreate)
-                    .subscribe({ file: CloudFile? ->
-                        addFile(file)
-                        setPlaceholderType(PlaceholderViews.Type.NONE)
-                        viewState.onDialogClose()
-                        viewState.onOpenLocalFile(file, null)
-                    }, ::fetchError)
-            )
-            showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
-        }
     }
 
     override fun addRecent(file: CloudFile) {

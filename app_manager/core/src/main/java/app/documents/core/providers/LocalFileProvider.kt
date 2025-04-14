@@ -23,6 +23,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import lib.toolkit.base.managers.tools.LocalContentTools
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import okhttp3.ResponseBody
@@ -39,6 +40,11 @@ class LocalFileProvider @Inject constructor(
 
     override val fileOpenResultFlow: Flow<FileOpenResult>
         get() = flowOf()
+
+
+    override suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
+
+    }
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.just(localContentTools.createRootDir())
@@ -58,11 +64,10 @@ class LocalFileProvider @Inject constructor(
             .map { explorer: Explorer -> sortExplorer(explorer, filter) }
     }
 
-    override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
+    override fun createFile(folderId: String, title: String): Observable<CloudFile> {
         val parentFile = File(folderId)
-        val name = body.title
         return try {
-            val localFile = localContentTools.createFile(name, parentFile, Locale.getDefault().language)
+            val localFile = localContentTools.createFile(title, parentFile, Locale.getDefault().language)
             Observable.just(localFile)
                 .map { createFile: File ->
                     if (createFile.exists()) {
@@ -72,7 +77,7 @@ class LocalFileProvider @Inject constructor(
                         file.title = createFile.name
                         file.folderId = folderId
                         file.pureContentLength = createFile.length()
-                        file.fileExst = getExtensionFromPath(name)
+                        file.fileExst = getExtensionFromPath(title)
                         file.created = Date()
                         file.isJustCreated = true
                         return@map file

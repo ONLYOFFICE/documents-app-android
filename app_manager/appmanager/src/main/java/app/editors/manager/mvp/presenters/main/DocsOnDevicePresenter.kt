@@ -13,7 +13,6 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
-import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.WebDavFileProvider
@@ -89,25 +88,6 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
 
     override fun getNextList() {
         // Stub to local
-    }
-
-    override fun createDocs(title: String) {
-        val id = modelExplorerStack.currentId
-        if (id != null) {
-            val requestCreate = RequestCreate()
-            requestCreate.title = title
-            disposable.add(
-                fileProvider.createFile(id, requestCreate)
-                    .doOnNext { file ->
-                        addFile(file)
-                        fileOpenRepository.openLocalFile(file, EditType.Edit(false))
-                    }
-                    .doOnError {
-                        viewState.onError(context.getString(R.string.errors_create_local_file))
-                    }
-                    .subscribe()
-            )
-        }
     }
 
     override fun addRecent(file: CloudFile) {
@@ -225,10 +205,6 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
         itemClicked?.id?.let { path ->
             viewState.onSendCopy(File(path))
         }
-    }
-
-    override fun openFile(editType: EditType) {
-        fileOpenRepository.openLocalFile(itemClicked as? CloudFile ?: return, editType)
     }
 
     private fun uploadWebDav(id: String, uriList: List<Uri>) {

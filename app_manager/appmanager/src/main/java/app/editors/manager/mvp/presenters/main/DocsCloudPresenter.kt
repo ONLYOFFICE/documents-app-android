@@ -20,7 +20,6 @@ import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.request.RequestBatchOperation
-import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDeleteShare
 import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.share.models.request.RequestRoomShare
@@ -272,19 +271,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             true,
             StringUtils.getExtensionFromPath(title)
         )
-
-        modelExplorerStack.currentId?.let { id ->
-            val requestCreate = RequestCreate()
-            requestCreate.title = title
-            disposable.add(
-                fileProvider.createFile(id, requestCreate).subscribe({ cloudFile ->
-                    addFile(cloudFile)
-                    addRecent(cloudFile)
-                    viewState.onDialogClose()
-                    fileOpenRepository.openCloudFile(cloudFile, EditType.Edit(false))
-                }, ::fetchError))
-            showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
-        }
+        super.createDocs(title)
     }
 
     override fun addRecent(file: CloudFile) {
@@ -483,16 +470,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         openFile(EditType.Fill())
     }
 
-    override fun openFile(editType: EditType) {
-        openFileJob?.cancel()
-        openFileJob = presenterScope.launch {
-            fileProvider.openFile(
-                context = context,
-                cloudFile = itemClicked as? CloudFile ?: return@launch,
-                editType = editType,
-                canShareable = isItemShareable
-            )
-        }
+    override fun openFile(editType: EditType, canBeShared: Boolean) {
+        super.openFile(editType, isItemShareable)
     }
 
     override fun onFileOpenResult(result: FileOpenResult) {
@@ -503,13 +482,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, result.cloudFile.fileExst)
             }
             else -> super.onFileOpenResult(result)
-        }
-    }
-
-    fun onContextClick(editType: EditType) {
-        when (val item = itemClicked) {
-            is CloudFile -> fileOpenRepository.openCloudFile(item, editType)
-            is CloudFolder -> editRoom()
         }
     }
 
@@ -678,7 +650,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         openFileJob = presenterScope.launch {
             if (model.share.isNotEmpty() && !model.portal.isNullOrEmpty()) {
                 fileProvider.openFile(
-                    context = context,
                     portal = model.portal,
                     token = model.share,
                     id = fileId.orEmpty(),
@@ -687,10 +658,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 )
             } else {
                 fileProvider.openFile(
-                    context = context,
                     cloudFile = CloudFile().apply { this.id = fileId.orEmpty() },
                     editType = EditType.Edit(),
-                    canShareable = false
+                    canBeShared  = false
                 )
             }
         }

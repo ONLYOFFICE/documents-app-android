@@ -33,6 +33,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import lib.toolkit.base.managers.tools.LocalContentTools
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.ResponseBody
@@ -97,6 +98,10 @@ class GoogleDriveFileProvider(
         get() = flowOf()
 
     private val api: GoogleDriveProvider get() = helper.api
+
+    override suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
+
+    }
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         var queryString = "\"$id\" in parents and trashed = false"
@@ -186,14 +191,13 @@ class GoogleDriveFileProvider(
         return explorer
     }
 
-    override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
+    override fun createFile(folderId: String, title: String): Observable<CloudFile> {
         return Observable.just(1)
             .map {
-                val title = body.title
                 val path = PATH_TEMPLATES + FileUtils.getTemplates(
                     context = context,
                     locale = Locale.getDefault().language,
-                    extension = StringUtils.getExtensionFromPath(body.title.lowercase())
+                    extension = StringUtils.getExtensionFromPath(title.lowercase())
                 )
                 val temp = FileUtils.createTempAssetsFile(
                     context = context,
@@ -206,8 +210,8 @@ class GoogleDriveFileProvider(
                 file.webUrl = Uri.fromFile(temp).toString()
                 file.pureContentLength = temp?.length() ?: 0
                 file.updated = Date()
-                file.title = body.title
-                file.fileExst = body.title.split(".")[1]
+                file.title = title
+                file.fileExst = title.split(".")[1]
                 return@map file
             }
     }

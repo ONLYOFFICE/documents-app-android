@@ -234,10 +234,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
         // stub
     }
 
-    override fun createDocs(title: String) {
-        // stub
-    }
-
     override fun updateViewsState() {
         // stub
     }

@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.flowOf
 import lib.toolkit.base.BuildConfig
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getName
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getSize
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils.createCacheFile
 import lib.toolkit.base.managers.utils.FileUtils.createFile
 import lib.toolkit.base.managers.utils.FileUtils.createTempAssetsFile
@@ -61,6 +62,10 @@ class WebDavFileProvider @Inject constructor(
     private var batchItems: List<Item>? = null
     val uploadsFile: MutableList<CloudFile> = Collections.synchronizedList(ArrayList())
 
+    override suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
+
+    }
+
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.fromCallable { id?.let { webDavService.propfind(it).execute() } }
             .subscribeOn(Schedulers.io())
@@ -74,21 +79,20 @@ class WebDavFileProvider @Inject constructor(
             }.map { webDavModel: WebDavModel -> getExplorer(webDavModel.list ?: emptyList(), filter) }
     }
 
-    override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
-        val title = body.title
+    override fun createFile(folderId: String, title: String): Observable<CloudFile> {
         val path = PATH_TEMPLATES + getTemplates(
             context, Locale.getDefault().language,
-            getExtensionFromPath(body.title.lowercase())
+            getExtensionFromPath(title.lowercase())
         )
         val temp = createTempAssetsFile(context, path, getNameWithoutExtension(title), getExtensionFromPath(title))
         return Observable.fromCallable {
             val file = CloudFile()
             file.webUrl = Uri.fromFile(temp).toString()
             file.pureContentLength = temp?.length() ?: 0
-            file.id = folderId + body.title
+            file.id = folderId + title
             file.updated = Date()
-            file.title = body.title
-            file.fileExst = getExtensionFromPath(body.title)
+            file.title = title
+            file.fileExst = getExtensionFromPath(title)
             file
         }
     }
