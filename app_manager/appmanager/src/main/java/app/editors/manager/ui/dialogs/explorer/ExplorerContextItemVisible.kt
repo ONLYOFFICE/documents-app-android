@@ -83,7 +83,6 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.edit: Boolean
         get() {
-            val item = this.item
             return when (section) {
                 ApiContract.Section.Device -> isExtensionEditable(item)
                 else -> {
@@ -190,7 +189,7 @@ interface ExplorerContextItemVisible {
 
     private fun isExtensionEditable(item: Item): Boolean {
         return if (item is CloudFile) {
-            isExtensionEditable(item.fileExst)
+            isExtensionEditable(item.fileExst) || item.isPdfForm
         } else {
             false
         }

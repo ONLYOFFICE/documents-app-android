@@ -56,6 +56,8 @@ import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import lib.toolkit.base.managers.tools.LocalContentTools.Companion.HWPX_EXTENSION
+import lib.toolkit.base.managers.tools.LocalContentTools.Companion.HWP_EXTENSION
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.CreateDocument
@@ -325,11 +327,29 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         show(requireContext())
     }
 
-    override fun onOpenLocalFile(file: CloudFile, editType: EditType?) {
-        val uri = file.webUrl.toUri()
-        when (getExtension(file.fileExst)) {
-            StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
-                showEditors(uri, EditorsType.DOCS, editType = editType)
+    override fun onOpenLocalFile(file: CloudFile, editType: EditType) {
+        onOpenLocalFile(
+            uri = file.webUrl.toUri(),
+            extension = file.fileExst,
+            editType = editType
+        )
+    }
+
+    override fun onOpenLocalFile(uri: Uri, extension: String, editType: EditType) {
+        when (getExtension(extension)) {
+            StringUtils.Extension.DOC,
+            StringUtils.Extension.EBOOK,
+            StringUtils.Extension.HTML,
+            StringUtils.Extension.FORM -> {
+                showEditors(
+                    uri = uri,
+                    type = EditorsType.DOCS,
+                    editType = if (extension in arrayOf(HWP_EXTENSION, HWPX_EXTENSION)) {
+                        EditType.View()
+                    } else {
+                        EditType.Edit()
+                    }
+                )
             }
             StringUtils.Extension.SHEET -> {
                 showEditors(uri, EditorsType.CELLS, editType = editType)
@@ -341,7 +361,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 showEditors(uri, EditorsType.PDF, editType = editType)
             }
             StringUtils.Extension.VIDEO_SUPPORT -> {
-                val videoFile = file.clone().apply {
+                val videoFile = CloudFile().apply {
                     webUrl = uri.path.orEmpty()
                     id = ""
                 }
@@ -351,10 +371,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 showMediaActivity(explorer, true)
             }
             StringUtils.Extension.UNKNOWN,
-            StringUtils.Extension.EBOOK,
             StringUtils.Extension.ARCH,
-            StringUtils.Extension.VIDEO,
-            StringUtils.Extension.HTML, -> {
+            StringUtils.Extension.VIDEO -> {
                 onSnackBar(getString(R.string.download_manager_complete))
             }
             else -> Unit

@@ -220,7 +220,9 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
     fun fileClick(recent: Recent? = item) {
         recent?.let {
             item = recent
-            fileOpenRepository.openRecentFile(recent, EditType.Edit())
+            openFileJob = presenterScope.launch {
+                fileProvider.openFile(recent, EditType.Edit())
+            }
         }
     }
 

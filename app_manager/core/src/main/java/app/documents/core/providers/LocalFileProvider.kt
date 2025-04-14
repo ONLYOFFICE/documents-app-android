@@ -41,10 +41,7 @@ class LocalFileProvider @Inject constructor(
     override val fileOpenResultFlow: Flow<FileOpenResult>
         get() = flowOf()
 
-
-    override suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
-
-    }
+    override suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {}
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.just(localContentTools.createRootDir())

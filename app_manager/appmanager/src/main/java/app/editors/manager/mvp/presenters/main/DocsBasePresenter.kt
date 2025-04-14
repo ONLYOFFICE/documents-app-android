@@ -16,7 +16,6 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
-import app.documents.core.manager.FileOpenRepository
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
@@ -129,9 +128,6 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
 
     @Inject
     lateinit var recentDataSource: RecentDataSource
-
-    @Inject
-    lateinit var fileOpenRepository: FileOpenRepository
 
     @Inject
     lateinit var fileProvider: FP
@@ -302,14 +298,17 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         }
     }
 
-    private fun openFileFromPortal(file: File, fileId: String, editType: EditType?) {
-        viewState.onOpenLocalFile(CloudFile().apply {
-            id = fileId
-            webUrl = Uri.fromFile(file).toString()
-            fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
-            title = file.name
-            viewUrl = file.absolutePath
-        }, editType)
+    private fun openFileFromPortal(file: File, fileId: String, editType: EditType) {
+        viewState.onOpenLocalFile(
+            CloudFile().apply {
+                id = fileId
+                webUrl = Uri.fromFile(file).toString()
+                fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
+                title = file.name
+                viewUrl = file.absolutePath
+            },
+            editType
+        )
     }
 
     open fun getItemsById(id: String?) {
@@ -1219,7 +1218,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                 if (itemClicked is CloudFolder) {
                     openFolder(itemClicked.id, position)
                 } else if (itemClicked is CloudFile) {
-                    fileOpenRepository.openLocalFile(itemClicked, EditType.Edit())
+                    openFile(itemClicked, EditType.Edit())
                 }
             }
         }
@@ -1720,22 +1719,18 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
     open fun openFile(editType: EditType, canBeShared: Boolean = false) {
-        val cloudFile = itemClicked as? CloudFile ?: return
-        openFileJob?.cancel()
-        openFileJob = presenterScope.launch {
-            suspendOpenFile(
-                file = cloudFile,
-                editType = editType,
-                canBeShared = canBeShared
-            )
-        }
+        openFile(
+            cloudFile = itemClicked as? CloudFile ?: return,
+            editType = editType,
+            canBeShared = canBeShared
+        )
     }
 
     open fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean = false) {
         openFileJob?.cancel()
         openFileJob = presenterScope.launch {
-            suspendOpenFile(
-                file = cloudFile,
+            fileProvider.openFile(
+                cloudFile = cloudFile,
                 editType = editType,
                 canBeShared = canBeShared
             )
@@ -1759,18 +1754,6 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                     .subscribe()
             )
         }
-    }
-
-    private suspend fun suspendOpenFile(
-        file: CloudFile,
-        editType: EditType,
-        canBeShared: Boolean = false
-    ) {
-        fileProvider.openFile(
-            cloudFile = file,
-            editType = editType,
-            canBeShared = canBeShared
-        )
     }
 
     abstract fun getNextList()

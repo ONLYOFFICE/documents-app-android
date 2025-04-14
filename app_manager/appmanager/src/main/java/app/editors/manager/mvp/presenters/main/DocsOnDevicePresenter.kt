@@ -34,6 +34,7 @@ import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.StringUtils.Extension
 import moxy.InjectViewState
 import moxy.presenterScope
 import java.io.File
@@ -266,9 +267,11 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
 
     fun openFromChooser(uri: Uri) {
         val fileName = ContentResolverUtils.getName(context, uri)
-        val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
-
-        fileOpenRepository.openLocalFile(uri, ext, EditType.Edit())
+        openFile(
+            uri = uri,
+            extension = StringUtils.getExtensionFromPath(fileName.lowercase()),
+            editType = EditType.Edit()
+        )
     }
 
     fun import(uri: Uri) {
@@ -421,9 +424,24 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
         }
     }
 
-    fun updateState() {
-        setSelection(false)
-        setFiltering(false)
-        updateViewsState()
+    override fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
+        openFile(
+            uri = File(cloudFile.id).toUri(),
+            extension = cloudFile.fileExst,
+            editType = editType
+        )
+    }
+
+    private fun openFile(uri: Uri, extension: String, editType: EditType) {
+        when (StringUtils.getExtension(extension)) {
+            Extension.PDF -> {
+                if (FileUtils.isOformPdf(context.contentResolver.openInputStream(uri))) {
+                    viewState.onOpenLocalFile(uri, extension, EditType.Fill())
+                } else {
+                    viewState.onShowPdf(uri)
+                }
+            }
+            else ->  viewState.onOpenLocalFile(uri, extension, editType)
+        }
     }
 }

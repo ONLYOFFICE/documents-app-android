@@ -4,12 +4,12 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.core.net.toUri
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
-import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.presenters.storages.BaseStorageDocsPresenter
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
@@ -108,16 +108,14 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         }
     }
 
-    override fun onOpenLocalFile(file: CloudFile, editType: EditType?) {
-        val uri = Uri.parse(file.webUrl)
+    override fun onOpenLocalFile(file: CloudFile, editType: EditType) {
+        val uri = file.webUrl.toUri()
         when(StringUtils.getExtension(file.fileExst)) {
             StringUtils.Extension.IMAGE -> {
-                val state = OpenState.Media(getMediaFile(uri), false)
-                showMediaActivity(state.explorer, state.isWebDav)
+                showMediaActivity(getMediaFile(uri), false)
             }
             else -> super.onOpenLocalFile(file, editType)
         }
-
     }
 
     private fun getMediaFile(uri: Uri): Explorer =

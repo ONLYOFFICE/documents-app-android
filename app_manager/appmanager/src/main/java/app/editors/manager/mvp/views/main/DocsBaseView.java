@@ -131,7 +131,11 @@ public interface DocsBaseView extends BaseViewExt {
     void onSnackBarWithAction(@NonNull String message, @NonNull String button, @NonNull View.OnClickListener action);
 
     @StateStrategyType(OneExecutionStateStrategy.class)
-    void onOpenLocalFile(CloudFile file, @Nullable EditType editType);
+    void onOpenLocalFile(@NonNull CloudFile file, @NonNull EditType editType);
+
+    @StateStrategyType(OneExecutionStateStrategy.class)
+    void onOpenLocalFile(@NonNull Uri uri, @NonNull String extension, @NonNull EditType editType);
+
     @StateStrategyType(OneExecutionStateStrategy.class)
     void onNoProvider();
 

@@ -633,7 +633,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun openFileById(id: String, editType: EditType) {
-        fileOpenRepository.openCloudFile(id, editType)
+        openFile(CloudFile().apply { this.id = id }, editType)
     }
 
     fun openFile(data: String) {

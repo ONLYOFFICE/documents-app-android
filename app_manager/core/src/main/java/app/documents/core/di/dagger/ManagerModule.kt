@@ -2,8 +2,6 @@ package app.documents.core.di.dagger
 
 import app.documents.core.account.AccountManager
 import app.documents.core.database.datasource.CloudDataSource
-import app.documents.core.manager.FileOpenRepository
-import app.documents.core.manager.FileOpenRepositoryImpl
 import app.documents.core.manager.ManagerRepository
 import app.documents.core.manager.ManagerRepositoryImpl
 import app.documents.core.model.cloud.CloudAccount
@@ -35,11 +33,6 @@ class ManagerModule {
             managerService = managerService,
             cloudDataSource = cloudDataSource
         )
-    }
-
-    @Provides
-    fun provideFileOpenRepository(): FileOpenRepository {
-        return FileOpenRepositoryImpl()
     }
 
     @Provides

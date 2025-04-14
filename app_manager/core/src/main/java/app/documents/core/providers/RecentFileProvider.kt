@@ -1,5 +1,6 @@
 package app.documents.core.providers
 
+import app.documents.core.model.cloud.Recent
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -72,5 +73,9 @@ class RecentFileProvider @Inject constructor() : BaseFileProvider {
         token: String?
     ): Single<Response<ResponseBody>> {
         TODO("Not yet implemented")
+    }
+
+    suspend fun openFile(cloudFile: Recent, editType: EditType.Edit) {
+
     }
 }
