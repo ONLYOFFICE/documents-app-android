@@ -54,6 +54,10 @@ class Security : Serializable {
     @Expose
     var editAccess: Boolean = false
 
+    @SerializedName("Edit")
+    @Expose
+    var edit: Boolean = false
+
     @SerializedName("Duplicate")
     @Expose
     var duplicate: Boolean = false
