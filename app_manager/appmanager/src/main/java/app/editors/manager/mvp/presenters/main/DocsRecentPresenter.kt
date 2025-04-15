@@ -217,7 +217,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
             item = recent
             openFileJob = presenterScope.launch {
                 recentDataSource.insertOrUpdate(recent.copy(date = Date().time))
-                fileProvider.openFile(recent, EditType.Edit())
+                fileProvider.openFile(recent, EditType.Edit()).collect(::onFileOpenCollect)
                 getRecentFiles()
             }
         }

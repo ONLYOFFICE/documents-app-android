@@ -5,6 +5,8 @@ import android.content.Context
 import app.documents.core.account.AccountRepository
 import app.documents.core.manager.ManagerRepository
 import app.documents.core.network.common.NetworkClient
+import app.documents.core.network.common.Result
+import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.ManagerService
@@ -33,11 +35,12 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.StringUtils
@@ -48,6 +51,7 @@ import retrofit2.HttpException
 import retrofit2.Response
 import java.io.InputStream
 import javax.inject.Inject
+import kotlin.coroutines.resume
 
 
 data class OpenDocumentResult(
@@ -76,9 +80,6 @@ class CloudFileProvider @Inject constructor(
     }
 
     var roomCallback: RoomCallback? = null
-
-    private val _fileOpenResultFlow: MutableSharedFlow<FileOpenResult> = MutableSharedFlow(1)
-    override val fileOpenResultFlow: Flow<FileOpenResult> = _fileOpenResultFlow.asSharedFlow()
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return when {
@@ -414,14 +415,14 @@ class CloudFileProvider @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    suspend fun openFile(
+    fun openFile(
         portal: String,
         token: String,
         id: String,
         title: String,
         extension: String,
-    ) = withContext(Dispatchers.IO) {
-        try {
+    ): Flow<Result<FileOpenResult>> {
+        return flow {
             val api = NetworkClient.getRetrofit<ManagerService>(portal, token, context)
             val fileJson = JSONObject(api.suspendOpenFile(id).body()?.string().toString())
                 .getJSONObject(KEY_RESPONSE)
@@ -446,7 +447,7 @@ class CloudFileProvider @Inject constructor(
                     .put("canShareable", false)
             }
 
-            _fileOpenResultFlow.emit(
+            emit(
                 FileOpenResult.OpenDocumentServer(
                     cloudFile = CloudFile().apply {
                         this.id = id
@@ -457,70 +458,85 @@ class CloudFileProvider @Inject constructor(
                     editType = EditType.Edit()
                 )
             )
-        } catch (e: Exception) {
-            _fileOpenResultFlow.emit(FileOpenResult.Failed(e))
         }
+            .flowOn(Dispatchers.IO)
+            .asResult()
     }
 
-    override suspend fun openFile(
+    override fun openFile(
         cloudFile: CloudFile,
         editType: EditType,
         canBeShared: Boolean
-    ) = withContext(Dispatchers.IO) {
-        try {
-            _fileOpenResultFlow.emit(FileOpenResult.Loading())
-            val token = checkNotNull(accountRepository.getOnlineToken())
-            when {
-                StringUtils.isDocument(cloudFile.fileExst) -> {
-                    if (firebaseTool.isCoauthoring()) {
-                        val document = openDocument(
-                            cloudFile = cloudFile,
-                            token = token,
-                            canShareable = canBeShared,
-                            editType = editType
-                        )
+    ): Flow<Result<FileOpenResult>> {
+       return flow {
+           emit(FileOpenResult.Loading())
+           val token = checkNotNull(accountRepository.getOnlineToken())
+           when {
+               StringUtils.isDocument(cloudFile.fileExst) -> {
+                   if (firebaseTool.isCoauthoring()) {
+                       val document = openDocument(
+                           cloudFile = cloudFile,
+                           token = token,
+                           canShareable = canBeShared,
+                           editType = editType
+                       )
 
-                        if (document.isPdf) {
-                            val cachedFile = suspendGetCachedFile(context, cloudFile, token)
-                            _fileOpenResultFlow.emit(
-                                FileOpenResult.OpenLocally(
-                                    file = cachedFile,
-                                    fileId = cloudFile.id,
-                                    editType = editType
-                                )
-                            )
-                        } else {
-                            _fileOpenResultFlow.emit(
-                                FileOpenResult.OpenDocumentServer(
-                                    cloudFile = cloudFile,
-                                    info = checkNotNull(document.info),
-                                    editType = editType
-                                )
-                            )
-                        }
-                    } else {
-                        val cachedFile = suspendGetCachedFile(context, cloudFile, token)
-                        _fileOpenResultFlow.emit(
-                            FileOpenResult.OpenLocally(
-                                file = cachedFile,
-                                fileId = cloudFile.id,
-                                editType = editType
-                            )
-                        )
-                    }
-                }
+                       if (document.isPdf) {
+                           val cachedFile = suspendGetCachedFile(context, cloudFile, token)
+                           emit(
+                               FileOpenResult.OpenLocally(
+                                   file = cachedFile,
+                                   fileId = cloudFile.id,
+                                   editType = editType
+                               )
+                           )
+                       } else {
+                           emit(
+                               FileOpenResult.OpenDocumentServer(
+                                   cloudFile = cloudFile,
+                                   info = checkNotNull(document.info),
+                                   editType = editType
+                               )
+                           )
+                       }
+                   } else {
+                       val cachedFile = suspendGetCachedFile(context, cloudFile, token)
+                       emit(
+                           FileOpenResult.OpenLocally(
+                               file = cachedFile,
+                               fileId = cloudFile.id,
+                               editType = editType
+                           )
+                       )
+                   }
+               }
 
-                StringUtils.isMedia(cloudFile.fileExst) -> _fileOpenResultFlow.emit(
-                    FileOpenResult.OpenMedia(
-                        fileId = cloudFile.id
-                    )
-                )
+               StringUtils.isMedia(cloudFile.fileExst) -> emit(
+                   FileOpenResult.OpenCloudMedia(cloudFile)
+               )
 
-                else -> _fileOpenResultFlow.emit(FileOpenResult.DownloadNotSupportedFile())
-            }
-        } catch (throwable: Throwable) {
-            _fileOpenResultFlow.emit(FileOpenResult.Failed(throwable))
+               else -> emit(FileOpenResult.DownloadNotSupportedFile())
+           }
+       }
+           .flowOn(Dispatchers.IO)
+           .asResult()
+    }
+
+    @OptIn(InternalCoroutinesApi::class)
+    suspend fun openFile(id: String, editType: EditType, canBeShared: Boolean): Flow<Result<FileOpenResult>> {
+        val cloudFile = suspendCancellableCoroutine<CloudFile> { cont ->
+            fileInfo(CloudFile().apply { this.id = id })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext { cloudFile -> cont.resume(cloudFile) }
+                .doOnError { error -> cont.tryResumeWithException(error) }
+                .subscribe()
         }
+        return openFile(
+            cloudFile = cloudFile,
+            editType = editType,
+            canBeShared = canBeShared
+        )
     }
 
     @SuppressLint("CheckResult")

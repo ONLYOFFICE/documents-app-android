@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -38,10 +39,11 @@ class LocalFileProvider @Inject constructor(
     private val localContentTools: LocalContentTools
 ) : BaseFileProvider {
 
-    override val fileOpenResultFlow: Flow<FileOpenResult>
-        get() = flowOf()
-
-    override suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {}
+    override fun openFile(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean
+    ): Flow<Result<FileOpenResult>> = flowOf()
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.just(localContentTools.createRootDir())

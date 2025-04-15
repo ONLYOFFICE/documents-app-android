@@ -1,5 +1,6 @@
 package app.documents.core.providers
 
+import app.documents.core.network.common.Result
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -15,22 +16,25 @@ import java.io.File
 sealed class FileOpenResult {
 
     class Loading : FileOpenResult()
-    class Failed(val throwable: Throwable) : FileOpenResult()
     class DownloadNotSupportedFile : FileOpenResult()
-    class OpenMedia(val fileId: String) : FileOpenResult()
+    class OpenCloudMedia(val media: CloudFile) : FileOpenResult()
     class OpenDocumentServer(
         val cloudFile: CloudFile,
         val info: String,
         val editType: EditType
     ) : FileOpenResult()
     class OpenLocally(val file: File, val fileId: String, val editType: EditType) : FileOpenResult()
+    class RecentAnotherAccount() : FileOpenResult()
 }
 
 interface BaseFileProvider : CacheFileHelper {
 
-    val fileOpenResultFlow: Flow<FileOpenResult>
+    fun openFile(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean
+    ): Flow<Result<FileOpenResult>>
 
-    suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean)
     fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer>
     fun createFile(folderId: String, title: String): Observable<CloudFile>
     fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder>

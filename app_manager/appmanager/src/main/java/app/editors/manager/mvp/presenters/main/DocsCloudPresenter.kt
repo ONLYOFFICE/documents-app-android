@@ -458,14 +458,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         super.openFile(editType, isItemShareable)
     }
 
-    override fun onFileOpenResult(result: FileOpenResult) {
+    override suspend fun onFileOpenCollect(result: FileOpenResult) {
         if (result !is FileOpenResult.Loading) viewState.onDialogClose()
         when (result) {
             is FileOpenResult.OpenDocumentServer -> {
                 viewState.onOpenDocumentServer(result.cloudFile, result.info, result.editType)
                 FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, result.cloudFile.fileExst)
             }
-            else -> super.onFileOpenResult(result)
+            else -> super.onFileOpenCollect(result)
         }
     }
 
@@ -639,13 +639,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     id = fileId.orEmpty(),
                     title = model.file?.title.orEmpty(),
                     extension = model.file?.extension.orEmpty(),
-                )
+                ).collect(::onFileOpenCollect)
             } else {
                 fileProvider.openFile(
                     cloudFile = CloudFile().apply { this.id = fileId.orEmpty() },
                     editType = EditType.Edit(),
                     canBeShared  = false
-                )
+                ).collect(::onFileOpenCollect)
             }
         }
     }

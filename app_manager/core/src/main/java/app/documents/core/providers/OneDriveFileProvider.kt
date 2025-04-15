@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.manager.models.explorer.*
@@ -49,14 +50,13 @@ class OneDriveFileProvider(
         private const val PATH_TEMPLATES = "templates/"
     }
 
-    override val fileOpenResultFlow: Flow<FileOpenResult>
-        get() = flowOf()
-
     private val api: OneDriveProvider get() = helper.api
 
-    override suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
-
-    }
+    override fun openFile(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean
+    ): Flow<Result<FileOpenResult>> = flowOf()
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         val searchValue = filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE)?.trim().orEmpty()

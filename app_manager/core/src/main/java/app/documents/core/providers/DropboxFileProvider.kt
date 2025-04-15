@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.manager.models.explorer.*
@@ -48,14 +49,13 @@ class DropboxFileProvider(
         private const val TAG_COMPLETE_OPERATION = "complete"
     }
 
-    override val fileOpenResultFlow: Flow<FileOpenResult>
-        get() = flowOf()
-
-    override suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
-
-    }
-
     private val api: DropboxProvider get() = helper.api
+
+    override fun openFile(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean
+    ): Flow<Result<FileOpenResult>> = flowOf()
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {

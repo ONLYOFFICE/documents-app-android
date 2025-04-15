@@ -1,6 +1,12 @@
 package app.documents.core.providers
 
+import androidx.core.net.toFile
+import androidx.core.net.toUri
+import app.documents.core.account.AccountRepository
+import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.Recent
+import app.documents.core.network.common.Result
+import app.documents.core.network.common.asResult
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -11,39 +17,176 @@ import app.documents.core.network.manager.models.response.ResponseOperation
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import lib.toolkit.base.managers.utils.EditType
+import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.ResponseBody
 import retrofit2.Response
+import java.io.File
 import javax.inject.Inject
 
-class RecentFileProvider @Inject constructor() : BaseFileProvider {
+class RecentAnotherAccountException : RuntimeException()
 
-    override val fileOpenResultFlow: Flow<FileOpenResult>
-        get() = flowOf()
+class RecentFileProvider @Inject constructor(
+    private val accountRepository: AccountRepository,
+    private val cloudFileProvider: CloudFileProvider,
+    private val webDavFileProvider: WebDavFileProvider,
+    private val oneDriveFileProvider: OneDriveFileProvider,
+    private val googleDriveFileProvider: GoogleDriveFileProvider,
+    private val dropboxFileProvider: DropboxFileProvider
+) : BaseFileProvider {
 
-    override suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
-        TODO("Not yet implemented")
+    override fun openFile(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean
+    ): Flow<Result<FileOpenResult>> = flowOf()
+
+    fun openFile(recent: Recent, editType: EditType): Flow<Result<FileOpenResult>> {
+        return flow {
+            emit(FileOpenResult.Loading())
+            if (recent.source == null) {
+                openLocalFile(recent.path, editType)
+            } else {
+                openCloudFile(recent, editType)
+            }
+        }.asResult()
+    }
+
+    private suspend fun FlowCollector<FileOpenResult>.openCloudFile(
+        recent: Recent,
+        editType: EditType
+    ) {
+        val owner = recent.ownerId ?: throw RuntimeException()
+        val recentAccount = accountRepository.getAccount(owner)
+
+        if (recentAccount == null) {
+            emit(FileOpenResult.RecentAnotherAccount())
+            return
+        }
+
+        if (recentAccount.isStorage) {
+            openStorageFile(recent, recentAccount, editType)
+        } else if (recentAccount.isWebDav) {
+            openWebDavFile(recent, recentAccount, editType)
+        } else {
+            openCloudFile(recent, recentAccount, editType)
+        }
+    }
+
+    private suspend fun FlowCollector<FileOpenResult>.openLocalFile(
+        path: String,
+        editType: EditType
+    ) {
+        val uri = path.toUri()
+        val file = if (uri.scheme != null) {
+            uri.toFile()
+        } else {
+            File(path)
+        }
+        emit(FileOpenResult.OpenLocally(file, "", editType))
+    }
+
+    private suspend fun FlowCollector<FileOpenResult>.openCloudFile(
+        recent: Recent,
+        recentAccount: CloudAccount,
+        editType: EditType
+    ) {
+        if (recentAccount.id == accountRepository.getOnlineAccount()?.id) {
+            cloudFileProvider.openFile(
+                id = recent.fileId,
+                editType = editType,
+                canBeShared = false
+            ).collect { result ->
+                when (result) {
+                    is Result.Error -> throw result.exception
+                    is Result.Success<FileOpenResult> -> emit(result.result)
+                }
+            }
+            return
+        }
+
+        val token = accountRepository.getToken(recentAccount.accountName)
+        if (token.isNullOrEmpty()) {
+            throw RecentAnotherAccountException()
+        }
+
+        cloudFileProvider.openFile(
+            portal = recentAccount.portal.urlWithScheme,
+            token = token,
+            id = recent.fileId,
+            title = recent.name,
+            extension = StringUtils.getExtensionFromPath(recent.name)
+        ).collect { result ->
+            when (result) {
+                is Result.Error -> throw result.exception
+                is Result.Success<FileOpenResult> -> emit(result.result)
+            }
+        }
+    }
+
+    private suspend fun FlowCollector<FileOpenResult>.openStorageFile(
+        recent: Recent,
+        recentAccount: CloudAccount,
+        editType: EditType
+    ) {
+        val provider = when {
+            recentAccount.isOneDrive -> oneDriveFileProvider
+            recentAccount.isGoogleDrive -> googleDriveFileProvider
+            recentAccount.isDropbox -> dropboxFileProvider
+            else -> return emit(FileOpenResult.RecentAnotherAccount())
+        }
+
+        provider.openFile(
+            cloudFile = CloudFile().apply {
+                title = recent.name
+                id = recent.fileId
+                fileExst = StringUtils.getExtensionFromPath(recent.name)
+                pureContentLength = recent.size
+            },
+            editType = editType,
+            canBeShared = false
+        )
+    }
+
+    // todo implement web dav file opening
+    private suspend fun FlowCollector<FileOpenResult>.openWebDavFile(
+        recent: Recent,
+        recentAccount: CloudAccount,
+        editType: EditType
+    ) {
+        webDavFileProvider.openFile(
+            cloudFile = CloudFile().apply {
+                title = recent.name
+                id = recent.fileId
+                fileExst = StringUtils.getExtensionFromPath(recent.name)
+                pureContentLength = recent.size
+            },
+            editType = editType,
+            canBeShared = false
+        )
     }
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
-        TODO("Not yet implemented")
+        return Observable.just(Explorer())
     }
 
     override fun createFile(folderId: String, title: String): Observable<CloudFile> {
-        TODO("Not yet implemented")
+        return Observable.just(CloudFile())
     }
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
-        TODO("Not yet implemented")
+        return Observable.just(CloudFolder())
     }
 
     override fun rename(item: Item, newName: String, version: Int?): Observable<Item> {
-        TODO("Not yet implemented")
+        return Observable.just(CloudFile())
     }
 
     override fun delete(items: List<Item>, from: CloudFolder?): Observable<List<Operation>> {
-        TODO("Not yet implemented")
+        return Observable.just(emptyList())
     }
 
     override fun transfer(
@@ -53,29 +196,25 @@ class RecentFileProvider @Inject constructor() : BaseFileProvider {
         isMove: Boolean,
         isOverwrite: Boolean
     ): Observable<List<Operation>>? {
-        TODO("Not yet implemented")
+        return null
     }
 
     override fun fileInfo(item: Item?): Observable<CloudFile> {
-        TODO("Not yet implemented")
+        return Observable.just(CloudFile())
     }
 
     override fun getStatusOperation(): ResponseOperation? {
-        TODO("Not yet implemented")
+        return null
     }
 
     override fun terminate(): Observable<List<Operation>>? {
-        TODO("Not yet implemented")
+        return null
     }
 
     override fun getDownloadResponse(
         cloudFile: CloudFile,
         token: String?
     ): Single<Response<ResponseBody>> {
-        TODO("Not yet implemented")
-    }
-
-    suspend fun openFile(cloudFile: Recent, editType: EditType.Edit) {
-
+        return Single.never()
     }
 }

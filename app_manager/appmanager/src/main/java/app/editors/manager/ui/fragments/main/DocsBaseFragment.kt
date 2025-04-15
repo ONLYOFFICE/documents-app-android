@@ -27,6 +27,7 @@ import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.Security
@@ -65,6 +66,7 @@ import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
+import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
@@ -359,6 +361,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             }
             StringUtils.Extension.PDF -> {
                 showEditors(uri, EditorsType.PDF, editType = editType)
+            }
+            StringUtils.Extension.IMAGE,
+            StringUtils.Extension.IMAGE_GIF -> {
+                showMediaActivity(getMediaFile(uri), false)
             }
             StringUtils.Extension.VIDEO_SUPPORT -> {
                 val videoFile = CloudFile().apply {
@@ -1260,4 +1266,21 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             dialog.show(parentFragmentManager, ExplorerContextBottomDialog.TAG)
         }
     }
+
+    private fun getMediaFile(uri: Uri): Explorer =
+        Explorer().apply {
+            val file = File(context?.let { PathUtils.getPath(it, uri).toString() }.toString())
+            val explorerFile = CloudFile().apply {
+                pureContentLength = file.length()
+                webUrl = file.absolutePath
+                fileExst = StringUtils.getExtensionFromPath(file.name)
+                title = file.name
+                isClicked = true
+            }
+            current = Current().apply {
+                title = file.name
+                filesCount = "1"
+            }
+            files = mutableListOf(explorerFile)
+        }
 }

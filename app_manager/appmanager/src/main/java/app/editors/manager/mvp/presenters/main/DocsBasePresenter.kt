@@ -18,6 +18,7 @@ import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.Recent
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -247,10 +248,6 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                     roomClicked?.indexing == true) || currentFolder?.indexing == true || field
         }
 
-    init {
-        collectFileOpenResult()
-    }
-
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
             PreferenceTool.KEY_IS_GRID_VIEW -> {
@@ -271,19 +268,14 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         disposable.dispose()
     }
 
-    private fun collectFileOpenResult() {
-        presenterScope.launch {
-            fileProvider.fileOpenResultFlow.collect { result ->
-                if (openFileJob?.isActive == true) {
-                    withContext(Dispatchers.Main) {
-                        onFileOpenResult(result)
-                    }
-                }
-            }
+    protected suspend fun onFileOpenCollect(result: Result<FileOpenResult>) {
+        when (result) {
+            is Result.Error -> fetchError(result.exception)
+            is Result.Success<FileOpenResult> -> onFileOpenCollect(result.result)
         }
     }
 
-    protected open fun onFileOpenResult(result: FileOpenResult) {
+    protected open suspend fun onFileOpenCollect(result: FileOpenResult) {
         if (result !is FileOpenResult.Loading) viewState.onDialogClose()
         when (result) {
             is FileOpenResult.DownloadNotSupportedFile -> viewState.onFileDownloadPermission()
@@ -291,10 +283,9 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             is FileOpenResult.OpenLocally -> {
                 openFileFromPortal(result.file, result.fileId, result.editType)
             }
-            is FileOpenResult.OpenMedia -> {
-                viewState.onFileMedia(getListMedia(result.fileId), false)
+            is FileOpenResult.OpenCloudMedia -> {
+                viewState.onFileMedia(getListMedia(result.media), false)
             }
-            is FileOpenResult.Failed -> fetchError(result.throwable)
             else -> Unit
         }
     }
@@ -1235,16 +1226,15 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             }
         }
 
-    fun getListMedia(clickedId: String?): Explorer {
-        return modelExplorerStack.last()?.let { explorer ->
-            Explorer().apply {
-                folders = mutableListOf()
-                files = explorer.files
-                    .filter { StringUtils.isImage(it.fileExst) || StringUtils.isVideoSupport(it.fileExst) }
-                    .onEach { it.isClicked = it.id.equals(clickedId, ignoreCase = true) }
-                    .toMutableList()
-            }
-        } ?: Explorer()
+    private fun getListMedia(mediaFile: CloudFile): Explorer {
+        val lastExplorer = modelExplorerStack.last() ?: Explorer(files = mutableListOf(mediaFile))
+        return Explorer().apply {
+            folders = mutableListOf()
+            files = lastExplorer.files
+                .filter { StringUtils.isImage(it.fileExst) || StringUtils.isVideoSupport(it.fileExst) }
+                .onEach { it.isClicked = it.id.equals(mediaFile.id, ignoreCase = true) }
+                .toMutableList()
+        }
     }
 
     open fun openFolder(id: String?, position: Int, roomType: Int? = null) {
@@ -1735,7 +1725,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                 cloudFile = cloudFile,
                 editType = editType,
                 canBeShared = canBeShared
-            )
+            ).collect(::onFileOpenCollect)
         }
     }
 

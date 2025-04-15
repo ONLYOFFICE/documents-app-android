@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import app.documents.core.manager.ProgressRequestBody
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
@@ -56,15 +57,14 @@ class WebDavFileProvider @Inject constructor(
         private val PATH_DOWNLOAD = Environment.getExternalStorageDirectory().absolutePath + "/${BuildConfig.ROOT_FOLDER}"
     }
 
-    override val fileOpenResultFlow: Flow<FileOpenResult>
-        get() = flowOf()
-
     private var batchItems: List<Item>? = null
     val uploadsFile: MutableList<CloudFile> = Collections.synchronizedList(ArrayList())
 
-    override suspend fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
-
-    }
+    override fun openFile(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean
+    ): Flow<Result<FileOpenResult>> = flowOf()
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.fromCallable { id?.let { webDavService.propfind(it).execute() } }
