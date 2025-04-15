@@ -8,7 +8,6 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.CloudAccount
-import app.documents.core.model.cloud.Recent
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
@@ -272,21 +271,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             StringUtils.getExtensionFromPath(title)
         )
         super.createDocs(title)
-    }
-
-    override fun addRecent(file: CloudFile) {
-        presenterScope.launch {
-            recentDataSource.add(
-                Recent(
-                    fileId = file.id,
-                    path = "",
-                    name = file.title,
-                    size = file.pureContentLength,
-                    ownerId = account.id,
-                    source = account.portalUrl
-                )
-            )
-        }
     }
 
     override fun updateViewsState() {

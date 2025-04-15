@@ -91,32 +91,6 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
         // Stub to local
     }
 
-    override fun addRecent(file: CloudFile) {
-        presenterScope.launch {
-            recentDataSource.add(
-                Recent(
-                    path = file.webUrl,
-                    name = file.title,
-                    size = file.pureContentLength
-                )
-            )
-        }
-    }
-
-    private fun addRecent(uri: Uri) {
-        presenterScope.launch {
-            DocumentFile.fromSingleUri(context, uri)?.let { file ->
-                recentDataSource.add(
-                    Recent(
-                        path = uri.toString(),
-                        name = file.name.toString(),
-                        size = file.length()
-                    )
-                )
-            }
-        }
-    }
-
     override fun updateViewsState() {
         if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
@@ -398,8 +372,6 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
                 }
                 files = mutableListOf(explorerFile)
             }
-
-            addRecent(explorerFile)
         }
     }
 
@@ -425,6 +397,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
     }
 
     override fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
+        presenterScope.launch { addToRecent(cloudFile) }
         openFile(
             uri = File(cloudFile.id).toUri(),
             extension = cloudFile.fileExst,
@@ -441,7 +414,18 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
                     viewState.onShowPdf(uri)
                 }
             }
+            Extension.IMAGE,
+            Extension.IMAGE_GIF,
+            Extension.VIDEO_SUPPORT -> showMedia(uri)
             else ->  viewState.onOpenLocalFile(uri, extension, editType)
         }
+    }
+
+    override fun cloudFileToRecent(cloudFile: CloudFile): Recent {
+        return Recent(
+            path = cloudFile.webUrl,
+            name = cloudFile.title,
+            size = cloudFile.pureContentLength
+        )
     }
 }

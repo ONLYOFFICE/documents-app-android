@@ -12,15 +12,12 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.providers.BaseFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
-import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.StringUtils
-import moxy.presenterScope
 
 abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView, FP : BaseFileProvider> : DocsBasePresenter<V, FP>(),
     UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
@@ -93,22 +90,16 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView, FP : BaseFilePr
         }
     }
 
-    override fun addRecent(file: CloudFile) {
-        presenterScope.launch {
-            context.accountOnline?.let {
-                recentDataSource.addRecent(
-                    Recent(
-                        fileId = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
-                        path = file.webUrl,
-                        name = file.title,
-                        size = file.pureContentLength,
-                        isWebdav = true,
-                        ownerId = it.id,
-                        source = it.portal.url
-                    )
-                )
-            }
-        }
+    override fun cloudFileToRecent(cloudFile: CloudFile): Recent {
+        return super.cloudFileToRecent(cloudFile).copy(
+            fileId = if (StringUtils.isImage(cloudFile.fileExst)) {
+                cloudFile.id
+            } else {
+                cloudFile.viewUrl
+            },
+            path = cloudFile.webUrl,
+            isWebdav = true
+        )
     }
 
     override fun delete(): Boolean {

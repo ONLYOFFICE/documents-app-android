@@ -33,7 +33,6 @@ import lib.toolkit.base.managers.utils.NetworkUtils.isWifiEnable
 import lib.toolkit.base.managers.utils.PermissionUtils.checkReadWritePermission
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
-import moxy.presenterScope
 
 
 @InjectViewState
@@ -87,22 +86,16 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView, WebDavFileProvider
         // Stub
     }
 
-    override fun addRecent(file: CloudFile) {
-        presenterScope.launch {
-            context.accountOnline?.let {
-                recentDataSource.addRecent(
-                    Recent(
-                        fileId = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
-                        path = file.webUrl,
-                        name = file.title,
-                        size = file.pureContentLength,
-                        isWebdav = true,
-                        ownerId = it.id,
-                        source = it.portalUrl
-                    )
-                )
-            }
-        }
+    override fun cloudFileToRecent(cloudFile: CloudFile): Recent {
+        return super.cloudFileToRecent(cloudFile).copy(
+            fileId = if (StringUtils.isImage(cloudFile.fileExst)) {
+                cloudFile.id
+            } else {
+                cloudFile.viewUrl
+            },
+            path = cloudFile.webUrl,
+            isWebdav = true
+        )
     }
 
     override fun updateViewsState() {

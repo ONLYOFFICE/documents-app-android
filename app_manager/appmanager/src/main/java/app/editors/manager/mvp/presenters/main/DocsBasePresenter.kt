@@ -17,6 +17,7 @@ import androidx.work.WorkManager
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.model.cloud.Access
+import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -1729,6 +1730,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     open fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean = false) {
         openFileJob?.cancel()
         openFileJob = presenterScope.launch {
+            addToRecent(cloudFile)
             fileProvider.openFile(
                 cloudFile = cloudFile,
                 editType = editType,
@@ -1756,9 +1758,25 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         }
     }
 
-    abstract fun getNextList()
+    protected open suspend fun addToRecent(cloudFile: CloudFile) = withContext(Dispatchers.IO) {
+        recentDataSource.insertOrUpdate(cloudFileToRecent(cloudFile))
+    }
 
-    abstract fun addRecent(file: CloudFile)
+    protected open fun cloudFileToRecent(cloudFile: CloudFile): Recent {
+        return with(cloudFile) {
+            val account = context.accountOnline
+            Recent(
+                fileId = id,
+                path = "",
+                name = title,
+                size = pureContentLength,
+                ownerId = account?.id.orEmpty(),
+                source = account?.portalUrl.orEmpty()
+            )
+        }
+    }
+
+    abstract fun getNextList()
 
     abstract fun onActionClick()
 

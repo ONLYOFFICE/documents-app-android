@@ -20,51 +20,13 @@ internal class RecentDataSourceImpl(private val db: RecentDatabase) : RecentData
             .map { it.map(RecentEntity::toRecent) }
     }
 
-    override suspend fun add(recent: Recent) {
-        val entity = recent.toEntity()
-        if (recent.fileId.isNotEmpty()) {
-            db.withTransaction {
-                if (db.recentDao.getRecentByFileId(recent.fileId, recent.ownerId) == null) {
-                    db.recentDao.add(entity)
-                } else {
-                    db.recentDao.update(entity)
-                }
-            }
-        } else {
-            db.withTransaction {
-                if (db.recentDao.getRecentByFilePath(recent.path) == null) {
-                    db.recentDao.add(entity)
-                } else {
-                    db.recentDao.update(entity)
-                }
-            }
-        }
-    }
-
-    override suspend fun updateRecent(recent: Recent) {
-        db.recentDao.update(recent.toEntity())
+    override suspend fun insertOrUpdate(recent: Recent) {
+        db.recentDao.add(recent.toEntity())
     }
 
     override suspend fun deleteRecent(vararg recent: Recent) {
         db.withTransaction {
             recent.forEach { recent -> db.recentDao.delete(recent.toEntity()) }
-        }
-    }
-
-    override suspend fun addRecent(recent: Recent) {
-        db.withTransaction {
-            if (recent.source == null) {
-                db.recentDao.getRecentByFilePath(recent.path)?.let {
-                    add(recent.copy(id = it.id))
-                    return@withTransaction
-                }
-            } else {
-                db.recentDao.getRecentByFileId(recent.fileId, recent.ownerId)?.let {
-                    add(recent.copy(id = it.id))
-                    return@withTransaction
-                }
-            }
-            add(recent)
         }
     }
 }

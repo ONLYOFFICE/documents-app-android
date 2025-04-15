@@ -119,13 +119,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
         }
     }
 
-    private fun addRecent(recent: Recent) {
-        presenterScope.launch {
-            recentDataSource.updateRecent(recent.copy(date = Date().time))
-            getRecentFiles()
-        }
-    }
-
     override fun upload(uri: Uri?, uris: List<Uri>?, tag: String?) {
         item?.let { item ->
             if (item.isWebdav) {
@@ -143,12 +136,14 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .flatMap { cloudFile ->
-                        addRecent(cloudFile)
                         return@flatMap provider.upload(cloudFile.folderId, arrayListOf(uri))
-                    }.subscribe({}, { error -> fetchError(error) }, {
+                    }
+                    .doOnError(::fetchError)
+                    .doOnComplete {
                         deleteTempFile()
                         viewState.onSnackBar(context.getString(R.string.upload_manager_complete))
-                    })
+                    }
+                    .subscribe()
                 )
             }
         }
@@ -221,14 +216,10 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
         recent?.let {
             item = recent
             openFileJob = presenterScope.launch {
+                recentDataSource.insertOrUpdate(recent.copy(date = Date().time))
                 fileProvider.openFile(recent, EditType.Edit())
+                getRecentFiles()
             }
-        }
-    }
-
-    override fun addRecent(file: CloudFile) {
-        presenterScope.launch {
-            item?.let { recentDataSource.updateRecent(it.copy(date = Date().time)) }
         }
     }
 
