@@ -6,7 +6,7 @@ import app.documents.core.network.manager.models.user.Thirdparty
 import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.app.cloudFileProvider
-import app.editors.manager.app.roomApi
+import app.editors.manager.app.roomProvider
 import app.editors.manager.mvp.models.filter.FilterAuthor
 import app.editors.manager.mvp.models.filter.FilterProvider
 import app.editors.manager.mvp.models.filter.RoomFilterTag
@@ -98,14 +98,15 @@ class RoomFilterPresenter(val folderId: String?) : BaseFilterPresenter() {
 
     private fun getTags() {
         presenterScope.launch(Dispatchers.IO) {
-            val tags = context.roomApi.getTags().tags
-            if (tags.isEmpty()) return@launch
-
-            withContext(Dispatchers.Main) {
-                viewState.onTagsLoaded(tags)
-            }
+            context.roomProvider.getTags()
+                .onSuccess { tags ->
+                    if (tags.isEmpty()) return@launch
+                    withContext(Dispatchers.Main) {
+                        viewState.onTagsLoaded(tags)
+                    }
+                }
+                .onFailure { e -> fetchError(e) }
         }
-
     }
 
     override fun saveFilter() {

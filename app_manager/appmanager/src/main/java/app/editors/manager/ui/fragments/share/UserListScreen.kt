@@ -66,7 +66,7 @@ import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
-import app.editors.manager.managers.utils.typeTitle
+import app.editors.manager.managers.utils.getTypeTitle
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.views.custom.SearchAppBar
 import app.editors.manager.ui.views.custom.UserListBottomContent
@@ -213,6 +213,7 @@ private fun MainScreen(
                         token = token,
                         portal = portal?.urlWithScheme,
                         isDocSpace = portal.isDocSpace,
+                        provider = portal?.provider,
                         onClick = onClick
                     )
                 } else {
@@ -223,7 +224,8 @@ private fun MainScreen(
                         onClick = onClick,
                         portal = portal?.urlWithScheme,
                         token = token,
-                        isDocSpace = portal.isDocSpace
+                        isDocSpace = portal.isDocSpace,
+                        provider = portal?.provider
                     )
                 }
                 bottomContent(state.selected.size, state.access ?: Access.None)
@@ -239,6 +241,7 @@ private fun SearchListScreen(
     onClick: (id: String) -> Unit,
     token: String,
     portal: String?,
+    provider: PortalProvider?,
     isDocSpace: Boolean
 ) {
     val members = mutableListOf<Member>()
@@ -275,6 +278,7 @@ private fun SearchListScreen(
                         token = token,
                         portal = portal,
                         isDocSpace = isDocSpace,
+                        provider = provider,
                         onClick = onClick
                     )
                 }
@@ -345,6 +349,7 @@ private fun PagerScreen(
     onClick: (id: String) -> Unit,
     token: String,
     portal: String?,
+    provider: PortalProvider?,
     isDocSpace: Boolean
 ) {
     HorizontalPager(modifier = modifier, state = pagerState) {
@@ -358,6 +363,7 @@ private fun PagerScreen(
                         token = token,
                         portal = portal,
                         isDocSpace = isDocSpace,
+                        provider = provider,
                         onClick = onClick
                     )
                 } else {
@@ -398,6 +404,7 @@ private fun PagerScreen(
                         token = token,
                         portal = portal,
                         isDocSpace = isDocSpace,
+                        provider = provider,
                         onClick = onClick
                     )
                 } else {
@@ -422,10 +429,11 @@ private fun LazyItemScope.UserItem(
     token: String,
     portal: String?,
     isDocSpace: Boolean,
+    provider: PortalProvider?,
     onClick: (String) -> Unit,
 ) {
     val subtitle = if (isDocSpace) {
-        stringResource(user.typeTitle) + user.email?.let { " | $it" }
+        stringResource(user.getTypeTitle(provider)) + user.email?.let { " | $it" }
     } else {
         user.groups.joinToString { group -> group.name }
     }
@@ -468,6 +476,7 @@ private fun UsersScreen(
     token: String,
     portal: String?,
     isDocSpace: Boolean,
+    provider: PortalProvider?,
     onClick: (String) -> Unit,
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -484,6 +493,7 @@ private fun UsersScreen(
                         token = token,
                         portal = portal,
                         isDocSpace = isDocSpace,
+                        provider = provider,
                         onClick = onClick
                     )
                 }

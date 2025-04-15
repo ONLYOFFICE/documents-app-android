@@ -18,6 +18,8 @@ plugins {
 //    id("org.owasp.dependencycheck")
 }
 
+val withEditors: Boolean = project.findProperty("withEditors")?.toString()?.toBoolean() ?: true
+
 // Onlyoffice
 val appId = "com.onlyoffice.documents"
 val appName = "onlyoffice-manager"
@@ -65,7 +67,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 615
+        versionCode = 619
         versionName = "9.0.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
@@ -233,15 +235,31 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":libcompose"))
     implementation(project(":libtoolkit"))
-    implementation(project(":libx2t"))
-    implementation(project(":libeditors"))
-    implementation(project(":libslides"))
-    implementation(project(":libdocs"))
-    implementation(project(":libcells"))
-    implementation(project(":libgeditors"))
-    implementation(project(":libgslides"))
-    implementation(project(":libgdocs"))
-    implementation(project(":libgcells"))
+    // Dynamic connection of editors
+    if (withEditors) {
+        val editorModules = listOf(
+            ":libx2t",
+            ":libeditors",
+            ":libcells",
+            ":libdocs",
+            ":libslides",
+            ":libgeditors",
+            ":libgcells",
+            ":libgdocs",
+            ":libgslides"
+        )
+
+        editorModules.forEach { modulePath ->
+            try {
+                implementation(project(modulePath))
+                println("✅ The $modulePath editor module is enabled")
+            } catch (e: UnknownProjectException) {
+                println("⚠️ The $modulePath editor module is missing and will be skipped.")
+            }
+        }
+    } else {
+        println("ℹ️ Build mode without editors")
+    }
 
     // Firebase
     implementation(libs.firebase.crashlytics)

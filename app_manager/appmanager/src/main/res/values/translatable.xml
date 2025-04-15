@@ -69,6 +69,7 @@
     <string name="errors_webdav_username_password">Wrong username or password</string>
     <string name="errors_webdav_2fa_code">Wrong verification code</string>
     <string name="errors_webdav_server">Wrong server</string>
+    <string name="errors_open_document">Failed open document</string>
 
     <!-- SignIn -->
     <string name="errors_sign_in_splash_error">Failed to access the portal</string>
@@ -363,6 +364,7 @@
     <string name="list_action_sheet">Spreadsheet</string>
     <string name="list_action_presentation">Presentation</string>
     <string name="list_action_doc">Text document</string>
+    <string name="list_action_doc_from_photo">Text document from photo</string>
     <string name="list_action_folder">Folder</string>
     <string name="list_action_photo">Make photo</string>
     <string name="list_action_upload">Upload file</string>
@@ -386,6 +388,8 @@
 
     <!-- Placeholder -->
     <string name="placeholder_connection">Connection error</string>
+    <string name="placeholder_connection_desc">No network connection detected. Please check your connection and try again</string>
+    <string name="placeholder_connection_button">Reload</string>
     <string name="placeholder_empty">Empty folder</string>
     <string name="placeholder_search">Nothing found</string>
     <string name="placeholder_share">Not shared</string>
@@ -898,6 +902,8 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="share_access_room_owner">Owner</string>
     <string name="share_user_type_room_docspace_admin">DocSpace admin</string>
     <string name="share_user_type_room_docspace_owner">DocSpace Owner</string>
+    <string name="share_user_type_room_workspace_owner">Workspace Owner</string>
+    <string name="share_user_type_room_portal_owner">Portal Owner</string>
     <string name="share_user_type_room_admin">Room admin</string>
     <string name="share_access_room_manager">Room manager</string>
     <string name="share_access_room_power_user">Content creator</string>

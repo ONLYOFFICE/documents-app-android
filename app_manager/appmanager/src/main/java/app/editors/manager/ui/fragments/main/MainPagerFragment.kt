@@ -44,7 +44,7 @@ interface IMainPagerFragment {
 }
 
 class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView, View.OnClickListener,
-    IMainPagerFragment {
+    IMainPagerFragment, PlaceholderViews.OnClickListener {
 
     companion object {
 
@@ -57,6 +57,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         private const val TAG_TYPE = "TAG_TYPE"
         private const val TAG_PERSONAL_END = "TAG_PERSONAL_END"
         private const val TAG_PAYMENT_REQUIRED = "TAG_PAYMENT_REQUIRED"
+        private const val TAG_CONNECTION = "TAG_CONNECTION"
         private const val OFFSCREEN_COUNT = 5
 
         fun newInstance(): MainPagerFragment {
@@ -138,6 +139,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             TAG_PAYMENT_REQUIRED,
             placeholderViews?.type == PlaceholderViews.Type.PAYMENT_REQUIRED
         )
+        outState.putBoolean(
+            TAG_CONNECTION,
+            placeholderViews?.type == PlaceholderViews.Type.CONNECTION
+        )
         outState.putInt(TAG_SELECTED_PAGE, selectedPage)
         outState.putStringArrayList(TAG_TITLES, tabTile)
         outState.putIntegerArrayList(TAG_TYPE, type)
@@ -195,6 +200,11 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         if (savedInstanceState.containsKey(TAG_PAYMENT_REQUIRED)) {
             if (savedInstanceState.getBoolean(TAG_PAYMENT_REQUIRED)) {
                 placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.PAYMENT_REQUIRED)
+            }
+        }
+        if (savedInstanceState.containsKey(TAG_CONNECTION)) {
+            if (savedInstanceState.getBoolean(TAG_CONNECTION)) {
+                placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.CONNECTION, ::onRetryClick)
             }
         }
         if (savedInstanceState.containsKey(TAG_TITLES) && savedInstanceState.containsKey(TAG_TYPE)) {
@@ -310,10 +320,17 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.PAYMENT_REQUIRED) {
                 context?.accountOnline?.portal?.urlWithScheme?.let(::showUrlInBrowser)
             }
+        } else if (message == getString(R.string.errors_connection_error)) {
+            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.CONNECTION, ::onRetryClick)
         } else {
             message?.let { showSnackBar(it) }
             (requireActivity() as? MainActivity)?.onUnauthorized(message)
         }
+    }
+
+    override fun onRetryClick() {
+        placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD)
+        checkBundle()
     }
 
     override fun onError(@StringRes res: Int) {
