@@ -107,11 +107,16 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                             cloudPresenter.updateDocument(data.data!!)
                         }
                     }
+                    refreshState()
                 }
             }
         } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
             onRefresh()
         }
+    }
+
+    private fun refreshState(){
+        presenter.refreshWithDelay()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
