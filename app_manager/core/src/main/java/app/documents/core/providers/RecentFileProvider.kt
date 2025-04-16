@@ -28,8 +28,6 @@ import retrofit2.Response
 import java.io.File
 import javax.inject.Inject
 
-class RecentAnotherAccountException : RuntimeException()
-
 class RecentFileProvider @Inject constructor(
     private val accountRepository: AccountRepository,
     private val cloudFileProvider: CloudFileProvider,
@@ -67,8 +65,13 @@ class RecentFileProvider @Inject constructor(
         val owner = recent.ownerId ?: throw RuntimeException()
         val recentAccount = accountRepository.getAccount(owner)
 
+        if (accountRepository.getOnlineAccount() == null) {
+            emit(FileOpenResult.RecentNoAccount())
+            return
+        }
+
         if (recentAccount == null) {
-            emit(FileOpenResult.RecentAnotherAccount())
+            emit(FileOpenResult.RecentFileNotFound())
             return
         }
 
@@ -106,29 +109,12 @@ class RecentFileProvider @Inject constructor(
                 canBeShared = false
             ).collect { result ->
                 when (result) {
-                    is Result.Error -> throw result.exception
+                    is Result.Error -> emit(FileOpenResult.RecentFileNotFound())
                     is Result.Success<FileOpenResult> -> emit(result.result)
                 }
             }
-            return
-        }
-
-        val token = accountRepository.getToken(recentAccount.accountName)
-        if (token.isNullOrEmpty()) {
-            throw RecentAnotherAccountException()
-        }
-
-        cloudFileProvider.openFile(
-            portal = recentAccount.portal.urlWithScheme,
-            token = token,
-            id = recent.fileId,
-            title = recent.name,
-            extension = StringUtils.getExtensionFromPath(recent.name)
-        ).collect { result ->
-            when (result) {
-                is Result.Error -> throw result.exception
-                is Result.Success<FileOpenResult> -> emit(result.result)
-            }
+        } else {
+            emit(FileOpenResult.RecentFileNotFound())
         }
     }
 
@@ -141,7 +127,7 @@ class RecentFileProvider @Inject constructor(
             recentAccount.isOneDrive -> oneDriveFileProvider
             recentAccount.isGoogleDrive -> googleDriveFileProvider
             recentAccount.isDropbox -> dropboxFileProvider
-            else -> return emit(FileOpenResult.RecentAnotherAccount())
+            else -> return emit(FileOpenResult.RecentNoAccount())
         }
 
         provider.openFile(

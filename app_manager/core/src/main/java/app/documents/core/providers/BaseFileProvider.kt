@@ -26,7 +26,8 @@ sealed class FileOpenResult {
         val editType: EditType
     ) : FileOpenResult()
     class OpenLocally(val file: File, val fileId: String, val editType: EditType) : FileOpenResult()
-    class RecentAnotherAccount() : FileOpenResult()
+    class RecentNoAccount : FileOpenResult()
+    class RecentFileNotFound : FileOpenResult()
 }
 
 interface BaseCloudFileProvider {

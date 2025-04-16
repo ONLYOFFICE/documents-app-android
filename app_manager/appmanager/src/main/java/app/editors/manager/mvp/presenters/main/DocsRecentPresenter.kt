@@ -9,6 +9,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.providers.FileOpenResult
 import app.documents.core.providers.RecentFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -17,6 +18,8 @@ import app.editors.manager.mvp.views.main.DocsRecentView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.EditType
@@ -29,6 +32,7 @@ import moxy.presenterScope
 import java.io.File
 import java.util.Date
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 sealed class RecentState {
     class RenderList(val recents: List<Recent>) : RecentState()
@@ -132,18 +136,19 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
                     fileExst = StringUtils.getExtensionFromPath(item.name)
                 }
 
-                disposable.add(provider.fileInfo(file, false)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .flatMap { cloudFile ->
-                        return@flatMap provider.upload(cloudFile.folderId, arrayListOf(uri))
-                    }
-                    .doOnError(::fetchError)
-                    .doOnComplete {
-                        deleteTempFile()
-                        viewState.onSnackBar(context.getString(R.string.upload_manager_complete))
-                    }
-                    .subscribe()
+                disposable.add(
+                    provider.fileInfo(file, false)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .flatMap { cloudFile ->
+                            return@flatMap provider.upload(cloudFile.folderId, arrayListOf(uri))
+                        }
+                        .doOnError(::fetchError)
+                        .doOnComplete {
+                            deleteTempFile()
+                            viewState.onSnackBar(context.getString(R.string.upload_manager_complete))
+                        }
+                        .subscribe()
                 )
             }
         }
@@ -212,12 +217,15 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
         contextPosition = position
     }
 
+    @OptIn(FlowPreview::class)
     fun fileClick(recent: Recent? = item) {
         recent?.let {
             item = recent
             openFileJob = presenterScope.launch {
                 recentDataSource.insertOrUpdate(recent.copy(date = Date().time))
-                fileProvider.openFile(recent, EditType.Edit()).collect(::onFileOpenCollect)
+                fileProvider.openFile(recent, EditType.Edit())
+                    .debounce(500.milliseconds)
+                    .collect(::onFileOpenCollect)
                 getRecentFiles()
             }
         }
@@ -294,5 +302,14 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
 
     override fun updateDocument(id: String, uri: Uri) {
         super.updateDocument(item?.fileId.orEmpty(), uri)
+    }
+
+    override suspend fun onFileOpenCollect(result: FileOpenResult) {
+        if (result !is FileOpenResult.Loading) viewState.onDialogClose()
+        when (result) {
+            is FileOpenResult.RecentNoAccount -> viewState.onSnackBar(context.getString(R.string.error_recent_enter_account))
+            is FileOpenResult.RecentFileNotFound -> viewState.onSnackBar(context.getString(R.string.error_recent_account))
+            else -> super.onFileOpenCollect(result)
+        }
     }
 }
