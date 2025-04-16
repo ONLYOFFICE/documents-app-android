@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.StringUtils
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import java.io.File
@@ -36,13 +37,17 @@ class RecentFileProvider @Inject constructor(
     private val oneDriveFileProvider: OneDriveFileProvider,
     private val googleDriveFileProvider: GoogleDriveFileProvider,
     private val dropboxFileProvider: DropboxFileProvider
-) : BaseFileProvider {
+) : BaseFileProvider, BaseCloudFileProvider {
 
     override fun openFile(
         cloudFile: CloudFile,
         editType: EditType,
         canBeShared: Boolean
     ): Flow<Result<FileOpenResult>> = flowOf()
+
+    override fun updateDocument(id: String, body: MultipartBody.Part): Single<Boolean> {
+        return cloudFileProvider.updateDocument(id, body)
+    }
 
     fun openFile(recent: Recent, editType: EditType): Flow<Result<FileOpenResult>> {
         return flow {

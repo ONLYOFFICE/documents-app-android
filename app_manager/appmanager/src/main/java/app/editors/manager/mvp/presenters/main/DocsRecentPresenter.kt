@@ -292,4 +292,7 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
         }
     }
 
+    override fun updateDocument(id: String, uri: Uri) {
+        super.updateDocument(item?.fileId.orEmpty(), uri)
+    }
 }

@@ -1,6 +1,5 @@
 package app.editors.manager.mvp.presenters.main
 
-import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
@@ -65,17 +64,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.tools.LocalContentTools
-import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
 import moxy.presenterScope
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import java.io.File
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
@@ -1011,30 +1005,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun getSelectedItemsCount(): Int {
         return modelExplorerStack.countSelectedItems
-    }
-
-    @SuppressLint("MissingPermission")
-    fun updateDocument(data: Uri) {
-        if (data.path?.isEmpty() == true) return
-        context.contentResolver.openInputStream(data).use {
-            val file = File(data.path.orEmpty())
-            val body = MultipartBody.Part.createFormData(
-                file.name, file.name, RequestBody.create(
-                    MediaType.parse(ContentResolverUtils.getMimeType(context, data)), file
-                )
-            )
-            disposable.add(
-                fileProvider.updateDocument(itemClicked?.id.orEmpty(), body)
-                    .subscribe({
-                        FileUtils.deletePath(file)
-                        viewState.onDialogClose()
-                    }, {
-                        FileUtils.deletePath(file)
-                        fetchError(it)
-                    })
-            )
-        }
-
     }
 
     // use for operation in order to filter by room

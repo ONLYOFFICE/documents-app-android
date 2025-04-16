@@ -66,7 +66,7 @@ class CloudFileProvider @Inject constructor(
     private val managerRepository: ManagerRepository,
     private val accountRepository: AccountRepository,
     private val firebaseTool: FirebaseTool
-) : BaseFileProvider, CacheFileHelper {
+) : BaseFileProvider, BaseCloudFileProvider, CacheFileHelper {
 
     companion object {
         private const val KEY_RESPONSE = "response"
@@ -393,7 +393,7 @@ class CloudFileProvider @Inject constructor(
         }
     }
 
-    fun updateDocument(id: String, body: MultipartBody.Part): Single<Boolean> {
+    override fun updateDocument(id: String, body: MultipartBody.Part): Single<Boolean> {
         return managerService.updateDocument(id, body)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).map { response ->

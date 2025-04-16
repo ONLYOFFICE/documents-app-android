@@ -9,8 +9,10 @@ import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.response.ResponseOperation
 import io.reactivex.Observable
+import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import lib.toolkit.base.managers.utils.EditType
+import okhttp3.MultipartBody
 import java.io.File
 
 sealed class FileOpenResult {
@@ -25,6 +27,11 @@ sealed class FileOpenResult {
     ) : FileOpenResult()
     class OpenLocally(val file: File, val fileId: String, val editType: EditType) : FileOpenResult()
     class RecentAnotherAccount() : FileOpenResult()
+}
+
+interface BaseCloudFileProvider {
+
+    fun updateDocument(id: String, body: MultipartBody.Part): Single<Boolean>
 }
 
 interface BaseFileProvider : CacheFileHelper {

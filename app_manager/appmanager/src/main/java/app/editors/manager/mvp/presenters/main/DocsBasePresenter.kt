@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.core.net.toFile
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -29,6 +30,7 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.UploadFile
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDownload
+import app.documents.core.providers.BaseCloudFileProvider
 import app.documents.core.providers.BaseFileProvider
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.FileOpenResult
@@ -75,6 +77,9 @@ import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import moxy.presenterScope
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import org.json.JSONException
 import retrofit2.HttpException
@@ -1762,6 +1767,42 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                 size = pureContentLength,
                 ownerId = account?.id.orEmpty(),
                 source = account?.portalUrl.orEmpty()
+            )
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    open fun updateDocument(id: String = itemClicked?.id.orEmpty(), uri: Uri) {
+        val provider = fileProvider as? BaseCloudFileProvider ?: return
+        if (uri.path?.isEmpty() == true) return
+        context.contentResolver.openInputStream(uri).use {
+            val file = uri.toFile()
+            val body = MultipartBody.Part.createFormData(
+                file.name,
+                file.name,
+                RequestBody.create(
+                    MediaType.parse(ContentResolverUtils.getMimeType(context, uri)),
+                    file
+                )
+            )
+            disposable.add(
+                provider.updateDocument(id, body)
+                    .doOnSubscribe {
+                        viewState.onDialogWaiting(
+                            context.getString(lib.editors.gbase.R.string.dialog_saving_file),
+                            TAG_DIALOG_CANCEL_SINGLE_OPERATIONS
+                        )
+                    }
+                    .doOnSuccess {
+                        FileUtils.deletePath(file)
+                        viewState.onDialogClose()
+                    }
+                    .doOnError { error ->
+                        fetchError(error)
+                        FileUtils.deletePath(file)
+                        viewState.onDialogClose()
+                    }
+                    .subscribe()
             )
         }
     }

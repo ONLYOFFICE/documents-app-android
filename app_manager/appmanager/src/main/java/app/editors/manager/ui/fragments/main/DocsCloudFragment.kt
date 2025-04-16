@@ -120,14 +120,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 }
 
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
-                    if (data?.data != null) {
-                        if (data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)) {
-                            showFillResultFragment(data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION))
-                            return
-                        }
-                        if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
-                            presenter.updateDocument(data.data!!)
-                        }
+                    val uri = data?.data ?: return
+                    if (data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)) {
+                        showFillResultFragment(data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION))
+                        return
+                    }
+                    if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
+                        presenter.updateDocument(uri = uri)
                     }
                 }
             }
