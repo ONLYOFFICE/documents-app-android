@@ -48,6 +48,7 @@ import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_TYPE
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
+import app.editors.manager.ui.fragments.main.versionhistory.RefreshListener
 import app.editors.manager.ui.fragments.main.versionhistory.VersionHistoryFragment
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment
 import app.editors.manager.ui.fragments.room.add.EditRoomFragment
@@ -93,6 +94,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    private var refreshListener: RefreshListener? = null
+
     override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onEditorActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
@@ -107,16 +110,12 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                             cloudPresenter.updateDocument(data.data!!)
                         }
                     }
-                    refreshState()
+                    refreshAfterEditing()
                 }
             }
         } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
             onRefresh()
         }
-    }
-
-    private fun refreshState(){
-        presenter.refreshWithDelay()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -137,6 +136,16 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     onRefresh()
                 }
             }
+        } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
+            onRefresh()
+        }
+    }
+
+    private fun refreshAfterEditing(){
+        if (refreshListener != null){
+            refreshListener!!.refresh()
+        } else {
+            presenter.refreshWithDelay()
         }
     }
 
@@ -636,13 +645,15 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun showVersionHistoryFragment(fileId: String) {
-        VersionHistoryFragment.show(
+        refreshListener = VersionHistoryFragment.show(
             parentFragmentManager,
             viewLifecycleOwner,
             fileId,
-            ::onRefresh,
             presenter as VersionViewer
-        )
+        ){
+            onRefresh()
+            refreshListener = null
+        }
     }
 
     val isRoot: Boolean

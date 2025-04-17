@@ -28,7 +28,7 @@ fun CloudFile.toFileVersionUi() = FileVersionUi(
     initiatorDisplayName = updatedBy.displayName,
     comment = comment,
     fileExst = fileExst,
-    viewUrl = viewUrl,
+    viewUrl = "$viewUrl&version=$version",
     isCurrentVersion = false,
     editAccess = security?.edit == true && access != Access.Editor,
     file = this

@@ -21,6 +21,8 @@ import app.editors.manager.mvp.models.ui.ResultUi
 import app.editors.manager.mvp.models.ui.asFlowResultUI
 import app.editors.manager.mvp.models.ui.toFileVersionUi
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -42,7 +44,8 @@ sealed interface DialogState {
 data class VersionHistoryState(
     val historyResult: ResultUi<Map<String, List<FileVersionUi>>> = ResultUi.Loading,
     val currentItem: FileVersionUi? = null,
-    val dialogState: DialogState = DialogState.Hidden
+    val dialogState: DialogState = DialogState.Hidden,
+    val isRefreshing: Boolean = false
 )
 
 fun interface VersionViewer {
@@ -65,16 +68,26 @@ class VersionHistoryViewModel(
 
     init {
         downloadReceiver.addListener(this)
-        loadHistory()
+        viewModelScope.launch { getVersionHistory() }
+
     }
 
-    fun loadHistory(){
+    fun onRefresh(delayMs: Long = 0){
         viewModelScope.launch {
-            cloudFileProvider.getVersionHistory(fileId)
-                .asFlowResultUI(::mapResult).collect { result ->
-                    _uiState.update { it.copy(historyResult = result) }
-                }
+            _uiState.update { it.copy(isRefreshing = true) }
+            if (delayMs > 0) delay(delayMs)
+            getVersionHistory()
         }
+    }
+
+    private suspend fun getVersionHistory() {
+        cloudFileProvider.getVersionHistory(fileId)
+            .asFlowResultUI(::mapResult).collect { result ->
+                _uiState.update { it.copy(
+                    historyResult = result,
+                    isRefreshing = false
+                ) }
+            }
     }
 
     fun setSelectedItem(item: FileVersionUi){
@@ -95,6 +108,7 @@ class VersionHistoryViewModel(
     }
 
     fun handleContextMenuAction(item: ExplorerContextItem){
+        if (_uiState.value.isRefreshing) return
         when(item){
             is ExplorerContextItem.Open -> onOpenClick()
             is ExplorerContextItem.Download -> onDownloadClick()
@@ -126,22 +140,40 @@ class VersionHistoryViewModel(
     }
 
     private fun onRestoreClick() {
-        viewModelScope.launch {
-            uiState.value.currentItem?.let { item ->
-                cloudFileProvider.restoreVersion(item.fileId, item.version)
-                    .collect { result ->
-                        if (result.isSuccess) loadHistory()
-                        else sendMessage(R.string.error_version_restore)
-                }
-            }
-            _uiState.update { it.copy(dialogState = DialogState.Hidden) }
-            sendMessage(R.string.version_restore_done)
+        handleVersionAction(
+            successMsgId = R.string.version_restore_done,
+            errorMsgId = R.string.error_version_restore
+        ){ item ->
+            cloudFileProvider.restoreVersion(item.fileId, item.version)
         }
     }
 
     private fun onDeleteClick() {
-        _uiState.update { it.copy(dialogState = DialogState.Hidden) }
-        sendMessage(R.string.error_version_delete)
+        handleVersionAction(
+            successMsgId = R.string.version_delete_done,
+            errorMsgId = R.string.error_version_delete
+        ){ item ->
+            cloudFileProvider.deleteVersion(item.fileId, item.version)
+        }
+    }
+
+    private fun handleVersionAction(
+        successMsgId: Int,
+        errorMsgId: Int,
+        apiCall: (FileVersionUi) -> Flow<Result<Unit>>
+    ){
+        viewModelScope.launch {
+            uiState.value.currentItem?.let { item ->
+                apiCall(item).collect { result ->
+                    if (result.isSuccess) {
+                        onRefresh()
+                        sendMessage(successMsgId)
+                    }
+                    else sendMessage(errorMsgId)
+                }
+            }
+            _uiState.update { it.copy(dialogState = DialogState.Hidden) }
+        }
     }
 
     fun startDownloadWork(uri: Uri){

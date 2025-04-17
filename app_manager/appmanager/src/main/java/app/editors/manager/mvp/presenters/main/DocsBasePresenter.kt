@@ -301,7 +301,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         return false
     }
 
-    fun refreshWithDelay(delayMs: Long = 1000, onRefresh: () -> Unit = {}) {
+    fun refreshWithDelay(delayMs: Long = 2000, onRefresh: () -> Unit = {}) {
         presenterScope.launch {
             viewState.onSwipeEnable(false)
             delay(delayMs)

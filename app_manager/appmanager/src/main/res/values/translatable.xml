@@ -1056,7 +1056,8 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="edit_comment_field_label">Comment</string>
     <string name="edit_comment_success">Saved successfully</string>
     <string name="context_menu_desc">More</string>
-    <string name="version_restore_done">Version had been restored</string>
+    <string name="version_restore_done">Version has been restored</string>
+    <string name="version_delete_done">Version has been deleted</string>
     <string name="edit_comment_label">Comment</string>
     <string name="error_version_open">Failed to open document</string>
     <string name="error_version_delete">Failed to delete</string>

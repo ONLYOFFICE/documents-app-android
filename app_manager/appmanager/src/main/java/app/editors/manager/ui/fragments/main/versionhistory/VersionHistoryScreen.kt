@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -57,6 +58,7 @@ import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppHeaderItem
+import lib.compose.ui.views.AppPullRefreshContainer
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.PlaceholderView
@@ -111,6 +113,7 @@ fun VersionHistoryScreen(
     ) {
         VersionHistoryScreenContent(
             state = state,
+            onRefresh = viewModel::onRefresh,
             setSelectedItem = viewModel::setSelectedItem,
             onContextMenuItemClick = viewModel::handleContextMenuAction,
             onConfirmDialog = viewModel::onConfirmDialog,
@@ -123,27 +126,33 @@ fun VersionHistoryScreen(
 @Composable
 fun VersionHistoryScreenContent(
     state: VersionHistoryState,
+    onRefresh: () -> Unit,
     setSelectedItem: (FileVersionUi) -> Unit,
     onContextMenuItemClick: (ExplorerContextItem) -> Unit,
     goToEditComment: (FileVersionUi) -> Unit,
     onConfirmDialog: (ExplorerContextItem) -> Unit,
     onDismissDialog: () -> Unit
 ){
-    when(state.historyResult){
-        ResultUi.Loading -> LoadingPlaceholder()
-        is ResultUi.Success -> VersionHistoryScreenContent(
-            history = state.historyResult.data,
-            currentItem = state.currentItem,
-            setSelectedItem = setSelectedItem,
-            onContextMenuItemClick = onContextMenuItemClick,
-            goToEditComment = goToEditComment
-        )
-        is ResultUi.Error -> {
-            PlaceholderView(
-                image = null,
-                title = stringResource(R.string.placeholder_connection),
-                subtitle = ""
+    AppPullRefreshContainer(
+        isRefreshing = state.isRefreshing,
+        onRefresh = onRefresh
+    ){
+        when(state.historyResult){
+            ResultUi.Loading -> LoadingPlaceholder()
+            is ResultUi.Success -> VersionHistoryScreenContent(
+                history = state.historyResult.data,
+                currentItem = state.currentItem,
+                setSelectedItem = setSelectedItem,
+                onContextMenuItemClick = onContextMenuItemClick,
+                goToEditComment = goToEditComment
             )
+            is ResultUi.Error -> {
+                PlaceholderView(
+                    image = null,
+                    title = stringResource(R.string.placeholder_connection),
+                    subtitle = ""
+                )
+            }
         }
     }
 
@@ -175,7 +184,6 @@ fun VersionHistoryScreenContent(
         skipHalfExpanded = true
     )
     val scope = rememberCoroutineScope()
-    sheetState.currentValue
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -206,7 +214,10 @@ fun VersionHistoryScreenContent(
             MaterialTheme.colors.background.copy(alpha = 0.60f)
         }
     ) {
-        LazyColumn(contentPadding = PaddingValues(bottom = 16.dp)) {
+        LazyColumn(
+            contentPadding = PaddingValues(bottom = 16.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
             history.entries.forEachIndexed { indexGroup, (versionGroup, versions) ->
                 item {
                     val title = if (indexGroup == 0) stringResource(R.string.version_group_current_header, versionGroup)
@@ -325,6 +336,7 @@ fun VersionHistoryScreenContentPreview(){
     )
     ManagerTheme {
         VersionHistoryScreenContent(
+            onRefresh = {},
             goToEditComment = {},
             onConfirmDialog = {},
             onDismissDialog = {},

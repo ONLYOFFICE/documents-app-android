@@ -1,8 +1,10 @@
 package app.editors.manager.ui.fragments.main.versionhistory
 
 import android.os.Bundle
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -19,9 +21,14 @@ import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.putArgs
 import lib.toolkit.base.ui.activities.base.BaseActivity
 
-class VersionHistoryFragment : ComposeDialogFragment() {
+interface RefreshListener{
+    fun refresh()
+}
+
+class VersionHistoryFragment : ComposeDialogFragment(), RefreshListener {
 
     private var viewer: VersionViewer? = null
+    private var refreshCallback: (() -> Unit)? = null
 
     sealed interface Screens {
         @Serializable
@@ -39,7 +46,7 @@ class VersionHistoryFragment : ComposeDialogFragment() {
         private const val TAG_FRAGMENT_RESULT = "VersionHistoryFragment Result"
         private const val KEY_DOC_ID = "KEY_DOC_ID"
 
-        fun newInstance(docId: String, versionViewer: VersionViewer): VersionHistoryFragment {
+         fun newInstance(docId: String, versionViewer: VersionViewer): VersionHistoryFragment {
             return VersionHistoryFragment().apply { this.viewer = versionViewer }.putArgs(KEY_DOC_ID to docId)
         }
 
@@ -47,17 +54,23 @@ class VersionHistoryFragment : ComposeDialogFragment() {
             fragmentManager: FragmentManager,
             lifecycleOwner: LifecycleOwner,
             docId: String,
-            onResult: () -> Unit,
-            versionViewer: VersionViewer
-        ){
+            versionViewer: VersionViewer,
+            onResult: () -> Unit
+        ): RefreshListener {
             fragmentManager
                 .setFragmentResultListener(
                     TAG_FRAGMENT_RESULT,
                     lifecycleOwner
                 ){ _, _ -> onResult()}
 
-            newInstance(docId, versionViewer).show(fragmentManager, TAG)
+            return newInstance(docId, versionViewer).apply {
+                show(fragmentManager, TAG)
+            }
         }
+    }
+
+    override fun refresh(){
+        refreshCallback?.invoke()
     }
 
     override fun dismiss() {
@@ -79,11 +92,13 @@ class VersionHistoryFragment : ComposeDialogFragment() {
         val viewModel = viewModel<VersionHistoryViewModel>(
             factory = VersionHistoryViewModel.Factory(fileId, viewer)
         )
+        refreshCallback = { viewModel.onRefresh(2000) }
 
         ManagerTheme {
             NavHost(
                 navController = navController,
-                startDestination = Screens.Main(fileId)
+                startDestination = Screens.Main(fileId),
+                modifier = Modifier.fillMaxSize()
             ) {
                 composable<Screens.Main>{
                     VersionHistoryScreen(
@@ -104,7 +119,7 @@ class VersionHistoryFragment : ComposeDialogFragment() {
 
                 composable<Screens.EditComment>{
                     EditCommentScreen(
-                        onSuccess = viewModel::loadHistory,
+                        onSuccess = viewModel::onRefresh,
                         onBack = navController::popBackStackWhenResumed
                     )
                 }

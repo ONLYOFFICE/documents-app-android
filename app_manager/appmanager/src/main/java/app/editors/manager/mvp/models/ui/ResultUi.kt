@@ -15,4 +15,4 @@ fun <T, R> Flow<Result<T>>.asFlowResultUI(mapper: (T) -> R) = map { result ->
         onSuccess = { ResultUi.Success(mapper(it)) },
         onFailure = { ResultUi.Error(it) }
     )
-}.onStart { emit(ResultUi.Loading) }
+}
