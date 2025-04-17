@@ -298,7 +298,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         fileProvider?.let { provider ->
             disposable.add(
                 provider.fileInfo(file)
-                    .subscribe({ doc -> onFileClickAction(doc, editType = EditType.VIEW) }, onError)
+                    .subscribe({ doc -> onFileClickAction(doc, editType = null) }, onError)
             )
         }
     }

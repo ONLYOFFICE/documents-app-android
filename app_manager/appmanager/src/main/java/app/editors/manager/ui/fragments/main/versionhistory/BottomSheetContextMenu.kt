@@ -26,10 +26,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
-import app.editors.manager.app.accountOnline
 import app.editors.manager.mvp.models.ui.FileVersionUi
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import lib.compose.ui.theme.ManagerTheme
@@ -72,8 +70,6 @@ internal fun BottomSheetContextMenu(
     onContextMenuItemClick: (ExplorerContextItem) -> Unit,
     goToEditComment: () -> Unit
 ){
-    val isDocSpace = LocalContext.current.accountOnline?.isDocSpace ?: false
-    val canEditVersion = currentVersionItem.editAccess && isDocSpace
     val menuItems = buildList {
         add(
             MenuItemData(
@@ -82,7 +78,7 @@ internal fun BottomSheetContextMenu(
                 onClick = { onContextMenuItemClick(ExplorerContextItem.Open) }
             )
         )
-        if (canEditVersion){
+        if (currentVersionItem.editAccess){
             add(
                 MenuItemData(
                     title = ExplorerContextItem.EditComment.title,
@@ -105,10 +101,10 @@ internal fun BottomSheetContextMenu(
                 title = ExplorerContextItem.Download.title,
                 icon = ExplorerContextItem.Download.icon,
                 onClick = { onContextMenuItemClick(ExplorerContextItem.Download) },
-                showDivider = canEditVersion && !currentVersionItem.isCurrentVersion
+                showDivider = currentVersionItem.editAccess && !currentVersionItem.isCurrentVersion
             )
         )
-        if (canEditVersion && !currentVersionItem.isCurrentVersion){
+        if (currentVersionItem.editAccess && !currentVersionItem.isCurrentVersion){
             add(
                 MenuItemData(
                     title = ExplorerContextItem.DeleteVersion.title,

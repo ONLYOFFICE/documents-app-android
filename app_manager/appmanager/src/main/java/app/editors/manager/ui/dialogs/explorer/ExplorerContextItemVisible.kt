@@ -164,7 +164,7 @@ interface ExplorerContextItemVisible {
         get() = (item is CloudFile) && item.security?.lock == true
 
     private val ExplorerContextState.versionHistory: Boolean
-        get() = provider is PortalProvider.Cloud &&
+        get() = provider is PortalProvider.Cloud.DocSpace &&
                 item is CloudFile && access != Access.Read
 
     private fun ExplorerContextState.favorites(enabled: Boolean): Boolean =
