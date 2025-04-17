@@ -33,6 +33,7 @@ class PreferenceTool @Inject constructor(val context: Context) {
         private const val KEY_31 = "KEY_31"
         private const val KEY_32 = "KEY_32"
         private const val KEY_WIFI_STATE = "KEY_WIFI_STATE"
+        private const val KEY_SCREEN_ON_STATE = "KEY_SCREEN_ON_STATE"
         private const val KEY_ANALYTIC = "KEY_ANALYTIC"
         private const val KEY_STORAGE_ACCESS = "KEY_STORAGE_ACCESS"
         private const val KEY_PASSCODE = "KEY_PASSCODE"
@@ -109,6 +110,10 @@ class PreferenceTool @Inject constructor(val context: Context) {
         sharedPreferences.edit().putBoolean(KEY_WIFI_STATE, wifiState).apply()
     }
 
+    fun setScreenOnState(screenState: Boolean) {
+        sharedPreferences.edit().putBoolean(KEY_SCREEN_ON_STATE, screenState).apply()
+    }
+
     var fileData: String
         get() = sharedPreferences.getString("KEY_FILE_DATA", "") ?: ""
         set(value) {
@@ -117,6 +122,9 @@ class PreferenceTool @Inject constructor(val context: Context) {
 
     val uploadWifiState: Boolean
         get() = sharedPreferences.getBoolean(KEY_WIFI_STATE, false)
+
+    val keepScreenOn: Boolean
+        get() = sharedPreferences.getBoolean(KEY_SCREEN_ON_STATE, false)
 
     var isAnalyticEnable: Boolean
         get() = sharedPreferences.getBoolean(KEY_ANALYTIC, true)

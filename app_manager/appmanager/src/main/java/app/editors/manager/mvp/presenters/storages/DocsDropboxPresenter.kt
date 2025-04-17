@@ -162,10 +162,10 @@ class DocsDropboxPresenter : BaseStorageDocsPresenter<BaseStorageDocsView>() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { file: CloudFile? ->
+                    { file: CloudFile ->
                         tempFile = file
                         viewState.onDialogClose()
-                        file?.let { addRecent(it) }
+                        addRecent(file)
                         viewState.onOpenLocalFile(file, null)
                     }
                 ) { throwable: Throwable -> fetchError(throwable) }

@@ -282,7 +282,6 @@
     <string name="list_context_delete_success">Úspěšně odstraněno</string>
     <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">Odebrat z nedávných</string>
-    <string name="list_context_upload_to_portal">Nahrát na portál</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">Tabulka</string>

@@ -53,22 +53,25 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
         }
 
         presenterScope.launch(Dispatchers.IO) {
-            val sections = getPortalModules()
-            val data = if (context.accountOnline.isDocSpace) {
-                sections.filter { it.current.rootFolderType != ApiContract.SectionType.CLOUD_FAVORITES }
-            } else {
-                sections
-            }
-            checkFileData(fileData)
-            withContext(Dispatchers.Main) {
-                viewState.onFinishRequest()
-                viewState.onRender(data)
+            getPortalModules().onSuccess { sections ->
+                val data = if (context.accountOnline.isDocSpace) {
+                    sections.filter { it.current.rootFolderType != ApiContract.SectionType.CLOUD_FAVORITES }
+                } else {
+                    sections
+                }
+                checkFileData(fileData)
+                withContext(Dispatchers.Main) {
+                    viewState.onFinishRequest()
+                    viewState.onRender(data)
+                }
+            }.onFailure { error ->
+                withContext(Dispatchers.Main) { fetchError(error) }
             }
         }
     }
 
-    private suspend fun getPortalModules(): List<Explorer> {
-        try {
+    private suspend fun getPortalModules(): Result<List<Explorer>> {
+        return runCatching {
             val response = api.getRootFolder(
                 mapOf(ApiContract.Modules.FILTER_TYPE_HEADER to ApiContract.Modules.FILTER_TYPE_VALUE),
                 mapOf(
@@ -77,18 +80,13 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
                     ApiContract.Modules.FLAG_ADDFOLDERS to false
                 )
             )
-            return withContext(Dispatchers.Default) {
+            withContext(Dispatchers.Default) {
                 val folderTypes = response.response.map { explorer -> explorer.current.rootFolderType }
                 preferenceTool.setFavoritesEnable(folderTypes.contains(ApiContract.SectionType.CLOUD_FAVORITES))
                 preferenceTool.isProjectDisable = !folderTypes.contains(ApiContract.SectionType.CLOUD_PROJECTS)
 
                 return@withContext sortSections(response.response)
             }
-        } catch (error: Throwable) {
-            withContext(Dispatchers.Main) {
-                fetchError(error)
-            }
-            return emptyList()
         }
     }
 

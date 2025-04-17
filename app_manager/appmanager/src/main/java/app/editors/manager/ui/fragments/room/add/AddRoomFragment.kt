@@ -20,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Watermark
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
@@ -204,7 +205,7 @@ class AddRoomFragment : ComposeDialogFragment() {
                         },
                         onSetWatermarkType = { type ->
                             viewModel.updateWatermarkState {
-                                it.copy(watermark = it.watermark.copy(type = type))
+                                it.copy(watermark = Watermark(type = type))
                             }
                         },
                         onSetQuotaEnabled = { enabled ->

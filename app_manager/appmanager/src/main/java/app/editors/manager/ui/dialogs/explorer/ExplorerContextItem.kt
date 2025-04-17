@@ -89,9 +89,19 @@ sealed class ExplorerContextItem(
         title = if (!pinned) R.string.list_context_pin_to_top else R.string.list_context_unpin
     ), ExplorerContextBlockOrder.Common
 
+    class Lock(locked: Boolean) : ExplorerContextItem(
+        icon = if (!locked) R.drawable.ic_list_context_lock else R.drawable.ic_list_context_unlock,
+        title = if (!locked) R.string.list_context_lock else R.string.list_context_unlock
+    ), ExplorerContextBlockOrder.Common
+
     object Download : ExplorerContextItem(
         icon = R.drawable.ic_list_context_download,
         title = R.string.list_context_create_download
+    ), ExplorerContextBlockOrder.Common
+
+    object EditIndex : ExplorerContextItem(
+        icon = R.drawable.ic_list_context_edit_index,
+        title = R.string.list_context_edit_index
     ), ExplorerContextBlockOrder.Common
 
     class Favorites(val enabled: Boolean, val favorite: Boolean) : ExplorerContextItem(
@@ -153,7 +163,7 @@ sealed class ExplorerContextItem(
 
     object Upload : ExplorerContextItem(
         icon = R.drawable.ic_list_action_upload,
-        title = R.string.list_context_upload_to_portal
+        title = R.string.list_context_upload_to_cloud
     ), ExplorerContextBlockOrder.Common
 
     object Rename : ExplorerContextItem(

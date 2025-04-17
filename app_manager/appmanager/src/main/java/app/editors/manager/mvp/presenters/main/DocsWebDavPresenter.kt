@@ -102,7 +102,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             fileProvider?.let { provider ->
                 disposable.add(
                     provider.createFile(id, requestCreate)
-                        .subscribe({ file: CloudFile? ->
+                        .subscribe({ file: CloudFile ->
                             addFile(file)
                             setPlaceholderType(PlaceholderViews.Type.NONE)
                             viewState.onDialogClose()
@@ -130,7 +130,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { file: CloudFile? ->
+                    { file: CloudFile ->
                         tempFile = file
                         viewState.onDialogClose()
                         viewState.onOpenLocalFile(file, null)

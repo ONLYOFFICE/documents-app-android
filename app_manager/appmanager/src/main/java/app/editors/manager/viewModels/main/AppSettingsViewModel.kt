@@ -3,15 +3,14 @@ package app.editors.manager.viewModels.main
 import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import app.editors.manager.R
+import app.editors.manager.managers.tools.FontManager
 import app.editors.manager.managers.tools.PreferenceTool
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -25,33 +24,35 @@ import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.mutableStateIn
 import java.io.File
+import javax.inject.Inject
 
 data class AppSettingsState(
     val cache: Long = 0,
     val themeMode: Int = 0,
     val analytics: Boolean = false,
     val wifi: Boolean = false,
+    val keepScreenOn: Boolean = false,
     val passcodeEnabled: Boolean = false,
     val fonts: List<File> = emptyList()
 )
 
 sealed class AppSettingsEffect {
-
     data class Error(val message: String) : AppSettingsEffect()
     data class Progress(val value: Int) : AppSettingsEffect()
     data object ShowDialog : AppSettingsEffect()
     data object HideDialog : AppSettingsEffect()
 }
 
-class AppSettingsViewModelFactory(
+class AppSettingsViewModelFactory @Inject constructor(
     private val themePrefs: ThemePreferencesTools,
     private val resourcesProvider: ResourcesProvider,
-    private val preferenceTool: PreferenceTool
+    private val preferenceTool: PreferenceTool,
+    private val fontManager: FontManager
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(AppSettingsViewModel::class.java)) {
-            AppSettingsViewModel(themePrefs, resourcesProvider, preferenceTool) as T
+            AppSettingsViewModel(themePrefs, resourcesProvider, preferenceTool, fontManager) as T
         } else {
             throw IllegalArgumentException("ViewModel Not Found")
         }
@@ -61,7 +62,8 @@ class AppSettingsViewModelFactory(
 class AppSettingsViewModel(
     private val themePrefs: ThemePreferencesTools,
     private val resourcesProvider: ResourcesProvider,
-    private val preferenceTool: PreferenceTool
+    private val preferenceTool: PreferenceTool,
+    private val fontManager: FontManager
 ) : ViewModel() {
 
     private val _settingsState: MutableStateFlow<AppSettingsState> = flow {
@@ -70,6 +72,7 @@ class AppSettingsViewModel(
                 cache = cache,
                 analytics = preferenceTool.isAnalyticEnable,
                 wifi = preferenceTool.uploadWifiState,
+                keepScreenOn = preferenceTool.keepScreenOn,
                 passcodeEnabled = preferenceTool.passcodeLock.enabled,
                 themeMode = themePrefs.mode,
                 fonts = File(FileUtils.getFontsDir(resourcesProvider.context)).listFiles()?.toList().orEmpty()
@@ -93,8 +96,7 @@ class AppSettingsViewModel(
                 FileUtils.getSize(File(resourcesProvider.getCacheDir(false)?.absolutePath + "/assets"))
 
     private fun fetchFonts() {
-        val fonts = File(FileUtils.getFontsDir(resourcesProvider.context)).listFiles()?.toList()
-        _settingsState.value = _settingsState.value.copy(fonts = fonts.orEmpty())
+        _settingsState.value = _settingsState.value.copy(fonts = fontManager.getFonts())
     }
 
     fun setAnalytic(isEnable: Boolean) {
@@ -105,6 +107,11 @@ class AppSettingsViewModel(
     fun setWifiState(isEnable: Boolean) {
         preferenceTool.setWifiState(isEnable)
         _settingsState.value = _settingsState.value.copy(wifi = isEnable)
+    }
+
+    fun setScreenOnState(isEnable: Boolean) {
+        preferenceTool.setScreenOnState(isEnable)
+        _settingsState.value = _settingsState.value.copy(keepScreenOn = isEnable)
     }
 
     fun setThemeMode(mode: Int) {
@@ -125,50 +132,39 @@ class AppSettingsViewModel(
 
     fun clearFonts() {
         viewModelScope.launch {
-            val fonts = File(FileUtils.getFontsDir(resourcesProvider.context))
-            if (fonts.exists()) {
-                fonts.deleteRecursively()
-                fetchFonts()
-            }
+            fontManager.clearFonts()
+            fetchFonts()
         }
     }
 
     fun deleteFont(font: File) {
         viewModelScope.launch {
-            val file = File("${FileUtils.getFontsDir(resourcesProvider.context)}/${font.name}")
-            if (file.exists()) file.delete()
+            fontManager.deleteFont(font)
             fetchFonts()
         }
     }
 
-    fun addFont(fonts: List<Uri>?) {
+    fun addFont(fonts: List<Uri>?){
+        if (fonts.isNullOrEmpty()) return
+        addFontsJob?.cancel()
+
         addFontsJob = viewModelScope.launch {
-            if (!fonts.isNullOrEmpty()) {
-                _effect.emit(AppSettingsEffect.ShowDialog)
-                fonts.forEachIndexed { index, font ->
-                    try {
-                        val filename = DocumentFile.fromSingleUri(resourcesProvider.context, font)?.name.orEmpty()
-                        val fontDir = FileUtils.getFontsDir(resourcesProvider.context)
-                        val file = File(fontDir, filename)
-                        file.createNewFile()
-                        file.writeBytes(
-                            resourcesProvider.context
-                                .contentResolver
-                                .openInputStream(font)?.readBytes() ?: ByteArray(0)
-                        )
-                        _effect.emit(AppSettingsEffect.Progress(((index + 1).toFloat() / fonts.size * 100).toInt()))
-                        fetchFonts()
-                        delay(250)
-                    } catch (e: Exception) {
-                        if (e !is CancellationException) {
-                            _effect.emit(AppSettingsEffect.Error(resourcesProvider.context.getString(R.string.upload_manager_error)))
-                        } else {
-                            _effect.emit(AppSettingsEffect.HideDialog)
-                        }
+            _effect.emit(AppSettingsEffect.ShowDialog)
+            fontManager.addFonts(
+                fonts = fonts,
+                onProgress = { value ->
+                    _effect.emit(AppSettingsEffect.Progress(value))
+                    fetchFonts()
+                },
+                onError = { e ->
+                    if (e !is CancellationException) {
+                        _effect.emit(AppSettingsEffect.Error(resourcesProvider.context.getString(R.string.upload_manager_error)))
+                    } else {
+                        _effect.emit(AppSettingsEffect.HideDialog)
                     }
                 }
-                _effect.emit(AppSettingsEffect.HideDialog)
-            }
+            )
+            _effect.emit(AppSettingsEffect.HideDialog)
         }
     }
 

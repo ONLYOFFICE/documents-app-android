@@ -140,7 +140,6 @@
     <string name="list_context_rename">Rinomina</string>
     <string name="list_context_rename_success">Rinominato con successo</string>
     <string name="list_context_share">Condividi</string>
-    <string name="list_context_upload_to_portal">Carica sul portale</string>
     <string name="list_headers_created">Appena creato</string>
     <string name="list_headers_files">File</string>
     <string name="list_headers_folder">Cartelle</string>

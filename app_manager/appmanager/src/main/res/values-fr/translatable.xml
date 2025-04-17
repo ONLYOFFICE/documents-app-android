@@ -140,7 +140,6 @@
     <string name="list_context_rename">Renommer</string>
     <string name="list_context_rename_success">Changement de nom réussi</string>
     <string name="list_context_share">Partager</string>
-    <string name="list_context_upload_to_portal">Télécharger sur le portail</string>
     <string name="list_headers_created">Créés récemment</string>
     <string name="list_headers_files">Fichiers</string>
     <string name="list_headers_folder">Dossiers</string>

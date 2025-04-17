@@ -21,6 +21,7 @@ import app.documents.core.network.manager.models.explorer.WatermarkType
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestRoomNotifications
 import app.documents.core.network.room.RoomService
+import app.documents.core.network.room.models.LockFileRequest
 import app.documents.core.network.room.models.RequestAddTags
 import app.documents.core.network.room.models.RequestArchive
 import app.documents.core.network.room.models.RequestCreateExternalLink
@@ -84,6 +85,14 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .flatMap { if (it.isSuccessful) Observable.just(it.body()) else throw HttpException(it) }
     }
 
+    fun lockFile(id: String, lock: Boolean): Flow<Result<Unit>> = flow {
+        val response = roomService.lockFile(id = id, body = LockFileRequest(lock))
+        if (!response.isSuccessful) throw HttpException(response)
+        emit(Unit)
+    }
+        .flowOn(Dispatchers.IO)
+        .asResult()
+
     suspend fun createRoom(
         title: String,
         type: Int,
@@ -110,6 +119,14 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         )
         if (!response.isSuccessful) throw HttpException(response)
         return checkNotNull(response.body()?.response?.id)
+    }
+
+    suspend fun getTags(): kotlin.Result<Array<String>> {
+        return runCatching {
+            val response = roomService.getTags()
+            if (!response.isSuccessful) throw HttpException(response)
+            checkNotNull(response.body()?.tags)
+        }
     }
 
     suspend fun createThirdPartyRoom(
@@ -148,14 +165,15 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
     }
 
     suspend fun addTags(roomId: String, tags: List<String>): Boolean {
-        val existTags = roomService.getTags().tags
-        withContext(Dispatchers.IO) {
-            tags.mapNotNull { newTag ->
-                async { roomService.createTag(RequestCreateTag(newTag)) }
-                    .takeIf { !existTags.contains(newTag) }
-            }
-        }.awaitAll()
-        return roomService.addTags(roomId, RequestAddTags(tags.toTypedArray())).isSuccessful
+        return getTags().mapCatching { existTags ->
+            withContext(Dispatchers.IO) {
+                tags.mapNotNull { newTag ->
+                    async { roomService.createTag(RequestCreateTag(newTag)) }
+                        .takeIf { !existTags.contains(newTag) }
+                }
+            }.awaitAll()
+            return roomService.addTags(roomId, RequestAddTags(tags.toTypedArray())).isSuccessful
+        }.getOrDefault(false)
     }
 
     suspend fun deleteTags(id: String, tag: List<String>): Boolean {
@@ -444,11 +462,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 lifetime = lifetime?.copy(value = lifetime.value.takeIf { it != 0 } ?: 1) ?: Lifetime(enabled = false, value = 1),
                 denyDownload = denyDownload,
                 indexing = indexing,
-                watermark = if (watermark?.type == WatermarkType.ViewerInfo) {
-                    watermark.copy(imageUrl = null)
-                } else {
-                    watermark
-                }
+                watermark = watermark
             )
         )
         if (!response.isSuccessful) throw HttpException(response)

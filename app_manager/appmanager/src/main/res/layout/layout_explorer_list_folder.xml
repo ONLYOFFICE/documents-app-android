@@ -9,6 +9,8 @@
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
     android:background="@color/colorBackground"
+    android:paddingEnd="@dimen/default_margin_medium"
+    android:paddingStart="0dp"
     android:paddingBottom="@dimen/line_separator_height">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -90,7 +92,6 @@
         android:id="@+id/contextButtonLayout"
         android:layout_width="@dimen/item_one_line_height"
         android:layout_height="@dimen/item_one_line_height"
-        android:layout_marginEnd="@dimen/default_margin_medium"
         android:animateLayoutChanges="true"
         app:icon="@drawable/ic_list_context_button"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -140,7 +140,6 @@
     <string name="list_context_rename">Zmień nazwę</string>
     <string name="list_context_rename_success">Zmieniono nazwę</string>
     <string name="list_context_share">Udostępnij</string>
-    <string name="list_context_upload_to_portal">Wgraj na portal</string>
     <string name="list_headers_created">Właśnie utworzone</string>
     <string name="list_headers_files">Pliki</string>
     <string name="list_headers_folder">Foldery</string>

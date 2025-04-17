@@ -5,6 +5,7 @@ import android.util.Log
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.model.exception.CloudAccountNotFoundException
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.exceptions.NoConnectivityException
 import app.editors.manager.R
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
@@ -179,6 +180,9 @@ abstract class BasePresenter<View : BaseView> : MvpPresenter<View>() {
             }
             is SSLHandshakeException -> {
                 viewState.onError(context.getString(R.string.errors_ssl_error))
+            }
+            is NoConnectivityException -> {
+                viewState.onError(context.getString(R.string.errors_connection_error))
             }
             else -> {
                 FirebaseUtils.addCrash(BasePresenter::class.java.simpleName + " - method - onFailureHandle()")

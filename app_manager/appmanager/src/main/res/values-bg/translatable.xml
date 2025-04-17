@@ -366,7 +366,6 @@
     <string name="profile_type_visitor">Гост</string>
     <string name="profile_type_user">Потребител</string>
     <string name="profile_thirdparty_title">Свързани услуги</string>
-    <string name="list_context_upload_to_portal">Зареждане на пристанището</string>
     <string name="error_unsupported_format">Неподдържан формат</string>
     <string name="errors_create_local_file">Неуспешно създаване на файл</string>
     <string name="operation_delete_impossible">Файлът не може да се изтрие. Файлът е отворен в портала.</string>
