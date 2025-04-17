@@ -95,6 +95,27 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         super.onEditorActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
+                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
+                    if (data?.data != null) {
+                        if (data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)) {
+                            showFillResultFragment(data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION))
+                            return
+                        }
+                        if (data.getBooleanExtra(EditorsContract.EXTRA_IS_MODIFIED, false)) {
+                            cloudPresenter.updateDocument(data.data!!)
+                        }
+                    }
+                }
+            }
+        } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
+            onRefresh()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
                 BaseActivity.REQUEST_ACTIVITY_STORAGE -> {
                     val folder = data?.getSerializable(StorageActivity.TAG_RESULT, CloudFolder::class.java)
                     val layoutManager = this@DocsCloudFragment.layoutManager
@@ -102,31 +123,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                         cloudPresenter.addFolderAndOpen(folder, layoutManager.findFirstVisibleItemPosition())
                     }
                 }
-
                 BaseActivity.REQUEST_ACTIVITY_SHARE -> {
                     cloudPresenter.refresh()
                 }
-
-                BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    cameraUri?.let { uri ->
-                        cloudPresenter.upload(uri, null)
-                    }
-                }
-
                 FilterActivity.REQUEST_ACTIVITY_FILTERS_CHANGED -> {
                     onRefresh()
-                }
-
-                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
-                    if (data?.data != null) {
-                        if (data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)) {
-                            showFillResultFragment(data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION))
-                            return
-                        }
-                        if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
-                            cloudPresenter.updateDocument(data.data!!)
-                        }
-                    }
                 }
             }
         } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {

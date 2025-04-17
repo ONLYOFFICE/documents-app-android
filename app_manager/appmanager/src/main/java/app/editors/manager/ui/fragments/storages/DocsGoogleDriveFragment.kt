@@ -17,7 +17,6 @@ import app.editors.manager.mvp.views.base.DocsGoogleDriveView
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import app.editors.manager.ui.fragments.base.StorageLoginFragment
-import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
 class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
@@ -40,11 +39,6 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
         super.onEditorActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
-                BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    cameraUri?.let { uri ->
-                        presenter.upload(uri, null, KEY_UPLOAD)
-                    }
-                }
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
                     if(data.getBooleanExtra(KEY_MODIFIED, false)) {
                         presenter.upload(uri, null, KEY_UPDATE)
