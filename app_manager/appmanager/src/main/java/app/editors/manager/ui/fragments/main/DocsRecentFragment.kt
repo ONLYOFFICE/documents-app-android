@@ -91,22 +91,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onEditorActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_DOCS,
-                REQUEST_SHEETS,
-                REQUEST_PRESENTATION -> {
-                    val uri = data?.data ?: return
-                    if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
-                        presenter.updateDocument(uri = uri)
-                    }
-                }
-            }
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         if (isResumed) {

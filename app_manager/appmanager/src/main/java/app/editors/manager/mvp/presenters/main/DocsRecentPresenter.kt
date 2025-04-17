@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import app.documents.core.account.AccountPreferences
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -13,10 +14,10 @@ import app.documents.core.providers.FileOpenResult
 import app.documents.core.providers.RecentFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.app.webDavFileProvider
+import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.views.main.DocsRecentView
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -119,37 +120,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
 
             withContext(Dispatchers.Main) {
                 updateFiles(list)
-            }
-        }
-    }
-
-    override fun upload(uri: Uri?, uris: List<Uri>?, tag: String?) {
-        item?.let { item ->
-            if (item.isWebdav) {
-                val provider = context.webDavFileProvider
-
-                val file = CloudFile().apply {
-                    id = item.fileId
-                    title = item.path
-                    webUrl = item.path
-                    folderId = item.fileId.substring(0, item.fileId.lastIndexOf('/').plus(1))
-                    fileExst = StringUtils.getExtensionFromPath(item.name)
-                }
-
-                disposable.add(
-                    provider.fileInfo(file, false)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap { cloudFile ->
-                            return@flatMap provider.upload(cloudFile.folderId, arrayListOf(uri))
-                        }
-                        .doOnError(::fetchError)
-                        .doOnComplete {
-                            deleteTempFile()
-                            viewState.onSnackBar(context.getString(R.string.upload_manager_complete))
-                        }
-                        .subscribe()
-                )
             }
         }
     }
@@ -301,7 +271,32 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
     }
 
     override fun updateDocument(id: String, uri: Uri) {
-        super.updateDocument(item?.fileId.orEmpty(), uri)
+        val provider = context.accountOnline?.portal?.provider ?: return
+        when (provider) {
+            is PortalProvider.Storage -> updateStorageDocument(uri)
+            is PortalProvider.Webdav -> updateWebdavDocument(uri)
+            else -> super.updateDocument(item?.fileId.orEmpty(), uri)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun updateWebdavDocument(uri: Uri) {
+        disposable.add(
+            fileProvider.updateWebdavDocument(uri, item?.path.toString())
+                .doOnComplete { getRecentFiles() }
+                .doOnError(::fetchError)
+                .subscribe()
+        )
+    }
+
+    private fun updateStorageDocument(uri: Uri) {
+        StorageUtils.updateDocument(
+            context = context,
+            uri = uri,
+            folderId = item?.path.orEmpty(),
+            storage = context.accountOnline?.portal?.provider as? PortalProvider.Storage ?: return,
+            tag = BaseStorageDocsFragment.KEY_UPDATE
+        )
     }
 
     override suspend fun onFileOpenCollect(result: FileOpenResult) {

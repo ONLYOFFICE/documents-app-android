@@ -71,4 +71,9 @@ interface WebDavService {
     @GET
     fun download(@Url path: String): Single<Response<ResponseBody>>
 
+    @ConverterFactory.Xml
+    @Streaming
+    @GET
+    suspend fun suspendDownload(@Url path: String): Response<ResponseBody>
+
 }

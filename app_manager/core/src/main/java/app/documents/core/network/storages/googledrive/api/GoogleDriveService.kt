@@ -55,6 +55,16 @@ interface GoogleDriveService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
+    @GET("drive/v3/files/{fileId}")
+    suspend fun suspendDownload(
+        @Path(value = "fileId") fileId: String,
+        @QueryMap map: Map<String, String>
+    ): Response<ResponseBody>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
     @PATCH("drive/v3/files/{fileId}")
     fun rename(@Path(value = "fileId") fileId: String, @Body request: RenameRequest): Single<Response<GoogleDriveFile>>
 

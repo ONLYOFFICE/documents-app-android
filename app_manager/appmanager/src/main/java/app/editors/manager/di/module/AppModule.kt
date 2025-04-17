@@ -12,7 +12,6 @@ import app.editors.manager.managers.providers.OneDriveStorageHelper
 import app.editors.manager.managers.utils.FirebaseUtils
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -43,7 +42,6 @@ object AppModule {
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Provides
     fun provideFirebaseTool(
         context: Context,

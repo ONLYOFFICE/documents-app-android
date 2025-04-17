@@ -1,8 +1,16 @@
 package app.editors.manager.managers.utils
 
+import android.content.Context
+import android.net.Uri
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.contracts.StorageContract
 import app.editors.manager.R
+import app.editors.manager.managers.works.BaseStorageUploadWork
+import app.editors.manager.managers.works.dropbox.UploadWork
 import kotlinx.serialization.Serializable
 import lib.toolkit.base.managers.utils.StringUtils.getEncodedString
 import java.util.TreeMap
@@ -234,5 +242,32 @@ object StorageUtils {
         }
         stringBuilder.deleteCharAt(stringBuilder.length - 1)
         return getEncodedString(stringBuilder.toString()).orEmpty()
+    }
+
+    fun updateDocument(
+        context: Context,
+        folderId: String,
+        storage: PortalProvider.Storage,
+        uri: Uri,
+        tag: String
+    ) {
+        val workManager = WorkManager.getInstance(context)
+
+        val clazz = when (storage) {
+            PortalProvider.Dropbox -> UploadWork::class.java
+            PortalProvider.GoogleDrive -> app.editors.manager.managers.works.googledrive.UploadWork::class.java
+            PortalProvider.Onedrive -> app.editors.manager.managers.works.onedrive.UploadWork::class.java
+        }
+
+        val data = Data.Builder()
+            .putString(BaseStorageUploadWork.TAG_FOLDER_ID, folderId)
+            .putString(BaseStorageUploadWork.KEY_TAG, tag)
+            .putString(BaseStorageUploadWork.TAG_UPLOAD_FILES, uri.toString())
+
+        val request = OneTimeWorkRequest.Builder(clazz)
+            .setInputData(data.build())
+            .build()
+
+        workManager.enqueue(request)
     }
 }

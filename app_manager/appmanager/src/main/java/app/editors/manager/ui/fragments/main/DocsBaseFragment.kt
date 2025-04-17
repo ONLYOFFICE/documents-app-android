@@ -161,13 +161,18 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     protected open fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
-        when(resultCode){
+        when (resultCode){
             Activity.RESULT_OK -> {
                 when (requestCode) {
                     REQUEST_DOCS,
                     REQUEST_SHEETS,
-                    REQUEST_PRESENTATION,
-                        -> removeCommonDialog()
+                    REQUEST_PRESENTATION -> {
+                        removeCommonDialog()
+                        val uri = data?.data ?: return
+                        if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
+                            presenter.updateDocument(uri = uri)
+                        }
+                    }
                 }
             }
             Activity.RESULT_CANCELED -> {

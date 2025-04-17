@@ -12,7 +12,6 @@ import app.documents.core.network.storages.onedrive.models.request.ExternalLinkR
 import app.documents.core.providers.OneDriveFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.managers.providers.OneDriveStorageHelper
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.BaseStorageUploadWork
 import app.editors.manager.managers.works.onedrive.DownloadWork
@@ -34,7 +33,7 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView, OneDr
                     type = OneDriveUtils.VAL_SHARE_TYPE_READ_WRITE,
                     scope = OneDriveUtils.VAL_SHARE_SCOPE_ANON
                 )
-                oneDriveFileProvider.share(it.id, request)?.let { externalLinkResponse ->
+                fileProvider.share(it.id, request)?.let { externalLinkResponse ->
                     disposable.add(externalLinkResponse
                         .subscribe( {response ->
                             it.shared = !it.shared
@@ -51,13 +50,6 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView, OneDr
                 }
             }
         }
-
-    private val oneDriveFileProvider: OneDriveFileProvider by lazy {
-        OneDriveFileProvider(
-            context = context,
-            helper = OneDriveStorageHelper()
-        )
-    }
 
     init {
         App.getApp().appComponent.inject(this)
@@ -145,7 +137,6 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView, OneDr
 
             workManager.enqueue(request)
         }
-
     }
 
     override fun copy(): Boolean {
@@ -168,7 +159,4 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView, OneDr
             }
         }
     }
-
-    fun isFoldersInSelection(): Boolean = modelExplorerStack.selectedFolders.isEmpty()
-
 }

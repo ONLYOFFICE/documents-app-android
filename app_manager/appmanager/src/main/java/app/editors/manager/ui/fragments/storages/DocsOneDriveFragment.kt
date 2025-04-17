@@ -49,15 +49,6 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
                         presenter.upload(uri, null, KEY_UPLOAD)
                     }
                 }
-                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
-                    if(data.getBooleanExtra(KEY_MODIFIED, false)) {
-                        presenter.upload(
-                            uri,
-                            null,
-                            KEY_UPDATE
-                        )
-                    }
-                }
             }
         }
     }

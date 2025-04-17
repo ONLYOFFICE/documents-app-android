@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Environment
 import app.documents.core.manager.ProgressRequestBody
 import app.documents.core.network.common.Result
+import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
@@ -19,8 +20,10 @@ import io.reactivex.ObservableSource
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import lib.toolkit.base.BuildConfig
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getName
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getSize
@@ -64,7 +67,20 @@ class WebDavFileProvider @Inject constructor(
         cloudFile: CloudFile,
         editType: EditType,
         canBeShared: Boolean
-    ): Flow<Result<FileOpenResult>> = flowOf()
+    ): Flow<Result<FileOpenResult>> {
+        return flow {
+            emit(FileOpenResult.Loading())
+            emit(
+                FileOpenResult.OpenLocally(
+                    file = suspendGetCachedFile(context, cloudFile, ""),
+                    fileId = cloudFile.id,
+                    editType = editType
+                )
+            )
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.fromCallable { id?.let { webDavService.propfind(it).execute() } }
@@ -337,6 +353,13 @@ class WebDavFileProvider @Inject constructor(
 
     override fun getDownloadResponse(cloudFile: CloudFile, token: String?): Single<Response<ResponseBody>> {
         return webDavService.download(cloudFile.id)
+    }
+
+    override suspend fun suspendGetDownloadResponse(
+        cloudFile: CloudFile,
+        token: String?
+    ): Response<ResponseBody> {
+        return webDavService.suspendDownload(cloudFile.id)
     }
 
     @SuppressLint("MissingPermission")

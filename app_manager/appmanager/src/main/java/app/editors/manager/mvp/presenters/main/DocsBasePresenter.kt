@@ -771,23 +771,21 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
             viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
         } else {
-            modelExplorerStack.currentId?.let { id ->
-                val uriList = mutableListOf<Uri>().apply {
-                    if (uri != null) {
-                        uploadUri = uri
-                        add(uri)
-                    } else if (uris != null) {
-                        for (i in uris.indices) {
-                            add(uris[i])
-                        }
+            val uriList = mutableListOf<Uri>().apply {
+                if (uri != null) {
+                    uploadUri = uri
+                    add(uri)
+                } else if (uris != null) {
+                    for (i in uris.indices) {
+                        add(uris[i])
                     }
                 }
+            }
 
-                if (uriList.size > 20) {
-                    viewState.onError(context.getString(R.string.upload_manager_error_number_files))
-                } else {
-                    addUploadFiles(uriList, id)
-                }
+            if (uriList.size > 20) {
+                viewState.onError(context.getString(R.string.upload_manager_error_number_files))
+            } else {
+                addUploadFiles(uriList, modelExplorerStack.currentId.orEmpty())
             }
         }
 
@@ -797,7 +795,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         // Stub
     }
 
-    private fun addUploadFiles(uriList: List<Uri>, id: String) {
+    protected fun addUploadFiles(uriList: List<Uri>, id: String) {
         val uploadFiles = mutableListOf<UploadFile>()
         for (uri in uriList) {
             if (ContentResolverUtils.getSize(context, uri) > FileUtils.STRICT_SIZE) {
@@ -1746,6 +1744,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                         openFile(file, EditType.Edit(false), true)
                     }
                     .doOnError {
+                        viewState.onDialogClose()
                         viewState.onError(context.getString(R.string.errors_create_local_file))
                     }
                     .subscribe()

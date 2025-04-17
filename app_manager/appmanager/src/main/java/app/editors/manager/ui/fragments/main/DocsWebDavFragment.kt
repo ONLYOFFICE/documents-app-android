@@ -61,13 +61,6 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
                 BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
                     presenter.upload(cameraUri, null)
                 }
-                REQUEST_PRESENTATION, REQUEST_PDF, REQUEST_DOCS, REQUEST_SHEETS -> {
-                    if (data?.data != null) {
-                        if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
-                            presenter.upload(data.data, null)
-                        }
-                    }
-                }
             }
         }
     }

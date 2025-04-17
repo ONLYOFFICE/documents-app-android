@@ -1,9 +1,10 @@
 package app.documents.core.providers
 
+import android.net.Uri
 import androidx.core.net.toFile
 import androidx.core.net.toUri
 import app.documents.core.account.AccountRepository
-import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.asResult
@@ -53,35 +54,38 @@ class RecentFileProvider @Inject constructor(
             if (recent.source == null) {
                 openLocalFile(recent.path, editType)
             } else {
-                openCloudFile(recent, editType)
+                val owner = recent.ownerId ?: throw RuntimeException()
+                val recentAccount = accountRepository.getAccount(owner)
+
+                if (accountRepository.getOnlineAccount() == null) {
+                    emit(FileOpenResult.RecentNoAccount())
+                    return@flow
+                }
+
+                if (recentAccount == null || recentAccount.id != accountRepository.getOnlineAccount()?.id) {
+                    emit(FileOpenResult.RecentFileNotFound())
+                    return@flow
+                }
+
+                when (val provider = recentAccount.portal.provider) {
+                    is PortalProvider.Storage -> {
+                        openStorageFile(recent, provider, editType)
+                    }
+
+                    is PortalProvider.Webdav -> {
+                        openWebDavFile(recent, editType)
+                    }
+
+                    else -> {
+                        openCloudFile(recent, editType)
+                    }
+                }
             }
         }.asResult()
     }
 
-    private suspend fun FlowCollector<FileOpenResult>.openCloudFile(
-        recent: Recent,
-        editType: EditType
-    ) {
-        val owner = recent.ownerId ?: throw RuntimeException()
-        val recentAccount = accountRepository.getAccount(owner)
-
-        if (accountRepository.getOnlineAccount() == null) {
-            emit(FileOpenResult.RecentNoAccount())
-            return
-        }
-
-        if (recentAccount == null) {
-            emit(FileOpenResult.RecentFileNotFound())
-            return
-        }
-
-        if (recentAccount.isStorage) {
-            openStorageFile(recent, recentAccount, editType)
-        } else if (recentAccount.isWebDav) {
-            openWebDavFile(recent, recentAccount, editType)
-        } else {
-            openCloudFile(recent, recentAccount, editType)
-        }
+    fun updateWebdavDocument(uri: Uri, id: String): Observable<Int> {
+        return webDavFileProvider.upload(id, listOf(uri))
     }
 
     private suspend fun FlowCollector<FileOpenResult>.openLocalFile(
@@ -99,38 +103,31 @@ class RecentFileProvider @Inject constructor(
 
     private suspend fun FlowCollector<FileOpenResult>.openCloudFile(
         recent: Recent,
-        recentAccount: CloudAccount,
         editType: EditType
     ) {
-        if (recentAccount.id == accountRepository.getOnlineAccount()?.id) {
-            cloudFileProvider.openFile(
-                id = recent.fileId,
-                editType = editType,
-                canBeShared = false
-            ).collect { result ->
-                when (result) {
-                    is Result.Error -> emit(FileOpenResult.RecentFileNotFound())
-                    is Result.Success<FileOpenResult> -> emit(result.result)
-                }
+        cloudFileProvider.openFile(
+            id = recent.fileId,
+            editType = editType,
+            canBeShared = false
+        ).collect { result ->
+            when (result) {
+                is Result.Error -> emit(FileOpenResult.RecentFileNotFound())
+                is Result.Success<FileOpenResult> -> emit(result.result)
             }
-        } else {
-            emit(FileOpenResult.RecentFileNotFound())
         }
     }
 
     private suspend fun FlowCollector<FileOpenResult>.openStorageFile(
         recent: Recent,
-        recentAccount: CloudAccount,
+        provider: PortalProvider,
         editType: EditType
     ) {
-        val provider = when {
-            recentAccount.isOneDrive -> oneDriveFileProvider
-            recentAccount.isGoogleDrive -> googleDriveFileProvider
-            recentAccount.isDropbox -> dropboxFileProvider
+        when (provider) {
+            is PortalProvider.Onedrive -> oneDriveFileProvider
+            is PortalProvider.GoogleDrive -> googleDriveFileProvider
+            is PortalProvider.Dropbox -> dropboxFileProvider
             else -> return emit(FileOpenResult.RecentNoAccount())
-        }
-
-        provider.openFile(
+        }.openFile(
             cloudFile = CloudFile().apply {
                 title = recent.name
                 id = recent.fileId
@@ -139,13 +136,16 @@ class RecentFileProvider @Inject constructor(
             },
             editType = editType,
             canBeShared = false
-        )
+        ).collect { result ->
+            when (result) {
+                is Result.Error -> emit(FileOpenResult.RecentFileNotFound())
+                is Result.Success<FileOpenResult> -> emit(result.result)
+            }
+        }
     }
 
-    // todo implement web dav file opening
     private suspend fun FlowCollector<FileOpenResult>.openWebDavFile(
         recent: Recent,
-        recentAccount: CloudAccount,
         editType: EditType
     ) {
         webDavFileProvider.openFile(
@@ -157,7 +157,12 @@ class RecentFileProvider @Inject constructor(
             },
             editType = editType,
             canBeShared = false
-        )
+        ).collect { result ->
+            when (result) {
+                is Result.Error -> emit(FileOpenResult.RecentFileNotFound())
+                is Result.Success<FileOpenResult> -> emit(result.result)
+            }
+        }
     }
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {

@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.WorkManager
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -12,11 +13,14 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.providers.BaseFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
+import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
+import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import lib.toolkit.base.managers.utils.StringUtils
 
 abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView, FP : BaseFileProvider> : DocsBasePresenter<V, FP>(),
@@ -88,18 +92,6 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView, FP : BaseFilePr
         } else {
             false
         }
-    }
-
-    override fun cloudFileToRecent(cloudFile: CloudFile): Recent {
-        return super.cloudFileToRecent(cloudFile).copy(
-            fileId = if (StringUtils.isImage(cloudFile.fileExst)) {
-                cloudFile.id
-            } else {
-                cloudFile.viewUrl
-            },
-            path = cloudFile.webUrl,
-            isWebdav = true
-        )
     }
 
     override fun delete(): Boolean {
@@ -225,6 +217,21 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView, FP : BaseFilePr
 
     private fun showDownloadFolderActivity(uri: Uri?) {
         viewState.onDownloadActivity(uri)
+    }
+
+    override fun updateDocument(id: String, uri: Uri) {
+        StorageUtils.updateDocument(
+            context = context,
+            uri = uri,
+            folderId = modelExplorerStack.currentId.toString(),
+            storage = context.accountOnline?.portal?.provider as? PortalProvider.Storage ?: return,
+            tag = BaseStorageDocsFragment.KEY_UPDATE
+        )
+    }
+
+    override fun cloudFileToRecent(cloudFile: CloudFile): Recent {
+        return super.cloudFileToRecent(cloudFile)
+            .copy(path = modelExplorerStack.currentId.orEmpty())
     }
 
 }
