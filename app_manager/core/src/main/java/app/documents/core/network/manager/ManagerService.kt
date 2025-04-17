@@ -32,6 +32,7 @@ import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.manager.models.response.ResponsePortal
 import app.documents.core.network.manager.models.response.ResponseThirdparty
 import app.documents.core.network.manager.models.response.ResponseVersionHistory
+import app.documents.core.network.room.models.DeleteVersionRequest
 import app.documents.core.network.room.models.EditCommentRequest
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -486,5 +487,14 @@ interface ManagerService {
     suspend fun updateVersionComment(
         @Path(value = "file_id") fileId: String,
         @Body body: EditCommentRequest
+    ): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/deleteversion")
+    suspend fun deleteVersion(
+        @Body body: DeleteVersionRequest
     ): Response<BaseResponse>
 }

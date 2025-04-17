@@ -27,6 +27,7 @@ import app.documents.core.network.manager.models.response.ResponseFile
 import app.documents.core.network.manager.models.response.ResponseFolder
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.room.RoomService
+import app.documents.core.network.room.models.DeleteVersionRequest
 import app.documents.core.network.room.models.EditCommentRequest
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -509,6 +510,15 @@ class CloudFileProvider @Inject constructor(
     ): Flow<Result<Unit>> = apiFlow {
         val body = EditCommentRequest(version, comment)
         val response = managerService.updateVersionComment(fileId, body)
+        if (!response.isSuccessful) throw HttpException(response)
+    }
+
+    fun deleteVersion(
+        fileId: String,
+        version: Int
+    ): Flow<Result<Unit>> = apiFlow {
+        val body = DeleteVersionRequest(fileId, arrayOf(version))
+        val response = managerService.deleteVersion(body)
         if (!response.isSuccessful) throw HttpException(response)
     }
 
