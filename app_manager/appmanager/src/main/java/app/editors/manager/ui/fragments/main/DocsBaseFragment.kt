@@ -1129,7 +1129,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected open fun showEditors(uri: Uri?, type: EditorsType, info: String? = null, editType: EditType? = null) {
+    protected open fun showEditors(
+        uri: Uri?,
+        type: EditorsType,
+        info: String? = null,
+        editType: EditType? = null
+    ) {
         try {
             val intent = Intent().apply {
                 data = uri

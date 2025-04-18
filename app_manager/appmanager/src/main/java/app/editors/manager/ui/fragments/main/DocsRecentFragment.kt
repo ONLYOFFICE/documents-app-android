@@ -35,6 +35,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.RequestPermissions
@@ -55,7 +56,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     private var clearItem: MenuItem? = null
 
     private val recentListener: (recent: Recent) -> Unit = { recent ->
-        Debounce.perform(1000L) { presenter.fileClick(recent) }
+        Debounce.perform(1000L) { presenter.openRecent(recent, EditType.Edit()) }
     }
 
     private val contextListener: (recent: Recent, position: Int, thumbnail: Bitmap) -> Unit = { recent, position, thumbnail ->
@@ -232,7 +233,8 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            is ExplorerContextItem.Edit -> presenter.fileClick()
+            is ExplorerContextItem.Edit -> presenter.openRecent(editType = EditType.Edit())
+            is ExplorerContextItem.View -> presenter.openRecent(editType = EditType.View())
             is ExplorerContextItem.Delete -> presenter.deleteRecent()
             else -> super.onContextButtonClick(contextItem)
         }

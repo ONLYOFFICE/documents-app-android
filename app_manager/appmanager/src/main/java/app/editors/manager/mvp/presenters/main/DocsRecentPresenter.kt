@@ -188,12 +188,12 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
     }
 
     @OptIn(FlowPreview::class)
-    fun fileClick(recent: Recent? = item) {
+    fun openRecent(recent: Recent? = item, editType: EditType) {
         recent?.let {
             item = recent
             openFileJob = presenterScope.launch {
                 recentDataSource.insertOrUpdate(recent.copy(date = Date().time))
-                fileProvider.openFile(recent, EditType.Edit())
+                fileProvider.openFile(recent, editType)
                     .debounce(500.milliseconds)
                     .collect(::onFileOpenCollect)
                 getRecentFiles()
