@@ -21,7 +21,7 @@ import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.putArgs
 import lib.toolkit.base.ui.activities.base.BaseActivity
 
-interface RefreshListener{
+interface RefreshListener {
     fun refresh()
 }
 
@@ -33,6 +33,7 @@ class VersionHistoryFragment : ComposeDialogFragment(), RefreshListener {
     sealed interface Screens {
         @Serializable
         data class Main(val fileId: String) : Screens
+
         @Serializable
         data class EditComment(
             val fileId: String,
@@ -46,8 +47,10 @@ class VersionHistoryFragment : ComposeDialogFragment(), RefreshListener {
         private const val TAG_FRAGMENT_RESULT = "VersionHistoryFragment Result"
         private const val KEY_DOC_ID = "KEY_DOC_ID"
 
-         fun newInstance(docId: String, versionViewer: VersionViewer): VersionHistoryFragment {
-            return VersionHistoryFragment().apply { this.viewer = versionViewer }.putArgs(KEY_DOC_ID to docId)
+        fun newInstance(docId: String, versionViewer: VersionViewer): VersionHistoryFragment {
+            return VersionHistoryFragment()
+                .apply { this.viewer = versionViewer }
+                .putArgs(KEY_DOC_ID to docId)
         }
 
         fun show(
@@ -61,7 +64,7 @@ class VersionHistoryFragment : ComposeDialogFragment(), RefreshListener {
                 .setFragmentResultListener(
                     TAG_FRAGMENT_RESULT,
                     lifecycleOwner
-                ){ _, _ -> onResult()}
+                ) { _, _ -> onResult() }
 
             return newInstance(docId, versionViewer).apply {
                 show(fragmentManager, TAG)
@@ -69,7 +72,7 @@ class VersionHistoryFragment : ComposeDialogFragment(), RefreshListener {
         }
     }
 
-    override fun refresh(){
+    override fun refresh() {
         refreshCallback?.invoke()
     }
 
@@ -100,7 +103,7 @@ class VersionHistoryFragment : ComposeDialogFragment(), RefreshListener {
                 startDestination = Screens.Main(fileId),
                 modifier = Modifier.fillMaxSize()
             ) {
-                composable<Screens.Main>{
+                composable<Screens.Main> {
                     VersionHistoryScreen(
                         viewModel = viewModel,
                         showDownloadFolderActivity = { uri ->
@@ -108,16 +111,18 @@ class VersionHistoryFragment : ComposeDialogFragment(), RefreshListener {
                                 this@VersionHistoryFragment,
                                 BaseActivity.REQUEST_ACTIVITY_DOWNLOAD_VIEWER,
                                 uri
-                            ) },
+                            )
+                        },
                         goToEditComment = { file ->
                             navController.navigate(
                                 Screens.EditComment(file.fileId, file.version, file.comment)
-                            ) },
+                            )
+                        },
                         onBack = ::dismiss
                     )
                 }
 
-                composable<Screens.EditComment>{
+                composable<Screens.EditComment> {
                     EditCommentScreen(
                         onSuccess = { successMsgId ->
                             navController.popBackStackWhenResumed()

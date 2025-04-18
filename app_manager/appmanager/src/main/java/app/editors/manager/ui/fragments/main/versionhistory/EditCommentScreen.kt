@@ -42,7 +42,7 @@ import lib.compose.ui.views.TopAppBarAction
 fun EditCommentScreen(
     onSuccess: (Int) -> Unit,
     onCancel: () -> Unit
-){
+) {
     val viewModel: VersionEditCommentViewModel = viewModel(factory = VersionEditCommentViewModel.Factory)
     val scaffoldState = rememberScaffoldState()
     val state by viewModel.uiState.collectAsState()
@@ -50,9 +50,9 @@ fun EditCommentScreen(
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(viewModel.events) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.events.collect { event ->
-                when(event){
+                when (event) {
                     is BaseEvent.ShowMessage -> {
                         scaffoldState.snackbarHostState.showSnackbar(event.msg)
                     }
@@ -101,15 +101,25 @@ fun EditCommentScreen(
 fun EditCommentScreenContent(
     comment: String,
     onValueChange: (String) -> Unit
-){
+) {
     val focusRequester = remember { FocusRequester() }
     val textFieldValue = remember {
-        mutableStateOf(TextFieldValue(
-            text = comment, selection = TextRange(comment.length)
-        ))
+        mutableStateOf(
+            TextFieldValue(
+                text = comment,
+                selection = TextRange(comment.length)
+            )
+        )
     }
 
-    Box(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)){
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(
+                horizontal = 16.dp,
+                vertical = 8.dp
+            )
+    ) {
         TextField(
             value = textFieldValue.value,
             onValueChange = {
@@ -127,7 +137,8 @@ fun EditCommentScreenContent(
                 disabledIndicatorColor = Color.Gray,
                 focusedLabelColor = MaterialTheme.colors.primary
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .focusRequester(focusRequester)
         )
         LaunchedEffect(Unit) { focusRequester.requestFocus() }

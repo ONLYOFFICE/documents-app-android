@@ -3,7 +3,6 @@ package lib.compose.ui.views
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.contentColorFor
 import androidx.compose.material.pullrefresh.PullRefreshDefaults
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -23,7 +22,7 @@ fun AppPullRefreshContainer(
     refreshThreshold: Dp = PullRefreshDefaults.RefreshThreshold,
     refreshingOffset: Dp = PullRefreshDefaults.RefreshingOffset,
     indicatorBackgroundColor: Color = MaterialTheme.colors.surface,
-    indicatorContentColor: Color = contentColorFor(indicatorBackgroundColor),
+    indicatorContentColor: Color = MaterialTheme.colors.secondary,
     indicatorScale: Boolean = false,
     content: @Composable () -> Unit
 ){

@@ -73,7 +73,7 @@ fun VersionHistoryScreen(
     showDownloadFolderActivity: (Uri) -> Unit,
     goToEditComment: (FileVersionUi) -> Unit,
     onBack: () -> Unit
-){
+) {
     val downloadActivityResult = rememberLauncherForActivityResult(CreateDocument()) { uri ->
         uri?.let { viewModel.startDownloadWork(uri) }
     }
@@ -82,16 +82,20 @@ fun VersionHistoryScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(viewModel.events) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             viewModel.events.collect { event ->
-                when(event){
+                when (event) {
                     is VersionHistoryEvent.RequestDocumentCreation -> {
                         downloadActivityResult.launch(event.fileName)
                     }
                     is VersionHistoryEvent.DownloadSuccessfully -> {
-                        showActionSnackbar(scaffoldState.snackbarHostState, event.msg, event.buttonText, onPerformed = {
-                            event.uri?.let { showDownloadFolderActivity(it) }
-                        })
+                        showActionSnackbar(
+                            scaffoldState.snackbarHostState,
+                            event.msg,
+                            event.buttonText,
+                            onPerformed = {
+                                event.uri?.let { showDownloadFolderActivity(it) }
+                            })
                     }
                     is BaseEvent.ShowMessage -> {
                         scaffoldState.snackbarHostState.showSnackbar(event.msg)
@@ -132,12 +136,12 @@ fun VersionHistoryScreenContent(
     goToEditComment: (FileVersionUi) -> Unit,
     onConfirmDialog: (ExplorerContextItem) -> Unit,
     onDismissDialog: () -> Unit
-){
+) {
     AppPullRefreshContainer(
         isRefreshing = state.isRefreshing,
         onRefresh = onRefresh
-    ){
-        when(state.historyResult){
+    ) {
+        when (state.historyResult) {
             ResultUi.Loading -> LoadingPlaceholder()
             is ResultUi.Success -> VersionHistoryScreenContent(
                 history = state.historyResult.data,
@@ -156,7 +160,7 @@ fun VersionHistoryScreenContent(
         }
     }
 
-    when(state.dialogState){
+    when (state.dialogState) {
         DialogState.Hidden -> {}
         is DialogState.Loading -> {
             LoadingDialog(state.dialogState.item)
@@ -178,7 +182,7 @@ fun VersionHistoryScreenContent(
     setSelectedItem: (FileVersionUi) -> Unit,
     onContextMenuItemClick: (ExplorerContextItem) -> Unit,
     goToEditComment: (FileVersionUi) -> Unit
-){
+) {
     val sheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
@@ -220,7 +224,10 @@ fun VersionHistoryScreenContent(
         ) {
             history.entries.forEachIndexed { indexGroup, (versionGroup, versions) ->
                 item {
-                    val title = if (indexGroup == 0) stringResource(R.string.version_group_current_header, versionGroup)
+                    val title = if (indexGroup == 0) stringResource(
+                        R.string.version_group_current_header,
+                        versionGroup
+                    )
                     else stringResource(R.string.version_group_header, versionGroup)
                     AppHeaderItem(title)
                     versions.forEachIndexed { indexVersion, version ->
@@ -231,7 +238,12 @@ fun VersionHistoryScreenContent(
                                 onContextMenuItemClick(ExplorerContextItem.Open)
                             },
                             onContextMenuClick = { item ->
-                                setSelectedItem(if (indexGroup == 0 && indexVersion == 0) item.copy(isCurrentVersion = true) else item)
+                                setSelectedItem(
+                                    if (indexGroup == 0 && indexVersion == 0)
+                                        item.copy(isCurrentVersion = true)
+                                    else
+                                        item
+                                )
                                 scope.launch { sheetState.show() }
                             }
                         )
@@ -248,24 +260,31 @@ fun VersionItem(
     modifier: Modifier = Modifier,
     onItemClick: ((FileVersionUi) -> Unit)? = null,
     onContextMenuClick: ((FileVersionUi) -> Unit)? = null
-){
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
             .clickable { onItemClick?.invoke(item) }
+            .padding(horizontal = 12.dp)
     ) {
         Image(
-            painter = painterResource(ManagerUiUtils.getFileThumbnail(item.fileExst, isGrid = onContextMenuClick == null)),
+            painter = painterResource(
+                ManagerUiUtils.getFileThumbnail(
+                    ext = item.fileExst,
+                    isGrid = onContextMenuClick == null
+                )
+            ),
             contentDescription = null,
-            modifier = Modifier
-                .size(48.dp)
-                .padding(start = 12.dp)
+            modifier = Modifier.size(48.dp)
         )
 
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f).padding(vertical = 12.dp)) {
+                Column(Modifier
+                    .weight(1f)
+                    .padding(vertical = 12.dp)) {
                     Text(
                         text = TimeUtils.formatVersionDate(item.date),
                         style = MaterialTheme.typography.body1,
@@ -274,12 +293,14 @@ fun VersionItem(
 
                     Text(
                         text = item.initiatorDisplayName,
-                        style = MaterialTheme.typography.caption
+                        style = MaterialTheme.typography.caption,
+                        color = MaterialTheme.colors.colorTextSecondary
                     )
 
                     Text(
                         text = item.comment,
-                        style = MaterialTheme.typography.caption
+                        style = MaterialTheme.typography.caption,
+                        color = MaterialTheme.colors.colorTextSecondary
                     )
                 }
                 onContextMenuClick?.let {
@@ -304,7 +325,7 @@ suspend fun showActionSnackbar(
     duration: SnackbarDuration = SnackbarDuration.Long,
     onPerformed: () -> Unit,
     onDismiss: (() -> Unit)? = null,
-){
+) {
     val result = snackbarHostState.showSnackbar(
         message = msg,
         actionLabel = actionLabel,
@@ -319,7 +340,7 @@ suspend fun showActionSnackbar(
 @Preview(showBackground = true)
 @Preview(showBackground = true, locale = "ar")
 @Composable
-fun VersionHistoryScreenContentPreview(){
+fun VersionHistoryScreenContentPreview() {
     val item = FileVersionUi(
         version = 1,
         versionGroup = "1",
@@ -341,7 +362,7 @@ fun VersionHistoryScreenContentPreview(){
             onConfirmDialog = {},
             onDismissDialog = {},
             setSelectedItem = {},
-            onContextMenuItemClick =  {},
+            onContextMenuItemClick = {},
             state = VersionHistoryState(
                 historyResult = ResultUi.Success(mapOf(("1" to listOf(item, item))))
             )

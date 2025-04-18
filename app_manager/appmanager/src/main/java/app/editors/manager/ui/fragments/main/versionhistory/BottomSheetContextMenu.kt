@@ -42,7 +42,7 @@ enum class FileVersionDialogAction(
     @StringRes val subtitleResId: Int,
     @StringRes val confirmTextResId: Int,
     @StringRes val loadingTextResId: Int
-){
+) {
     Restore(
         titleResId = R.string.version_restore_title,
         subtitleResId = R.string.version_restore_subtitle,
@@ -69,7 +69,7 @@ internal fun BottomSheetContextMenu(
     currentVersionItem: FileVersionUi,
     onContextMenuItemClick: (ExplorerContextItem) -> Unit,
     goToEditComment: () -> Unit
-){
+) {
     val menuItems = buildList {
         add(
             MenuItemData(
@@ -78,7 +78,7 @@ internal fun BottomSheetContextMenu(
                 onClick = { onContextMenuItemClick(ExplorerContextItem.Open) }
             )
         )
-        if (currentVersionItem.editAccess){
+        if (currentVersionItem.editAccess) {
             add(
                 MenuItemData(
                     title = ExplorerContextItem.EditComment.title,
@@ -104,7 +104,7 @@ internal fun BottomSheetContextMenu(
                 showDivider = currentVersionItem.editAccess && !currentVersionItem.isCurrentVersion
             )
         )
-        if (currentVersionItem.editAccess && !currentVersionItem.isCurrentVersion){
+        if (currentVersionItem.editAccess && !currentVersionItem.isCurrentVersion) {
             add(
                 MenuItemData(
                     title = ExplorerContextItem.DeleteVersion.title,
@@ -121,7 +121,7 @@ internal fun BottomSheetContextMenu(
 fun BottomSheetContextMenu(
     menuItems: List<MenuItemData>,
     currentVersionItem: FileVersionUi
-){
+) {
     Column(
         modifier = Modifier
             .wrapContentHeight()
@@ -162,8 +162,8 @@ fun ConfirmationDialog(
     onConfirm: (ExplorerContextItem) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
-){
-    val actionDialog = when(item){
+) {
+    val actionDialog = when (item) {
         ExplorerContextItem.Restore -> FileVersionDialogAction.Restore
         ExplorerContextItem.DeleteVersion -> FileVersionDialogAction.Delete
         else -> null
@@ -205,8 +205,8 @@ fun ConfirmationDialog(
 fun LoadingDialog(
     item: ExplorerContextItem,
     modifier: Modifier = Modifier
-){
-    val actionDialog = when(item){
+) {
+    val actionDialog = when (item) {
         ExplorerContextItem.Restore -> FileVersionDialogAction.Restore
         ExplorerContextItem.DeleteVersion -> FileVersionDialogAction.Delete
         else -> null
@@ -241,7 +241,7 @@ fun LoadingDialog(
 
 @Preview
 @Composable
-fun ConfirmationDialogPreview(){
+fun ConfirmationDialogPreview() {
     ManagerTheme {
         ConfirmationDialog(
             item = ExplorerContextItem.Restore,
@@ -253,7 +253,7 @@ fun ConfirmationDialogPreview(){
 
 @Preview
 @Composable
-fun BottomSheetContextMenuPreview(){
+fun BottomSheetContextMenuPreview() {
     ManagerTheme {
         val item = FileVersionUi(
             version = 1,
