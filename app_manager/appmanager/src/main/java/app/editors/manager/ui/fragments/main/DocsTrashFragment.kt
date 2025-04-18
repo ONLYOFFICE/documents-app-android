@@ -46,7 +46,6 @@ class DocsTrashFragment : DocsCloudFragment() {
                 it.paddingLeft, it.paddingTop,
                 it.paddingLeft, 0
             )
-            presenter.checkBackStack()
         }
         explorerAdapter?.isTrash = !isArchive
     }

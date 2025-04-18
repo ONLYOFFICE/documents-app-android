@@ -1282,7 +1282,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
     fun showFileChooserFragment() {
-        viewState.onPickCloudFile(currentFolder?.id)
+        viewState.onPickCloudFile(currentFolder?.id ?: "")
     }
 
     val itemTitle: String
@@ -1417,15 +1417,19 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     private var photoUri: Uri? = null
 
     @SuppressLint("MissingPermission")
-    fun createPhoto() {
-        val photo = if (fileProvider is LocalFileProvider) {
-            FileUtils.createFile(File(stack?.current?.id ?: ""), TimeUtils.fileTimeStamp, "png")
+    fun createPhoto(withOCR: Boolean = false): Unit {
+        val photo = if (withOCR) {
+            FileUtils.createFile(File(context.cacheDir.absolutePath + "/OCR"), TimeUtils.fileTimeStamp, "png")
         } else {
-            FileUtils.createFile(File(context.cacheDir.absolutePath), TimeUtils.fileTimeStamp, "png")
+            if (fileProvider is LocalFileProvider) {
+                FileUtils.createFile(File(stack?.current?.id ?: ""), TimeUtils.fileTimeStamp, "png")
+            } else {
+                FileUtils.createFile(File(context.cacheDir.absolutePath), TimeUtils.fileTimeStamp, "png")
+            }
         }
         if (photo != null) {
             photoUri = ContentResolverUtils.getFileUri(context, photo).also { uri ->
-                viewState.onShowCamera(uri)
+                viewState.onShowCamera(uri, withOCR)
             }
         }
     }

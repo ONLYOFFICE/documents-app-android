@@ -61,7 +61,7 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
         )
     }
 
-    override fun onShowCamera(photoUri: Uri) {
+    override fun onShowCamera(photoUri: Uri, isOCR: Boolean) {
         RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
             if (permissions[Manifest.permission.CAMERA] == true) {
                 CameraPicker(requireActivity().activityResultRegistry, { isCreate ->

@@ -122,7 +122,7 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView, FP : BaseFilePr
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             viewState.onStateActionButton(true)
-            viewState.onActionBarTitle(currentTitle.ifEmpty { itemClicked?.title })
+            viewState.onActionBarTitle(currentTitle.ifEmpty { itemClicked?.title ?: "" })
         } else {
             if (pickerMode == PickerMode.Folders) {
                 viewState.onActionBarTitle(context.getString(R.string.operation_title))
