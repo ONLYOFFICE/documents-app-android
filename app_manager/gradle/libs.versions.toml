@@ -3,7 +3,7 @@ compileSdk = "35"
 minSdk = "26"
 targetSdk = "35"
 ndk = "21.3.6528147"
-gradle = "8.9.0"
+gradle = "8.7.3"
 
 #kotlin
 kotlin = "1.9.24"
@@ -82,7 +82,6 @@ glideOkHttpIntegration = "4.16.0"
 glideCompose = "1.0.0-beta01"
 photoView = "2.3.0"
 colorPicker = "2.3.0"
-visionCommon = "17.3.0"
 
 [libraries]
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx" }
@@ -183,7 +182,6 @@ glideOkhttp = { module = "com.github.bumptech.glide:okhttp3-integration", versio
 glideCompose = { module = "com.github.bumptech.glide:compose", version.ref = "glideCompose" }
 photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoView" }
 colorPicker = { module = "com.github.skydoves:colorpickerview", version.ref = "colorPicker" }
-vision-common = { group = "com.google.mlkit", name = "vision-common", version.ref = "visionCommon" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "gradle" }
