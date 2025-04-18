@@ -232,6 +232,37 @@ object ApiContract {
         }
     }
 
+
+
+    sealed class FormFillingStatus(val type: Int){
+
+        data object None : FormFillingStatus(type = NONE)
+        data object Draft : FormFillingStatus(type = DRAFT_TYPE)
+        data object YourTurn : FormFillingStatus(type = YOUR_TURN_TYPE)
+        data object InProgress : FormFillingStatus(type = IN_PROGRESS_TYPE)
+        data object Complete : FormFillingStatus(type = COMPLETE_TYPE)
+        data object Stopped : FormFillingStatus(type = STOPPED_TYPE)
+
+        companion object {
+            fun fromType(statusType: Int): FormFillingStatus =
+                when(statusType){
+                    DRAFT_TYPE -> Draft
+                    YOUR_TURN_TYPE -> YourTurn
+                    IN_PROGRESS_TYPE -> InProgress
+                    COMPLETE_TYPE -> Complete
+                    STOPPED_TYPE -> Stopped
+                    else -> None
+                }
+
+            private const val NONE = 0
+            private const val DRAFT_TYPE = 1
+            private const val YOUR_TURN_TYPE = 2
+            private const val IN_PROGRESS_TYPE = 3
+            private const val COMPLETE_TYPE = 4
+            private const val STOPPED_TYPE = 5
+        }
+    }
+
     object RoomType {
         const val FILL_FORMS_ROOM = 1
         const val COLLABORATION_ROOM = 2

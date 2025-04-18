@@ -9,7 +9,9 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerGridFileBinding
 import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.mvp.models.ui.UiFormFillingStatus
 import app.editors.manager.ui.adapters.ExplorerAdapter
+import app.editors.manager.ui.views.badge.setFormStatus
 
 
 class GridFileViewHolder(view: View, adapter: ExplorerAdapter) :
@@ -47,6 +49,7 @@ class GridFileViewHolder(view: View, adapter: ExplorerAdapter) :
         binding.favorite.isVisible = element.isFavorite
         binding.badgeNewCard.isVisible = element.isNew
         binding.editing.isVisible = element.isEditing
+        binding.badgeFormStatus.setFormStatus(UiFormFillingStatus.from(element.formFillingStatus))
         setFileExpiring(element, binding.title)
     }
 }

@@ -44,14 +44,29 @@
         tools:drawableEnd="@drawable/ic_small_clock"
         tools:text="File name" />
 
+    <app.editors.manager.ui.views.badge.BadgeCardView
+        android:id="@+id/badgeFormStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin_small"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/title"
+        app:layout_constraintStart_toEndOf="@id/title"
+        app:layout_constraintTop_toTopOf="@id/title"
+        tools:badgeText="Your turn"
+        tools:visibility="visible" />
+
     <LinearLayout
         android:id="@+id/statusLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constrainedWidth="true"
+        android:layout_marginStart="@dimen/default_margin_small"
+        app:layout_constraintStart_toEndOf="@id/badgeFormStatus"
         app:layout_constraintBottom_toBottomOf="@+id/title"
         app:layout_constraintEnd_toStartOf="@+id/contextButtonLayout"
-        app:layout_constraintTop_toTopOf="@+id/title">
+        app:layout_constraintTop_toTopOf="@+id/title"
+        app:layout_constraintHorizontal_bias="1.0">
 
         <ImageView
             android:id="@+id/favorite"
@@ -110,8 +125,7 @@
                 android:paddingHorizontal="3dp"
                 android:paddingVertical="1dp"
                 android:text="new"
-                android:textColor="@color/colorOnSecondary"
-                android:visibility="gone" />
+                android:textColor="@color/colorOnSecondary"/>
 
         </androidx.cardview.widget.CardView>
 

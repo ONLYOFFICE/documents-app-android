@@ -18,18 +18,32 @@
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_type_document_column" />
 
+        <app.editors.manager.ui.views.badge.BadgeCardView
+            android:id="@+id/badgeFormStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/file_grid_badge_start_margin"
+            android:layout_marginTop="@dimen/default_margin_medium"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/image"
+            app:layout_constraintStart_toStartOf="@id/image"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:badgeText="Your turn"
+            tools:visibility="visible" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/badgeNewCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin_small"
             app:cardBackgroundColor="@color/colorSecondary"
             app:cardCornerRadius="4dp"
             app:cardElevation="4dp"
-            app:layout_constraintBottom_toTopOf="@id/image"
-            app:layout_constraintEnd_toStartOf="@id/image"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toStartOf="@id/statusLayout"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintStart_toStartOf="@id/badgeFormStatus"
+            app:layout_constraintTop_toBottomOf="@id/badgeFormStatus"
+            app:layout_goneMarginStart="@dimen/file_grid_badge_start_margin"
+            app:layout_goneMarginTop="-4dp"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/badgeNew"
@@ -41,7 +55,6 @@
                 android:paddingHorizontal="3dp"
                 android:paddingVertical="1dp"
                 android:text="new"
-                android:visibility="gone"
                 android:textColor="@color/colorOnSecondary" />
 
         </androidx.cardview.widget.CardView>

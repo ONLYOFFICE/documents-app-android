@@ -61,6 +61,10 @@ open class CloudFile : Item() {
     @Expose
     var isLocked = false
 
+    @SerializedName("formFillingStatus")
+    @Expose
+    var formFillingStatusType = 0
+
     @SerializedName("canWebRestrictedEditing")
     @Expose
     var isCanWebRestrictedEditing = true
@@ -117,6 +121,9 @@ open class CloudFile : Item() {
             val timePassed =  Duration.between(Instant.now(), created.toInstant()).abs()
             return timePassed.toMillis() >= totalDuration.toMillis() * 0.9
         }
+
+    val formFillingStatus: ApiContract.FormFillingStatus
+        get() = ApiContract.FormFillingStatus.fromType(formFillingStatusType)
 
     private fun String.toIntOrZero(): Int {
         return if (isNotEmpty()) toInt() else 0

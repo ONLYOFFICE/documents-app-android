@@ -40,4 +40,12 @@
 
     <color name="shadow_end">@color/colorBlack12</color>
     <color name="shadow_start">@color/colorBlack32</color>
+
+    <!-- Form filling status -->
+    <color name="colorFormDraft">#FF3B30</color>
+    <color name="colorFormYourTurn">#007AFF</color>
+    <color name="colorFormInProgress">#8E8E93</color>
+    <color name="colorFormComplete">#34C759</color>
+    <color name="colorFormStopped">#FF3B30</color>
+
 </resources>

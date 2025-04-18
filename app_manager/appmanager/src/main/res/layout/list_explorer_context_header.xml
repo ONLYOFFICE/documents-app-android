@@ -29,13 +29,29 @@
         app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/title"
-            style="@style/Widget.Common.TextView"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/subtitle"
-            tools:text="Report.docx" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/title"
+                style="@style/Widget.Common.TextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                tools:text="Report.docx" />
+
+            <app.editors.manager.ui.views.badge.BadgeCardView
+                android:id="@+id/badgeFormStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/default_margin_small"
+                android:visibility="gone"
+                tools:badgeText="Your turn"
+                tools:visibility="visible" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/subtitle"
