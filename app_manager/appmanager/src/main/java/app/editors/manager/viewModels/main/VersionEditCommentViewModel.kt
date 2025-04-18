@@ -48,17 +48,14 @@ class VersionEditCommentViewModel(
     )
     val uiState = _uiState.asStateFlow()
 
-    fun saveComment(){
+    fun saveComment() {
         viewModelScope.launch {
-            with(_uiState.value){
+            with(_uiState.value) {
                 cloudFileProvider.editVersionComment(fileId, version, comment)
                     .onStart { _uiState.update { it.copy(isLoading = true) } }
                     .onCompletion { _uiState.update { it.copy(isLoading = false) } }
                     .collect { result ->
-                        if (result.isSuccess) {
-                            _events.send(EditCommentEvent.UpdateHistory)
-                            sendMessage(R.string.edit_comment_success)
-                        }
+                        if (result.isSuccess) _events.send(EditCommentEvent.UpdateHistory)
                         else sendMessage(R.string.error_edit_comment)
                     }
             }

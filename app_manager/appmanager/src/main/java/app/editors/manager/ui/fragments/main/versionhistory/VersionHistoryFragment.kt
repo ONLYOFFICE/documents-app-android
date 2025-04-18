@@ -119,8 +119,11 @@ class VersionHistoryFragment : ComposeDialogFragment(), RefreshListener {
 
                 composable<Screens.EditComment>{
                     EditCommentScreen(
-                        onSuccess = viewModel::onRefresh,
-                        onBack = navController::popBackStackWhenResumed
+                        onSuccess = { successMsgId ->
+                            navController.popBackStackWhenResumed()
+                            viewModel.onRefresh(msgRes = successMsgId)
+                        },
+                        onCancel = navController::popBackStackWhenResumed
                     )
                 }
             }

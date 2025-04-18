@@ -72,9 +72,10 @@ class VersionHistoryViewModel(
 
     }
 
-    fun onRefresh(delayMs: Long = 0){
+    fun onRefresh(delayMs: Long = 0, msgRes: Int? = null) {
         viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true) }
+            msgRes?.let { sendMessage(it) }
             if (delayMs > 0) delay(delayMs)
             getVersionHistory()
         }
@@ -165,10 +166,7 @@ class VersionHistoryViewModel(
         viewModelScope.launch {
             uiState.value.currentItem?.let { item ->
                 apiCall(item).collect { result ->
-                    if (result.isSuccess) {
-                        onRefresh()
-                        sendMessage(successMsgId)
-                    }
+                    if (result.isSuccess) onRefresh(msgRes = successMsgId)
                     else sendMessage(errorMsgId)
                 }
             }

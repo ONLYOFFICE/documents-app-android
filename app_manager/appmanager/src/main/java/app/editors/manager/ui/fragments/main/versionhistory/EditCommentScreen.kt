@@ -40,8 +40,8 @@ import lib.compose.ui.views.TopAppBarAction
 
 @Composable
 fun EditCommentScreen(
-    onSuccess: () -> Unit,
-    onBack: () -> Unit
+    onSuccess: (Int) -> Unit,
+    onCancel: () -> Unit
 ){
     val viewModel: VersionEditCommentViewModel = viewModel(factory = VersionEditCommentViewModel.Factory)
     val scaffoldState = rememberScaffoldState()
@@ -57,7 +57,7 @@ fun EditCommentScreen(
                         scaffoldState.snackbarHostState.showSnackbar(event.msg)
                     }
                     is EditCommentEvent.UpdateHistory -> {
-                        onSuccess()
+                        onSuccess(R.string.edit_comment_success)
                     }
                 }
             }
@@ -69,7 +69,7 @@ fun EditCommentScreen(
             Column {
                 AppTopBar(
                     title = stringResource(R.string.version_edit_comment_title),
-                    backListener = onBack,
+                    backListener = onCancel,
                     isClose = true,
                     actions = {
                         TopAppBarAction(

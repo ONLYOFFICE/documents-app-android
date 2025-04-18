@@ -1054,7 +1054,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="version_group_current_header">Current — Version %s</string>
     <string name="edit_comment_title">Edit comment</string>
     <string name="edit_comment_field_label">Comment</string>
-    <string name="edit_comment_success">Saved successfully</string>
+    <string name="edit_comment_success">Comment saved successfully</string>
     <string name="context_menu_desc">More</string>
     <string name="version_restore_done">Version has been restored</string>
     <string name="version_delete_done">Version has been deleted</string>
