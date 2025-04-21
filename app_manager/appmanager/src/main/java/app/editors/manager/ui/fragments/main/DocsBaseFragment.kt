@@ -57,10 +57,10 @@ import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.base.ListFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
-import lib.toolkit.base.managers.tools.LocalContentTools.Companion.HWPX_EXTENSION
-import lib.toolkit.base.managers.tools.LocalContentTools.Companion.HWP_EXTENSION
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.tools.LocalContentTools.Companion.HWPX_EXTENSION
+import lib.toolkit.base.managers.tools.LocalContentTools.Companion.HWP_EXTENSION
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.CreateDocument
@@ -356,7 +356,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     editType = if (extension in arrayOf(HWP_EXTENSION, HWPX_EXTENSION)) {
                         EditType.View()
                     } else {
-                        EditType.Edit()
+                        editType
                     }
                 )
             }
@@ -1145,7 +1145,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         uri: Uri?,
         type: EditorsType,
         info: String? = null,
-        editType: EditType? = null
+        editType: EditType
     ) {
         try {
             val intent = Intent().apply {

@@ -411,7 +411,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
                 if (FileUtils.isOformPdf(context.contentResolver.openInputStream(uri))) {
                     viewState.onOpenLocalFile(uri, extension, EditType.Fill())
                 } else {
-                    viewState.onShowPdf(uri)
+                    viewState.onShowPdf(uri, editType)
                 }
             }
             Extension.IMAGE,
