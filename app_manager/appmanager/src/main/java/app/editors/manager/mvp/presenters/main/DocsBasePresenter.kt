@@ -1725,6 +1725,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
     open fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean = false) {
+        itemClicked = cloudFile
         openFileJob?.cancel()
         openFileJob = presenterScope.launch {
             addToRecent(cloudFile)
