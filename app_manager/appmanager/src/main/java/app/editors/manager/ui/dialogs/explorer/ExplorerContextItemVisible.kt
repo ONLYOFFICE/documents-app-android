@@ -7,6 +7,7 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.StringUtils.Extension
 
 
 interface ExplorerContextItemVisible {
@@ -73,6 +74,9 @@ interface ExplorerContextItemVisible {
                 is ApiContract.Section.Device -> file.isPdfForm
                 else -> when (provider) {
                     PortalProvider.Cloud.DocSpace -> file.security?.fillForms == true
+                    PortalProvider.Cloud.Workspace -> {
+                        StringUtils.getExtension(file.fileExst) == Extension.PDF
+                    }
                     else -> item.isPdfForm
                 }
             }
@@ -86,18 +90,27 @@ interface ExplorerContextItemVisible {
             return when (section) {
                 ApiContract.Section.Device -> isExtensionEditable(item)
                 else -> {
-                    if (provider == PortalProvider.Cloud.DocSpace) {
-                        with(item.security ?: return false) {
-                            when (item) {
-                                is CloudFile -> {
-                                    edit && (isExtensionEditable(item) || item.isPdfForm)
+                    when (provider) {
+                        PortalProvider.Cloud.DocSpace -> {
+                            with(item.security ?: return false) {
+                                when (item) {
+                                    is CloudFile -> {
+                                        edit && (isExtensionEditable(item) || item.isPdfForm)
+                                    }
+
+                                    is CloudFolder -> editRoom && item.isRoom
+                                    else -> false
                                 }
-                                is CloudFolder -> editRoom && item.isRoom
-                                else -> false
                             }
                         }
-                    } else {
-                        isExtensionEditable(item) && access == Access.ReadWrite
+                        PortalProvider.Cloud.Workspace -> {
+                            val item = item as? CloudFile ?: return false
+                            val isPdf = StringUtils.getExtension(item.fileExst) == Extension.PDF
+                            (isExtensionEditable(item) || isPdf) && access.isEditable
+                        }
+                        else -> {
+                            isExtensionEditable(item)
+                        }
                     }
                 }
             }
@@ -197,10 +210,10 @@ interface ExplorerContextItemVisible {
 
     private fun isExtensionEditable(ext: String): Boolean {
         return StringUtils.getExtension(ext) in listOf(
-            StringUtils.Extension.FORM,
-            StringUtils.Extension.DOC,
-            StringUtils.Extension.SHEET,
-            StringUtils.Extension.PRESENTATION
+            Extension.FORM,
+            Extension.DOC,
+            Extension.SHEET,
+            Extension.PRESENTATION
         )
     }
 

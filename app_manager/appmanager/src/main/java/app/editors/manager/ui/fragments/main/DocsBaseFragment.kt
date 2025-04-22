@@ -15,7 +15,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.widget.SearchView
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
@@ -131,7 +131,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    private val sendActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    private val sendActivityResult = registerForActivityResult(StartActivityForResult()) {
         presenter.removeSendingFile()
     }
 
@@ -184,7 +184,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     private fun registerEditorLauncher(requestCode: Int){
-        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+        val launcher = registerForActivityResult(StartActivityForResult()) { result ->
             onEditorActivityResult(requestCode, result.resultCode, result.data)
         }
         editorLaunchers[requestCode] = launcher
@@ -1160,9 +1160,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             when (type) {
                 EditorsType.DOCS, EditorsType.PDF -> {
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
-                    if (type == EditorsType.PDF) {
-                        intent.putExtra(EditorsContract.KEY_PDF, true)
-                    }
                     editorLaunchers[REQUEST_DOCS]?.launch(intent)
                 }
                 EditorsType.CELLS -> {

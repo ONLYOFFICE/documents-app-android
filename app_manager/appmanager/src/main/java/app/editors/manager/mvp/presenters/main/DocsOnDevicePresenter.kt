@@ -409,7 +409,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
         when (StringUtils.getExtension(extension)) {
             Extension.PDF -> {
                 if (FileUtils.isOformPdf(context.contentResolver.openInputStream(uri))) {
-                    viewState.onOpenLocalFile(uri, extension, EditType.Fill())
+                    viewState.onOpenLocalFile(uri, extension, editType)
                 } else {
                     viewState.onShowPdf(uri, editType)
                 }

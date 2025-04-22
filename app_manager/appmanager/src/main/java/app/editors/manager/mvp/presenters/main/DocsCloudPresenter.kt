@@ -68,6 +68,7 @@ import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.StringUtils.Extension
 import moxy.InjectViewState
 import moxy.presenterScope
 import java.util.UUID
@@ -178,7 +179,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     if (LocalContentTools.isOpenFormat(itemClicked.clearExt)) {
                         viewState.onConversionQuestion()
                     } else {
-                        if (itemClicked.isPdfForm) {
+                        if (StringUtils.getExtension(itemClicked.fileExst) == Extension.PDF) {
                             openFillFormFile()
                         } else {
                             openFile(EditType.Edit())
@@ -441,9 +442,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun openFillFormFile() {
-        if (isUserSection) {
-            viewState.showFillFormChooserFragment()
-            return
+        val file = itemClicked as? CloudFile ?: return
+        if (account.portal.isDocSpace && file.isPdfForm) {
+            if (isUserSection) {
+                viewState.showFillFormChooserFragment()
+                return
+            }
         }
         openFile(EditType.Fill())
     }
