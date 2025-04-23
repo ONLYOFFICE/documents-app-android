@@ -985,10 +985,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             roomProvider.lockFile(id = file.id, lock = !file.isLocked)
                 .collect { result ->
                     when(result){
-                        is Result.Success -> {
-                            file.isLocked = !file.isLocked
-                            viewState.onUpdateItemState()
-                        }
+                        is Result.Success -> refresh()
                         is Result.Error -> fetchError(result.exception)
                     }
                 }
