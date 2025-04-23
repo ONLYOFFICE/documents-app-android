@@ -12,6 +12,7 @@ object EditorsContract {
     const val KEY_HELP_URL = "KEY_HELP_URL"
     const val KEY_DOC_SERVER = "KEY_DOC_SERVER"
     const val KEY_EDIT_TYPE = "KEY_EDIT_TYPE"
+    const val KEY_EDIT_ACCESS = "KEY_EDIT_ACCESS"
     const val KEY_KEEP_SCREEN_ON = "KEY_KEEP_SCREEN_ON"
 
     const val EDITOR_DOCUMENTS = "lib.editors.gdocs.ui.activities.DocsActivity"

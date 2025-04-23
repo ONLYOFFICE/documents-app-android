@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import app.documents.core.account.AccountRepository
 import app.documents.core.manager.ManagerRepository
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.asResult
@@ -468,6 +469,15 @@ class CloudFileProvider @Inject constructor(
         editType: EditType,
         canBeShared: Boolean
     ): Flow<Result<FileOpenResult>> {
+        TODO("Not yet implemented")
+    }
+
+    fun openFile(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean,
+        access: Access
+    ): Flow<Result<FileOpenResult>> {
        return flow {
            emit(FileOpenResult.Loading())
            val token = checkNotNull(accountRepository.getOnlineToken())
@@ -487,7 +497,8 @@ class CloudFileProvider @Inject constructor(
                                FileOpenResult.OpenLocally(
                                    file = cachedFile,
                                    fileId = cloudFile.id,
-                                   editType = editType
+                                   editType = editType,
+                                   access = access
                                )
                            )
                        } else {
@@ -505,7 +516,8 @@ class CloudFileProvider @Inject constructor(
                            FileOpenResult.OpenLocally(
                                file = cachedFile,
                                fileId = cloudFile.id,
-                               editType = editType
+                               editType = editType,
+                               access = access
                            )
                        )
                    }

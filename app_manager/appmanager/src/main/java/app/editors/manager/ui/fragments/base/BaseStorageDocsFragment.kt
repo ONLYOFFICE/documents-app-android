@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.net.toUri
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
@@ -108,13 +109,13 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         }
     }
 
-    override fun onOpenLocalFile(file: CloudFile, editType: EditType) {
+    override fun onOpenLocalFile(file: CloudFile, editType: EditType, access: Access) {
         val uri = file.webUrl.toUri()
         when(StringUtils.getExtension(file.fileExst)) {
             StringUtils.Extension.IMAGE -> {
                 showMediaActivity(getMediaFile(uri), false)
             }
-            else -> super.onOpenLocalFile(file, editType)
+            else -> super.onOpenLocalFile(file, editType, access)
         }
     }
 

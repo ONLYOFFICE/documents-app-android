@@ -456,6 +456,19 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         super.openFile(editType, isItemShareable)
     }
 
+    override suspend fun openFileAndCollect(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean
+    ) {
+        fileProvider.openFile(
+            cloudFile = cloudFile,
+            editType = editType,
+            canBeShared = canBeShared,
+            access = cloudFile.access
+        ).collect(::onFileOpenCollect)
+    }
+
     override suspend fun onFileOpenCollect(result: FileOpenResult) {
         if (result !is FileOpenResult.Loading) viewState.onDialogClose()
         when (result) {

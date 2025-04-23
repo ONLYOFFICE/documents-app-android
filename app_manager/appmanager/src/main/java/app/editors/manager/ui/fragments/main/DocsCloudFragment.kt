@@ -634,7 +634,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 else -> return
             },
             info = info,
-            editType = editType
+            editType = editType,
+            access = file.access
         )
     }
 

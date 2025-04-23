@@ -1,5 +1,6 @@
 package app.documents.core.providers
 
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.Result
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -20,14 +21,20 @@ sealed class FileOpenResult {
     class Loading : FileOpenResult()
     class DownloadNotSupportedFile : FileOpenResult()
     class OpenCloudMedia(val media: CloudFile) : FileOpenResult()
+    class RecentNoAccount : FileOpenResult()
+    class RecentFileNotFound : FileOpenResult()
+
     class OpenDocumentServer(
         val cloudFile: CloudFile,
         val info: String,
         val editType: EditType
     ) : FileOpenResult()
-    class OpenLocally(val file: File, val fileId: String, val editType: EditType) : FileOpenResult()
-    class RecentNoAccount : FileOpenResult()
-    class RecentFileNotFound : FileOpenResult()
+    class OpenLocally(
+        val file: File,
+        val fileId: String,
+        val editType: EditType,
+        val access: Access = Access.None
+    ) : FileOpenResult()
 }
 
 interface BaseCloudFileProvider {

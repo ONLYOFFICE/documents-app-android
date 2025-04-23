@@ -286,7 +286,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             is FileOpenResult.DownloadNotSupportedFile -> viewState.onFileDownloadPermission()
             is FileOpenResult.Loading -> showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
             is FileOpenResult.OpenLocally -> {
-                openFileFromPortal(result.file, result.fileId, result.editType)
+                openFileFromPortal(result.file, result.fileId, result.editType, result.access)
             }
             is FileOpenResult.OpenCloudMedia -> {
                 viewState.onFileMedia(getListMedia(result.media), false)
@@ -295,7 +295,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         }
     }
 
-    private fun openFileFromPortal(file: File, fileId: String, editType: EditType) {
+    private fun openFileFromPortal(file: File, fileId: String, editType: EditType, access: Access) {
         viewState.onOpenLocalFile(
             CloudFile().apply {
                 id = fileId
@@ -304,7 +304,8 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                 title = file.name
                 viewUrl = file.absolutePath
             },
-            editType
+            editType,
+            access
         )
     }
 
@@ -1729,12 +1730,24 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         openFileJob?.cancel()
         openFileJob = presenterScope.launch {
             addToRecent(cloudFile)
-            fileProvider.openFile(
+            openFileAndCollect(
                 cloudFile = cloudFile,
                 editType = editType,
                 canBeShared = canBeShared
-            ).collect(::onFileOpenCollect)
+            )
         }
+    }
+
+    protected open suspend fun openFileAndCollect(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean
+    ) {
+        fileProvider.openFile(
+            cloudFile = cloudFile,
+            editType = editType,
+            canBeShared = canBeShared,
+        ).collect(::onFileOpenCollect)
     }
 
     open fun createDocs(title: String) {

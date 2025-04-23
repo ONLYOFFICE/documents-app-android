@@ -23,6 +23,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
@@ -37,6 +38,7 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.ActionMenuAdapter
 import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.managers.tools.ActionMenuItemsFactory
+import app.editors.manager.managers.utils.toEditAccess
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.PickerMode
@@ -336,15 +338,16 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         show(requireContext())
     }
 
-    override fun onOpenLocalFile(file: CloudFile, editType: EditType) {
+    override fun onOpenLocalFile(file: CloudFile, editType: EditType, access: Access) {
         onOpenLocalFile(
             uri = file.webUrl.toUri(),
             extension = file.fileExst,
-            editType = editType
+            editType = editType,
+            access = access
         )
     }
 
-    override fun onOpenLocalFile(uri: Uri, extension: String, editType: EditType) {
+    override fun onOpenLocalFile(uri: Uri, extension: String, editType: EditType, access: Access) {
         when (getExtension(extension)) {
             StringUtils.Extension.DOC,
             StringUtils.Extension.EBOOK,
@@ -357,17 +360,18 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                         EditType.View()
                     } else {
                         editType
-                    }
+                    },
+                    access = access
                 )
             }
             StringUtils.Extension.SHEET -> {
-                showEditors(uri, EditorsType.CELLS, editType = editType)
+                showEditors(uri, EditorsType.CELLS, editType = editType, access = access)
             }
             StringUtils.Extension.PRESENTATION -> {
-                showEditors(uri, EditorsType.PRESENTATION, editType = editType)
+                showEditors(uri, EditorsType.PRESENTATION, editType = editType, access = access)
             }
             StringUtils.Extension.PDF -> {
-                showEditors(uri, EditorsType.PDF, editType = editType)
+                showEditors(uri, EditorsType.PDF, editType = editType, access = access)
             }
             StringUtils.Extension.IMAGE,
             StringUtils.Extension.IMAGE_GIF -> {
@@ -1141,11 +1145,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    protected open fun showEditors(
+    protected fun showEditors(
         uri: Uri?,
         type: EditorsType,
         info: String? = null,
-        editType: EditType
+        editType: EditType,
+        access: Access
     ) {
         try {
             val intent = Intent().apply {
@@ -1153,6 +1158,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 info?.let { putExtra(EditorsContract.KEY_DOC_SERVER, info) }
                 putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
                 putExtra(EditorsContract.KEY_EDIT_TYPE, editType)
+                putExtra(EditorsContract.KEY_EDIT_ACCESS, access.toEditAccess())
                 putExtra(EditorsContract.KEY_KEEP_SCREEN_ON, presenter.keepScreenOnSetting)
                 action = Intent.ACTION_VIEW
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -1175,35 +1181,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             e.printStackTrace()
             showToast("Not found")
         }
-    }
-
-    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, isForm: Boolean = false): Intent {
-        val intent = Intent().apply {
-            data = uri
-            putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-            action = Intent.ACTION_VIEW
-            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        }
-        when (type) {
-            EditorsType.DOCS -> {
-                intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
-            }
-            EditorsType.CELLS -> {
-                intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS)
-            }
-            EditorsType.PRESENTATION -> {
-                intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
-            }
-            EditorsType.PDF -> {
-                if (isForm) {
-                    intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
-                    intent.extras?.putBoolean("pdf", true)
-                } else {
-                    intent.setClassName(requireContext(), EditorsContract.PDF)
-                }
-            }
-        }
-        return intent
     }
 
     private fun removeCommonDialog() {

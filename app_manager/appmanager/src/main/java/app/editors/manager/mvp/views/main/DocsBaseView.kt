@@ -4,6 +4,7 @@ import android.net.Uri
 import android.view.View
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -168,10 +169,19 @@ interface DocsBaseView : BaseViewExt {
     )
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onOpenLocalFile(file: CloudFile, editType: EditType)
+    fun onOpenLocalFile(
+        file: CloudFile,
+        editType: EditType,
+        access: Access = Access.None
+    )
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onOpenLocalFile(uri: Uri, extension: String, editType: EditType)
+    fun onOpenLocalFile(
+        uri: Uri,
+        extension: String,
+        editType: EditType,
+        access: Access = Access.None
+    )
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onNoProvider()
