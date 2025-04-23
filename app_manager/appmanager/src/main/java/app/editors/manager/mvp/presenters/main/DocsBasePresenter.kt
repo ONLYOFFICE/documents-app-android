@@ -1798,6 +1798,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                         )
                     }
                     .doOnSuccess {
+                        refresh()
                         FileUtils.deletePath(file)
                         viewState.onDialogClose()
                     }
