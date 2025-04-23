@@ -1,6 +1,5 @@
 package app.editors.manager.mvp.models.ui
 
-import app.documents.core.model.cloud.Access
 import app.documents.core.network.manager.models.explorer.CloudFile
 import java.util.Date
 
@@ -30,6 +29,6 @@ fun CloudFile.toFileVersionUi() = FileVersionUi(
     fileExst = fileExst,
     viewUrl = "$viewUrl&version=$version",
     isCurrentVersion = false,
-    editAccess = security?.edit == true && access != Access.Editor,
+    editAccess = security?.editHistory == true,
     file = this
 )
