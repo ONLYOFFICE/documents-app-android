@@ -40,6 +40,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -469,7 +470,7 @@ class CloudFileProvider @Inject constructor(
         editType: EditType,
         canBeShared: Boolean
     ): Flow<Result<FileOpenResult>> {
-        TODO("Not yet implemented")
+        return flowOf()
     }
 
     fun openFile(
@@ -547,7 +548,8 @@ class CloudFileProvider @Inject constructor(
         return openFile(
             cloudFile = cloudFile,
             editType = editType,
-            canBeShared = canBeShared
+            canBeShared = canBeShared,
+            access = cloudFile.access
         )
     }
 
