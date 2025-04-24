@@ -22,6 +22,7 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.presenterScope
+import javax.inject.Inject
 
 abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePresenter<V>(),
     UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
@@ -31,8 +32,9 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
     var tempFile: CloudFile? = null
     val workManager = WorkManager.getInstance(App.getApp())
 
+    @Inject
+    lateinit var downloadReceiver: DownloadReceiver
     private val uploadReceiver: UploadReceiver = UploadReceiver()
-    private val downloadReceiver: DownloadReceiver = DownloadReceiver()
 
     companion object {
         const val DOWNLOAD_ZIP_NAME =  "storage.zip"
@@ -48,14 +50,13 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
         super.onFirstViewAttach()
         uploadReceiver.setOnUploadListener(this)
         LocalBroadcastManager.getInstance(context).registerReceiver(uploadReceiver, uploadReceiver.filter)
-        downloadReceiver.setOnDownloadListener(this)
-        LocalBroadcastManager.getInstance(context).registerReceiver(downloadReceiver, downloadReceiver.filter)
+        downloadReceiver.addListener(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(downloadReceiver)
+        downloadReceiver.removeListener(this)
     }
 
     override fun createDownloadFile() {

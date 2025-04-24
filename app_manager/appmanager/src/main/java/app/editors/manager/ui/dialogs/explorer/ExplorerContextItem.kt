@@ -176,13 +176,33 @@ sealed class ExplorerContextItem(
         title = R.string.dialog_create_room
     ), ExplorerContextBlockOrder.Common
 
+    object VersionHistory : ExplorerContextItem(
+        icon = R.drawable.ic_restore,
+        title = R.string.list_context_version_history
+    ), ExplorerContextBlockOrder.Common
+
+    object Open : ExplorerContextItem(
+        icon = R.drawable.ic_open_version,
+        title = R.string.list_context_open_vesrion
+    ), ExplorerContextBlockOrder.Common
+
+    object EditComment : ExplorerContextItem(
+        icon = R.drawable.ic_edit_comment,
+        title = R.string.list_context_edit_comment
+    ), ExplorerContextBlockOrder.Common
+
+    object DeleteVersion : ExplorerContextItem(
+        icon = R.drawable.ic_list_context_delete,
+        title = R.string.list_context_delete
+    ), ExplorerContextBlockOrder.Remove
+
     object Archive : ExplorerContextItem(
         icon = R.drawable.ic_room_archive,
         title = R.string.context_room_move_to_archive
     ), ExplorerContextBlockOrder.Remove
 
     object Restore : ExplorerContextItem(
-        icon = R.drawable.ic_trash_restore,
+        icon = R.drawable.ic_restore,
         title = R.string.device_trash_files_restore
     ), ExplorerContextBlockOrder.Remove
 

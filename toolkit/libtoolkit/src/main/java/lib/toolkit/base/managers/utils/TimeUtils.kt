@@ -37,6 +37,7 @@ object TimeUtils {
     val OUTPUT_PATTERN_DEFAULT = "yyyy-MM-dd'T'HH:mm:ss"
     private val OUTPUT_PATTERN_DATE = "dd MMM yyyy"
     private val OUTPUT_PATTERN_TIME = "dd MMM yyyy HH:mm"
+    private val OUTPUT_PATTERN_TIME_VERSION = "dd/MM/yyyy HH:mm:ss"
     private val OUTPUT_PATTERN_DATE_TIME_OFFSET = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
     private val OUTPUT_PATTERN_FILE = "yyyyMMdd_HHmmssSSS"
 
@@ -46,6 +47,7 @@ object TimeUtils {
     val DEFAULT_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DEFAULT)
     val DEFAULT_GMT_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DATE_TIME_OFFSET).also { it.timeZone = TimeZone.getTimeZone("gmt") }
     private val OUTPUT_TIME_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_TIME)
+    private val OUTPUT_TIME_VERSION_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_TIME_VERSION)
     private val OUTPUT_DATE_FORMAT = SimpleDateFormat(OUTPUT_PATTERN_DATE)
 
     /*
@@ -95,6 +97,11 @@ object TimeUtils {
     @JvmStatic
     fun formatDate(date: Date?): String {
         return if (date != null) OUTPUT_TIME_FORMAT.format(date) else "-"
+    }
+
+    @JvmStatic
+    fun formatVersionDate(date: Date?): String {
+        return if (date != null) OUTPUT_TIME_VERSION_FORMAT.format(date) else "-"
     }
 
     @JvmStatic
