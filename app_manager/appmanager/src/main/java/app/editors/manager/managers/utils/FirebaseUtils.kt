@@ -124,7 +124,7 @@ object FirebaseUtils {
         onResult: (isCoauthoring: Boolean) -> Unit
     ) {
         getSdk { allowCoauthoring, checkSdkFully ->
-            if (allowCoauthoring) {
+            if (!allowCoauthoring) {
                 onResult(false)
                 return@getSdk
             }
