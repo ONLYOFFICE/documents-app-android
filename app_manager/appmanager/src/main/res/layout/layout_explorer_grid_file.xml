@@ -19,17 +19,45 @@
             tools:src="@drawable/ic_type_document_column" />
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/badgeVersionCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin_medium"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/colorOnBottomBarInActive"
+            app:cardCornerRadius="4dp"
+            app:layout_constraintStart_toStartOf="@id/statusLayout"
+            app:layout_constraintEnd_toStartOf="@id/image"
+            app:layout_constraintBottom_toTopOf="@id/image"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/badgeVersion"
+                style="@style/Widget.Common.TextView.Micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:paddingHorizontal="@dimen/default_margin_small"
+                android:paddingVertical="@dimen/default_margin_micro"
+                android:textColor="@color/colorOnPrimary"
+                tools:text="V.5" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
             android:id="@+id/badgeNewCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/default_margin_small"
+            app:layout_goneMarginTop="0dp"
             app:cardBackgroundColor="@color/colorSecondary"
             app:cardCornerRadius="4dp"
             app:cardElevation="4dp"
-            app:layout_constraintBottom_toTopOf="@id/image"
+            app:layout_constraintBottom_toTopOf="@id/statusLayout"
             app:layout_constraintEnd_toStartOf="@id/image"
-            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="@id/statusLayout"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/badgeVersionCard">
 
             <TextView
                 android:id="@+id/badgeNew"

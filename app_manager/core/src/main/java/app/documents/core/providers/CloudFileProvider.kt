@@ -31,6 +31,8 @@ import app.documents.core.network.manager.models.response.ResponseFolder
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.room.RoomService
 import app.documents.core.utils.FirebaseTool
+import app.documents.core.network.room.models.DeleteVersionRequest
+import app.documents.core.network.room.models.EditCommentRequest
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -43,6 +45,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.StringUtils
@@ -296,7 +300,8 @@ class CloudFileProvider @Inject constructor(
     }
 
     override fun fileInfo(item: Item?): Observable<CloudFile> {
-        return managerService.getFileInfo(item?.id)
+        val version = (item as? CloudFile)?.version
+        return managerService.getFileInfo(item?.id, version)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseFile: Response<ResponseFile> ->
@@ -630,4 +635,40 @@ class CloudFileProvider @Inject constructor(
             .put("canShareable", canShareable)
             .toString()
     }
+
+    fun getVersionHistory(fileId: String): Flow<Result<List<CloudFile>>> = apiFlow {
+        val response = managerService.getVersionHistory(fileId)
+        val files = response.body()?.response
+        if (response.isSuccessful && files != null) files
+        else throw HttpException(response)
+    }
+
+    fun restoreVersion(fileId: String, version: Int): Flow<Result<Unit>> = apiFlow {
+        val response = managerService.restoreVersion(fileId, version)
+        if (!response.isSuccessful) throw HttpException(response)
+    }
+
+    fun editVersionComment(
+        fileId: String,
+        version: Int,
+        comment: String
+    ): Flow<Result<Unit>> = apiFlow {
+        val body = EditCommentRequest(version, comment)
+        val response = managerService.updateVersionComment(fileId, body)
+        if (!response.isSuccessful) throw HttpException(response)
+    }
+
+    fun deleteVersion(
+        fileId: String,
+        version: Int
+    ): Flow<Result<Unit>> = apiFlow {
+        val body = DeleteVersionRequest(fileId, arrayOf(version))
+        val response = managerService.deleteVersion(body)
+        if (!response.isSuccessful) throw HttpException(response)
+    }
+
+    private fun <T> apiFlow(apiCall: suspend () -> T): Flow<Result<T>> = flow {
+        val result = kotlin.runCatching { apiCall() }
+        emit(result)
+    }.flowOn(Dispatchers.IO)
 }

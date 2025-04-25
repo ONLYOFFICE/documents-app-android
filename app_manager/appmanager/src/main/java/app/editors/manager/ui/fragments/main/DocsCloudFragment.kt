@@ -47,6 +47,8 @@ import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_TYPE
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
+import app.editors.manager.ui.fragments.main.versionhistory.RefreshListener
+import app.editors.manager.ui.fragments.main.versionhistory.VersionHistoryFragment
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment
 import app.editors.manager.ui.fragments.room.add.EditRoomFragment
 import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
@@ -55,6 +57,7 @@ import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
+import app.editors.manager.viewModels.main.VersionViewer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.DialogUtils
@@ -93,8 +96,32 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    private var refreshListener: RefreshListener? = null
+
     override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onEditorActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
+                    if (data?.data != null) {
+                        if (data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)) {
+                            showFillResultFragment(data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION))
+                            return
+                        }
+                        if (data.getBooleanExtra(EditorsContract.EXTRA_IS_MODIFIED, false)) {
+                            cloudPresenter.updateDocument(data.data!!)
+                        }
+                    }
+                    refreshAfterEditing()
+                }
+            }
+        } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
+            onRefresh()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 BaseActivity.REQUEST_ACTIVITY_STORAGE -> {
@@ -104,34 +131,23 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                         presenter.addFolderAndOpen(folder, layoutManager.findFirstVisibleItemPosition())
                     }
                 }
-
                 BaseActivity.REQUEST_ACTIVITY_SHARE -> {
                     presenter.refresh()
                 }
-
-                BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    cameraUri?.let { uri ->
-                        presenter.upload(uri, null)
-                    }
-                }
-
                 FilterActivity.REQUEST_ACTIVITY_FILTERS_CHANGED -> {
                     onRefresh()
-                }
-
-                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
-                    if (data != null && data.getBooleanExtra(
-                            EditorsContract.EXTRA_IS_SEND_FORM,
-                            false
-                        )
-                    ) {
-                        showFillResultFragment(data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION))
-                        return
-                    }
                 }
             }
         } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
             onRefresh()
+        }
+    }
+
+    private fun refreshAfterEditing(){
+        if (refreshListener != null){
+            refreshListener!!.refresh()
+        } else {
+            presenter.refreshWithDelay()
         }
     }
 
@@ -229,6 +245,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.ExternalLink -> presenter.saveExternalLinkToClipboard()
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> presenter.addToFavorite()
+            is ExplorerContextItem.VersionHistory -> presenter.showVersionHistory()
             else -> super.onContextButtonClick(contextItem)
         }
     }
@@ -637,6 +654,18 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             editType = editType,
             access = file.access
         )
+    }
+
+    override fun showVersionHistoryFragment(fileId: String) {
+        refreshListener = VersionHistoryFragment.show(
+            parentFragmentManager,
+            viewLifecycleOwner,
+            fileId,
+            presenter as VersionViewer
+        ) {
+            onRefresh()
+            refreshListener = null
+        }
     }
 
     val isRoot: Boolean

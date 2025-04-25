@@ -86,6 +86,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Fill(),
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.View,
+                ExplorerContextItem.VersionHistory,
                 ExplorerContextItem.Share.takeIf {
                     state.provider != PortalProvider.Cloud.DocSpace || state.section == ApiContract.Section.User && !((state.item is CloudFile) && state.item.isPdfForm)
                 },

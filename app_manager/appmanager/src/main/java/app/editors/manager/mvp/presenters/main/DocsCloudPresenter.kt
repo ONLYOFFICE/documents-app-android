@@ -52,6 +52,7 @@ import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROT
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
+import app.editors.manager.viewModels.main.VersionViewer
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -73,12 +74,14 @@ import moxy.InjectViewState
 import moxy.presenterScope
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @InjectViewState
 class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<DocsCloudView, CloudFileProvider>(),
-    OnDownloadListener, OnUploadListener, RoomDuplicateReceiver.Listener {
+    OnDownloadListener, OnUploadListener, RoomDuplicateReceiver.Listener, VersionViewer {
 
-    private val downloadReceiver: DownloadReceiver = DownloadReceiver()
+    @Inject
+    lateinit var downloadReceiver: DownloadReceiver
     private val uploadReceiver: UploadReceiver = UploadReceiver()
     private var duplicateRoomReceiver: RoomDuplicateReceiver = RoomDuplicateReceiver()
 
@@ -114,26 +117,23 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        downloadReceiver.setOnDownloadListener(this)
+        downloadReceiver.addListener(this)
         uploadReceiver.setOnUploadListener(this)
         duplicateRoomReceiver.setListener(this)
         LocalBroadcastManager.getInstance(context)
             .registerReceiver(duplicateRoomReceiver, RoomDuplicateReceiver.getFilters())
         LocalBroadcastManager.getInstance(context)
             .registerReceiver(uploadReceiver, uploadReceiver.filter)
-        LocalBroadcastManager.getInstance(context)
-            .registerReceiver(downloadReceiver, downloadReceiver.filter)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         interruptConversion()
-        downloadReceiver.setOnDownloadListener(null)
+        downloadReceiver.removeListener(this)
         uploadReceiver.setOnUploadListener(null)
         duplicateRoomReceiver.setListener(null)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(duplicateRoomReceiver)
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(downloadReceiver)
     }
 
     override fun onItemClick(item: Item, position: Int) {
@@ -265,6 +265,43 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             true,
             StringUtils.getExtensionFromPath(title)
         )
+        super.createDocs(title)
+    }
+
+    override fun openFileVersion(file: CloudFile, onError: (Throwable) -> Unit){
+        fileProvider?.let { provider ->
+            disposable.add(
+                provider.fileInfo(file)
+                    .subscribe({ doc -> onFileClickAction(doc, editType = null) }, onError)
+            )
+        }
+    }
+
+    override fun getFileInfo() {
+        val item = itemClicked
+        if (item != null && item is CloudFile) {
+            fileProvider?.let { provider ->
+                disposable.add(
+                    provider.fileInfo(item)
+                        .subscribe({ onFileClickAction(item, editType = null) }, ::fetchError)
+                )
+            }
+        }
+    }
+
+    override fun addRecent(file: CloudFile) {
+        presenterScope.launch {
+            recentDataSource.add(
+                Recent(
+                    fileId = file.id,
+                    path = "",
+                    name = file.title,
+                    size = file.pureContentLength,
+                    ownerId = account.id,
+                    source = account.portalUrl
+                )
+            )
+        }
         super.createDocs(title)
     }
 
@@ -863,6 +900,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         is Result.Error -> fetchError(result.exception)
                     }
                 }
+        }
+    }
+
+    fun showVersionHistory(){
+        (itemClicked as? CloudFile)?.let {
+            viewState.showVersionHistoryFragment(it.id)
         }
     }
 

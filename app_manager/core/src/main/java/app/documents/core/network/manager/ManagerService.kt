@@ -31,6 +31,9 @@ import app.documents.core.network.manager.models.response.ResponseFolder
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.manager.models.response.ResponsePortal
 import app.documents.core.network.manager.models.response.ResponseThirdparty
+import app.documents.core.network.manager.models.response.ResponseVersionHistory
+import app.documents.core.network.room.models.DeleteVersionRequest
+import app.documents.core.network.room.models.EditCommentRequest
 import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.MultipartBody
@@ -146,7 +149,10 @@ interface ManagerService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}")
-    fun getFileInfo(@Path(value = "file_id") fileId: String?): Observable<Response<ResponseFile>>
+    fun getFileInfo(
+        @Path(value = "file_id") fileId: String?,
+        @Query(value = "version") version: Int? = null
+    ): Observable<Response<ResponseFile>>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -500,4 +506,41 @@ interface ManagerService {
     @GET("api/${ApiContract.API_VERSION}/settings/version/build")
     suspend fun getSettings(): app.documents.core.network.BaseResponse<Settings>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/history")
+    suspend fun getVersionHistory(
+        @Path(value = "file_id") fileId: String
+    ): Response<ResponseVersionHistory>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/restoreversion")
+    suspend fun restoreVersion(
+        @Path(value = "file_id") fileId: String,
+        @Query(value = "version") version: Int
+    ): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/comment")
+    suspend fun updateVersionComment(
+        @Path(value = "file_id") fileId: String,
+        @Body body: EditCommentRequest
+    ): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/deleteversion")
+    suspend fun deleteVersion(
+        @Body body: DeleteVersionRequest
+    ): Response<BaseResponse>
 }

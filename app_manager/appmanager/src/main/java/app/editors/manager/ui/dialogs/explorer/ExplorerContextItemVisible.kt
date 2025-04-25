@@ -41,6 +41,10 @@ interface ExplorerContextItemVisible {
             is ExplorerContextItem.Notifications -> notifications
             is ExplorerContextItem.Favorites -> favorites(contextItem.enabled)
             is ExplorerContextItem.Lock -> lock
+            ExplorerContextItem.VersionHistory -> versionHistory
+            ExplorerContextItem.EditComment -> false
+            ExplorerContextItem.Open -> false
+            ExplorerContextItem.DeleteVersion -> false
         }
     }
 
@@ -193,6 +197,9 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.lock: Boolean
         get() = (item is CloudFile) && item.security?.lock == true
+
+    private val ExplorerContextState.versionHistory: Boolean
+        get() = item.security?.readHistory == true
 
     private fun ExplorerContextState.favorites(enabled: Boolean): Boolean =
         enabled && !isFolder && !listOf(

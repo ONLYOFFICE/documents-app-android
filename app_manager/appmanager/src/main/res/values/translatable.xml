@@ -356,6 +356,9 @@
     <string name="list_context_fill">Fill</string>
     <string name="list_context_lock">Lock</string>
     <string name="list_context_unlock">Unlock</string>
+    <string name="list_context_version_history">Show version history</string>
+    <string name="list_context_open_vesrion">Open</string>
+    <string name="list_context_edit_comment">Edit comment</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">Spreadsheet</string>
@@ -1044,4 +1047,31 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="whats_new_3_desc">Add new chart types to visualize your data for detailed presentations and analysis.</string>
     <string name="whats_new_4">View Apple Pages and HWP files</string>
     <string name="whats_new_4_desc">Open and view documents in Apple Pages and Hangul Word formats.</string>
+
+    <string name="version_history_title">Version History</string>
+    <string name="version_edit_comment_title">Edit Comment</string>
+    <string name="version_group_header">Version %s</string>
+    <string name="version_group_current_header">Current — Version %s</string>
+    <string name="edit_comment_title">Edit comment</string>
+    <string name="edit_comment_field_label">Comment</string>
+    <string name="edit_comment_success">Comment saved successfully</string>
+    <string name="context_menu_desc">More</string>
+    <string name="version_restore_done">Version has been restored</string>
+    <string name="version_delete_done">Version has been deleted</string>
+    <string name="edit_comment_label">Comment</string>
+    <string name="error_version_open">Failed to open document</string>
+    <string name="error_version_delete">Failed to delete</string>
+    <string name="error_version_restore">Failed to restore version</string>
+    <string name="error_edit_comment">Failed to update comment</string>
+    <!-- Version History Context Action Dialogs -->
+    <string name="version_restore_title">Restore this version?</string>
+    <string name="version_restore_subtitle">Current file will be saved in version history.</string>
+    <string name="version_restore_confirm">Restore</string>
+    <string name="version_restore_loading">Restoring version</string>
+    <string name="version_delete_title">Delete version</string>
+    <string name="version_delete_subtitle">You are about to delete a file version. It will be no possible to see or restore it anymore. Are you sure you want to continue?</string>
+    <string name="version_delete_confirm">Delete</string>
+    <string name="version_delete_loading">Deleting</string>
+    <string name="version_dialog_cancel">Cancel</string>
+
 </resources>

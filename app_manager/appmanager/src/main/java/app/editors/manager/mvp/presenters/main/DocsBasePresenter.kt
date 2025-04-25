@@ -68,6 +68,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
@@ -80,6 +82,7 @@ import moxy.presenterScope
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import moxy.presenterScope
 import okhttp3.ResponseBody
 import org.json.JSONException
 import retrofit2.HttpException
@@ -340,6 +343,14 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             return true
         }
         return false
+    }
+
+    fun refreshWithDelay(delayMs: Long = 2000, onRefresh: () -> Unit = {}) {
+        presenterScope.launch {
+            viewState.onSwipeEnable(false)
+            delay(delayMs)
+            refresh(onRefresh)
+        }
     }
 
     open fun sortBy(sortValue: String): Boolean {

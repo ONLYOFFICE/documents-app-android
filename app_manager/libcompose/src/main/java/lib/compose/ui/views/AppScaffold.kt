@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarHost
 import androidx.compose.material.Surface
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -30,7 +31,7 @@ fun AppScaffold(
         modifier = modifier,
         topBar = topBar,
         scaffoldState = scaffoldState,
-        snackbarHost = { scaffoldState.snackbarHostState }) { padding ->
+        snackbarHost = { SnackbarHost(hostState = scaffoldState.snackbarHostState) }) { padding ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()

@@ -21,6 +21,7 @@ import app.documents.core.providers.RecentFileProvider
 import app.documents.core.providers.RoomProvider
 import app.documents.core.providers.WebDavFileProvider
 import app.editors.manager.di.module.AppModule
+import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.tools.AppLocaleHelper
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
@@ -125,6 +126,7 @@ interface AppComponent {
     val fontManager: FontManager
     val themePreferencesTools: ThemePreferencesTools
     val errorHandler: ErrorHandler
+    val downloadReceiver: DownloadReceiver
 
     val cloudDataSource: CloudDataSource
     val recentDataSource: RecentDataSource

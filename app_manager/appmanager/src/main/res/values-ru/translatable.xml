@@ -529,6 +529,7 @@
         <item quantity="one" tools:ignore="ImpliedQuantity">Он будет безвозвратно удален.\nЭто действие необратимо.</item>
         <item quantity="many">Они будут безвозвратно удалены.\nЭто действие необратимо.</item>
         <item quantity="few">Они будут безвозвратно удалены.\nЭто действие необратимо.</item>
+        <item quantity="other">Они будут безвозвратно удалены.\nЭто действие необратимо.</item>
     </plurals>
     <plurals name="dialogs_question_message_to_trash">
         <item quantity="one" tools:ignore="ImpliedQuantity">Он будет перемещен в Корзину.</item>
@@ -539,7 +540,7 @@
     <plurals name="dialogs_question_delete_title">
         <item quantity="one" tools:ignore="ImpliedQuantity">Удалить этот элемент?</item>
         <item quantity="many">Удалить %1$d элементов?</item>
-        <item quantity="few">Удалить %1$d элементов?</item>
+        <item quantity="few">Удалить %1$d элемента?</item>
     </plurals>
     <string name="storage_dropbox_email_not_verified_error">Электронная почта не подтверждена</string>
     <string name="download_manager_downloading">Скачивание…</string>

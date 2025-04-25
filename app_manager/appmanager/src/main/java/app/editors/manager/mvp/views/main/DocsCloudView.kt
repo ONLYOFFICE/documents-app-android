@@ -57,5 +57,8 @@ interface DocsCloudView : DocsBaseView {
     fun showRoomInfoFragment()
 
     @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showVersionHistoryFragment(fileId: String)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun onOpenDocumentServer(file: CloudFile, info: String, type: EditType)
 }
