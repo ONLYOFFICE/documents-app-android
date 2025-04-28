@@ -55,7 +55,10 @@ interface ExplorerContextItemVisible {
         get() = item.security?.moveTo == true && item.security?.editRoom == true && section !is ApiContract.Section.Room.Archive
 
     private val ExplorerContextState.copy: Boolean
-        get() = if (section.isRoom) item.security?.copy == true else section != ApiContract.Section.Trash
+        get() = if (section.isRoom || isDocSpaceUser())
+            item.security?.copy == true
+        else
+            !section.isTrash
 
     private val ExplorerContextState.duplicate: Boolean
         get() = item.security?.duplicate == true
@@ -110,7 +113,9 @@ interface ExplorerContextItemVisible {
                         PortalProvider.Cloud.Workspace -> {
                             val item = item as? CloudFile ?: return false
                             val isPdf = StringUtils.getExtension(item.fileExst) == Extension.PDF
-                            (isExtensionEditable(item) || isPdf) && access.isEditable
+
+                            (isExtensionEditable(item) || isPdf) &&
+                                (access.isEditable || item.security?.editAccess == true)
                         }
                         else -> {
                             isExtensionEditable(item)
@@ -121,26 +126,26 @@ interface ExplorerContextItemVisible {
         }
 
     private val ExplorerContextState.move: Boolean
-        get() = if (!section.isRoom) {
-            section in listOf(
-                ApiContract.Section.User,
-                ApiContract.Section.Device
-            ) || section is ApiContract.Section.Storage
-        } else item.security?.move == true
+        get() = when {
+            isDocSpaceUser() -> item.security?.move == true
+            !section.isRoom -> section.isDevice || section.isUser || section.isStorage
+            else -> item.security?.move == true
+        }
 
     private val ExplorerContextState.externalLink: Boolean
-        get() = when (section) {
-            is ApiContract.Section.Room -> true
-            else -> isShareVisible(access, section) && !isFolder
+        get() = when {
+            section.isRoom -> true
+            isFolder -> false
+            isDocSpaceUser() -> item.security?.copyLink == true
+            else -> isShareVisible(access, section)
         }
 
     private val ExplorerContextState.rename: Boolean
-        get() = if (!section.isRoom) {
-            access == Access.ReadWrite || section in listOf(
-                ApiContract.Section.User,
-                ApiContract.Section.Device
-            )
-        } else item.security?.rename == true
+        get() = when {
+            isDocSpaceUser() -> item.security?.rename == true
+            !section.isRoom -> section.isDevice || section.isUser || access == Access.ReadWrite
+            else -> item.security?.rename == true
+        }
 
     private val ExplorerContextState.restore: Boolean
         get() = when (section) {
@@ -153,11 +158,15 @@ interface ExplorerContextItemVisible {
         get() = section.isRoom
 
     private val ExplorerContextState.send: Boolean
-        get() = section != ApiContract.Section.Trash && !isFolder
+        get() = when {
+            isFolder || section.isTrash -> false
+            isDocSpaceUser() -> item.security?.copy == true
+            else -> true
+        }
 
     private val ExplorerContextState.share: Boolean
         get() = if (provider is PortalProvider.Cloud.DocSpace) {
-            section == ApiContract.Section.User && item is CloudFile
+            item.isCanShare
         } else if (item is CloudFile) {
             !item.isDenySharing && access in arrayOf(
                 Access.ReadWrite,
@@ -181,15 +190,19 @@ interface ExplorerContextItemVisible {
             ApiContract.Section.Share,
             ApiContract.Section.Favorites,
             ApiContract.Section.Projects -> false
-
+            ApiContract.Section.Device -> true
+            is ApiContract.Section.Room.Archive -> item.security?.delete == true
             is ApiContract.Section.Room -> isRoot || item.security?.delete == true
-            else -> true
+
+            else -> if (provider == PortalProvider.Cloud.DocSpace)
+                        item.security?.delete == true
+                    else true
         }
 
     private val ExplorerContextState.createRoom: Boolean
         get() {
             if (section is ApiContract.Section.Room.Archive) return false
-            return item.security?.create == true || item is CloudFile
+            return item.security?.createRoomFrom == true
         }
 
     private val ExplorerContextState.location: Boolean
@@ -206,6 +219,9 @@ interface ExplorerContextItemVisible {
             ApiContract.Section.Trash,
             ApiContract.Section.Webdav
         ).contains(section)
+
+    private fun ExplorerContextState.isDocSpaceUser() =
+        section.isUser && provider == PortalProvider.Cloud.DocSpace
 
     private fun isExtensionEditable(item: Item): Boolean {
         return if (item is CloudFile) {
@@ -229,5 +245,4 @@ interface ExplorerContextItemVisible {
             Access.Comment,
             Access.ReadWrite
         )
-
 }

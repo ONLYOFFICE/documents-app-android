@@ -205,11 +205,13 @@ object ApiContract {
         }
 
         val isRoom: Boolean get() = this is Room
+        val isUser: Boolean get() = this is User
         val isArchive: Boolean get() = this == Room.Archive
         val isLocal: Boolean get() = this in listOf(Device, Recent, LocalRecent)
         val isLocalRecent: Boolean get() = this == LocalRecent
         val isDevice: Boolean get() = this == Device
         val isTrash: Boolean get() = this == Trash
+        val isStorage: Boolean get() = this is Storage
 
         companion object {
 
