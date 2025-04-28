@@ -56,6 +56,10 @@ class ExplorerContextAdapter(
                 title.text = header.state.item.title
                 subtitle.text = header.info
                 val file = header.state.item as? CloudFile
+                badgeVersionCard.isVisible = file != null && file.version > 1
+                if (badgeVersionCard.isVisible) {
+                    badgeVersion.text = itemView.context.getString(R.string.badge_doc_version, file?.version)
+                }
                 file?.let {
                     badgeFormStatus.setFormStatus(UiFormFillingStatus.from(file.formFillingStatus))
                     if (file.expired != null) {

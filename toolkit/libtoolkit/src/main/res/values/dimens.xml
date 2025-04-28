@@ -41,7 +41,8 @@
     <dimen name="default_margin_micro">2dp</dimen>
     <dimen name="alert_dialog_start_end_margin">20dp</dimen>
     <dimen name="passcode_keyboard_margin">80dp</dimen>
-    <dimen name="file_grid_badge_start_margin">-20dp</dimen>
+    <dimen name="file_grid_badge_start_margin">-16dp</dimen>
+    <dimen name="file_grid_badge_top_margin">-4dp</dimen>
 
     <!-- Corners -->
     <dimen name="default_corner_radius_medium">8dp</dimen>

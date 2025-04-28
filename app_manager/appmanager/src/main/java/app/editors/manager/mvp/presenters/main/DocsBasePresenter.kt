@@ -62,6 +62,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
@@ -70,6 +72,7 @@ import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import moxy.MvpPresenter
+import moxy.presenterScope
 import okhttp3.ResponseBody
 import org.json.JSONException
 import retrofit2.HttpException
@@ -296,6 +299,14 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             }
         }
         return false
+    }
+
+    fun refreshWithDelay(delayMs: Long = 2000, onRefresh: () -> Unit = {}) {
+        presenterScope.launch {
+            viewState.onSwipeEnable(false)
+            delay(delayMs)
+            refresh(onRefresh)
+        }
     }
 
     open fun sortBy(sortValue: String): Boolean {
