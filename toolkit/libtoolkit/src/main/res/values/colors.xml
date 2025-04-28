@@ -29,6 +29,7 @@
     <color name="colorMediaBackground">@color/colorBlack</color>
     <color name="colorChipBackground">@color/colorBackdrop</color>
     <color name="colorIconBackground">@color/colorBackdrop</color>
+    <color name="colorOnBottomBarInActive">#8E8E93</color>
 
     <!-- Editors -->
     <color name="colorDocTint">#446995</color>

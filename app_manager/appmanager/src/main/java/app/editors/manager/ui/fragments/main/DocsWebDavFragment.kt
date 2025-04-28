@@ -16,6 +16,7 @@ import app.editors.manager.mvp.views.main.DocsWebDavView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
+import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -52,23 +53,27 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
 
     override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onEditorActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_CANCELED) {
-            if (isActivePage && (requestCode == BaseActivity.REQUEST_ACTIVITY_MEDIA ||
-                        requestCode == REQUEST_PDF)
-            ) {
-                webDavPresenter.deleteTempFile()
-            }
-        } else if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK){
             when (requestCode) {
-                BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    webDavPresenter.upload(cameraUri, null)
-                }
                 REQUEST_PRESENTATION, REQUEST_PDF, REQUEST_DOCS, REQUEST_SHEETS -> {
                     if (data?.data != null) {
-                        if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
+                        if (data.getBooleanExtra(EditorsContract.EXTRA_IS_MODIFIED, false)) {
                             webDavPresenter.upload(data.data, null)
                         }
                     }
+                }
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (resultCode) {
+            Activity.RESULT_CANCELED -> {
+                if (isActivePage && (requestCode == BaseActivity.REQUEST_ACTIVITY_MEDIA ||
+                            requestCode == REQUEST_PDF)
+                ) {
+                    webDavPresenter.deleteTempFile()
                 }
             }
         }

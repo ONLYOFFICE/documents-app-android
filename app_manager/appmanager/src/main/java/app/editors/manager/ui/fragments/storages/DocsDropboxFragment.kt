@@ -8,7 +8,6 @@ import app.editors.manager.app.App
 import app.editors.manager.mvp.presenters.storages.DocsDropboxPresenter
 import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import app.editors.manager.ui.fragments.base.StorageLoginFragment
-import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
 class DocsDropboxFragment: BaseStorageDocsFragment() {
@@ -33,12 +32,6 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
         super.onEditorActivityResult(requestCode, resultCode, data)
         if(resultCode == Activity.RESULT_OK) {
             when(requestCode) {
-
-                BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    cameraUri?.let { uri ->
-                        presenter.upload(uri, null, KEY_UPLOAD)
-                    }
-                }
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
                     if(data.getBooleanExtra(KEY_MODIFIED, false)) {
                         presenter.upload(

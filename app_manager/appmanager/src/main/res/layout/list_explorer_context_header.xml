@@ -29,13 +29,44 @@
         app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/title"
-            style="@style/Widget.Common.TextView"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@id/subtitle"
-            tools:text="Report.docx" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/title"
+                style="@style/Widget.Common.TextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                tools:text="Report.docx" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/badgeVersionCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/default_margin_small"
+                android:visibility="gone"
+                tools:visibility="visible"
+                app:cardBackgroundColor="@color/colorOnBottomBarInActive"
+                app:cardCornerRadius="4dp">
+
+                <TextView
+                    android:id="@+id/badgeVersion"
+                    style="@style/Widget.Common.TextView.Micro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:paddingHorizontal="@dimen/default_margin_small"
+                    android:paddingVertical="@dimen/default_margin_micro"
+                    tools:text="V.5"
+                    android:textColor="@color/colorOnPrimary"/>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/subtitle"

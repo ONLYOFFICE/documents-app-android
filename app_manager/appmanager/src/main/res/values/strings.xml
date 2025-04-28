@@ -2,6 +2,7 @@
     <!-- App -->
     <string name="app_package" translatable="false">app.editors.manager</string>
     <string name="placeholder_point" translatable="false">" • "</string>
+    <string name="badge_doc_version" translatable="false">"V.%d"</string>
 
     <!-- Google -->
     <string name="google_scope" translatable="false">oauth2:profile email</string>
