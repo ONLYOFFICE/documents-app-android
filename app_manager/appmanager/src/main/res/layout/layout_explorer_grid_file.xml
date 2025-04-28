@@ -96,9 +96,20 @@
                 app:tint="@color/colorPrimary" />
 
             <ImageView
+                android:id="@+id/locked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:src="@drawable/ic_file_lock"
+                android:visibility="gone"
+                app:tint="@color/colorPrimary"
+                tools:ignore="ContentDescription"/>
+
+            <ImageView
                 android:id="@+id/editing"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
+                android:layout_marginBottom="4dp"
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_fab_edit_mode"
                 android:visibility="gone"
@@ -106,6 +117,14 @@
                 app:layout_constraintTop_toBottomOf="@id/favorite"
                 app:tint="@color/colorPrimary" />
 
+            <ImageView
+                android:id="@+id/customFilter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_custom_filter"
+                android:visibility="gone"
+                app:tint="@color/colorCustomFilter"
+                tools:ignore="ContentDescription"/>
 
         </LinearLayout>
 

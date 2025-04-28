@@ -527,7 +527,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     },
                     onSuccess = { externalLink ->
                         if (externalLink.isNotEmpty()) {
-                            setDataToClipboard(externalLink)
+                            setDataToClipboard(externalLink, (item as? CloudFile)?.customFilterEnabled)
                         } else {
                             viewState.onSnackBar(context.getString(R.string.share_access_denied))
                         }
@@ -613,13 +613,21 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    private fun setDataToClipboard(value: String) {
+    private fun setDataToClipboard(value: String, customFilterEnabled: Boolean? = false) {
         KeyboardUtils.setDataToClipboard(
             context,
             value,
             context.getString(R.string.share_clipboard_external_link_label)
         )
-        viewState.onSnackBar(context.getString(R.string.share_clipboard_external_copied))
+        viewState.onSnackBar(
+            context.getString(
+                if (customFilterEnabled == true) {
+                    R.string.share_clipboard_external_custom_filter_copied
+                } else {
+                    R.string.share_clipboard_external_copied
+                }
+            )
+        )
     }
 
     private fun checkMoveCopyFiles(action: String) {
@@ -997,6 +1005,31 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         is Result.Success -> {
                             file.isLocked = !file.isLocked
                             viewState.onUpdateItemState()
+                        }
+                        is Result.Error -> fetchError(result.exception)
+                    }
+                }
+        }
+    }
+
+    fun setCustomFilter(){
+        val roomProvider = roomProvider ?: return
+        val file = itemClicked as? CloudFile ?: return
+        presenterScope.launch {
+            val enable = !file.customFilterEnabled
+            roomProvider.enableCustomFilter(id = file.id, enable = enable)
+                .collect { result ->
+                    when(result){
+                        is Result.Success -> {
+                            file.customFilterEnabled = enable
+                            viewState.onUpdateItemState()
+                            viewState.onSnackBar(
+                                if (enable) {
+                                    context.getString(R.string.operation_enable_custom_filter)
+                                } else {
+                                    context.getString(R.string.operation_disable_custom_filter)
+                                }
+                            )
                         }
                         is Result.Error -> fetchError(result.exception)
                     }

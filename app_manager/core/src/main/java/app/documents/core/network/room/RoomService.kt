@@ -13,6 +13,7 @@ import app.documents.core.network.manager.models.request.RequestRoomNotification
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.manager.models.response.ResponseExplorer
 import app.documents.core.network.manager.models.response.ResponseRoomNotifications
+import app.documents.core.network.room.models.CustomFilterRequest
 import app.documents.core.network.room.models.LockFileRequest
 import app.documents.core.network.room.models.RequestAddTags
 import app.documents.core.network.room.models.RequestArchive
@@ -379,6 +380,13 @@ interface RoomService {
     )
     @PUT("api/" + ApiContract.API_VERSION + "/files/file/{id}/lock")
     suspend fun lockFile(@Path("id") id: String, @Body body: LockFileRequest): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{id}/customfilter")
+    suspend fun enableCustomFilter(@Path("id") id: String, @Body body: CustomFilterRequest): Response<BaseResponse>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,

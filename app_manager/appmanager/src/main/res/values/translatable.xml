@@ -359,6 +359,8 @@
     <string name="list_context_version_history">Show version history</string>
     <string name="list_context_open_vesrion">Open</string>
     <string name="list_context_edit_comment">Edit comment</string>
+    <string name="list_context_enable_custom_filter">Enable custom filter</string>
+    <string name="list_context_disable_custom_filter">Disable custom filter</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">Spreadsheet</string>
@@ -465,6 +467,7 @@
     <string name="share_access_success">External access successful</string>
     <string name="share_access_denied">External access denied</string>
     <string name="share_clipboard_external_copied">Secret link copied to clipboard</string>
+    <string name="share_clipboard_external_custom_filter_copied">The link to the file with the enabled Custom filter is successfully copied to the clipboard</string>
     <string name="share_clipboard_internal_copied">Link for portal users copied to clipboard</string>
     <string name="share_clipboard_external_link_label">External link</string>
 
@@ -537,6 +540,9 @@
     <string name="operation_share_send_link">SEND</string>
     <string name="operation_add_to_favorites">Added to Favorites</string>
     <string name="operation_remove_from_favorites">Removed from Favorites</string>
+    <string name="operation_enable_custom_filter">Custom filter for the selected file enabled</string>
+    <string name="operation_disable_custom_filter">Custom filter for the selected file disabled</string>
+
 
     <plurals name="operation_moved_to_trash">
         <item quantity="one">Item moved to the Trash</item>
