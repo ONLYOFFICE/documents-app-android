@@ -100,12 +100,16 @@ interface ExplorerContextItemVisible {
         }
 
     private val ExplorerContextState.rename: Boolean
-        get() = if (!section.isRoom) {
-            access == Access.ReadWrite || section in listOf(
-                ApiContract.Section.User,
-                ApiContract.Section.Device
-            )
-        } else item.security?.rename == true
+        get() = when {
+            section is ApiContract.Section.Storage -> true
+            !section.isRoom -> {
+                access == Access.ReadWrite || section in listOf(
+                    ApiContract.Section.User,
+                    ApiContract.Section.Device
+                )
+            }
+            else -> item.security?.rename == true
+        }
 
     private val ExplorerContextState.restore: Boolean
         get() = when (section) {
