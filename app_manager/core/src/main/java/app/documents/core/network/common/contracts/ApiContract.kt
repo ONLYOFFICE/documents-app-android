@@ -129,8 +129,8 @@ object ApiContract {
         const val VAL_FILTER_SUBFOLDERS = "true"
         const val VAL_FILTER_BY_FOLDERS = "FoldersOnly"
         const val VAL_FILTER_BY_DOCUMENTS = "DocumentsOnly"
-        const val VAL_FILTER_BY_FORM_TEMPLATES = "OFormTemplateOnly"
-        const val VAL_FILTER_BY_FORMS = "OFormOnly"
+        const val VAL_FILTER_BY_PDF_DOCUMENTS = "Pdf"
+        const val VAL_FILTER_BY_PDF_FORMS = "PdfForm"
         const val VAL_FILTER_BY_PRESENTATIONS = "PresentationsOnly"
         const val VAL_FILTER_BY_SPREADSHEETS = "SpreadsheetsOnly"
         const val VAL_FILTER_BY_IMAGES = "ImagesOnly"
@@ -205,11 +205,13 @@ object ApiContract {
         }
 
         val isRoom: Boolean get() = this is Room
+        val isUser: Boolean get() = this is User
         val isArchive: Boolean get() = this == Room.Archive
         val isLocal: Boolean get() = this in listOf(Device, Recent, LocalRecent)
         val isLocalRecent: Boolean get() = this == LocalRecent
         val isDevice: Boolean get() = this == Device
         val isTrash: Boolean get() = this == Trash
+        val isStorage: Boolean get() = this is Storage
 
         companion object {
 
