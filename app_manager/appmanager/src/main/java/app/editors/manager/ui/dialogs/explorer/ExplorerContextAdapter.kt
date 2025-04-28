@@ -53,7 +53,14 @@ class ExplorerContextAdapter(
                 icon.setImageBitmap(header.state.icon)
                 title.text = header.state.item.title
                 subtitle.text = header.info
-                if (header.state.item is CloudFile && header.state.item.expired != null) {
+
+                val file = header.state.item as? CloudFile
+                badgeVersionCard.isVisible = file != null && file.version > 1
+                if (badgeVersionCard.isVisible) {
+                    badgeVersion.text = itemView.context.getString(R.string.badge_doc_version, file?.version)
+                }
+
+                if (file?.expired != null) {
                     info.isVisible = true
                     info.text = info.context.getString(
                         R.string.rooms_expire_context_info,

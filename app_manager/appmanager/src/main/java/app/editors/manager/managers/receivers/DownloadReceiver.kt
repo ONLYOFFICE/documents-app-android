@@ -6,8 +6,12 @@ import android.content.IntentFilter
 import android.net.Uri
 import app.editors.manager.R
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
+import javax.inject.Inject
+import javax.inject.Singleton
+import androidx.core.net.toUri
 
-class DownloadReceiver : BaseReceiver<Intent?>() {
+@Singleton
+class DownloadReceiver @Inject constructor() : BaseReceiver<Intent?>() {
 
     companion object {
         const val DOWNLOAD_ACTION_ERROR = "DOWNLOAD_ACTION_ERROR"
@@ -33,11 +37,8 @@ class DownloadReceiver : BaseReceiver<Intent?>() {
         const val EXTRAS_VALUE_CANCELED_NOT_FOUND = 1
     }
 
-    interface OnDownloadListener {
+    interface BaseOnDownloadListener {
         fun onDownloadError(info: String?)
-        fun onDownloadProgress(id: String?, total: Int, progress: Int)
-        fun onDownloadCanceled(id: String?, info: String?)
-        fun onDownloadRepeat(id: String?, title: String?, info: String?)
         fun onDownloadComplete(
             id: String?,
             url: String?,
@@ -49,58 +50,69 @@ class DownloadReceiver : BaseReceiver<Intent?>() {
         )
     }
 
-    private var onDownloadListener: OnDownloadListener? = null
+    interface OnDownloadListener : BaseOnDownloadListener {
+        fun onDownloadCanceled(id: String?, info: String?)
+        fun onDownloadProgress(id: String?, total: Int, progress: Int)
+        fun onDownloadRepeat(id: String?, title: String?, info: String?)
+    }
+
+    private val onDownloadListeners = mutableListOf<BaseOnDownloadListener>()
 
     override fun onReceive(context: Context, intent: Intent) {
         try {
-            if (onDownloadListener != null) {
+            if (onDownloadListeners.isNotEmpty()) {
                 val id = intent.getStringExtra(EXTRAS_KEY_ID)
                 val title = intent.getStringExtra(EXTRAS_KEY_TITLE)
 
                 when (intent.action) {
                     DOWNLOAD_ACTION_ERROR -> {
-                        onDownloadListener?.onDownloadError(info = intent.getStringExtra(EXTRAS_KEY_ERROR))
+                        val info = intent.getStringExtra(EXTRAS_KEY_ERROR)
+                        onDownloadListeners.forEach { it.onDownloadError(info) }
                     }
                     DOWNLOAD_ACTION_ERROR_FREE_SPACE -> {
-                        onDownloadListener?.onDownloadError(
-                            info = context.getString(R.string.download_manager_error_free_space)
-                        )
+                        val info = context.getString(R.string.download_manager_error_free_space)
+                        onDownloadListeners.forEach { it.onDownloadError(info) }
                     }
                     DOWNLOAD_ACTION_ERROR_URL_INIT -> {
-                        onDownloadListener?.onDownloadError(
-                            info = context.getString(R.string.download_manager_error_url)
-                        )
+                        val info = context.getString(R.string.download_manager_error_url)
+                        onDownloadListeners.forEach { it.onDownloadError(info) }
                     }
                     DOWNLOAD_ACTION_PROGRESS -> {
-                        onDownloadListener?.onDownloadProgress(
-                            id = id,
-                            total = intent.getIntExtra(EXTRAS_KEY_TOTAL, 0),
-                            progress = intent.getIntExtra(EXTRAS_KEY_PROGRESS, 0)
-                        )
+                        val total = intent.getIntExtra(EXTRAS_KEY_TOTAL, 0)
+                        val progress = intent.getIntExtra(EXTRAS_KEY_PROGRESS, 0)
+                        onDownloadListeners.filterIsInstance<OnDownloadListener>().forEach {
+                            it.onDownloadProgress(id, total, progress)
+                        }
                     }
                     DOWNLOAD_ACTION_COMPLETE -> {
-                        onDownloadListener?.onDownloadComplete(
-                            id = id,
-                            url = intent.getStringExtra(EXTRAS_KEY_URL),
-                            title = title,
-                            info = context.getString(R.string.download_manager_complete),
-                            path = intent.getStringExtra(EXTRAS_KEY_PATH),
-                            mime = intent.getStringExtra(EXTRAS_KEY_MIME_TYPE),
-                            uri = Uri.parse(intent.getStringExtra(EXTRAS_KEY_URI))
-                        )
+                        val url = intent.getStringExtra(EXTRAS_KEY_URL)
+                        val info = context.getString(R.string.download_manager_complete)
+                        val path = intent.getStringExtra(EXTRAS_KEY_PATH)
+                        val mime = intent.getStringExtra(EXTRAS_KEY_MIME_TYPE)
+                        val uri = intent.getStringExtra(EXTRAS_KEY_URI)?.toUri()
+                        onDownloadListeners.forEach {
+                            it.onDownloadComplete(
+                                id = id,
+                                url = url,
+                                title = title,
+                                info = info,
+                                path = path,
+                                mime = mime,
+                                uri = uri
+                            )
+                        }
                     }
                     DOWNLOAD_ACTION_REPEAT -> {
-                        onDownloadListener?.onDownloadRepeat(
-                            id = id,
-                            title = title,
-                            info = context.getString(R.string.download_manager_repeat)
-                        )
+                        val info = context.getString(R.string.download_manager_repeat)
+                        onDownloadListeners.filterIsInstance<OnDownloadListener>().forEach {
+                            it.onDownloadRepeat(id, title, info)
+                        }
                     }
                     DOWNLOAD_ACTION_CANCELED -> {
-                        onDownloadListener?.onDownloadCanceled(
-                            id = id,
-                            info = context.getString(R.string.download_manager_cancel)
-                        )
+                        val info = context.getString(R.string.download_manager_cancel)
+                        onDownloadListeners.filterIsInstance<OnDownloadListener>().forEach {
+                            it.onDownloadCanceled(id, info)
+                        }
                     }
                 }
             }
@@ -121,7 +133,11 @@ class DownloadReceiver : BaseReceiver<Intent?>() {
         }
     }
 
-    fun setOnDownloadListener(onDownloadListener: OnDownloadListener?) {
-        this.onDownloadListener = onDownloadListener
+    fun addListener(listener: BaseOnDownloadListener) {
+        onDownloadListeners.add(listener)
+    }
+
+    fun removeListener(listener: BaseOnDownloadListener) {
+        onDownloadListeners.remove(listener)
     }
 }

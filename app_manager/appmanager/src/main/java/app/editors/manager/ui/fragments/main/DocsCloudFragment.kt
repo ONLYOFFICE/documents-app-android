@@ -48,6 +48,8 @@ import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_TYPE
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
+import app.editors.manager.ui.fragments.main.versionhistory.RefreshListener
+import app.editors.manager.ui.fragments.main.versionhistory.VersionHistoryFragment
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment
 import app.editors.manager.ui.fragments.room.add.EditRoomFragment
 import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
@@ -56,6 +58,7 @@ import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
+import app.editors.manager.viewModels.main.VersionViewer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.DialogUtils
@@ -91,6 +94,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    private var refreshListener: RefreshListener? = null
+
     override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onEditorActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
@@ -105,6 +110,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                             cloudPresenter.updateDocument(data.data!!)
                         }
                     }
+                    refreshAfterEditing()
                 }
             }
         } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
@@ -132,6 +138,14 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             }
         } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
             onRefresh()
+        }
+    }
+
+    private fun refreshAfterEditing(){
+        if (refreshListener != null){
+            refreshListener!!.refresh()
+        } else {
+            presenter.refreshWithDelay()
         }
     }
 
@@ -232,6 +246,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
+            is ExplorerContextItem.VersionHistory -> cloudPresenter.showVersionHistory()
             else -> super.onContextButtonClick(contextItem)
         }
     }
@@ -627,6 +642,18 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             }
         }
         AddRoomBottomDialog().show(parentFragmentManager, AddRoomBottomDialog.TAG)
+    }
+
+    override fun showVersionHistoryFragment(fileId: String) {
+        refreshListener = VersionHistoryFragment.show(
+            parentFragmentManager,
+            viewLifecycleOwner,
+            fileId,
+            presenter as VersionViewer
+        ){
+            onRefresh()
+            refreshListener = null
+        }
     }
 
     val isRoot: Boolean
