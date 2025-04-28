@@ -109,8 +109,4 @@ class Security : Serializable {
     @SerializedName("FillForms")
     @Expose
     var fillForms: Boolean = false
-
-    @SerializedName("Edit")
-    @Expose
-    var edit: Boolean = false
 }

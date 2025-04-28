@@ -269,40 +269,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun openFileVersion(file: CloudFile, onError: (Throwable) -> Unit){
-        fileProvider?.let { provider ->
-            disposable.add(
-                provider.fileInfo(file)
-                    .subscribe({ doc -> onFileClickAction(doc, editType = null) }, onError)
-            )
+        openFileJob = presenterScope.launch {
+            fileProvider.openFile(
+                id = file.id,
+                version = file.version,
+                editType = EditType.Edit(),
+                canBeShared = false
+            ).collect(::onFileOpenCollect)
         }
-    }
-
-    override fun getFileInfo() {
-        val item = itemClicked
-        if (item != null && item is CloudFile) {
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.fileInfo(item)
-                        .subscribe({ onFileClickAction(item, editType = null) }, ::fetchError)
-                )
-            }
-        }
-    }
-
-    override fun addRecent(file: CloudFile) {
-        presenterScope.launch {
-            recentDataSource.add(
-                Recent(
-                    fileId = file.id,
-                    path = "",
-                    name = file.title,
-                    size = file.pureContentLength,
-                    ownerId = account.id,
-                    source = account.portalUrl
-                )
-            )
-        }
-        super.createDocs(title)
     }
 
     override fun updateViewsState() {

@@ -6,7 +6,6 @@ import app.documents.core.account.AccountRepository
 import app.documents.core.manager.ManagerRepository
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.NetworkClient
-import app.documents.core.network.common.Result
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
@@ -30,9 +29,9 @@ import app.documents.core.network.manager.models.response.ResponseFile
 import app.documents.core.network.manager.models.response.ResponseFolder
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.room.RoomService
-import app.documents.core.utils.FirebaseTool
 import app.documents.core.network.room.models.DeleteVersionRequest
 import app.documents.core.network.room.models.EditCommentRequest
+import app.documents.core.utils.FirebaseTool
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -45,8 +44,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.StringUtils
@@ -57,7 +54,9 @@ import retrofit2.HttpException
 import retrofit2.Response
 import java.io.InputStream
 import javax.inject.Inject
+import kotlin.Result
 import kotlin.coroutines.resume
+import app.documents.core.network.common.Result as NetworkResult
 
 
 data class OpenDocumentResult(
@@ -428,7 +427,7 @@ class CloudFileProvider @Inject constructor(
         id: String,
         title: String,
         extension: String,
-    ): Flow<Result<FileOpenResult>> {
+    ): Flow<NetworkResult<FileOpenResult>> {
         return flow {
             val api = NetworkClient.getRetrofit<ManagerService>(portal, token, context)
             val fileJson = JSONObject(api.suspendOpenFile(id).body()?.string().toString())
@@ -474,7 +473,7 @@ class CloudFileProvider @Inject constructor(
         cloudFile: CloudFile,
         editType: EditType,
         canBeShared: Boolean
-    ): Flow<Result<FileOpenResult>> {
+    ): Flow<NetworkResult<FileOpenResult>> {
         return flowOf()
     }
 
@@ -483,65 +482,70 @@ class CloudFileProvider @Inject constructor(
         editType: EditType,
         canBeShared: Boolean,
         access: Access
-    ): Flow<Result<FileOpenResult>> {
-       return flow {
-           emit(FileOpenResult.Loading())
-           val token = checkNotNull(accountRepository.getOnlineToken())
-           when {
-               StringUtils.isDocument(cloudFile.fileExst) -> {
-                   if (firebaseTool.isCoauthoring()) {
-                       val document = openDocument(
-                           cloudFile = cloudFile,
-                           token = token,
-                           canShareable = canBeShared,
-                           editType = editType
-                       )
+    ): Flow<NetworkResult<FileOpenResult>> {
+        return flow {
+            emit(FileOpenResult.Loading())
+            val token = checkNotNull(accountRepository.getOnlineToken())
+            when {
+                StringUtils.isDocument(cloudFile.fileExst) -> {
+                    if (firebaseTool.isCoauthoring()) {
+                        val document = openDocument(
+                            cloudFile = cloudFile,
+                            token = token,
+                            canShareable = canBeShared,
+                            editType = editType
+                        )
 
-                       if (document.isPdf) {
-                           val cachedFile = suspendGetCachedFile(context, cloudFile, token)
-                           emit(
-                               FileOpenResult.OpenLocally(
-                                   file = cachedFile,
-                                   fileId = cloudFile.id,
-                                   editType = editType,
-                                   access = access
-                               )
-                           )
-                       } else {
-                           emit(
-                               FileOpenResult.OpenDocumentServer(
-                                   cloudFile = cloudFile,
-                                   info = checkNotNull(document.info),
-                                   editType = editType
-                               )
-                           )
-                       }
-                   } else {
-                       val cachedFile = suspendGetCachedFile(context, cloudFile, token)
-                       emit(
-                           FileOpenResult.OpenLocally(
-                               file = cachedFile,
-                               fileId = cloudFile.id,
-                               editType = editType,
-                               access = access
-                           )
-                       )
-                   }
-               }
+                        if (document.isPdf) {
+                            val cachedFile = suspendGetCachedFile(context, cloudFile, token)
+                            emit(
+                                FileOpenResult.OpenLocally(
+                                    file = cachedFile,
+                                    fileId = cloudFile.id,
+                                    editType = editType,
+                                    access = access
+                                )
+                            )
+                        } else {
+                            emit(
+                                FileOpenResult.OpenDocumentServer(
+                                    cloudFile = cloudFile,
+                                    info = checkNotNull(document.info),
+                                    editType = editType
+                                )
+                            )
+                        }
+                    } else {
+                        val cachedFile = suspendGetCachedFile(context, cloudFile, token)
+                        emit(
+                            FileOpenResult.OpenLocally(
+                                file = cachedFile,
+                                fileId = cloudFile.id,
+                                editType = editType,
+                                access = access
+                            )
+                        )
+                    }
+                }
 
-               StringUtils.isMedia(cloudFile.fileExst) -> emit(
-                   FileOpenResult.OpenCloudMedia(cloudFile)
-               )
+                StringUtils.isMedia(cloudFile.fileExst) -> emit(
+                    FileOpenResult.OpenCloudMedia(cloudFile)
+                )
 
-               else -> emit(FileOpenResult.DownloadNotSupportedFile())
-           }
-       }
-           .flowOn(Dispatchers.IO)
-           .asResult()
+                else -> emit(FileOpenResult.DownloadNotSupportedFile())
+            }
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
     }
 
     @OptIn(InternalCoroutinesApi::class)
-    suspend fun openFile(id: String, editType: EditType, canBeShared: Boolean): Flow<Result<FileOpenResult>> {
+    suspend fun openFile(
+        id: String,
+        editType: EditType,
+        canBeShared: Boolean,
+        version: Int? = null
+    ): Flow<NetworkResult<FileOpenResult>> {
         val cloudFile = suspendCancellableCoroutine<CloudFile> { cont ->
             fileInfo(CloudFile().apply { this.id = id })
                 .subscribeOn(Schedulers.io())
@@ -550,12 +554,47 @@ class CloudFileProvider @Inject constructor(
                 .doOnError { error -> cont.tryResumeWithException(error) }
                 .subscribe()
         }
-        return openFile(
-            cloudFile = cloudFile,
-            editType = editType,
-            canBeShared = canBeShared,
-            access = cloudFile.access
-        )
+        return if (version != null) {
+            openDocumentVersion(
+                cloudFile = cloudFile,
+                version = version
+            )
+        } else {
+            openFile(
+                cloudFile = cloudFile,
+                editType = editType,
+                canBeShared = canBeShared,
+                access = cloudFile.access
+            )
+        }
+    }
+
+    private fun openDocumentVersion(
+        cloudFile: CloudFile,
+        version: Int
+    ): Flow<NetworkResult<FileOpenResult>> {
+        return flow {
+            emit(FileOpenResult.Loading())
+            val token = accountRepository.getOnlineToken()
+            val response = managerService.suspendDownloadFile(
+                url = "${cloudFile.viewUrl}&version=$version",
+                cookie = ApiContract.COOKIE_HEADER + token
+            )
+            emit(
+                FileOpenResult.OpenLocally(
+                    file = mapDownloadResponse(context, cloudFile, response),
+                    fileId = cloudFile.id,
+                    editType = EditType.Edit(),
+                    access = if (version == cloudFile.version) {
+                        cloudFile.access
+                    } else {
+                        Access.Read
+                    }
+                )
+            )
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
     }
 
     @SuppressLint("CheckResult")

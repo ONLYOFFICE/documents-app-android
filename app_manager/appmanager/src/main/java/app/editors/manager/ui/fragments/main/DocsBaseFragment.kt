@@ -68,6 +68,7 @@ import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.CreateDocument
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
+import lib.toolkit.base.managers.utils.EditorsContract.EXTRA_IS_MODIFIED
 import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import lib.toolkit.base.managers.utils.PathUtils
@@ -173,7 +174,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     REQUEST_PRESENTATION -> {
                         removeCommonDialog()
                         val uri = data?.data ?: return
-                        if (data.getBooleanExtra("EXTRA_IS_MODIFIED", false)) {
+                        if (data.getBooleanExtra(EXTRA_IS_MODIFIED, false)) {
                             presenter.updateDocument(uri = uri)
                         }
                     }

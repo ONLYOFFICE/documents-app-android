@@ -1,7 +1,5 @@
 package app.editors.manager.ui.fragments.storages
 
-import android.app.Activity
-import android.content.Intent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.providers.BaseFileProvider
@@ -32,23 +30,6 @@ class DocsDropboxFragment: BaseStorageDocsFragment() {
 
     init {
         App.getApp().appComponent.inject(this)
-    }
-
-    override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onEditorActivityResult(requestCode, resultCode, data)
-        if(resultCode == Activity.RESULT_OK) {
-            when(requestCode) {
-                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
-                    if(data.getBooleanExtra(KEY_MODIFIED, false)) {
-                        presenter.upload(
-                            uri,
-                            null,
-                            KEY_UPDATE
-                        )
-                    }
-                }
-            }
-        }
     }
 
     override fun onAuthorization() {

@@ -1,7 +1,5 @@
 package app.editors.manager.ui.fragments.storages
 
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
@@ -38,19 +36,6 @@ class DocsGoogleDriveFragment: BaseStorageDocsFragment(), DocsGoogleDriveView {
         get() = storagePresenter
 
     override fun getSection(): ApiContract.Section = ApiContract.Section.Storage.GoogleDrive
-
-    override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onEditorActivityResult(requestCode, resultCode, data)
-        if(resultCode == Activity.RESULT_OK) {
-            when(requestCode) {
-                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
-                    if(data.getBooleanExtra(KEY_MODIFIED, false)) {
-                        presenter.upload(uri, null, KEY_UPDATE)
-                    }
-                }
-            }
-        }
-    }
 
     override fun onActionButtonClick(buttons: ActionBottomDialog.Buttons?) {
         if (buttons == ActionBottomDialog.Buttons.UPLOAD) {

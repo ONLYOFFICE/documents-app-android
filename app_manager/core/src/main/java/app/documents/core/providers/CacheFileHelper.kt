@@ -30,7 +30,7 @@ interface CacheFileHelper {
             AccountUtils.getToken(context, accountName)
         )
             .subscribeOn(Schedulers.io())
-            .map { response -> mapResponse(context, cloudFile, response) }
+            .map { response -> mapDownloadResponse(context, cloudFile, response) }
             .observeOn(AndroidSchedulers.mainThread())
     }
 
@@ -43,11 +43,11 @@ interface CacheFileHelper {
             cloudFile = cloudFile,
             token = token
         )
-        return mapResponse(context, cloudFile, response)
+        return mapDownloadResponse(context, cloudFile, response)
     }
 
     @SuppressLint("MissingPermission")
-    private fun mapResponse(context: Context, cloudFile: CloudFile, response: Response<ResponseBody>): File {
+    fun mapDownloadResponse(context: Context, cloudFile: CloudFile, response: Response<ResponseBody>): File {
         val responseBody = response.body()
         if (response.isSuccessful && responseBody != null) {
             return FileUtils.createCacheFile(context, cloudFile.title)?.also { file ->

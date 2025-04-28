@@ -108,9 +108,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                             showFillResultFragment(data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION))
                             return
                         }
-                        if (data.getBooleanExtra(EditorsContract.EXTRA_IS_MODIFIED, false)) {
-                            cloudPresenter.updateDocument(data.data!!)
-                        }
                     }
                     refreshAfterEditing()
                 }
