@@ -53,7 +53,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
 
     override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onEditorActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK){
+        if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 REQUEST_PRESENTATION, REQUEST_PDF, REQUEST_DOCS, REQUEST_SHEETS -> {
                     if (data?.data != null) {
