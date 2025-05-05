@@ -107,6 +107,7 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.rename: Boolean
         get() = when {
+            section is ApiContract.Section.Storage -> true
             isDocSpaceUser() -> item.security?.rename == true
             !section.isRoom -> section.isDevice || section.isUser || access == Access.ReadWrite
             else -> item.security?.rename == true

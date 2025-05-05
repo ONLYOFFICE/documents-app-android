@@ -55,6 +55,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.Send,
+                ExplorerContextItem.Rename,
                 ExplorerContextItem.Move,
                 ExplorerContextItem.Copy,
                 ExplorerContextItem.Download,
