@@ -256,7 +256,7 @@ fun Access.toUi(): AccessUI {
 
         Access.Read -> arrayOf(
             R.drawable.ic_access_read,
-            R.string.share_popup_access_read_only
+            R.string.share_access_room_viewer
         )
 
         Access.Review -> arrayOf(

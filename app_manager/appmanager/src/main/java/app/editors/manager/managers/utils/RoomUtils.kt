@@ -79,6 +79,7 @@ object RoomUtils {
                 ApiContract.RoomType.VIRTUAL_ROOM -> {
                     add(Access.Editor)
                     add(Access.Read)
+                    add(Access.FormFiller)
                 }
             }
             if (isRemove) add(Access.None)
