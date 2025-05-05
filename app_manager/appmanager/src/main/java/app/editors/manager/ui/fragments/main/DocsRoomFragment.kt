@@ -84,6 +84,7 @@ class DocsRoomFragment : DocsCloudFragment() {
             is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()
             is ExplorerContextItem.Delete -> if (presenter.isRoot) cloudPresenter.checkRoomOwner() else super.onContextButtonClick(contextItem)
             is ExplorerContextItem.Lock -> cloudPresenter.lockFile()
+            is ExplorerContextItem.CustomFilter -> cloudPresenter.setCustomFilter()
             else -> super.onContextButtonClick(contextItem)
         }
     }

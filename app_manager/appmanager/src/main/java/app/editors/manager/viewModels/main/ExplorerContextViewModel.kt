@@ -90,6 +90,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.CreateRoom.takeIf { state.provider == PortalProvider.Cloud.DocSpace },
                 ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.isFavorite),
+                ExplorerContextItem.CustomFilter((state.item as? CloudFile)?.customFilterEnabled),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Location,
                 ExplorerContextItem.Move,

@@ -57,6 +57,10 @@ open class CloudFile : Item() {
     @Expose
     var comment = ""
 
+    @SerializedName("customFilterEnabled")
+    @Expose
+    var customFilterEnabled = false
+
     @SerializedName("locked")
     @Expose
     var isLocked = false
@@ -84,6 +88,10 @@ open class CloudFile : Item() {
     @SerializedName("availableExternalRights")
     @Expose
     var availableExternalRights: ExternalAccessRights? = null
+
+    @SerializedName("viewAccessibility")
+    @Expose
+    val viewAccessibility: ViewAccessibility? = null
 
     @SerializedName("isForm")
     @Expose

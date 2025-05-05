@@ -39,6 +39,7 @@ interface ExplorerContextItemVisible {
             is ExplorerContextItem.Notifications -> notifications
             is ExplorerContextItem.Favorites -> favorites(contextItem.enabled)
             is ExplorerContextItem.Lock -> lock
+            is ExplorerContextItem.CustomFilter -> customFilter
             ExplorerContextItem.VersionHistory -> versionHistory
             ExplorerContextItem.EditComment -> false
             ExplorerContextItem.Open -> false
@@ -174,6 +175,12 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.lock: Boolean
         get() = (item is CloudFile) && item.security?.lock == true
+
+    private val ExplorerContextState.customFilter: Boolean
+        get() = (item is CloudFile) && section.isRoom
+                && item.viewAccessibility?.webCustomFilterEditing == true
+                && item.security?.customFilter == true
+                && access in listOf(Access.None, Access.RoomManager)
 
     private val ExplorerContextState.versionHistory: Boolean
         get() = item.security?.readHistory == true

@@ -29,7 +29,7 @@
         style="@style/Widget.Common.TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="@dimen/default_margin_large"
         android:layout_marginEnd="@dimen/default_margin_medium"
         android:drawablePadding="4dp"
         android:drawableTint="@color/colorSecondary"
@@ -44,32 +44,50 @@
         tools:drawableEnd="@drawable/ic_small_clock"
         tools:text="File name" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/badgeVersionCard"
+    <LinearLayout
+        android:id="@+id/leftStatusLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/default_margin_small"
-        android:visibility="gone"
-        app:cardBackgroundColor="@color/colorOnBottomBarInActive"
-        app:cardCornerRadius="4dp"
+        android:layout_marginHorizontal="@dimen/default_margin_small"
+        android:orientation="horizontal"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@id/title"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/title"
-        app:layout_constraintTop_toTopOf="@id/title"
-        tools:visibility="visible">
+        app:layout_constraintTop_toTopOf="@id/title">
 
-        <TextView
-            android:id="@+id/badgeVersion"
-            style="@style/Widget.Common.TextView.Micro"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/badgeVersionCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:paddingHorizontal="@dimen/default_margin_small"
-            android:paddingVertical="@dimen/default_margin_micro"
-            android:textColor="@color/colorOnPrimary"
-            tools:text="V.5" />
+            android:layout_marginEnd="@dimen/default_margin_small"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/colorOnBottomBarInActive"
+            app:cardCornerRadius="4dp"
+            tools:visibility="visible">
 
-    </androidx.cardview.widget.CardView>
+            <TextView
+                android:id="@+id/badgeVersion"
+                style="@style/Widget.Common.TextView.Micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:paddingHorizontal="@dimen/default_margin_small"
+                android:paddingVertical="@dimen/default_margin_micro"
+                android:textColor="@color/colorOnPrimary"
+                tools:text="V.5" />
+
+        </androidx.cardview.widget.CardView>
+
+        <ImageView
+            android:id="@+id/customFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_custom_filter"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/statusLayout"
@@ -77,7 +95,7 @@
         android:layout_height="wrap_content"
         app:layout_constrainedWidth="true"
         android:layout_marginStart="@dimen/default_margin_small"
-        app:layout_constraintStart_toEndOf="@id/badgeVersionCard"
+        app:layout_constraintStart_toEndOf="@id/leftStatusLayout"
         app:layout_constraintBottom_toBottomOf="@+id/title"
         app:layout_constraintEnd_toStartOf="@+id/contextButtonLayout"
         app:layout_constraintTop_toTopOf="@+id/title"
@@ -152,7 +170,7 @@
         style="@style/Widget.Common.TextView.Small.Secondary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="@dimen/default_margin_small"
         android:layout_marginEnd="@dimen/default_margin_medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/contextButtonLayout"
