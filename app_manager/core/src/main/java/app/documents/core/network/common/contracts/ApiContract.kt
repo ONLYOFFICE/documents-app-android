@@ -229,6 +229,9 @@ object ApiContract {
                     SectionType.CLOUD_VIRTUAL_ROOM -> Room.Virtual
                     SectionType.CLOUD_ARCHIVE_ROOM -> Room.Archive
                     SectionType.LOCAL_RECENT -> LocalRecent
+                    SectionType.GOOGLE_DRIVE -> Storage.GoogleDrive
+                    SectionType.DROPBOX -> Storage.Dropbox
+                    SectionType.ONEDRIVE -> Storage.OneDrive
                     else -> Common
                 }
         }
