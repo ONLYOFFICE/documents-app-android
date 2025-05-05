@@ -96,8 +96,7 @@ sealed class ExplorerContextItem(
 
     class CustomFilter(enabled: Boolean? = false) : ExplorerContextItem(
         icon = R.drawable.ic_custom_filter,
-        title = if (enabled == true) R.string.list_context_disable_custom_filter
-                else R.string.list_context_enable_custom_filter
+        title = if (enabled == true) R.string.list_context_disable_custom_filter else R.string.list_context_enable_custom_filter
     ), ExplorerContextBlockOrder.Common
 
     object Download : ExplorerContextItem(

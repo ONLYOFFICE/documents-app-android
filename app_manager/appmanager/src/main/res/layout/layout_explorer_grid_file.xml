@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin_small"
-            app:layout_goneMarginTop="0dp"
+            app:layout_goneMarginTop="@dimen/default_margin_none"
             app:cardBackgroundColor="@color/colorSecondary"
             app:cardCornerRadius="4dp"
             app:cardElevation="4dp"
@@ -78,8 +78,8 @@
             android:id="@+id/statusLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="4dp"
+            android:layout_marginTop="@dimen/default_margin_small"
+            android:layout_marginEnd="@dimen/default_margin_small"
             android:orientation="vertical"
             app:layout_constraintEnd_toStartOf="@id/image"
             app:layout_constraintTop_toBottomOf="@id/badgeNewCard">
@@ -88,7 +88,7 @@
                 android:id="@+id/favorite"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:layout_marginBottom="4dp"
+                android:layout_marginBottom="@dimen/default_margin_small"
                 android:importantForAccessibility="no"
                 android:visibility="gone"
                 android:src="@drawable/ic_favorites_fill"
@@ -99,7 +99,7 @@
                 android:id="@+id/locked"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
+                android:layout_marginBottom="@dimen/default_margin_small"
                 android:src="@drawable/ic_file_lock"
                 android:visibility="gone"
                 app:tint="@color/colorPrimary"
@@ -109,7 +109,7 @@
                 android:id="@+id/editing"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:layout_marginBottom="4dp"
+                android:layout_marginBottom="@dimen/default_margin_small"
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_fab_edit_mode"
                 android:visibility="gone"
@@ -123,7 +123,6 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_custom_filter"
                 android:visibility="gone"
-                app:tint="@color/colorCustomFilter"
                 tools:ignore="ContentDescription"/>
 
         </LinearLayout>
@@ -156,7 +155,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/image"
             tools:drawableEnd="@drawable/ic_small_clock"
-            android:drawablePadding="4dp"
+            android:drawablePadding="@dimen/default_margin_small"
             android:drawableTint="@color/colorSecondary"
             tools:text="@tools:sample/lorem[1:3]" />
 

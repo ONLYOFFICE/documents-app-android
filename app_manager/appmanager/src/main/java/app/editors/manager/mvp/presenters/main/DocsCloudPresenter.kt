@@ -995,13 +995,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun lockFile(){
+    fun lockFile() {
         val roomProvider = roomProvider ?: return
         val file = itemClicked as? CloudFile ?: return
         presenterScope.launch {
             roomProvider.lockFile(id = file.id, lock = !file.isLocked)
                 .collect { result ->
-                    when(result){
+                    when (result) {
                         is Result.Success -> refresh()
                         is Result.Error -> fetchError(result.exception)
                     }
@@ -1009,14 +1009,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun setCustomFilter(){
+    fun setCustomFilter() {
         val roomProvider = roomProvider ?: return
         val file = itemClicked as? CloudFile ?: return
         presenterScope.launch {
             val enable = !file.customFilterEnabled
             roomProvider.enableCustomFilter(id = file.id, enable = enable)
                 .collect { result ->
-                    when(result){
+                    when (result) {
                         is Result.Success -> {
                             file.customFilterEnabled = enable
                             viewState.onUpdateItemState()
@@ -1034,7 +1034,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun showVersionHistory(){
+    fun showVersionHistory() {
         (itemClicked as? CloudFile)?.let {
             viewState.showVersionHistoryFragment(it.id)
         }
