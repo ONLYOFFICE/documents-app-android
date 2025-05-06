@@ -339,6 +339,7 @@ dependencies {
     implementation(libs.compose.uiToolingPreview)
     implementation(libs.compose.navigation)
     implementation(libs.compose.livedata)
+    implementation(libs.compose.constraint.layout)
     debugImplementation(libs.compose.uiTooling)
 
     //Jackson

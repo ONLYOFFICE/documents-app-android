@@ -1082,4 +1082,11 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="version_delete_loading">Deleting</string>
     <string name="version_dialog_cancel">Cancel</string>
 
+    <string name="filling_form_complete">Complete</string>
+    <string name="filling_form_stopped">Stopped</string>
+    <string name="filling_form_history_opened">Opened the form to fill out</string>
+    <string name="filling_form_history_submitted">Submitted their part. The form was sent to the next role.</string>
+    <string name="filling_form_history_stopped">Filling was stopped by %s</string>
+    <string name="filling_form_history_complete">Has completed and submitted their part of the form. The form is fully filled out.</string>
+
 </resources>

@@ -32,6 +32,7 @@ composeUiToolingPreview = "1.7.8"
 composeNavigation = "2.8.9"
 composeCompiler = "1.5.14"
 compose = "1.7.8"
+composeConstrainLayout = "1.1.1"
 
 #dagger
 dagger = "2.56.1"
@@ -104,6 +105,7 @@ compose-material3 = { module = "androidx.compose.material3:material3", version.r
 compose-material = { module = "androidx.compose.material:material", version.ref = "composeMaterial" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 compose-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "compose" }
+compose-constraint-layout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "composeConstrainLayout" }
 
 #google
 google-playServiceAuth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServieAuth" }
