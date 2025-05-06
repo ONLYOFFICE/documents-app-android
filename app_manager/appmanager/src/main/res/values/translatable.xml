@@ -376,6 +376,13 @@
     <string name="list_action_delete_link">Delete link</string>
     <string name="list_action_delete_image">Delete image</string>
 
+    <!-- Form filling status -->
+    <string name="form_status_draft">Draft</string>
+    <string name="form_status_your_turn">Your turn</string>
+    <string name="form_status_in_progress">In progress</string>
+    <string name="form_status_complete">Complete</string>
+    <string name="form_status_stopped">Stopped</string>
+
     <!-- Dialog info -->
 
     <!-- Pager -->

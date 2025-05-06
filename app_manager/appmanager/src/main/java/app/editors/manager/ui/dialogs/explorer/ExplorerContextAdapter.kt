@@ -8,7 +8,9 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.databinding.ListExplorerContextHeaderBinding
 import app.editors.manager.databinding.ListExplorerContextItemBinding
+import app.editors.manager.mvp.models.ui.UiFormFillingStatus
 import app.editors.manager.ui.adapters.base.BaseAdapter
+import app.editors.manager.ui.views.badge.setFormStatus
 import lib.toolkit.base.managers.extensions.inflate
 import lib.toolkit.base.managers.utils.TimeUtils
 
@@ -53,19 +55,20 @@ class ExplorerContextAdapter(
                 icon.setImageBitmap(header.state.icon)
                 title.text = header.state.item.title
                 subtitle.text = header.info
-
                 val file = header.state.item as? CloudFile
                 badgeVersionCard.isVisible = file != null && file.version > 1
                 if (badgeVersionCard.isVisible) {
                     badgeVersion.text = itemView.context.getString(R.string.badge_doc_version, file?.version)
                 }
-
-                if (file?.expired != null) {
-                    info.isVisible = true
-                    info.text = info.context.getString(
-                        R.string.rooms_expire_context_info,
-                        TimeUtils.formatDate(header.state.item.expired)
-                    )
+                file?.let {
+                    badgeFormStatus.setFormStatus(UiFormFillingStatus.from(file.formFillingStatus))
+                    if (file.expired != null) {
+                        info.isVisible = true
+                        info.text = info.context.getString(
+                            R.string.rooms_expire_context_info,
+                            TimeUtils.formatDate(header.state.item.expired)
+                        )
+                    }
                 }
             }
         }

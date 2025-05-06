@@ -56,6 +56,15 @@
         app:layout_constraintStart_toEndOf="@id/title"
         app:layout_constraintTop_toTopOf="@id/title">
 
+        <app.editors.manager.ui.views.badge.BadgeCardView
+            android:id="@+id/badgeFormStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/default_margin_small"
+            android:visibility="gone"
+            tools:badgeText="Your turn"
+            tools:visibility="visible" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/badgeVersionCard"
             android:layout_width="wrap_content"
@@ -76,6 +85,30 @@
                 android:paddingVertical="@dimen/default_margin_micro"
                 android:textColor="@color/colorOnPrimary"
                 tools:text="V.5" />
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/badgeNewCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/default_margin_small"
+            android:visibility="gone"
+            app:cardBackgroundColor="@color/colorSecondary"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="4dp">
+
+            <TextView
+                android:id="@+id/badgeNew"
+                style="@style/Widget.Common.TextView.Micro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorSecondary"
+                android:includeFontPadding="false"
+                android:paddingHorizontal="3dp"
+                android:paddingVertical="1dp"
+                android:text="new"
+                android:textColor="@color/colorOnSecondary"/>
 
         </androidx.cardview.widget.CardView>
 
@@ -132,36 +165,6 @@
             app:layout_constraintEnd_toStartOf="@id/image"
             app:layout_constraintTop_toBottomOf="@id/favorite"
             app:tint="@color/colorPrimary" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/badgeNewCard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/default_margin_medium"
-            android:visibility="gone"
-            app:cardBackgroundColor="@color/colorSecondary"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="4dp"
-            app:layout_constraintBottom_toTopOf="@id/image"
-            app:layout_constraintEnd_toStartOf="@id/image"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toStartOf="@id/statusLayout"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/badgeNew"
-                style="@style/Widget.Common.TextView.Micro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorSecondary"
-                android:includeFontPadding="false"
-                android:paddingHorizontal="3dp"
-                android:paddingVertical="1dp"
-                android:text="new"
-                android:textColor="@color/colorOnSecondary"
-                android:visibility="gone" />
-
-        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 

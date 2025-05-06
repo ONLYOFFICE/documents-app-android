@@ -12,8 +12,10 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerListFileBinding
 import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.mvp.models.ui.UiFormFillingStatus
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.ExplorerAdapter
+import app.editors.manager.ui.views.badge.setFormStatus
 
 class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
     ListBaseViewHolder<CloudFile>(itemView, adapter) {
@@ -58,6 +60,7 @@ class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
         if (binding.badgeVersionCard.isVisible){
             binding.badgeVersion.text = itemView.context.getString(R.string.badge_doc_version, element.version)
         }
+        binding.badgeFormStatus.setFormStatus(UiFormFillingStatus.from(element.formFillingStatus))
         setFileExpiring(element, binding.title)
         if (adapter.pickerMode == PickerMode.Ordering) {
             initOrderingMode(binding.dragIcon, binding.contextButtonLayout)
