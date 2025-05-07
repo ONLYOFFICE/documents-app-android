@@ -149,7 +149,7 @@ private fun RoleItem(
                 maxLines = 1,
                 color = if (stopped) {
                     MaterialTheme.colors.error
-                } else if (role.roleStatus == FormRoleStatus.YourTurn) {
+                } else if (role.roleStatus in arrayOf(FormRoleStatus.YourTurn, FormRoleStatus.Filling)) {
                     MaterialTheme.colors.primary
                 } else {
                     MaterialTheme.colors.colorTextPrimary
@@ -172,7 +172,9 @@ private fun RoleItem(
                 },
             history = role.history,
             dashEffect = role.roleStatus in arrayOf(
-                FormRoleStatus.YourTurn, FormRoleStatus.Waiting
+                FormRoleStatus.YourTurn,
+                FormRoleStatus.Waiting,
+                FormRoleStatus.Filling
             ) && !stopped,
             strokeColor = if (stopped) {
                 MaterialTheme.colors.error
@@ -196,7 +198,7 @@ private fun AvatarContent(
         ) && !stopped,
         color = if (stopped) {
             MaterialTheme.colors.error
-        } else if (roleStatus == FormRoleStatus.YourTurn) {
+        } else if (roleStatus in arrayOf(FormRoleStatus.YourTurn, FormRoleStatus.Filling)) {
             MaterialTheme.colors.primary
         } else {
             MaterialTheme.colors.colorTextTertiary
