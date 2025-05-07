@@ -262,7 +262,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     private fun showFillingStatusFragment() {
-        FillingStatusFragment.show(requireActivity().supportFragmentManager)
+        FillingStatusFragment.show(
+            requireActivity().supportFragmentManager,
+            presenter.itemClicked as? CloudFile ?: return
+        )
     }
 
     private fun showShareFragment() {

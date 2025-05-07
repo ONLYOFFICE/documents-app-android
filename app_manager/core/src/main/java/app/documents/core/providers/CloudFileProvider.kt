@@ -3,6 +3,8 @@ package app.documents.core.providers
 import android.annotation.SuppressLint
 import android.net.Uri
 import app.documents.core.manager.ManagerRepository
+import app.documents.core.model.cloud.FormRole
+import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.ManagerService
@@ -520,6 +522,12 @@ class CloudFileProvider @Inject constructor(
         val body = DeleteVersionRequest(fileId, arrayOf(version))
         val response = managerService.deleteVersion(body)
         if (!response.isSuccessful) throw HttpException(response)
+    }
+
+    fun getFillingStatus(fileId: String): Flow<app.documents.core.network.common.Result<List<FormRole>>> {
+        return flow { emit(managerService.getFillingStatus(fileId).response) }
+            .flowOn(Dispatchers.IO)
+            .asResult()
     }
 
     private fun <T> apiFlow(apiCall: suspend () -> T): Flow<Result<T>> = flow {

@@ -1,5 +1,6 @@
 package app.documents.core.network.manager
 
+import app.documents.core.model.cloud.FormRole
 import app.documents.core.model.login.Settings
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
@@ -497,4 +498,13 @@ interface ManagerService {
     suspend fun deleteVersion(
         @Body body: DeleteVersionRequest
     ): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/formroles")
+    suspend fun getFillingStatus(
+        @Path(value = "file_id") fileId: String,
+    ): app.documents.core.network.BaseResponse<List<FormRole>>
 }

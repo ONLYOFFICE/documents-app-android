@@ -17,7 +17,8 @@ data class ExplorerContextState(
     val isSearching: Boolean = false,
     val isRoot: Boolean = false,
     val editIndex: Boolean = false,
-    val headerInfo: String? = null
+    val headerInfo: String? = null,
+    val roomType: Int? = null
 ) : Serializable {
 
     val section: ApiContract.Section

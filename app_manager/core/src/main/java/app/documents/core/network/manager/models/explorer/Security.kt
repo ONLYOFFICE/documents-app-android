@@ -125,4 +125,8 @@ class Security : Serializable {
     @SerializedName("ResetFilling")
     @Expose
     var resetFilling: Boolean = false
+
+    @SerializedName("Fill")
+    @Expose
+    var fill: Boolean = false
 }
