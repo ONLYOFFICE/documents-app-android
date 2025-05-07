@@ -1,34 +1,34 @@
-package app.documents.core.model.cloud
+package app.documents.core.network.manager.models.explorer
 
 import app.documents.core.model.login.User
-import kotlinx.serialization.SerialName
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class FormRole(
 
-    @SerialName("roleName")
+    @SerializedName("roleName")
     val roleName: String,
 
-    @SerialName("roleColor")
+    @SerializedName("roleColor")
     val roleColor: String,
 
-    @SerialName("roleStatus")
+    @SerializedName("roleStatus")
     val roleStatus: Int,
 
-    @SerialName("sequence")
+    @SerializedName("sequence")
     val sequence: Int,
 
-    @SerialName("submitted")
+    @SerializedName("submitted")
     val submitted: Boolean,
 
-    @SerialName("user")
+    @SerializedName("user")
     val user: User,
 
-    @SerialName("history")
+    @SerializedName("history")
     val history: Map<String, String>? = null,
 
-    @SerialName("stoppedBy")
+    @SerializedName("stopedBy")
     val stoppedBy: User? = null
 ) {
 

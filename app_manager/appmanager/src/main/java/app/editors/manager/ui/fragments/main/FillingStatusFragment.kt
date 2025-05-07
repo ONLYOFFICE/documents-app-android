@@ -25,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +36,7 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CreatedBy
 import app.editors.manager.R
 import app.editors.manager.app.cloudFileProvider
+import app.editors.manager.mvp.models.ui.UiFormFillingStatus
 import app.editors.manager.mvp.models.ui.toUi
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.views.custom.FillingStatusRoleList
@@ -41,7 +44,6 @@ import app.editors.manager.viewModels.main.FillingStatusState
 import app.editors.manager.viewModels.main.FillingStatusViewModel
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
-import lib.compose.ui.theme.colorTextTertiary
 import lib.compose.ui.views.ActivityIndicatorView
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppDivider
@@ -117,6 +119,7 @@ private fun FillingStatusScreen(
                 text = R.string.filling_form_filling_status_desc
             )
             FormInfoContent(
+                formFillingStatus = UiFormFillingStatus.from(cloudFile.formFillingStatus),
                 fileTitle = StringUtils.removeExtension(cloudFile.title),
                 owner = cloudFile.createdBy.displayNameFromHtml,
                 date = cloudFile.created
@@ -167,6 +170,7 @@ private fun FillingStatusScreen(
 @Composable
 private fun FormInfoContent(
     modifier: Modifier = Modifier,
+    formFillingStatus: UiFormFillingStatus,
     fileTitle: String,
     owner: String,
     date: Date
@@ -196,9 +200,9 @@ private fun FormInfoContent(
                     modifier = Modifier
                         .padding(start = 8.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colors.colorTextTertiary)
+                        .background(colorResource(formFillingStatus.colorRes))
                         .padding(vertical = 2.dp, horizontal = 4.dp),
-                    text = "Stopped",
+                    text = stringResource(formFillingStatus.textRes),
                     style = MaterialTheme.typography.caption,
                     color = MaterialTheme.colors.onPrimary
                 )
@@ -222,6 +226,7 @@ private fun FillingStatusScreenPreview() {
                     displayName = "Username"
                 }
                 title = "File name.pdf"
+                formFillingStatusType = 1
             },
             state = FillingStatusState(loading = true)
         ) {}

@@ -2,8 +2,8 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.documents.core.model.cloud.FormRole
 import app.documents.core.network.common.Result
+import app.documents.core.network.manager.models.explorer.FormRole
 import app.documents.core.providers.CloudFileProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

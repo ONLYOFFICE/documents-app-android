@@ -3,7 +3,6 @@ package app.documents.core.providers
 import android.annotation.SuppressLint
 import android.net.Uri
 import app.documents.core.manager.ManagerRepository
-import app.documents.core.model.cloud.FormRole
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
@@ -11,6 +10,7 @@ import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.FormRole
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestBatchBase
