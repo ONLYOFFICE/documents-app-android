@@ -85,6 +85,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Fill().takeIf { ((state.item is CloudFile) && state.item.isPdfForm) },
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.VersionHistory,
+                ExplorerContextItem.FillingStatus,
                 ExplorerContextItem.Share.takeIf {
                     state.provider != PortalProvider.Cloud.DocSpace || state.section == ApiContract.Section.User && !((state.item is CloudFile) && state.item.isPdfForm)
                 },
@@ -102,6 +103,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Rename,
                 ExplorerContextItem.Restore,
                 ExplorerContextItem.ShareDelete,
+                ExplorerContextItem.StopFilling,
                 ExplorerContextItem.Delete(state),
                 ExplorerContextItem.Lock(state.item.isLocked)
             )
