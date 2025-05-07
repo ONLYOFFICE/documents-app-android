@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -43,6 +44,7 @@ import androidx.constraintlayout.compose.Dimension
 import app.documents.core.network.manager.models.explorer.FormRole
 import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
+import app.editors.manager.app.accountOnline
 import app.editors.manager.mvp.models.ui.FormRoleHistory
 import app.editors.manager.mvp.models.ui.FormRoleStatus
 import app.editors.manager.mvp.models.ui.FormRoleUi
@@ -61,6 +63,14 @@ private enum class CompleteStatus {
 @Composable
 fun FillingStatusRoleList(modifier: Modifier = Modifier, data: List<FormRoleUi>) {
     Column(modifier = modifier) {
+        val view = LocalView.current
+        val ownerId = remember {
+            if (!view.isInEditMode) {
+                view.context.accountOnline?.id.orEmpty()
+            } else {
+                ""
+            }
+        }
         var stopped = remember { false }
         data.forEach { role ->
             if (role.stoppedBy != null) {
@@ -68,7 +78,8 @@ fun FillingStatusRoleList(modifier: Modifier = Modifier, data: List<FormRoleUi>)
             }
             RoleItem(
                 role = role,
-                stopped = stopped
+                stopped = stopped,
+                isOwner = ownerId == role.user.id
             )
         }
         CompleteContent(
@@ -88,7 +99,8 @@ fun FillingStatusRoleList(modifier: Modifier = Modifier, data: List<FormRoleUi>)
 private fun RoleItem(
     modifier: Modifier = Modifier,
     role: FormRoleUi,
-    stopped: Boolean
+    stopped: Boolean,
+    isOwner: Boolean
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -149,14 +161,23 @@ private fun RoleItem(
                 maxLines = 1,
                 color = if (stopped) {
                     MaterialTheme.colors.error
-                } else if (role.roleStatus in arrayOf(FormRoleStatus.YourTurn, FormRoleStatus.Filling)) {
+                } else if (role.roleStatus in arrayOf(
+                        FormRoleStatus.YourTurn,
+                        FormRoleStatus.Filling
+                    )
+                ) {
                     MaterialTheme.colors.primary
                 } else {
                     MaterialTheme.colors.colorTextPrimary
                 }
             )
             Text(
-                text = role.user.displayNameFromHtml,
+                text = role.user.displayNameFromHtml +
+                        if (isOwner) {
+                            " (${stringResource(R.string.item_owner_self)})"
+                        } else {
+                            ""
+                        },
                 style = MaterialTheme.typography.body2,
                 color = MaterialTheme.colors.colorTextSecondary,
                 maxLines = 1
