@@ -242,6 +242,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
             is ExplorerContextItem.Edit -> cloudPresenter.onContextClick(EditType.EDIT)
             is ExplorerContextItem.Fill -> cloudPresenter.onContextClick(EditType.FILL)
+            is ExplorerContextItem.FillingStatus -> showFillingStatusFragment()
             is ExplorerContextItem.View -> cloudPresenter.onContextClick(EditType.VIEW)
             is ExplorerContextItem.ExternalLink -> cloudPresenter.saveExternalLinkToClipboard()
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationType.RESTORE)
@@ -258,6 +259,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             ActionMenuItem.CreateRoom -> showAddRoomBottomDialog()
             else -> super.actionMenuClickListener(item)
         }
+    }
+
+    private fun showFillingStatusFragment() {
+        FillingStatusFragment.show(requireActivity().supportFragmentManager)
     }
 
     private fun showShareFragment() {

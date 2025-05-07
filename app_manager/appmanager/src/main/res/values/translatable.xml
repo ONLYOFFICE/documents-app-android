@@ -1089,6 +1089,8 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="filling_form_history_stopped">Filling was stopped by %s</string>
     <string name="filling_form_history_complete">Has completed and submitted their part of the form. The form is fully filled out.</string>
     <string name="filling_form_filling_status">Filling status</string>
+    <string name="filling_form_filling_status_desc">In this panel you can monitor the completion of the form in which you participate or in which you are the organizer of completion</string>
+    <string name="filling_form_filling_process_details">Process details</string>
     <string name="filling_form_stop_filling">Stop filling</string>
 
 </resources>

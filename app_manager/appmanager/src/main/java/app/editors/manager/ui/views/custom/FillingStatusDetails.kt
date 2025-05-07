@@ -60,7 +60,7 @@ private enum class CompleteStatus {
 
 @Composable
 fun FillingStatusRoleList(modifier: Modifier = Modifier, data: List<FormRoleUi>) {
-    Column {
+    Column(modifier = modifier) {
         var stopped = remember { false }
         data.forEach { role ->
             if (role.stoppedBy != null) {
@@ -238,7 +238,7 @@ private fun HistoryContent(
                         style = Stroke(
                             width = 1.5.dp.toPx(),
                             pathEffect = PathEffect
-                                .dashPathEffect(floatArrayOf(2.dp.toPx(), 4.dp.toPx()), 0f)
+                                .dashPathEffect(floatArrayOf(2.dp.toPx(), 2.dp.toPx()), 0f)
                                 .takeIf { dashEffect }
                         )
                     )
