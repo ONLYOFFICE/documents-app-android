@@ -43,6 +43,15 @@
                 android:layout_weight="1"
                 tools:text="Report.docx" />
 
+            <app.editors.manager.ui.views.badge.BadgeCardView
+                android:id="@+id/badgeFormStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/default_margin_small"
+                android:visibility="gone"
+                tools:badgeText="Your turn"
+                tools:visibility="visible" />
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/badgeVersionCard"
                 android:layout_width="wrap_content"

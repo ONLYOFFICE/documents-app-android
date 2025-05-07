@@ -18,61 +18,73 @@
             tools:ignore="ContentDescription"
             tools:src="@drawable/ic_type_document_column" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/badgeVersionCard"
+        <LinearLayout
+            android:id="@+id/topStatusLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_margin_medium"
-            android:visibility="gone"
-            app:cardBackgroundColor="@color/colorOnBottomBarInActive"
-            app:cardCornerRadius="4dp"
-            app:layout_constraintStart_toStartOf="@id/statusLayout"
-            app:layout_constraintEnd_toStartOf="@id/image"
-            app:layout_constraintBottom_toTopOf="@id/image"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible">
+            android:layout_marginStart="@dimen/file_grid_badge_start_margin"
+            android:layout_marginTop="@dimen/file_grid_badge_top_margin"
+            android:orientation="vertical"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintStart_toStartOf="@id/image"
+            app:layout_constraintTop_toTopOf="@id/image">
 
-            <TextView
-                android:id="@+id/badgeVersion"
-                style="@style/Widget.Common.TextView.Micro"
+            <app.editors.manager.ui.views.badge.BadgeCardView
+                android:id="@+id/badgeFormStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:paddingHorizontal="@dimen/default_margin_small"
-                android:paddingVertical="@dimen/default_margin_micro"
-                android:textColor="@color/colorOnPrimary"
-                tools:text="V.5" />
-
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/badgeNewCard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/default_margin_small"
-            app:layout_goneMarginTop="@dimen/default_margin_none"
-            app:cardBackgroundColor="@color/colorSecondary"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="4dp"
-            app:layout_constraintBottom_toTopOf="@id/statusLayout"
-            app:layout_constraintEnd_toStartOf="@id/image"
-            app:layout_constraintStart_toStartOf="@id/statusLayout"
-            app:layout_constraintTop_toBottomOf="@id/badgeVersionCard">
-
-            <TextView
-                android:id="@+id/badgeNew"
-                style="@style/Widget.Common.TextView.Micro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorSecondary"
-                android:includeFontPadding="false"
-                android:paddingHorizontal="3dp"
-                android:paddingVertical="1dp"
-                android:text="new"
+                android:layout_marginBottom="@dimen/default_margin_small"
                 android:visibility="gone"
-                android:textColor="@color/colorOnSecondary" />
+                tools:badgeText="Your turn"
+                tools:visibility="visible" />
 
-        </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/badgeVersionCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/default_margin_small"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/colorOnBottomBarInActive"
+                app:cardCornerRadius="4dp"
+                tools:visibility="visible">
+
+                <TextView
+                    android:id="@+id/badgeVersion"
+                    style="@style/Widget.Common.TextView.Micro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:includeFontPadding="false"
+                    android:paddingHorizontal="@dimen/default_margin_small"
+                    android:paddingVertical="@dimen/default_margin_micro"
+                    android:textColor="@color/colorOnPrimary"
+                    tools:text="V.5" />
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/badgeNewCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/colorSecondary"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="4dp"
+                android:visibility="gone" >
+
+                <TextView
+                    android:id="@+id/badgeNew"
+                    style="@style/Widget.Common.TextView.Micro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/colorSecondary"
+                    android:includeFontPadding="false"
+                    android:paddingHorizontal="3dp"
+                    android:paddingVertical="1dp"
+                    android:text="new"
+                    android:textColor="@color/colorOnSecondary" />
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/statusLayout"
@@ -82,7 +94,7 @@
             android:layout_marginEnd="@dimen/default_margin_small"
             android:orientation="vertical"
             app:layout_constraintEnd_toStartOf="@id/image"
-            app:layout_constraintTop_toBottomOf="@id/badgeNewCard">
+            app:layout_constraintTop_toBottomOf="@id/topStatusLayout">
 
             <ImageView
                 android:id="@+id/favorite"
@@ -109,7 +121,6 @@
                 android:id="@+id/editing"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                android:layout_marginBottom="@dimen/default_margin_small"
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_fab_edit_mode"
                 android:visibility="gone"
@@ -130,9 +141,8 @@
         <ImageView
             android:id="@+id/selectIcon"
             style="@style/ExplorerItemLayout.SelectIcon"
-            app:layout_constraintBottom_toBottomOf="@id/badgeNewCard"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/badgeNewCard"
+            app:layout_constraintTop_toTopOf="@id/topStatusLayout"
             tools:ignore="ContentDescription" />
 
         <com.google.android.material.imageview.ShapeableImageView
@@ -155,7 +165,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/image"
             tools:drawableEnd="@drawable/ic_small_clock"
-            android:drawablePadding="@dimen/default_margin_small"
+            android:drawablePadding="4dp"
             android:drawableTint="@color/colorSecondary"
             tools:text="@tools:sample/lorem[1:3]" />
 

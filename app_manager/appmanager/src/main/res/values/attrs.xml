@@ -3,4 +3,9 @@
     <declare-styleable name="ItemIconImageView">
         <attr name="badge" format="reference" />
     </declare-styleable>
+
+    <declare-styleable name="BadgeCardView">
+        <attr name="badgeText" format="string" />
+        <attr name="badgeColor" format="color" />
+    </declare-styleable>
 </resources>
