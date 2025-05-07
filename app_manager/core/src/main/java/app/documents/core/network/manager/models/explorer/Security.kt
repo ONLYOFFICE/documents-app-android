@@ -109,4 +109,20 @@ class Security : Serializable {
     @SerializedName("IndexExport")
     @Expose
     var indexExport: Boolean = false
+
+    @SerializedName("FillingStatus")
+    @Expose
+    var fillingStatus: Boolean = false
+
+    @SerializedName("StartFilling")
+    @Expose
+    var startFilling: Boolean = false
+
+    @SerializedName("StopFilling")
+    @Expose
+    var stopFilling: Boolean = false
+
+    @SerializedName("ResetFilling")
+    @Expose
+    var resetFilling: Boolean = false
 }
