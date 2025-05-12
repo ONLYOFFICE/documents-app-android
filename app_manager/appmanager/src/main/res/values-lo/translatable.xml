@@ -503,8 +503,8 @@
 
     <string name="app_settings_analytic_title">ຊ່ວຍປັບປຸງຜະລິດຕະພັນ</string>
     <string name="app_settings_analytic">ແບ່ງປັນການວິເຄາະແອັບ</string>
-    <string name="app_manage_files_title">ການເຂົ້າເຖິງການຄຸ້ມຄອງເອກະສານ</string>
-    <string name="app_manage_files_description"></string>
+    <string name="app_manage_files_title">ການເຂົ້າເຖິງການຈັດການໄຟລ໌</string>
+    <string name="app_manage_files_description">ເພື່ອແກ້ໄຂ ແລະສ້າງເອກະສານຢູ່ໃນເຄື່ອງ, ທ່ານຈໍາເປັນຕ້ອງອະນຸຍາດໃຫ້ແອັບຯເຂົ້າເຖິງໄຟລ໌ໃນອຸປະກອນຂອງທ່ານ.</string>
 
     <string name="app_internal_error">ພົບບັນຫາພາຍໃນ</string>
     <string name="app_fragment_crash_error">ກະລຸນາປິດແອັບ ແລ້ວລອງໃໝ່</string>
