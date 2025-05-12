@@ -54,7 +54,6 @@ import retrofit2.HttpException
 import retrofit2.Response
 import java.io.InputStream
 import javax.inject.Inject
-import kotlin.Result
 import kotlin.coroutines.resume
 import app.documents.core.network.common.Result as NetworkResult
 
@@ -575,6 +574,24 @@ class CloudFileProvider @Inject constructor(
     ): Flow<NetworkResult<FileOpenResult>> {
         return flow {
             emit(FileOpenResult.Loading())
+
+            if (firebaseTool.isCoauthoring()) {
+                val info = openEdit(
+                    cloudFile = cloudFile,
+                    canShareable = false,
+                    editType = EditType.Edit(),
+                    version = version
+                )
+                emit(
+                    FileOpenResult.OpenDocumentServer(
+                        cloudFile = cloudFile,
+                        info = info,
+                        editType = EditType.Edit()
+                    )
+                )
+                return@flow
+            }
+
             val token = accountRepository.getOnlineToken()
             val response = managerService.suspendDownloadFile(
                 url = "${cloudFile.viewUrl}&version=$version",
@@ -641,15 +658,18 @@ class CloudFileProvider @Inject constructor(
     private suspend fun openEdit(
         cloudFile: CloudFile,
         canShareable: Boolean? = null,
-        editType: EditType
+        editType: EditType,
+        version: Int? = null
     ): String {
         managerRepository.updateDocumentServerVersion()
         val file = checkNotNull(managerService.suspendGetFileInfo(cloudFile.id).body()?.response)
-        val response = when (editType) {
-            is EditType.Edit -> managerService.suspendOpenFile(file.id, file.version, edit = true)
-            is EditType.Fill -> managerService.suspendOpenFile(file.id, file.version, view = true)
-            is EditType.View -> managerService.suspendOpenFile(file.id, file.version, fill = true)
-        }
+        val response = managerService.suspendOpenFile(
+            id = file.id,
+            version = version ?: file.version,
+            edit = editType is EditType.Edit,
+            fill = editType is EditType.Fill,
+            view = editType is EditType.View,
+        )
         if (!response.isSuccessful) throw HttpException(response)
 
         val docServiceResponse = managerService.suspendGetDocService()
