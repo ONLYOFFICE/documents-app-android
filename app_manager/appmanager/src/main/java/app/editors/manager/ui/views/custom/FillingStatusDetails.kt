@@ -56,12 +56,27 @@ import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.theme.colorTextTertiary
 import lib.compose.ui.views.AppScaffold
 
-private enum class CompleteStatus {
-    Waiting, Complete, Stopped
+enum class FormCompleteStatus {
+    Waiting, Complete, Stopped;
+
+    companion object {
+
+        fun from(roles: List<FormRole>): FormCompleteStatus {
+            return when {
+                roles.any { it.stoppedBy != null } -> Stopped
+                roles.none { it.submitted == false } -> Complete
+                else -> Waiting
+            }
+        }
+    }
 }
 
 @Composable
-fun FillingStatusRoleList(modifier: Modifier = Modifier, data: List<FormRoleUi>) {
+fun FillingStatusRoleList(
+    modifier: Modifier = Modifier,
+    data: List<FormRoleUi>,
+    completeStatus: FormCompleteStatus
+) {
     Column(modifier = modifier) {
         val view = LocalView.current
         val ownerId = remember {
@@ -86,11 +101,7 @@ fun FillingStatusRoleList(modifier: Modifier = Modifier, data: List<FormRoleUi>)
             modifier = Modifier
                 .height(64.dp)
                 .fillMaxWidth(),
-            completeStatus = when {
-                data.any { it.stoppedBy != null } -> CompleteStatus.Stopped
-                data.none { it.submitted == false } -> CompleteStatus.Complete
-                else -> CompleteStatus.Waiting
-            }
+            completeStatus = completeStatus
         )
     }
 }
@@ -286,7 +297,7 @@ private fun HistoryContent(
 }
 
 @Composable
-private fun CompleteContent(modifier: Modifier = Modifier, completeStatus: CompleteStatus) {
+private fun CompleteContent(modifier: Modifier = Modifier, completeStatus: FormCompleteStatus) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -294,21 +305,21 @@ private fun CompleteContent(modifier: Modifier = Modifier, completeStatus: Compl
     ) {
         CircleContent(
             modifier = Modifier.padding(start = 16.dp + 16.dp + 16.dp),
-            dashEffect = completeStatus == CompleteStatus.Waiting,
+            dashEffect = completeStatus == FormCompleteStatus.Waiting,
             color = when (completeStatus) {
-                CompleteStatus.Waiting -> MaterialTheme.colors.colorTextTertiary
-                CompleteStatus.Complete -> MaterialTheme.colors.colorGreen
-                CompleteStatus.Stopped -> MaterialTheme.colors.error
+                FormCompleteStatus.Waiting -> MaterialTheme.colors.colorTextTertiary
+                FormCompleteStatus.Complete -> MaterialTheme.colors.colorGreen
+                FormCompleteStatus.Stopped -> MaterialTheme.colors.error
             },
             background = when (completeStatus) {
-                CompleteStatus.Complete -> MaterialTheme.colors.colorGreen
-                CompleteStatus.Stopped -> MaterialTheme.colors.error
-                CompleteStatus.Waiting -> null
+                FormCompleteStatus.Complete -> MaterialTheme.colors.colorGreen
+                FormCompleteStatus.Stopped -> MaterialTheme.colors.error
+                FormCompleteStatus.Waiting -> null
             }
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.drawable_ic_done),
-                tint = if (completeStatus == CompleteStatus.Waiting) {
+                tint = if (completeStatus == FormCompleteStatus.Waiting) {
                     MaterialTheme.colors.colorTextTertiary
                 } else {
                     MaterialTheme.colors.onPrimary
@@ -317,15 +328,15 @@ private fun CompleteContent(modifier: Modifier = Modifier, completeStatus: Compl
             )
         }
         Text(
-            text = if (completeStatus == CompleteStatus.Stopped) {
+            text = if (completeStatus == FormCompleteStatus.Stopped) {
                 stringResource(R.string.filling_form_stopped)
             } else {
                 stringResource(R.string.filling_form_complete)
             },
             color = when (completeStatus) {
-                CompleteStatus.Waiting -> MaterialTheme.colors.colorTextTertiary
-                CompleteStatus.Complete -> MaterialTheme.colors.colorGreen
-                CompleteStatus.Stopped -> MaterialTheme.colors.error
+                FormCompleteStatus.Waiting -> MaterialTheme.colors.colorTextTertiary
+                FormCompleteStatus.Complete -> MaterialTheme.colors.colorGreen
+                FormCompleteStatus.Stopped -> MaterialTheme.colors.error
             }
         )
     }
@@ -370,7 +381,8 @@ private fun FillingStatusDetailsPreview() {
             FillingStatusRoleList(
                 data = FormRole
                     .mockList
-                    .map { it.toUi(LocalContext.current) }
+                    .map { it.toUi(LocalContext.current) },
+                completeStatus = FormCompleteStatus.Complete
             )
         }
     }

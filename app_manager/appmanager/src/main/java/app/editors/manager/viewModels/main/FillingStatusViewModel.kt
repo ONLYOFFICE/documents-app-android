@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import app.documents.core.network.common.Result
 import app.documents.core.network.manager.models.explorer.FormRole
 import app.documents.core.providers.CloudFileProvider
+import app.editors.manager.ui.views.custom.FormCompleteStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
 
 data class FillingStatusState(
     val loading: Boolean = false,
-    val roles: List<FormRole> = emptyList()
+    val roles: List<FormRole> = emptyList(),
+    val completeStatus: FormCompleteStatus = FormCompleteStatus.Waiting
 )
 
 class FillingStatusViewModel(
@@ -32,10 +34,12 @@ class FillingStatusViewModel(
                 .collect { result ->
                     when (result) {
                         is Result.Success<List<FormRole>> -> {
+                            val roles = result.result
                             _state.update {
                                 it.copy(
                                     loading = false,
-                                    roles = result.result
+                                    roles = roles,
+                                    completeStatus = FormCompleteStatus.from(roles)
                                 )
                             }
                         }

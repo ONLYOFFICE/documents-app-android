@@ -40,6 +40,7 @@ import app.editors.manager.mvp.models.ui.UiFormFillingStatus
 import app.editors.manager.mvp.models.ui.toUi
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.views.custom.FillingStatusRoleList
+import app.editors.manager.ui.views.custom.FormCompleteStatus
 import app.editors.manager.viewModels.main.FillingStatusState
 import app.editors.manager.viewModels.main.FillingStatusViewModel
 import lib.compose.ui.theme.ManagerTheme
@@ -139,29 +140,32 @@ private fun FillingStatusScreen(
                             modifier = Modifier
                                 .verticalScroll(rememberScrollState())
                                 .padding(bottom = 16.dp),
-                            data = state.roles.map { it.toUi(LocalContext.current) }
+                            data = state.roles.map { it.toUi(LocalContext.current) },
+                            completeStatus = state.completeStatus
                         )
                     }
                 }
             }
-            AppDivider()
-            Row(
-                modifier = Modifier
-                    .height(56.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
-            ) {
-                AppTextButton(
-                    modifier = Modifier.padding(end = 8.dp),
-                    enabled = !state.loading && cloudFile.security?.stopFilling == true,
-                    title = R.string.filling_form_stop_filling
-                ) { }
-                AppTextButton(
-                    modifier = Modifier.padding(end = 8.dp),
-                    enabled = !state.loading && cloudFile.security?.fill == true,
-                    title = R.string.list_context_fill
-                ) { }
+            if (state.completeStatus == FormCompleteStatus.Waiting) {
+                AppDivider()
+                Row(
+                    modifier = Modifier
+                        .height(56.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    AppTextButton(
+                        modifier = Modifier.padding(end = 8.dp),
+                        enabled = !state.loading && cloudFile.security?.stopFilling == true,
+                        title = R.string.filling_form_stop_filling
+                    ) { }
+                    AppTextButton(
+                        modifier = Modifier.padding(end = 8.dp),
+                        enabled = !state.loading && cloudFile.security?.fill == true,
+                        title = R.string.list_context_fill
+                    ) { }
+                }
             }
         }
     }
