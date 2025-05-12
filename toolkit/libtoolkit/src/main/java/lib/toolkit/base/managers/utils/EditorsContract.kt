@@ -25,6 +25,7 @@ object EditorsContract {
     const val EXTRA_IS_SEND_FORM = "EXTRA_IS_SEND_FORM"
     const val EXTRA_FILL_SESSION = "EXTRA_FILL_SESSION"
 
+    const val RESULT_FAILED_OPEN = 4000
 }
 
 enum class EditorsType {

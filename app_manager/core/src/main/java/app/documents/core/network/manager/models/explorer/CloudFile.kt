@@ -57,9 +57,17 @@ open class CloudFile : Item() {
     @Expose
     var comment = ""
 
+    @SerializedName("customFilterEnabled")
+    @Expose
+    var customFilterEnabled = false
+
     @SerializedName("locked")
     @Expose
     var isLocked = false
+
+    @SerializedName("formFillingStatus")
+    @Expose
+    var formFillingStatusType = 0
 
     @SerializedName("canWebRestrictedEditing")
     @Expose
@@ -84,6 +92,10 @@ open class CloudFile : Item() {
     @SerializedName("availableExternalRights")
     @Expose
     var availableExternalRights: ExternalAccessRights? = null
+
+    @SerializedName("viewAccessibility")
+    @Expose
+    val viewAccessibility: ViewAccessibility? = null
 
     @SerializedName("isForm")
     @Expose
@@ -117,6 +129,9 @@ open class CloudFile : Item() {
             val timePassed =  Duration.between(Instant.now(), created.toInstant()).abs()
             return timePassed.toMillis() >= totalDuration.toMillis() * 0.9
         }
+
+    val formFillingStatus: ApiContract.FormFillingStatus
+        get() = ApiContract.FormFillingStatus.fromType(formFillingStatusType)
 
     private fun String.toIntOrZero(): Int {
         return if (isNotEmpty()) toInt() else 0

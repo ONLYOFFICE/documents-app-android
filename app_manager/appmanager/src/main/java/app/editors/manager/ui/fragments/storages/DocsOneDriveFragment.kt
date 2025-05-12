@@ -15,6 +15,7 @@ import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import app.editors.manager.ui.fragments.base.StorageLoginFragment
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.RequestPermissions
+import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
 class DocsOneDriveFragment : BaseStorageDocsFragment() {

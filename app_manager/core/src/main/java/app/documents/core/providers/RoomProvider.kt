@@ -21,6 +21,7 @@ import app.documents.core.network.manager.models.explorer.WatermarkType
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestRoomNotifications
 import app.documents.core.network.room.RoomService
+import app.documents.core.network.room.models.CustomFilterRequest
 import app.documents.core.network.room.models.LockFileRequest
 import app.documents.core.network.room.models.RequestAddTags
 import app.documents.core.network.room.models.RequestArchive
@@ -62,6 +63,7 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.HttpException
+import retrofit2.Response
 import java.util.UUID
 import javax.inject.Inject
 
@@ -85,13 +87,13 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .flatMap { if (it.isSuccessful) Observable.just(it.body()) else throw HttpException(it) }
     }
 
-    fun lockFile(id: String, lock: Boolean): Flow<Result<Unit>> = flow {
-        val response = roomService.lockFile(id = id, body = LockFileRequest(lock))
-        if (!response.isSuccessful) throw HttpException(response)
-        emit(Unit)
+    fun lockFile(id: String, lock: Boolean): Flow<Result<Unit>> = handleUnitResponse {
+        roomService.lockFile(id = id, body = LockFileRequest(lock))
     }
-        .flowOn(Dispatchers.IO)
-        .asResult()
+
+    fun enableCustomFilter(id: String, enable: Boolean): Flow<Result<Unit>> = handleUnitResponse {
+        roomService.enableCustomFilter(id = id, body = CustomFilterRequest(enable))
+    }
 
     suspend fun createRoom(
         title: String,
@@ -527,4 +529,12 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .flowOn(Dispatchers.IO)
             .asResult()
     }
+
+    private fun handleUnitResponse(apiCall: suspend () -> Response<BaseResponse>): Flow<Result<Unit>> = flow {
+        val response = apiCall()
+        if (!response.isSuccessful) throw HttpException(response)
+        emit(Unit)
+    }
+        .flowOn(Dispatchers.IO)
+        .asResult()
 }

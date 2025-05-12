@@ -18,6 +18,10 @@ class Security : Serializable {
     @Expose
     var delete: Boolean = false
 
+    @SerializedName("CustomFilter")
+    @Expose
+    var customFilter: Boolean = false
+
     @SerializedName("EditRoom")
     @Expose
     var editRoom: Boolean = false

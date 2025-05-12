@@ -180,7 +180,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     }
                 }
             }
-            Activity.RESULT_CANCELED -> {
+            EditorsContract.RESULT_FAILED_OPEN -> {
                 showSnackBar(R.string.errors_open_document)
             }
         }
