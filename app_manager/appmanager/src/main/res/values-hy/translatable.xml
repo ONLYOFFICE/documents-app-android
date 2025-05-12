@@ -610,7 +610,7 @@
     <string name="app_settings_analytic_title">Օգնել բարելավել պրոդուկտը</string>
     <string name="app_settings_analytic">Կիսվեք հավելվածի վերլուծությամբ</string>
     <string name="app_manage_files_title">Մուտք գործել կառավարվող ֆայլեր</string>
-    <string name="app_manage_files_description">Ֆայլերին հասանելիություն տրամադրելու անհրաժեշտություն: Եթե ​​մուտքն արգելված է, կորցրած հավելվածներից հետո բոլոր ֆայլերը կջնջվեն:</string>
+    <string name="app_manage_files_description"></string>
     //ծածկագիր
     <string name="app_settings_security">Անվտանգություն</string>
     <string name="app_settings_passcode">Կողպում ծածկագրի միջոցով</string>

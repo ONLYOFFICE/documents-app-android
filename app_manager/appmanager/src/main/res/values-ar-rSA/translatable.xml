@@ -601,7 +601,7 @@
     <string name="app_settings_analytic_title">المساعدة في تحسين المنتج</string>
     <string name="app_settings_analytic">مشاركة تحليلات التطبيق</string>
     <string name="app_manage_files_title">الوصول إلى إدارة الملفات</string>
-    <string name="app_manage_files_description">تحتاج إلى منح حق الوصول إلى الملفات. إذا تم رفض الوصول سيتم حذف كافة الملفات بعد التطبيقات</string>
+    <string name="app_manage_files_description"></string>
     //passcode
     <string name="app_settings_security">حماية</string>
     <string name="app_settings_passcode">قفل رمز المرور</string>

@@ -498,7 +498,7 @@
     <string name="app_settings_analytic_title">Pomožte vylepšit produkt</string>
     <string name="app_settings_analytic">Sdílejte analytiku aplikací</string>
     <string name="app_manage_files_title">Přistupujte ke správě souborů</string>
-    <string name="app_manage_files_description">Je třeba udělit přístup k souborům. Pokud je přístup odepřen, budou všechny soubory ve ztracených aplikacích smazány.</string>
+    <string name="app_manage_files_description"></string>
 
     <string name="app_internal_error">Vnitřní chyba</string>
     <string name="app_fragment_crash_error">Prosím vypněte aplikaci a zkuste to znovu</string>

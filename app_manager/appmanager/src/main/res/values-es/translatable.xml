@@ -372,7 +372,7 @@
     <string name="app_settings_analytic_title">Ayudar a mejorar el producto</string>
     <string name="app_settings_analytic">Compartir el análisis de la aplicación</string>
     <string name="app_manage_files_title">Acceder a la gestión de archivos</string>
-    <string name="app_manage_files_description">Es necesario conceder acceso a los archivos. Si se deniega el acceso, todos los archivos se eliminarán después de la desinstalación de la aplicación.</string>
+    <string name="app_manage_files_description"></string>
     <string name="app_internal_error">Error interno</string>
     <string name="app_fragment_crash_error">Por favor, cierre esta aplicación e inténtelo de nuevo</string>
     <string name="operation_add_to_favorites">Agregado a Favoritos</string>

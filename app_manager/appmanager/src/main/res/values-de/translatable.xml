@@ -377,7 +377,7 @@
     <string name="app_settings_analytic_title">Bei der App-Verbesserung helfen</string>
     <string name="app_settings_analytic">Analysedaten der App teilen</string>
     <string name="app_manage_files_title">Zugriff auf Dateiverwaltung</string>
-    <string name="app_manage_files_description">Zugriff auf die Dateien erforderlich. Wenn dieser verweigert bleibt werden alle Dateien nach der Deinstallation gelöscht.</string>
+    <string name="app_manage_files_description"></string>
 
     <string name="app_internal_error">Interner Fehler</string>
     <string name="app_fragment_crash_error">Bitte App schließen und erneut versuchen</string>

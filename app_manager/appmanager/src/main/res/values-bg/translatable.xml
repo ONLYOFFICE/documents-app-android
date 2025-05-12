@@ -373,7 +373,7 @@
     <string name="app_settings_analytic_title">Помогнете да подобрим продукта</string>
     <string name="app_settings_analytic">Сподели анализи на приложението</string>
     <string name="app_manage_files_title">Управление на файловете за достъп</string>
-    <string name="app_manage_files_description">Трябва да ви се предостави достъп до файловете. Ако достъпът е отказан, всички файлове след загубените приложения ще бъдат изтрити.</string>
+    <string name="app_manage_files_description"></string>
     <string name="app_internal_error">Вътрешна грешка</string>
     <string name="app_fragment_crash_error">Моля, затворете приложението и опитайте отново</string>
     <string name="operation_add_to_favorites">Добавено към Любими</string>

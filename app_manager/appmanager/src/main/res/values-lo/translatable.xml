@@ -504,7 +504,7 @@
     <string name="app_settings_analytic_title">ຊ່ວຍປັບປຸງຜະລິດຕະພັນ</string>
     <string name="app_settings_analytic">ແບ່ງປັນການວິເຄາະແອັບ</string>
     <string name="app_manage_files_title">ການເຂົ້າເຖິງການຄຸ້ມຄອງເອກະສານ</string>
-    <string name="app_manage_files_description">ຕ້ອງການການອະນຸຍາດເຂົ້າເຖິງເອກະສານ. ຖ້າການເຂົ້າເຖິງຖືກປະຕິເສດທຸກເອກະສານຫຼັງຈາກການສູນເສຍໂປແກຼມຈະຖືກລຶບອອກ.</string>
+    <string name="app_manage_files_description"></string>
 
     <string name="app_internal_error">ພົບບັນຫາພາຍໃນ</string>
     <string name="app_fragment_crash_error">ກະລຸນາປິດແອັບ ແລ້ວລອງໃໝ່</string>
