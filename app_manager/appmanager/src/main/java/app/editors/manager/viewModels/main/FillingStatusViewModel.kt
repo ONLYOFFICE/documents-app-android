@@ -6,8 +6,11 @@ import app.documents.core.network.common.Result
 import app.documents.core.network.manager.models.explorer.FormRole
 import app.documents.core.providers.CloudFileProvider
 import app.editors.manager.ui.views.custom.FormCompleteStatus
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -18,6 +21,11 @@ data class FillingStatusState(
     val completeStatus: FormCompleteStatus = FormCompleteStatus.Waiting
 )
 
+sealed class FillingStatusEffect {
+
+    data object Error : FillingStatusEffect()
+}
+
 class FillingStatusViewModel(
     fileId: String,
     private val cloudFileProvider: CloudFileProvider
@@ -26,6 +34,9 @@ class FillingStatusViewModel(
     private val _state: MutableStateFlow<FillingStatusState> =
         MutableStateFlow(FillingStatusState())
     val state: StateFlow<FillingStatusState> = _state.asStateFlow()
+
+    private val _effect: MutableSharedFlow<FillingStatusEffect> = MutableSharedFlow(1)
+    val effect: SharedFlow<FillingStatusEffect> = _effect.asSharedFlow()
 
     init {
         viewModelScope.launch {
@@ -45,7 +56,7 @@ class FillingStatusViewModel(
                         }
 
                         is Result.Error -> {
-                            // todo
+                            _effect.emit(FillingStatusEffect.Error)
                         }
                     }
                 }

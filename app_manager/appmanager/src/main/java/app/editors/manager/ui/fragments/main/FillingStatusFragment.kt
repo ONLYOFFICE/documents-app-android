@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +42,7 @@ import app.editors.manager.mvp.models.ui.toUi
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.views.custom.FillingStatusRoleList
 import app.editors.manager.ui.views.custom.FormCompleteStatus
+import app.editors.manager.viewModels.main.FillingStatusEffect
 import app.editors.manager.viewModels.main.FillingStatusState
 import app.editors.manager.viewModels.main.FillingStatusViewModel
 import lib.compose.ui.theme.ManagerTheme
@@ -54,6 +56,7 @@ import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
 import java.util.Date
@@ -89,6 +92,18 @@ class FillingStatusFragment : ComposeDialogFragment() {
                 )
             }
             val state = viewModel.state.collectAsState()
+
+            LaunchedEffect(Unit) {
+                viewModel.effect.collect { effect ->
+                    when (effect) {
+                        FillingStatusEffect.Error -> {
+                            UiUtils.getSnackBar(requireActivity())
+                                .setText(R.string.errors_unknown_error)
+                                .show()
+                        }
+                    }
+                }
+            }
 
             FillingStatusScreen(
                 state = state.value,
