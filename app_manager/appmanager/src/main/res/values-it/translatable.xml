@@ -371,8 +371,8 @@
     <string name="operation_delete_multiple">. Uno o più file non sono stati eliminati perché erano aperti sul portale</string>
     <string name="app_settings_analytic_title">Aiuta a migliorare il prodotto</string>
     <string name="app_settings_analytic">Condividi le analisi dellapp</string>
-    <string name="app_manage_files_title">Accedi per gestire i file</string>
-    <string name="app_manage_files_description">È necessario concedere l’accesso ai file. Se neghi l’accesso, tutti i file dopo le applicazioni perse verranno cancellati.</string>
+    <string name="app_manage_files_title">Accesso alla gestione dei file</string>
+    <string name="app_manage_files_description">Per modificare e creare documenti in locale, è necessario consentire all'applicazione di accedere ai file sul dispositivo.</string>
     <string name="app_internal_error">Errore interno</string>
     <string name="app_fragment_crash_error">Chiudi questa applicazione e riprova</string>
     <string name="operation_add_to_favorites">Aggiunto ai Preferiti</string>

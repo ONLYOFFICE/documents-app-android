@@ -436,8 +436,8 @@
     <string name="profile_thirdparty_title">已连接的服务</string>
     <string name="app_settings_analytic_title">帮助改进产品</string>
     <string name="app_settings_analytic">共享应用分析数据</string>
-    <string name="app_manage_files_title">访问管理文件</string>
-    <string name="app_manage_files_description">需要授予文件访问权限。如果访问被拒，则在应用丢失后所有文件都将被删除。</string>
+    <string name="app_manage_files_title">访问文件管理</string>
+    <string name="app_manage_files_description">要在本地编辑和创建文档，请允许此应用访问您设备上的文件。</string>
 
     <string name="app_internal_error">内部错误</string>
     <string name="app_fragment_crash_error">请关闭此应用程序并再次尝试</string>
