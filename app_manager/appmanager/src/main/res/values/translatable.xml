@@ -708,8 +708,8 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
 
     <string name="app_settings_analytic_title">Help improve the product</string>
     <string name="app_settings_analytic">Share app analytics</string>
-    <string name="app_manage_files_title">Access manage files</string>
-    <string name="app_manage_files_description">Need to grant access to the files. If access is denied all files after lost applications will be deleted.</string>
+    <string name="app_manage_files_title">Access to file management</string>
+    <string name="app_manage_files_description">To edit and create documents locally, you need to allow the app to access files on your device.</string>
 
     <string name="app_settings_security">Security</string>
     <string name="app_settings_passcode">Passcode lock</string>

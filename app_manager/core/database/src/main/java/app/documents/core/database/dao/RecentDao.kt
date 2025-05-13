@@ -29,7 +29,7 @@ internal interface RecentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(recent: RecentEntity)
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(recent: RecentEntity)
 
     @Transaction

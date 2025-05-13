@@ -372,7 +372,7 @@
     <string name="app_settings_analytic_title">Pomóż nam poprawić produkt</string>
     <string name="app_settings_analytic">Udostępniaj dane analityczne aplikacji</string>
     <string name="app_manage_files_title">Dostęp do zarządzania plikami</string>
-    <string name="app_manage_files_description">Należy udzielić dostępu do plików. W razie odmowy wszystkie pliki z usuniętych aplikacji zostaną utracone.</string>
+    <string name="app_manage_files_description">Aby edytować i tworzyć dokumenty lokalnie, należy zezwolić aplikacji na dostęp do plików na urządzeniu.</string>
     <string name="app_internal_error">Błąd wewnętrzny</string>
     <string name="app_fragment_crash_error">Zamknij tę aplikację i spróbuj ponownie</string>
     <string name="operation_add_to_favorites">Dodano do Ulubionych</string>

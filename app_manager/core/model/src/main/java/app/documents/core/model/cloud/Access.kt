@@ -14,6 +14,9 @@ sealed class Access(val type: String, val code: Int) {
     data object RoomManager : Access(TYPE_ROOM_MANAGER, CODE_ROOM_MANAGER)
     data object ContentCreator : Access(TYPE_CONTENT_CREATOR, CODE_CONTENT_CREATOR)
 
+    val isEditable: Boolean
+        get() = this in arrayOf(None, ReadWrite)
+
     companion object {
 
         private const val CODE_NONE = 0

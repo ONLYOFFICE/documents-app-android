@@ -110,6 +110,10 @@ class Security : Serializable {
     @Expose
     var indexExport: Boolean = false
 
+    @SerializedName("FillForms")
+    @Expose
+    var fillForms: Boolean = false
+
     @SerializedName("FillingStatus")
     @Expose
     var fillingStatus: Boolean = false
@@ -125,8 +129,4 @@ class Security : Serializable {
     @SerializedName("ResetFilling")
     @Expose
     var resetFilling: Boolean = false
-
-    @SerializedName("FillForms")
-    @Expose
-    var fill: Boolean = false
 }

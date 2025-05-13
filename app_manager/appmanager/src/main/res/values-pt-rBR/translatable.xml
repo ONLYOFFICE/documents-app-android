@@ -371,8 +371,8 @@
     <string name="operation_delete_multiple">. Um ou mais arquivos não foram excluídos por estarem abertos no portal</string>
     <string name="app_settings_analytic_title">Ajude a melhorar o produto</string>
     <string name="app_settings_analytic">Compartilhe as análises de aplicativos</string>
-    <string name="app_manage_files_title">Acesse para gerenciar arquivos</string>
-    <string name="app_manage_files_description">É necessário dar acesso aos arquivos. Se for negado acesso, todos os arquivos serão excluídos após a perda do aplicativo.</string>
+    <string name="app_manage_files_title">Acesso ao gerenciamento de arquivos</string>
+    <string name="app_manage_files_description">Para editar e criar documentos localmente, você precisa permitir que o aplicativo acesse os arquivos no seu dispositivo.</string>
     <string name="app_internal_error">Erro interno</string>
     <string name="app_fragment_crash_error">Feche este aplicativo e tente novamente</string>
     <string name="operation_add_to_favorites">Adicionado aos Favoritos</string>

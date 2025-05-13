@@ -115,6 +115,12 @@ object StringUtils {
     }
 
     @JvmStatic
+    fun isMedia(extension: String): Boolean {
+        return getExtension(extension) in
+                arrayOf(Extension.IMAGE, Extension.IMAGE_GIF, Extension.VIDEO_SUPPORT)
+    }
+
+    @JvmStatic
     fun isCreateUserName(name: String): Boolean {
         return !name.matches(PATTERN_CREATE_PORTAL.toRegex())
     }

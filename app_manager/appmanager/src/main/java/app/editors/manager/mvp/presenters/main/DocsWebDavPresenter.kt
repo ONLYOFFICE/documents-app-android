@@ -4,22 +4,20 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import androidx.core.net.toUri
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.providers.WebDavFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.webDavFileProvider
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.WebDavDownloadWork
 import app.editors.manager.mvp.views.main.DocsWebDavView
-import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
@@ -29,17 +27,17 @@ import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.receivers.ExportReceiver
 import lib.toolkit.base.managers.receivers.ExportReceiver.OnExportFile
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getSize
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FileUtils.asyncDeletePath
 import lib.toolkit.base.managers.utils.NetworkUtils.isWifiEnable
 import lib.toolkit.base.managers.utils.PermissionUtils.checkReadWritePermission
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
-import moxy.presenterScope
 
 
 @InjectViewState
-class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
+class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView, WebDavFileProvider>() {
 
     companion object {
         val TAG: String = DocsWebDavPresenter::class.java.simpleName
@@ -53,14 +51,9 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         App.getApp().appComponent.inject(this)
     }
 
-    fun getProvider() {
+    fun getItems() {
         val path = (context.accountOnline?.portal?.provider as? PortalProvider.Webdav)?.path
-        fileProvider?.let {
-            getItemsById(path)
-        } ?: run {
-            fileProvider = context.webDavFileProvider
-            getItemsById(path)
-        }
+        getItemsById(path)
     }
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -94,67 +87,9 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         // Stub
     }
 
-    override fun createDocs(title: String) {
-        val id = modelExplorerStack.currentId
-        if (id != null) {
-            val requestCreate = RequestCreate()
-            requestCreate.title = title
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.createFile(id, requestCreate)
-                        .subscribe({ file: CloudFile ->
-                            addFile(file)
-                            setPlaceholderType(PlaceholderViews.Type.NONE)
-                            viewState.onDialogClose()
-                            viewState.onOpenLocalFile(file, null)
-                        }, ::fetchError)
-                )
-            }
-            showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
-        }
-    }
-
-    override fun getFileInfo() {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            val extension = file.fileExst
-            if (StringUtils.isImage(extension)) {
-                addRecent(file)
-                viewState.onFileMedia(removeVideo(getListMedia(file.id)), true)
-                return
-            }
-        }
-        showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
-        fileProvider?.let { provider ->
-            downloadDisposable = provider.fileInfo(itemClicked)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { file: CloudFile ->
-                        tempFile = file
-                        viewState.onDialogClose()
-                        viewState.onOpenLocalFile(file, null)
-                    }
-                ) { throwable: Throwable -> fetchError(throwable) }
-        }
-    }
-
-    override fun addRecent(file: CloudFile) {
-        presenterScope.launch {
-            context.accountOnline?.let {
-                recentDataSource.addRecent(
-                    Recent(
-                        fileId = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
-                        path = file.webUrl,
-                        name = file.title,
-                        size = file.pureContentLength,
-                        isWebdav = true,
-                        ownerId = it.id,
-                        source = it.portalUrl
-                    )
-                )
-            }
-        }
+    override fun cloudFileToRecent(cloudFile: CloudFile): Recent {
+        return super.cloudFileToRecent(cloudFile)
+            .copy(path = modelExplorerStack.currentId.orEmpty(), isWebdav = true)
     }
 
     override fun updateViewsState() {
@@ -219,7 +154,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
             if (uri != null) {
                 uploadUris.add(uri)
             }
-            if (uris != null && uris.isNotEmpty()) {
+            if (!uris.isNullOrEmpty()) {
                 for (i in uris.indices) {
                     uploadUris.add(uris[i])
                 }
@@ -265,14 +200,13 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         if (uploadId[uploadId.length - 1] != '/') {
             uploadId = "$uploadId/"
         }
-        showDialogWaiting(TAG_DIALOG_CANCEL_UPLOAD)
-        uploadDisposable = fileProvider?.upload(uploadId, uriList)!!
+        uploadDisposable = fileProvider.upload(uploadId, uriList)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ }, { throwable: Throwable ->
                 fetchError(throwable)
                 if (tempFile != null && tempFile!!.webUrl != "") {
-                    asyncDeletePath(Uri.parse(tempFile!!.webUrl).path!!)
+                    asyncDeletePath(tempFile?.webUrl?.toUri()?.path.orEmpty())
                 }
             }
             ) {
@@ -280,7 +214,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
                 deleteTempFile()
                 viewState.onDialogClose()
                 viewState.onSnackBar(context.getString(R.string.upload_manager_complete))
-                (fileProvider as WebDavFileProvider).uploadsFile.clear()
+                fileProvider.uploadsFile.clear()
             }
     }
 
@@ -294,9 +228,9 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
     @SuppressLint("MissingPermission")
     fun deleteTempFile() {
         if (tempFile != null && checkReadWritePermission(context)) {
-            val uri = Uri.parse(tempFile?.webUrl)
-            if (uri.path != null) {
-                asyncDeletePath(uri.path ?: "")
+            val uri = tempFile?.webUrl?.toUri()
+            if (uri?.path != null) {
+                asyncDeletePath(uri.path.orEmpty())
             }
         }
     }
@@ -312,4 +246,34 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView>() {
         return listMedia
     }
 
+    override fun createDocs(title: String) {
+        modelExplorerStack.currentId?.let { folderId ->
+            disposable.add(
+                fileProvider.createFile(
+                    folderId = folderId,
+                    title = title
+                )
+                    .doOnNext { file ->
+                        viewState.onDialogClose()
+                        viewState.onOpenLocalFile(file, EditType.Edit(false))
+                    }
+                    .doOnError {
+                        viewState.onDialogClose()
+                        viewState.onError(context.getString(R.string.errors_create_local_file))
+                    }
+                    .subscribe()
+            )
+        }
+    }
+
+    override fun updateDocument(id: String, uri: Uri) {
+        downloadDisposable =
+            fileProvider.upload(modelExplorerStack.currentId.orEmpty(), listOf(uri))
+                .doOnError(::fetchError)
+                .doOnNext {
+                    refresh()
+                    deleteTempFile()
+                }
+                .subscribe()
+    }
 }

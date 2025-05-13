@@ -5,11 +5,11 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import app.documents.core.manager.ProgressRequestBody
+import app.documents.core.network.common.Result
+import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
-import app.documents.core.network.manager.models.request.RequestExternal
-import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.webdav.WebDavService
 import app.documents.core.network.webdav.models.WebDavModel
@@ -20,9 +20,14 @@ import io.reactivex.ObservableSource
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import lib.toolkit.base.BuildConfig
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getName
 import lib.toolkit.base.managers.utils.ContentResolverUtils.getSize
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils.createCacheFile
 import lib.toolkit.base.managers.utils.FileUtils.createFile
 import lib.toolkit.base.managers.utils.FileUtils.createTempAssetsFile
@@ -58,6 +63,25 @@ class WebDavFileProvider @Inject constructor(
     private var batchItems: List<Item>? = null
     val uploadsFile: MutableList<CloudFile> = Collections.synchronizedList(ArrayList())
 
+    override fun openFile(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean
+    ): Flow<Result<FileOpenResult>> {
+        return flow {
+            emit(FileOpenResult.Loading())
+            emit(
+                FileOpenResult.OpenLocally(
+                    file = suspendGetCachedFile(context, cloudFile, ""),
+                    fileId = cloudFile.id,
+                    editType = editType
+                )
+            )
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.fromCallable { id?.let { webDavService.propfind(it).execute() } }
             .subscribeOn(Schedulers.io())
@@ -71,27 +95,22 @@ class WebDavFileProvider @Inject constructor(
             }.map { webDavModel: WebDavModel -> getExplorer(webDavModel.list ?: emptyList(), filter) }
     }
 
-    override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
-        val title = body.title
+    override fun createFile(folderId: String, title: String): Observable<CloudFile> {
         val path = PATH_TEMPLATES + getTemplates(
             context, Locale.getDefault().language,
-            getExtensionFromPath(body.title.lowercase())
+            getExtensionFromPath(title.lowercase())
         )
         val temp = createTempAssetsFile(context, path, getNameWithoutExtension(title), getExtensionFromPath(title))
         return Observable.fromCallable {
             val file = CloudFile()
             file.webUrl = Uri.fromFile(temp).toString()
             file.pureContentLength = temp?.length() ?: 0
-            file.id = folderId + body.title
+            file.id = folderId + title
             file.updated = Date()
-            file.title = body.title
-            file.fileExst = getExtensionFromPath(body.title)
+            file.title = title
+            file.fileExst = getExtensionFromPath(title)
             file
         }
-    }
-
-    override fun search(query: String?): Observable<String> {
-        TODO("Not yet implemented")
     }
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
@@ -336,6 +355,13 @@ class WebDavFileProvider @Inject constructor(
         return webDavService.download(cloudFile.id)
     }
 
+    override suspend fun suspendGetDownloadResponse(
+        cloudFile: CloudFile,
+        token: String?
+    ): Response<ResponseBody> {
+        return webDavService.suspendDownload(cloudFile.id)
+    }
+
     @SuppressLint("MissingPermission")
     private fun checkDirectory(item: Item?): File? {
         val file = item as CloudFile
@@ -369,7 +395,7 @@ class WebDavFileProvider @Inject constructor(
         return file
     }
 
-    override fun download(items: List<Item>): Observable<Int> {
+    fun download(items: List<Item>): Observable<Int> {
         return Observable.fromIterable(items)
             .filter { item: Item? -> item is CloudFile }
             .flatMap { item: Item -> startDownload(item) }
@@ -410,7 +436,7 @@ class WebDavFileProvider @Inject constructor(
         }
     }
 
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
+    fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
         return Observable.fromIterable(uris)
             .map { uri: Uri -> addUploadsFile(folderId, uri) }
             .flatMap { uri: Uri -> startUpload(folderId, uri) }
@@ -460,8 +486,6 @@ class WebDavFileProvider @Inject constructor(
         responseOperation.response = ArrayList()
         return responseOperation
     }
-
-    override fun share(id: String, requestExternal: RequestExternal): Observable<ResponseExternal>? = null
 
     override fun terminate(): Observable<List<Operation>>?  = null
 

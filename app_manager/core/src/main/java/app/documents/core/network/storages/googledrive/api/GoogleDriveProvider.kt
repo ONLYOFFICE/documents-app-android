@@ -49,6 +49,13 @@ class GoogleDriveProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    suspend fun suspendDownload(
+        fileId: String,
+        map: Map<String, String> = mapOf("alt" to "media")
+    ): Response<ResponseBody> {
+        return googleDriveService.suspendDownload(fileId, map)
+    }
+
     fun delete(fileId: String): Single<Response<ResponseBody>> {
         return googleDriveService.deleteItem(fileId)
             .subscribeOn(Schedulers.io())

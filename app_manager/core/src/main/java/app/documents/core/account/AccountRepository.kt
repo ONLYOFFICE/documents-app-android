@@ -50,6 +50,8 @@ interface AccountRepository {
 
     suspend fun getToken(accountName: String): String?
 
+    suspend fun getOnlineToken(): String?
+
     suspend fun getRefreshToken(accountName: String? = null): String?
 
     suspend fun updateAccount(
@@ -244,6 +246,10 @@ internal class AccountRepositoryImpl(
 
     override suspend fun getToken(accountName: String): String? {
         return accountManager.getToken(accountName)
+    }
+
+    override suspend fun getOnlineToken(): String? {
+        return accountManager.getToken(getOnlineAccount()?.accountName ?: return null)
     }
 
     override suspend fun getRefreshToken(accountName: String?): String? {

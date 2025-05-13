@@ -4,27 +4,28 @@ import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.WorkManager
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
-import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.providers.BaseFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
+import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
-import app.editors.manager.ui.views.custom.PlaceholderViews
-import kotlinx.coroutines.launch
+import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.presenterScope
 import javax.inject.Inject
 
-abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePresenter<V>(),
+abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView, FP : BaseFileProvider> : DocsBasePresenter<V, FP>(),
     UploadReceiver.OnUploadListener, DownloadReceiver.OnDownloadListener {
 
     abstract val externalLink: Unit
@@ -44,7 +45,7 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
 
     abstract fun refreshToken()
 
-    abstract fun getProvider()
+    abstract fun getItems()
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -86,48 +87,12 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
         }
     }
 
-    override fun createDocs(title: String) {
-        val id = modelExplorerStack.currentId
-        id?.let {
-            val requestCreate = RequestCreate()
-            requestCreate.title = title
-            fileProvider?.let { provider ->
-                disposable.add(provider.createFile(id, requestCreate).subscribe({ file: CloudFile ->
-                    itemClicked = file
-                    addFile(file)
-                    setPlaceholderType(PlaceholderViews.Type.NONE)
-                    viewState.onDialogClose()
-                    viewState.onOpenLocalFile(file, null)
-                }) { throwable: Throwable -> fetchError(throwable) })
-            }
-            showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
-        }
-    }
-
     override fun move(): Boolean {
         return if (super.move()) {
             transfer(ApiContract.Operation.DUPLICATE, true)
             true
         } else {
             false
-        }
-    }
-
-    override fun addRecent(file: CloudFile) {
-        presenterScope.launch {
-            context.accountOnline?.let {
-                recentDataSource.addRecent(
-                    Recent(
-                        fileId = if (StringUtils.isImage(file.fileExst)) file.id else file.viewUrl,
-                        path = file.webUrl,
-                        name = file.title,
-                        size = file.pureContentLength,
-                        isWebdav = true,
-                        ownerId = it.id,
-                        source = it.portal.url
-                    )
-                )
-            }
         }
     }
 
@@ -254,6 +219,21 @@ abstract class BaseStorageDocsPresenter<V : BaseStorageDocsView> : DocsBasePrese
 
     private fun showDownloadFolderActivity(uri: Uri?) {
         viewState.onDownloadActivity(uri)
+    }
+
+    override fun updateDocument(id: String, uri: Uri) {
+        StorageUtils.updateDocument(
+            context = context,
+            uri = uri,
+            folderId = modelExplorerStack.currentId.toString(),
+            storage = context.accountOnline?.portal?.provider as? PortalProvider.Storage ?: return,
+            tag = BaseStorageDocsFragment.KEY_UPDATE
+        )
+    }
+
+    override fun cloudFileToRecent(cloudFile: CloudFile): Recent {
+        return super.cloudFileToRecent(cloudFile)
+            .copy(path = modelExplorerStack.currentId.orEmpty())
     }
 
 }

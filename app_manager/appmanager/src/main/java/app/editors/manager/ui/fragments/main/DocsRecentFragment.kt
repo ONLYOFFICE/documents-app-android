@@ -1,7 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
 import android.Manifest
-import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -18,10 +17,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
-import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
 import app.editors.manager.mvp.presenters.main.DocsRecentPresenter
-import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.presenters.main.RecentState
 import app.editors.manager.mvp.views.main.DocsRecentView
 import app.editors.manager.ui.activities.main.IMainActivity
@@ -35,10 +32,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
-import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.RequestPermissions
-import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -55,7 +51,7 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     private var clearItem: MenuItem? = null
 
     private val recentListener: (recent: Recent) -> Unit = { recent ->
-        Debounce.perform(1000L) { presenter.fileClick(recent) }
+        Debounce.perform(1000L) { presenter.openRecent(recent, EditType.Edit()) }
     }
 
     private val contextListener: (recent: Recent, position: Int, thumbnail: Bitmap) -> Unit = { recent, position, thumbnail ->
@@ -206,23 +202,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
         }
     }
 
-    override fun openFile(response: CloudFile) {
-        val ext = response.fileExst
-        if (StringUtils.isVideoSupport(ext) || StringUtils.isImage(ext)) {
-            showMediaActivity(getExplorer(response), false)
-        } else if (StringUtils.isDocument(ext)) {
-            activity?.showWebViewer(response)
-        } else {
-            onError(getString(R.string.error_unsupported_format))
-        }
-    }
-
-    private fun getExplorer(file: CloudFile): Explorer {
-        return Explorer().apply {
-            this.files = mutableListOf(file)
-        }
-    }
-
     override fun onDeleteItem(position: Int) {
         adapter?.let { recentAdapter ->
             recentAdapter.removeItem(position)
@@ -232,7 +211,8 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            is ExplorerContextItem.Edit -> presenter.fileClick()
+            is ExplorerContextItem.Edit -> presenter.openRecent(editType = EditType.Edit())
+            is ExplorerContextItem.View -> presenter.openRecent(editType = EditType.View())
             is ExplorerContextItem.Delete -> presenter.deleteRecent()
             else -> super.onContextButtonClick(contextItem)
         }
@@ -263,32 +243,6 @@ class DocsRecentFragment : DocsBaseFragment(), DocsRecentView {
     override fun onStateUpdateFilter(isFilter: Boolean, value: String?) {
         super.onStateUpdateFilter(isFilter, value)
         activity?.showNavigationButton(isFilter)
-    }
-
-    override fun onOpenFile(state: OpenState) {
-        when (state) {
-            is OpenState.Docs, is OpenState.Cells, is OpenState.Slide, is OpenState.Pdf -> {
-                LaunchActivityForResult(
-                    requireActivity().activityResultRegistry,
-                    { result ->
-                        if (result.resultCode == Activity.RESULT_CANCELED) {
-                            presenter.deleteTempFile()
-                        } else if (result.resultCode == Activity.RESULT_OK) {
-                            result.data?.data?.let {
-                                if (result.data?.getBooleanExtra("EXTRA_IS_MODIFIED", false) == true) {
-                                    presenter.upload(it, null)
-                                }
-                            }
-                        }
-                    },
-                    getEditorsIntent(state.uri, checkNotNull(state.type), isForm = state is OpenState.Pdf && state.isForm)
-                ).show()
-            }
-
-            is OpenState.Media -> {
-                showMediaActivity(state.explorer, state.isWebDav)
-            }
-        }
     }
 
     object Debounce {

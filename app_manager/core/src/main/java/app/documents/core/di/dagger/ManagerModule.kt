@@ -5,7 +5,7 @@ import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.manager.ManagerRepository
 import app.documents.core.manager.ManagerRepositoryImpl
 import app.documents.core.model.cloud.CloudAccount
-import app.documents.core.model.exception.CloudAccountNotFoundException
+import app.documents.core.model.cloud.PortalSettings
 import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.interceptors.WebDavInterceptor
 import app.documents.core.network.manager.ManagerService
@@ -18,6 +18,8 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+
+private const val stubBaseUrl: String = "https://localhost"
 
 @Module
 class ManagerModule {
@@ -37,9 +39,8 @@ class ManagerModule {
 
     @Provides
     fun provideApi(factory: GsonConverterFactory, client: OkHttpClient, cloudAccount: CloudAccount?): ManagerService {
-        if (cloudAccount == null) throw CloudAccountNotFoundException
         return Retrofit.Builder()
-            .baseUrl(cloudAccount.portal.urlWithScheme)
+            .baseUrl(cloudAccount?.portal?.urlWithScheme ?: stubBaseUrl)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(factory)
             .client(client)
@@ -53,10 +54,9 @@ class ManagerModule {
         factory: GsonConverterFactory,
         okHttpClient: OkHttpClient
     ): RoomService {
-        if (cloudAccount == null) throw CloudAccountNotFoundException
         return Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl(cloudAccount.portal.urlWithScheme)
+            .baseUrl(cloudAccount?.portal?.urlWithScheme ?: stubBaseUrl)
             .addConverterFactory(factory)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
@@ -68,17 +68,16 @@ class ManagerModule {
         cloudAccount: CloudAccount?,
         accountManager: AccountManager
     ): WebDavService {
-        if (cloudAccount == null) throw CloudAccountNotFoundException
         val okHttpClient = NetworkClient.getOkHttpBuilder(
-            portalSettings = cloudAccount.portal.settings,
+            portalSettings = cloudAccount?.portal?.settings ?: PortalSettings(),
             WebDavInterceptor(
-                cloudAccount.login,
-                accountManager.getPassword(cloudAccount.accountName)
+                cloudAccount?.login.orEmpty(),
+                cloudAccount?.accountName?.let { accountManager.getPassword(it) }
             )
         ).build()
 
         return Retrofit.Builder()
-            .baseUrl(cloudAccount.portal.urlWithScheme)
+            .baseUrl(cloudAccount?.portal?.urlWithScheme ?: stubBaseUrl)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(ConverterFactory())
             .client(okHttpClient)
