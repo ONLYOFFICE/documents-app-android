@@ -1,6 +1,5 @@
 package app.editors.manager.ui.fragments.main
 
-import android.os.Bundle
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -34,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -72,17 +72,29 @@ class FillingStatusFragment : ComposeDialogFragment() {
 
         private const val CLOUD_FILE = "cloud_file"
         private const val REQUEST_KEY = "filling_status_request"
+        private const val RESULT_START_FILL_KEY = "result_start_fill_key"
+        private const val RESULT_ON_CLOSE_KEY = "result_on_close_key"
 
         private fun newInstance(file: CloudFile): FillingStatusFragment {
             return FillingStatusFragment()
                 .putArgs(CLOUD_FILE to file)
         }
 
-        fun show(activity: FragmentActivity, file: CloudFile, onClose: () -> Unit) {
+        fun show(
+            activity: FragmentActivity,
+            file: CloudFile,
+            onClose: () -> Unit,
+            onStartFill: () -> Unit
+        ) {
             activity.supportFragmentManager.setFragmentResultListener(
                 REQUEST_KEY,
                 activity
-            ) { _, _ -> onClose() }
+            ) { _, bundle ->
+                when {
+                    bundle.getBoolean(RESULT_START_FILL_KEY) == true -> onStartFill()
+                    bundle.getBoolean(RESULT_ON_CLOSE_KEY) == true -> onClose()
+                }
+            }
             newInstance(file).show(activity.supportFragmentManager, "")
         }
     }
@@ -117,16 +129,22 @@ class FillingStatusFragment : ComposeDialogFragment() {
             FillingStatusScreen(
                 state = state.value,
                 onBack = ::dismiss,
-                onStopFilling = {
-                    showStopFillingQuestionDialog(viewModel::stopFilling)
-                }
+                onFillClick = ::onFillClick,
+                onStopFillingClick = { showStopFillingQuestionDialog(viewModel::stopFilling) }
             )
         }
     }
 
     override fun onDestroyView() {
-        requireActivity().supportFragmentManager.setFragmentResult(REQUEST_KEY, Bundle.EMPTY)
+        requireActivity().supportFragmentManager
+            .setFragmentResult(REQUEST_KEY, bundleOf(RESULT_ON_CLOSE_KEY to true))
         super.onDestroyView()
+    }
+
+    private fun onFillClick() {
+        requireActivity().supportFragmentManager
+            .setFragmentResult(REQUEST_KEY, bundleOf(RESULT_START_FILL_KEY to true))
+        dismiss()
     }
 
     private fun showStopFillingQuestionDialog(onAccept: () -> Unit) {
@@ -143,7 +161,8 @@ class FillingStatusFragment : ComposeDialogFragment() {
 @Composable
 private fun FillingStatusScreen(
     state: FillingStatusState,
-    onStopFilling: () -> Unit,
+    onStopFillingClick: () -> Unit,
+    onFillClick: () -> Unit,
     onBack: () -> Unit
 ) {
     AppScaffold(
@@ -198,17 +217,18 @@ private fun FillingStatusScreen(
                 ) {
                     AppTextButton(
                         modifier = Modifier.padding(end = 8.dp),
-                        enabled = state.formInfo.security?.fill == true &&
+                        enabled = state.formInfo.security?.stopFilling == true &&
                                 !state.requestLoading,
                         title = R.string.filling_form_stop_filling,
-                        onClick = onStopFilling
+                        onClick = onStopFillingClick
                     )
                     AppTextButton(
                         modifier = Modifier.padding(end = 8.dp),
-                        enabled = state.formInfo.security?.fill == true &&
+                        enabled = state.formInfo.security?.fillForms == true &&
                                 !state.requestLoading,
-                        title = R.string.list_context_fill
-                    ) { }
+                        title = R.string.list_context_fill,
+                        onClick = onFillClick
+                    )
                 }
             }
         }
@@ -252,7 +272,9 @@ private fun FormInfoContent(
                                 ?.let { colorResource(it.colorRes) } ?: Color.Transparent
                         )
                         .padding(vertical = 2.dp, horizontal = 4.dp),
-                    text = stringResource(formFillingStatus.textRes),
+                    text = formFillingStatus
+                        .takeIf { it != UiFormFillingStatus.None }
+                        ?.let { stringResource(formFillingStatus.textRes) }.orEmpty(),
                     style = MaterialTheme.typography.caption,
                     color = MaterialTheme.colors.onPrimary
                 )
@@ -283,7 +305,8 @@ private fun FillingStatusScreenPreview() {
                         formFillingStatusType = 1
                     }
             ),
-            onStopFilling = {}
+            onStopFillingClick = {},
+            onFillClick = {}
         ) {}
     }
 }
