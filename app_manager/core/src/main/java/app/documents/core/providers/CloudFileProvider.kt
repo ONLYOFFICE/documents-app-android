@@ -20,6 +20,7 @@ import app.documents.core.network.manager.models.request.RequestDeleteRecent
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
+import app.documents.core.network.manager.models.request.RequestStopFilling
 import app.documents.core.network.manager.models.request.RequestTitle
 import app.documents.core.network.manager.models.response.ResponseCreateFile
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
@@ -356,6 +357,20 @@ class CloudFileProvider @Inject constructor(
             }
     }
 
+    fun getFileInfo(
+        fileId: String,
+        version: Int? = null
+    ): Flow<app.documents.core.network.common.Result<CloudFile>> {
+        return flow {
+            val response = managerService.suspendGetFileInfo(fileId, version)
+            if (!response.isSuccessful) throw HttpException(response)
+            emit(checkNotNull(response.body()?.response))
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
+
     fun addToFavorites(requestFavorites: RequestFavorites, isAdd: Boolean): Observable<BaseResponse> {
         return if (isAdd) {
             managerService.addToFavorites(requestFavorites)
@@ -526,6 +541,16 @@ class CloudFileProvider @Inject constructor(
 
     fun getFillingStatus(fileId: String): Flow<app.documents.core.network.common.Result<List<FormRole>>> {
         return flow { emit(managerService.getFillingStatus(fileId).response) }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
+    fun stopFilling(fileId: String): Flow<app.documents.core.network.common.Result<Unit>> {
+        return flow {
+            val response = managerService.stopFilling(fileId, RequestStopFilling(fileId.toInt()))
+            if (!response.isSuccessful) throw HttpException(response)
+            emit(Unit)
+        }
             .flowOn(Dispatchers.IO)
             .asResult()
     }

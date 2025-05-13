@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
+import android.os.Bundle
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -31,7 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CreatedBy
@@ -48,6 +51,7 @@ import app.editors.manager.viewModels.main.FillingStatusViewModel
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.ActivityIndicatorView
+import lib.compose.ui.views.AnimatedVisibilityVerticalFade
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppHeaderItem
@@ -67,14 +71,19 @@ class FillingStatusFragment : ComposeDialogFragment() {
     companion object {
 
         private const val CLOUD_FILE = "cloud_file"
+        private const val REQUEST_KEY = "filling_status_request"
 
         private fun newInstance(file: CloudFile): FillingStatusFragment {
             return FillingStatusFragment()
                 .putArgs(CLOUD_FILE to file)
         }
 
-        fun show(fragmentManager: FragmentManager, file: CloudFile) {
-            newInstance(file).show(fragmentManager, "")
+        fun show(activity: FragmentActivity, file: CloudFile, onClose: () -> Unit) {
+            activity.supportFragmentManager.setFragmentResultListener(
+                REQUEST_KEY,
+                activity
+            ) { _, _ -> onClose() }
+            newInstance(file).show(activity.supportFragmentManager, "")
         }
     }
 
@@ -87,7 +96,7 @@ class FillingStatusFragment : ComposeDialogFragment() {
         ManagerTheme {
             val viewModel = viewModel<FillingStatusViewModel> {
                 FillingStatusViewModel(
-                    fileId = cloudFile.id,
+                    formInfo = cloudFile,
                     cloudFileProvider = requireContext().cloudFileProvider
                 )
             }
@@ -107,17 +116,34 @@ class FillingStatusFragment : ComposeDialogFragment() {
 
             FillingStatusScreen(
                 state = state.value,
-                cloudFile = cloudFile,
-                onBack = ::dismiss
+                onBack = ::dismiss,
+                onStopFilling = {
+                    showStopFillingQuestionDialog(viewModel::stopFilling)
+                }
             )
         }
+    }
+
+    override fun onDestroyView() {
+        requireActivity().supportFragmentManager.setFragmentResult(REQUEST_KEY, Bundle.EMPTY)
+        super.onDestroyView()
+    }
+
+    private fun showStopFillingQuestionDialog(onAccept: () -> Unit) {
+        UiUtils.showQuestionDialog(
+            context = requireContext(),
+            title = getString(R.string.filling_form_stop_filling_dialog_title),
+            description = getString(R.string.filling_form_stop_filling_dialog_desc),
+            acceptListener = onAccept,
+            acceptTitle = getString(R.string.filling_form_stop_filling),
+        )
     }
 }
 
 @Composable
 private fun FillingStatusScreen(
-    cloudFile: CloudFile,
     state: FillingStatusState,
+    onStopFilling: () -> Unit,
     onBack: () -> Unit
 ) {
     AppScaffold(
@@ -130,15 +156,15 @@ private fun FillingStatusScreen(
         }
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
+            AnimatedVisibilityVerticalFade(visible = state.requestLoading) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
             AppDescriptionItem(
                 modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
                 text = R.string.filling_form_filling_status_desc
             )
             FormInfoContent(
-                formFillingStatus = UiFormFillingStatus.from(cloudFile.formFillingStatus),
-                fileTitle = StringUtils.removeExtension(cloudFile.title),
-                owner = cloudFile.createdBy.displayNameFromHtml,
-                date = cloudFile.created
+                formInfo = state.formInfo
             )
             AppDivider()
             AnimatedContent(
@@ -161,7 +187,7 @@ private fun FillingStatusScreen(
                     }
                 }
             }
-            if (state.completeStatus == FormCompleteStatus.Waiting) {
+            if (state.completeStatus == FormCompleteStatus.Waiting && state.roles.isNotEmpty()) {
                 AppDivider()
                 Row(
                     modifier = Modifier
@@ -172,12 +198,15 @@ private fun FillingStatusScreen(
                 ) {
                     AppTextButton(
                         modifier = Modifier.padding(end = 8.dp),
-                        enabled = !state.loading && cloudFile.security?.stopFilling == true,
-                        title = R.string.filling_form_stop_filling
-                    ) { }
+                        enabled = state.formInfo.security?.fill == true &&
+                                !state.requestLoading,
+                        title = R.string.filling_form_stop_filling,
+                        onClick = onStopFilling
+                    )
                     AppTextButton(
                         modifier = Modifier.padding(end = 8.dp),
-                        enabled = !state.loading && cloudFile.security?.fill == true,
+                        enabled = state.formInfo.security?.fill == true &&
+                                !state.requestLoading,
                         title = R.string.list_context_fill
                     ) { }
                 }
@@ -189,10 +218,7 @@ private fun FillingStatusScreen(
 @Composable
 private fun FormInfoContent(
     modifier: Modifier = Modifier,
-    formFillingStatus: UiFormFillingStatus,
-    fileTitle: String,
-    owner: String,
-    date: Date
+    formInfo: CloudFile
 ) {
     Row(
         modifier = modifier
@@ -211,15 +237,20 @@ private fun FormInfoContent(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.Center
         ) {
+            val formFillingStatus = UiFormFillingStatus.from(formInfo.formFillingStatus)
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = fileTitle)
+                Text(text = StringUtils.removeExtension(formInfo.title))
                 Text(
                     modifier = Modifier
                         .padding(start = 8.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .background(colorResource(formFillingStatus.colorRes))
+                        .background(
+                            formFillingStatus
+                                .takeIf { it != UiFormFillingStatus.None }
+                                ?.let { colorResource(it.colorRes) } ?: Color.Transparent
+                        )
                         .padding(vertical = 2.dp, horizontal = 4.dp),
                     text = stringResource(formFillingStatus.textRes),
                     style = MaterialTheme.typography.caption,
@@ -227,7 +258,7 @@ private fun FormInfoContent(
                 )
             }
             Text(
-                text = "$owner · ${TimeUtils.formatDate(date)}",
+                text = "${formInfo.createdBy.displayNameFromHtml} · ${TimeUtils.formatDate(formInfo.created)}",
                 style = MaterialTheme.typography.body2,
                 color = MaterialTheme.colors.colorTextSecondary
             )
@@ -240,14 +271,19 @@ private fun FormInfoContent(
 private fun FillingStatusScreenPreview() {
     ManagerTheme {
         FillingStatusScreen(
-            cloudFile = CloudFile().apply {
-                createdBy = CreatedBy().apply {
-                    displayName = "Username"
-                }
-                title = "File name.pdf"
-                formFillingStatusType = 1
-            },
-            state = FillingStatusState(loading = true)
+            state = FillingStatusState(
+                loading = true,
+                formInfo = CloudFile()
+                    .apply {
+                        createdBy = CreatedBy().apply {
+                            displayName = "Username"
+                        }
+                        title = "File name.pdf"
+                        created = Date()
+                        formFillingStatusType = 1
+                    }
+            ),
+            onStopFilling = {}
         ) {}
     }
 }

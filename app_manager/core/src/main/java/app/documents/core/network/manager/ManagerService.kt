@@ -15,6 +15,7 @@ import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
+import app.documents.core.network.manager.models.request.RequestStopFilling
 import app.documents.core.network.manager.models.request.RequestStorage
 import app.documents.core.network.manager.models.request.RequestTitle
 import app.documents.core.network.manager.models.response.ResponseCloudTree
@@ -154,6 +155,16 @@ interface ManagerService {
         @Path(value = "file_id") fileId: String?,
         @Query(value = "version") version: Int? = null
     ): Observable<Response<ResponseFile>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}")
+    suspend fun suspendGetFileInfo(
+        @Path(value = "file_id") fileId: String?,
+        @Query(value = "version") version: Int? = null
+    ): Response<ResponseFile>
 
 
     @Headers(
@@ -507,4 +518,14 @@ interface ManagerService {
     suspend fun getFillingStatus(
         @Path(value = "file_id") fileId: String,
     ): app.documents.core.network.BaseResponse<List<FormRole>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/manageformfilling")
+    suspend fun stopFilling(
+        @Path(value = "file_id") fileId: String,
+        @Body body: RequestStopFilling
+    ): Response<ResponseBody>
 }

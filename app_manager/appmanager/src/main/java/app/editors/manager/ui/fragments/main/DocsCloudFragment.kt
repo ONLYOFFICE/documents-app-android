@@ -263,8 +263,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     private fun showFillingStatusFragment() {
         FillingStatusFragment.show(
-            requireActivity().supportFragmentManager,
-            presenter.itemClicked as? CloudFile ?: return
+            activity = requireActivity(),
+            file = presenter.itemClicked as? CloudFile ?: return,
+            onClose = { presenter.refresh() }
         )
     }
 

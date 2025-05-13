@@ -3,6 +3,7 @@ package app.editors.manager.viewModels.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.network.common.Result
+import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.FormRole
 import app.documents.core.providers.CloudFileProvider
 import app.editors.manager.ui.views.custom.FormCompleteStatus
@@ -16,7 +17,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class FillingStatusState(
+    val formInfo: CloudFile,
     val loading: Boolean = false,
+    val requestLoading: Boolean = false,
     val roles: List<FormRole> = emptyList(),
     val completeStatus: FormCompleteStatus = FormCompleteStatus.Waiting
 )
@@ -27,12 +30,12 @@ sealed class FillingStatusEffect {
 }
 
 class FillingStatusViewModel(
-    fileId: String,
+    private val formInfo: CloudFile,
     private val cloudFileProvider: CloudFileProvider
 ) : ViewModel() {
 
     private val _state: MutableStateFlow<FillingStatusState> =
-        MutableStateFlow(FillingStatusState())
+        MutableStateFlow(FillingStatusState(formInfo))
     val state: StateFlow<FillingStatusState> = _state.asStateFlow()
 
     private val _effect: MutableSharedFlow<FillingStatusEffect> = MutableSharedFlow(1)
@@ -41,25 +44,65 @@ class FillingStatusViewModel(
     init {
         viewModelScope.launch {
             _state.update { it.copy(loading = true) }
-            cloudFileProvider.getFillingStatus(fileId)
-                .collect { result ->
-                    when (result) {
-                        is Result.Success<List<FormRole>> -> {
-                            val roles = result.result
-                            _state.update {
-                                it.copy(
-                                    loading = false,
-                                    roles = roles,
-                                    completeStatus = FormCompleteStatus.from(roles)
-                                )
-                            }
-                        }
+            fetchFormInfo()
+            fetchRoles()
+        }
+    }
 
-                        is Result.Error -> {
-                            _effect.emit(FillingStatusEffect.Error)
+    fun stopFilling() {
+        viewModelScope.launch {
+            _state.update { it.copy(requestLoading = true) }
+            cloudFileProvider.stopFilling(formInfo.id)
+                .collect { result ->
+                    _state.update { it.copy(requestLoading = false) }
+                    when (result) {
+                        is Result.Error -> _effect.emit(FillingStatusEffect.Error)
+                        is Result.Success<*> -> {
+                            fetchFormInfo()
+                            fetchRoles()
                         }
                     }
                 }
         }
+    }
+
+    private suspend fun fetchFormInfo() {
+        cloudFileProvider.getFileInfo(formInfo.id)
+            .collect { result ->
+                when (result) {
+                    is Result.Success<CloudFile> -> {
+                        _state.update {
+                            it.copy(formInfo = result.result)
+                        }
+                    }
+
+                    is Result.Error -> {
+                        _effect.emit(FillingStatusEffect.Error)
+                    }
+                }
+            }
+
+    }
+
+    private suspend fun fetchRoles() {
+        cloudFileProvider.getFillingStatus(formInfo.id)
+            .collect { result ->
+                when (result) {
+                    is Result.Success<List<FormRole>> -> {
+                        val roles = result.result
+                        _state.update {
+                            it.copy(
+                                loading = false,
+                                roles = roles,
+                                completeStatus = FormCompleteStatus.from(roles)
+                            )
+                        }
+                    }
+
+                    is Result.Error -> {
+                        _effect.emit(FillingStatusEffect.Error)
+                    }
+                }
+            }
     }
 }
