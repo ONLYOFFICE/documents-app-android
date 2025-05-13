@@ -9,14 +9,11 @@ import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
-import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
-import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.mvp.views.main.DocsWebDavView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
-import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.ui.activities.base.BaseActivity
@@ -27,7 +24,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
     protected var provider: WebdavProvider? = null
 
     @InjectPresenter
-    lateinit var webDavPresenter: DocsWebDavPresenter
+    override lateinit var presenter: DocsWebDavPresenter
 
     private var mainActivity: IMainActivity? = null
 
@@ -51,21 +48,6 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         init()
     }
 
-    override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onEditorActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_PRESENTATION, REQUEST_PDF, REQUEST_DOCS, REQUEST_SHEETS -> {
-                    if (data?.data != null) {
-                        if (data.getBooleanExtra(EditorsContract.EXTRA_IS_MODIFIED, false)) {
-                            webDavPresenter.upload(data.data, null)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (resultCode) {
@@ -73,7 +55,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
                 if (isActivePage && (requestCode == BaseActivity.REQUEST_ACTIVITY_MEDIA ||
                             requestCode == REQUEST_PDF)
                 ) {
-                    webDavPresenter.deleteTempFile()
+                    presenter.deleteTempFile()
                 }
             }
         }
@@ -126,7 +108,7 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
 
     override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {
         showMediaActivity(explorer, isWebDAv) {
-            webDavPresenter.deleteTempFile()
+            presenter.deleteTempFile()
         }
     }
 
@@ -134,16 +116,12 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         mainActivity?.showActionButton(isShow)
     }
 
-
-    override val presenter: DocsBasePresenter<out DocsBaseView>
-        get() = webDavPresenter
-
     private fun loadFiles() {
-        webDavPresenter.getProvider()
+        presenter.getItems()
     }
 
     private fun init() {
-        webDavPresenter.checkBackStack()
+        presenter.checkBackStack()
     }
 
     companion object {

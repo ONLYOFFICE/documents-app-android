@@ -11,12 +11,15 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.core.net.toFile
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.model.cloud.Access
+import app.documents.core.model.cloud.Recent
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -27,8 +30,10 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.UploadFile
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDownload
+import app.documents.core.providers.BaseCloudFileProvider
 import app.documents.core.providers.BaseFileProvider
 import app.documents.core.providers.CloudFileProvider
+import app.documents.core.providers.FileOpenResult
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.ProviderError.Companion.throwInterruptException
@@ -36,9 +41,7 @@ import app.documents.core.providers.WebDavFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.DownloadWork
@@ -61,7 +64,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.ContentResolverUtils
@@ -72,6 +78,10 @@ import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import moxy.MvpPresenter
+import moxy.presenterScope
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import moxy.presenterScope
 import okhttp3.ResponseBody
 import org.json.JSONException
@@ -111,7 +121,7 @@ sealed class PickerMode {
 }
 
 @InjectViewState
-abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
+abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpPresenter<V>(),
     SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Inject
@@ -129,6 +139,9 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
     @Inject
     lateinit var recentDataSource: RecentDataSource
 
+    @Inject
+    lateinit var fileProvider: FP
+
     /**
      * Handler for some common job
      * */
@@ -139,7 +152,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
      * Saved values
      * */
 
-    protected var fileProvider: BaseFileProvider? = null
     protected var modelExplorerStack: ModelExplorerStack = ModelExplorerStack()
     protected var filteringValue: String = ""
     private var placeholderViewType: PlaceholderViews.Type = PlaceholderViews.Type.NONE
@@ -215,6 +227,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     protected var disposable = CompositeDisposable()
     protected var requestJob: Job? = null
+    protected var openFileJob: Job? = null
     protected var batchDisposable: Disposable? = null
     protected var uploadDisposable: Disposable? = null
     protected var downloadDisposable: Disposable? = null
@@ -261,42 +274,73 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         preferenceTool.unregisterChangeListener(this)
         disposable.clear()
         disposable.dispose()
-        fileProvider = null
+    }
+
+    protected suspend fun onFileOpenCollect(result: Result<FileOpenResult>) {
+        when (result) {
+            is Result.Error -> fetchError(result.exception)
+            is Result.Success<FileOpenResult> -> onFileOpenCollect(result.result)
+        }
+    }
+
+    protected open suspend fun onFileOpenCollect(result: FileOpenResult) {
+        if (result !is FileOpenResult.Loading) viewState.onDialogClose()
+        when (result) {
+            is FileOpenResult.DownloadNotSupportedFile -> viewState.onFileDownloadPermission()
+            is FileOpenResult.Loading -> showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+            is FileOpenResult.OpenLocally -> {
+                openFileFromPortal(result.file, result.fileId, result.editType, result.access)
+            }
+            is FileOpenResult.OpenCloudMedia -> {
+                viewState.onFileMedia(getListMedia(result.media), false)
+            }
+            else -> Unit
+        }
+    }
+
+    private fun openFileFromPortal(file: File, fileId: String, editType: EditType, access: Access) {
+        viewState.onOpenLocalFile(
+            CloudFile().apply {
+                id = fileId
+                webUrl = Uri.fromFile(file).toString()
+                fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
+                title = file.name
+                viewUrl = file.absolutePath
+            },
+            editType,
+            access
+        )
     }
 
     open fun getItemsById(id: String?) {
         id?.let {
             setPlaceholderType(PlaceholderViews.Type.LOAD)
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.getFiles(id, getArgs(filteringValue).putFilters())
-                        .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
-                        .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)
-                )
-            }
+            disposable.add(
+                fileProvider.getFiles(id, getArgs(filteringValue).putFilters())
+                    .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
+                    .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)
+            )
         }
     }
 
     open fun refresh(onRefresh: () -> Unit = {}): Boolean {
         //        setPlaceholderType(PlaceholderViews.Type.LOAD)
         modelExplorerStack.currentId?.let { id ->
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.getFiles(id, getArgs(filteringValue).putFilters())
-                        .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
-                        .flatMap { explorer ->
-                            modelExplorerStack.refreshStack(explorer)
-                            Observable.just(getListWithHeaders(modelExplorerStack.last(), true))
-                        }
-                        .subscribe({ explorer ->
-                            updateViewsState()
-                            viewState.onDocsRefresh(explorer)
-                            onRefresh()
-                        }, this::fetchError)
-                )
-                viewState.onSwipeEnable(true)
-                return true
-            }
+            disposable.add(
+                fileProvider.getFiles(id, getArgs(filteringValue).putFilters())
+                    .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
+                    .flatMap { explorer ->
+                        modelExplorerStack.refreshStack(explorer)
+                        Observable.just(getListWithHeaders(modelExplorerStack.last(), true))
+                    }
+                    .subscribe({ explorer ->
+                        updateViewsState()
+                        viewState.onDocsRefresh(explorer)
+                        onRefresh()
+                    }, this::fetchError)
+            )
+            viewState.onSwipeEnable(true)
+            return true
         }
         return false
     }
@@ -328,18 +372,16 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         if (isFilteringMode) {
             modelExplorerStack.currentId?.let { id ->
                 filteringValue = value
-                fileProvider?.let { provider ->
-                    provider.getFiles(id, getArgs(value).putFilters())
-                        .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
-                        .subscribe({ explorer ->
-                            modelExplorerStack.setFilter(explorer)
-                            setPlaceholderType(
-                                if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.SEARCH else
-                                    PlaceholderViews.Type.NONE
-                            )
-                            viewState.onDocsFilter(getListWithHeaders(modelExplorerStack.last(), true))
-                        }, this::fetchError)
-                }
+                fileProvider.getFiles(id, getArgs(value).putFilters())
+                    .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
+                    .subscribe({ explorer ->
+                        modelExplorerStack.setFilter(explorer)
+                        setPlaceholderType(
+                            if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.SEARCH else
+                                PlaceholderViews.Type.NONE
+                        )
+                        viewState.onDocsFilter(getListWithHeaders(modelExplorerStack.last(), true))
+                    }, this::fetchError)
             }
         }
     }
@@ -359,14 +401,14 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                     title?.takeIf { title.isNotEmpty() } ?: context.getString(R.string.dialogs_edit_create_docs)
             }
 
-            fileProvider?.let { provider ->
-                provider.createFolder(id, requestCreate)
+            disposable.add(
+                fileProvider.createFolder(id, requestCreate)
                     .subscribe({ folder ->
                         setPlaceholderType(PlaceholderViews.Type.NONE)
                         viewState.onDialogClose()
                         addFolder(folder)
                     }, this::fetchError)
-            }
+            )
 
             showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         }
@@ -374,33 +416,29 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     private fun renameFolder(id: Item, title: String) {
         modelExplorerStack.currentId?.let { currentId ->
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.rename(id, title, null)
-                        .flatMap { provider.getFiles(currentId, getArgs(null)) }
-                        .subscribe({ item ->
-                            viewState.onDialogClose()
-                            viewState.onSnackBar(context.getString(R.string.list_context_rename_success))
-                            loadSuccess(item)
-                        }, this::fetchError)
-                )
-            }
+            disposable.add(
+                fileProvider.rename(id, title, null)
+                    .flatMap { fileProvider.getFiles(currentId, getArgs(null)) }
+                    .subscribe({ item ->
+                        viewState.onDialogClose()
+                        viewState.onSnackBar(context.getString(R.string.list_context_rename_success))
+                        loadSuccess(item)
+                    }, this::fetchError)
+            )
         }
     }
 
     private fun renameFile(id: Item, title: String, version: Int) {
         modelExplorerStack.currentId?.let { currentId ->
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.rename(id, title, version)
-                        .flatMap { provider.getFiles(currentId, getArgs(null)) }
-                        .subscribe({ item ->
-                            viewState.onDialogClose()
-                            viewState.onSnackBar(context.getString(R.string.list_context_rename_success))
-                            loadSuccess(item)
-                        }, this::fetchError)
-                )
-            }
+            disposable.add(
+                fileProvider.rename(id, title, version)
+                    .flatMap { fileProvider.getFiles(currentId, getArgs(null)) }
+                    .subscribe({ item ->
+                        viewState.onDialogClose()
+                        viewState.onSnackBar(context.getString(R.string.list_context_rename_success))
+                        loadSuccess(item)
+                    }, this::fetchError)
+            )
         }
     }
 
@@ -424,8 +462,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         }
 
         showDialogProgress(true, TAG_DIALOG_CANCEL_BATCH_OPERATIONS)
-        fileProvider?.let { provider ->
-
             if (isRecentViaLinkSection()) {
                 batchDisposable = (fileProvider as? CloudFileProvider)
                     ?.deleteRecent(items.map { it.id })
@@ -445,7 +481,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                 return
             }
 
-            batchDisposable = provider.delete(items, null)
+            batchDisposable = fileProvider.delete(items, null)
                 .switchMap { status }
                 .subscribe({ progress ->
                     viewState.onDialogProgress(100, progress ?: 0)
@@ -469,7 +505,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                         viewState.onDialogClose()
                         viewState.onDeleteMessage(items.size)
                     }
-                }
         }
     }
 
@@ -499,17 +534,18 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             )
         } else if (!isSelectionMode) {
             if (itemClicked is CloudFile) {
-                fileProvider?.let { provider ->
-                    disposable.add(
-                        getFileInfo(provider, itemClicked as CloudFile).subscribe({ response ->
-                            if (response.isEditing) {
+                disposable.add(
+                    fileProvider.fileInfo(itemClicked)
+                        .doOnError(::fetchError)
+                        .doOnNext { file ->
+                            if (file.isEditing) {
                                 onFileDeleteProtected()
                             } else {
                                 deleteItems()
                             }
-                        }, this::fetchError)
-                    )
-                }
+                        }
+                        .subscribe()
+                )
             } else {
                 deleteItems()
             }
@@ -519,26 +555,19 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         return true
     }
 
-    private fun getFileInfo(provider: BaseFileProvider, itemClicked: CloudFile): Observable<CloudFile> {
-        return if (provider is WebDavFileProvider) provider.fileInfo(itemClicked, false) else
-            provider.fileInfo(itemClicked)
-    }
-
     private fun isFileDeleteProtected(item: Item): Observable<Boolean>? {
-        return fileProvider?.let { provider ->
-            Observable.just(provider.fileInfo(item))
-                .flatMap { response: Observable<CloudFile> ->
-                    response.subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap { file: CloudFile ->
-                            if (file.isEditing) {
-                                Observable.just(true)
-                            } else {
-                                Observable.just(false)
-                            }
+        return Observable.just(fileProvider.fileInfo(item))
+            .flatMap { response: Observable<CloudFile> ->
+                response.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .flatMap { file: CloudFile ->
+                        if (file.isEditing) {
+                            Observable.just(true)
+                        } else {
+                            Observable.just(false)
                         }
-                }
-        }
+                    }
+            }
     }
 
     open fun move(): Boolean {
@@ -566,26 +595,24 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                 addAll(operationStack.selectedFolders)
             }
 
-            fileProvider?.let { provider ->
-                batchDisposable = provider.transfer(items, destination, conflict, isMove, false)?.let { observable ->
-                    observable.switchMap { status }
-                        .subscribe(
-                            { progress: Int? -> viewState.onDialogProgress(100, progress ?: 0) },
-                            this::fetchError
-                        ) {
-                            if (!operationStack.currentId.equals(destFolderId, ignoreCase = true)) {
-                                operationStack.setSelectionAll(false)
-                                operationStack.explorer?.also {
-                                    it.destFolderId = destFolderId.orEmpty()
-                                    operationsState.insert(modelExplorerStack.rootFolderType, it.takeIf {
-                                        modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_USER
-                                    } ?: setAccess(it))
-                                }
+            batchDisposable = fileProvider.transfer(items, destination, conflict, isMove, false)?.let { observable ->
+                observable.switchMap { status }
+                    .subscribe(
+                        { progress: Int? -> viewState.onDialogProgress(100, progress ?: 0) },
+                        this::fetchError
+                    ) {
+                        if (!operationStack.currentId.equals(destFolderId, ignoreCase = true)) {
+                            operationStack.setSelectionAll(false)
+                            operationStack.explorer?.also {
+                                it.destFolderId = destFolderId.orEmpty()
+                                operationsState.insert(modelExplorerStack.rootFolderType, it.takeIf {
+                                    modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_USER
+                                } ?: setAccess(it))
                             }
-                            setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-                            onBatchOperations()
                         }
-                }
+                        setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                        onBatchOperations()
+                    }
             }
             showDialogWaiting(TAG_DIALOG_CANCEL_BATCH_OPERATIONS)
         }
@@ -599,7 +626,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                         terminateOperation()
                         break
                     }
-                    val response = fileProvider?.getStatusOperation()?.response
+                    val response = fileProvider.getStatusOperation()?.response
                     if (response?.isNotEmpty() == true) {
                         Log.d(TAG, "getStatus: " + response[0].id)
                         emitter.onNext(response[0].progress)
@@ -616,7 +643,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             .observeOn(AndroidSchedulers.mainThread())
 
     private fun terminateOperation() {
-        fileProvider?.terminate()?.let { provider ->
+        fileProvider.terminate()?.let { provider ->
             disposable.add(
                 provider
                     .doOnSubscribe { showDialogProgress(true, TAG_DIALOG_BATCH_TERMINATE) }
@@ -756,23 +783,21 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         if (preferenceTool.uploadWifiState && !NetworkUtils.isWifiEnable(context)) {
             viewState.onSnackBar(context.getString(R.string.upload_error_wifi))
         } else {
-            modelExplorerStack.currentId?.let { id ->
-                val uriList = mutableListOf<Uri>().apply {
-                    if (uri != null) {
-                        uploadUri = uri
-                        add(uri)
-                    } else if (uris != null) {
-                        for (i in uris.indices) {
-                            add(uris[i])
-                        }
+            val uriList = mutableListOf<Uri>().apply {
+                if (uri != null) {
+                    uploadUri = uri
+                    add(uri)
+                } else if (uris != null) {
+                    for (i in uris.indices) {
+                        add(uris[i])
                     }
                 }
+            }
 
-                if (uriList.size > 20) {
-                    viewState.onError(context.getString(R.string.upload_manager_error_number_files))
-                } else {
-                    addUploadFiles(uriList, id)
-                }
+            if (uriList.size > 20) {
+                viewState.onError(context.getString(R.string.upload_manager_error_number_files))
+            } else {
+                addUploadFiles(uriList, modelExplorerStack.currentId.orEmpty())
             }
         }
 
@@ -782,7 +807,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         // Stub
     }
 
-    private fun addUploadFiles(uriList: List<Uri>, id: String) {
+    protected fun addUploadFiles(uriList: List<Uri>, id: String) {
         val uploadFiles = mutableListOf<UploadFile>()
         for (uri in uriList) {
             if (ContentResolverUtils.getSize(context, uri) > FileUtils.STRICT_SIZE) {
@@ -909,11 +934,13 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
     private fun cancelGetRequests() {
         disposable.clear()
         requestJob?.cancel()
+        openFileJob?.cancel()
     }
 
     fun cancelSingleOperationsRequests() {
         disposable.clear()
         requestJob?.cancel()
+        openFileJob?.cancel()
     }
 
     fun resetDatesHeaders() {
@@ -1198,7 +1225,7 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
                 if (itemClicked is CloudFolder) {
                     openFolder(itemClicked.id, position)
                 } else if (itemClicked is CloudFile) {
-                    getFileInfo()
+                    openFile(itemClicked, EditType.Edit())
                 }
             }
         }
@@ -1214,16 +1241,15 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             }
         }
 
-    fun getListMedia(clickedId: String?): Explorer {
-        return modelExplorerStack.last()?.let { explorer ->
-            Explorer().apply {
-                folders = mutableListOf()
-                files = explorer.files
-                    .filter { StringUtils.isImage(it.fileExst) || StringUtils.isVideoSupport(it.fileExst) }
-                    .onEach { it.isClicked = it.id.equals(clickedId, ignoreCase = true) }
-                    .toMutableList()
-            }
-        } ?: Explorer()
+    private fun getListMedia(mediaFile: CloudFile): Explorer {
+        val lastExplorer = modelExplorerStack.last() ?: Explorer(files = mutableListOf(mediaFile))
+        return Explorer().apply {
+            folders = mutableListOf()
+            files = lastExplorer.files
+                .filter { StringUtils.isImage(it.fileExst) || StringUtils.isVideoSupport(it.fileExst) }
+                .onEach { it.isClicked = it.id.equals(mediaFile.id, ignoreCase = true) }
+                .toMutableList()
+        }
     }
 
     open fun openFolder(id: String?, position: Int, roomType: Int? = null) {
@@ -1373,12 +1399,10 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
             currentFolder.id = modelExplorerStack.currentId.orEmpty()
             if (file.fileType.isEmpty() && file.fileExst.isEmpty()) {
                 fileList.remove()
-                fileProvider?.let { provider ->
-                    disposable.add(
-                        provider.delete(listOf(file), currentFolder)
-                            .subscribe({ modelExplorerStack.refreshStack(explorer) }, this::fetchError)
-                    )
-                }
+                disposable.add(
+                    fileProvider.delete(listOf(file), currentFolder)
+                        .subscribe({ modelExplorerStack.refreshStack(explorer) }, this::fetchError)
+                )
             }
         }
         return explorer
@@ -1657,18 +1681,16 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     open fun sendCopy() {
         (itemClicked as? CloudFile)?.let { cloudFile ->
-            fileProvider?.let { fileProvider ->
-                context.accountOnline?.let { account ->
-                    sendDisposable = fileProvider.getCachedFile(context, cloudFile, account.accountName)
-                        .doOnSubscribe { viewState.onDialogDownloadWaiting() }
-                        .doOnError { viewState.onError(context.getString(R.string.errors_create_local_file)) }
-                        .doOnSuccess { file ->
-                            sendingFile = file
-                            viewState.onDialogClose()
-                            viewState.onSendCopy(file)
-                        }
-                        .subscribe()
-                }
+            context.accountOnline?.let { account ->
+                sendDisposable = fileProvider.getCachedFile(context, cloudFile, account.accountName)
+                    .doOnSubscribe { viewState.onDialogDownloadWaiting() }
+                    .doOnError { viewState.onError(context.getString(R.string.errors_create_local_file)) }
+                    .doOnSuccess { file ->
+                        sendingFile = file
+                        viewState.onDialogClose()
+                        viewState.onSendCopy(file)
+                    }
+                    .subscribe()
             }
         }
     }
@@ -1684,60 +1706,6 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
 
     fun clearDisposable() {
         disposable.clear()
-    }
-
-    protected fun checkSdkVersion(version: String? = null, result: (isCoauthoring: Boolean) -> Unit) {
-        FirebaseUtils.getSdk { pair ->
-            if (!pair.first) {
-                result(false)
-                return@getSdk
-            }
-            val webSdk = version?.replace(".", "") ?: context.accountOnline
-                ?.portal?.version?.documentServerVersion?.replace(".", "")
-
-            if (webSdk.isNullOrEmpty()) {
-                result(false)
-                return@getSdk
-            }
-
-            val localSdk = FileUtils.readSdkVersion(context).replace(".", "")
-
-            var maxVersionIndex = 2
-
-            if (!pair.second) {
-                maxVersionIndex = 1
-            }
-
-            for (i in 0..maxVersionIndex) {
-                if (webSdk[i] != localSdk[i]) {
-                    result(false)
-                    return@getSdk
-                }
-            }
-
-            result(true)
-        }
-    }
-
-    protected fun downloadTempFile(cloudFile: CloudFile, editType: EditType?) {
-        disposable.add(
-            context.cloudFileProvider
-                .getCachedFile(context, cloudFile, context.accountOnline?.accountName.orEmpty())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ file -> openFileFromPortal(file, cloudFile.id, editType = editType) }, ::fetchError)
-        )
-    }
-
-    private fun openFileFromPortal(file: File, fileId: String, editType: EditType?) {
-        viewState.onDialogClose()
-        viewState.onOpenLocalFile(CloudFile().apply {
-            id = fileId
-            webUrl = Uri.fromFile(file).toString()
-            fileExst = StringUtils.getExtensionFromPath(file.absolutePath)
-            title = file.name
-            viewUrl = file.absolutePath
-        }, editType)
     }
 
     fun isRecentViaLinkSection(): Boolean {
@@ -1756,18 +1724,119 @@ abstract class DocsBasePresenter<View : DocsBaseView> : MvpPresenter<View>(),
         destFolderId = id
     }
 
-
     fun setGridView(isGrid: Boolean) {
         preferenceTool.isGridView = isGrid
     }
 
+    open fun openFile(editType: EditType, canBeShared: Boolean = false) {
+        openFile(
+            cloudFile = itemClicked as? CloudFile ?: return,
+            editType = editType,
+            canBeShared = canBeShared
+        )
+    }
+
+    open fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean = false) {
+        itemClicked = cloudFile
+        openFileJob?.cancel()
+        openFileJob = presenterScope.launch {
+            addToRecent(cloudFile)
+            openFileAndCollect(
+                cloudFile = cloudFile,
+                editType = editType,
+                canBeShared = canBeShared
+            )
+        }
+    }
+
+    protected open suspend fun openFileAndCollect(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean
+    ) {
+        fileProvider.openFile(
+            cloudFile = cloudFile,
+            editType = editType,
+            canBeShared = canBeShared,
+        ).collect(::onFileOpenCollect)
+    }
+
+    open fun createDocs(title: String) {
+        modelExplorerStack.currentId?.let { folderId ->
+            disposable.add(
+                fileProvider.createFile(
+                    folderId = folderId,
+                    title = title
+                )
+                    .doOnNext { file ->
+                        viewState.onDialogClose()
+                        openFile(file, EditType.Edit(false), true)
+                    }
+                    .doOnError {
+                        viewState.onDialogClose()
+                        viewState.onError(context.getString(R.string.errors_create_local_file))
+                    }
+                    .subscribe()
+            )
+        }
+    }
+
+    protected open suspend fun addToRecent(cloudFile: CloudFile) = withContext(Dispatchers.IO) {
+        recentDataSource.insertOrUpdate(cloudFileToRecent(cloudFile))
+    }
+
+    protected open fun cloudFileToRecent(cloudFile: CloudFile): Recent {
+        return with(cloudFile) {
+            val account = context.accountOnline
+            Recent(
+                fileId = id,
+                path = "",
+                name = title,
+                size = pureContentLength,
+                ownerId = account?.id.orEmpty(),
+                source = account?.portalUrl.orEmpty()
+            )
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    open fun updateDocument(id: String = itemClicked?.id.orEmpty(), uri: Uri) {
+        val provider = fileProvider as? BaseCloudFileProvider ?: return
+        if (uri.path?.isEmpty() == true) return
+        context.contentResolver.openInputStream(uri).use {
+            val file = uri.toFile()
+            val body = MultipartBody.Part.createFormData(
+                file.name,
+                file.name,
+                RequestBody.create(
+                    MediaType.parse(ContentResolverUtils.getMimeType(context, uri)),
+                    file
+                )
+            )
+            disposable.add(
+                provider.updateDocument(id, body)
+                    .doOnSubscribe {
+                        viewState.onDialogWaiting(
+                            context.getString(lib.editors.gbase.R.string.dialog_saving_file),
+                            TAG_DIALOG_CANCEL_SINGLE_OPERATIONS
+                        )
+                    }
+                    .doOnSuccess {
+                        refresh()
+                        FileUtils.deletePath(file)
+                        viewState.onDialogClose()
+                    }
+                    .doOnError { error ->
+                        fetchError(error)
+                        FileUtils.deletePath(file)
+                        viewState.onDialogClose()
+                    }
+                    .subscribe()
+            )
+        }
+    }
+
     abstract fun getNextList()
-
-    abstract fun getFileInfo()
-
-    abstract fun createDocs(title: String)
-
-    abstract fun addRecent(file: CloudFile)
 
     abstract fun onActionClick()
 

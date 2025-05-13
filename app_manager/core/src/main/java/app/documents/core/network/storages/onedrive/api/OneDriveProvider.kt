@@ -45,6 +45,10 @@ class OneDriveProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    suspend fun suspendDownload(itemId: String): Response<ResponseBody> {
+        return oneDriveService.suspendDownload(itemId)
+    }
+
     fun deleteItem(itemId: String): Single<Response<ResponseBody>> {
         return oneDriveService.deleteItem(itemId)
             .subscribeOn(Schedulers.io())

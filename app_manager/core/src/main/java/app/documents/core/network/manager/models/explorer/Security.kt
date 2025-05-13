@@ -109,4 +109,8 @@ class Security : Serializable {
     @SerializedName("IndexExport")
     @Expose
     var indexExport: Boolean = false
+
+    @SerializedName("FillForms")
+    @Expose
+    var fillForms: Boolean = false
 }

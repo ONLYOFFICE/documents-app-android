@@ -20,7 +20,7 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog
 
 class DocsRoomFragment : DocsCloudFragment() {
 
-    private val isRoom get() = cloudPresenter.isCurrentRoom && cloudPresenter.isRoot
+    private val isRoom get() = presenter.isCurrentRoom && presenter.isRoot
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,7 +55,7 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.toolbar_selection_archive -> cloudPresenter.archiveRooms(true)
+            R.id.toolbar_selection_archive -> presenter.archiveRooms(true)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -73,18 +73,18 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            ExplorerContextItem.Duplicate -> cloudPresenter.duplicateRoom()
+            ExplorerContextItem.Duplicate -> presenter.duplicateRoom()
             ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             ExplorerContextItem.Reconnect -> reconnectStorage()
-            ExplorerContextItem.Archive -> cloudPresenter.archiveRooms(true)
+            ExplorerContextItem.Archive -> presenter.archiveRooms(true)
             ExplorerContextItem.AddUsers -> showInviteUsersDialog()
             ExplorerContextItem.EditIndex -> showEditIndexDialog()
-            is ExplorerContextItem.Notifications -> cloudPresenter.muteRoomNotifications(!contextItem.muted)
-            is ExplorerContextItem.ExternalLink -> cloudPresenter.copyLinkFromContextMenu()
-            is ExplorerContextItem.Pin -> cloudPresenter.pinRoom()
-            is ExplorerContextItem.Delete -> if (presenter.isRoot) cloudPresenter.checkRoomOwner() else super.onContextButtonClick(contextItem)
-            is ExplorerContextItem.Lock -> cloudPresenter.lockFile()
-            is ExplorerContextItem.CustomFilter -> cloudPresenter.setCustomFilter()
+            is ExplorerContextItem.Notifications -> presenter.muteRoomNotifications(!contextItem.muted)
+            is ExplorerContextItem.ExternalLink -> presenter.copyLinkFromContextMenu()
+            is ExplorerContextItem.Pin -> presenter.pinRoom()
+            is ExplorerContextItem.Delete -> if (presenter.isRoot) presenter.checkRoomOwner() else super.onContextButtonClick(contextItem)
+            is ExplorerContextItem.Lock -> presenter.lockFile()
+            is ExplorerContextItem.CustomFilter -> presenter.setCustomFilter()
             else -> super.onContextButtonClick(contextItem)
         }
     }
@@ -92,15 +92,15 @@ class DocsRoomFragment : DocsCloudFragment() {
     override val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
             ActionMenuItem.Archive -> {
-                cloudPresenter.popToRoot()
-                cloudPresenter.archiveRooms(true)
+                presenter.popToRoot()
+                presenter.archiveRooms(true)
             }
             ActionMenuItem.Info -> showRoomInfoFragment()
-            ActionMenuItem.EditRoom -> cloudPresenter.editRoom()
+            ActionMenuItem.EditRoom -> presenter.editRoom()
             ActionMenuItem.Invite -> showInviteUsersDialog()
-            ActionMenuItem.LeaveRoom -> cloudPresenter.checkRoomOwner()
+            ActionMenuItem.LeaveRoom -> presenter.checkRoomOwner()
             ActionMenuItem.EditIndex -> showEditIndexDialog()
-            ActionMenuItem.ExportIndex -> cloudPresenter.exportIndex()
+            ActionMenuItem.ExportIndex -> presenter.exportIndex()
             ActionMenuItem.Download -> presenter.createDownloadFile()
             else -> super.actionMenuClickListener.invoke(item)
         }
@@ -108,10 +108,10 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
         when (tag) {
-            TAG_LEAVE_ROOM -> cloudPresenter.leaveRoom()
+            TAG_LEAVE_ROOM -> presenter.leaveRoom()
             TAG_PROTECTED_ROOM_OPEN_FOLDER,
             TAG_PROTECTED_ROOM_SHOW_INFO,
-            TAG_PROTECTED_ROOM_DOWNLOAD -> cloudPresenter.authRoomViaLink(value.orEmpty(), tag)
+            TAG_PROTECTED_ROOM_DOWNLOAD -> presenter.authRoomViaLink(value.orEmpty(), tag)
             else -> super.onAcceptClick(dialogs, value, tag)
         }
     }

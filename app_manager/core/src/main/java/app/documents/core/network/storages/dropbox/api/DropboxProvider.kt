@@ -49,6 +49,10 @@ class DropboxProvider(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
+    suspend fun suspendDownload(itemId: String): Response<ResponseBody> {
+        return dropBoxContentService.suspendDownload(getDownloadRequest(itemId))
+    }
+
     fun downloadFolder(request: String): Single<Response<ResponseBody>> {
         return dropBoxContentService.downloadFolder(request)
             .subscribeOn(Schedulers.io())

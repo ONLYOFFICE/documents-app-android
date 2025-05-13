@@ -125,7 +125,7 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
                 setEnabledActionButton(security.editAccess || security.editRoom)
                 operationDialogFragment?.setEnabledCreateFolderButton(security.create, isRoomsRoot)
             } else {
-                val editable = current.access == Access.ReadWrite || cloudPresenter.isContextOwner
+                val editable = current.access == Access.ReadWrite || presenter.isContextOwner
                 setEnabledActionButton(editable)
                 operationDialogFragment?.setEnabledCreateFolderButton(editable, isRoomsRoot)
             }
@@ -160,9 +160,9 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
         when (operationType) {
             OperationType.COPY_TO_FILL_FORM_ROOM,
             OperationType.COPY -> presenter.copy()
-            OperationType.MOVE -> cloudPresenter.tryMove()
-            OperationType.RESTORE -> cloudPresenter.tryMove()
-            OperationType.PICK_PDF_FORM -> cloudPresenter.copyFilesToCurrent()
+            OperationType.MOVE -> presenter.tryMove()
+            OperationType.RESTORE -> presenter.tryMove()
+            OperationType.PICK_PDF_FORM -> presenter.copyFilesToCurrent()
             else -> {}
         }
     }
@@ -181,7 +181,7 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
         presenter.checkBackStack()
 
         if (operationType == OperationType.COPY_TO_FILL_FORM_ROOM) {
-            cloudPresenter.setFilterByRoom(ApiContract.RoomType.FILL_FORMS_ROOM)
+            presenter.setFilterByRoom(ApiContract.RoomType.FILL_FORMS_ROOM)
         }
     }
 

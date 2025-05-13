@@ -65,6 +65,13 @@ interface OneDriveService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
+    @GET("$API_VERSION/me/drive/items/{item-id}/content")
+    suspend fun suspendDownload(@Path(value = "item-id") itemId: String): Response<ResponseBody>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
     @DELETE("$API_VERSION/me/drive/items/{item_id}")
     fun deleteItem(@Path(value = "item_id") item_id: String): Single<Response<ResponseBody>>
 

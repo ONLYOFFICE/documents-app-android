@@ -4,12 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import app.documents.core.network.common.Result
+import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
-import app.documents.core.network.manager.models.request.RequestExternal
-import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.storages.IStorageHelper
 import app.documents.core.network.storages.dropbox.api.DropboxProvider
@@ -25,6 +25,11 @@ import io.reactivex.ObservableEmitter
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.ResponseBody
@@ -48,6 +53,32 @@ class DropboxFileProvider(
     }
 
     private val api: DropboxProvider get() = helper.api
+
+    override fun openFile(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean
+    ): Flow<Result<FileOpenResult>> {
+        return flow {
+            emit(FileOpenResult.Loading())
+            emit(
+                FileOpenResult.OpenLocally(
+                    file = suspendGetCachedFile(context, cloudFile, ""),
+                    fileId = cloudFile.id,
+                    editType = editType
+                )
+            )
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
+    override suspend fun suspendGetDownloadResponse(
+        cloudFile: CloudFile,
+        token: String?
+    ): Response<ResponseBody> {
+        return api.suspendDownload(cloudFile.id)
+    }
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
@@ -176,8 +207,7 @@ class DropboxFileProvider(
         return Observable.just(explorer)
     }
 
-    override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
-        val title = body.title
+    override fun createFile(folderId: String, title: String): Observable<CloudFile> {
         val path = PATH_TEMPLATES + FileUtils.getTemplates(
             context = context,
             locale = Locale.getDefault().language,
@@ -198,10 +228,6 @@ class DropboxFileProvider(
         file.title = title
         file.fileExst = title.split(".")[1]
         return Observable.just(file)
-    }
-
-    override fun search(query: String?): Observable<String>? {
-        TODO("Not yet implemented")
     }
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
@@ -423,19 +449,8 @@ class DropboxFileProvider(
         return responseOperation
     }
 
-    override fun download(items: List<Item>): Observable<Int>? {
-        TODO("Not yet implemented")
-    }
-
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
+    fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
         return helper.upload(folderId, uris)
-    }
-
-    override fun share(
-        id: String,
-        requestExternal: RequestExternal
-    ): Observable<ResponseExternal>? {
-        TODO("Not yet implemented")
     }
 
     fun share(id: String): Observable<ExternalLinkResponse>? {
@@ -455,9 +470,7 @@ class DropboxFileProvider(
             }
     }
 
-    override fun terminate(): Observable<List<Operation>>? {
-        TODO("Not yet implemented")
-    }
+    override fun terminate(): Observable<List<Operation>>? = null
 
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {

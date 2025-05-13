@@ -4,12 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import app.documents.core.network.common.Result
+import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.manager.models.explorer.*
 import app.documents.core.network.manager.models.request.RequestCreate
-import app.documents.core.network.manager.models.request.RequestExternal
-import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.storages.IStorageHelper
 import app.documents.core.network.storages.onedrive.api.OneDriveProvider
@@ -27,6 +27,11 @@ import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.FileUtils.createCacheFile
 import lib.toolkit.base.managers.utils.FileUtils.createFile
@@ -43,11 +48,38 @@ class OneDriveFileProvider(
     private val context: Context,
     private val helper: IStorageHelper<OneDriveProvider>
 ) : BaseFileProvider {
+
     companion object {
         private const val PATH_TEMPLATES = "templates/"
     }
 
     private val api: OneDriveProvider get() = helper.api
+
+    override fun openFile(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean
+    ): Flow<Result<FileOpenResult>> {
+        return flow {
+            emit(FileOpenResult.Loading())
+            emit(
+                FileOpenResult.OpenLocally(
+                    file = suspendGetCachedFile(context, cloudFile, ""),
+                    fileId = cloudFile.id,
+                    editType = editType
+                )
+            )
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
+    override suspend fun suspendGetDownloadResponse(
+        cloudFile: CloudFile,
+        token: String?
+    ): Response<ResponseBody> {
+        return api.suspendDownload(cloudFile.id)
+    }
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         val searchValue = filter?.get(ApiContract.Parameters.ARG_FILTER_VALUE)?.trim().orEmpty()
@@ -130,11 +162,11 @@ class OneDriveFileProvider(
     }
 
     @SuppressLint("MissingPermission")
-    override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
+    override fun createFile(folderId: String, title: String): Observable<CloudFile> {
         return Observable.fromCallable {
             api.createFile(
                 folderId,
-                body.title,
+                title,
                 mapOf(OneDriveUtils.KEY_CONFLICT_BEHAVIOR to OneDriveUtils.VAL_CONFLICT_BEHAVIOR_RENAME)
             ).blockingGet()
         }
@@ -161,7 +193,7 @@ class OneDriveFileProvider(
                             pureContentLength = temp?.length() ?: 0
                             updated = Date()
                             id = item.id
-                            title = item.name
+                            this.title = item.name
                             fileExst = item.name.split(".")[1]
                         }
                     }
@@ -169,8 +201,6 @@ class OneDriveFileProvider(
                 }
             }
     }
-
-    override fun search(query: String?): Observable<String>? = null
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
         val request = CreateFolderRequest(
@@ -349,8 +379,6 @@ class OneDriveFileProvider(
         return responseOperation
     }
 
-    override fun download(items: List<Item>): Observable<Int>? = null
-
     @Throws(IOException::class)
     private fun download(emitter: Emitter<CloudFile?>, item: Item, outputFile: File) {
         val response = api.download((item as CloudFile).id).blockingGet()
@@ -375,18 +403,16 @@ class OneDriveFileProvider(
         }
     }
 
-    override fun getDownloadResponse(cloudFile: CloudFile, token: String?): Single<Response<ResponseBody>> {
+    override fun getDownloadResponse(
+        cloudFile: CloudFile,
+        token: String?
+    ): Single<Response<ResponseBody>> {
         return api.download(cloudFile.id)
     }
 
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
+    fun upload(folderId: String, uris: List<Uri?>): Observable<Int> {
         return helper.upload(folderId, uris)
     }
-
-    override fun share(
-        id: String,
-        requestExternal: RequestExternal
-    ): Observable<ResponseExternal>? = null
 
     fun share(
         id: String,

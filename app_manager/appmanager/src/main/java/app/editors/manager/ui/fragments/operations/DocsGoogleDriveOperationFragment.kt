@@ -8,7 +8,7 @@ import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import lib.toolkit.base.managers.utils.putArgs
 import moxy.presenter.InjectPresenter
 
-class DocsGoogleDriveOperationFragment: BaseStorageOperationsFragment(), DocsGoogleDriveView {
+class DocsGoogleDriveOperationFragment : BaseStorageOperationsFragment(), DocsGoogleDriveView {
 
     companion object {
 
@@ -22,6 +22,6 @@ class DocsGoogleDriveOperationFragment: BaseStorageOperationsFragment(), DocsGoo
     }
 
     @InjectPresenter
-    override lateinit var presenter: DocsGoogleDrivePresenter
+    override lateinit var storagePresenter: DocsGoogleDrivePresenter
 
 }

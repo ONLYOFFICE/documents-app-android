@@ -32,7 +32,7 @@ class RoomOrderFragment : DocsCloudFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        cloudPresenter.isIndexing = true
+        presenter.isIndexing = true
         isGridView = false
     }
 

@@ -15,25 +15,30 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.widget.SearchView
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.Security
+import app.documents.core.providers.BaseFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.ActionMenuAdapter
 import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.managers.tools.ActionMenuItemsFactory
+import app.editors.manager.managers.utils.toEditAccess
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.PickerMode
@@ -56,13 +61,17 @@ import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.tools.LocalContentTools.Companion.HWPX_EXTENSION
+import lib.toolkit.base.managers.tools.LocalContentTools.Companion.HWP_EXTENSION
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.CreateDocument
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
+import lib.toolkit.base.managers.utils.EditorsContract.EXTRA_IS_MODIFIED
 import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
+import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
@@ -117,7 +126,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     private var lastClickTime: Long = 0
     private var selectItem: MenuItem? = null
 
-    protected abstract val presenter: DocsBasePresenter<out DocsBaseView>
+    protected abstract val presenter: DocsBasePresenter<out DocsBaseView, out BaseFileProvider>
 
     private val lifecycleEventObserver = LifecycleEventObserver { _, event ->
         if (event == Lifecycle.Event.ON_RESUME) {
@@ -125,7 +134,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    private val sendActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    private val sendActivityResult = registerForActivityResult(StartActivityForResult()) {
         presenter.removeSendingFile()
     }
 
@@ -157,12 +166,18 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     protected open fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
-        when(resultCode){
+        when (resultCode){
             Activity.RESULT_OK -> {
                 when (requestCode) {
                     REQUEST_DOCS,
                     REQUEST_SHEETS,
-                    REQUEST_PRESENTATION, -> removeCommonDialog()
+                    REQUEST_PRESENTATION -> {
+                        removeCommonDialog()
+                        val uri = data?.data ?: return
+                        if (data.getBooleanExtra(EXTRA_IS_MODIFIED, false)) {
+                            presenter.updateDocument(uri = uri)
+                        }
+                    }
                 }
             }
             EditorsContract.RESULT_FAILED_OPEN -> {
@@ -172,7 +187,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     private fun registerEditorLauncher(requestCode: Int){
-        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+        val launcher = registerForActivityResult(StartActivityForResult()) { result ->
             onEditorActivityResult(requestCode, result.resultCode, result.data)
         }
         editorLaunchers[requestCode] = launcher
@@ -324,29 +339,48 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         show(requireContext())
     }
 
-    override fun onOpenLocalFile(file: CloudFile, editType: EditType?) {
-        val uri = Uri.parse(file.webUrl)
-        when (getExtension(file.fileExst)) {
-            StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
-                presenter.addRecent(file)
-                showEditors(uri, EditorsType.DOCS, editType = editType)
+    override fun onOpenLocalFile(file: CloudFile, editType: EditType, access: Access) {
+        onOpenLocalFile(
+            uri = file.webUrl.toUri(),
+            extension = file.fileExst,
+            editType = editType,
+            access = access
+        )
+    }
+
+    override fun onOpenLocalFile(uri: Uri, extension: String, editType: EditType, access: Access) {
+        when (getExtension(extension)) {
+            StringUtils.Extension.DOC,
+            StringUtils.Extension.EBOOK,
+            StringUtils.Extension.HTML,
+            StringUtils.Extension.FORM -> {
+                showEditors(
+                    uri = uri,
+                    type = EditorsType.DOCS,
+                    editType = if (extension in arrayOf(HWP_EXTENSION, HWPX_EXTENSION)) {
+                        EditType.View()
+                    } else {
+                        editType
+                    },
+                    access = access
+                )
             }
             StringUtils.Extension.SHEET -> {
-                presenter.addRecent(file)
-                showEditors(uri, EditorsType.CELLS, editType = editType)
+                showEditors(uri, EditorsType.CELLS, editType = editType, access = access)
             }
             StringUtils.Extension.PRESENTATION -> {
-                presenter.addRecent(file)
-                showEditors(uri, EditorsType.PRESENTATION, editType = editType)
+                showEditors(uri, EditorsType.PRESENTATION, editType = editType, access = access)
             }
             StringUtils.Extension.PDF -> {
-                presenter.addRecent(file)
-                showEditors(uri, EditorsType.PDF, editType = editType)
+                showEditors(uri, EditorsType.PDF, editType = editType, access = access)
+            }
+            StringUtils.Extension.IMAGE,
+            StringUtils.Extension.IMAGE_GIF -> {
+                showMediaActivity(getMediaFile(uri), false)
             }
             StringUtils.Extension.VIDEO_SUPPORT -> {
-                presenter.addRecent(file)
-                val videoFile = file.clone().apply {
-                    webUrl = uri?.path.orEmpty()
+                val videoFile = CloudFile().apply {
+                    webUrl = uri.path.orEmpty()
                     id = ""
                 }
                 val explorer = Explorer().apply {
@@ -354,13 +388,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 }
                 showMediaActivity(explorer, true)
             }
-            StringUtils.Extension.UNKNOWN, StringUtils.Extension.EBOOK, StringUtils.Extension.ARCH,
-            StringUtils.Extension.VIDEO, StringUtils.Extension.HTML,
-            -> {
+            StringUtils.Extension.UNKNOWN,
+            StringUtils.Extension.ARCH,
+            StringUtils.Extension.VIDEO -> {
                 onSnackBar(getString(R.string.download_manager_complete))
             }
-            else -> {
-            }
+            else -> Unit
         }
     }
 
@@ -379,8 +412,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 cancelButton = getString(R.string.dialogs_common_cancel_button),
                 suffix = presenter.itemExtension
             )
-            is ExplorerContextItem.Edit -> presenter.getFileInfo()
-            is ExplorerContextItem.Fill -> presenter.getFileInfo()
+            is ExplorerContextItem.Edit -> presenter.openFile(EditType.Edit(false))
+            is ExplorerContextItem.Fill -> presenter.openFile(EditType.Fill())
+            is ExplorerContextItem.View -> presenter.openFile(EditType.View())
             is ExplorerContextItem.Delete -> {
                 if (presenter.isRecentViaLinkSection()) {
                     presenter.deleteItems()
@@ -1112,36 +1146,20 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         }
     }
 
-    override fun onOpenDocumentServer(file: CloudFile?, info: String?, editType: EditType?) {
-        when (getExtension(file?.fileExst ?: "")) {
-            StringUtils.Extension.DOC, StringUtils.Extension.FORM -> {
-                showEditors(null, EditorsType.DOCS, info, editType)
-            }
-
-            StringUtils.Extension.SHEET -> {
-                showEditors(null, EditorsType.CELLS, info, editType)
-            }
-
-            StringUtils.Extension.PRESENTATION -> {
-                showEditors(null, EditorsType.PRESENTATION, info, editType)
-            }
-
-            StringUtils.Extension.PDF -> {
-                showEditors(null, EditorsType.PDF, info, editType)
-            }
-
-            else -> {
-            }
-        }
-    }
-
-    protected open fun showEditors(uri: Uri?, type: EditorsType, info: String? = null, editType: EditType? = null) {
+    protected fun showEditors(
+        uri: Uri?,
+        type: EditorsType,
+        info: String? = null,
+        editType: EditType,
+        access: Access
+    ) {
         try {
             val intent = Intent().apply {
                 data = uri
                 info?.let { putExtra(EditorsContract.KEY_DOC_SERVER, info) }
                 putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
                 putExtra(EditorsContract.KEY_EDIT_TYPE, editType)
+                putExtra(EditorsContract.KEY_EDIT_ACCESS, access.toEditAccess())
                 putExtra(EditorsContract.KEY_KEEP_SCREEN_ON, presenter.keepScreenOnSetting)
                 action = Intent.ACTION_VIEW
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -1149,9 +1167,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             when (type) {
                 EditorsType.DOCS, EditorsType.PDF -> {
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
-                    if (type == EditorsType.PDF) {
-                        intent.putExtra(EditorsContract.KEY_PDF, true)
-                    }
                     editorLaunchers[REQUEST_DOCS]?.launch(intent)
                 }
                 EditorsType.CELLS -> {
@@ -1162,44 +1177,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
                     editorLaunchers[REQUEST_PRESENTATION]?.launch(intent)
                 }
-                //                EditorsType.PDF -> {
-                //                    intent.setClassName(requireContext(), EditorsContract.PDF)
-                //                    startActivity(intent)
-                //                }
             }
         } catch (e: ActivityNotFoundException) {
             e.printStackTrace()
             showToast("Not found")
         }
-    }
-
-    protected fun getEditorsIntent(uri: Uri?, type: EditorsType, isForm: Boolean = false): Intent {
-        val intent = Intent().apply {
-            data = uri
-            putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-            action = Intent.ACTION_VIEW
-            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        }
-        when (type) {
-            EditorsType.DOCS -> {
-                intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
-            }
-            EditorsType.CELLS -> {
-                intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS)
-            }
-            EditorsType.PRESENTATION -> {
-                intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
-            }
-            EditorsType.PDF -> {
-                if (isForm) {
-                    intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
-                    intent.extras?.putBoolean("pdf", true)
-                } else {
-                    intent.setClassName(requireContext(), EditorsContract.PDF)
-                }
-            }
-        }
-        return intent
     }
 
     private fun removeCommonDialog() {
@@ -1281,4 +1263,21 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             dialog.show(parentFragmentManager, ExplorerContextBottomDialog.TAG)
         }
     }
+
+    private fun getMediaFile(uri: Uri): Explorer =
+        Explorer().apply {
+            val file = File(context?.let { PathUtils.getPath(it, uri).toString() }.toString())
+            val explorerFile = CloudFile().apply {
+                pureContentLength = file.length()
+                webUrl = file.absolutePath
+                fileExst = StringUtils.getExtensionFromPath(file.name)
+                title = file.name
+                isClicked = true
+            }
+            current = Current().apply {
+                title = file.name
+                filesCount = "1"
+            }
+            files = mutableListOf(explorerFile)
+        }
 }
