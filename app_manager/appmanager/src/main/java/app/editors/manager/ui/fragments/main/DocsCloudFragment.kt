@@ -248,6 +248,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> cloudPresenter.addToFavorite()
             is ExplorerContextItem.VersionHistory -> cloudPresenter.showVersionHistory()
+            is ExplorerContextItem.StopFilling -> showStopFillingQuestionDialog()
             else -> super.onContextButtonClick(contextItem)
         }
     }
@@ -266,6 +267,16 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             activity = requireActivity(),
             file = presenter.itemClicked as? CloudFile ?: return,
             onClose = { presenter.refresh() }
+        )
+    }
+
+    private fun showStopFillingQuestionDialog() {
+        UiUtils.showQuestionDialog(
+            context = requireContext(),
+            title = getString(R.string.filling_form_stop_filling_dialog_title),
+            description = getString(R.string.filling_form_stop_filling_dialog_desc),
+            acceptTitle = getString(R.string.filling_form_stop_filling),
+            acceptListener = { cloudPresenter.stopFillingForm() },
         )
     }
 

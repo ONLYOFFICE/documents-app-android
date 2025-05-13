@@ -1432,4 +1432,19 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             }
         }
     }
+
+    fun stopFillingForm() {
+        showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+        requestJob = presenterScope.launch {
+            (fileProvider as? CloudFileProvider ?: return@launch)
+                .stopFilling(itemClicked?.id.orEmpty())
+                .collect { result ->
+                    viewState.onDialogClose()
+                    when (result) {
+                        is Result.Error -> fetchError(result.exception)
+                        is Result.Success -> refresh()
+                    }
+                }
+        }
+    }
 }
