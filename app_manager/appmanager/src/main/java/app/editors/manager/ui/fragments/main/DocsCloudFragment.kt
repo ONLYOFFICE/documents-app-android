@@ -262,7 +262,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         FillingStatusFragment.show(
             activity = requireActivity(),
             file = presenter.itemClicked as? CloudFile ?: return,
-            onClose = { presenter.refresh() }
+            onClose = { presenter.refresh() },
+            onStartFill = { presenter.openFile(EditType.Fill(), false) }
         )
     }
 

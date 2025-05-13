@@ -6,8 +6,6 @@ import app.documents.core.account.AccountRepository
 import app.documents.core.manager.ManagerRepository
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.NetworkClient
-import app.documents.core.network.common.Result
-import app.documents.core.network.common.asResult
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
@@ -743,13 +741,13 @@ class CloudFileProvider @Inject constructor(
         if (!response.isSuccessful) throw HttpException(response)
     }
 
-    fun getFillingStatus(fileId: String): Flow<app.documents.core.network.common.Result<List<FormRole>>> {
+    fun getFillingStatus(fileId: String): Flow<NetworkResult<List<FormRole>>> {
         return flow { emit(managerService.getFillingStatus(fileId).response) }
             .flowOn(Dispatchers.IO)
             .asResult()
     }
 
-    fun stopFilling(fileId: String): Flow<app.documents.core.network.common.Result<Unit>> {
+    fun stopFilling(fileId: String): Flow<NetworkResult<Unit>> {
         return flow {
             val response = managerService.stopFilling(fileId, RequestStopFilling(fileId.toInt()))
             if (!response.isSuccessful) throw HttpException(response)
