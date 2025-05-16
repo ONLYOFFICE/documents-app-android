@@ -59,7 +59,7 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
 import app.editors.manager.viewModels.main.VersionViewer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import lib.toolkit.base.managers.tools.LocalContentTools
+import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.DialogUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
@@ -421,7 +421,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 .setPositiveButton(
                     getString(
                         R.string.conversion_dialog_convert_to,
-                        LocalContentTools.toOOXML(file.clearExt)
+                        FileExtensions.toOOXML(file.fileExst)
                     )
                 ) { dialog, _ ->
                     dialog.dismiss()
