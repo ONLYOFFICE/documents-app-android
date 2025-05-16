@@ -45,6 +45,10 @@ open class CloudFile : Item() {
     @Expose
     var webUrl = ""
 
+    @SerializedName("shortWebUrl")
+    @Expose
+    var shortWebUrl = ""
+
     @SerializedName("fileType")
     @Expose
     var fileType = ""

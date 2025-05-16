@@ -6,22 +6,29 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +45,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CreatedBy
+import app.documents.core.network.manager.models.explorer.FormRole
 import app.editors.manager.R
 import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.mvp.models.ui.UiFormFillingStatus
@@ -49,6 +57,7 @@ import app.editors.manager.viewModels.main.FillingStatusEffect
 import app.editors.manager.viewModels.main.FillingStatusState
 import app.editors.manager.viewModels.main.FillingStatusViewModel
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.colorGreen
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.ActivityIndicatorView
 import lib.compose.ui.views.AnimatedVisibilityVerticalFade
@@ -58,10 +67,12 @@ import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
+import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
+import lib.toolkit.base.managers.utils.openSendTextActivity
 import lib.toolkit.base.managers.utils.putArgs
 import java.util.Date
 
@@ -70,19 +81,22 @@ class FillingStatusFragment : ComposeDialogFragment() {
 
     companion object {
 
-        private const val CLOUD_FILE = "cloud_file"
+        private const val KEY_CLOUD_FILE = "key_cloud_file"
         private const val REQUEST_KEY = "filling_status_request"
         private const val RESULT_START_FILL_KEY = "result_start_fill_key"
         private const val RESULT_ON_CLOSE_KEY = "result_on_close_key"
+        private const val KEY_SEND_FORM = "key_send_form"
 
-        private fun newInstance(file: CloudFile): FillingStatusFragment {
+        private fun newInstance(file: CloudFile, isSendForm: Boolean): FillingStatusFragment {
             return FillingStatusFragment()
-                .putArgs(CLOUD_FILE to file)
+                .putArgs(KEY_CLOUD_FILE to file)
+                .putArgs(KEY_SEND_FORM to isSendForm)
         }
 
         fun show(
             activity: FragmentActivity,
             file: CloudFile,
+            isSendForm: Boolean,
             onClose: () -> Unit,
             onStartFill: () -> Unit
         ) {
@@ -95,12 +109,12 @@ class FillingStatusFragment : ComposeDialogFragment() {
                     bundle.getBoolean(RESULT_ON_CLOSE_KEY) == true -> onClose()
                 }
             }
-            newInstance(file).show(activity.supportFragmentManager, "")
+            newInstance(file, isSendForm).show(activity.supportFragmentManager, "")
         }
     }
 
     private val cloudFile: CloudFile by lazy {
-        arguments?.getSerializableExt(CLOUD_FILE) ?: CloudFile()
+        arguments?.getSerializableExt(KEY_CLOUD_FILE) ?: CloudFile()
     }
 
     @Composable
@@ -128,9 +142,22 @@ class FillingStatusFragment : ComposeDialogFragment() {
 
             FillingStatusScreen(
                 state = state.value,
+                isSendForm = remember { arguments?.getBoolean(KEY_SEND_FORM) == true },
                 onBack = ::dismiss,
                 onFillClick = ::onFillClick,
-                onStopFillingClick = { showStopFillingQuestionDialog(viewModel::stopFilling) }
+                onStopFillingClick = { showStopFillingQuestionDialog(viewModel::stopFilling) },
+                onCopyLinkClick = {
+                    KeyboardUtils.setDataToClipboard(requireContext(), state.value.formInfo.shortWebUrl)
+                    UiUtils.getSnackBar(requireActivity())
+                        .setText(R.string.rooms_info_create_link_complete)
+                        .show()
+                },
+                onShareClick = {
+                    requireContext().openSendTextActivity(
+                        getString(R.string.toolbar_menu_main_share),
+                        state.value.formInfo.shortWebUrl
+                    )
+                }
             )
         }
     }
@@ -161,29 +188,87 @@ class FillingStatusFragment : ComposeDialogFragment() {
 @Composable
 private fun FillingStatusScreen(
     state: FillingStatusState,
+    isSendForm: Boolean,
+    onCopyLinkClick: () -> Unit,
+    onShareClick: () -> Unit,
     onStopFillingClick: () -> Unit,
     onFillClick: () -> Unit,
     onBack: () -> Unit
 ) {
     AppScaffold(
         topBar = {
-            AppTopBar(
-                title = R.string.filling_form_filling_status,
-                backListener = onBack,
-                isClose = true
-            )
+            if (!isSendForm) {
+                AppTopBar(
+                    title = R.string.filling_form_filling_status,
+                    backListener = onBack,
+                    isClose = true
+                )
+            }
         }
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             AnimatedVisibilityVerticalFade(visible = state.requestLoading) {
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
-            AppDescriptionItem(
-                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-                text = R.string.filling_form_filling_status_desc
-            )
+            if (isSendForm) {
+                Box(
+                    modifier = Modifier
+                        .padding(top = 56.dp)
+                        .size(56.dp)
+                        .border(2.dp, MaterialTheme.colors.colorGreen, CircleShape)
+                        .align(Alignment.CenterHorizontally),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(20.dp),
+                        imageVector = ImageVector.vectorResource(R.drawable.drawable_ic_done),
+                        tint = MaterialTheme.colors.colorGreen,
+                        contentDescription = null
+                    )
+                }
+                Text(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .align(Alignment.CenterHorizontally),
+                    style = MaterialTheme.typography.h6,
+                    text = when (state.completeStatus) {
+                        FormCompleteStatus.Waiting -> {
+                            stringResource(R.string.filling_form_send_section_complete)
+                        }
+                        FormCompleteStatus.Complete -> {
+                            stringResource(R.string.filling_form_send_finalized)
+                        }
+                        else -> ""
+                    }
+                )
+            }
+            if (isSendForm) {
+                when (state.completeStatus) {
+                    FormCompleteStatus.Waiting -> {
+                        AppDescriptionItem(
+                            modifier = Modifier.padding(top = 16.dp),
+                            text = R.string.filling_form_send_section_complete_desc
+                        )
+                    }
+                    FormCompleteStatus.Complete -> {
+                        AppDescriptionItem(
+                            modifier = Modifier.padding(top = 16.dp),
+                            text = R.string.filling_form_send_finalized_desc
+                        )
+                    }
+                    else -> Unit
+                }
+            } else {
+                AppDescriptionItem(
+                    modifier = Modifier.padding(top = 16.dp),
+                    text = R.string.filling_form_filling_status_desc
+                )
+            }
             FormInfoContent(
-                formInfo = state.formInfo
+                modifier = Modifier.padding(top = 8.dp),
+                formInfo = state.formInfo,
+                isSendForm = isSendForm,
+                onShareClick = onShareClick
             )
             AppDivider()
             AnimatedContent(
@@ -195,7 +280,9 @@ private fun FillingStatusScreen(
                     ActivityIndicatorView()
                 } else {
                     Column {
-                        AppHeaderItem(title = R.string.filling_form_filling_process_details)
+                        if (!isSendForm) {
+                            AppHeaderItem(title = R.string.filling_form_filling_process_details)
+                        }
                         FillingStatusRoleList(
                             modifier = Modifier
                                 .verticalScroll(rememberScrollState())
@@ -206,7 +293,27 @@ private fun FillingStatusScreen(
                     }
                 }
             }
-            if (state.completeStatus == FormCompleteStatus.Waiting && state.roles.isNotEmpty()) {
+            if (isSendForm) {
+                AppDivider()
+                Row(
+                    modifier = Modifier
+                        .height(56.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    AppTextButton(
+                        modifier = Modifier.padding(end = 8.dp),
+                        title = R.string.rooms_fill_form_complete_back_to_room,
+                        onClick = onBack
+                    )
+                    AppTextButton(
+                        modifier = Modifier.padding(end = 8.dp),
+                        title = R.string.rooms_info_copy_link,
+                        onClick = onCopyLinkClick
+                    )
+                }
+            } else if (state.completeStatus == FormCompleteStatus.Waiting && state.roles.isNotEmpty()) {
                 AppDivider()
                 Row(
                     modifier = Modifier
@@ -238,7 +345,9 @@ private fun FillingStatusScreen(
 @Composable
 private fun FormInfoContent(
     modifier: Modifier = Modifier,
-    formInfo: CloudFile
+    formInfo: CloudFile,
+    isSendForm: Boolean,
+    onShareClick: () -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -254,7 +363,7 @@ private fun FormInfoContent(
         )
         Column(
             modifier = Modifier
-                .fillMaxWidth(),
+                .weight(1f),
             verticalArrangement = Arrangement.Center
         ) {
             val formFillingStatus = UiFormFillingStatus.from(formInfo.formFillingStatus)
@@ -285,6 +394,15 @@ private fun FormInfoContent(
                 color = MaterialTheme.colors.colorTextSecondary
             )
         }
+        if (isSendForm) {
+            IconButton(onClick = onShareClick) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_list_context_share),
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.primary
+                )
+            }
+        }
     }
 }
 
@@ -294,7 +412,7 @@ private fun FillingStatusScreenPreview() {
     ManagerTheme {
         FillingStatusScreen(
             state = FillingStatusState(
-                loading = true,
+                loading = false,
                 formInfo = CloudFile()
                     .apply {
                         createdBy = CreatedBy().apply {
@@ -303,10 +421,14 @@ private fun FillingStatusScreenPreview() {
                         title = "File name.pdf"
                         created = Date()
                         formFillingStatusType = 1
-                    }
+                    },
+                roles = FormRole.mockList
             ),
+            isSendForm = true,
             onStopFillingClick = {},
-            onFillClick = {}
+            onFillClick = {},
+            onCopyLinkClick = {},
+            onShareClick = {}
         ) {}
     }
 }
