@@ -66,10 +66,10 @@ import app.editors.manager.ui.fragments.login.EnterprisePortalFragment
 import app.editors.manager.ui.fragments.login.EnterpriseSignInFragment
 import app.editors.manager.ui.fragments.login.EnterpriseSmsFragment
 import app.editors.manager.ui.fragments.login.PersonalPortalFragment
-import app.editors.manager.ui.fragments.main.AppSettingsFragment
 import app.editors.manager.ui.fragments.main.CloudsFragment
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.main.WebViewerFragment
+import app.editors.manager.ui.fragments.main.settings.AppSettingsFragment
 import app.editors.manager.ui.fragments.media.MediaImageFragment
 import app.editors.manager.ui.fragments.media.MediaVideoFragment
 import app.editors.manager.ui.fragments.operations.DocsOperationSectionFragment
