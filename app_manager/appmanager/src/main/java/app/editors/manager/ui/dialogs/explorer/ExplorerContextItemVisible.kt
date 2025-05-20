@@ -46,6 +46,8 @@ interface ExplorerContextItemVisible {
             ExplorerContextItem.EditComment -> false
             ExplorerContextItem.Open -> false
             ExplorerContextItem.DeleteVersion -> false
+            ExplorerContextItem.SaveAsTemplate -> saveAsTemplate
+            ExplorerContextItem.AccessSettings -> accessSettings
         }
     }
 
@@ -202,10 +204,12 @@ interface ExplorerContextItemVisible {
         }
 
     private val ExplorerContextState.createRoom: Boolean
-        get() {
-            if (section is ApiContract.Section.Room.Archive) return false
-            return item.security?.createRoomFrom == true
-        }
+        get() = when {
+                section.isArchive -> false
+                section.isTemplates -> true
+                else -> item.security?.createRoomFrom == true
+            }
+
 
     private val ExplorerContextState.location: Boolean
         get() = isSearching
@@ -221,6 +225,12 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.versionHistory: Boolean
         get() = item.security?.readHistory == true
+
+    private val ExplorerContextState.saveAsTemplate: Boolean
+        get() = (item is CloudFolder) && item.isRoom
+
+    private val ExplorerContextState.accessSettings: Boolean
+        get() = (item is CloudFolder) && item.isTemplate
 
     private fun ExplorerContextState.favorites(enabled: Boolean): Boolean =
         enabled && !isFolder && !listOf(

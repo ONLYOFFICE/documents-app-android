@@ -28,6 +28,7 @@ sealed class ExplorerContextItem(
 
             fun getTitle(state: ExplorerContextState) = when {
                 state.section.isRoom && state.isRoot -> R.string.list_context_edit_room
+                state.section.isTemplates -> R.string.list_context_edit_template
                 else -> R.string.list_context_edit
             }
         }
@@ -97,6 +98,16 @@ sealed class ExplorerContextItem(
     class CustomFilter(enabled: Boolean? = false) : ExplorerContextItem(
         icon = R.drawable.ic_custom_filter,
         title = if (enabled == true) R.string.list_context_disable_custom_filter else R.string.list_context_enable_custom_filter
+    ), ExplorerContextBlockOrder.Common
+
+    object SaveAsTemplate : ExplorerContextItem(
+        icon = R.drawable.ic_save_as_template,
+        title = R.string.list_context_save_as_template
+    ), ExplorerContextBlockOrder.Common
+
+    object AccessSettings : ExplorerContextItem(
+        icon = R.drawable.ic_add_users,
+        title = R.string.list_context_access_settings
     ), ExplorerContextBlockOrder.Common
 
     object Download : ExplorerContextItem(

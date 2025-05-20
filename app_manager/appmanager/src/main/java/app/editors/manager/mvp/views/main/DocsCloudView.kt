@@ -61,4 +61,13 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onOpenDocumentServer(file: CloudFile, info: String, type: EditType)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showTemplateSettingsFragment(templateId: String, modeId: Int)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showTemplateAccessSettingsFragment(templateId: String)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showRoomFromTemplateFragment(templateId: String?)
 }

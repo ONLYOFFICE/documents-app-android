@@ -44,11 +44,18 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.AddUsers,
                 ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Notifications((state.item as? CloudFolder)?.mute == true),
+                ExplorerContextItem.SaveAsTemplate,
                 ExplorerContextItem.Duplicate,
                 ExplorerContextItem.Download,
                 ExplorerContextItem.Archive,
                 ExplorerContextItem.Restore,
                 ExplorerContextItem.Delete(state)
+            )
+
+            state.section.isTemplates -> listOf(
+                ExplorerContextItem.CreateRoom,
+                ExplorerContextItem.AccessSettings,
+                ExplorerContextItem.Edit(state)
             )
 
             state.section is ApiContract.Section.Storage -> listOf(

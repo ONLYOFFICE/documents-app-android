@@ -52,6 +52,7 @@ import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROT
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
+import app.editors.manager.viewModels.main.TemplateSettingsMode
 import app.editors.manager.viewModels.main.VersionViewer
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -913,6 +914,36 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun showVersionHistory() {
         (itemClicked as? CloudFile)?.let {
             viewState.showVersionHistoryFragment(it.id)
+        }
+    }
+
+    fun createTemplate() {
+        (itemClicked as? CloudFolder)?.let { folder ->
+            viewState.showTemplateSettingsFragment(
+                folder.id,
+                TemplateSettingsMode.MODE_CREATE_TEMPLATE
+            )
+        }
+    }
+
+    fun createRoomFromTemplate() {
+        (itemClicked as? CloudFolder)?.let { template ->
+            viewState.showRoomFromTemplateFragment(template.id)
+        }
+    }
+
+    private fun editTemplate() {
+        roomClicked?.let { template ->
+            viewState.showTemplateSettingsFragment(
+                template.id,
+                TemplateSettingsMode.MODE_EDIT_TEMPLATE
+            )
+        }
+    }
+
+    fun editTemplateAccessSettings() {
+        (itemClicked as? CloudFolder)?.let { folder ->
+            viewState.showTemplateAccessSettingsFragment(folder.id)
         }
     }
 
