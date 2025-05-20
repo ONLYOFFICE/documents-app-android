@@ -11,6 +11,7 @@ import androidx.compose.runtime.Immutable
 import androidx.core.graphics.decodeBitmap
 import androidx.lifecycle.ViewModel
 import app.documents.core.model.login.User
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Lifetime
 import app.documents.core.network.manager.models.explorer.Watermark
 import app.documents.core.network.manager.models.explorer.WatermarkType
@@ -110,7 +111,7 @@ abstract class RoomSettingsViewModel(
                 return@combine false
             }
 
-            if (watermarkState.watermark.enabled) {
+            if (state.type == ApiContract.RoomType.VIRTUAL_ROOM && watermarkState.watermark.enabled) {
                 with(watermarkState) {
                     when (watermark.type) {
                         WatermarkType.Image -> {
