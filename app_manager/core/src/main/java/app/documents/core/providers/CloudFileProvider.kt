@@ -81,12 +81,14 @@ class CloudFileProvider @Inject constructor(
         fun isRoomRoot(id: String?): Boolean
         fun isArchive(): Boolean
         fun isRecent(): Boolean
+        fun isTemplatesRoot(id: String?): Boolean
     }
 
     var roomCallback: RoomCallback? = null
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return when {
+            roomCallback?.isTemplatesRoot(id) == true -> getRoomTemplates(filter.orEmpty())
             roomCallback?.isRoomRoot(id) == true -> getRooms(filter, roomCallback!!::isArchive)
             roomCallback?.isRecent() == true -> getRecentViaLink(filter.orEmpty()).toObservable()
             else -> managerService.getItemById(id.orEmpty(), filter)
@@ -693,6 +695,20 @@ class CloudFileProvider @Inject constructor(
             .put("fileId", cloudFile.id)
             .put("canShareable", canShareable)
             .toString()
+    }
+
+    fun getRoomTemplates(filter: Map<String, String> = mapOf()): Observable<Explorer> {
+        val options = filter.plus("searchArea" to "Templates")
+        return roomService.getAllRooms(options)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .map { responseExplorerResponse: Response<ResponseExplorer> ->
+                if (responseExplorerResponse.isSuccessful && responseExplorerResponse.body() != null) {
+                    return@map responseExplorerResponse.body()?.response
+                } else {
+                    throw HttpException(responseExplorerResponse)
+                }
+            }
     }
 
     fun getVersionHistory(fileId: String): Flow<Result<List<CloudFile>>> = apiFlow {

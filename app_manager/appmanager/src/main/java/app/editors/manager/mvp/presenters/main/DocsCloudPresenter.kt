@@ -107,6 +107,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 override fun isRecent(): Boolean {
                     return modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_RECENT
                 }
+
+                override fun isTemplatesRoot(id: String?) =
+                    isTemplatesFolder && modelExplorerStack.last()?.pathParts?.firstOrNull()?.id == id
             }
         }
 
@@ -1085,6 +1088,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             }
             override fun isArchive(): Boolean = false
             override fun isRecent(): Boolean = false
+            override fun isTemplatesRoot(id: String?): Boolean = isTemplatesFolder
+
         }
     }
 

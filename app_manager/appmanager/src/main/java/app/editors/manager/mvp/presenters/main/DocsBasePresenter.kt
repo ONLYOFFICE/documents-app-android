@@ -66,8 +66,6 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.ContentResolverUtils
@@ -82,7 +80,6 @@ import moxy.presenterScope
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import moxy.presenterScope
 import okhttp3.ResponseBody
 import org.json.JSONException
 import retrofit2.HttpException
@@ -1363,6 +1360,10 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         } else {
             modelExplorerStack.isRoot
         }
+
+    val isTemplatesFolder: Boolean
+        get() = ApiContract.SectionType.isTemplates(modelExplorerStack.rootFolderType)
+                && modelExplorerStack.last()?.pathParts.orEmpty().size < 2
 
     private val isBackStackEmpty: Boolean
         get() = modelExplorerStack.isStackEmpty
