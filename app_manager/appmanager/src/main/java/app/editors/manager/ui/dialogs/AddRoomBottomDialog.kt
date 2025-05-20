@@ -93,6 +93,7 @@ private fun AddRoomBottomDialogContent(onClick: (type: Int) -> Unit) {
         for (type in RoomUtils.roomTypes) {
             AddRoomItem(roomType = type, onClick = onClick)
         }
+        AddRoomItem(roomType = 0, onClick = onClick, isTemplate = true)
     }
 }
 
@@ -101,9 +102,10 @@ fun AddRoomItem(
     roomType: Int,
     selected: Boolean? = null,
     clickable: Boolean = true,
+    isTemplate: Boolean = false,
     onClick: (Int) -> Unit
 ) {
-    val info = RoomUtils.getRoomInfo(roomType)
+    val info = RoomUtils.getRoomInfo(roomType, isTemplate)
     AppMultilineArrowItem(
         icon = info.icon,
         selected = selected,
