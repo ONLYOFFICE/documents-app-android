@@ -49,19 +49,37 @@ internal object StringUtils {
                 )
             }
             folder.isRoom -> {
-                val roomType = context.getString(RoomUtils.getRoomInfo(folder.roomType).title)
-                if (state.isGridView) {
-                    return listOfNotNull(roomType)
-                }
-
-                when (state.sortBy) {
-                    ActionMenuItem.Date.sortValue -> listOfNotNull(date, roomType, owner)
-                    ActionMenuItem.Author.sortValue -> listOfNotNull(owner, roomType, date)
-                    ActionMenuItem.Type.sortValue -> listOfNotNull(roomType, owner, date)
-                    else -> listOfNotNull(roomType, owner, date)
-                }
+                getRoomInfo(
+                    roomType = folder.roomType,
+                    context = context,
+                    date = date,
+                    owner = owner,
+                    isGridView = state.isGridView,
+                    sortBy = state.sortBy
+                )
             }
             else -> listOfNotNull(owner, date)
+        }
+    }
+
+    fun getRoomInfo(
+        roomType: Int,
+        context: Context,
+        date: String?,
+        owner: String?,
+        isGridView: Boolean,
+        sortBy: String?
+    ) : List<String> {
+        val roomTypeTitle = context.getString(RoomUtils.getRoomInfo(roomType).title)
+        if (isGridView) {
+            return listOfNotNull(roomTypeTitle)
+        }
+
+        return when (sortBy) {
+            ActionMenuItem.Date.sortValue -> listOfNotNull(date, roomTypeTitle, owner)
+            ActionMenuItem.Author.sortValue -> listOfNotNull(owner, roomTypeTitle, date)
+            ActionMenuItem.Type.sortValue -> listOfNotNull(roomTypeTitle, owner, date)
+            else -> listOfNotNull(roomTypeTitle, owner, date)
         }
     }
 
@@ -97,7 +115,7 @@ internal object StringUtils {
         }
     }
 
-    private fun getItemOwner(context: Context, item: Item, userId: String?): String? {
+    fun getItemOwner(context: Context, item: Item, userId: String?): String? {
         return when {
             userId.equals(
                 item.createdBy.id,
