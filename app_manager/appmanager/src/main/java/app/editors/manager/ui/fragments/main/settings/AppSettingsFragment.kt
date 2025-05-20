@@ -194,7 +194,7 @@ class AppSettingsFragment : BaseFragment() {
                 AppSettingsScreen.Passcode.route -> R.string.app_settings_passcode
                 AppSettingsScreen.LocalePicker.route -> R.string.settings_language
                 AppSettingsScreen.About.route -> R.string.about_title
-                AppSettingsScreen.HelpAndFeedback.route -> R.string.help_and_feedback_title
+                AppSettingsScreen.HelpAndFeedback.route -> lib.toolkit.base.R.string.help_and_feedback_title
                 AppSettingsScreen.Fonts.route -> lib.toolkit.base.R.string.settings_fonts_title
                 else -> R.string.settings_item_title
             }

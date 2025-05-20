@@ -24,10 +24,10 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.ui.compose.locale.AppLocalePickerScreen
 import app.editors.manager.ui.compose.passcode.PasscodeMainScreen
-import app.editors.manager.ui.screens.HelpAndFeedbackScreen
 import app.editors.manager.viewModels.main.AppSettingsState
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import app.editors.manager.viewModels.main.PasscodeViewModel
+import lib.compose.ui.screens.HelpAndFeedbackScreen
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDivider
@@ -158,9 +158,13 @@ fun AppSettingsScreenHost(
             )
         }
         composable(AppSettingsScreen.HelpAndFeedback.route) {
-            HelpAndFeedbackScreen(
-                onWhatsNewClick = { }
-            )
+            HelpAndFeedbackScreen {
+                AppArrowItem(
+                    title = R.string.whats_new_title,
+                    dividerVisible = false,
+                    onClick = { } // TODO: add what's new screen navigate
+                )
+            }
         }
     }
 }
@@ -261,7 +265,7 @@ private fun AppSettingsScreen(
                 onClick = onAboutClick
             )
             AppArrowItem(
-                title = R.string.help_and_feedback_title,
+                title = lib.toolkit.base.R.string.help_and_feedback_title,
                 arrowVisible = true,
                 dividerVisible = false,
                 onClick = onHelpAndFeedbackClick

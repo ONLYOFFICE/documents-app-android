@@ -40,10 +40,6 @@
     <string name="about_license">License agreement</string>
     <string name="about_website">ONLYOFFICE website</string>
 
-    <string name="help_and_feedback_title">Help &amp; Feedback</string>
-    <string name="help_and_feedback_suggest_a_feature">Suggest a Feature</string>
-    <string name="help_and_feedback_contact_support">Contact support</string>
-    <string name="help_and_feedback_help_center">Help Center</string>
     <!-- ======================================================================================= -->
     <!-- Common errors -->
     <string name="errors_unknown_error">Connection error. Try again later.</string>
