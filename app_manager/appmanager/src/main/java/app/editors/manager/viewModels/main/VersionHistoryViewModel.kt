@@ -1,6 +1,7 @@
 package app.editors.manager.viewModels.main
 
 import android.net.Uri
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,9 @@ import app.documents.core.providers.CloudFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.receivers.DownloadReceiver
+import app.editors.manager.managers.tools.BaseEvent
+import app.editors.manager.managers.tools.BaseEventSender
+import app.editors.manager.managers.tools.EventSender
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.mvp.models.ui.FileVersionUi
@@ -58,8 +62,10 @@ class VersionHistoryViewModel(
     private val downloadReceiver: DownloadReceiver,
     private val resourceProvider: ResourcesProvider,
     private val fileId: String
-
-) : BaseEventViewModel(resourceProvider), DownloadReceiver.BaseOnDownloadListener {
+) : ViewModel(),
+    EventSender by BaseEventSender(resourceProvider),
+    DownloadReceiver.BaseOnDownloadListener
+{
 
     private val _uiState = MutableStateFlow(VersionHistoryState())
     val uiState = _uiState.asStateFlow()
@@ -122,21 +128,21 @@ class VersionHistoryViewModel(
     private fun onDownloadClick(){
         viewModelScope.launch {
             _uiState.value.currentItem?.let { item ->
-                _events.send(VersionHistoryEvent.RequestDocumentCreation(item.title))
+                sendEvent(VersionHistoryEvent.RequestDocumentCreation(item.title))
             }
         }
     }
 
     private fun onOpenClick() {
+        fun handleError() = viewModelScope.launch { sendMessage(R.string.error_version_open) }
         _uiState.value.currentItem?.let {
             viewerRef?.get()?.openFileVersion(
                 CloudFile().apply {
                     id = it.fileId
                     version = it.version
-                }
-            ){
-                sendMessage(R.string.error_version_open)
-            } ?: sendMessage(R.string.error_version_open)
+                },
+                onError = { handleError() }
+            ) ?: handleError()
         }
     }
 
@@ -191,7 +197,7 @@ class VersionHistoryViewModel(
     }
 
     override fun onDownloadError(info: String?) {
-        sendMessage(R.string.download_manager_error)
+        viewModelScope.launch { sendMessage(R.string.download_manager_error) }
     }
 
     override fun onDownloadComplete(
@@ -204,7 +210,7 @@ class VersionHistoryViewModel(
         uri: Uri?
     ) {
         viewModelScope.launch {
-            _events.send(VersionHistoryEvent.DownloadSuccessfully(
+            sendEvent(VersionHistoryEvent.DownloadSuccessfully(
                 msg = "$info\n$title",
                 buttonText = resourceProvider.getString(R.string.download_manager_open),
                 uri = uri
