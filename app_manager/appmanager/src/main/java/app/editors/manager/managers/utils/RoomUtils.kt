@@ -23,15 +23,10 @@ object RoomUtils {
         ApiContract.RoomType.CUSTOM_ROOM
     )
 
-    fun getRoomInfo(type: Int): RoomInfo {
-        val icon = when (type) {
-            ApiContract.RoomType.COLLABORATION_ROOM -> R.drawable.ic_collaboration_room
-            ApiContract.RoomType.PUBLIC_ROOM -> R.drawable.ic_public_room
-            ApiContract.RoomType.CUSTOM_ROOM -> R.drawable.ic_custom_room
-            ApiContract.RoomType.FILL_FORMS_ROOM -> R.drawable.ic_fill_forms_room
-            ApiContract.RoomType.VIRTUAL_ROOM -> R.drawable.ic_vdr_room
-            else -> R.drawable.ic_collaboration_room
-        }
+    fun getRoomInfo(type: Int, isTemplate: Boolean = false): RoomInfo {
+        if (isTemplate && type == 0) return getFromTemplateInfo()
+
+        val icon = if (isTemplate) getTemplateIcon(type) else getRoomIcon(type)
         val title = when (type) {
             ApiContract.RoomType.COLLABORATION_ROOM -> R.string.rooms_add_collaboration
             ApiContract.RoomType.PUBLIC_ROOM -> R.string.rooms_add_public_room
@@ -49,6 +44,32 @@ object RoomUtils {
             else -> R.string.rooms_add_collaboration_des
         }
         return RoomInfo(icon, title, des)
+    }
+
+    private fun getRoomIcon(type: Int) = when (type) {
+        ApiContract.RoomType.COLLABORATION_ROOM -> R.drawable.ic_collaboration_room
+        ApiContract.RoomType.PUBLIC_ROOM -> R.drawable.ic_public_room
+        ApiContract.RoomType.CUSTOM_ROOM -> R.drawable.ic_custom_room
+        ApiContract.RoomType.FILL_FORMS_ROOM -> R.drawable.ic_fill_forms_room
+        ApiContract.RoomType.VIRTUAL_ROOM -> R.drawable.ic_vdr_room
+        else -> R.drawable.ic_collaboration_room
+    }
+
+    private fun getTemplateIcon(type: Int) = when (type) {
+        ApiContract.RoomType.COLLABORATION_ROOM -> R.drawable.ic_collaboration_template
+        ApiContract.RoomType.PUBLIC_ROOM -> R.drawable.ic_public_template
+        ApiContract.RoomType.CUSTOM_ROOM -> R.drawable.ic_custom_template
+        ApiContract.RoomType.FILL_FORMS_ROOM -> R.drawable.ic_fill_forms_template
+        ApiContract.RoomType.VIRTUAL_ROOM -> R.drawable.ic_vdr_template
+        else -> R.drawable.ic_collaboration_template
+    }
+
+    private fun getFromTemplateInfo(): RoomInfo {
+        return RoomInfo(
+            icon = R.drawable.ic_create_template,
+            title = R.string.title_create_from_template,
+            description = R.string.desc_create_from_template
+        )
     }
 
     fun getLinkAccessOptions(): List<Access> = listOf(
