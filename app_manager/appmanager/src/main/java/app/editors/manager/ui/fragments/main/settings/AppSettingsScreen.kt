@@ -24,6 +24,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.ui.compose.locale.AppLocalePickerScreen
 import app.editors.manager.ui.compose.passcode.PasscodeMainScreen
+import app.editors.manager.ui.screens.HelpAndFeedbackScreen
 import app.editors.manager.viewModels.main.AppSettingsState
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import app.editors.manager.viewModels.main.PasscodeViewModel
@@ -32,6 +33,7 @@ import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppSwitchItem
+import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.capitalize
@@ -43,6 +45,8 @@ sealed class AppSettingsScreen(val route: String) {
     data object Passcode : AppSettingsScreen("passcode")
     data object LocalePicker : AppSettingsScreen("locale")
     data object Fonts : AppSettingsScreen("fonts")
+    data object HelpAndFeedback : AppSettingsScreen("help-and-feedback")
+    data object About : AppSettingsScreen("about")
 }
 
 private data class ClearCacheMessage(
@@ -94,7 +98,8 @@ fun AppSettingsScreenHost(
                 onPasscodeClick = { navController.navigate(AppSettingsScreen.Passcode.route) },
                 onLocaleClick = { navController.navigate(AppSettingsScreen.LocalePicker.route) },
                 onFontsClick = { navController.navigate(AppSettingsScreen.Fonts.route) },
-                onHelpAndFeedbackClick = { }
+                onAboutClick = { navController.navigate(AppSettingsScreen.About.route) },
+                onHelpAndFeedbackClick = { navController.navigate(AppSettingsScreen.HelpAndFeedback.route) }
             )
         }
         composable(AppSettingsScreen.Theme.route) {
@@ -142,6 +147,21 @@ fun AppSettingsScreenHost(
                 )
             }
         }
+        composable(AppSettingsScreen.About.route) {
+            AboutScreen(
+                onShowBrowser = { url ->
+                    ActivitiesUtils.showBrowser(
+                        context = context,
+                        url = context.getString(url)
+                    )
+                }
+            )
+        }
+        composable(AppSettingsScreen.HelpAndFeedback.route) {
+            HelpAndFeedbackScreen(
+                onWhatsNewClick = { }
+            )
+        }
     }
 }
 
@@ -151,12 +171,13 @@ private fun AppSettingsScreen(
     onThemeClick: () -> Unit,
     onPasscodeClick: () -> Unit,
     onLocaleClick: () -> Unit,
-    onHelpAndFeedbackClick: () -> Unit,
     onWifiState: (Boolean) -> Unit,
     onScreenOnState: (Boolean) -> Unit,
     onAnalytics: (Boolean) -> Unit,
     onCacheClear: () -> Unit,
-    onFontsClick: () -> Unit
+    onFontsClick: () -> Unit,
+    onHelpAndFeedbackClick: () -> Unit,
+    onAboutClick: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -237,6 +258,12 @@ private fun AppSettingsScreen(
                 title = R.string.about_title,
                 arrowVisible = true,
                 dividerVisible = false,
+                onClick = onAboutClick
+            )
+            AppArrowItem(
+                title = R.string.help_and_feedback_title,
+                arrowVisible = true,
+                dividerVisible = false,
                 onClick = onHelpAndFeedbackClick
             )
         }
@@ -262,6 +289,7 @@ private fun AppSettingsScreenPreview() {
             onPasscodeClick = {},
             onLocaleClick = {},
             onHelpAndFeedbackClick = {},
+            onAboutClick = {},
             onCacheClear = {},
             onFontsClick = {}
         )

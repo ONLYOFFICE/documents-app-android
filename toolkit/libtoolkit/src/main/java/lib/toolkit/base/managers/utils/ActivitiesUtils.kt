@@ -120,10 +120,15 @@ object ActivitiesUtils {
 
     @JvmStatic
     fun showBrowser(activity: Activity, chooseTitle: String?, url: String) {
+        showBrowser(activity.applicationContext, chooseTitle, url)
+    }
+
+    @JvmStatic
+    fun showBrowser(context: Context, chooseTitle: String? = null, url: String) {
         val intent = Intent(Intent.ACTION_VIEW).apply {
             data = Uri.parse(url)
         }
-        activity.startActivity(Intent.createChooser(intent, chooseTitle))
+        context.startActivity(Intent.createChooser(intent, chooseTitle ?: url))
     }
 
     fun getBrowserIntent(url: String): Intent {
