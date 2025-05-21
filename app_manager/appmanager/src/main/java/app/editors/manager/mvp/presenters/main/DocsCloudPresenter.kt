@@ -26,6 +26,7 @@ import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.CloudFileProvider.RoomCallback
 import app.documents.core.providers.FileOpenResult
 import app.documents.core.providers.RoomProvider
+import app.documents.core.utils.FirebaseTool
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -82,6 +83,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     @Inject
     lateinit var downloadReceiver: DownloadReceiver
+
+    @Inject
+    lateinit var firebaseTool: FirebaseTool
+
     private val uploadReceiver: UploadReceiver = UploadReceiver()
     private var duplicateRoomReceiver: RoomDuplicateReceiver = RoomDuplicateReceiver()
 
@@ -454,13 +459,21 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun openFillFormFile() {
         val file = itemClicked as? CloudFile ?: return
-        if (account.portal.isDocSpace && file.isPdfForm) {
-            if (isUserSection) {
-                viewState.showFillFormChooserFragment()
-                return
+
+        presenterScope.launch {
+            if (file.formFillingStatus == ApiContract.FormFillingStatus.YourTurn &&
+                !firebaseTool.isCoauthoring()
+            ) {
+                viewState.showFillFormIncompatibleVersionsDialog()
+                return@launch
             }
+
+            if (account.portal.isDocSpace && file.isPdfForm && isUserSection) {
+                viewState.showFillFormChooserFragment()
+                return@launch
+            }
+            openFile(EditType.Fill())
         }
-        openFile(EditType.Fill())
     }
 
     override fun openFile(editType: EditType, canBeShared: Boolean) {

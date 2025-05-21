@@ -1105,5 +1105,6 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="filling_form_send_section_complete_desc">The assigned portion of the PDF form has been successfully completed. The filling status of the form can be monitored in the room and via the Filling status panel. An email notification will be sent once the form is fully completed.</string>
     <string name="filling_form_send_finalized">Form Section Completed</string>
     <string name="filling_form_send_finalized_desc">The form has been fully completed by all roles and is now finalized. It is available in view-only mode.</string>
+    <string name="filling_form_version_incompatible_desc">The client and server versions are incompatible. You can only open the document in view mode.</string>
 
 </resources>

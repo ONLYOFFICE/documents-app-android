@@ -681,6 +681,16 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         )
     }
 
+    override fun showFillFormIncompatibleVersionsDialog() {
+        UiUtils.showQuestionDialog(
+            context = requireContext(),
+            title = getString(R.string.rooms_filter_type_filling_forms),
+            description = getString(R.string.filling_form_version_incompatible_desc),
+            acceptTitle = getString(R.string.conversion_dialog_open_in_view_mode),
+            acceptListener = { presenter.openFile(EditType.View()) },
+        )
+    }
+
     override fun showVersionHistoryFragment(fileId: String) {
         refreshListener = VersionHistoryFragment.show(
             parentFragmentManager,
