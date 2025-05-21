@@ -510,11 +510,10 @@ class CloudFileProvider @Inject constructor(
                             editType = editType
                         )
 
-                        if (document.isPdf) {
-                            val cachedFile = suspendGetCachedFile(context, cloudFile, token)
+                        if (document.isPdf || document.info == null) {
                             emit(
                                 FileOpenResult.OpenLocally(
-                                    file = cachedFile,
+                                    file = suspendGetCachedFile(context, cloudFile, token),
                                     fileId = cloudFile.id,
                                     editType = editType,
                                     access = access
@@ -524,16 +523,15 @@ class CloudFileProvider @Inject constructor(
                             emit(
                                 FileOpenResult.OpenDocumentServer(
                                     cloudFile = cloudFile,
-                                    info = checkNotNull(document.info),
+                                    info = document.info,
                                     editType = editType
                                 )
                             )
                         }
                     } else {
-                        val cachedFile = suspendGetCachedFile(context, cloudFile, token)
                         emit(
                             FileOpenResult.OpenLocally(
-                                file = cachedFile,
+                                file = suspendGetCachedFile(context, cloudFile, token),
                                 fileId = cloudFile.id,
                                 editType = editType,
                                 access = access

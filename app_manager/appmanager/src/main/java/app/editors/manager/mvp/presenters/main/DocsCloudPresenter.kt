@@ -472,7 +472,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 viewState.showFillFormChooserFragment()
                 return@launch
             }
-            openFile(EditType.Fill())
+
+            openFile(if (file.security?.fillForms == true) EditType.Fill() else EditType.View())
         }
     }
 
