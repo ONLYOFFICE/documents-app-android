@@ -13,6 +13,7 @@ import app.editors.manager.managers.utils.FirebaseUtils
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.suspendCancellableCoroutine
+import javax.inject.Singleton
 import kotlin.coroutines.resume
 
 @Module
@@ -43,13 +44,19 @@ object AppModule {
     }
 
     @Provides
+    @Singleton
     fun provideFirebaseTool(
         context: Context,
         cloudAccount: CloudAccount?
     ): FirebaseTool {
         return object : FirebaseTool {
 
+            private var _isCoauthoring: Boolean? = null
+
             override suspend fun isCoauthoring(): Boolean {
+                _isCoauthoring?.let { enabled ->
+                    return enabled
+                }
                 val isCoauthoring = suspendCancellableCoroutine { continuation ->
                     if (cloudAccount == null) {
                         continuation.resume(false)
@@ -58,7 +65,10 @@ object AppModule {
                     FirebaseUtils.checkSdkVersion(
                         context = context,
                         account = cloudAccount,
-                        onResult = { continuation.resume(it) }
+                        onResult = { enabled ->
+                            _isCoauthoring = enabled
+                            continuation.resume(enabled)
+                        }
                     )
                 }
                 return isCoauthoring
