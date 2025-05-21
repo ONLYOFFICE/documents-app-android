@@ -90,7 +90,7 @@
 
                 <ImageView
                     style="@style/Widget.Common.ImageView.ActionBottomMenu"
-                    app:srcCompat="@drawable/ic_default_add"
+                    app:srcCompat="@drawable/ic_list_action_photo"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.textview.MaterialTextView
