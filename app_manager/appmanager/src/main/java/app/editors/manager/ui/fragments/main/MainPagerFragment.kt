@@ -461,16 +461,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         val fragmentList: List<MainPagerContainer>
     ) : ViewPagerAdapter(manager, fragmentList) {
 
-        private var isInitSelection = true
-
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
             activity?.showActionButton(false)
             this@MainPagerFragment.selectedPage = selectedPage
-            if (isInitSelection) {
-                isInitSelection = false
-                return
-            }
             (getActiveFragment(viewBinding?.mainViewPager) as DocsCloudFragment).onScrollPage()
         }
     }
