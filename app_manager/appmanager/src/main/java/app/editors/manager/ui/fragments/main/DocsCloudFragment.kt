@@ -177,7 +177,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             menuInflater?.let { menuInflater ->
                 menuInflater.inflate(R.menu.docs_select, menu)
                 deleteItem = menu.findItem(R.id.toolbar_selection_delete)
-                    .setVisible(presenter.isContextItemEditable).also {
+                    .setVisible(presenter.isContextItemEditable && presenter.areItemsRemovable).also {
                         setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary)
                     }
                 setAccountEnable(false)
@@ -267,7 +267,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         when (item) {
             is ActionMenuItem.CopyLink -> presenter.copyLinkFromActionMenu(item.isRoom)
             ActionMenuItem.Info -> showRoomInfoFragment()
-            ActionMenuItem.CreateRoom -> showAddRoomBottomDialog()
+            ActionMenuItem.CreateRoom -> {
+                if (presenter.currentFolder?.isTemplate == true) {
+                    presenter.createRoomFromTemplate()
+                } else {
+                    showAddRoomBottomDialog()
+                }
+            }
             else -> super.actionMenuClickListener(item)
         }
     }

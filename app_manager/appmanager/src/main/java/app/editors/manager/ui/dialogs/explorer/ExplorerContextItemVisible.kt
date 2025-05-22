@@ -227,10 +227,10 @@ interface ExplorerContextItemVisible {
         get() = item.security?.readHistory == true
 
     private val ExplorerContextState.saveAsTemplate: Boolean
-        get() = (item is CloudFolder) && item.isRoom
+        get() = (item is CloudFolder) && item.isRoom && item.security?.editRoom == true
 
     private val ExplorerContextState.accessSettings: Boolean
-        get() = (item is CloudFolder) && item.isTemplate
+        get() = section.isTemplates && item.security?.editAccess == true
 
     private fun ExplorerContextState.favorites(enabled: Boolean): Boolean =
         enabled && !isFolder && !listOf(

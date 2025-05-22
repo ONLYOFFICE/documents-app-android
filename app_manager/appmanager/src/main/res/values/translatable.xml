@@ -356,6 +356,7 @@
     <string name="list_context_rename">Rename</string>
     <string name="list_context_rename_success">Renamed successfully</string>
     <string name="list_context_delete">Delete</string>
+    <string name="list_context_delete_template">Delete template</string>
     <string name="list_context_delete_storage">Disconnect storage</string>
     <string name="list_context_delete_success">Deleted successfully</string>
     <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
@@ -950,6 +951,8 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="share_invite_title">Invite</string>
     <string name="room_create_success">Room created</string>
     <string name="room_delete_success">Room deleted</string>
+    <string name="template_delete_success">Template deleted</string>
+    <string name="templates_delete_success">Templates deleted</string>
     <string name="room_create_thirdparty_storage_title">Third party storage</string>
     <string name="room_create_thirdparty_storage">Storage</string>
     <string name="room_create_thirdparty_location">Location</string>

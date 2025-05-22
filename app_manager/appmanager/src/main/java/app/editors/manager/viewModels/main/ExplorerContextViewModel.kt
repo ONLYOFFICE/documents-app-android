@@ -53,9 +53,13 @@ class ExplorerContextViewModel : ViewModel() {
             )
 
             state.section.isTemplates -> listOf(
+                ExplorerContextItem.Header(state),
+                ExplorerContextItem.RoomInfo,
                 ExplorerContextItem.CreateRoom,
+                ExplorerContextItem.Edit(state),
                 ExplorerContextItem.AccessSettings,
-                ExplorerContextItem.Edit(state)
+                ExplorerContextItem.ExternalLink(state),
+                ExplorerContextItem.Delete(state)
             )
 
             state.section is ApiContract.Section.Storage -> listOf(

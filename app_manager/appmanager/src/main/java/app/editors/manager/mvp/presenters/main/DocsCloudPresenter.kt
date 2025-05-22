@@ -48,6 +48,7 @@ import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.MoveCopyDialog
+import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_DELETE_TEMPLATE
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_DOWNLOAD
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_OPEN_FOLDER
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
@@ -732,6 +733,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     val isContextItemEditable: Boolean
         get() = isContextEditable && (!isVisitor && !isShareSection || isCommonSection || isItemOwner)
 
+    val areItemsRemovable: Boolean
+        get() = modelExplorerStack.selectedFolders.none { it.security?.delete == false }
+
     val isContextOwner: Boolean
         get() = StringUtils.equals(modelExplorerStack.currentFolderOwnerId, account.id)
 
@@ -1031,6 +1035,44 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    fun onDeleteTemplates(){
+        if (modelExplorerStack.countSelectedItems > 0){
+            viewState.onDialogDelete(
+                modelExplorerStack.countSelectedItems,
+                true,
+                TAG_DELETE_TEMPLATE
+            )
+        }
+    }
+
+    fun deleteTemplate() {
+        showDialogProgress(true, TAG_DIALOG_CANCEL_BATCH_OPERATIONS)
+        fun onSuccess(msgId: Int) {
+            viewState.onDialogProgress(100, 100)
+            viewState.onDialogClose()
+            viewState.onSnackBar(context.getString(msgId))
+            if (currentFolder?.isTemplate == true) getBackStack()
+            refresh()
+        }
+
+        if (isSelectionMode && modelExplorerStack.countSelectedItems > 0) {
+            disposable.add(
+                fileProvider.delete(modelExplorerStack.selectedFolders, null)
+                    .subscribe({
+                        deselectAll()
+                        onSuccess(R.string.templates_delete_success)
+                    }, ::fetchError)
+            )
+        } else {
+            roomClicked?.let { template ->
+                disposable.add(
+                    fileProvider.delete(listOf(template), null)
+                        .subscribe({ onSuccess(R.string.template_delete_success) }, ::fetchError)
+                )
+            }
+        }
+    }
+
     fun interruptConversion(): Boolean {
         val cancelled = conversionJob?.isCancelled == true // conversionJob == null || isCancelled
         conversionJob?.cancel()
@@ -1177,7 +1219,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private fun copyRoomLink() {
         roomClicked?.let { room ->
-            if (room.roomType == ApiContract.RoomType.COLLABORATION_ROOM || room.roomType == ApiContract.RoomType.VIRTUAL_ROOM) {
+            if (isTemplatesFolder || room.roomType == ApiContract.RoomType.COLLABORATION_ROOM
+                || room.roomType == ApiContract.RoomType.VIRTUAL_ROOM
+            ) {
                 setDataToClipboard(getInternalLink(room))
             } else {
                 presenterScope.launch {

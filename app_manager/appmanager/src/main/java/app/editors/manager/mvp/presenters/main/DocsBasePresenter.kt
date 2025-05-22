@@ -69,6 +69,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
@@ -1365,6 +1366,9 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     val isTemplatesFolder: Boolean
         get() = ApiContract.SectionType.isTemplates(modelExplorerStack.rootFolderType)
                 && modelExplorerStack.last()?.pathParts.orEmpty().size < 2
+
+    val currentSelectedFolderTitle: String
+        get() = modelExplorerStack.selectedFolders.firstOrNull()?.title ?: itemClickedTitle
 
     private val isBackStackEmpty: Boolean
         get() = modelExplorerStack.isStackEmpty
