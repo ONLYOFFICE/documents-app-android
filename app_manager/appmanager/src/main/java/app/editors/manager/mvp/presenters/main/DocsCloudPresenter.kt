@@ -65,7 +65,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.tools.LocalContentTools
+import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -181,7 +181,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         openFolder(itemClicked.id, position)
                     }
                 } else if (itemClicked is CloudFile) {
-                    if (LocalContentTools.isOpenFormat(itemClicked.clearExt)) {
+                    if (FileExtensions.isOpenFormat(itemClicked.clearExt)) {
                         viewState.onConversionQuestion()
                     } else {
                         if (StringUtils.getExtension(itemClicked.fileExst) == Extension.PDF) {
@@ -1007,7 +1007,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun convertToOOXML() {
-        val extension = LocalContentTools.toOOXML((itemClicked as? CloudFile)?.clearExt.orEmpty())
+        val extension = FileExtensions.toOOXML((itemClicked as CloudFile).fileExst)
         viewState.onConversionProgress(0, extension)
         conversionJob = presenterScope.launch {
             try {

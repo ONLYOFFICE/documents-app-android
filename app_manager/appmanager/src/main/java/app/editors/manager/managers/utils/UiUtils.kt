@@ -25,6 +25,8 @@ import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import app.editors.manager.mvp.models.ui.AccessUI
 import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
+import lib.toolkit.base.managers.tools.FileExtensionUtils
+import lib.toolkit.base.managers.tools.FileGroup
 import lib.toolkit.base.managers.utils.StringUtils
 
 object ManagerUiUtils {
@@ -102,25 +104,15 @@ object ManagerUiUtils {
     }
 
     fun getFileThumbnail(ext: String, isGrid: Boolean): Int {
-        return when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC -> if (!isGrid) R.drawable.ic_type_document_row else R.drawable.ic_type_document_column
-            StringUtils.Extension.SHEET -> if (!isGrid) R.drawable.ic_type_spreadsheet_row else R.drawable.ic_type_spreadsheet_column
-            StringUtils.Extension.PRESENTATION -> if (!isGrid) R.drawable.ic_type_presentation_row else R.drawable.ic_type_presentation_column
-            StringUtils.Extension.IMAGE,
-            StringUtils.Extension.IMAGE_GIF,
-                -> if (!isGrid) R.drawable.ic_type_picture_row else R.drawable.ic_type_picture_column
-
-            StringUtils.Extension.HTML,
-            StringUtils.Extension.EBOOK,
-            StringUtils.Extension.PDF,
-                -> if (!isGrid) R.drawable.ic_type_pdf_row else R.drawable.ic_type_pdf_column
-
-            StringUtils.Extension.VIDEO_SUPPORT,
-            StringUtils.Extension.VIDEO,
-                -> if (!isGrid) R.drawable.ic_type_video_row else R.drawable.ic_type_video_column
-
-            StringUtils.Extension.ARCH -> if (!isGrid) R.drawable.ic_type_archive_row else R.drawable.ic_type_archive_column
-            StringUtils.Extension.FORM -> if (!isGrid) R.drawable.ic_type_docxf_row else R.drawable.ic_type_docxf_column
+        return when (FileExtensionUtils.getDocumentType(ext)) {
+            FileGroup.DOCUMENT -> if (!isGrid) R.drawable.ic_type_document_row else R.drawable.ic_type_document_column
+            FileGroup.SHEET -> if (!isGrid) R.drawable.ic_type_spreadsheet_row else R.drawable.ic_type_spreadsheet_column
+            FileGroup.PRESENTATION -> if (!isGrid) R.drawable.ic_type_presentation_row else R.drawable.ic_type_presentation_column
+            FileGroup.IMAGE, FileGroup.IMAGE_GIF -> if (!isGrid) R.drawable.ic_type_picture_row else R.drawable.ic_type_picture_column
+            FileGroup.HTML, FileGroup.PDF -> if (!isGrid) R.drawable.ic_type_pdf_row else R.drawable.ic_type_pdf_column
+            FileGroup.VIDEO -> if (!isGrid) R.drawable.ic_type_video_row else R.drawable.ic_type_video_column
+            FileGroup.ARCHIVE -> if (!isGrid) R.drawable.ic_type_archive_row else R.drawable.ic_type_archive_column
+//            StringUtils.Extension.FORM -> if (!isGrid) R.drawable.ic_type_docxf_row else R.drawable.ic_type_docxf_column
             else -> if (!isGrid) R.drawable.ic_type_other_row else R.drawable.ic_type_other_column
         }
     }
@@ -206,6 +198,7 @@ object ManagerUiUtils {
                 StringUtils.Extension.PDF, StringUtils.Extension.OFORM -> {
                     add(Access.FormFiller)
                 }
+
                 else -> Unit
             }
             add(Access.Read)
@@ -290,12 +283,13 @@ fun Access.toUi(): AccessUI {
 fun User.getTypeTitle(provider: PortalProvider?): Int {
     return when (type) {
         UserType.Owner -> {
-            when(provider) {
+            when (provider) {
                 is PortalProvider.Cloud.Workspace -> R.string.share_user_type_room_workspace_owner
                 is PortalProvider.Cloud.DocSpace -> R.string.share_user_type_room_docspace_owner
                 else -> R.string.share_user_type_room_portal_owner
             }
         }
+
         UserType.Admin -> R.string.share_user_type_room_docspace_admin
         UserType.RoomAdmin -> R.string.share_user_type_room_admin
         UserType.User -> R.string.profile_type_user
