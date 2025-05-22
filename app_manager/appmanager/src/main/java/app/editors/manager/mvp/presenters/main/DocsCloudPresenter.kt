@@ -51,6 +51,7 @@ import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_DOWNLOAD
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_OPEN_FOLDER
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
+import app.editors.manager.ui.fragments.main.ToolbarState
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
 import app.editors.manager.viewModels.main.TemplateSettingsMode
@@ -339,7 +340,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onStateAdapterRoot(true)
             viewState.onStateUpdateRoot(true)
         }
-        viewState.onRoomLifetime(modelExplorerStack.last()?.current?.lifetime)
+        val lifetime = currentFolder?.lifetime
+        val toolbarState = when {
+            currentFolder?.isTemplate == true -> ToolbarState.RoomTemplate
+            lifetime != null -> ToolbarState.RoomLifetime(lifetime)
+            else -> ToolbarState.None
+        }
+        viewState.setToolbarState(toolbarState)
         viewState.onRoomFileIndexing(isIndexing)
     }
 

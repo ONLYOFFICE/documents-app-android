@@ -32,6 +32,10 @@ class Current : Cloneable, Serializable {
     @Expose
     var title = ""
 
+    @SerializedName("inRoom")
+    @Expose
+    var inRoom: Boolean = false
+
     @SerializedName("access")
     @Expose
     private var _access = Access.None.type
@@ -105,4 +109,7 @@ class Current : Cloneable, Serializable {
         }.getOrElse {
             Access.get(_access)
         }
+
+    val isTemplate: Boolean
+        get() = ApiContract.SectionType.isTemplates(rootFolderType) && inRoom
 }

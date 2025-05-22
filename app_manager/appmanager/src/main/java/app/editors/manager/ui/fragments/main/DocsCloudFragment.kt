@@ -79,6 +79,12 @@ import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
+sealed interface ToolbarState {
+    data class RoomLifetime(val lifetime: Lifetime) : ToolbarState
+    data object RoomTemplate : ToolbarState
+    data object None : ToolbarState
+}
+
 open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     @InjectPresenter
@@ -405,12 +411,14 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             when {
                 roomType != null && roomType > 0 -> {
                     when {
+                        presenter.currentFolder?.isTemplate == true -> PlaceholderViews.Type.EMPTY_TEMPLATE
                         presenter.itemClicked?.security?.editRoom != true -> PlaceholderViews.Type.VISITOR_EMPTY_ROOM
                         roomType == ApiContract.RoomType.FILL_FORMS_ROOM -> PlaceholderViews.Type.EMPTY_FORM_FILLING_ROOM
                         roomType == ApiContract.RoomType.VIRTUAL_ROOM -> PlaceholderViews.Type.EMPTY_VIRTUAL_ROOM
                         else -> PlaceholderViews.Type.EMPTY_ROOM
                     }
                 }
+                presenter.isTemplatesFolder -> PlaceholderViews.Type.EMPTY_TEMPLATES_FOLDER
                 presenter.isRecentViaLinkSection() -> PlaceholderViews.Type.EMPTY_RECENT_VIA_LINK
                 else -> type
             }
@@ -566,24 +574,34 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         )
     }
 
-    override fun onRoomLifetime(lifetime: Lifetime?) {
-         (activity as? IMainActivity)?.let { activity ->
-            if (lifetime != null) {
-                activity.setToolbarInfo(
-                    title = getString(
-                        R.string.rooms_vdr_lifetime_info,
-                        lifetime.value,
-                        when (lifetime.period) {
-                            Lifetime.PERIOD_DAYS -> lib.toolkit.base.R.plurals.days
-                            Lifetime.PERIOD_MONTHS -> lib.toolkit.base.R.plurals.months
-                            Lifetime.PERIOD_YEARS ->lib.toolkit.base.R.plurals.years
-                            else -> return@let
-                        }.let { resources.getQuantityText(it, lifetime.value) }
-                    ),
-                    drawable = lib.toolkit.base.R.drawable.ic_expiring
-                )
-            } else {
-                activity.setToolbarInfo(null)
+    override fun setToolbarState(state: ToolbarState) {
+        (activity as? IMainActivity)?.let { activity ->
+            when (state) {
+                is ToolbarState.RoomLifetime -> {
+                    activity.setToolbarInfo(
+                        title = getString(
+                            R.string.rooms_vdr_lifetime_info,
+                            state.lifetime.value,
+                            when (state.lifetime.period) {
+                                Lifetime.PERIOD_DAYS -> lib.toolkit.base.R.plurals.days
+                                Lifetime.PERIOD_MONTHS -> lib.toolkit.base.R.plurals.months
+                                Lifetime.PERIOD_YEARS -> lib.toolkit.base.R.plurals.years
+                                else -> return@let
+                            }.let { resources.getQuantityText(it, state.lifetime.value) }
+                        ),
+                        drawable = lib.toolkit.base.R.drawable.ic_expiring,
+                    )
+                }
+
+                is ToolbarState.RoomTemplate -> {
+                    activity.setToolbarInfo(
+                        title = getString(R.string.template_subheader_title),
+                        drawable = R.drawable.ic_template_subheader,
+                        drawablePadding = 12
+                    )
+                }
+
+                ToolbarState.None -> activity.setToolbarInfo(null)
             }
         }
     }

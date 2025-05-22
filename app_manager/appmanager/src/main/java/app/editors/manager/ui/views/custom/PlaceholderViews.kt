@@ -18,7 +18,7 @@ import lib.compose.ui.views.PlaceholderView
 class PlaceholderViews(val view: View?) {
 
     enum class Type {
-        NONE, CONNECTION, EMPTY, EMPTY_ROOM, EMPTY_FORM_FILLING_ROOM, EMPTY_VIRTUAL_ROOM, VISITOR_EMPTY_ROOM, SEARCH, SHARE, ACCESS,
+        NONE, CONNECTION, EMPTY, EMPTY_TEMPLATES_FOLDER, EMPTY_ROOM, EMPTY_TEMPLATE, EMPTY_FORM_FILLING_ROOM, EMPTY_VIRTUAL_ROOM, VISITOR_EMPTY_ROOM, SEARCH, SHARE, ACCESS,
         SUBFOLDER, USERS, GROUPS, COMMON, MEDIA, LOAD, LOAD_GROUPS, LOAD_USERS,
         OTHER_ACCOUNTS, EMPTY_TRASH, EMPTY_ARCHIVE, NO_ROOMS, VISITOR_NO_ROOMS,
         EMPTY_RECENT_VIA_LINK, PAYMENT_REQUIRED, PERSONAL_PORTAL_END, EXTERNAL_STORAGE
@@ -57,7 +57,7 @@ class PlaceholderViews(val view: View?) {
                 setVisibility(false)
                 return
             }
-            Type.EMPTY, Type.LOAD, Type.EMPTY_ROOM, Type.SEARCH, Type.EMPTY_TRASH,
+            Type.EMPTY, Type.LOAD, Type.EMPTY_TEMPLATE, Type.EMPTY_TEMPLATES_FOLDER, Type.EMPTY_ROOM, Type.SEARCH, Type.EMPTY_TRASH,
             Type.EMPTY_ARCHIVE, Type.VISITOR_EMPTY_ROOM, Type.NO_ROOMS, Type.VISITOR_NO_ROOMS,
             Type.EMPTY_RECENT_VIA_LINK, Type.PAYMENT_REQUIRED, Type.EMPTY_FORM_FILLING_ROOM,
             Type.EMPTY_VIRTUAL_ROOM, Type.EXTERNAL_STORAGE, Type.CONNECTION -> {
@@ -119,6 +119,16 @@ class PlaceholderViews(val view: View?) {
                         image = lib.toolkit.base.R.drawable.placeholder_empty_folder
                         title = R.string.placeholder_empty_folder
                         subtitle = R.string.placeholder_empty_room_visitor_desc
+                    }
+                    Type.EMPTY_TEMPLATES_FOLDER -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_empty_folder
+                        title = R.string.placeholder_empty_templates_folder
+                        subtitle = R.string.placeholder_empty_templates_folder_desc
+                    }
+                    Type.EMPTY_TEMPLATE -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_empty_folder
+                        title = R.string.room_placeholder_created_template_title
+                        subtitle = R.string.room_placeholder_created_room_subtitle
                     }
                     Type.EMPTY_ROOM -> {
                         image = lib.toolkit.base.R.drawable.placeholder_empty_folder

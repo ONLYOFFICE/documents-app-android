@@ -1138,6 +1138,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="error_save_template">Failed to save template</string>
     <string name="error_save_access_settings">Failed to save access settings</string>
 
+    <string name="template_subheader_title">Room template</string>
     <string name="template_name_hint">Template name</string>
     <string name="setting_tags_desc">Tags are applied to the room which will be created based on this template.</string>
     <string name="setting_access_desc">Access to template. You can select members who can create rooms based on this template.</string>
