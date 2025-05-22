@@ -16,6 +16,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.activities.main.IMainActivity
+import app.editors.manager.ui.fragments.onboarding.WhatsNewDialog
 import app.editors.manager.viewModels.main.AppSettingsEffect
 import app.editors.manager.viewModels.main.AppSettingsViewModel
 import app.editors.manager.viewModels.main.AppSettingsViewModelFactory
@@ -181,7 +182,10 @@ class AppSettingsFragment : BaseFragment() {
                     viewModel = viewModel,
                     passcodeViewModel = passcodeViewModel,
                     navController = navController,
-                    onShowClearMenuItem = { show -> clearMenuItem?.isVisible = show }
+                    onShowClearMenuItem = { show -> clearMenuItem?.isVisible = show },
+                    onShowWhatsNew = {
+                        WhatsNewDialog.show(requireActivity().supportFragmentManager)
+                    }
                 )
             }
         }

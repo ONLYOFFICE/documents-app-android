@@ -25,10 +25,10 @@ object InAppUpdateUtils {
     private const val UPDATE_COMPLETED_KEY = "update_completed"
     private const val LAST_UPDATE_PROMPT_KEY = "last_update_prompt"
 
-    fun checkForUpdate(activity: Activity) {
+    fun checkForUpdate(activity: FragmentActivity) {
         if (!GoogleUtils.isGooglePlayServicesAvailable(activity)) {
             if (shouldShowWhatsNew(activity)) {
-                WhatsNewDialog.show(activity as FragmentActivity)
+                WhatsNewDialog.show(activity.supportFragmentManager)
             }
             return
         }
@@ -56,7 +56,7 @@ object InAppUpdateUtils {
 
         appUpdateInfoTask.addOnFailureListener {
             if (shouldShowWhatsNew(activity)) {
-                WhatsNewDialog.show(activity as FragmentActivity)
+                WhatsNewDialog.show(activity.supportFragmentManager)
             }
         }
 
@@ -88,7 +88,7 @@ object InAppUpdateUtils {
         }
     }
 
-    fun handleActivityResult(requestCode: Int, resultCode: Int, activity: Activity) {
+    fun handleActivityResult(requestCode: Int, resultCode: Int, activity: FragmentActivity) {
         if (requestCode == REQUEST_CODE_UPDATE && resultCode != Activity.RESULT_OK) {
             checkForUpdate(activity)
         }

@@ -82,7 +82,8 @@ fun AppSettingsScreenHost(
     viewModel: AppSettingsViewModel,
     navController: NavHostController,
     passcodeViewModel: PasscodeViewModel,
-    onShowClearMenuItem: (Boolean) -> Unit
+    onShowClearMenuItem: (Boolean) -> Unit,
+    onShowWhatsNew: () -> Unit
 ) {
     val settingsState = viewModel.settingsState.collectAsState()
     val context = LocalContext.current
@@ -164,7 +165,7 @@ fun AppSettingsScreenHost(
                     AppArrowItem(
                         title = R.string.whats_new_title,
                         dividerVisible = false,
-                        onClick = { } // TODO: add what's new screen navigate
+                        onClick = onShowWhatsNew
                     )
                 }
             }
