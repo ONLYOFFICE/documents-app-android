@@ -32,6 +32,7 @@ import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppHeaderItem
+import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppSwitchItem
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.StringUtils
@@ -86,84 +87,86 @@ fun AppSettingsScreenHost(
     val settingsState = viewModel.settingsState.collectAsState()
     val context = LocalContext.current
 
-    NavHost(navController = navController, startDestination = AppSettingsScreen.Main.route) {
-        composable(AppSettingsScreen.Main.route) {
-            AppSettingsScreen(
-                settingsState = settingsState.value,
-                onWifiState = viewModel::setWifiState,
-                onScreenOnState = viewModel::setScreenOnState,
-                onAnalytics = viewModel::setAnalytic,
-                onCacheClear = viewModel::clearCache,
-                onThemeClick = { navController.navigate(AppSettingsScreen.Theme.route) },
-                onPasscodeClick = { navController.navigate(AppSettingsScreen.Passcode.route) },
-                onLocaleClick = { navController.navigate(AppSettingsScreen.LocalePicker.route) },
-                onFontsClick = { navController.navigate(AppSettingsScreen.Fonts.route) },
-                onAboutClick = { navController.navigate(AppSettingsScreen.About.route) },
-                onHelpAndFeedbackClick = { navController.navigate(AppSettingsScreen.HelpAndFeedback.route) }
-            )
-        }
-        composable(AppSettingsScreen.Theme.route) {
-            AppSettingsThemeScreen(
-                currentTheme = settingsState.value.themeMode,
-                onSetTheme = viewModel::setThemeMode
-            )
-        }
-        composable(AppSettingsScreen.Passcode.route) {
-            PasscodeMainScreen(
-                viewModel = passcodeViewModel,
-                enterPasscodeKey = false,
-                onBackClick = navController::popBackStack,
-                onSuccess = navController::popBackStack
-            )
-        }
-        composable(AppSettingsScreen.LocalePicker.route) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                with(App.getApp().appComponent.appLocaleHelper) {
-                    AppLocalePickerScreen(
-                        locales = locales,
-                        current = currentLocale,
-                        onBackListener = navController::popBackStack,
-                        onChangeLocale = ::changeLocale
-                    )
+    AppScaffold {
+        NavHost(navController = navController, startDestination = AppSettingsScreen.Main.route) {
+            composable(AppSettingsScreen.Main.route) {
+                AppSettingsScreen(
+                    settingsState = settingsState.value,
+                    onWifiState = viewModel::setWifiState,
+                    onScreenOnState = viewModel::setScreenOnState,
+                    onAnalytics = viewModel::setAnalytic,
+                    onCacheClear = viewModel::clearCache,
+                    onThemeClick = { navController.navigate(AppSettingsScreen.Theme.route) },
+                    onPasscodeClick = { navController.navigate(AppSettingsScreen.Passcode.route) },
+                    onLocaleClick = { navController.navigate(AppSettingsScreen.LocalePicker.route) },
+                    onFontsClick = { navController.navigate(AppSettingsScreen.Fonts.route) },
+                    onAboutClick = { navController.navigate(AppSettingsScreen.About.route) },
+                    onHelpAndFeedbackClick = { navController.navigate(AppSettingsScreen.HelpAndFeedback.route) }
+                )
+            }
+            composable(AppSettingsScreen.Theme.route) {
+                AppSettingsThemeScreen(
+                    currentTheme = settingsState.value.themeMode,
+                    onSetTheme = viewModel::setThemeMode
+                )
+            }
+            composable(AppSettingsScreen.Passcode.route) {
+                PasscodeMainScreen(
+                    viewModel = passcodeViewModel,
+                    enterPasscodeKey = false,
+                    onBackClick = navController::popBackStack,
+                    onSuccess = navController::popBackStack
+                )
+            }
+            composable(AppSettingsScreen.LocalePicker.route) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    with(App.getApp().appComponent.appLocaleHelper) {
+                        AppLocalePickerScreen(
+                            locales = locales,
+                            current = currentLocale,
+                            onBackListener = navController::popBackStack,
+                            onChangeLocale = ::changeLocale
+                        )
+                    }
                 }
             }
-        }
-        composable(AppSettingsScreen.Fonts.route) {
-            LaunchedEffect(settingsState.value.fonts.size) {
-                onShowClearMenuItem(settingsState.value.fonts.isNotEmpty())
-            }
+            composable(AppSettingsScreen.Fonts.route) {
+                LaunchedEffect(settingsState.value.fonts.size) {
+                    onShowClearMenuItem(settingsState.value.fonts.isNotEmpty())
+                }
 
-            AppSettingsFontsScreen(
-                fonts = settingsState.value.fonts,
-            ) { font ->
-                UiUtils.showQuestionDialog(
-                    context = context,
-                    title = context.getString(R.string.dialogs_question_delete_font),
-                    description = context.resources.getQuantityString(
-                        R.plurals.dialogs_question_message_delete,
-                        1
-                    ),
-                    acceptListener = { viewModel.deleteFont(font) }
-                )
-            }
-        }
-        composable(AppSettingsScreen.About.route) {
-            AboutScreen(
-                onShowBrowser = { url ->
-                    ActivitiesUtils.showBrowser(
+                AppSettingsFontsScreen(
+                    fonts = settingsState.value.fonts,
+                ) { font ->
+                    UiUtils.showQuestionDialog(
                         context = context,
-                        url = context.getString(url)
+                        title = context.getString(R.string.dialogs_question_delete_font),
+                        description = context.resources.getQuantityString(
+                            R.plurals.dialogs_question_message_delete,
+                            1
+                        ),
+                        acceptListener = { viewModel.deleteFont(font) }
                     )
                 }
-            )
-        }
-        composable(AppSettingsScreen.HelpAndFeedback.route) {
-            HelpAndFeedbackScreen {
-                AppArrowItem(
-                    title = R.string.whats_new_title,
-                    dividerVisible = false,
-                    onClick = { } // TODO: add what's new screen navigate
+            }
+            composable(AppSettingsScreen.About.route) {
+                AboutScreen(
+                    onShowBrowser = { url ->
+                        ActivitiesUtils.showBrowser(
+                            context = context,
+                            url = context.getString(url)
+                        )
+                    }
                 )
+            }
+            composable(AppSettingsScreen.HelpAndFeedback.route) {
+                HelpAndFeedbackScreen {
+                    AppArrowItem(
+                        title = R.string.whats_new_title,
+                        dividerVisible = false,
+                        onClick = { } // TODO: add what's new screen navigate
+                    )
+                }
             }
         }
     }
