@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.viewModels.main.TemplateSettingsMode
+import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.putArgs
 
@@ -17,19 +18,21 @@ class TemplateAccessSettingsFragment : ComposeDialogFragment() {
 
     @Composable
     override fun Content() {
-        AccessSettingsDestination(
-            templateId = templateId,
-            modeId = TemplateSettingsMode.MODE_EDIT_TEMPLATE,
-            initSettings = null,
-            showSnackbar = {
-                UiUtils.getSnackBar(requireView()).setText(it).show()
-            },
-            onSavedSuccessfully = {
-                setResultMsg()
-                dismiss()
-            },
-            onClose = ::dismiss
-        )
+        ManagerTheme {
+            AccessSettingsDestination(
+                templateId = templateId,
+                modeId = TemplateSettingsMode.MODE_EDIT_TEMPLATE,
+                initSettings = null,
+                showSnackbar = {
+                    UiUtils.getSnackBar(requireView()).setText(it).show()
+                },
+                onSavedSuccessfully = {
+                    setResultMsg()
+                    dismiss()
+                },
+                onClose = ::dismiss
+            )
+        }
     }
 
     private fun setResultMsg() {
