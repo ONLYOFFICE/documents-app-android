@@ -468,7 +468,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun openFile(editType: EditType, canBeShared: Boolean) {
-        super.openFile(editType, isItemShareable)
+        if (itemClicked is CloudFolder){
+            editRoom()
+        } else {
+            super.openFile(editType, isItemShareable)
+        }
     }
 
     override suspend fun openFileAndCollect(
