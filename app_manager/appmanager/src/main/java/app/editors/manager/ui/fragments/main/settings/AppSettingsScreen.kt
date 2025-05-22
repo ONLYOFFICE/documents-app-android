@@ -259,16 +259,16 @@ private fun AppSettingsScreen(
                 onClick = onThemeClick
             )
             AppArrowItem(
-                title = R.string.about_title,
-                arrowVisible = true,
-                dividerVisible = false,
-                onClick = onAboutClick
-            )
-            AppArrowItem(
                 title = lib.toolkit.base.R.string.help_and_feedback_title,
                 arrowVisible = true,
                 dividerVisible = false,
                 onClick = onHelpAndFeedbackClick
+            )
+            AppArrowItem(
+                title = R.string.about_title,
+                arrowVisible = true,
+                dividerVisible = false,
+                onClick = onAboutClick
             )
         }
     }

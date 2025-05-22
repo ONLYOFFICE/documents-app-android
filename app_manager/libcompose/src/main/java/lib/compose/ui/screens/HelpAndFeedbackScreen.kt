@@ -15,6 +15,7 @@ import lib.toolkit.base.managers.utils.ActivitiesUtils
 fun HelpAndFeedbackScreen(
     modifier: Modifier = Modifier,
     showIconsAndDividers: Boolean = false,
+    helpUrl: String? = null,
     whatsNewContent: @Composable () -> Unit = {}
 ) {
     Column(
@@ -49,7 +50,7 @@ fun HelpAndFeedbackScreen(
             onClick = {
                 ActivitiesUtils.showBrowser(
                     context = context,
-                    url = "" // TODO: add link
+                    url = helpUrl ?: context.getString(R.string.app_url_help)
                 )
             }
         )
