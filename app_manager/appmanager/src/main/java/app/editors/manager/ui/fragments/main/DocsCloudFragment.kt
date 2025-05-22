@@ -498,10 +498,15 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     }
                 }
         } else {
+            val filterSection = when {
+                presenter.isRecentViaLinkSection() -> ApiContract.SectionType.CLOUD_RECENT
+                presenter.isTemplatesFolder -> ApiContract.SectionType.CLOUD_TEMPLATES
+                else -> section
+            }
             filterActivity.launch(FilterActivity.getIntent(
                 this,
                 presenter.folderId,
-                if (!presenter.isRecentViaLinkSection()) section else ApiContract.SectionType.CLOUD_RECENT,
+                filterSection,
                 presenter.isRoot
             ))
         }

@@ -47,7 +47,7 @@ class FilterDialogFragment : BaseDialogFragment() {
         val section = arguments?.getInt(KEY_SECTION) ?: -1
         val isRoot = arguments?.getBoolean(KEY_IS_ROOT) == true
         return when {
-            ApiContract.SectionType.isRoom(section) && isRoot -> RoomFilterFragment.newInstance(folderId)
+            ApiContract.SectionType.isRoom(section) && isRoot -> RoomFilterFragment.newInstance()
             else -> CloudFilterFragment.newInstance(folderId, section)
         }
     }

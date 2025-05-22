@@ -904,7 +904,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         return plus(
             mutableMapOf<String, String>().apply {
                 val filter = preferenceTool.filter
-                if (ApiContract.SectionType.isRoom(currentSectionType) && isRoot) {
+                if (ApiContract.SectionType.isRoom(currentSectionType) && isRoot || isTemplatesFolder) {
                     if (filter.roomType != RoomFilterType.None) {
                         put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filter.roomType.filterVal.toString())
                     }
