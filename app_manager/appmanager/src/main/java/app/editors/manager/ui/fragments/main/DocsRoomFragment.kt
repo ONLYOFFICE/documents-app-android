@@ -6,10 +6,12 @@ import android.view.View
 import androidx.core.view.forEach
 import androidx.fragment.app.setFragmentResultListener
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.RoomFilterType
+import app.editors.manager.mvp.models.list.Templates
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.room.order.RoomOrderDialogFragment
@@ -138,6 +140,27 @@ class DocsRoomFragment : DocsCloudFragment() {
             tag = tag,
             bottomTitle = null
         )
+    }
+
+    override fun onDocsGet(list: List<Entity>?) {
+        super.onDocsGet(prepareDocsList(list))
+    }
+
+    override fun onDocsRefresh(list: List<Entity>?) {
+        super.onDocsGet(prepareDocsList(list))
+        setMenuFilterEnabled(true)
+    }
+
+    override fun onDocsNext(list: List<Entity>?) {
+        super.onDocsGet(prepareDocsList(list))
+    }
+
+    private fun prepareDocsList(list: List<Entity>?): List<Entity> {
+        val newList = list.orEmpty().toMutableList()
+        if (ApiContract.SectionType.isRoom(presenter.getSectionType()) && presenter.isRoot) {
+            newList.add(0, Templates)
+        }
+        return newList
     }
 
     private fun reconnectStorage() {

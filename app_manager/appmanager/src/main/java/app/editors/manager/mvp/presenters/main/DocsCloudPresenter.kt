@@ -43,6 +43,7 @@ import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.works.RoomDuplicateWork
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.list.RecentViaLink
+import app.editors.manager.mvp.models.list.Templates
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
@@ -191,6 +192,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     }
                 } else if (itemClicked is RecentViaLink) {
                     openRecentViaLink()
+                } else if (itemClicked is Templates){
+                    openTemplates()
                 }
             }
         }
@@ -468,10 +471,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun openFile(editType: EditType, canBeShared: Boolean) {
-        if (itemClicked is CloudFolder){
-            editRoom()
-        } else {
-            super.openFile(editType, isItemShareable)
+        when {
+            isTemplatesFolder -> editTemplate()
+            itemClicked is CloudFolder -> editRoom()
+            else -> super.openFile(editType, isItemShareable)
         }
     }
 
@@ -931,12 +934,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun createRoomFromTemplate() {
-        (itemClicked as? CloudFolder)?.let { template ->
+        roomClicked?.let { template ->
             viewState.showRoomFromTemplateFragment(template.id)
         }
     }
 
-    private fun editTemplate() {
+    fun editTemplate() {
         roomClicked?.let { template ->
             viewState.showTemplateSettingsFragment(
                 template.id,
@@ -946,7 +949,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun editTemplateAccessSettings() {
-        (itemClicked as? CloudFolder)?.let { folder ->
+        roomClicked?.let { folder ->
             viewState.showTemplateAccessSettingsFragment(folder.id)
         }
     }
@@ -1152,6 +1155,16 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     }, ::fetchError)
             )
         }
+    }
+
+    private fun openTemplates() {
+        val cloudProvider = (fileProvider as? CloudFileProvider) ?: return
+        resetFilters()
+        setPlaceholderType(PlaceholderViews.Type.LOAD)
+        disposable.add(
+            cloudProvider.getRoomTemplates(getArgs(filteringValue).putFilters())
+                .subscribe(::loadSuccess, ::fetchError)
+        )
     }
 
     private fun copyRoomLink() {
