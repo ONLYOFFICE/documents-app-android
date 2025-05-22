@@ -175,6 +175,7 @@ class FillingStatusFragment : ComposeDialogFragment() {
     }
 
     private fun showStopFillingQuestionDialog(onAccept: () -> Unit) {
+        dismiss()
         UiUtils.showQuestionDialog(
             context = requireContext(),
             title = getString(R.string.filling_form_stop_filling_dialog_title),
@@ -204,7 +205,8 @@ private fun FillingStatusScreen(
                     isClose = true
                 )
             }
-        }
+        },
+        useTablePaddings = false
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             AnimatedVisibilityVerticalFade(visible = state.requestLoading) {
