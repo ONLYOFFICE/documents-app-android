@@ -47,9 +47,9 @@ import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_TYPE
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
-import app.editors.manager.ui.fragments.main.template.createroom.RoomFromTemplateFragment
-import app.editors.manager.ui.fragments.main.template.settings.TemplateAccessSettingsFragment
-import app.editors.manager.ui.fragments.main.template.settings.TemplateSettingsFragment
+import app.editors.manager.ui.fragments.template.createroom.RoomFromTemplateFragment
+import app.editors.manager.ui.fragments.template.settings.TemplateAccessSettingsFragment
+import app.editors.manager.ui.fragments.template.settings.TemplateSettingsFragment
 import app.editors.manager.ui.fragments.main.versionhistory.RefreshListener
 import app.editors.manager.ui.fragments.main.versionhistory.VersionHistoryFragment
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment
@@ -58,6 +58,7 @@ import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
 import app.editors.manager.ui.fragments.share.ShareFragment
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
+import app.editors.manager.ui.fragments.template.info.TemplateInfoFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
 import app.editors.manager.viewModels.main.TemplateSettingsMode
@@ -266,7 +267,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
             is ActionMenuItem.CopyLink -> presenter.copyLinkFromActionMenu(item.isRoom)
-            ActionMenuItem.Info -> showRoomInfoFragment()
             ActionMenuItem.CreateRoom -> {
                 if (presenter.currentFolder?.isTemplate == true) {
                     presenter.createRoomFromTemplate()
@@ -526,8 +526,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    private fun openRoom(id: String?, type: Int? = null) {
+    private fun openRoom(id: String?, type: Int? = null, popToRoot: Boolean = false) {
         try {
+            if (popToRoot) presenter.popToRoot()
             requireActivity().supportFragmentManager
                 .fragments
                 .filterIsInstance<IMainPagerFragment>()
@@ -641,6 +642,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onRoomViaLinkPasswordRequired(error: Boolean, tag: String) { }
 
     override fun showRoomInfoFragment() {
+        if (presenter.isTemplatesFolder || presenter.currentFolder?.isTemplate == true) {
+            presenter.showTemplateInfo()
+            return
+        }
         if (presenter.roomClicked?.passwordProtected == true) {
             onRoomViaLinkPasswordRequired(false, TAG_PROTECTED_ROOM_SHOW_INFO)
             return
@@ -713,11 +718,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             templateId,
             modeId
         ) { bundle ->
+            val id = bundle.getString(TemplateSettingsFragment.KEY_SAVED_ID)
+            val type = bundle.getInt(TemplateSettingsFragment.KEY_SAVED_ROOM_TYPE)
+            val title = bundle.getString(TemplateSettingsFragment.KEY_SAVED_TITLE)
             when (modeId) {
                 TemplateSettingsMode.MODE_CREATE_TEMPLATE -> {
-                    val id = bundle.getString(TemplateSettingsFragment.KEY_SAVED_ID)
-                    val type = bundle.getInt(TemplateSettingsFragment.KEY_SAVED_ROOM_TYPE)
-                    val title = bundle.getString(TemplateSettingsFragment.KEY_SAVED_TITLE)
                     id?.let {
                         openRoom(id = id, type = type)
                         showSnackBar(getString(R.string.template_created_successfully, title))
@@ -730,9 +735,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 }
 
                 TemplateSettingsMode.MODE_CREATE_ROOM -> {
-                    val id = bundle.getString(TemplateSettingsFragment.KEY_SAVED_ID)
                     id?.let {
-                        openRoom(id = id)
+                        openRoom(id = id, type = type, popToRoot = true)
                         showSnackBar(R.string.room_created_successfully)
                     }
                 }
@@ -759,7 +763,21 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         ) { bundle ->
             bundle.getString(RoomFromTemplateFragment.KEY_SAVED_ID)?.let { id ->
                 val roomType = bundle.getInt(RoomFromTemplateFragment.KEY_SAVED_ROOM_TYPE)
-                openRoom(id, roomType)
+                openRoom(id, roomType, popToRoot = true)
+                showSnackBar(R.string.room_created_successfully)
+            }
+        }
+    }
+
+    override fun showTemplateInfoFragment(templateId: String) {
+        TemplateInfoFragment.show(
+            parentFragmentManager,
+            viewLifecycleOwner,
+            templateId
+        ) { bundle ->
+            bundle.getString(TemplateInfoFragment.KEY_SAVED_ID)?.let { id ->
+                val roomType = bundle.getInt(TemplateInfoFragment.KEY_SAVED_ROOM_TYPE)
+                openRoom(id, roomType, popToRoot = true)
                 showSnackBar(R.string.room_created_successfully)
             }
         }

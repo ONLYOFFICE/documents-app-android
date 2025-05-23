@@ -102,7 +102,7 @@ class DocsRoomFragment : DocsCloudFragment() {
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
             ExplorerContextItem.Duplicate -> presenter.duplicateRoom()
-            ExplorerContextItem.RoomInfo -> if (presenter.isTemplatesFolder) Unit else showRoomInfoFragment()
+            ExplorerContextItem.RoomInfo -> showRoomInfoFragment()
             ExplorerContextItem.Reconnect -> reconnectStorage()
             ExplorerContextItem.Archive -> presenter.archiveRooms(true)
             ExplorerContextItem.AddUsers -> showInviteUsersDialog()

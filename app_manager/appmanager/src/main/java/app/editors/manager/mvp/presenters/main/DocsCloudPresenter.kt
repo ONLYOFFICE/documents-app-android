@@ -446,7 +446,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun getBackStack(): Boolean {
-        if (isTemplatesFolder && !isSelectionMode) resetFilters()
+        if ((currentFolder?.isTemplate ?: isTemplatesFolder) && !isSelectionMode) {
+            resetFilters()
+            return super.getBackStack()
+        }
         val backStackResult = super.getBackStack()
         if (modelExplorerStack.last()?.filterType != preferenceTool.filter.type.filterVal) {
             refresh()
@@ -963,6 +966,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun editTemplateAccessSettings() {
         roomClicked?.let { folder ->
             viewState.showTemplateAccessSettingsFragment(folder.id)
+        }
+    }
+
+    fun showTemplateInfo() {
+        roomClicked?.let { folder ->
+            viewState.showTemplateInfoFragment(folder.id)
         }
     }
 

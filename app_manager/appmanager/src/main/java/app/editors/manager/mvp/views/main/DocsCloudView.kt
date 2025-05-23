@@ -70,4 +70,7 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showRoomFromTemplateFragment(templateId: String?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showTemplateInfoFragment(templateId: String)
 }

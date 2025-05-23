@@ -338,8 +338,8 @@ object ActionMenuItemsFactory {
                 ActionMenuItem.EditTemplate.takeIf { security.editRoom },
                 ActionMenuItem.AccessSettings.takeIf { security.editAccess },
                 ActionMenuItem.CreateRoom,
-                ActionMenuItem.Divider,
-                ActionMenuItem.DeleteTemplate.takeIf { security.delete },
+                ActionMenuItem.Divider.takeIf { security.delete },
+                ActionMenuItem.DeleteTemplate.takeIf { security.delete }
             )
         )
     }
