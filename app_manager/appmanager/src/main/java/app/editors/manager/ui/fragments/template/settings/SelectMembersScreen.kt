@@ -1,8 +1,9 @@
-package app.editors.manager.ui.fragments.main.template.settings
+package app.editors.manager.ui.fragments.template.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,13 +27,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.ui.fragments.main.template.rememberAccountContext
+import app.editors.manager.ui.fragments.template.rememberAccountContext
 import app.editors.manager.ui.fragments.share.MemberAvatar
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.ui.views.custom.UserListBottomContent
@@ -125,19 +127,21 @@ fun SelectedMembersList(
     currentUser: User,
     users: List<User>,
     groups: List<Group>,
-    onDelete: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    paddingValues: PaddingValues = PaddingValues(vertical = 8.dp),
+    innerPadding: Dp = 4.dp,
+    onDelete: ((String) -> Unit)? = null
 ) {
     val accountContext = rememberAccountContext()
     val allUsers = listOf(currentUser) + users
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier.padding(vertical = 4.dp)
+        verticalArrangement = Arrangement.spacedBy(innerPadding),
+        modifier = modifier.padding(paddingValues)
     ) {
         items(allUsers, key = User::id) { user ->
             val isCurrentUser = user.id == currentUser.id
-            RemovableMemberItem(
+            AccessMemberItem(
                 id = user.id,
                 name = user.displayNameFromHtml,
                 avatar = GlideUtils.getCorrectLoad(
@@ -145,15 +149,17 @@ fun SelectedMembersList(
                     accountContext.token,
                     accountContext.portal.urlWithScheme
                 ),
+                isCurrentUser = isCurrentUser,
                 onDelete = if (!isCurrentUser) onDelete else null
             )
         }
 
         items(groups, key = Group::id) { group ->
-            RemovableMemberItem(
+            AccessMemberItem(
                 id = group.id,
                 name = group.name,
                 avatar = null,
+                isCurrentUser = false,
                 onDelete = onDelete
             )
         }
@@ -161,13 +167,14 @@ fun SelectedMembersList(
 }
 
 @Composable
-private fun LazyItemScope.RemovableMemberItem(
+private fun LazyItemScope.AccessMemberItem(
     id: String,
     name: String,
     avatar: Any?,
+    isCurrentUser: Boolean,
     onDelete: ((String) -> Unit)? = null
 ) {
-    Column {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -186,7 +193,7 @@ private fun LazyItemScope.RemovableMemberItem(
             }
             MemberTitle(
                 name = name,
-                isCurrentUser = onDelete == null,
+                isCurrentUser = isCurrentUser,
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 16.dp)

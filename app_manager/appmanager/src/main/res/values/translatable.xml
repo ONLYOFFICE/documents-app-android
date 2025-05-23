@@ -1116,6 +1116,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="title_access_settings">Access settings</string>
 
     <string name="desc_create_from_template">Create a room based on a template. All settings, users, folders and files will be taken from the selected room template.</string>
+    <string name="desc_info_template">Room template. Use this template to quickly create a new room.</string>
 
     <string name="access_members_me_and_title">Me and %s</string>
     <string name="access_members_me_users_groups_title">Me, %1$s and %2$s</string>

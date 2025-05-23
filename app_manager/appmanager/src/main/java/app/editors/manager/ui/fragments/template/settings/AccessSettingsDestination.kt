@@ -1,4 +1,4 @@
-package app.editors.manager.ui.fragments.main.template.settings
+package app.editors.manager.ui.fragments.template.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +31,7 @@ fun AccessSettingsDestination(
     initSettings: TemplateAccessSettings?,
     showSnackbar: (String) -> Unit,
     onClose: () -> Unit,
+    saveSettings: Boolean = false,
     onSaveClick: ((TemplateAccessSettings) -> Unit)? = null,
     onSavedSuccessfully: (() -> Unit)? = null
 ) {
@@ -65,7 +66,8 @@ fun AccessSettingsDestination(
                     navController.navigate(Screens.SelectMembers)
                 },
                 onSave = { settings ->
-                    onSaveClick?.invoke(settings) ?: accessViewModel.onSaveClick(settings)
+                    if (saveSettings) accessViewModel.onSaveClick(settings)
+                    onSaveClick?.invoke(settings)
                 },
                 onBack = onClose
             )

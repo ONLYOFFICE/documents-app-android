@@ -1,4 +1,4 @@
-package app.editors.manager.ui.fragments.main.template
+package app.editors.manager.ui.fragments.template
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

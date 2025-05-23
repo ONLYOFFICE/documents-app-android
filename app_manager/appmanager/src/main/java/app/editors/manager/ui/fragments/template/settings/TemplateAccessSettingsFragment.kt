@@ -1,4 +1,4 @@
-package app.editors.manager.ui.fragments.main.template.settings
+package app.editors.manager.ui.fragments.template.settings
 
 import android.os.Bundle
 import androidx.compose.runtime.Composable
@@ -8,7 +8,6 @@ import androidx.lifecycle.LifecycleOwner
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.viewModels.main.TemplateSettingsMode
 import lib.compose.ui.theme.ManagerTheme
-import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.putArgs
 
 class TemplateAccessSettingsFragment : ComposeDialogFragment() {
@@ -23,9 +22,8 @@ class TemplateAccessSettingsFragment : ComposeDialogFragment() {
                 templateId = templateId,
                 modeId = TemplateSettingsMode.MODE_EDIT_TEMPLATE,
                 initSettings = null,
-                showSnackbar = {
-                    UiUtils.getSnackBar(requireView()).setText(it).show()
-                },
+                showSnackbar = ::showSnackbar,
+                saveSettings = true,
                 onSavedSuccessfully = {
                     setResultMsg()
                     dismiss()

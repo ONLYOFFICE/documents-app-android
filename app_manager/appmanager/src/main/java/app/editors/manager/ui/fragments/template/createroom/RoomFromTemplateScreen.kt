@@ -1,4 +1,4 @@
-package app.editors.manager.ui.fragments.main.template.createroom
+package app.editors.manager.ui.fragments.template.createroom
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +34,7 @@ import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.StringUtils
 import app.editors.manager.mvp.models.ui.ResultUi
-import app.editors.manager.ui.fragments.main.template.rememberAccountContext
+import app.editors.manager.ui.fragments.template.rememberAccountContext
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.viewModels.main.RoomFromTemplateViewModel
 import app.editors.manager.viewModels.main.TemplateListState

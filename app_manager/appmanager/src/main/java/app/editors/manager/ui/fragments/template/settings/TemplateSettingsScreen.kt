@@ -1,4 +1,4 @@
-package app.editors.manager.ui.fragments.main.template.settings
+package app.editors.manager.ui.fragments.template.settings
 
 import android.net.Uri
 import androidx.compose.animation.Crossfade
@@ -59,18 +59,18 @@ import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.ui.ResultUi
 import app.editors.manager.mvp.models.ui.SizeUnit
 import app.editors.manager.ui.dialogs.AddRoomItem
-import app.editors.manager.ui.fragments.main.template.rememberAccountContext
+import app.editors.manager.ui.fragments.template.rememberAccountContext
 import app.editors.manager.ui.fragments.room.add.ChooseImageBottomView
 import app.editors.manager.ui.fragments.room.add.QuotaBlock
 import app.editors.manager.ui.fragments.room.add.RoomLogo
 import app.editors.manager.ui.fragments.share.MemberAvatar
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
+import app.editors.manager.viewModels.main.TemplateInfoState
+import app.editors.manager.viewModels.main.TemplateSettingsEvent
 import app.editors.manager.viewModels.main.TemplateSettingsViewModel
 import app.editors.manager.viewModels.base.RoomSettingsLogoState
 import app.editors.manager.viewModels.main.TemplateAccessSettings
-import app.editors.manager.viewModels.main.TemplateSettingsEvent
 import app.editors.manager.viewModels.main.TemplateSettingsMode
-import app.editors.manager.viewModels.main.TemplateSettingsState
 import kotlinx.coroutines.launch
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
@@ -153,7 +153,7 @@ fun TemplateSettingsScreen(
 
 @Composable
 private fun TemplateSettingsScreenContent(
-    state: TemplateSettingsState,
+    state: TemplateInfoState,
     mode: TemplateSettingsMode,
     loadingStatus: ResultUi<*>,
     logoState: RoomSettingsLogoState,
@@ -221,7 +221,7 @@ private fun TemplateSettingsScreenContent(
 @Composable
 private fun TemplateSettingsScreenContent(
     loadingStatus: ResultUi<*>,
-    templateState: TemplateSettingsState,
+    templateState: TemplateInfoState,
     mode: TemplateSettingsMode,
     logoState: RoomSettingsLogoState,
     onSetImage: (Uri?) -> Unit,
@@ -263,7 +263,7 @@ private fun TemplateSettingsScreenContent(
 
 @Composable
 private fun TemplateSettingsScreenContent(
-    state: TemplateSettingsState,
+    state: TemplateInfoState,
     mode: TemplateSettingsMode,
     logoState: RoomSettingsLogoState,
     onSetImage: (Uri?) -> Unit,
@@ -299,7 +299,7 @@ private fun TemplateSettingsScreenContent(
             MaterialTheme.colors.background.copy(alpha = 0.60f)
         }
     ) {
-        if (state.isSaving) {
+        AnimatedVisibilityVerticalFade(visible = state.isSaving) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
         NestedColumn {
@@ -372,29 +372,7 @@ private fun AccessBlock(
 ) {
     Column {
         if (settings.public) {
-            AppMultilineArrowItem(
-                icon = {
-                    Box(
-                        modifier = Modifier
-                            .padding(start = 16.dp)
-                            .size(40.dp)
-                            .background(
-                                color = colorResource(R2.color.colorIconBackground),
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_user),
-                            contentDescription = null,
-                            tint = MaterialTheme.colors.colorTextSecondary
-                        )
-                    }
-                },
-                title = stringResource(R.string.setting_access_public),
-                description = stringResource(R.string.setting_access_public_desc),
-                onClick = navigateToAccessSettings
-            )
+            PublicBlock(navigateToSettings = navigateToAccessSettings)
         } else {
             MembersRow(
                 currentUser = currentUser,
@@ -553,17 +531,49 @@ private fun MultiAvatarRow(
     }
 }
 
+@Composable
+fun PublicBlock(
+    addDivider: Boolean = true,
+    navigateToSettings: (() -> Unit)? = null
+) {
+    AppMultilineArrowItem(
+        icon = {
+            Box(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .size(40.dp)
+                    .background(
+                        color = colorResource(R2.color.colorIconBackground),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_user),
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.colorTextSecondary
+                )
+            }
+        },
+        title = stringResource(R.string.setting_access_public),
+        description = stringResource(R.string.setting_access_public_desc),
+        clickable = navigateToSettings != null,
+        onClick = navigateToSettings ?: {},
+        addDivider = addDivider
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun AddTemplateScreenContentPreview() {
     ManagerTheme {
         TemplateSettingsScreenContent(
-            state = TemplateSettingsState(
+            state = TemplateInfoState(
                 title = "Template",
                 roomType = 2,
                 tags = listOf("tag1"),
                 accessSettings = TemplateAccessSettings(
-                    public = false,
+                    public = true,
                     selectedUsers = listOf(
                         User(
                             id = "1u",

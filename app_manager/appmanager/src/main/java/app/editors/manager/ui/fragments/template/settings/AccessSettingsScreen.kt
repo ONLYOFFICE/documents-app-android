@@ -1,4 +1,4 @@
-package app.editors.manager.ui.fragments.main.template.settings
+package app.editors.manager.ui.fragments.template.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +19,7 @@ import app.editors.manager.viewModels.main.TemplateAccessSettings
 import app.editors.manager.viewModels.main.TemplateAccessSettingsState
 import app.editors.manager.viewModels.main.TemplateUserListViewModel
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.views.AnimatedVisibilityVerticalFade
 import lib.compose.ui.views.AppArrowItem
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppHeaderItem
@@ -59,23 +60,25 @@ private fun AccessSettingsScreenContent(
 ) {
     AppScaffold(
         topBar = {
-            AppTopBar(
-                title = stringResource(R.string.title_access_settings),
-                backListener = onBack,
-                actions = {
-                    TopAppBarAction(
-                        icon = R.drawable.drawable_ic_done,
-                        enabled = !(settings.loading || settings.requestLoading),
-                        onClick = { onSave(settings.confirmedSettings) }
-                    )
+            Column {
+                AppTopBar(
+                    title = stringResource(R.string.title_access_settings),
+                    backListener = onBack,
+                    actions = {
+                        TopAppBarAction(
+                            icon = R.drawable.drawable_ic_done,
+                            enabled = !(settings.loading || settings.requestLoading),
+                            onClick = { onSave(settings.confirmedSettings) }
+                        )
+                    }
+                )
+                AnimatedVisibilityVerticalFade(visible = settings.requestLoading) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
-            )
+            }
         },
         useTablePaddings = false
     ) {
-        if (settings.requestLoading) {
-            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-        }
         if (settings.loading) {
             LoadingPlaceholder()
         } else {

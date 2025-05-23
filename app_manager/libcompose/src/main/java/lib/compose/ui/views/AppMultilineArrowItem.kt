@@ -34,6 +34,7 @@ fun AppMultilineArrowItem(
     selected: Boolean? = null,
     clickable: Boolean = true,
     singleLine: Boolean = false,
+    addDivider: Boolean = true,
     onClick: () -> Unit
 ) {
     AppMultilineArrowItem(
@@ -53,6 +54,7 @@ fun AppMultilineArrowItem(
         selected = selected,
         clickable = clickable,
         singleLine = singleLine,
+        addDivider = addDivider,
         onClick = onClick
     )
 }
@@ -65,6 +67,7 @@ fun AppMultilineArrowItem(
     selected: Boolean? = null,
     clickable: Boolean = true,
     singleLine: Boolean = false,
+    addDivider: Boolean = true,
     onClick: () -> Unit
 ) {
     Row(
@@ -123,7 +126,7 @@ fun AppMultilineArrowItem(
                     }
                 }
             }
-            AppDivider()
+            if (addDivider) AppDivider()
         }
     }
 }
