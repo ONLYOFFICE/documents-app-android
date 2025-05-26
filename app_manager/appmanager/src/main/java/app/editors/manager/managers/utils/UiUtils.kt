@@ -1,6 +1,5 @@
 package app.editors.manager.managers.utils
 
-import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -143,6 +142,7 @@ object ManagerUiUtils {
             image = image,
             text = text,
             isGrid = isGrid,
+            isTemplate = false,
             backgroundColor = backgroundColor
         ) { setCardBackgroundColor(backgroundColor) }
 
@@ -181,6 +181,7 @@ object ManagerUiUtils {
             image = image,
             text = text,
             isGrid = isGrid,
+            isTemplate = true,
             backgroundColor = backgroundColor
         ) { text.setTextColor(logoColor) }
 
@@ -194,6 +195,7 @@ object ManagerUiUtils {
         image: ImageView,
         text: TextView,
         isGrid: Boolean,
+        isTemplate: Boolean,
         backgroundColor: Int,
         onSetInitials: (() -> Unit)? = null
     ) {
@@ -212,7 +214,7 @@ object ManagerUiUtils {
         if (!logo.isNullOrEmpty()) {
             text.isVisible = false
             image.isVisible = true
-            image.setRoomLogo(logo, isGrid, ::setInitials)
+            image.setRoomLogo(logo, isGrid, isTemplate, ::setInitials)
             setCardBackgroundColor(backgroundColor)
         } else {
             setInitials()
