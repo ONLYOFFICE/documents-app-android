@@ -446,7 +446,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun getBackStack(): Boolean {
-        if ((currentFolder?.isTemplate ?: isTemplatesFolder) && !isSelectionMode) {
+        if ((currentFolder?.isTemplate == true || isTemplatesFolder)
+            && !isSelectionMode && !isFilteringMode
+        ) {
             resetFilters()
             return super.getBackStack()
         }

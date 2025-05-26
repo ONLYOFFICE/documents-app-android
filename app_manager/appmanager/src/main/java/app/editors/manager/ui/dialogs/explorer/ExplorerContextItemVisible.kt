@@ -218,7 +218,7 @@ interface ExplorerContextItemVisible {
         get() = (item is CloudFile) && item.security?.lock == true
 
     private val ExplorerContextState.customFilter: Boolean
-        get() = (item is CloudFile) && section.isRoom
+        get() = (item is CloudFile) && section.isRoom && !inTemplate
                 && item.viewAccessibility?.webCustomFilterEditing == true
                 && item.security?.customFilter == true
                 && access in listOf(Access.None, Access.RoomManager)

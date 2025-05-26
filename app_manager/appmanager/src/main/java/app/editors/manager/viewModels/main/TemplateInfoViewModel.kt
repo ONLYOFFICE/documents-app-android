@@ -152,7 +152,7 @@ open class TemplateInfoViewModel(
     protected suspend fun createRoomFromTemplate() {
         with(uiState.value) {
             performTemplateOperation(
-                errorMessage = R.string.error_create_template,
+                errorMessage = R.string.error_create_room,
                 successHandler = { sendEvent(TemplateSettingsEvent.Created(it)) }
             ) { uploadedLogo, copyLogo ->
                 roomProvider.createRoomFromTemplate(

@@ -295,7 +295,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 provider = context?.accountOnline?.portal?.provider ?: PortalProvider.default,
                 isSearching = presenter.isFilteringMode,
                 editIndex = presenter.isIndexing && roomSecurity?.editRoom == true,
-                isRoot = presenter.isRoot
+                isRoot = presenter.isRoot,
+                inTemplate = presenter.currentFolder?.isTemplate == true
             )
             presenter.onClickEvent(item, position, true)
             showExplorerContextBottomDialog(state)

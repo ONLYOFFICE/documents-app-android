@@ -2,6 +2,8 @@ package app.editors.manager.ui.fragments.template.info
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -211,7 +213,12 @@ private fun AccessBlock(
     content: @Composable () -> Unit
 ) {
     var expanded by remember { mutableStateOf(true) }
-    Column(Modifier.animateContentSize()) {
+    Column(Modifier.animateContentSize(
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioNoBouncy,
+            stiffness = Spring.StiffnessMedium
+        )
+    )) {
         Row(verticalAlignment = Alignment.Top) {
             AppHeaderItem(
                 title = R.string.setting_access_list_title,
