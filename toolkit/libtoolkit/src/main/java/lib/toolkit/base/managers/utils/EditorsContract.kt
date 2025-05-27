@@ -36,6 +36,17 @@ sealed class EditType : Serializable {
     class Edit(val initialView: Boolean = true) : EditType()
     class View : EditType()
     class Fill : EditType()
+
+    companion object {
+
+        fun from(mode: String): EditType {
+            return when (mode) {
+                "view" -> View()
+                "fill" -> Fill()
+                else -> Edit()
+            }
+        }
+    }
 }
 
 class EditorsForResult(

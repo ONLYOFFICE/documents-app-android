@@ -677,7 +677,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             } else {
                 fileProvider.openFile(
                     cloudFile = CloudFile().apply { this.id = fileId.orEmpty() },
-                    editType = EditType.Edit(),
+                    editType = EditType.from(model.action),
                     canBeShared  = false
                 ).collect(::onFileOpenCollect)
             }
