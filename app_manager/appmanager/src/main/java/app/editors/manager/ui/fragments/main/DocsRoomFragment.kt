@@ -185,12 +185,12 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     override fun onDocsRefresh(list: List<Entity>?) {
-        super.onDocsGet(prepareDocsList(list))
+        super.onDocsRefresh(prepareDocsList(list))
         setMenuFilterEnabled(true)
     }
 
     override fun onDocsNext(list: List<Entity>?) {
-        super.onDocsGet(prepareDocsList(list))
+        super.onDocsNext(prepareDocsList(list))
     }
 
     private fun prepareDocsList(list: List<Entity>?): List<Entity> {
