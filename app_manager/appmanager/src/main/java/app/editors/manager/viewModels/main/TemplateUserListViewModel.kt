@@ -119,7 +119,7 @@ class TemplateUserListViewModel(
 
         val users = roomProvider.getUsers(mode.templateId, getOptions())
             .filterNot { it.id == mode.user.id }
-            .filter { it.status == ApiContract.EmployeeStatus.Active && (it.isAdmin || it.isRoomAdmin) }
+            .filter { it.status == ApiContract.EmployeeStatus.ACTIVE && (it.isAdmin || it.isRoomAdmin) }
             .map { user ->
                 user.copy(
                     avatarMedium = cloudAccount?.portal?.urlWithScheme + user.avatarMedium,

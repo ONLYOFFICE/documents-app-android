@@ -95,14 +95,14 @@ object ApiContract {
     }
 
     object ActivationStatus {
-        const val Activate = 1
-        const val Pending = 2
+        const val ACTIVATE = 1
+        const val PENDING = 2
     }
 
     object EmployeeStatus {
-        const val Active = 1
-        const val Terminated = 2
-        const val Pending = 4
+        const val ACTIVE = 1
+        const val TERMINATED = 2
+        const val PENDING = 4
     }
 
     object Parameters {

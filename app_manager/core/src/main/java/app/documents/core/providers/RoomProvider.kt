@@ -563,7 +563,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 RequestCreateRoomFromTemplate(
                     templateId = templateId,
                     title = title,
-                    tags = tags?.toTypedArray(),
+                    tags = tags,
                     quota = quota,
                     copylogo = copyLogo,
                     color = color,
@@ -596,15 +596,15 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             roomService.createTemplate(
                 RequestCreateTemplate(
                     title = title,
-                    tags = tags?.toTypedArray(),
+                    tags = tags,
                     quota = quota,
                     roomId = roomId,
                     public = public,
                     copylogo = copyLogo,
                     color = color,
                     logo = buildRequestLogo(logoSize, logoUrl),
-                    share = share?.toTypedArray(),
-                    groups = groups?.toTypedArray()
+                    share = share,
+                    groups = groups
                 )
             )
             val resultId = pollCreationStatus(isRoom = false)
@@ -706,7 +706,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             body = RequestEditTemplate(
                 title = newTitle,
                 quota = quota,
-                tags = tags?.toTypedArray(),
+                tags = tags,
                 logo = logo
             )
         )

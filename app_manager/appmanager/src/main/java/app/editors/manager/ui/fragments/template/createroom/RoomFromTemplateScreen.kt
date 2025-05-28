@@ -47,6 +47,7 @@ import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.PlaceholderView
 import lib.toolkit.base.managers.utils.TimeUtils
+import lib.toolkit.base.managers.utils.UiUtils
 import java.util.Date
 
 @Composable
@@ -56,14 +57,17 @@ fun RoomFromTemplateScreen(
     onBack: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     AppScaffold(
         topBar = {
             AppTopBar(
                 title = stringResource(R.string.title_create_from_template),
-                backListener = onBack
+                backListener = onBack,
+                isClose = UiUtils.isTablet(context)
             )
-        }
+        },
+        useTablePaddings = false
     ) {
         RoomFromTemplateScreenContent(
             loadingResult = state,
@@ -132,7 +136,7 @@ private fun TemplateItem(
             userId = context.accountOnline?.id
         )
     } else {
-        "Me"
+        stringResource(R.string.item_owner_self)
     }
 
     val subtitle = StringUtils.getRoomInfo(
