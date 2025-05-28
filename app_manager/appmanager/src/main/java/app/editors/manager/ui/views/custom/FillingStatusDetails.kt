@@ -64,7 +64,7 @@ enum class FormCompleteStatus {
         fun from(roles: List<FormRole>): FormCompleteStatus {
             return when {
                 roles.any { it.stoppedBy != null } -> Stopped
-                roles.none { it.submitted == false } -> Complete
+                roles.none { !it.submitted } -> Complete
                 else -> Waiting
             }
         }
@@ -86,11 +86,8 @@ fun FillingStatusRoleList(
                 ""
             }
         }
-        var stopped = remember { false }
+        val stopped = remember { data.any { it.stoppedBy != null } }
         data.forEach { role ->
-            if (role.stoppedBy != null) {
-                stopped = true
-            }
             RoleItem(
                 role = role,
                 stopped = stopped,
@@ -117,12 +114,9 @@ private fun RoleItem(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        val (sequence,
-            avatar,
-            nameColumn,
-            historyColumn,
-            avatarHorizontalCenter
-        ) = createRefs()
+        val (sequence, avatar, nameColumn, historyColumn) = createRefs()
+        val avatarHorizontalCenter = createRef()
+
         Box(
             modifier = Modifier
                 .height(64.dp)
@@ -151,12 +145,12 @@ private fun RoleItem(
                 stopped = stopped
             )
         }
-        Box(
-            modifier = Modifier.constrainAs(avatarHorizontalCenter) {
-                start.linkTo(avatar.start)
-                end.linkTo(avatar.end)
-            }
-        )
+
+        constrain(avatarHorizontalCenter) {
+            start.linkTo(avatar.start)
+            end.linkTo(avatar.end)
+        }
+
         Column(
             modifier = Modifier
                 .height(64.dp)
@@ -172,7 +166,7 @@ private fun RoleItem(
                 maxLines = 1,
                 color = if (stopped) {
                     MaterialTheme.colors.error
-                } else if (role.roleStatus in arrayOf(
+                } else if (role.roleStatus in setOf(
                         FormRoleStatus.YourTurn,
                         FormRoleStatus.Filling
                     )
@@ -225,7 +219,7 @@ private fun AvatarContent(
     roleStatus: FormRoleStatus
 ) {
     CircleContent(
-        dashEffect = roleStatus in arrayOf(
+        dashEffect = roleStatus in setOf(
             FormRoleStatus.YourTurn, FormRoleStatus.Waiting
         ) && !stopped,
         color = if (stopped) {
