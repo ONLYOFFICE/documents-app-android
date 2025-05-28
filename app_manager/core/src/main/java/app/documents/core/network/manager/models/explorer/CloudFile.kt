@@ -5,8 +5,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import lib.toolkit.base.managers.utils.StringUtils.Extension
-import lib.toolkit.base.managers.utils.StringUtils.getExtension
+import lib.toolkit.base.managers.tools.FileExtensions
 import java.time.Duration
 import java.time.Instant
 import java.util.Date
@@ -115,7 +114,7 @@ open class CloudFile : Item() {
         get() = fileExst.replace(".", "")
 
     val isPdfForm: Boolean
-        get() = getExtension(fileExst) == Extension.PDF && isForm
+        get() = FileExtensions.fromExtension(fileExst) is FileExtensions.PDF && isForm
 
     val isFavorite: Boolean
         get() = (fileStatus and ApiContract.FileStatus.FAVORITE) != 0
