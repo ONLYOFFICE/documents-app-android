@@ -86,8 +86,11 @@ fun FillingStatusRoleList(
                 ""
             }
         }
-        val stopped = remember { data.any { it.stoppedBy != null } }
+        var stopped = remember { false }
         data.forEach { role ->
+            if (role.stoppedBy != null) {
+                stopped = true
+            }
             RoleItem(
                 role = role,
                 stopped = stopped,
