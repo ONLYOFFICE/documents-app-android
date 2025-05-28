@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -61,7 +62,8 @@ fun ChipsTextField(
     label: String,
     chips: ChipList,
     onChipAdd: (String) -> Unit,
-    onChipDelete: (String) -> Unit
+    onChipDelete: (String) -> Unit,
+    contentPadding: PaddingValues = PaddingValues()
 ) {
     val focusRequester = remember { FocusRequester() }
     var focused by remember { mutableStateOf(false) }
@@ -100,6 +102,7 @@ fun ChipsTextField(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(contentPadding)
                 .weight(1f),
             contentAlignment = Alignment.Center
         ) {

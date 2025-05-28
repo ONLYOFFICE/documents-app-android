@@ -295,7 +295,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 provider = context?.accountOnline?.portal?.provider ?: PortalProvider.default,
                 isSearching = presenter.isFilteringMode,
                 editIndex = presenter.isIndexing && roomSecurity?.editRoom == true,
-                isRoot = presenter.isRoot
+                isRoot = presenter.isRoot,
+                inTemplate = presenter.currentFolder?.isTemplate == true
             )
             presenter.onClickEvent(item, position, true)
             showExplorerContextBottomDialog(state)
@@ -1221,42 +1222,60 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         ActionBarMenu(
             context = requireContext(),
             adapter = ActionMenuAdapter(actionMenuClickListener),
-            items = if (section.isRoom) {
-                ActionMenuItemsFactory.getRoomItems(
-                    section = section,
-                    provider = context?.accountOnline?.portal?.provider,
-                    root = presenter.isRoot,
-                    selected = presenter.isSelectionMode,
-                    allSelected = presenter.isSelectedAll,
-                    sortBy = presenter.preferenceTool.sortBy,
-                    empty = presenter.isListEmpty(),
-                    currentRoom = presenter.isRoomFolder(),
-                    security = presenter.roomClicked?.security ?: Security(),
-                    isGridView = presenter.preferenceTool.isGridView,
-                    asc = presenter.preferenceTool.sortOrder.equals(
-                        ApiContract.Parameters.VAL_SORT_ORDER_ASC,
-                        ignoreCase = true
-                    ),
-                    isIndexing = presenter.roomClicked?.indexing == true
-                )
-            } else {
-                ActionMenuItemsFactory.getDocsItems(
-                    section = section,
-                    provider = context?.accountOnline?.portal?.provider,
-                    selected = presenter.isSelectionMode,
-                    allSelected = presenter.isSelectedAll,
-                    sortBy = presenter.preferenceTool.sortBy,
-                    isGridView = presenter.preferenceTool.isGridView,
-                    asc = presenter.preferenceTool.sortOrder.equals(
-                        ApiContract.Parameters.VAL_SORT_ORDER_ASC,
-                        ignoreCase = true
+            items = when {
+                section.isTemplates -> {
+                    ActionMenuItemsFactory.getTemplatesItems(
+                        selected = presenter.isSelectionMode,
+                        allSelected = presenter.isSelectedAll,
+                        isGridView = presenter.preferenceTool.isGridView,
+                        asc = presenter.preferenceTool.sortOrder.equals(
+                            ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                            ignoreCase = true
+                        ),
+                        sortBy = presenter.preferenceTool.sortBy,
                     )
-                )
+                }
+                section.isRoom -> {
+                    ActionMenuItemsFactory.getRoomItems(
+                        section = section,
+                        provider = context?.accountOnline?.portal?.provider,
+                        root = presenter.isRoot,
+                        selected = presenter.isSelectionMode,
+                        allSelected = presenter.isSelectedAll,
+                        sortBy = presenter.preferenceTool.sortBy,
+                        empty = presenter.isListEmpty(),
+                        currentRoom = presenter.isRoomFolder(),
+                        security = presenter.currentFolder?.security ?: Security(),
+                        isGridView = presenter.preferenceTool.isGridView,
+                        asc = presenter.preferenceTool.sortOrder.equals(
+                            ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                            ignoreCase = true
+                        ),
+                        isIndexing = presenter.roomClicked?.indexing == true,
+                        isTemplate = presenter.currentFolder?.isTemplate == true
+                    )
+                }
+                else -> {
+                    ActionMenuItemsFactory.getDocsItems(
+                        section = section,
+                        provider = context?.accountOnline?.portal?.provider,
+                        selected = presenter.isSelectionMode,
+                        allSelected = presenter.isSelectedAll,
+                        sortBy = presenter.preferenceTool.sortBy,
+                        isGridView = presenter.preferenceTool.isGridView,
+                        asc = presenter.preferenceTool.sortOrder.equals(
+                            ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                            ignoreCase = true
+                        )
+                    )
+                }
             }
         ).show(requireActivity().window.decorView)
     }
 
-    protected open fun getSection(): ApiContract.Section = ApiContract.Section.getSection(presenter.getSectionType())
+    protected open fun getSection(): ApiContract.Section =
+        if (presenter.isTemplatesFolder) ApiContract.Section.Room.Templates
+        else ApiContract.Section.getSection(presenter.getSectionType())
 
     protected open val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {

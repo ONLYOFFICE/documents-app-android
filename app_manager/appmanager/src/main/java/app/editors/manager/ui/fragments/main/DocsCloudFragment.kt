@@ -47,6 +47,9 @@ import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_TYPE
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
+import app.editors.manager.ui.fragments.template.createroom.RoomFromTemplateFragment
+import app.editors.manager.ui.fragments.template.settings.TemplateAccessSettingsFragment
+import app.editors.manager.ui.fragments.template.settings.TemplateSettingsFragment
 import app.editors.manager.ui.fragments.main.versionhistory.RefreshListener
 import app.editors.manager.ui.fragments.main.versionhistory.VersionHistoryFragment
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment
@@ -55,8 +58,10 @@ import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
 import app.editors.manager.ui.fragments.share.ShareFragment
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
+import app.editors.manager.ui.fragments.template.info.TemplateInfoFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
+import app.editors.manager.viewModels.main.TemplateSettingsMode
 import app.editors.manager.viewModels.main.VersionViewer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import lib.toolkit.base.managers.tools.FileExtensions
@@ -74,6 +79,12 @@ import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
+
+sealed interface ToolbarState {
+    data class RoomLifetime(val lifetime: Lifetime) : ToolbarState
+    data object RoomTemplate : ToolbarState
+    data object None : ToolbarState
+}
 
 open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
@@ -167,7 +178,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             menuInflater?.let { menuInflater ->
                 menuInflater.inflate(R.menu.docs_select, menu)
                 deleteItem = menu.findItem(R.id.toolbar_selection_delete)
-                    .setVisible(presenter.isContextItemEditable).also {
+                    .setVisible(presenter.isContextItemEditable && presenter.areItemsRemovable).also {
                         setMenuItemTint(requireContext(), it, lib.toolkit.base.R.color.colorPrimary)
                     }
                 setAccountEnable(false)
@@ -229,7 +240,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         when (contextItem) {
             ExplorerContextItem.Share -> showShareFragment()
             ExplorerContextItem.Location -> presenter.openLocation()
-            ExplorerContextItem.CreateRoom -> showAddRoomBottomDialog()
+            ExplorerContextItem.CreateRoom -> {
+                if (presenter.isTemplatesFolder) {
+                    presenter.createRoomFromTemplate()
+                } else {
+                    showAddRoomBottomDialog()
+                }
+            }
             ExplorerContextItem.ShareDelete -> showQuestionDialog(
                 title = getString(R.string.dialogs_question_share_remove),
                 string = "${presenter.itemClicked?.title}",
@@ -250,8 +267,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
             is ActionMenuItem.CopyLink -> presenter.copyLinkFromActionMenu(item.isRoom)
-            ActionMenuItem.Info -> showRoomInfoFragment()
-            ActionMenuItem.CreateRoom -> showAddRoomBottomDialog()
+            ActionMenuItem.CreateRoom -> {
+                if (presenter.currentFolder?.isTemplate == true) {
+                    presenter.createRoomFromTemplate()
+                } else {
+                    showAddRoomBottomDialog()
+                }
+            }
             else -> super.actionMenuClickListener(item)
         }
     }
@@ -395,12 +417,14 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             when {
                 roomType != null && roomType > 0 -> {
                     when {
+                        presenter.currentFolder?.isTemplate == true -> PlaceholderViews.Type.EMPTY_TEMPLATE
                         presenter.itemClicked?.security?.editRoom != true -> PlaceholderViews.Type.VISITOR_EMPTY_ROOM
                         roomType == ApiContract.RoomType.FILL_FORMS_ROOM -> PlaceholderViews.Type.EMPTY_FORM_FILLING_ROOM
                         roomType == ApiContract.RoomType.VIRTUAL_ROOM -> PlaceholderViews.Type.EMPTY_VIRTUAL_ROOM
                         else -> PlaceholderViews.Type.EMPTY_ROOM
                     }
                 }
+                presenter.isTemplatesFolder -> PlaceholderViews.Type.EMPTY_TEMPLATES_FOLDER
                 presenter.isRecentViaLinkSection() -> PlaceholderViews.Type.EMPTY_RECENT_VIA_LINK
                 else -> type
             }
@@ -488,17 +512,23 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     }
                 }
         } else {
+            val filterSection = when {
+                presenter.isRecentViaLinkSection() -> ApiContract.SectionType.CLOUD_RECENT
+                presenter.isTemplatesFolder -> ApiContract.SectionType.CLOUD_TEMPLATES
+                else -> section
+            }
             filterActivity.launch(FilterActivity.getIntent(
                 this,
                 presenter.folderId,
-                if (!presenter.isRecentViaLinkSection()) section else ApiContract.SectionType.CLOUD_RECENT,
+                filterSection,
                 presenter.isRoot
             ))
         }
     }
 
-    private fun openRoom(id: String?, type: Int? = null) {
+    private fun openRoom(id: String?, type: Int? = null, popToRoot: Boolean = false) {
         try {
+            if (popToRoot) presenter.popToRoot()
             requireActivity().supportFragmentManager
                 .fragments
                 .filterIsInstance<IMainPagerFragment>()
@@ -551,24 +581,34 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         )
     }
 
-    override fun onRoomLifetime(lifetime: Lifetime?) {
-         (activity as? IMainActivity)?.let { activity ->
-            if (lifetime != null) {
-                activity.setToolbarInfo(
-                    title = getString(
-                        R.string.rooms_vdr_lifetime_info,
-                        lifetime.value,
-                        when (lifetime.period) {
-                            Lifetime.PERIOD_DAYS -> lib.toolkit.base.R.plurals.days
-                            Lifetime.PERIOD_MONTHS -> lib.toolkit.base.R.plurals.months
-                            Lifetime.PERIOD_YEARS ->lib.toolkit.base.R.plurals.years
-                            else -> return@let
-                        }.let { resources.getQuantityText(it, lifetime.value) }
-                    ),
-                    drawable = lib.toolkit.base.R.drawable.ic_expiring
-                )
-            } else {
-                activity.setToolbarInfo(null)
+    override fun setToolbarState(state: ToolbarState) {
+        (activity as? IMainActivity)?.let { activity ->
+            when (state) {
+                is ToolbarState.RoomLifetime -> {
+                    activity.setToolbarInfo(
+                        title = getString(
+                            R.string.rooms_vdr_lifetime_info,
+                            state.lifetime.value,
+                            when (state.lifetime.period) {
+                                Lifetime.PERIOD_DAYS -> lib.toolkit.base.R.plurals.days
+                                Lifetime.PERIOD_MONTHS -> lib.toolkit.base.R.plurals.months
+                                Lifetime.PERIOD_YEARS -> lib.toolkit.base.R.plurals.years
+                                else -> return@let
+                            }.let { resources.getQuantityText(it, state.lifetime.value) }
+                        ),
+                        drawable = lib.toolkit.base.R.drawable.ic_expiring,
+                    )
+                }
+
+                is ToolbarState.RoomTemplate -> {
+                    activity.setToolbarInfo(
+                        title = getString(R.string.template_subheader_title),
+                        drawable = R.drawable.ic_template_subheader,
+                        drawablePadding = 12
+                    )
+                }
+
+                ToolbarState.None -> activity.setToolbarInfo(null)
             }
         }
     }
@@ -602,6 +642,10 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     override fun onRoomViaLinkPasswordRequired(error: Boolean, tag: String) { }
 
     override fun showRoomInfoFragment() {
+        if (presenter.isTemplatesFolder || presenter.currentFolder?.isTemplate == true) {
+            presenter.showTemplateInfo()
+            return
+        }
         if (presenter.roomClicked?.passwordProtected == true) {
             onRoomViaLinkPasswordRequired(false, TAG_PROTECTED_ROOM_SHOW_INFO)
             return
@@ -627,7 +671,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             onActionDialogClose()
             if (bundle.contains(AddRoomBottomDialog.KEY_RESULT_TYPE)) {
                 val roomType = bundle.getInt(AddRoomBottomDialog.KEY_RESULT_TYPE)
-                if (copyFiles) {
+                if (roomType == 0) {
+                    showRoomFromTemplateFragment(null)
+                } else if (copyFiles) {
                     presenter.createRoom(roomType)
                 } else {
                     showAddRoomFragment(roomType)
@@ -662,6 +708,78 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         ) {
             onRefresh()
             refreshListener = null
+        }
+    }
+
+    override fun showTemplateSettingsFragment(templateId: String, modeId: Int) {
+        TemplateSettingsFragment.show(
+            parentFragmentManager,
+            viewLifecycleOwner,
+            templateId,
+            modeId
+        ) { bundle ->
+            val id = bundle.getString(TemplateSettingsFragment.KEY_SAVED_ID)
+            val type = bundle.getInt(TemplateSettingsFragment.KEY_SAVED_ROOM_TYPE)
+            val title = bundle.getString(TemplateSettingsFragment.KEY_SAVED_TITLE)
+            when (modeId) {
+                TemplateSettingsMode.MODE_CREATE_TEMPLATE -> {
+                    id?.let {
+                        openRoom(id = id, type = type)
+                        showSnackBar(getString(R.string.template_created_successfully, title))
+                    }
+                }
+
+                TemplateSettingsMode.MODE_EDIT_TEMPLATE -> {
+                    onRefresh()
+                    showSnackBar(R.string.settings_saved_successfully)
+                }
+
+                TemplateSettingsMode.MODE_CREATE_ROOM -> {
+                    id?.let {
+                        openRoom(id = id, type = type, popToRoot = true)
+                        showSnackBar(R.string.room_created_successfully)
+                    }
+                }
+            }
+
+        }
+    }
+
+    override fun showTemplateAccessSettingsFragment(templateId: String) {
+        TemplateAccessSettingsFragment.show(
+            parentFragmentManager,
+            viewLifecycleOwner,
+            templateId
+        ) {
+            showSnackBar(R.string.settings_saved_successfully)
+        }
+    }
+
+    override fun showRoomFromTemplateFragment(templateId: String?) {
+        RoomFromTemplateFragment.show(
+            parentFragmentManager,
+            viewLifecycleOwner,
+            templateId
+        ) { bundle ->
+            bundle.getString(RoomFromTemplateFragment.KEY_SAVED_ID)?.let { id ->
+                val roomType = bundle.getInt(RoomFromTemplateFragment.KEY_SAVED_ROOM_TYPE)
+                openRoom(id, roomType, popToRoot = true)
+                showSnackBar(R.string.room_created_successfully)
+            }
+        }
+    }
+
+    override fun showTemplateInfoFragment(templateId: String) {
+        TemplateInfoFragment.show(
+            parentFragmentManager,
+            viewLifecycleOwner,
+            templateId
+        ) { bundle ->
+            bundle.getString(TemplateInfoFragment.KEY_SAVED_ID)?.let { id ->
+                val roomType = bundle.getInt(TemplateInfoFragment.KEY_SAVED_ROOM_TYPE)
+                openRoom(id, roomType, popToRoot = true)
+                showSnackBar(R.string.room_created_successfully)
+            }
         }
     }
 

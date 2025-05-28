@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardRootLayout"
+    style="@style/GridItemLayout.Card">
+
+    <androidx.constraintlayout.widget.ConstraintLayout style="@style/GridItemLayout.ConstraintLayout">
+
+        <ImageView
+            android:id="@+id/selectIcon"
+            style="@style/ExplorerItemLayout.SelectIcon"
+            app:layout_constraintBottom_toTopOf="@id/cardImageLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/cardImageLayout"
+            tools:ignore="ContentDescription" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardImageLayout"
+            android:layout_width="@dimen/grid_template_card_size"
+            android:layout_height="@dimen/grid_template_card_size"
+            android:translationZ="-2dp"
+            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardCornerRadius="@dimen/grid_card_view_corner_radius"
+            app:cardElevation="@dimen/zero_width"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0">
+
+            <TextView
+                android:id="@+id/cardText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:maxLength="2"
+                android:textColor="@color/colorWhite"
+                android:textSize="28sp"
+                tools:text="PR" />
+
+            <ImageView
+                android:id="@+id/cardImage"
+                android:layout_width="@dimen/grid_template_img_size"
+                android:layout_height="@dimen/grid_template_img_size"
+                android:layout_gravity="center"
+                tools:ignore="ContentDescription" />
+
+        </androidx.cardview.widget.CardView>
+
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/title"
+            style="@style/GridItemLayout.Title"
+            android:layout_width="wrap_content"
+            android:maxLines="2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardImageLayout"
+            tools:text="Template name" />
+
+        <TextView
+            android:id="@+id/subtitle"
+            style="@style/GridItemLayout.Subtitle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:text="Room type" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

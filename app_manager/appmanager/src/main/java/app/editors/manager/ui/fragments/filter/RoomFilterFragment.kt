@@ -22,11 +22,12 @@ class RoomFilterFragment : BaseFilterFragment() {
 
     companion object {
         val TAG = RoomFilterFragment::class.simpleName
+        private const val KEY_IS_TEMPLATES_SECTION = "key_is_template_section"
 
-        fun newInstance(folderId: String?): RoomFilterFragment {
+        fun newInstance(isTemplatesFolder: Boolean = false): RoomFilterFragment {
             return RoomFilterFragment().apply {
                 arguments = Bundle(1).apply {
-                    putString(KEY_FOLDER_ID, folderId)
+                    putBoolean(KEY_IS_TEMPLATES_SECTION, isTemplatesFolder)
                 }
             }
         }
@@ -37,7 +38,7 @@ class RoomFilterFragment : BaseFilterFragment() {
 
     @ProvidePresenter
     fun providePresenter(): RoomFilterPresenter {
-        return RoomFilterPresenter(arguments?.getString(KEY_FOLDER_ID))
+        return RoomFilterPresenter(arguments?.getBoolean(KEY_IS_TEMPLATES_SECTION) ?: false)
     }
 
     private var authorChipGroup: SingleChoiceChipGroupView? = null

@@ -6,10 +6,12 @@ import android.view.View
 import androidx.core.view.forEach
 import androidx.fragment.app.setFragmentResultListener
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.RoomFilterType
+import app.editors.manager.mvp.models.list.Templates
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.room.order.RoomOrderDialogFragment
@@ -56,6 +58,10 @@ class DocsRoomFragment : DocsCloudFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.toolbar_selection_archive -> presenter.archiveRooms(true)
+            R.id.toolbar_selection_delete -> if (presenter.isTemplatesFolder) {
+                presenter.onDeleteTemplates()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -71,6 +77,28 @@ class DocsRoomFragment : DocsCloudFragment() {
         } else super.onStateMenuSelection()
     }
 
+    override fun showDeleteDialog(count: Int, toTrash: Boolean, tag: String) {
+        if (presenter.isTemplatesFolder || tag == TAG_DELETE_TEMPLATE) {
+            showQuestionDialog(
+                title = resources.getQuantityString(
+                    R.plurals.dialogs_question_delete_template_title,
+                    count
+                ),
+                string = resources.getQuantityString(
+                    R.plurals.dialogs_question_message_template,
+                    count,
+                    presenter.currentSelectedFolderTitle
+                ),
+                acceptButton = getString(R.string.dialogs_question_accept_delete),
+                cancelButton = getString(R.string.dialogs_common_cancel_button),
+                tag = tag,
+                acceptErrorTint = true
+            )
+        } else {
+            super.showDeleteDialog(count, toTrash, tag)
+        }
+    }
+
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
             ExplorerContextItem.Duplicate -> presenter.duplicateRoom()
@@ -82,9 +110,17 @@ class DocsRoomFragment : DocsCloudFragment() {
             is ExplorerContextItem.Notifications -> presenter.muteRoomNotifications(!contextItem.muted)
             is ExplorerContextItem.ExternalLink -> presenter.copyLinkFromContextMenu()
             is ExplorerContextItem.Pin -> presenter.pinRoom()
-            is ExplorerContextItem.Delete -> if (presenter.isRoot) presenter.checkRoomOwner() else super.onContextButtonClick(contextItem)
+            is ExplorerContextItem.Delete -> {
+                when {
+                    presenter.isTemplatesFolder -> showDeleteDialog(tag = TAG_DELETE_TEMPLATE)
+                    presenter.isRoot -> presenter.checkRoomOwner()
+                    else -> super.onContextButtonClick(contextItem)
+                }
+            }
             is ExplorerContextItem.Lock -> presenter.lockFile()
             is ExplorerContextItem.CustomFilter -> presenter.setCustomFilter()
+            is ExplorerContextItem.SaveAsTemplate -> presenter.createTemplate()
+            is ExplorerContextItem.AccessSettings -> presenter.editTemplateAccessSettings()
             else -> super.onContextButtonClick(contextItem)
         }
     }
@@ -102,6 +138,9 @@ class DocsRoomFragment : DocsCloudFragment() {
             ActionMenuItem.EditIndex -> showEditIndexDialog()
             ActionMenuItem.ExportIndex -> presenter.exportIndex()
             ActionMenuItem.Download -> presenter.createDownloadFile()
+            ActionMenuItem.DeleteTemplate -> showDeleteDialog(tag = TAG_DELETE_TEMPLATE)
+            ActionMenuItem.EditTemplate -> presenter.editTemplate()
+            ActionMenuItem.AccessSettings -> presenter.editTemplateAccessSettings()
             else -> super.actionMenuClickListener.invoke(item)
         }
     }
@@ -109,6 +148,7 @@ class DocsRoomFragment : DocsCloudFragment() {
     override fun onAcceptClick(dialogs: CommonDialog.Dialogs?, value: String?, tag: String?) {
         when (tag) {
             TAG_LEAVE_ROOM -> presenter.leaveRoom()
+            TAG_DELETE_TEMPLATE -> presenter.deleteTemplate()
             TAG_PROTECTED_ROOM_OPEN_FOLDER,
             TAG_PROTECTED_ROOM_SHOW_INFO,
             TAG_PROTECTED_ROOM_DOWNLOAD -> presenter.authRoomViaLink(value.orEmpty(), tag)
@@ -117,7 +157,7 @@ class DocsRoomFragment : DocsCloudFragment() {
     }
 
     override fun getFilters(): Boolean {
-        return if (isRoom) {
+        return if (isRoom || presenter.isTemplatesFolder) {
             val filter = presenter.preferenceTool.filter
             filter.roomType != RoomFilterType.None ||
                     filter.author.id.isNotEmpty() ||
@@ -138,6 +178,27 @@ class DocsRoomFragment : DocsCloudFragment() {
             tag = tag,
             bottomTitle = null
         )
+    }
+
+    override fun onDocsGet(list: List<Entity>?) {
+        super.onDocsGet(prepareDocsList(list))
+    }
+
+    override fun onDocsRefresh(list: List<Entity>?) {
+        super.onDocsRefresh(prepareDocsList(list))
+        setMenuFilterEnabled(true)
+    }
+
+    override fun onDocsNext(list: List<Entity>?) {
+        super.onDocsNext(prepareDocsList(list))
+    }
+
+    private fun prepareDocsList(list: List<Entity>?): List<Entity> {
+        val newList = list.orEmpty().toMutableList()
+        if (ApiContract.SectionType.isRoom(presenter.getSectionType()) && presenter.isRoot) {
+            newList.add(0, Templates)
+        }
+        return newList
     }
 
     private fun reconnectStorage() {
@@ -173,6 +234,7 @@ class DocsRoomFragment : DocsCloudFragment() {
         const val KEY_RESULT_ROOM_ID = "key_result_room_id"
         const val KEY_RESULT_ROOM_TYPE = "key_result_room_type"
         const val TAG_LEAVE_ROOM = "tag_leave_room"
+        const val TAG_DELETE_TEMPLATE = "tag_delete_template"
         const val TAG_PROTECTED_ROOM_OPEN_FOLDER = "tag_protected_room_open"
         const val TAG_PROTECTED_ROOM_SHOW_INFO = "tag_protected_room_info"
         const val TAG_PROTECTED_ROOM_DOWNLOAD = "tag_protected_room_download"

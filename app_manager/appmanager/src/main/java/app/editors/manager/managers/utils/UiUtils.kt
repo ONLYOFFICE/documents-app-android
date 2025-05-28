@@ -1,9 +1,9 @@
 package app.editors.manager.managers.utils
 
-import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
@@ -28,6 +28,7 @@ import com.google.android.material.imageview.ShapeableImageView
 import lib.toolkit.base.managers.tools.FileExtensionUtils
 import lib.toolkit.base.managers.tools.FileGroup
 import lib.toolkit.base.managers.utils.StringUtils
+import androidx.core.graphics.toColorInt
 
 object ManagerUiUtils {
 
@@ -125,29 +126,17 @@ object ManagerUiUtils {
         externalBadge: ImageView,
         isGrid: Boolean,
     ) {
-        val logo = room.logo?.large
+        val backgroundColor = room.logo?.color?.let { color -> "#$color".toColorInt() }
+            ?: context.getColor(lib.toolkit.base.R.color.colorPrimary)
 
-        fun setInitials() {
-            val initials = RoomUtils.getRoomInitials(room.title)
-            if (!initials.isNullOrEmpty()) {
-                image.isVisible = false
-                text.isVisible = true
-                text.text = initials
-            }
-            setCardBackgroundColor(
-                room.logo?.color?.let { color -> Color.parseColor("#$color") }
-                    ?: context.getColor(lib.toolkit.base.R.color.colorPrimary)
-            )
-        }
-
-        if (!logo.isNullOrEmpty()) {
-            text.isVisible = false
-            image.isVisible = true
-            image.setRoomLogo(logo, isGrid, ::setInitials)
-            setCardBackgroundColor(context.getColor(lib.toolkit.base.R.color.colorTransparent))
-        } else {
-            setInitials()
-        }
+        setIconCommon(
+            item = room,
+            image = image,
+            text = text,
+            isGrid = isGrid,
+            isTemplate = false,
+            backgroundColor = backgroundColor
+        ) { setCardBackgroundColor(backgroundColor) }
 
         publicBadge.isVisible = false
         externalBadge.isVisible = false
@@ -166,6 +155,61 @@ object ManagerUiUtils {
                 }
             )
             publicBadge.isVisible = true
+        }
+    }
+
+    fun CardView.setTemplateIcon(
+        template: CloudFolder,
+        image: ImageView,
+        text: TextView,
+        isGrid: Boolean,
+    ) {
+        val logoColor = template.logo?.color?.let { color -> "#$color".toColorInt() }
+            ?: context.getColor(lib.toolkit.base.R.color.colorTextTertiary)
+        val backgroundColor = context.getColor(lib.toolkit.base.R.color.colorTransparent)
+
+        setIconCommon(
+            item = template,
+            image = image,
+            text = text,
+            isGrid = isGrid,
+            isTemplate = true,
+            backgroundColor = backgroundColor
+        ) { text.setTextColor(logoColor) }
+
+        val frame = AppCompatResources.getDrawable(context, R.drawable.room_template_logo)?.mutate()
+        frame?.setTint(logoColor)
+        background = frame
+    }
+
+    private fun CardView.setIconCommon(
+        item: CloudFolder,
+        image: ImageView,
+        text: TextView,
+        isGrid: Boolean,
+        isTemplate: Boolean,
+        backgroundColor: Int,
+        onSetInitials: (() -> Unit)? = null
+    ) {
+        val logo = item.logo?.large
+
+        fun setInitials() {
+            val initials = RoomUtils.getRoomInitials(item.title)
+            if (!initials.isNullOrEmpty()) {
+                image.isVisible = false
+                text.isVisible = true
+                text.text = initials
+            }
+            onSetInitials?.invoke()
+        }
+
+        if (!logo.isNullOrEmpty()) {
+            text.isVisible = false
+            image.isVisible = true
+            image.setRoomLogo(logo, isGrid, isTemplate, ::setInitials)
+            setCardBackgroundColor(backgroundColor)
+        } else {
+            setInitials()
         }
     }
 
