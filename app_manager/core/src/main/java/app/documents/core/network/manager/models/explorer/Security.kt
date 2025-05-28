@@ -113,4 +113,20 @@ class Security : Serializable {
     @SerializedName("FillForms")
     @Expose
     var fillForms: Boolean = false
+
+    @SerializedName("FillingStatus")
+    @Expose
+    var fillingStatus: Boolean = false
+
+    @SerializedName("StartFilling")
+    @Expose
+    var startFilling: Boolean = false
+
+    @SerializedName("StopFilling")
+    @Expose
+    var stopFilling: Boolean = false
+
+    @SerializedName("ResetFilling")
+    @Expose
+    var resetFilling: Boolean = false
 }

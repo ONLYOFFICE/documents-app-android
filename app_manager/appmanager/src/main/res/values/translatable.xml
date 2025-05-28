@@ -1156,4 +1156,22 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="setting_access_public_bold_docspace">DocSpace</string>
     <string name="setting_access_public_bold_room">Room admins</string>
 
+    <string name="filling_form_complete">Complete</string>
+    <string name="filling_form_stopped">Stopped</string>
+    <string name="filling_form_history_opened">Opened the form to fill out</string>
+    <string name="filling_form_history_submitted">Submitted their part. The form was sent to the next role.</string>
+    <string name="filling_form_history_stopped">Filling was stopped by %s</string>
+    <string name="filling_form_history_complete">Has completed and submitted their part of the form. The form is fully filled out.</string>
+    <string name="filling_form_filling_status">Filling status</string>
+    <string name="filling_form_filling_status_desc">In this panel you can monitor the completion of the form in which you participate or in which you are the organizer of completion</string>
+    <string name="filling_form_filling_process_details">Process details</string>
+    <string name="filling_form_stop_filling">Stop filling</string>
+    <string name="filling_form_stop_filling_dialog_title">Stop filling?</string>
+    <string name="filling_form_stop_filling_dialog_desc">Are you sure you want to stop filling? It will be impossible to resume filling out this form after cancellation. Filling out the form will be stopped at the stage it is currently at. The file will be marked as "Stopped".</string>
+    <string name="filling_form_send_section_complete">Form Section Completed</string>
+    <string name="filling_form_send_section_complete_desc">The assigned portion of the PDF form has been successfully completed. The filling status of the form can be monitored in the room and via the Filling status panel. An email notification will be sent once the form is fully completed.</string>
+    <string name="filling_form_send_finalized">Form Section Completed</string>
+    <string name="filling_form_send_finalized_desc">The form has been fully completed by all roles and is now finalized. It is available in view-only mode.</string>
+    <string name="filling_form_version_incompatible_desc">The client and server versions are incompatible. You can only open the document in view mode.</string>
+
 </resources>
