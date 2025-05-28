@@ -12,3 +12,10 @@ sealed class Result<out T> {
 
 fun <T> Flow<T>.asResult(): Flow<Result<T>> = map<T, Result<T>>(::Success)
     .catch { cause -> emit(Result.Error(cause)) }
+
+fun <T> Result<T>.getOrDefault(default: T): T {
+    return when(this){
+        is Success -> result
+        else -> default
+    }
+}

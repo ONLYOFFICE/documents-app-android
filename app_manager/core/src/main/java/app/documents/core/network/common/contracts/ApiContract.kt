@@ -95,8 +95,14 @@ object ApiContract {
     }
 
     object ActivationStatus {
-        const val Activate = 1
-        const val Pending = 2
+        const val ACTIVATE = 1
+        const val PENDING = 2
+    }
+
+    object EmployeeStatus {
+        const val ACTIVE = 1
+        const val TERMINATED = 2
+        const val PENDING = 4
     }
 
     object Parameters {
@@ -167,6 +173,7 @@ object ApiContract {
         const val CLOUD_PRIVATE_ROOM = 13
         const val CLOUD_VIRTUAL_ROOM = 14
         const val CLOUD_ARCHIVE_ROOM = 20
+        const val CLOUD_TEMPLATES = 30
 
         const val WEB_DAV = 100
         const val GOOGLE_DRIVE = 110
@@ -176,8 +183,8 @@ object ApiContract {
         const val LOCAL_RECENT = 200
 
         fun isRoom(type: Int): Boolean = type == 14
-        fun isArchive(type: String): Boolean = isArchive(type.toInt())
         fun isArchive(type: Int): Boolean = type == CLOUD_ARCHIVE_ROOM
+        fun isTemplates(type: Int?): Boolean = type == CLOUD_TEMPLATES
     }
 
     sealed class Section(val type: Int) {
@@ -196,6 +203,7 @@ object ApiContract {
             object Private : Room(SectionType.CLOUD_PRIVATE_ROOM)
             object Virtual : Room(SectionType.CLOUD_VIRTUAL_ROOM)
             object Archive : Room(SectionType.CLOUD_ARCHIVE_ROOM)
+            object Templates : Room(SectionType.CLOUD_TEMPLATES)
         }
 
         sealed class Storage(type: Int) : Section(type) {
@@ -205,6 +213,7 @@ object ApiContract {
         }
 
         val isRoom: Boolean get() = this is Room
+        val isTemplates: Boolean get() = this is Room.Templates
         val isUser: Boolean get() = this is User
         val isArchive: Boolean get() = this == Room.Archive
         val isLocal: Boolean get() = this in listOf(Device, Recent, LocalRecent)
@@ -225,6 +234,7 @@ object ApiContract {
                     SectionType.CLOUD_FAVORITES -> Favorites
                     SectionType.CLOUD_RECENT -> Recent
                     SectionType.WEB_DAV -> Webdav
+                    SectionType.CLOUD_TEMPLATES -> Room.Templates
                     SectionType.CLOUD_PRIVATE_ROOM -> Room.Private
                     SectionType.CLOUD_VIRTUAL_ROOM -> Room.Virtual
                     SectionType.CLOUD_ARCHIVE_ROOM -> Room.Archive

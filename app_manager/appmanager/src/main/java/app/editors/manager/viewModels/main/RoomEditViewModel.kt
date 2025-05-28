@@ -10,6 +10,7 @@ import app.documents.core.network.manager.models.explorer.WatermarkType
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.mvp.models.ui.StorageQuota
+import app.editors.manager.viewModels.base.RoomSettingsLogoState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

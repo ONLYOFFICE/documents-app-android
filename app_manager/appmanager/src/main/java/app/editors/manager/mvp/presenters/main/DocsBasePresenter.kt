@@ -50,6 +50,7 @@ import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.models.filter.joinToString
 import app.editors.manager.mvp.models.list.RecentViaLink
+import app.editors.manager.mvp.models.list.Templates
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.states.OperationsState
@@ -904,7 +905,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         return plus(
             mutableMapOf<String, String>().apply {
                 val filter = preferenceTool.filter
-                if (ApiContract.SectionType.isRoom(currentSectionType) && isRoot) {
+                if (ApiContract.SectionType.isRoom(currentSectionType) && isRoot || isTemplatesFolder) {
                     if (filter.roomType != RoomFilterType.None) {
                         put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filter.roomType.filterVal.toString())
                     }
@@ -1204,7 +1205,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
 
     fun onClickEvent(item: Item?, position: Int, isContext: Boolean = false) {
         itemClickedPosition = position
-        itemClicked = if (item is RecentViaLink) item else modelExplorerStack.getItemById(item)
+        itemClicked = if (item is RecentViaLink || item is Templates) item else modelExplorerStack.getItemById(item)
         if (item is CloudFolder && item.isRoom) roomClicked = item
         isContextClick = isContext
     }
@@ -1361,6 +1362,13 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         } else {
             modelExplorerStack.isRoot
         }
+
+    val isTemplatesFolder: Boolean
+        get() = ApiContract.SectionType.isTemplates(modelExplorerStack.rootFolderType)
+                && modelExplorerStack.last()?.pathParts.orEmpty().size < 2
+
+    val currentSelectedFolderTitle: String
+        get() = modelExplorerStack.selectedFolders.firstOrNull()?.title ?: itemClickedTitle
 
     private val isBackStackEmpty: Boolean
         get() = modelExplorerStack.isStackEmpty

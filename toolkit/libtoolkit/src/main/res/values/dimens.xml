@@ -22,6 +22,12 @@
     <integer name="screen_media_grid_columns">2</integer>
     <item name="screen_on_boarding_layout_height" format="dimension" type="dimen">0dp</item>
 
+    <dimen name="screen_margin_start_toolbar">12dp</dimen>
+    <dimen name="grid_template_card_size">80dp</dimen>
+    <dimen name="grid_template_img_size">60dp</dimen>
+    <dimen name="list_template_img_size">36dp</dimen>
+    <dimen name="zero_width">0dp</dimen>
+
     <dimen name="screen_auth_image_width">240dp</dimen>
     <dimen name="screen_auth_image_height">240dp</dimen>
 

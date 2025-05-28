@@ -43,15 +43,19 @@ import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.works.RoomDuplicateWork
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.list.RecentViaLink
+import app.editors.manager.mvp.models.list.Templates
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.MoveCopyDialog
+import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_DELETE_TEMPLATE
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_DOWNLOAD
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_OPEN_FOLDER
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
+import app.editors.manager.ui.fragments.main.ToolbarState
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
+import app.editors.manager.viewModels.main.TemplateSettingsMode
 import app.editors.manager.viewModels.main.VersionViewer
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -64,7 +68,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import lib.toolkit.base.managers.tools.LocalContentTools
+import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -107,6 +111,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 override fun isRecent(): Boolean {
                     return modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_RECENT
                 }
+
+                override fun isTemplatesRoot(id: String?) =
+                    isTemplatesFolder && modelExplorerStack.last()?.pathParts?.firstOrNull()?.id == id
             }
         }
 
@@ -176,7 +183,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         openFolder(itemClicked.id, position)
                     }
                 } else if (itemClicked is CloudFile) {
-                    if (LocalContentTools.isOpenFormat(itemClicked.clearExt)) {
+                    if (FileExtensions.isOpenFormat(itemClicked.clearExt)) {
                         viewState.onConversionQuestion()
                     } else {
                         if (StringUtils.getExtension(itemClicked.fileExst) == Extension.PDF) {
@@ -187,6 +194,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     }
                 } else if (itemClicked is RecentViaLink) {
                     openRecentViaLink()
+                } else if (itemClicked is Templates){
+                    openTemplates()
                 }
             }
         }
@@ -332,7 +341,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onStateAdapterRoot(true)
             viewState.onStateUpdateRoot(true)
         }
-        viewState.onRoomLifetime(modelExplorerStack.last()?.current?.lifetime)
+        val lifetime = currentFolder?.lifetime
+        val toolbarState = when {
+            currentFolder?.isTemplate == true -> ToolbarState.RoomTemplate
+            lifetime != null -> ToolbarState.RoomLifetime(lifetime)
+            else -> ToolbarState.None
+        }
+        viewState.setToolbarState(toolbarState)
         viewState.onRoomFileIndexing(isIndexing)
     }
 
@@ -431,6 +446,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun getBackStack(): Boolean {
+        if ((currentFolder?.isTemplate == true || isTemplatesFolder)
+            && !isSelectionMode && !isFilteringMode
+        ) {
+            resetFilters()
+            return super.getBackStack()
+        }
         val backStackResult = super.getBackStack()
         if (modelExplorerStack.last()?.filterType != preferenceTool.filter.type.filterVal) {
             refresh()
@@ -464,10 +485,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun openFile(editType: EditType, canBeShared: Boolean) {
-        if (itemClicked is CloudFolder){
-            editRoom()
-        } else {
-            super.openFile(editType, isItemShareable)
+        when {
+            isTemplatesFolder -> editTemplate()
+            itemClicked is CloudFolder -> editRoom()
+            else -> super.openFile(editType, isItemShareable)
         }
     }
 
@@ -717,6 +738,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     val isContextItemEditable: Boolean
         get() = isContextEditable && (!isVisitor && !isShareSection || isCommonSection || isItemOwner)
 
+    val areItemsRemovable: Boolean
+        get() = modelExplorerStack.selectedFolders.none { it.security?.delete == false }
+
     val isContextOwner: Boolean
         get() = StringUtils.equals(modelExplorerStack.currentFolderOwnerId, account.id)
 
@@ -917,6 +941,42 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    fun createTemplate() {
+        (itemClicked as? CloudFolder)?.let { folder ->
+            viewState.showTemplateSettingsFragment(
+                folder.id,
+                TemplateSettingsMode.MODE_CREATE_TEMPLATE
+            )
+        }
+    }
+
+    fun createRoomFromTemplate() {
+        roomClicked?.let { template ->
+            viewState.showRoomFromTemplateFragment(template.id)
+        }
+    }
+
+    fun editTemplate() {
+        roomClicked?.let { template ->
+            viewState.showTemplateSettingsFragment(
+                template.id,
+                TemplateSettingsMode.MODE_EDIT_TEMPLATE
+            )
+        }
+    }
+
+    fun editTemplateAccessSettings() {
+        roomClicked?.let { folder ->
+            viewState.showTemplateAccessSettingsFragment(folder.id)
+        }
+    }
+
+    fun showTemplateInfo() {
+        roomClicked?.let { folder ->
+            viewState.showTemplateInfoFragment(folder.id)
+        }
+    }
+
     fun createRoom(roomType: Int) {
         val files = modelExplorerStack.selectedFiles.toMutableList()
         val folders = modelExplorerStack.selectedFolders.toMutableList()
@@ -986,6 +1046,44 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    fun onDeleteTemplates(){
+        if (modelExplorerStack.countSelectedItems > 0){
+            viewState.onDialogDelete(
+                modelExplorerStack.countSelectedItems,
+                true,
+                TAG_DELETE_TEMPLATE
+            )
+        }
+    }
+
+    fun deleteTemplate() {
+        showDialogProgress(true, TAG_DIALOG_CANCEL_BATCH_OPERATIONS)
+        fun onSuccess(msgId: Int) {
+            viewState.onDialogProgress(100, 100)
+            viewState.onDialogClose()
+            viewState.onSnackBar(context.getString(msgId))
+            if (currentFolder?.isTemplate == true) getBackStack()
+            refresh()
+        }
+
+        if (isSelectionMode && modelExplorerStack.countSelectedItems > 0) {
+            disposable.add(
+                fileProvider.delete(modelExplorerStack.selectedFolders, null)
+                    .subscribe({
+                        deselectAll()
+                        onSuccess(R.string.templates_delete_success)
+                    }, ::fetchError)
+            )
+        } else {
+            roomClicked?.let { template ->
+                disposable.add(
+                    fileProvider.delete(listOf(template), null)
+                        .subscribe({ onSuccess(R.string.template_delete_success) }, ::fetchError)
+                )
+            }
+        }
+    }
+
     fun interruptConversion(): Boolean {
         val cancelled = conversionJob?.isCancelled == true // conversionJob == null || isCancelled
         conversionJob?.cancel()
@@ -993,7 +1091,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun convertToOOXML() {
-        val extension = LocalContentTools.toOOXML((itemClicked as? CloudFile)?.clearExt.orEmpty())
+        val extension = FileExtensions.toOOXML((itemClicked as CloudFile).fileExst)
         viewState.onConversionProgress(0, extension)
         conversionJob = presenterScope.launch {
             try {
@@ -1089,6 +1187,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             }
             override fun isArchive(): Boolean = false
             override fun isRecent(): Boolean = false
+            override fun isTemplatesRoot(id: String?): Boolean = isTemplatesFolder
+
         }
     }
 
@@ -1118,9 +1218,21 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    private fun openTemplates() {
+        val cloudProvider = (fileProvider as? CloudFileProvider) ?: return
+        resetFilters()
+        setPlaceholderType(PlaceholderViews.Type.LOAD)
+        disposable.add(
+            cloudProvider.getRoomTemplates(getArgs(filteringValue).putFilters())
+                .subscribe(::loadSuccess, ::fetchError)
+        )
+    }
+
     private fun copyRoomLink() {
         roomClicked?.let { room ->
-            if (room.roomType == ApiContract.RoomType.COLLABORATION_ROOM || room.roomType == ApiContract.RoomType.VIRTUAL_ROOM) {
+            if (isTemplatesFolder || room.roomType == ApiContract.RoomType.COLLABORATION_ROOM
+                || room.roomType == ApiContract.RoomType.VIRTUAL_ROOM
+            ) {
                 setDataToClipboard(getInternalLink(room))
             } else {
                 presenterScope.launch {

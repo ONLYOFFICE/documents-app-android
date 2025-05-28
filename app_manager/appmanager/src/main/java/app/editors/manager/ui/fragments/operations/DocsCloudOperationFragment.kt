@@ -14,6 +14,7 @@ import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsCloudFragment
+import app.editors.manager.ui.fragments.main.ToolbarState
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment
 import app.editors.manager.viewModels.main.CopyItems
 import lib.toolkit.base.managers.utils.getIntExt
@@ -222,18 +223,18 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
         }
     }
 
-    override fun onRoomLifetime(lifetime: Lifetime?) {
-        if (lifetime != null) {
+    override fun setToolbarState(state: ToolbarState) {
+        if (state is ToolbarState.RoomLifetime){
             operationDialogFragment?.setToolbarInfo(
                 title = getString(
                     R.string.rooms_vdr_lifetime_info,
-                    lifetime.value,
-                    when (lifetime.period) {
+                    state.lifetime.value,
+                    when (state.lifetime.period) {
                         Lifetime.PERIOD_DAYS -> lib.toolkit.base.R.plurals.days
                         Lifetime.PERIOD_MONTHS -> lib.toolkit.base.R.plurals.months
                         Lifetime.PERIOD_YEARS ->lib.toolkit.base.R.plurals.years
                         else -> return
-                    }.let { resources.getQuantityText(it, lifetime.value) }
+                    }.let { resources.getQuantityText(it, state.lifetime.value) }
                 ),
                 drawable = lib.toolkit.base.R.drawable.ic_expiring
             )
