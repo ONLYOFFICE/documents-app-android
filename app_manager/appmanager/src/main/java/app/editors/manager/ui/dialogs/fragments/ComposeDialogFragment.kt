@@ -53,6 +53,10 @@ abstract class ComposeDialogFragment : DialogFragment() {
         dialog?.window?.setLayout(width.toInt(), height.toInt())
     }
 
+    protected fun showSnackbar(message: String) {
+        UiUtils.getSnackBar(requireView()).setText(message).show()
+    }
+
     @Composable
     abstract fun Content()
 }

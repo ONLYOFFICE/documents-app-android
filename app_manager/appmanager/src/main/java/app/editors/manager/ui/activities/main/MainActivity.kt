@@ -77,7 +77,11 @@ interface IMainActivity {
     fun showWebViewer(file: CloudFile, isEditMode: Boolean = false, callback: (() -> Unit)? = null)
     fun onLogOut()
     fun showPersonalMigrationFragment()
-    fun setToolbarInfo(title: String?, drawable: Int? = null)
+    fun setToolbarInfo(
+        title: String?,
+        drawable: Int? = null,
+        drawablePadding: Int? = null
+    )
 }
 
 class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBottomDialogCloseListener,
@@ -611,10 +615,15 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         }
     }
 
-    override fun setToolbarInfo(title: String?, drawable: Int?) {
+    override fun setToolbarInfo(
+        title: String?,
+        drawable: Int?,
+        drawablePadding: Int?
+    ) {
         viewBinding.infoLayout.root.isVisible = title != null
         viewBinding.infoLayout.infoText.text = title
         viewBinding.infoLayout.infoText.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
+        viewBinding.infoLayout.infoText.compoundDrawablePadding = drawablePadding ?: 4
     }
 
     private fun isNotification(): Boolean =

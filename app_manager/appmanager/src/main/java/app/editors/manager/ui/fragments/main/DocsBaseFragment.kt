@@ -114,7 +114,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     protected var openItem: MenuItem? = null
     protected var mainItem: MenuItem? = null
     protected var deleteItem: MenuItem? = null
-    protected var restoreItem: MenuItem? = null
     protected var filterItem: MenuItem? = null
     protected var explorerAdapter: ExplorerAdapter? = null
 
@@ -124,7 +123,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     var moveCopyDialog: MoveCopyDialog? = null
 
     private var lastClickTime: Long = 0
-    private var selectItem: MenuItem? = null
 
     protected abstract val presenter: DocsBasePresenter<out DocsBaseView, out BaseFileProvider>
 
@@ -165,8 +163,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         moveCopyDialog = null
     }
 
-    protected open fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
-        when (resultCode){
+    protected open fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (resultCode) {
             Activity.RESULT_OK -> {
                 when (requestCode) {
                     REQUEST_DOCS,
@@ -180,13 +178,14 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     }
                 }
             }
+
             EditorsContract.RESULT_FAILED_OPEN -> {
                 showSnackBar(R.string.errors_open_document)
             }
         }
     }
 
-    private fun registerEditorLauncher(requestCode: Int){
+    private fun registerEditorLauncher(requestCode: Int) {
         val launcher = registerForActivityResult(StartActivityForResult()) { result ->
             onEditorActivityResult(requestCode, result.resultCode, result.data)
         }
@@ -207,6 +206,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                         presenter.createDownloadFile()
                     }
                 }
+
                 PERMISSION_CAMERA -> {
                     if (grantResults.size == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                         showCameraActivity(fileTimeStamp)
@@ -295,7 +295,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 provider = context?.accountOnline?.portal?.provider ?: PortalProvider.default,
                 isSearching = presenter.isFilteringMode,
                 editIndex = presenter.isIndexing && roomSecurity?.editRoom == true,
-                isRoot = presenter.isRoot
+                isRoot = presenter.isRoot,
+                inTemplate = presenter.currentFolder?.isTemplate == true
             )
             presenter.onClickEvent(item, position, true)
             showExplorerContextBottomDialog(state)
@@ -365,19 +366,24 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     access = access
                 )
             }
+
             StringUtils.Extension.SHEET -> {
                 showEditors(uri, EditorsType.CELLS, editType = editType, access = access)
             }
+
             StringUtils.Extension.PRESENTATION -> {
                 showEditors(uri, EditorsType.PRESENTATION, editType = editType, access = access)
             }
+
             StringUtils.Extension.PDF -> {
                 showEditors(uri, EditorsType.PDF, editType = editType, access = access)
             }
+
             StringUtils.Extension.IMAGE,
             StringUtils.Extension.IMAGE_GIF -> {
                 showMediaActivity(getMediaFile(uri), false)
             }
+
             StringUtils.Extension.VIDEO_SUPPORT -> {
                 val videoFile = CloudFile().apply {
                     webUrl = uri.path.orEmpty()
@@ -388,11 +394,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 }
                 showMediaActivity(explorer, true)
             }
+
             StringUtils.Extension.UNKNOWN,
             StringUtils.Extension.ARCH,
             StringUtils.Extension.VIDEO -> {
                 onSnackBar(getString(R.string.download_manager_complete))
             }
+
             else -> Unit
         }
     }
@@ -412,6 +420,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 cancelButton = getString(R.string.dialogs_common_cancel_button),
                 suffix = presenter.itemExtension
             )
+
             is ExplorerContextItem.Edit -> presenter.openFile(EditType.Edit(false))
             is ExplorerContextItem.Fill -> presenter.openFile(EditType.Fill())
             is ExplorerContextItem.View -> presenter.openFile(EditType.View())
@@ -422,6 +431,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
                 }
             }
+
             else -> {}
         }
     }
@@ -437,6 +447,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 getString(R.string.dialogs_edit_accept_create),
                 getString(R.string.dialogs_common_cancel_button)
             )
+
             ActionBottomDialog.Buttons.PRESENTATION -> showEditDialogCreate(
                 getString(R.string.dialogs_edit_create_presentation),
                 getString(R.string.dialogs_edit_create_presentation),
@@ -446,6 +457,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 getString(R.string.dialogs_edit_accept_create),
                 getString(R.string.dialogs_common_cancel_button)
             )
+
             ActionBottomDialog.Buttons.DOC -> showEditDialogCreate(
                 getString(R.string.dialogs_edit_create_docs),
                 getString(R.string.dialogs_edit_create_docs),
@@ -455,6 +467,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 getString(R.string.dialogs_edit_accept_create),
                 getString(R.string.dialogs_common_cancel_button)
             )
+
             ActionBottomDialog.Buttons.FOLDER -> showEditDialogCreate(
                 getString(R.string.dialogs_edit_create_folder),
                 getString(R.string.dialogs_edit_create_folder),
@@ -464,42 +477,46 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 getString(R.string.dialogs_edit_accept_create),
                 getString(R.string.dialogs_common_cancel_button)
             )
+
             ActionBottomDialog.Buttons.UPLOAD -> presenter.uploadPermission()
             ActionBottomDialog.Buttons.PHOTO -> {
                 presenter.createPhoto()
             }
+
             ActionBottomDialog.Buttons.CREATE_FROM_PHOTO -> {
                 presenter.createPhoto(withOCR = true)
             }
+
             else -> {}
         }
     }
 
     override fun onShowCamera(photoUri: Uri, isOCR: Boolean) {
-        RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
-            if (permissions[Manifest.permission.CAMERA] == true) {
-                CameraPicker(requireActivity().activityResultRegistry, { isCreate ->
-                    if (isOCR) {
-                        lifecycleScope.launch {
-                            delay(300)
-                            onActionButtonClick(ActionBottomDialog.Buttons.DOC)
-                        }
-                    } else {
-                        if (isCreate) {
-                            if (this is DocsOnDeviceFragment) {
-                                onRefresh()
-                            } else {
-                                presenter.upload(photoUri, null)
+        RequestPermissions(
+            requireActivity().activityResultRegistry,
+            { permissions ->
+                if (permissions[Manifest.permission.CAMERA] == true) {
+                    CameraPicker(
+                        requireActivity().activityResultRegistry,
+                        { photoCreated ->
+                            when {
+                                photoCreated && isOCR -> lifecycleScope.launch {
+                                    delay(300)
+                                    onActionButtonClick(ActionBottomDialog.Buttons.DOC)
+                                }
+                                photoCreated && this is DocsOnDeviceFragment -> onRefresh()
+                                photoCreated -> presenter.upload(photoUri, null)
+                                else -> presenter.deletePhoto()
                             }
-                        } else {
-                            presenter.deletePhoto()
-                        }
-                    }
-                }, photoUri).show()
-            } else {
-                presenter.deletePhoto()
-            }
-        }, arrayOf(Manifest.permission.CAMERA)).request()
+                        },
+                        photoUri
+                    ).show()
+                } else {
+                    presenter.deletePhoto()
+                }
+            },
+            arrayOf(Manifest.permission.CAMERA)
+        ).request()
     }
 
     override fun onAcceptClick(dialogs: Dialogs?, value: String?, tag: String?) {
@@ -516,14 +533,17 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                         value
                                 + "." + ApiContract.Extension.XLSX.lowercase()
                     )
+
                     DocsBasePresenter.TAG_DIALOG_ACTION_PRESENTATION -> presenter.createDocs(
                         value
                                 + "." + ApiContract.Extension.PPTX.lowercase()
                     )
+
                     DocsBasePresenter.TAG_DIALOG_ACTION_DOC -> presenter.createDocs(
                         value
                                 + "." + ApiContract.Extension.DOCX.lowercase()
                     )
+
                     else -> {
                     }
                 }
@@ -1169,10 +1189,12 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
                     editorLaunchers[REQUEST_DOCS]?.launch(intent)
                 }
+
                 EditorsType.CELLS -> {
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS)
                     editorLaunchers[REQUEST_SHEETS]?.launch(intent)
                 }
+
                 EditorsType.PRESENTATION -> {
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
                     editorLaunchers[REQUEST_PRESENTATION]?.launch(intent)
@@ -1200,42 +1222,60 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         ActionBarMenu(
             context = requireContext(),
             adapter = ActionMenuAdapter(actionMenuClickListener),
-            items = if (section.isRoom) {
-                ActionMenuItemsFactory.getRoomItems(
-                    section = section,
-                    provider = context?.accountOnline?.portal?.provider,
-                    root = presenter.isRoot,
-                    selected = presenter.isSelectionMode,
-                    allSelected = presenter.isSelectedAll,
-                    sortBy = presenter.preferenceTool.sortBy,
-                    empty = presenter.isListEmpty(),
-                    currentRoom = presenter.isRoomFolder(),
-                    security = presenter.roomClicked?.security ?: Security(),
-                    isGridView = presenter.preferenceTool.isGridView,
-                    asc = presenter.preferenceTool.sortOrder.equals(
-                        ApiContract.Parameters.VAL_SORT_ORDER_ASC,
-                        ignoreCase = true
-                    ),
-                    isIndexing = presenter.roomClicked?.indexing == true
-                )
-            } else {
-                ActionMenuItemsFactory.getDocsItems(
-                    section = section,
-                    provider = context?.accountOnline?.portal?.provider,
-                    selected = presenter.isSelectionMode,
-                    allSelected = presenter.isSelectedAll,
-                    sortBy = presenter.preferenceTool.sortBy,
-                    isGridView = presenter.preferenceTool.isGridView,
-                    asc = presenter.preferenceTool.sortOrder.equals(
-                        ApiContract.Parameters.VAL_SORT_ORDER_ASC,
-                        ignoreCase = true
+            items = when {
+                section.isTemplates -> {
+                    ActionMenuItemsFactory.getTemplatesItems(
+                        selected = presenter.isSelectionMode,
+                        allSelected = presenter.isSelectedAll,
+                        isGridView = presenter.preferenceTool.isGridView,
+                        asc = presenter.preferenceTool.sortOrder.equals(
+                            ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                            ignoreCase = true
+                        ),
+                        sortBy = presenter.preferenceTool.sortBy,
                     )
-                )
+                }
+                section.isRoom -> {
+                    ActionMenuItemsFactory.getRoomItems(
+                        section = section,
+                        provider = context?.accountOnline?.portal?.provider,
+                        root = presenter.isRoot,
+                        selected = presenter.isSelectionMode,
+                        allSelected = presenter.isSelectedAll,
+                        sortBy = presenter.preferenceTool.sortBy,
+                        empty = presenter.isListEmpty(),
+                        currentRoom = presenter.isRoomFolder(),
+                        security = presenter.currentFolder?.security ?: Security(),
+                        isGridView = presenter.preferenceTool.isGridView,
+                        asc = presenter.preferenceTool.sortOrder.equals(
+                            ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                            ignoreCase = true
+                        ),
+                        isIndexing = presenter.roomClicked?.indexing == true,
+                        isTemplate = presenter.currentFolder?.isTemplate == true
+                    )
+                }
+                else -> {
+                    ActionMenuItemsFactory.getDocsItems(
+                        section = section,
+                        provider = context?.accountOnline?.portal?.provider,
+                        selected = presenter.isSelectionMode,
+                        allSelected = presenter.isSelectedAll,
+                        sortBy = presenter.preferenceTool.sortBy,
+                        isGridView = presenter.preferenceTool.isGridView,
+                        asc = presenter.preferenceTool.sortOrder.equals(
+                            ApiContract.Parameters.VAL_SORT_ORDER_ASC,
+                            ignoreCase = true
+                        )
+                    )
+                }
             }
         ).show(requireActivity().window.decorView)
     }
 
-    protected open fun getSection(): ApiContract.Section = ApiContract.Section.getSection(presenter.getSectionType())
+    protected open fun getSection(): ApiContract.Section =
+        if (presenter.isTemplatesFolder) ApiContract.Section.Room.Templates
+        else ApiContract.Section.getSection(presenter.getSectionType())
 
     protected open val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
@@ -1247,13 +1287,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             ActionMenuItem.SelectAll -> presenter.setSelectionAll()
             ActionMenuItem.Deselect -> presenter.deselectAll()
             ActionMenuItem.Download -> presenter.createDownloadFile()
-            ActionMenuItem.SelectAll -> presenter.selectAll()
             ActionMenuItem.EmptyTrash -> {
                 showDeleteDialog(
                     count = -1,
                     tag = DocsBasePresenter.TAG_DIALOG_BATCH_EMPTY
                 )
             }
+
             else -> Unit
         }
     }

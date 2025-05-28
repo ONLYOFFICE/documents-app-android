@@ -16,6 +16,7 @@ data class ExplorerContextState(
     val provider: PortalProvider = PortalProvider.Cloud.Workspace,
     val isSearching: Boolean = false,
     val isRoot: Boolean = false,
+    val inTemplate: Boolean = false,
     val editIndex: Boolean = false,
     val headerInfo: String? = null
 ) : Serializable {

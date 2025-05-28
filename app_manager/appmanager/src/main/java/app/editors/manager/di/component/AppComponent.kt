@@ -28,6 +28,7 @@ import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.ErrorHandler
 import app.editors.manager.managers.tools.FontManager
 import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.managers.usecase.SaveAccessSettingsUseCase
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.filter.BaseFilterPresenter
 import app.editors.manager.mvp.presenters.filter.FilterAuthorPresenter
@@ -146,6 +147,8 @@ interface AppComponent {
     val roomProvider: RoomProvider
     val webDavFileProvider: WebDavFileProvider
     val recentFileProvider: RecentFileProvider
+
+    val saveAccessSettingsUseCase: SaveAccessSettingsUseCase
 
     /*
    * Login

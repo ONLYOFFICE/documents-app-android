@@ -15,6 +15,7 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.list.Footer
 import app.editors.manager.mvp.models.list.RecentViaLink
+import app.editors.manager.mvp.models.list.Templates
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.base.BaseAdapter
 import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
@@ -22,11 +23,14 @@ import app.editors.manager.ui.adapters.holders.explorer.GridFileViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.GridFolderViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.GridFooterViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.GridRoomViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.GridTemplateViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.ListFileViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.ListFolderViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.ListFooterViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.ListRoomViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.ListTemplateViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.RecentViaLinkViewHolder
+import app.editors.manager.ui.adapters.holders.explorer.TemplatesFolderViewHolder
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import lib.toolkit.base.ui.adapters.factory.inflate
 import java.util.Collections
@@ -168,6 +172,7 @@ class ExplorerAdapter(
                 is CloudFile -> if (isGridView) GridFileViewHolder.LAYOUT else ListFileViewHolder.LAYOUT
                 is CloudFolder -> getFolderLayout(item)
                 RecentViaLink -> RecentViaLinkViewHolder.LAYOUT
+                Templates -> TemplatesFolderViewHolder.LAYOUT
                 else -> 0
             }
         }
@@ -175,16 +180,16 @@ class ExplorerAdapter(
 
     private fun getFolderLayout(item: CloudFolder): Int {
         return if (isGridView) {
-            if (item.isRoom) {
-                GridRoomViewHolder.LAYOUT
-            } else {
-                GridFolderViewHolder.LAYOUT
+            when {
+                item.isTemplate -> GridTemplateViewHolder.LAYOUT
+                item.isRoom -> GridRoomViewHolder.LAYOUT
+                else -> GridFolderViewHolder.LAYOUT
             }
         } else {
-            if (item.isRoom) {
-                ListRoomViewHolder.LAYOUT
-            } else {
-                ListFolderViewHolder.LAYOUT
+            when {
+                item.isTemplate -> ListTemplateViewHolder.LAYOUT
+                item.isRoom -> ListRoomViewHolder.LAYOUT
+                else -> ListFolderViewHolder.LAYOUT
             }
         }
     }

@@ -118,6 +118,11 @@ open class CloudFolder : Item(), Serializable {
     val isRoom: Boolean
         get() = isParentRoom && roomType >= 1
 
+    val isTemplate: Boolean
+        get() = ApiContract.SectionType.isTemplates(
+            rootFolderType.toIntOrNull() ?: ApiContract.SectionType.UNKNOWN
+        ) && isRoom
+
     override fun clone(): CloudFolder {
         return super.clone() as CloudFolder
     }
