@@ -1,6 +1,5 @@
 package app.editors.manager.ui.views.custom
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +32,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +43,7 @@ import app.documents.core.network.manager.models.explorer.FormRole
 import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.utils.GlideAvatarImage
 import app.editors.manager.mvp.models.ui.FormRoleHistory
 import app.editors.manager.mvp.models.ui.FormRoleStatus
 import app.editors.manager.mvp.models.ui.FormRoleUi
@@ -143,7 +142,7 @@ private fun RoleItem(
             contentAlignment = Alignment.Center
         ) {
             AvatarContent(
-                imageUrl = "",
+                imageUrl = role.user.avatarMedium,
                 roleStatus = role.roleStatus,
                 stopped = stopped
             )
@@ -181,11 +180,9 @@ private fun RoleItem(
             )
             Text(
                 text = role.user.displayNameFromHtml +
-                        if (isOwner) {
-                            " (${stringResource(R.string.item_owner_self)})"
-                        } else {
-                            ""
-                        },
+                        " (${stringResource(R.string.item_owner_self)})"
+                            .takeIf { isOwner }
+                            .orEmpty(),
                 style = MaterialTheme.typography.body2,
                 color = MaterialTheme.colors.colorTextSecondary,
                 maxLines = 1
@@ -239,10 +236,7 @@ private fun AvatarContent(
                 .background(colorResource(lib.toolkit.base.R.color.colorOutline)),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(R.drawable.ic_list_item_share_user_icon),
-                contentDescription = null
-            )
+            GlideAvatarImage(url = imageUrl)
         }
     }
 }

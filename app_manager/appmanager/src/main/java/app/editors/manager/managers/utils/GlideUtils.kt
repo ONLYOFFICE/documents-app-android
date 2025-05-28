@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import app.documents.core.model.cloud.CloudAccount
@@ -200,9 +201,10 @@ fun GlideAvatarImage(modifier: Modifier = Modifier, url: String) {
     GlideImage(
         modifier = modifier,
         model = GlideUtils.getCorrectLoad(
-            url = if (StringUtils.hasScheme(url)) url else "${account?.portal?.urlWithScheme}/$url",
+            url = if (StringUtils.hasScheme(url)) url else "${account?.portal?.urlWithScheme}$url",
             token = token.orEmpty()
         ),
+        contentScale = ContentScale.FillBounds,
         contentDescription = null,
         loading = placeholder(R.drawable.ic_account_placeholder),
         failure = placeholder(R.drawable.ic_account_placeholder),
