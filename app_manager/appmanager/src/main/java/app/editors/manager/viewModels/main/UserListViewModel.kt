@@ -27,6 +27,7 @@ import kotlin.time.Duration.Companion.milliseconds
 sealed class UserListMode {
     data object Invite : UserListMode()
     data object ChangeOwner : UserListMode()
+    data object TemplateAccess : UserListMode()
 }
 
 data class UserListState(

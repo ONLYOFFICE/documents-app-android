@@ -1,6 +1,7 @@
 package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.createSavedStateHandle
@@ -11,6 +12,9 @@ import androidx.navigation.toRoute
 import app.documents.core.providers.CloudFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
+import app.editors.manager.managers.tools.BaseEvent
+import app.editors.manager.managers.tools.BaseEventSender
+import app.editors.manager.managers.tools.EventSender
 import app.editors.manager.ui.fragments.main.versionhistory.VersionHistoryFragment
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,7 +39,7 @@ class VersionEditCommentViewModel(
     private val cloudFileProvider: CloudFileProvider,
     private val resourceProvider: ResourcesProvider,
     savedStateHandle: SavedStateHandle
-) : BaseEventViewModel(resourceProvider) {
+) : ViewModel(), EventSender by BaseEventSender(resourceProvider) {
 
     private val data = savedStateHandle.toRoute<VersionHistoryFragment.Screens.EditComment>()
     private val _uiState = MutableStateFlow(
@@ -55,7 +59,7 @@ class VersionEditCommentViewModel(
                     .onStart { _uiState.update { it.copy(isLoading = true) } }
                     .onCompletion { _uiState.update { it.copy(isLoading = false) } }
                     .collect { result ->
-                        if (result.isSuccess) _events.send(EditCommentEvent.UpdateHistory)
+                        if (result.isSuccess) sendEvent(EditCommentEvent.UpdateHistory)
                         else sendMessage(R.string.error_edit_comment)
                     }
             }

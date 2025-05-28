@@ -231,9 +231,19 @@
         <item quantity="other">They will be moved to the Trash.</item>
     </plurals>
 
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Do you really want to delete template room «%s»? The template cannot be restored.</item>
+        <item quantity="other">Do you really want to delete selected room templates? They cannot be restored.</item>
+    </plurals>
+
     <plurals name="dialogs_question_delete_title">
         <item quantity="one">Delete this item?</item>
         <item quantity="other">Delete %1$d items?</item>
+    </plurals>
+
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Delete template</item>
+        <item quantity="other">Delete templates</item>
     </plurals>
 
     <string name="dialogs_warning_title">Warning</string>
@@ -273,6 +283,7 @@
     <string name="fragment_recent_title">Recent</string>
     <string name="fragment_on_device_title">On Device</string>
     <string name="fragment_profile_title">Profile</string>
+    <string name="fragment_templates_title">Templates</string>
 
     <!-- Drawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -338,11 +349,14 @@
     <string name="list_context_notification_enable">Enable notifications</string>
     <string name="list_context_notification_disable">Disable notifications</string>
     <string name="list_context_create_download">Download</string>
+    <string name="list_context_save_as_template">Save as template</string>
+    <string name="list_context_access_settings">Access settings</string>
     <string name="list_context_edit_index">Edit index</string>
     <string name="list_context_open_location">Open location</string>
     <string name="list_context_rename">Rename</string>
     <string name="list_context_rename_success">Renamed successfully</string>
     <string name="list_context_delete">Delete</string>
+    <string name="list_context_delete_template">Delete template</string>
     <string name="list_context_delete_storage">Disconnect storage</string>
     <string name="list_context_delete_success">Deleted successfully</string>
     <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
@@ -353,6 +367,7 @@
     <string name="list_context_leave_room">Leave the room</string>
     <string name="list_context_copy_general_link">Copy general link</string>
     <string name="list_context_edit_room">Edit room</string>
+    <string name="list_context_edit_template">Edit template</string>
     <string name="list_context_fill">Fill</string>
     <string name="list_context_lock">Lock</string>
     <string name="list_context_unlock">Unlock</string>
@@ -424,6 +439,8 @@
     <string name="placeholder_no_rooms_visitor_desc">Rooms shared with you will appear here</string>
     <string name="placeholder_empty_archive">No archived rooms here yet</string>
     <string name="placeholder_empty_archive_desc">You can archive rooms you don’t use and restore them in your DocSpace at any moment or delete them permanently. These rooms will appear here</string>
+    <string name="placeholder_empty_templates_folder">No templates here yet</string>
+    <string name="placeholder_empty_templates_folder_desc">You can create a template from a room in the Room section</string>
     <string name="placeholder_no_search_result">No search result</string>
     <string name="placeholder_no_search_result_desc">No results matching your search could be found. Please try another phrase</string>
     <string name="placeholder_empty_room_visitor_desc">Files and folders uploaded by admins will appeared here</string>
@@ -815,6 +832,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="room_search_not_found">No users found</string>
     <string name="room_search_not_found_desc">The list of users previously invited to DocSpace or separate rooms will appear here.</string>
     <string name="room_placeholder_created_room_title">Room created!</string>
+    <string name="room_placeholder_created_template_title">Template created!</string>
     <string name="room_placeholder_created_room_subtitle">Create new folders to organize your files.</string>
     <string name="room_placeholder_created_filling_form_room_title">Welcome to the Form filling room</string>
     <string name="room_placeholder_created_filling_form_room_subtitle">Upload a ready PDF form or create new folders to organize your files</string>
@@ -933,6 +951,8 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="share_invite_title">Invite</string>
     <string name="room_create_success">Room created</string>
     <string name="room_delete_success">Room deleted</string>
+    <string name="template_delete_success">Template deleted</string>
+    <string name="templates_delete_success">Templates deleted</string>
     <string name="room_create_thirdparty_storage_title">Third party storage</string>
     <string name="room_create_thirdparty_storage">Storage</string>
     <string name="room_create_thirdparty_location">Location</string>
@@ -1088,6 +1108,53 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="version_delete_confirm">Delete</string>
     <string name="version_delete_loading">Deleting</string>
     <string name="version_dialog_cancel">Cancel</string>
+
+    <!--    Room Templates-->
+    <string name="title_save_template">Save as template</string>
+    <string name="title_edit_template">Edit template</string>
+    <string name="title_create_from_template">From template</string>
+    <string name="title_access_settings">Access settings</string>
+
+    <string name="desc_create_from_template">Create a room based on a template. All settings, users, folders and files will be taken from the selected room template.</string>
+    <string name="desc_info_template">Room template. Use this template to quickly create a new room.</string>
+
+    <string name="access_members_me_and_title">Me and %s</string>
+    <string name="access_members_me_users_groups_title">Me, %1$s and %2$s</string>
+    <string name="access_members_me_subtitle">(Me)</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d user</item>
+        <item quantity="other">%d users</item>
+    </plurals>
+
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d group</item>
+        <item quantity="other">%d groups</item>
+    </plurals>
+
+    <string name="settings_saved_successfully">Template settings saved</string>
+    <string name="template_created_successfully">Template «%s» saved</string>
+    <string name="room_created_successfully">Room created successfully</string>
+
+    <string name="error_upload_logo">Failed to load logo</string>
+    <string name="error_create_template">Failed to create template</string>
+    <string name="error_create_room">Failed to create room</string>
+    <string name="error_save_template">Failed to save template</string>
+    <string name="error_save_access_settings">Failed to save access settings</string>
+
+    <string name="template_subheader_title">Room template</string>
+    <string name="template_name_hint">Template name</string>
+    <string name="setting_tags_desc">Tags are applied to the room which will be created based on this template.</string>
+    <string name="setting_access_desc">Access to template. You can select members who can create rooms based on this template.</string>
+    <string name="setting_access_public">Template available to everyone</string>
+    <string name="setting_access_public_desc">All DocSpace and Room admins will be able to create rooms using this template.</string>
+    <string name="setting_access_members_title">Add Users or Groups</string>
+    <string name="setting_access_members_title_desc">The added administrators will be able to create rooms using this template.</string>
+    <string name="setting_access_list_title">Access to template</string>
+    <string name="setting_select_members_title">Select Members</string>
+
+    <string name="setting_access_public_bold_docspace">DocSpace</string>
+    <string name="setting_access_public_bold_room">Room admins</string>
 
     <string name="filling_form_complete">Complete</string>
     <string name="filling_form_stopped">Stopped</string>

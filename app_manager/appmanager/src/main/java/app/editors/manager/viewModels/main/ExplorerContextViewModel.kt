@@ -44,10 +44,21 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.AddUsers,
                 ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Notifications((state.item as? CloudFolder)?.mute == true),
+                ExplorerContextItem.SaveAsTemplate,
                 ExplorerContextItem.Duplicate,
                 ExplorerContextItem.Download,
                 ExplorerContextItem.Archive,
                 ExplorerContextItem.Restore,
+                ExplorerContextItem.Delete(state)
+            )
+
+            state.section.isTemplates -> listOf(
+                ExplorerContextItem.Header(state),
+                ExplorerContextItem.RoomInfo,
+                ExplorerContextItem.CreateRoom,
+                ExplorerContextItem.Edit(state),
+                ExplorerContextItem.AccessSettings,
+                ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Delete(state)
             )
 

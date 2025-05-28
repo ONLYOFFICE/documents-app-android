@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -55,6 +56,7 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import lib.compose.ui.addIf
 import lib.compose.ui.addIfNotNull
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextPrimary
@@ -232,6 +234,8 @@ fun AppTextFieldListItem(
     onValueChange: (String) -> Unit,
     hint: String = "",
     isPassword: Boolean = false,
+    fillMaxWidth: Boolean = false,
+    contentPadding: PaddingValues = PaddingValues(),
     keyboardType: KeyboardType = KeyboardType.Text,
     keyboardOptions: KeyboardOptions? = null,
     focusManager: FocusManager? = null,
@@ -242,7 +246,9 @@ fun AppTextFieldListItem(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .padding(contentPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
             var visible by remember { mutableStateOf(false) }
@@ -257,7 +263,8 @@ fun AppTextFieldListItem(
                 }
                 BasicTextField(
                     modifier = Modifier
-                        .onFocusChanged { focused = it.isFocused },
+                        .onFocusChanged { focused = it.isFocused }
+                        .addIf(fillMaxWidth) { fillMaxWidth() },
                     value = value,
                     onValueChange = { onValueChange(it) },
                     singleLine = true,

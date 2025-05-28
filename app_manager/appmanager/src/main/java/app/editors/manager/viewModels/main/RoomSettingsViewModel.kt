@@ -2,14 +2,8 @@ package app.editors.manager.viewModels.main
 
 import android.content.ContentResolver
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import android.util.Size
 import androidx.compose.runtime.Immutable
-import androidx.core.graphics.decodeBitmap
-import androidx.lifecycle.ViewModel
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Lifetime
@@ -18,6 +12,7 @@ import app.documents.core.network.manager.models.explorer.WatermarkType
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.mvp.models.ui.StorageQuota
+import app.editors.manager.viewModels.base.BaseLogoViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,13 +40,6 @@ data class RoomSettingsWatermarkState(
 )
 
 @Immutable
-data class RoomSettingsLogoState(
-    val logoWebUrl: String? = null,
-    val logoUri: Uri? = null,
-    val logoPreview: Bitmap? = null,
-)
-
-@Immutable
 data class RoomSettingsState(
     val roomId: String? = null,
     val type: Int = -1,
@@ -73,9 +61,9 @@ sealed class RoomSettingsEffect {
 }
 
 abstract class RoomSettingsViewModel(
-    private val contentResolver: ContentResolver,
+    contentResolver: ContentResolver,
     protected val roomProvider: RoomProvider,
-) : ViewModel() {
+) : BaseLogoViewModel(contentResolver, roomProvider) {
 
     private val _state: MutableStateFlow<RoomSettingsState> = MutableStateFlow(RoomSettingsState())
     val state: StateFlow<RoomSettingsState> = _state.asStateFlow()
@@ -83,10 +71,6 @@ abstract class RoomSettingsViewModel(
     private val _watermarkState: MutableStateFlow<RoomSettingsWatermarkState> =
         MutableStateFlow(RoomSettingsWatermarkState())
     val watermarkState: StateFlow<RoomSettingsWatermarkState> = _watermarkState.asStateFlow()
-
-    private val _logoState: MutableStateFlow<RoomSettingsLogoState> =
-        MutableStateFlow(RoomSettingsLogoState())
-    val logoState: StateFlow<RoomSettingsLogoState> = _logoState.asStateFlow()
 
     private val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val loading: StateFlow<Boolean> = _loading.asStateFlow()
@@ -150,14 +134,14 @@ abstract class RoomSettingsViewModel(
     // set room logo if uri is not null, delete logo if web url is null
     protected suspend fun setOrDeleteRoomLogo(roomId: String) {
         try {
-            with(logoState.value) {
-                if (logoUri != null && logoPreview != null) {
-                    roomProvider.setLogo(
-                        roomId = roomId,
-                        size = Size(logoPreview.width, logoPreview.height),
-                        url = roomProvider.uploadImage(logoPreview)
-                    )
-                } else if (logoWebUrl == null) {
+            getUploadedRoomLogo { throw it }?.let { logo ->
+                roomProvider.setLogo(
+                    roomId = roomId,
+                    size = logo.size,
+                    url = logo.tmpFile
+                )
+            } ?: run {
+                if (logoState.value.logoWebUrl == null) {
                     roomProvider.deleteLogo(roomId)
                 }
             }
@@ -193,10 +177,6 @@ abstract class RoomSettingsViewModel(
     }
 
     abstract fun applyChanges()
-
-    fun setLogoUri(uri: Uri?) {
-        _logoState.update { it.copy(logoUri = uri, logoPreview = uri?.let(::getBitmapFromUri)) }
-    }
 
     fun setWatermarkImageUri(uri: Uri?) {
         _watermarkState.update {
@@ -252,16 +232,4 @@ abstract class RoomSettingsViewModel(
         _watermarkState.update(block)
     }
 
-    fun updateLogoState(block: (RoomSettingsLogoState) -> RoomSettingsLogoState) {
-        _logoState.update(block)
-    }
-
-    @Suppress("DEPRECATION")
-    private fun getBitmapFromUri(uri: Uri): Bitmap {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ImageDecoder.createSource(contentResolver, uri).decodeBitmap { _, _ -> }
-        } else {
-            MediaStore.Images.Media.getBitmap(contentResolver, uri)
-        }
-    }
 }

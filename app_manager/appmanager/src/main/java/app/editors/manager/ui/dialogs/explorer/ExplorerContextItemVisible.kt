@@ -48,6 +48,8 @@ interface ExplorerContextItemVisible {
             ExplorerContextItem.EditComment -> false
             ExplorerContextItem.Open -> false
             ExplorerContextItem.DeleteVersion -> false
+            ExplorerContextItem.SaveAsTemplate -> saveAsTemplate
+            ExplorerContextItem.AccessSettings -> accessSettings
         }
     }
 
@@ -210,10 +212,12 @@ interface ExplorerContextItemVisible {
         }
 
     private val ExplorerContextState.createRoom: Boolean
-        get() {
-            if (section is ApiContract.Section.Room.Archive) return false
-            return item.security?.createRoomFrom == true
-        }
+        get() = when {
+                section.isArchive -> false
+                section.isTemplates -> true
+                else -> item.security?.createRoomFrom == true
+            }
+
 
     private val ExplorerContextState.location: Boolean
         get() = isSearching
@@ -222,13 +226,19 @@ interface ExplorerContextItemVisible {
         get() = (item is CloudFile) && item.security?.lock == true
 
     private val ExplorerContextState.customFilter: Boolean
-        get() = (item is CloudFile) && section.isRoom
+        get() = (item is CloudFile) && section.isRoom && !inTemplate
                 && item.viewAccessibility?.webCustomFilterEditing == true
                 && item.security?.customFilter == true
                 && access in listOf(Access.None, Access.RoomManager)
 
     private val ExplorerContextState.versionHistory: Boolean
         get() = item.security?.readHistory == true
+
+    private val ExplorerContextState.saveAsTemplate: Boolean
+        get() = (item is CloudFolder) && item.isRoom && item.security?.editRoom == true
+
+    private val ExplorerContextState.accessSettings: Boolean
+        get() = section.isTemplates && item.security?.editAccess == true
 
     private fun ExplorerContextState.favorites(enabled: Boolean): Boolean =
         enabled && !isFolder && !listOf(

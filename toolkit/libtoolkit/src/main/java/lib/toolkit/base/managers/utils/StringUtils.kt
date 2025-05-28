@@ -41,7 +41,7 @@ object StringUtils {
     private val EXT_VIDEO_SUPPORT = "3gp|mp4|ts|webm|mkv"
     private val EXT_VIDEO = "$EXT_VIDEO_SUPPORT|3g2|3gpp|asf|avi|divx|f4v|flv|h264|ifo|m2ts|m4v|mod|mov|mpeg|mpg|mswmm|mts|mxf|ogv|rm|swf|ts|vep|vob|wlmp|wmv"
 
-    private val PATTERN_EXT_DOC = "^(doc|docx|docm|doct|dot|dotm|dotx|odt|ott|fodt|rtf|epub|txt|html|mht|hwp|hwpx|pages)$"
+    private val PATTERN_EXT_DOC = "^(doc|docx|docm|doct|dot|dotm|dotx|odt|ott|fodt|rtf|epub|txt|html|mht|hwp|hwpx|pages|md)$"
     private val PATTERN_EXT_FORM = "^(oform|docxf)$"
     private val PATTERN_EXT_DOCXF = "^(docxf)$"
     private val PATTERN_EXT_OFORM = "^(oform)$"
