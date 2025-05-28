@@ -828,14 +828,14 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         placeholderViews?.setTemplatePlaceholder(type)
     }
 
-    override fun onDialogClose() {
-        if (isActivePage) {
-            hideDialog()
+    override fun onDialogClose(force: Boolean) {
+        if (isActivePage || force) {
+            hideDialog(force)
         }
     }
 
-    override fun onDialogWaiting(title: String?, tag: String?) {
-        if (isActivePage) {
+    override fun onDialogWaiting(title: String?, tag: String?, force: Boolean) {
+        if (isActivePage || force) {
             showWaitingDialog(title, getString(R.string.dialogs_common_cancel_button), tag)
         }
     }

@@ -66,10 +66,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
@@ -82,7 +81,6 @@ import moxy.presenterScope
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import moxy.presenterScope
 import okhttp3.ResponseBody
 import org.json.JSONException
 import retrofit2.HttpException
@@ -284,10 +282,10 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
     protected open suspend fun onFileOpenCollect(result: FileOpenResult) {
-        if (result !is FileOpenResult.Loading) viewState.onDialogClose()
+        if (result !is FileOpenResult.Loading) viewState.onDialogClose(true)
         when (result) {
             is FileOpenResult.DownloadNotSupportedFile -> viewState.onFileDownloadPermission()
-            is FileOpenResult.Loading -> showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+            is FileOpenResult.Loading -> showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS, true)
             is FileOpenResult.OpenLocally -> {
                 openFileFromPortal(result.file, result.fileId, result.editType, result.access)
             }
@@ -1326,8 +1324,8 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     /**
      * Dialogs templates
      * */
-    protected fun showDialogWaiting(tag: String?) {
-        viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title), tag)
+    protected fun showDialogWaiting(tag: String?, force: Boolean = false) {
+        viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title), tag, force)
     }
 
     protected fun showDialogProgress(isHideButtons: Boolean, tag: String?) {

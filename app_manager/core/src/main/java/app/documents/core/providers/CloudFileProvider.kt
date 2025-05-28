@@ -41,6 +41,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -527,7 +528,7 @@ class CloudFileProvider @Inject constructor(
                 canBeShared = canBeShared,
                 access = cloudFile.access
             ).collect { emit(it) }
-        }
+        }.catch { NetworkResult.Error(it) }
     }
 
     fun openFile(
