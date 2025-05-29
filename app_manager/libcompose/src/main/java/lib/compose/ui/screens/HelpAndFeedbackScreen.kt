@@ -24,17 +24,17 @@ fun HelpAndFeedbackScreen(
             .background(color = MaterialTheme.colors.background)
     ) {
         val context = LocalContext.current
-        AppArrowItem(
-            title = R.string.help_and_feedback_suggest_a_feature,
-            startIcon = R.drawable.ic_suggest.takeIf { showIconsAndDividers },
-            dividerVisible = showIconsAndDividers,
-            onClick = {
-                ActivitiesUtils.showBrowser(
-                    context = context,
-                    url = "" // TODO: add link
-                )
-            }
-        )
+//        AppArrowItem(
+//            title = R.string.help_and_feedback_suggest_a_feature,
+//            startIcon = R.drawable.ic_suggest.takeIf { showIconsAndDividers },
+//            dividerVisible = showIconsAndDividers,
+//            onClick = {
+//                ActivitiesUtils.showBrowser(
+//                    context = context,
+//                    url = "" // TODO: add link
+//                )
+//            }
+//        )
         AppArrowItem(
             title = R.string.help_and_feedback_contact_support,
             startIcon = R.drawable.ic_support.takeIf { showIconsAndDividers },
