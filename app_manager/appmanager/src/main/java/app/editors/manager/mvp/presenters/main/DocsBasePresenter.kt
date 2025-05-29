@@ -1823,7 +1823,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                 provider.updateDocument(id, body)
                     .doOnSubscribe {
                         viewState.onDialogWaiting(
-                            context.getString(lib.editors.gbase.R.string.dialog_saving_file),
+                            null,
                             TAG_DIALOG_CANCEL_SINGLE_OPERATIONS
                         )
                     }
