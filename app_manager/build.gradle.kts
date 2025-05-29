@@ -38,6 +38,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization.plugin) apply false
 }
 
+apply(from = "buildSrc/translations.gradle.kts")
+
 tasks.register("clean", Delete::class) {
     delete(rootProject.layout.buildDirectory)
 }
@@ -48,7 +50,8 @@ tasks.register("clearAssets") {
             || projectKey == "appmanager"
             || projectKey == "core"
             || projectKey == "libcompose"
-            || projectKey == "libgeditors") {
+            || projectKey == "libgeditors"
+        ) {
             return@forEach
         }
 
