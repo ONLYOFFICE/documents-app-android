@@ -1,4 +1,4 @@
-package app.editors.manager.ui.activities.main
+package app.editors.manager.ui.fragments.main.settings
 
 import android.view.ViewGroup
 import android.webkit.WebView
@@ -36,7 +36,7 @@ private sealed class Screen(val screen: String) {
 }
 
 @Composable
-fun AboutScreen(onShowBrowser: (Int) -> Unit, onBackClick: () -> Unit) {
+fun AboutScreen(onShowBrowser: (Int) -> Unit) {
     val navController = rememberNavController()
     val context = LocalContext.current
 
@@ -45,7 +45,6 @@ fun AboutScreen(onShowBrowser: (Int) -> Unit, onBackClick: () -> Unit) {
             MainScreen(
                 navController = navController,
                 sdkVersion = FileUtils.readSdkVersion(context, "sdk.version"),
-                backPressed = onBackClick,
                 onClick = onShowBrowser
             )
         }
@@ -59,7 +58,6 @@ fun AboutScreen(onShowBrowser: (Int) -> Unit, onBackClick: () -> Unit) {
 private fun MainScreen(
     navController: NavHostController,
     sdkVersion: String,
-    backPressed: () -> Unit,
     onClick: (Int) -> Unit
 ) {
     ManagerTheme {
@@ -135,6 +133,5 @@ private fun Preview() {
     MainScreen(
         navController = rememberNavController(),
         sdkVersion = "5.4.21",
-        backPressed = { },
         onClick = {})
 }

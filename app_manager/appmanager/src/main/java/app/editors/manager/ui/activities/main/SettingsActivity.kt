@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.widget.Toolbar
 import app.editors.manager.R
 import app.editors.manager.ui.activities.base.BaseAppActivity
-import app.editors.manager.ui.fragments.main.AppSettingsFragment
+import app.editors.manager.ui.fragments.main.settings.AppSettingsFragment
 import lib.toolkit.base.managers.utils.FragmentUtils.showFragment
 
 class SettingsActivity : BaseAppActivity() {

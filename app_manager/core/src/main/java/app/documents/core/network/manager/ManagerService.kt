@@ -5,6 +5,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.FormRole
 import app.documents.core.network.manager.models.request.RequestBatchBase
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
@@ -14,6 +15,7 @@ import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
+import app.documents.core.network.manager.models.request.RequestStopFilling
 import app.documents.core.network.manager.models.request.RequestStorage
 import app.documents.core.network.manager.models.request.RequestTitle
 import app.documents.core.network.manager.models.response.ResponseCloudTree
@@ -159,7 +161,11 @@ interface ManagerService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}")
-    suspend fun suspendGetFileInfo(@Path(value = "file_id") fileId: String?): Response<ResponseFile>
+    suspend fun suspendGetFileInfo(
+        @Path(value = "file_id") fileId: String?,
+        @Query(value = "version") version: Int? = null
+    ): Response<ResponseFile>
+
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -543,4 +549,23 @@ interface ManagerService {
     suspend fun deleteVersion(
         @Body body: DeleteVersionRequest
     ): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/formroles")
+    suspend fun getFillingStatus(
+        @Path(value = "file_id") fileId: String,
+    ): app.documents.core.network.BaseResponse<List<FormRole>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/manageformfilling")
+    suspend fun stopFilling(
+        @Path(value = "file_id") fileId: String,
+        @Body body: RequestStopFilling
+    ): Response<ResponseBody>
 }

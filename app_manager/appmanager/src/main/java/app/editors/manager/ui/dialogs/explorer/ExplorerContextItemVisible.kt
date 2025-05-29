@@ -33,6 +33,8 @@ interface ExplorerContextItemVisible {
             is ExplorerContextItem.Edit -> edit
             is ExplorerContextItem.Fill -> fill
             is ExplorerContextItem.View -> view
+            is ExplorerContextItem.FillingStatus -> fillingStatus
+            is ExplorerContextItem.StopFilling -> stopFilling
             is ExplorerContextItem.ExternalLink -> externalLink
             is ExplorerContextItem.Restore -> restore
             is ExplorerContextItem.Header -> true
@@ -76,6 +78,12 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.reconnect: Boolean
         get() = item is CloudFolder && item.providerItem
+
+    private val ExplorerContextState.fillingStatus: Boolean
+        get() = (item as? CloudFile)?.security?.fillingStatus == true
+
+    private val ExplorerContextState.stopFilling: Boolean
+        get() = (item as? CloudFile)?.security?.stopFilling == true
 
     private val ExplorerContextState.fill: Boolean
         get() {

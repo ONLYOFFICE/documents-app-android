@@ -13,6 +13,7 @@ import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.FormRole
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestBatchBase
@@ -21,6 +22,7 @@ import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestDeleteRecent
 import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
+import app.documents.core.network.manager.models.request.RequestStopFilling
 import app.documents.core.network.manager.models.request.RequestTitle
 import app.documents.core.network.manager.models.response.ResponseCreateFile
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
@@ -333,6 +335,19 @@ class CloudFileProvider @Inject constructor(
             }
     }
 
+    fun getFileInfo(
+        fileId: String,
+        version: Int? = null
+    ): Flow<NetworkResult<CloudFile>> {
+        return flow {
+            val response = managerService.suspendGetFileInfo(fileId, version)
+            if (!response.isSuccessful) throw HttpException(response)
+            emit(checkNotNull(response.body()?.response))
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
     fun addToFavorites(
         requestFavorites: RequestFavorites,
         isAdd: Boolean
@@ -497,11 +512,10 @@ class CloudFileProvider @Inject constructor(
                             editType = editType
                         )
 
-                        if (document.isPdf) {
-                            val cachedFile = suspendGetCachedFile(context, cloudFile, token)
+                        if (document.isPdf || document.info == null) {
                             emit(
                                 FileOpenResult.OpenLocally(
-                                    file = cachedFile,
+                                    file = suspendGetCachedFile(context, cloudFile, token),
                                     fileId = cloudFile.id,
                                     editType = editType,
                                     access = access
@@ -511,16 +525,15 @@ class CloudFileProvider @Inject constructor(
                             emit(
                                 FileOpenResult.OpenDocumentServer(
                                     cloudFile = cloudFile,
-                                    info = checkNotNull(document.info),
+                                    info = document.info,
                                     editType = editType
                                 )
                             )
                         }
                     } else {
-                        val cachedFile = suspendGetCachedFile(context, cloudFile, token)
                         emit(
                             FileOpenResult.OpenLocally(
-                                file = cachedFile,
+                                file = suspendGetCachedFile(context, cloudFile, token),
                                 fileId = cloudFile.id,
                                 editType = editType,
                                 access = access
@@ -740,6 +753,22 @@ class CloudFileProvider @Inject constructor(
         val body = DeleteVersionRequest(fileId, arrayOf(version))
         val response = managerService.deleteVersion(body)
         if (!response.isSuccessful) throw HttpException(response)
+    }
+
+    fun getFillingStatus(fileId: String): Flow<NetworkResult<List<FormRole>>> {
+        return flow { emit(managerService.getFillingStatus(fileId).response) }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
+    fun stopFilling(fileId: String): Flow<NetworkResult<Unit>> {
+        return flow {
+            val response = managerService.stopFilling(fileId, RequestStopFilling(fileId.toInt()))
+            if (!response.isSuccessful) throw HttpException(response)
+            emit(Unit)
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
     }
 
     private fun <T> apiFlow(apiCall: suspend () -> T): Flow<Result<T>> = flow {
