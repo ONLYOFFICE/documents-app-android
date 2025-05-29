@@ -21,7 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import app.editors.manager.R
 import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment.Companion.TAG
@@ -30,16 +30,21 @@ import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppButton
 import lib.compose.ui.views.AppScaffold
 
-data class Feature(@StringRes val title: Int, @StringRes val description: Int, @DrawableRes val icon: Int)
+private data class Feature(
+    @StringRes val title: Int,
+    @StringRes val description: Int,
+    @DrawableRes val icon: Int
+)
 
 class WhatsNewDialog : ComposeDialogFragment() {
 
     companion object {
-        fun show(activity: FragmentActivity) {
-            val fragmentManager = activity.supportFragmentManager
-            val transaction = fragmentManager.beginTransaction()
-            transaction.add(WhatsNewDialog(), TAG)
-            transaction.commitAllowingStateLoss()
+
+        fun show(fragmentManager: FragmentManager) {
+            fragmentManager
+                .beginTransaction()
+                .add(WhatsNewDialog(), TAG)
+                .commitAllowingStateLoss()
         }
     }
 
@@ -80,7 +85,7 @@ class WhatsNewDialog : ComposeDialogFragment() {
 }
 
 @Composable
-fun WhatsNewScreen(features: List<Feature>, onDismiss: () -> Unit) {
+private fun WhatsNewScreen(features: List<Feature>, onDismiss: () -> Unit) {
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(top = 48.dp, bottom = 24.dp, start = 30.dp, end = 30.dp)) {
@@ -101,7 +106,7 @@ fun WhatsNewScreen(features: List<Feature>, onDismiss: () -> Unit) {
 }
 
 @Composable
-fun FeatureItem(feature: Feature) {
+private fun FeatureItem(feature: Feature) {
     Row(modifier = Modifier.padding(vertical = 12.dp)) {
         Image(painter = painterResource(id = feature.icon), contentDescription = null, modifier = Modifier.align(Alignment.CenterVertically))
         Spacer(modifier = Modifier.width(16.dp))

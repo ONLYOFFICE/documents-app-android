@@ -489,7 +489,7 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
     }
 
     protected fun showUrlInBrowser(url: String) {
-        ActivitiesUtils.showBrowser(requireActivity(), null, url)
+        ActivitiesUtils.showBrowser(requireContext(), null, url)
     }
 
 
