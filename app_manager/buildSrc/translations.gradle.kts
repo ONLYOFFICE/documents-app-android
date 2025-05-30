@@ -9,17 +9,21 @@ val targetLocales = listOf(
     "values-pt-rBR", "values-lo", "values-pl", "values-hy", "values-si"
 )
 
+//
 tasks.register("extractTranslations") {
     group = "translations"
     description = "Extracts untranslated strings from all project modules"
 
+    // Добавляем свойство для управления заполнением
+    val fillWithOriginals = project.findProperty("fillWithOriginals")?.toString()?.toBoolean() ?: true
+
     doLast {
+        println("Extracting untranslated strings. Fill with original text: $fillWithOriginals")
 
         val outputDir = "${project.buildDir}/../../translations"
         file(outputDir).mkdirs()
 
         val missingTranslations = mutableMapOf<String, MutableMap<String, MutableMap<String, String>>>()
-
         val originalTexts = mutableMapOf<String, MutableMap<String, String>>()
 
         targetLocales.forEach { locale ->
@@ -39,13 +43,11 @@ tasks.register("extractTranslations") {
                 return@forEach
             }
 
-            // Check if base strings.xml exists???
             val baseStringsFile = file("${resDir}/$baseLocale/strings.xml")
             val baseTranslatableFile = file("${resDir}/$baseLocale/translatable.xml")
 
             val baseStrings = mutableMapOf<String, String>()
 
-            // Collect strings from base files
             if (baseStringsFile.exists()) {
                 baseStrings.putAll(parseStringXml(baseStringsFile))
                 println("  - Found strings.xml file with ${baseStrings.size} strings")
@@ -70,11 +72,10 @@ tasks.register("extractTranslations") {
                 val targetStringsDir = file("${resDir}/$targetLocale")
 
                 if (!targetStringsDir.exists()) {
-                    // If target language directory doesn't exist, add all keys
                     val moduleStrings = missingTranslations[normalizedLocale]!!.getOrPut(subproject.name) { mutableMapOf() }
 
-                    baseStrings.forEach { (key, _) ->
-                        moduleStrings[key] = ""
+                    baseStrings.forEach { (key, value) ->
+                        moduleStrings[key] = if (fillWithOriginals) value else ""
                     }
                     println("  - $targetLocale: localization directory is missing, added ${baseStrings.size} strings")
                     return@forEach
@@ -94,9 +95,9 @@ tasks.register("extractTranslations") {
 
                 val moduleStrings = missingTranslations[normalizedLocale]!!.getOrPut(subproject.name) { mutableMapOf() }
 
-                baseStrings.forEach { (key, _) ->
+                baseStrings.forEach { (key, value) ->
                     if (!targetStrings.containsKey(key)) {
-                        moduleStrings[key] = ""
+                        moduleStrings[key] = if (fillWithOriginals) value else ""
                     }
                 }
 
@@ -105,7 +106,6 @@ tasks.register("extractTranslations") {
         }
 
         missingTranslations.forEach { (lang, moduleMap) ->
-            // Skip languages without untranslated strings
             if (moduleMap.isEmpty() || moduleMap.all { it.value.isEmpty() }) {
                 println("No untranslated strings for language $lang")
                 return@forEach
@@ -124,7 +124,8 @@ tasks.register("extractTranslations") {
                     writer.println("\n    <!-- Module: $module - ${strings.size} strings -->")
 
                     strings.keys.sorted().forEach { key ->
-                        writer.println("    <string name=\"$key\"></string>")
+                        val value = strings[key]!!.replace("\"", "\\\"").replace("'", "\\'")
+                        writer.println("    <string name=\"$key\">$value</string>")
                     }
                 }
 
