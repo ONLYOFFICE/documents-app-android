@@ -17,6 +17,7 @@ import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.CloudLoginDataSource
 import app.documents.core.utils.displayNameFromHtml
+import app.documents.core.utils.toCloudAccount
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -34,7 +35,7 @@ internal class CloudLoginRepositoryImpl(
     private val cloudPortal: CloudPortal?,
     private val cloudLoginDataSource: CloudLoginDataSource,
     private val accountRepository: AccountRepository,
-    private val isGooglePlayServicesAvailable: Boolean
+    private val isGooglePlayServicesAvailable: Boolean,
 ) : CloudLoginRepository {
 
     private var savedAccessToken: String? = null
@@ -80,7 +81,11 @@ internal class CloudLoginRepositoryImpl(
             .asResult()
     }
 
-    override suspend fun signInByEmail(email: String, password: String, code: String?): Flow<LoginResult> {
+    override suspend fun signInByEmail(
+        email: String,
+        password: String,
+        code: String?
+    ): Flow<LoginResult> {
         return signIn(
             request = RequestSignIn(
                 userName = email,
@@ -90,7 +95,11 @@ internal class CloudLoginRepositoryImpl(
         )
     }
 
-    override suspend fun signInWithProvider(accessToken: String?, provider: String, code: String?): Flow<LoginResult> {
+    override suspend fun signInWithProvider(
+        accessToken: String?,
+        provider: String,
+        code: String?
+    ): Flow<LoginResult> {
         if (provider == ApiContract.Social.GOOGLE) savedAccessToken = accessToken
         return signIn(
             request = RequestSignIn(
@@ -102,7 +111,12 @@ internal class CloudLoginRepositoryImpl(
     }
 
     override suspend fun signInWithSSO(accessToken: String): Flow<Result<CloudAccount>> {
-        return flowOf(onSuccessResponse(RequestSignIn(accessToken = accessToken), Token(token = accessToken)))
+        return flowOf(
+            onSuccessResponse(
+                request = RequestSignIn(accessToken = accessToken),
+                response = Token(token = accessToken)
+            )
+        )
             .asResult()
     }
 
@@ -152,7 +166,13 @@ internal class CloudLoginRepositoryImpl(
                     try {
                         val oldAccount = accountRepository.getAccount(result.oldAccountId)
                         if (oldAccount != null) {
-                            unsubscribePush(oldAccount.apply { unsubToken = accountRepository.getToken(oldAccount.accountName).orEmpty() })
+                            unsubscribePush(
+                                oldAccount.apply {
+                                    unsubToken = accountRepository
+                                        .getToken(oldAccount.accountName)
+                                        .orEmpty()
+                                }
+                            )
                         }
 
                         val newAccount = accountRepository.getOnlineAccount()
@@ -212,12 +232,19 @@ internal class CloudLoginRepositoryImpl(
             .flowOn(Dispatchers.IO)
     }
 
-    override suspend fun updatePortalSettings() {
+    override suspend fun updateCloudAccount() {
         try {
             cloudPortal?.let { portal ->
-                val token = accountRepository.getToken(accountRepository.getOnlineAccount()?.accountName.orEmpty())
-                val cloudPortal = cloudLoginDataSource.getPortalSettings(portal, token.orEmpty())
-                accountRepository.updateAccount { it.copy(portal = cloudPortal) }
+                val token = accountRepository.getOnlineToken() ?: return
+                val cloudPortal = cloudLoginDataSource.getPortalSettings(portal, token)
+                val account = cloudLoginDataSource.getUserInfo(token)
+
+                accountRepository.updateOnlineAccount {
+                    account.toCloudAccount(
+                        portal = cloudPortal,
+                        socialProvider = it.socialProvider
+                    )
+                }
             }
         } catch (_: Exception) {
         }
@@ -235,6 +262,7 @@ internal class CloudLoginRepositoryImpl(
                     val account = onSuccessResponse(request, response)
                     emit(LoginResult.Success(account))
                 }
+
                 response.tfa -> emit(LoginResult.Tfa(response.tfaKey))
                 response.sms -> emit(LoginResult.Sms(response.phoneNoise))
             }
@@ -249,18 +277,15 @@ internal class CloudLoginRepositoryImpl(
 
     private suspend fun onSuccessResponse(request: RequestSignIn, response: Token): CloudAccount {
         val accessToken = requireNotNull(response.token)
-        val userInfo = cloudLoginDataSource.getUserInfo(accessToken)
-        val cloudAccount = CloudAccount(
-            id = userInfo.id,
-            portalUrl = requireNotNull(cloudPortal).url,
-            login = request.userName.ifEmpty { userInfo.email.orEmpty() },
-            name = userInfo.displayNameFromHtml,
-            avatarUrl = userInfo.avatarMedium,
-            socialProvider = request.provider,
-            isAdmin = userInfo.isAdmin,
-            isVisitor = userInfo.isVisitor,
-            portal = cloudLoginDataSource.getPortalSettings(cloudPortal, requireNotNull(response.token))
-        )
+        val cloudAccount = cloudLoginDataSource.getUserInfo(accessToken)
+            .toCloudAccount(
+                portal = cloudLoginDataSource.getPortalSettings(
+                    requireNotNull(cloudPortal),
+                    requireNotNull(response.token)
+                ),
+                socialProvider = request.provider
+            )
+
         accountRepository.addAccount(
             cloudAccount = cloudAccount,
             accessToken = accessToken,

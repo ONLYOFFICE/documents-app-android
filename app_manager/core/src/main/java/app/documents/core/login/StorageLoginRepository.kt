@@ -40,8 +40,8 @@ internal abstract class StorageLoginRepositoryImpl<U, D : StorageLoginDataSource
     override suspend fun refreshToken(): Flow<Result<*>> {
         return flow {
             val response = storageLoginDataSource.refreshToken(requireNotNull(accountRepository.getRefreshToken()))
-            accountRepository.updateAccount(
-                token = response.accessToken,
+            accountRepository.updateToken(
+                accessToken = response.accessToken,
                 refreshToken = response.refreshToken
             )
             emit(null)

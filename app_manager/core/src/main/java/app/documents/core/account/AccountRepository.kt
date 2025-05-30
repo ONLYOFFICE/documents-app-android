@@ -54,11 +54,16 @@ interface AccountRepository {
 
     suspend fun getRefreshToken(accountName: String? = null): String?
 
+    suspend fun updateOnlineAccount(block: ((CloudAccount) -> CloudAccount)? = null)
+
     suspend fun updateAccount(
-        id: String? = null,
-        token: String? = null,
-        refreshToken: String? = null,
+        id: String,
         block: ((CloudAccount) -> CloudAccount)? = null
+    )
+
+    suspend fun updateToken(
+        accessToken: String,
+        refreshToken: String
     )
 
     suspend fun updateAccountData(
@@ -75,20 +80,32 @@ internal class AccountRepositoryImpl(
     private val accountPreferences: AccountPreferences
 ) : AccountRepository {
 
-    override suspend fun updateAccount(
-        id: String?,
-        token: String?,
-        refreshToken: String?,
-        block: ((CloudAccount) -> CloudAccount)?
-    ) {
-        cloudDataSource.getAccount(checkNotNull(id ?: accountPreferences.onlineAccountId))?.let { account ->
+    override suspend fun updateOnlineAccount(block: ((CloudAccount) -> CloudAccount)?) {
+        getOnlineAccount()?.let { account ->
             block?.invoke(account)?.let { updated ->
                 cloudDataSource.updateAccount(updated)
                 cloudDataSource.insertOrUpdatePortal(updated.portal)
             }
+        }
+    }
+
+    override suspend fun updateToken(accessToken: String, refreshToken: String) {
+        getOnlineAccount()?.let { account ->
             with(accountManager) {
-                token?.let { setToken(account.accountName, token) }
-                refreshToken?.let { updateAccountData(account.accountName) { it.copy(refreshToken = refreshToken) } }
+                setToken(account.accountName, accessToken)
+                updateAccountData(account.accountName) { it.copy(refreshToken = refreshToken) }
+            }
+        }
+    }
+
+    override suspend fun updateAccount(
+        id: String,
+        block: ((CloudAccount) -> CloudAccount)?
+    ) {
+        cloudDataSource.getAccount(id)?.let { account ->
+            block?.invoke(account)?.let { updated ->
+                cloudDataSource.updateAccount(updated)
+                cloudDataSource.insertOrUpdatePortal(updated.portal)
             }
         }
     }

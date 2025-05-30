@@ -82,7 +82,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
             context.accountOnline?.let { account ->
                 if (isAppColdStart) {
                     App.getApp().refreshLoginComponent(account.portal)
-                    App.getApp().loginComponent.cloudLoginRepository.updatePortalSettings()
+                    App.getApp().loginComponent.cloudLoginRepository.updateCloudAccount()
                     isAppColdStart = false
                 }
             }
