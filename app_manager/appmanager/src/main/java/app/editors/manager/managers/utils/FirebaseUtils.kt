@@ -141,6 +141,11 @@ object FirebaseUtils {
             }
 
             val localSdk = FileUtils.readSdkVersion(context).replace(".", "")
+            //TODO: for without editors
+            if (localSdk.isEmpty()) {
+                onResult(false)
+                return@getSdk
+            }
 
             var maxVersionIndex = 2
 

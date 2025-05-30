@@ -115,9 +115,15 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             when (requestCode) {
                 REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
                     if (data?.data != null) {
-                        if (data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)) {
-                            showFillResultFragment(data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION))
-                            return
+                        val isSendForm = data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)
+                        val fillSession = data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION)
+                        if (isSendForm) {
+                            val clickedFile = presenter.itemClicked as? CloudFile
+                            if (clickedFile?.formFillingStatus != ApiContract.FormFillingStatus.None) {
+                                showFillingStatusFragment(true)
+                            } else if (fillSession != null) {
+                                showFillResultFragment(fillSession)
+                            }
                         }
                     }
                     refreshAfterEditing()
@@ -260,6 +266,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> presenter.addToFavorite()
             is ExplorerContextItem.VersionHistory -> presenter.showVersionHistory()
+            is ExplorerContextItem.FillingStatus -> showFillingStatusFragment(false)
+            is ExplorerContextItem.StopFilling -> showStopFillingQuestionDialog()
             else -> super.onContextButtonClick(contextItem)
         }
     }
@@ -276,6 +284,26 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             }
             else -> super.actionMenuClickListener(item)
         }
+    }
+
+    private fun showFillingStatusFragment(isSendForm: Boolean) {
+        FillingStatusFragment.show(
+            activity = requireActivity(),
+            file = presenter.itemClicked as? CloudFile ?: return,
+            isSendForm = isSendForm,
+            onClose = { presenter.refresh() },
+            onStartFill = { presenter.openFile(EditType.Fill(), false) }
+        )
+    }
+
+    private fun showStopFillingQuestionDialog() {
+        UiUtils.showQuestionDialog(
+            context = requireContext(),
+            title = getString(R.string.filling_form_stop_filling_dialog_title),
+            description = getString(R.string.filling_form_stop_filling_dialog_desc),
+            acceptTitle = getString(R.string.filling_form_stop_filling),
+            acceptListener = { presenter.stopFillingForm() },
+        )
     }
 
     private fun showShareFragment() {
@@ -696,6 +724,16 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             info = info,
             editType = editType,
             access = file.access
+        )
+    }
+
+    override fun showFillFormIncompatibleVersionsDialog() {
+        UiUtils.showQuestionDialog(
+            context = requireContext(),
+            title = getString(R.string.rooms_filter_type_filling_forms),
+            description = getString(R.string.filling_form_version_incompatible_desc),
+            acceptTitle = getString(R.string.conversion_dialog_open_in_view_mode),
+            acceptListener = { presenter.openFile(EditType.View()) },
         )
     }
 

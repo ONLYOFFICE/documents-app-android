@@ -26,6 +26,7 @@ import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.CloudFileProvider.RoomCallback
 import app.documents.core.providers.FileOpenResult
 import app.documents.core.providers.RoomProvider
+import app.documents.core.utils.FirebaseTool
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -86,6 +87,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     @Inject
     lateinit var downloadReceiver: DownloadReceiver
+
+    @Inject
+    lateinit var firebaseTool: FirebaseTool
+
     private val uploadReceiver: UploadReceiver = UploadReceiver()
     private var duplicateRoomReceiver: RoomDuplicateReceiver = RoomDuplicateReceiver()
 
@@ -475,13 +480,22 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun openFillFormFile() {
         val file = itemClicked as? CloudFile ?: return
-        if (account.portal.isDocSpace && file.isPdfForm) {
-            if (isUserSection) {
-                viewState.showFillFormChooserFragment()
-                return
+
+        presenterScope.launch {
+            if (file.formFillingStatus == ApiContract.FormFillingStatus.YourTurn &&
+                !firebaseTool.isCoauthoring()
+            ) {
+                viewState.showFillFormIncompatibleVersionsDialog()
+                return@launch
             }
+
+            if (account.portal.isDocSpace && file.isPdfForm && isUserSection) {
+                viewState.showFillFormChooserFragment()
+                return@launch
+            }
+
+            openFile(if (file.security?.fillForms == true) EditType.Fill() else EditType.View())
         }
-        openFile(EditType.Fill())
     }
 
     override fun openFile(editType: EditType, canBeShared: Boolean) {
@@ -1340,6 +1354,21 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     }
                 }
             }
+        }
+    }
+
+    fun stopFillingForm() {
+        showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+        requestJob = presenterScope.launch {
+            (fileProvider as? CloudFileProvider ?: return@launch)
+                .stopFilling(itemClicked?.id.orEmpty())
+                .collect { result ->
+                    viewState.onDialogClose()
+                    when (result) {
+                        is Result.Error -> fetchError(result.exception)
+                        is Result.Success -> refresh()
+                    }
+                }
         }
     }
 }

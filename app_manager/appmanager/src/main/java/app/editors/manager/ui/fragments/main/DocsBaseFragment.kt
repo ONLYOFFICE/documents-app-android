@@ -296,7 +296,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 isSearching = presenter.isFilteringMode,
                 editIndex = presenter.isIndexing && roomSecurity?.editRoom == true,
                 isRoot = presenter.isRoot,
-                inTemplate = presenter.currentFolder?.isTemplate == true
+                inTemplate = presenter.currentFolder?.isTemplate == true,
+                roomType = presenter.currentFolder?.roomType?.takeIf { it > 0 }
             )
             presenter.onClickEvent(item, position, true)
             showExplorerContextBottomDialog(state)

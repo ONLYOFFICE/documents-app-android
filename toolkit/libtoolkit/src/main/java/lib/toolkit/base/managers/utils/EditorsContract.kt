@@ -26,6 +26,14 @@ object EditorsContract {
     const val EXTRA_FILL_SESSION = "EXTRA_FILL_SESSION"
 
     const val RESULT_FAILED_OPEN = 4000
+
+    const val INTERNAL_EDIT_ACCESS_EDIT = 0
+    const val INTERNAL_EDIT_ACCESS_READ = 1
+    const val INTERNAL_EDIT_ACCESS_RESTRICT = 2
+    const val INTERNAL_EDIT_ACCESS_COMMENT = 3
+    const val INTERNAL_EDIT_ACCESS_FILLING_FORMS = 4
+    const val INTERNAL_EDIT_ACCESS_TRACKED_CHANGES = 5
+    const val INTERNAL_EDIT_ACCESS_CUSTOM_FILTER = 6
 }
 
 enum class EditorsType {

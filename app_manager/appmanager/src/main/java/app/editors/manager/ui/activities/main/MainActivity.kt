@@ -34,13 +34,13 @@ import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.compose.personal.PersonalPortalMigrationFragment
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
-import app.editors.manager.ui.fragments.main.AppSettingsFragment
 import app.editors.manager.ui.fragments.main.CloudAccountFragment
 import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment
 import app.editors.manager.ui.fragments.main.DocsRecentFragment
 import app.editors.manager.ui.fragments.main.DocsWebDavFragment
 import app.editors.manager.ui.fragments.main.MainPagerFragment
 import app.editors.manager.ui.fragments.main.OnlyOfficeCloudFragment
+import app.editors.manager.ui.fragments.main.settings.AppSettingsFragment
 import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment

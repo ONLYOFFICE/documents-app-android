@@ -67,7 +67,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 624
+        versionCode = 626
         versionName = "9.0.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
@@ -339,6 +339,7 @@ dependencies {
     implementation(libs.compose.uiToolingPreview)
     implementation(libs.compose.navigation)
     implementation(libs.compose.livedata)
+    implementation(libs.compose.constraint.layout)
     debugImplementation(libs.compose.uiTooling)
 
     //Jackson

@@ -73,4 +73,7 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showTemplateInfoFragment(templateId: String)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showFillFormIncompatibleVersionsDialog()
 }
