@@ -202,6 +202,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
 
     private fun onActionView(intent: Intent? = null) {
         (intent ?: this.intent)?.data?.let { uri ->
+            // TODO: Refactor. Remove opening deeplink from MainPagerFragment
             val fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
             if (fragment is MainPagerFragment && fragment.isVisible) {
                 fragment.checkBundle(uri)
