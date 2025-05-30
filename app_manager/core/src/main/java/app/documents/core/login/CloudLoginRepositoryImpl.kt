@@ -232,12 +232,14 @@ internal class CloudLoginRepositoryImpl(
             .flowOn(Dispatchers.IO)
     }
 
-    override suspend fun updateCloudAccount() {
+    override suspend fun updateCloudAccount(onDowngradeToGuest: (Boolean) -> Unit) {
         try {
             cloudPortal?.let { portal ->
                 val token = accountRepository.getOnlineToken() ?: return
                 val cloudPortal = cloudLoginDataSource.getPortalSettings(portal, token)
                 val account = cloudLoginDataSource.getUserInfo(token)
+                val isDowngradeToGuest = accountRepository
+                    .getOnlineAccount()?.isVisitor != true && account.isVisitor
 
                 accountRepository.updateOnlineAccount {
                     account.toCloudAccount(
@@ -245,6 +247,8 @@ internal class CloudLoginRepositoryImpl(
                         socialProvider = it.socialProvider
                     )
                 }
+
+                onDowngradeToGuest(isDowngradeToGuest)
             }
         } catch (_: Exception) {
         }

@@ -21,4 +21,5 @@ interface MainActivityView : BaseViewExt {
     fun onShowOnBoarding()
     fun onCloseActionDialog()
     fun onLocaleConfirmation()
+    fun onDowngradeToGuestDialog()
 }

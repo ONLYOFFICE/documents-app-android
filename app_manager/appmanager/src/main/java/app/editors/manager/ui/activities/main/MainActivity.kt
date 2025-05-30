@@ -55,6 +55,7 @@ import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.RequestPermission
 import lib.toolkit.base.managers.utils.TimeUtils
+import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -323,6 +324,15 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             AppLocaleConfirmationActivity.show(this)
         }
+    }
+
+    override fun onDowngradeToGuestDialog() {
+        UiUtils.showQuestionDialog(
+            context = this,
+            title = getString(R.string.dialogs_warning_title),
+            description = getString(R.string.dialogs_warning_downgrade_to_guest),
+            acceptListener = {},
+        )
     }
 
     fun openFile() {

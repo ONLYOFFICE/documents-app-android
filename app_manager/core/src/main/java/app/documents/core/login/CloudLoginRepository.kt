@@ -77,7 +77,7 @@ interface CloudLoginRepository : LoginRepository {
 
     suspend fun handleIOException(exception: IOException): Flow<Boolean>
 
-    suspend fun updateCloudAccount()
+    suspend fun updateCloudAccount(onDowngradeToGuest: (Boolean) -> Unit)
 
     fun getSavedPortals(): Flow<List<String>>
 }
