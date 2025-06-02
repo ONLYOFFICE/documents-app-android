@@ -425,9 +425,11 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             layout.root.isVisible = title != null
             layout.infoText.text = title
             layout.infoText.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
-            drawableTint?.let { tint ->
-                TextViewCompat
-                    .setCompoundDrawableTintList(layout.infoText, ColorStateList.valueOf(tint))
+            if (title != null && drawableTint != null) {
+                TextViewCompat.setCompoundDrawableTintList(
+                    layout.infoText,
+                    ColorStateList.valueOf(requireContext().getColor(drawableTint))
+                )
             }
         }
     }

@@ -637,8 +637,11 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
             root.isVisible = title != null
             infoText.text = title
             infoText.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
-            drawableTint?.let { tint ->
-                TextViewCompat.setCompoundDrawableTintList(infoText, ColorStateList.valueOf(tint))
+            if (title != null && drawableTint != null) {
+                TextViewCompat.setCompoundDrawableTintList(
+                    infoText,
+                    ColorStateList.valueOf(getColor(drawableTint))
+                )
             }
         }
     }
