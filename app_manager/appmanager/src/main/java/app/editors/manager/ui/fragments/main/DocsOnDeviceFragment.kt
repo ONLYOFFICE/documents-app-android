@@ -240,7 +240,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun onShowPdf(uri: Uri, editType: EditType) {
-        onOpenLocalFile(uri, FileExtensions.fromExtension(ContentResolverUtils.getName(requireContext(), uri)).extension, editType)
+        onOpenLocalFile(uri, FileExtensions.fromPath(ContentResolverUtils.getName(requireContext(), uri)).extension, editType)
     }
 
     override fun onOpenMedia(state: OpenState.Media) {

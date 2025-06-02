@@ -100,8 +100,14 @@ sealed class FileExtensions(
         }
 
         @JvmStatic
-        fun fromExtension(input: String): FileExtensions {
+        fun fromPath(input: String): FileExtensions {
             val cleanExt = FileExtensionUtils.getExtensionFromPath(input).replace(".", "")
+            return extensionMap[cleanExt] ?: UNKNOWN
+        }
+
+        @JvmStatic
+        fun fromExtension(ext: String): FileExtensions {
+            val cleanExt = ext.replace(".", "")
             return extensionMap[cleanExt] ?: UNKNOWN
         }
 
