@@ -1264,6 +1264,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                         allSelected = presenter.isSelectedAll,
                         sortBy = presenter.preferenceTool.sortBy,
                         isGridView = presenter.preferenceTool.isGridView,
+                        security = presenter.currentFolder?.security,
                         asc = presenter.preferenceTool.sortOrder.equals(
                             ApiContract.Parameters.VAL_SORT_ORDER_ASC,
                             ignoreCase = true

@@ -348,7 +348,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
         val lifetime = currentFolder?.lifetime
         val toolbarState = when {
-            isGuestDocuments -> ToolbarState.GuestDocuments
+            isGuestDocuments -> {
+                viewState.onStateActionButton(false)
+                ToolbarState.GuestDocuments
+            }
             currentFolder?.isTemplate == true -> ToolbarState.RoomTemplate
             lifetime != null -> ToolbarState.RoomLifetime(lifetime)
             currentSectionType == ApiContract.SectionType.CLOUD_TRASH -> ToolbarState.Trash
@@ -364,6 +367,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             !isVisitor || modelExplorerStack.last()?.current?.security?.create == true,
             roomClicked?.roomType
         )
+    }
+
+    override fun setSelection(isSelection: Boolean) {
+        if (isSelection) {
+            viewState.setToolbarState(ToolbarState.None)
+        }
+        super.setSelection(isSelection)
     }
 
     /*
@@ -819,6 +829,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private val isGuestDocuments: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_USER &&
+                !isSelectionMode &&
+                isRoot &&
                 currentFolder?.security?.create != true &&
                 currentFolder?.security?.read == true
 

@@ -124,6 +124,7 @@ object ActionMenuItemsFactory {
         selected: Boolean,
         allSelected: Boolean,
         asc: Boolean,
+        security: Security?,
         sortBy: String?,
         isGridView: Boolean
     ) = mutableListOf<ActionMenuItem>().apply {
@@ -171,11 +172,19 @@ object ActionMenuItemsFactory {
             add(ActionMenuItem.Delete)
         } else {
             // common action block
-            if (!section.isLocal && provider == PortalProvider.Cloud.DocSpace) add(ActionMenuItem.CreateRoom)
-            if (!section.isDevice) add(ActionMenuItem.Download)
-            add(ActionMenuItem.Move)
-            add(ActionMenuItem.Copy)
-            add(ActionMenuItem.Delete)
+            if (security == null) {
+                if (!section.isLocal && provider == PortalProvider.Cloud.DocSpace) add(ActionMenuItem.CreateRoom)
+                if (!section.isDevice) add(ActionMenuItem.Download)
+                add(ActionMenuItem.Move)
+                add(ActionMenuItem.Copy)
+                add(ActionMenuItem.Delete)
+            } else {
+                if (security.create) add(ActionMenuItem.CreateRoom)
+                add(ActionMenuItem.Download)
+                if (security.moveTo) add(ActionMenuItem.Move)
+                if (security.copyTo) add(ActionMenuItem.Copy)
+                if (security.delete) add(ActionMenuItem.Delete)
+            }
         }
         // select block
         if (!section.isLocalRecent) addAll(getSelectItems(selected, allSelected))

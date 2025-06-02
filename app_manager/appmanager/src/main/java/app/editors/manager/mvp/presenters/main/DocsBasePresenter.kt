@@ -1170,7 +1170,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
      * Reset/Set model to selection mode
      * */
 
-    fun setSelection(isSelection: Boolean) {
+    open fun setSelection(isSelection: Boolean) {
         if (isSelectionMode != isSelection) {
             isSelectionMode = isSelection
             if (!isSelection) {
