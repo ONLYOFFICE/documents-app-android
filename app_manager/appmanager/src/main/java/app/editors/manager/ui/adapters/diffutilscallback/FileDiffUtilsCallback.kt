@@ -1,25 +1,21 @@
-package app.editors.manager.ui.adapters.diffutilscallback;
+package app.editors.manager.ui.adapters.diffutilscallback
 
-import java.io.File;
-import java.util.List;
+import java.io.File
 
-public class FileDiffUtilsCallback extends BaseDiffUtilsCallback<File> {
+class FileDiffUtilsCallback(
+    newList: List<File>,
+    oldList: List<File>
+) : BaseDiffUtilsCallback<File>(newList, oldList) {
 
-    public FileDiffUtilsCallback(List<File> mNewList, List<File> mOldList) {
-        super(mNewList, mOldList);
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val oldFile = mOldList[oldItemPosition]
+        val newFile = mNewList[newItemPosition]
+        return oldFile.absolutePath == newFile.absolutePath
     }
 
-    @Override
-    public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-        File oldFile = mOldList.get(oldItemPosition);
-        File newFile = mNewList.get(newItemPosition);
-        return oldFile.getAbsolutePath().equals(newFile.getAbsolutePath());
-    }
-
-    @Override
-    public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-        File oldFile = mOldList.get(oldItemPosition);
-        File newFile = mNewList.get(newItemPosition);
-        return oldFile.lastModified() == newFile.lastModified();
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        val oldFile = mOldList[oldItemPosition]
+        val newFile = mNewList[newItemPosition]
+        return oldFile.lastModified() == newFile.lastModified()
     }
 }

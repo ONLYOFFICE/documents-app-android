@@ -1,26 +1,13 @@
-package app.editors.manager.ui.adapters.diffutilscallback;
+package app.editors.manager.ui.adapters.diffutilscallback
 
-import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.DiffUtil
 
-import java.util.List;
+abstract class BaseDiffUtilsCallback<D>(
+    protected val mNewList: List<D>,
+    protected val mOldList: List<D>
+) : DiffUtil.Callback() {
 
-public abstract class BaseDiffUtilsCallback<D> extends DiffUtil.Callback {
+    override fun getNewListSize(): Int = mNewList.size
 
-    protected List<D> mNewList;
-    protected List<D> mOldList;
-
-    public BaseDiffUtilsCallback(List<D> mNewList, List<D> mOldList) {
-        this.mNewList = mNewList;
-        this.mOldList = mOldList;
-    }
-
-    @Override
-    public int getNewListSize() {
-        return mNewList.size();
-    }
-
-    @Override
-    public int getOldListSize() {
-        return mOldList.size();
-    }
+    override fun getOldListSize(): Int = mOldList.size
 }
