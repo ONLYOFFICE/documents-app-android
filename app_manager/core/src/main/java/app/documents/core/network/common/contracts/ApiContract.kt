@@ -105,6 +105,14 @@ object ApiContract {
         const val PENDING = 4
     }
 
+    object ThumbnailStatus {
+        const val WAITING = 0
+        const val CREATED = 1
+        const val ERROR = 2
+        const val NOT_REQUIRED = 3
+        const val CREATING = 4
+    }
+
     object Parameters {
         const val ARG_ACTION = "action"
         const val ARG_COUNT = "count"

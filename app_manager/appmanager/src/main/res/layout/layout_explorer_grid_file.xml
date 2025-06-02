@@ -7,16 +7,46 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout style="@style/GridItemLayout.ConstraintLayout">
 
-        <ImageView
-            android:id="@+id/image"
-            style="@style/GridItemLayout.Image"
+        <FrameLayout
+            android:id="@+id/preview"
+            android:layout_width="80dp"
+            android:layout_height="95dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0"
-            tools:ignore="ContentDescription"
-            tools:src="@drawable/ic_type_document_column" />
+            app:layout_constraintVertical_bias="0">
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/ic_type_document_column" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/previewLoading"
+                style="@style/Widget.MaterialComponents.CircularProgressIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:indeterminate="true"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/fileTypeBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="-8dp"
+            android:layout_marginBottom="4dp"
+            android:importantForAccessibility="no"
+            app:layout_constraintBottom_toBottomOf="@id/preview"
+            app:layout_constraintStart_toEndOf="@id/preview"
+            tools:src="@drawable/ic_type_document_badge" />
+
 
         <LinearLayout
             android:id="@+id/topStatusLayout"
@@ -26,8 +56,8 @@
             android:layout_marginTop="@dimen/file_grid_badge_top_margin"
             android:orientation="vertical"
             app:layout_constrainedWidth="true"
-            app:layout_constraintStart_toStartOf="@id/image"
-            app:layout_constraintTop_toTopOf="@id/image">
+            app:layout_constraintStart_toStartOf="@id/preview"
+            app:layout_constraintTop_toTopOf="@id/preview">
 
             <app.editors.manager.ui.views.badge.BadgeCardView
                 android:id="@+id/badgeFormStatus"
@@ -90,10 +120,10 @@
             android:id="@+id/statusLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/topStatusLayout"
             android:layout_marginTop="@dimen/default_margin_small"
             android:layout_marginEnd="@dimen/default_margin_small"
             android:orientation="vertical"
-            app:layout_constraintEnd_toStartOf="@id/image"
             app:layout_constraintTop_toBottomOf="@id/topStatusLayout">
 
             <ImageView
@@ -124,7 +154,7 @@
                 android:importantForAccessibility="no"
                 android:src="@drawable/ic_fab_edit_mode"
                 android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@id/image"
+                app:layout_constraintEnd_toStartOf="@id/preview"
                 app:layout_constraintTop_toBottomOf="@id/favorite"
                 app:tint="@color/colorPrimary" />
 
@@ -163,7 +193,7 @@
             style="@style/GridItemLayout.Title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image"
+            app:layout_constraintTop_toBottomOf="@id/preview"
             tools:drawableEnd="@drawable/ic_small_clock"
             android:drawablePadding="4dp"
             android:drawableTint="@color/colorSecondary"

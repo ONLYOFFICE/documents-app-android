@@ -442,7 +442,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
 
-    protected fun loadSuccess(explorer: Explorer?) {
+    protected open fun loadSuccess(explorer: Explorer?) {
         modelExplorerStack.addStack(explorer)
         updateViewsState()
         setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
@@ -1180,14 +1180,9 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         }
     }
 
-    fun setSelectionAll() {
-        setSelection(true)
-        selectAll()
-    }
-
     fun selectAll() {
         viewState.onItemsSelection(modelExplorerStack.setSelection(true).toString())
-        viewState.onStateUpdateSelection(true)
+        setSelection(true)
     }
 
     fun deselectAll() {
@@ -1259,6 +1254,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             this.roomType = it
         } }
         getItemsById(id)
+        viewState.onScrollToPosition(0)
     }
 
     /**

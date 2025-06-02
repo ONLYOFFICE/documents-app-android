@@ -65,6 +65,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -99,6 +100,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private var conversionJob: Job? = null
 
+
     init {
         App.getApp().appComponent.inject(this)
         api = context.api
@@ -119,6 +121,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
                 override fun isTemplatesRoot(id: String?) =
                     isTemplatesFolder && modelExplorerStack.last()?.pathParts?.firstOrNull()?.id == id
+
+                override fun isRoot(): Boolean = isRoot
             }
         }
 
@@ -169,7 +173,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
                 modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
                 if (!isSelectedItemsEmpty) {
-                    viewState.onStateUpdateSelection(true)
                     viewState.onItemSelected(
                         position,
                         modelExplorerStack.countSelectedItems.toString()
@@ -263,11 +266,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (id != null && loadPosition > 0) {
             val args = getArgs(filteringValue).toMutableMap()
             args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
-            disposable.add(fileProvider.getFiles(id, args.putFilters()).subscribe({ explorer: Explorer? ->
-                modelExplorerStack.addOnNext(explorer)
+            val filter = args.putFilters()
+            disposable.add(fileProvider.getFiles(id, filter).subscribe({ explorer: Explorer? ->
+                modelExplorerStack.addOnNext(explorer?.apply {
+                    filterType = modelExplorerStack.last()?.filterType.orEmpty()
+                })
                 val last = modelExplorerStack.last()
                 if (last != null) {
                     viewState.onDocsNext(getListWithHeaders(last, true))
+                    explorer?.let { loadThumbnails(explorer, filter) }
                 }
             }) { throwable: Throwable -> fetchError(throwable) })
         }
@@ -291,6 +298,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 canBeShared = false
             ).collect(::onFileOpenCollect)
         }
+    }
+
+    override fun loadSuccess(explorer: Explorer?) {
+        super.loadSuccess(explorer)
+        explorer?.let { loadThumbnails(explorer, getArgs(filteringValue).putFilters()) }
     }
 
     override fun updateViewsState() {
@@ -451,11 +463,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun getBackStack(): Boolean {
-        if ((currentFolder?.isTemplate == true || isTemplatesFolder)
-            && !isSelectionMode && !isFilteringMode
-        ) {
-            resetFilters()
-            return super.getBackStack()
+        if (!isSelectionMode && !isFilteringMode){
+            if ((currentFolder?.isTemplate == true || isTemplatesFolder)) {
+                resetFilters()
+                return super.getBackStack()
+            }
         }
         val backStackResult = super.getBackStack()
         if (modelExplorerStack.last()?.filterType != preferenceTool.filter.type.filterVal) {
@@ -1202,9 +1214,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             override fun isArchive(): Boolean = false
             override fun isRecent(): Boolean = false
             override fun isTemplatesRoot(id: String?): Boolean = isTemplatesFolder
+            override fun isRoot(): Boolean = isRoot
 
         }
     }
+
 
     fun duplicateRoom() {
         val workData = Data.Builder()
@@ -1371,4 +1385,32 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
         }
     }
+
+    private fun loadThumbnails(explorer: Explorer, filter: Map<String, String>) {
+        val id = explorer.current.id
+        (fileProvider as? CloudFileProvider)?.let { provider ->
+            presenterScope.launch(Dispatchers.IO) {
+                provider.getThumbnails(explorer, id, filter)
+                    .catch { e -> fetchError(e) }
+                    .collect { file ->
+                        withContext(Dispatchers.Main){
+                            updateFileThumbnail(file)
+                        }
+                    }
+            }
+
+
+        }
+    }
+
+    private fun updateFileThumbnail(file: CloudFile){
+        modelExplorerStack.last()?.let { explorer ->
+            explorer.files.filter { it.id == file.id }.map {
+                it.thumbnailStatus = file.thumbnailStatus
+                it.thumbnailUrl = file.thumbnailUrl
+                viewState.onStateUpdateThumbnail(it.id)
+            }
+        }
+    }
+
 }

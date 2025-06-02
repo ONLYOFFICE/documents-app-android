@@ -1,3 +1,5 @@
 package app.documents.core.network.manager.models.base
 
-interface Entity
+interface Entity {
+    fun getEntityId(): String = ""
+}

@@ -19,6 +19,7 @@ import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestBatchBase
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestCreateThumbnails
 import app.documents.core.network.manager.models.request.RequestDeleteRecent
 import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
@@ -80,6 +81,7 @@ class CloudFileProvider @Inject constructor(
     }
 
     interface RoomCallback {
+        fun isRoot(): Boolean
         fun isRoomRoot(id: String?): Boolean
         fun isArchive(): Boolean
         fun isRecent(): Boolean
@@ -103,6 +105,53 @@ class CloudFileProvider @Inject constructor(
                         throw HttpException(responseExplorerResponse)
                     }
                 }
+        }
+    }
+
+    fun getThumbnails(
+        explorer: Explorer?,
+        id: String,
+        filter: Map<String, String>,
+        delayMs: Long = 2000,
+        maxAttempts: Int = 5
+    ): Flow<CloudFile> = flow {
+
+        val missingStatuses = listOf(
+            ApiContract.ThumbnailStatus.WAITING,
+            ApiContract.ThumbnailStatus.CREATING
+        )
+        val missingThumbnailsIds = explorer?.files
+            ?.filter { it.thumbnailStatus == ApiContract.ThumbnailStatus.WAITING }
+            ?.map { it.id }.orEmpty().toMutableList()
+
+        if (missingThumbnailsIds.isEmpty()) return@flow
+
+        val response = managerService.createThumbnails(
+            RequestCreateThumbnails(fileIds = missingThumbnailsIds)
+        )
+        if (!response.isSuccessful || roomCallback?.isRoot() == true) return@flow
+
+        repeat(maxAttempts) { index ->
+            delay(delayMs)
+            val fileResponse = managerService.getItemByIdFlow(id, filter)
+            val body = fileResponse.body()?.response ?: return@repeat
+            if (!fileResponse.isSuccessful) return@repeat
+
+            val readyFiles = body.files.filter { file ->
+                file.id in missingThumbnailsIds && file.thumbnailStatus !in missingStatuses
+            }
+            readyFiles.forEach { file ->
+                missingThumbnailsIds.remove(file.id)
+                emit(file.apply { thumbnailStatus = ApiContract.ThumbnailStatus.CREATED })
+            }
+
+            if (index == maxAttempts - 1) {
+                body.files.filter { it.id in missingThumbnailsIds }.forEach { file ->
+                    emit(file.apply { thumbnailStatus = ApiContract.ThumbnailStatus.NOT_REQUIRED })
+                }
+            }
+
+            if (missingThumbnailsIds.isEmpty()) return@flow
         }
     }
 

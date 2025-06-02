@@ -9,6 +9,7 @@ import app.documents.core.network.manager.models.explorer.FormRole
 import app.documents.core.network.manager.models.request.RequestBatchBase
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestCreateThumbnails
 import app.documents.core.network.manager.models.request.RequestDeleteRecent
 import app.documents.core.network.manager.models.request.RequestDeleteShare
 import app.documents.core.network.manager.models.request.RequestDownload
@@ -568,4 +569,21 @@ interface ManagerService {
         @Path(value = "file_id") fileId: String,
         @Body body: RequestStopFilling
     ): Response<ResponseBody>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/files/thumbnails")
+    suspend fun createThumbnails(@Body body: RequestCreateThumbnails): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/{item_id}")
+    suspend fun getItemByIdFlow(
+        @Path(value = "item_id") folderId: String,
+        @QueryMap options: Map<String, String>?
+    ): Response<ResponseExplorer>
 }
