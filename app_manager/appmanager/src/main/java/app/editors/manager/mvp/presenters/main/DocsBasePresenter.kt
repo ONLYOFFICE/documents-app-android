@@ -283,10 +283,10 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
     protected open suspend fun onFileOpenCollect(result: FileOpenResult) {
-        if (result !is FileOpenResult.Loading) viewState.onDialogClose()
+        if (result !is FileOpenResult.Loading) viewState.onDialogClose(true)
         when (result) {
             is FileOpenResult.DownloadNotSupportedFile -> viewState.onFileDownloadPermission()
-            is FileOpenResult.Loading -> showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+            is FileOpenResult.Loading -> showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS, true)
             is FileOpenResult.OpenLocally -> {
                 openFileFromPortal(result.file, result.fileId, result.editType, result.access)
             }
@@ -1325,8 +1325,8 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     /**
      * Dialogs templates
      * */
-    protected fun showDialogWaiting(tag: String?) {
-        viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title), tag)
+    protected fun showDialogWaiting(tag: String?, force: Boolean = false) {
+        viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title), tag, force)
     }
 
     protected fun showDialogProgress(isHideButtons: Boolean, tag: String?) {

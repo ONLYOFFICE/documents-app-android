@@ -849,14 +849,14 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         placeholderViews?.setTemplatePlaceholder(type)
     }
 
-    override fun onDialogClose() {
-        if (isActivePage) {
-            hideDialog()
+    override fun onDialogClose(force: Boolean) {
+        if (isActivePage || force) {
+            hideDialog(force)
         }
     }
 
-    override fun onDialogWaiting(title: String?, tag: String?) {
-        if (isActivePage) {
+    override fun onDialogWaiting(title: String?, tag: String?, force: Boolean) {
+        if (isActivePage || force) {
             showWaitingDialog(title, getString(R.string.dialogs_common_cancel_button), tag)
         }
     }
@@ -1186,7 +1186,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
             when (type) {
-                EditorsType.DOCS, EditorsType.PDF -> {
+                EditorsType.DOCS -> {
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
                     editorLaunchers[REQUEST_DOCS]?.launch(intent)
                 }
@@ -1199,6 +1199,15 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 EditorsType.PRESENTATION -> {
                     intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
                     editorLaunchers[REQUEST_PRESENTATION]?.launch(intent)
+                }
+                EditorsType.PDF -> {
+                    if (editType is EditType.View) {
+                        intent.setClassName(requireContext(), EditorsContract.PDF)
+                        startActivity(intent)
+                    } else {
+                        intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
+                        editorLaunchers[REQUEST_DOCS]?.launch(intent)
+                    }
                 }
             }
         } catch (e: ActivityNotFoundException) {

@@ -30,7 +30,12 @@ object NetworkClient {
         const val CONNECT_TIMEOUT = 60L
     }
 
-    inline fun <reified V>getRetrofit(url: String, token: String, context: Context): V {
+    inline fun <reified V> getRetrofit(
+        url: String,
+        token: String,
+        context: Context,
+        headerType: HeaderType = HeaderType.REQUEST_TOKEN
+    ): V {
         val modifiedUrl = if (!url.startsWith(ApiContract.SCHEME_HTTP) && !url.startsWith(ApiContract.SCHEME_HTTPS)) {
             "https://$url"
         } else {
@@ -41,7 +46,7 @@ object NetworkClient {
             .baseUrl(modifiedUrl)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
-            .client(getOkHttpBuilder(PortalSettings(), BaseInterceptor(token, context, HeaderType.REQUEST_TOKEN)).build())
+            .client(getOkHttpBuilder(PortalSettings(), BaseInterceptor(token, context, headerType)).build())
             .build()
             .create(V::class.java)
     }

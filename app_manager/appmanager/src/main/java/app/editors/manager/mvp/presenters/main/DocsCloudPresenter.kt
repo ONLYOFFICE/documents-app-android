@@ -520,7 +520,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override suspend fun onFileOpenCollect(result: FileOpenResult) {
-        if (result !is FileOpenResult.Loading) viewState.onDialogClose()
+        if (result !is FileOpenResult.Loading) viewState.onDialogClose(true)
         when (result) {
             is FileOpenResult.OpenDocumentServer -> {
                 viewState.onOpenDocumentServer(result.cloudFile, result.info, result.editType)
@@ -712,7 +712,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             } else {
                 fileProvider.openFile(
                     cloudFile = CloudFile().apply { this.id = fileId.orEmpty() },
-                    editType = EditType.Edit(),
+                    editType = EditType.from(model.action),
                     canBeShared  = false
                 ).collect(::onFileOpenCollect)
             }
