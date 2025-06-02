@@ -348,8 +348,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
         val lifetime = currentFolder?.lifetime
         val toolbarState = when {
+            isGuestDocuments -> ToolbarState.GuestDocuments
             currentFolder?.isTemplate == true -> ToolbarState.RoomTemplate
             lifetime != null -> ToolbarState.RoomLifetime(lifetime)
+            currentSectionType == ApiContract.SectionType.CLOUD_TRASH -> ToolbarState.Trash
             else -> ToolbarState.None
         }
         viewState.setToolbarState(toolbarState)
@@ -814,6 +816,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     val isCurrentRoom: Boolean
         get() = currentSectionType > ApiContract.SectionType.CLOUD_PRIVATE_ROOM // && modelExplorerStack.last()?.current?.isCanEdit == true
+
+    private val isGuestDocuments: Boolean
+        get() = currentSectionType == ApiContract.SectionType.CLOUD_USER &&
+                currentFolder?.security?.create != true &&
+                currentFolder?.security?.read == true
 
     private fun showDownloadFolderActivity(uri: Uri) {
         viewState.onDownloadActivity(uri)

@@ -47,9 +47,6 @@ import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_TYPE
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
-import app.editors.manager.ui.fragments.template.createroom.RoomFromTemplateFragment
-import app.editors.manager.ui.fragments.template.settings.TemplateAccessSettingsFragment
-import app.editors.manager.ui.fragments.template.settings.TemplateSettingsFragment
 import app.editors.manager.ui.fragments.main.versionhistory.RefreshListener
 import app.editors.manager.ui.fragments.main.versionhistory.VersionHistoryFragment
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment
@@ -58,7 +55,10 @@ import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
 import app.editors.manager.ui.fragments.share.ShareFragment
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
+import app.editors.manager.ui.fragments.template.createroom.RoomFromTemplateFragment
 import app.editors.manager.ui.fragments.template.info.TemplateInfoFragment
+import app.editors.manager.ui.fragments.template.settings.TemplateAccessSettingsFragment
+import app.editors.manager.ui.fragments.template.settings.TemplateSettingsFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
 import app.editors.manager.viewModels.main.TemplateSettingsMode
@@ -83,6 +83,8 @@ import moxy.presenter.ProvidePresenter
 sealed interface ToolbarState {
     data class RoomLifetime(val lifetime: Lifetime) : ToolbarState
     data object RoomTemplate : ToolbarState
+    data object GuestDocuments : ToolbarState
+    data object Trash : ToolbarState
     data object None : ToolbarState
 }
 
@@ -108,6 +110,14 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     private var refreshListener: RefreshListener? = null
+
+    private val mainPagerFragment: IMainPagerFragment? by lazy {
+        requireActivity().supportFragmentManager
+            .fragments
+            .filterIsInstance<IMainPagerFragment>()
+            .firstOrNull()
+    }
+
 
     override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onEditorActivityResult(requestCode, resultCode, data)
@@ -625,18 +635,32 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                             }.let { resources.getQuantityText(it, state.lifetime.value) }
                         ),
                         drawable = lib.toolkit.base.R.drawable.ic_expiring,
+                        drawableTint = null
                     )
                 }
 
                 is ToolbarState.RoomTemplate -> {
                     activity.setToolbarInfo(
                         title = getString(R.string.template_subheader_title),
-                        drawable = R.drawable.ic_template_subheader,
-                        drawablePadding = 12
+                        drawable = R.drawable.ic_template_subheader
                     )
                 }
 
-                ToolbarState.None -> activity.setToolbarInfo(null)
+                is ToolbarState.GuestDocuments -> {
+                    mainPagerFragment?.setToolbarInfo(
+                        title = getString(R.string.rooms_warning_downgrade_to_guest),
+                        drawable = lib.toolkit.base.R.drawable.ic_info_filled
+                    )
+                }
+
+                is ToolbarState.Trash -> {
+                    mainPagerFragment?.setToolbarInfo(getString(R.string.trash_toolbar_info))
+                }
+
+                ToolbarState.None -> {
+                    mainPagerFragment?.setToolbarInfo(null)
+                    activity.setToolbarInfo(null)
+                }
             }
         }
     }

@@ -1,14 +1,17 @@
 package app.editors.manager.ui.fragments.main
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
@@ -40,7 +43,11 @@ import moxy.presenter.InjectPresenter
 interface IMainPagerFragment {
 
     fun setPagerPosition(sectionType: Int, onPageChanged: () -> Unit = {})
-    fun setToolbarInfo(title: String?, drawable: Int? = null)
+    fun setToolbarInfo(
+        title: String?,
+        drawable: Int? = null,
+        @ColorRes drawableTint: Int? = lib.toolkit.base.R.color.colorPrimary
+    )
 }
 
 class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView, View.OnClickListener,
@@ -409,10 +416,20 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     private val activeFragment: Fragment?
         get() = runCatching { adapter?.getActiveFragment(viewBinding?.mainViewPager) }.getOrNull()
 
-    override fun setToolbarInfo(title: String?, drawable: Int?) {
-        viewBinding?.infoLayout?.root?.isVisible = title != null
-        viewBinding?.infoLayout?.infoText?.text = title
-        viewBinding?.infoLayout?.infoText?.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
+    override fun setToolbarInfo(
+        title: String?,
+        drawable: Int?,
+        @ColorRes drawableTint: Int?
+    ) {
+        viewBinding?.infoLayout?.let { layout ->
+            layout.root.isVisible = title != null
+            layout.infoText.text = title
+            layout.infoText.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
+            drawableTint?.let { tint ->
+                TextViewCompat
+                    .setCompoundDrawableTintList(layout.infoText, ColorStateList.valueOf(tint))
+            }
+        }
     }
 
     override fun onClick(view: View?) {

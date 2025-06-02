@@ -18,13 +18,6 @@ class DocsTrashFragment : DocsCloudFragment() {
 
     private val isArchive: Boolean get() = section == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
 
-    private val mainPagerFragment: IMainPagerFragment? by lazy {
-        requireActivity().supportFragmentManager
-            .fragments
-            .filterIsInstance<IMainPagerFragment>()
-            .firstOrNull()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
@@ -104,15 +97,11 @@ class DocsTrashFragment : DocsCloudFragment() {
     override fun onResume() {
         super.onResume()
         presenter.isTrashMode = true
-        if (!isArchive) {
-            mainPagerFragment?.setToolbarInfo(getString(R.string.trash_toolbar_info))
-        }
     }
 
     override fun onPause() {
         super.onPause()
         presenter.isTrashMode = false
-        mainPagerFragment?.setToolbarInfo(null)
     }
 
     override fun getFilters(): Boolean {

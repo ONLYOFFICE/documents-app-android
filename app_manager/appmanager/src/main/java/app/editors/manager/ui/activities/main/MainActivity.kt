@@ -5,12 +5,15 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
+import androidx.core.widget.TextViewCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
@@ -81,7 +84,7 @@ interface IMainActivity {
     fun setToolbarInfo(
         title: String?,
         drawable: Int? = null,
-        drawablePadding: Int? = null
+        @ColorRes drawableTint: Int? = lib.toolkit.base.R.color.colorPrimary
     )
 }
 
@@ -628,12 +631,16 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
     override fun setToolbarInfo(
         title: String?,
         drawable: Int?,
-        drawablePadding: Int?
+        @ColorRes drawableTint: Int?
     ) {
-        viewBinding.infoLayout.root.isVisible = title != null
-        viewBinding.infoLayout.infoText.text = title
-        viewBinding.infoLayout.infoText.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
-        viewBinding.infoLayout.infoText.compoundDrawablePadding = drawablePadding ?: 4
+        with(viewBinding.infoLayout) {
+            root.isVisible = title != null
+            infoText.text = title
+            infoText.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
+            drawableTint?.let { tint ->
+                TextViewCompat.setCompoundDrawableTintList(infoText, ColorStateList.valueOf(tint))
+            }
+        }
     }
 
     private fun isNotification(): Boolean =

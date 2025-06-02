@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/infoLayout"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/item_one_line_height"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:visibility="gone">
 
@@ -18,11 +18,13 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="start"
-        android:layout_weight="1"
-        android:drawablePadding="@dimen/default_margin_small"
-        android:gravity="center"
-        android:paddingHorizontal="@dimen/default_margin_medium"
         android:layout_marginStart="@dimen/screen_margin_start_toolbar"
+        android:layout_weight="1"
+        android:drawablePadding="@dimen/screen_margin_start_toolbar"
+        android:padding="@dimen/screen_margin_start_toolbar"
+        android:gravity="center|start"
+        android:maxLines="2"
+        android:paddingHorizontal="@dimen/default_margin_medium"
         tools:drawableStartCompat="@drawable/ic_expiring"
         tools:text="The file lifetime is set to 12 days in this room" />
 
