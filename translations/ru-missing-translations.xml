@@ -33,11 +33,11 @@
     <string name="filling_form_history_complete">Заполнил и отправил свою часть формы. Форма полностью заполнена.</string>
     <string name="filling_form_history_opened">Открыл форму для заполнения</string>
     <string name="filling_form_history_stopped">Заполнение остановлено %s</string>
-    <string name="filling_form_history_submitted">Отправил свою часть. Форма была отправлена ​​следующей роли.</string>
+    <string name="filling_form_history_submitted">Направил свою часть. Форма была отправлена участнику в следующей роли.</string>
     <string name="filling_form_send_finalized">Раздел формы заполнен</string>
-    <string name="filling_form_send_finalized_desc">Форма заполнена всеми ролями и завершена. Она доступна в режиме только для просмотра.</string>
+    <string name="filling_form_send_finalized_desc">Форма заполнена участниками во всех ролях и завершена. Она доступна в режиме только для просмотра.</string>
     <string name="filling_form_send_section_complete">Раздел формы заполнен</string>
-    <string name="filling_form_send_section_complete_desc">Назначенная часть PDF-формы успешно заполнена. Статус заполнения формы можно отслеживать в комнате и через панель «Статус заполнения». Уведомление по электронной почте будет отправлено, как только форма будет полностью заполнена.</string>
+    <string name="filling_form_send_section_complete_desc">Назначенная часть PDF-формы успешно завершена. Статус заполнения формы можно отследить в комнате и через панель статуса заполнения. Уведомление по электронной почте будет отправлено, как только форма будет полностью заполнена.</string>
     <string name="filling_form_stop_filling">Остановить заполнение</string>
     <string name="filling_form_stop_filling_dialog_desc">Вы уверены, что хотите остановить заполнение? После отмены заполнение этой формы возобновить будет невозможно. Заполнение формы будет остановлено на текущем этапе. Файл будет отмечен как \"Остановлено\".</string>
     <string name="filling_form_stop_filling_dialog_title">Остановить заполнение?</string>
