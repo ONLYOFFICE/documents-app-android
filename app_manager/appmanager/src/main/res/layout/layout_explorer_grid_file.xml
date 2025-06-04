@@ -9,8 +9,8 @@
 
         <FrameLayout
             android:id="@+id/preview"
-            android:layout_width="80dp"
-            android:layout_height="95dp"
+            android:layout_width="@dimen/file_thumbnail_width"
+            android:layout_height="@dimen/file_thumbnail_height"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -29,6 +29,8 @@
                 style="@style/Widget.MaterialComponents.CircularProgressIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:indicatorSize="@dimen/image_default_size"
+                app:trackThickness="@dimen/loading_track_thickness"
                 android:layout_gravity="center"
                 android:background="@android:color/transparent"
                 android:indeterminate="true"
@@ -36,65 +38,21 @@
 
         </FrameLayout>
 
-        <ImageView
-            android:id="@+id/fileTypeBadge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="-8dp"
-            android:layout_marginBottom="4dp"
-            android:importantForAccessibility="no"
-            app:layout_constraintBottom_toBottomOf="@id/preview"
-            app:layout_constraintStart_toEndOf="@id/preview"
-            tools:src="@drawable/ic_type_document_badge" />
-
-
         <LinearLayout
-            android:id="@+id/topStatusLayout"
+            android:id="@+id/sideStatusLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/file_grid_badge_start_margin"
-            android:layout_marginTop="@dimen/file_grid_badge_top_margin"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             app:layout_constrainedWidth="true"
-            app:layout_constraintStart_toStartOf="@id/preview"
-            app:layout_constraintTop_toTopOf="@id/preview">
-
-            <app.editors.manager.ui.views.badge.BadgeCardView
-                android:id="@+id/badgeFormStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/default_margin_small"
-                android:visibility="gone"
-                tools:badgeText="Your turn"
-                tools:visibility="visible" />
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/badgeVersionCard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/default_margin_small"
-                android:visibility="gone"
-                app:cardBackgroundColor="@color/colorOnBottomBarInActive"
-                app:cardCornerRadius="4dp"
-                tools:visibility="visible">
-
-                <TextView
-                    android:id="@+id/badgeVersion"
-                    style="@style/Widget.Common.TextView.Micro"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:includeFontPadding="false"
-                    android:paddingHorizontal="@dimen/default_margin_small"
-                    android:paddingVertical="@dimen/default_margin_micro"
-                    android:textColor="@color/colorOnPrimary"
-                    tools:text="V.5" />
-
-            </androidx.cardview.widget.CardView>
+            android:layout_marginStart="@dimen/default_margin_small"
+            app:layout_constraintStart_toEndOf="@id/statusLayout"
+            app:layout_constraintTop_toTopOf="@id/statusLayout">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/badgeNewCard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/default_margin_small"
                 app:cardBackgroundColor="@color/colorSecondary"
                 app:cardCornerRadius="4dp"
                 app:cardElevation="4dp"
@@ -114,49 +72,68 @@
 
             </androidx.cardview.widget.CardView>
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/badgeVersionCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/default_margin_small"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/colorOnBottomBarInActive"
+                app:cardCornerRadius="4dp">
+
+                <TextView
+                    android:id="@+id/badgeVersion"
+                    style="@style/Widget.Common.TextView.Micro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:includeFontPadding="false"
+                    android:paddingHorizontal="@dimen/default_margin_small"
+                    android:paddingVertical="@dimen/default_margin_micro"
+                    android:textColor="@color/colorOnPrimary"
+                    tools:text="V.5" />
+
+            </androidx.cardview.widget.CardView>
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/statusLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@id/topStatusLayout"
-            android:layout_marginTop="@dimen/default_margin_small"
-            android:layout_marginEnd="@dimen/default_margin_small"
+            app:layout_constraintStart_toStartOf="@id/preview"
+            android:layout_marginStart="@dimen/file_grid_status_margin"
+            android:layout_marginTop="@dimen/file_grid_status_margin"
             android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@id/topStatusLayout">
+            app:layout_constraintTop_toTopOf="@id/preview">
+
+            <ImageView
+                android:id="@+id/editing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_edit_circle"
+                android:visibility="gone"
+                android:layout_marginBottom="@dimen/default_margin_small"
+                app:layout_constraintEnd_toStartOf="@id/preview"
+                app:layout_constraintTop_toBottomOf="@id/favorite"/>
 
             <ImageView
                 android:id="@+id/favorite"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/default_margin_small"
                 android:importantForAccessibility="no"
                 android:visibility="gone"
-                android:src="@drawable/ic_favorites_fill"
-                app:layout_constraintVertical_chainStyle="packed"
-                app:tint="@color/colorPrimary" />
+                android:src="@drawable/ic_favorites_circle"
+                app:layout_constraintVertical_chainStyle="packed"/>
 
             <ImageView
                 android:id="@+id/locked"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/default_margin_small"
-                android:src="@drawable/ic_file_lock"
+                android:src="@drawable/ic_file_lock_circle"
                 android:visibility="gone"
-                app:tint="@color/colorPrimary"
                 tools:ignore="ContentDescription"/>
-
-            <ImageView
-                android:id="@+id/editing"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:importantForAccessibility="no"
-                android:src="@drawable/ic_fab_edit_mode"
-                android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@id/preview"
-                app:layout_constraintTop_toBottomOf="@id/favorite"
-                app:tint="@color/colorPrimary" />
 
             <ImageView
                 android:id="@+id/customFilter"
@@ -164,15 +141,38 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_custom_filter"
                 android:visibility="gone"
+                android:layout_marginStart="@dimen/default_margin_micro"
                 tools:ignore="ContentDescription"/>
 
         </LinearLayout>
+
+        <app.editors.manager.ui.views.badge.BadgeCardView
+            android:id="@+id/badgeFormStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/file_grid_status_margin"
+            android:layout_marginBottom="@dimen/file_grid_status_margin"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@id/preview"
+            app:layout_constraintBottom_toBottomOf="@id/preview"
+            tools:badgeText="Your turn"/>
+
+        <ImageView
+            android:id="@+id/fileTypeBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/file_grid_badge_margin"
+            android:layout_marginBottom="@dimen/default_margin_small"
+            android:importantForAccessibility="no"
+            app:layout_constraintBottom_toBottomOf="@id/preview"
+            app:layout_constraintStart_toEndOf="@id/preview"
+            tools:src="@drawable/ic_type_document_badge" />
 
         <ImageView
             android:id="@+id/selectIcon"
             style="@style/ExplorerItemLayout.SelectIcon"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/topStatusLayout"
+            app:layout_constraintTop_toTopOf="@id/sideStatusLayout"
             tools:ignore="ContentDescription" />
 
         <com.google.android.material.imageview.ShapeableImageView
