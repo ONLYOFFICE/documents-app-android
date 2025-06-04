@@ -9,17 +9,83 @@ val targetLocales = listOf(
     "values-pt-rBR", "values-lo", "values-pl", "values-hy", "values-si"
 )
 
+/**
+ * Extracts the application version from build configuration files.
+ * This version will be used in translation comments to track when strings were added.
+ * The code tries multiple patterns and files to find version information.
+ */
+val appVersion = try {
+    val rootProject = project.rootProject
+    val buildGradle = file("${rootProject.projectDir}/appmanager/build.gradle.kts")
+    if (buildGradle.exists()) {
+        val content = buildGradle.readText()
+        val patterns = listOf(
+            "versionName\\s+[\"']([^\"']+)[\"']",     // versionName "1.2.3"
+            "versionName\\s+=\\s+[\"']([^\"']+)[\"']", // versionName = "1.2.3"
+            "versionName\\s+([\\d.]+)",               // versionName 1.2.3
+            "ext\\.versionName\\s*=\\s*[\"']([^\"']+)[\"']" // ext.versionName = "1.2.3"
+        )
+
+        var version: String? = null
+        for (pattern in patterns) {
+            val match = pattern.toRegex().find(content)
+            if (match != null && match.groupValues.size > 1) {
+                version = match.groupValues[1]
+                break
+            }
+        }
+
+        if (version == null) {
+            val gradleProperties = file("${rootProject.projectDir}/gradle.properties")
+            if (gradleProperties.exists()) {
+                val propertiesContent = gradleProperties.readText()
+                val propertyMatch = "version\\s*=\\s*([\\d.]+)".toRegex().find(propertiesContent)
+                if (propertyMatch != null && propertyMatch.groupValues.size > 1) {
+                    version = propertyMatch.groupValues[1]
+                }
+            }
+        }
+
+        version ?: "unknown"
+    } else {
+        println("Warning: app/build.gradle not found")
+        "unknown"
+    }
+} catch (e: Exception) {
+    println("Error retrieving version: ${e.message}")
+    "unknown"
+}
+
+/**
+ * Task: extractTranslations
+ *
+ * Extracts untranslated strings from all project modules and creates XML files with missing translations.
+ * The task analyzes all string resources in the project modules and identifies strings that are present
+ * in the base locale but missing in target locales. It generates XML files for each language with all
+ * missing strings, organized by module.
+ *
+ * Options:
+ * - fillWithOriginals: When true, missing translations are pre-filled with the original text.
+ *                     When false, empty strings are generated. Default is true.
+ *
+ * Output:
+ * - Creates [lang]-missing-translations.xml files in the translations directory
+ * - Creates original-strings.xml with all original strings for reference
+ */
 tasks.register("extractTranslations") {
     group = "translations"
     description = "Extracts untranslated strings from all project modules"
 
+    // Добавляем свойство для управления заполнением
+    val fillWithOriginals = project.findProperty("fillWithOriginals")?.toString()?.toBoolean() ?: true
+
     doLast {
+        println("Extracting untranslated strings. Fill with original text: $fillWithOriginals")
 
         val outputDir = "${project.buildDir}/../../translations"
         file(outputDir).mkdirs()
 
         val missingTranslations = mutableMapOf<String, MutableMap<String, MutableMap<String, String>>>()
-
         val originalTexts = mutableMapOf<String, MutableMap<String, String>>()
 
         targetLocales.forEach { locale ->
@@ -39,13 +105,11 @@ tasks.register("extractTranslations") {
                 return@forEach
             }
 
-            // Check if base strings.xml exists???
             val baseStringsFile = file("${resDir}/$baseLocale/strings.xml")
             val baseTranslatableFile = file("${resDir}/$baseLocale/translatable.xml")
 
             val baseStrings = mutableMapOf<String, String>()
 
-            // Collect strings from base files
             if (baseStringsFile.exists()) {
                 baseStrings.putAll(parseStringXml(baseStringsFile))
                 println("  - Found strings.xml file with ${baseStrings.size} strings")
@@ -70,11 +134,10 @@ tasks.register("extractTranslations") {
                 val targetStringsDir = file("${resDir}/$targetLocale")
 
                 if (!targetStringsDir.exists()) {
-                    // If target language directory doesn't exist, add all keys
                     val moduleStrings = missingTranslations[normalizedLocale]!!.getOrPut(subproject.name) { mutableMapOf() }
 
-                    baseStrings.forEach { (key, _) ->
-                        moduleStrings[key] = ""
+                    baseStrings.forEach { (key, value) ->
+                        moduleStrings[key] = if (fillWithOriginals) value else ""
                     }
                     println("  - $targetLocale: localization directory is missing, added ${baseStrings.size} strings")
                     return@forEach
@@ -94,9 +157,9 @@ tasks.register("extractTranslations") {
 
                 val moduleStrings = missingTranslations[normalizedLocale]!!.getOrPut(subproject.name) { mutableMapOf() }
 
-                baseStrings.forEach { (key, _) ->
+                baseStrings.forEach { (key, value) ->
                     if (!targetStrings.containsKey(key)) {
-                        moduleStrings[key] = ""
+                        moduleStrings[key] = if (fillWithOriginals) value else ""
                     }
                 }
 
@@ -105,7 +168,6 @@ tasks.register("extractTranslations") {
         }
 
         missingTranslations.forEach { (lang, moduleMap) ->
-            // Skip languages without untranslated strings
             if (moduleMap.isEmpty() || moduleMap.all { it.value.isEmpty() }) {
                 println("No untranslated strings for language $lang")
                 return@forEach
@@ -124,7 +186,8 @@ tasks.register("extractTranslations") {
                     writer.println("\n    <!-- Module: $module - ${strings.size} strings -->")
 
                     strings.keys.sorted().forEach { key ->
-                        writer.println("    <string name=\"$key\"></string>")
+                        val value = strings[key]!!.replace("\"", "\\\"").replace("'", "\\'")
+                        writer.println("    <string name=\"$key\">$value</string>")
                     }
                 }
 
@@ -161,13 +224,31 @@ tasks.register("extractTranslations") {
     }
 }
 
+/**
+ * Task: importXmlTranslations
+ *
+ * Imports translations from XML files back into project modules.
+ * The task reads translation files generated by extractTranslations, and adds the translated strings
+ * to the appropriate resource files in each module. It preserves existing translations and appends
+ * new ones with version and date comments.
+ *
+ * The task handles:
+ * - Detection of proper target file (strings.xml or translatable.xml)
+ * - Adding version and date information in XML comments
+ * - Creating new resource files if they don't exist
+ * - Appending to existing files while preserving their content
+ *
+ * Input:
+ * - XML files in the translations directory with naming pattern [lang]-missing-translations.xml
+ */
 tasks.register("importXmlTranslations") {
     group = "translations"
     description = "Imports translations from XML files back into project modules"
 
     doLast {
-        val inputDir = "${project.buildDir}/translations"
+        val inputDir = "${project.buildDir}/../../translations"
         val translationsDir = file(inputDir)
+
 
         if (!translationsDir.exists()) {
             println("Translations directory not found: $inputDir")
@@ -184,6 +265,7 @@ tasks.register("importXmlTranslations") {
         }
 
         println("Found ${xmlFiles.size} translation files")
+        println("Current app version: $appVersion")
 
         xmlFiles.forEach { xmlFile ->
             val lang = xmlFile.name.substringBefore("-missing-translations.xml")
@@ -222,12 +304,6 @@ tasks.register("importXmlTranslations") {
 
                 val fileToUpdate = if (useTranslatableFile) targetTranslatableFile else targetFile
 
-                val existingStrings = if (fileToUpdate.exists()) {
-                    parseStringXml(fileToUpdate).toMutableMap()
-                } else {
-                    mutableMapOf()
-                }
-
                 val stringsToAdd = strings.filter { (_, value) -> value.isNotEmpty() }
 
                 if (stringsToAdd.isEmpty()) {
@@ -235,18 +311,44 @@ tasks.register("importXmlTranslations") {
                     return@forEach
                 }
 
-                existingStrings.putAll(stringsToAdd)
+                if (fileToUpdate.exists()) {
+                    val existingContent = fileToUpdate.readText()
 
-                fileToUpdate.printWriter().use { writer ->
-                    writer.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
-                    writer.println("<resources>")
+                    val closingTagIndex = existingContent.lastIndexOf("</resources>")
 
-                    existingStrings.keys.sorted().forEach { key ->
-                        val value = existingStrings[key]!!
-                        writer.println("    <string name=\"$key\">$value</string>")
+                    if (closingTagIndex != -1) {
+                        fileToUpdate.printWriter().use { writer ->
+                            writer.print(existingContent.substring(0, closingTagIndex))
+
+                            val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd")
+                            val currentDate = dateFormat.format(java.util.Date())
+                            writer.println("\n    <!-- Newly added translations (v$appVersion - $currentDate) -->")
+                            stringsToAdd.forEach { (key, value) ->
+                                writer.println("    <string name=\"$key\">$value</string>")
+                            }
+
+                            // Закрываем тег resources
+                            writer.println("</resources>")
+                        }
+                    } else {
+                        println("    - Warning: Could not find closing resources tag in existing file")
+                        return@forEach
                     }
+                } else {
+                    fileToUpdate.printWriter().use { writer ->
+                        writer.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
+                        writer.println("<resources>")
 
-                    writer.println("</resources>")
+                        val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd")
+                        val currentDate = dateFormat.format(java.util.Date())
+                        writer.println("    <!-- Translations added in version $appVersion - $currentDate -->")
+
+                        stringsToAdd.forEach { (key, value) ->
+                            writer.println("    <string name=\"$key\">$value</string>")
+                        }
+
+                        writer.println("</resources>")
+                    }
                 }
 
                 println("    - Updated file: ${fileToUpdate.name} (added ${stringsToAdd.size} strings)")
@@ -257,6 +359,15 @@ tasks.register("importXmlTranslations") {
     }
 }
 
+/**
+ * Helper function: parseModuleTranslations
+ *
+ * Parses an XML file with translations organized by modules.
+ * Extracts strings from files generated by extractTranslations task.
+ *
+ * @param file The XML file to parse
+ * @return A map where keys are module names and values are maps of string key-value pairs
+ */
 fun parseModuleTranslations(file: File): Map<String, Map<String, String>> {
     val result = mutableMapOf<String, MutableMap<String, String>>()
     var currentModule = ""
@@ -287,6 +398,15 @@ fun parseModuleTranslations(file: File): Map<String, Map<String, String>> {
     return result
 }
 
+/**
+ * Helper function: parseStringXml
+ *
+ * Parses a standard Android string resource XML file.
+ * Extracts all string resources with their keys and values.
+ *
+ * @param file The Android string resource XML file to parse
+ * @return A map of string resource names to their values
+ */
 fun parseStringXml(file: File): Map<String, String> {
     val result = mutableMapOf<String, String>()
     val content = file.readText()
