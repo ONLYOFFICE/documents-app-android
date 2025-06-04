@@ -33,10 +33,10 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
+import app.documents.core.network.common.NetworkResult
 import app.editors.manager.R
 import app.editors.manager.managers.tools.BaseEvent
 import app.editors.manager.managers.utils.RoomUtils
-import app.editors.manager.mvp.models.ui.ResultUi
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.fragments.template.settings.PublicBlock
 import app.editors.manager.ui.fragments.template.settings.SelectedMembersList
@@ -95,7 +95,7 @@ fun TemplateInfoScreen(
 @Composable
 private fun TemplateInfoScreenContent(
     state: TemplateInfoState,
-    loadingStatus: ResultUi<*>,
+    loadingStatus: NetworkResult<*>,
     currentUser: User,
     onCreateRoom: () -> Unit,
     navigateToAccessSettings: () -> Unit,
@@ -146,7 +146,7 @@ private fun TemplateInfoScreenContent(
 @Composable
 private fun TemplateInfoScreenContent(
     templateState: TemplateInfoState,
-    loadingStatus: ResultUi<*>,
+    loadingStatus: NetworkResult<*>,
     currentUser: User,
     onCreateRoom: () -> Unit
 ) {
@@ -156,13 +156,13 @@ private fun TemplateInfoScreenContent(
             modifier = Modifier.weight(1f)
         ) { state ->
             when (state) {
-                ResultUi.Loading -> LoadingPlaceholder()
-                is ResultUi.Success -> TemplateInfoScreenContent(
+                NetworkResult.Loading -> LoadingPlaceholder()
+                is NetworkResult.Success -> TemplateInfoScreenContent(
                     templateState.accessSettings,
                     currentUser
                 )
 
-                is ResultUi.Error -> {
+                is NetworkResult.Error -> {
                     PlaceholderView(
                         image = null,
                         title = stringResource(R.string.placeholder_connection),
@@ -268,7 +268,7 @@ private fun TemplateInfoScreenContentPreview() {
                 )
             ),
             currentUser = User(id = "1", displayName = "John"),
-            loadingStatus = ResultUi.Success(Unit),
+            loadingStatus = NetworkResult.Success(Unit),
             onBack = {},
             onCreateRoom = {},
             navigateToAccessSettings = {}

@@ -57,7 +57,7 @@ import retrofit2.Response
 import java.io.InputStream
 import javax.inject.Inject
 import kotlin.coroutines.resume
-import app.documents.core.network.common.Result as NetworkResult
+import app.documents.core.network.common.NetworkResult as NetworkResult
 
 
 data class OpenDocumentResult(
@@ -724,14 +724,14 @@ class CloudFileProvider @Inject constructor(
             }
     }
 
-    fun getVersionHistory(fileId: String): Flow<Result<List<CloudFile>>> = apiFlow {
+    fun getVersionHistory(fileId: String): Flow<NetworkResult<List<CloudFile>>> = apiFlow {
         val response = managerService.getVersionHistory(fileId)
         val files = response.body()?.response
         if (response.isSuccessful && files != null) files
         else throw HttpException(response)
     }
 
-    fun restoreVersion(fileId: String, version: Int): Flow<Result<Unit>> = apiFlow {
+    fun restoreVersion(fileId: String, version: Int): Flow<NetworkResult<Unit>> = apiFlow {
         val response = managerService.restoreVersion(fileId, version)
         if (!response.isSuccessful) throw HttpException(response)
     }
@@ -740,7 +740,7 @@ class CloudFileProvider @Inject constructor(
         fileId: String,
         version: Int,
         comment: String
-    ): Flow<Result<Unit>> = apiFlow {
+    ): Flow<NetworkResult<Unit>> = apiFlow {
         val body = EditCommentRequest(version, comment)
         val response = managerService.updateVersionComment(fileId, body)
         if (!response.isSuccessful) throw HttpException(response)
@@ -749,7 +749,7 @@ class CloudFileProvider @Inject constructor(
     fun deleteVersion(
         fileId: String,
         version: Int
-    ): Flow<Result<Unit>> = apiFlow {
+    ): Flow<NetworkResult<Unit>> = apiFlow {
         val body = DeleteVersionRequest(fileId, arrayOf(version))
         val response = managerService.deleteVersion(body)
         if (!response.isSuccessful) throw HttpException(response)
@@ -771,8 +771,10 @@ class CloudFileProvider @Inject constructor(
             .asResult()
     }
 
-    private fun <T> apiFlow(apiCall: suspend () -> T): Flow<Result<T>> = flow {
-        val result = kotlin.runCatching { apiCall() }
+    private fun <T> apiFlow(apiCall: suspend () -> T): Flow<NetworkResult<T>> = flow {
+        val result = apiCall()
         emit(result)
-    }.flowOn(Dispatchers.IO)
+    }
+        .flowOn(Dispatchers.IO)
+        .asResult()
 }

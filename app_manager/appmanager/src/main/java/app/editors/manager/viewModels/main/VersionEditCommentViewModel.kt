@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.toRoute
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.providers.CloudFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -59,7 +60,7 @@ class VersionEditCommentViewModel(
                     .onStart { _uiState.update { it.copy(isLoading = true) } }
                     .onCompletion { _uiState.update { it.copy(isLoading = false) } }
                     .collect { result ->
-                        if (result.isSuccess) sendEvent(EditCommentEvent.UpdateHistory)
+                        if (result is NetworkResult.Success) sendEvent(EditCommentEvent.UpdateHistory)
                         else sendMessage(R.string.error_edit_comment)
                     }
             }

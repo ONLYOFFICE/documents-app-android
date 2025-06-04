@@ -12,7 +12,7 @@ import app.documents.core.model.login.request.RequestRegister
 import app.documents.core.model.login.request.RequestSignIn
 import app.documents.core.model.login.request.RequestValidatePortal
 import app.documents.core.model.login.response.ResponseRegisterPortal
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.CloudLoginDataSource
@@ -67,14 +67,14 @@ internal class CloudLoginRepositoryImpl(
         }.catch { cause -> emit(PortalResult.Error(cause)) }
     }
 
-    override suspend fun logOut(accountId: String): Flow<Result<*>> {
+    override suspend fun logOut(accountId: String): Flow<NetworkResult<*>> {
         return flowOf(accountRepository.logOut(accountId))
             .onEach(::unsubscribePush)
             .flowOn(Dispatchers.IO)
             .asResult()
     }
 
-    override suspend fun deleteAccounts(vararg accountIds: String): Flow<Result<List<CloudAccount>>> {
+    override suspend fun deleteAccounts(vararg accountIds: String): Flow<NetworkResult<List<CloudAccount>>> {
         return flowOf(accountRepository.deleteAccounts(accountIds, ::unsubscribePush))
             .flowOn(Dispatchers.IO)
             .asResult()
@@ -101,7 +101,7 @@ internal class CloudLoginRepositoryImpl(
         )
     }
 
-    override suspend fun signInWithSSO(accessToken: String): Flow<Result<CloudAccount>> {
+    override suspend fun signInWithSSO(accessToken: String): Flow<NetworkResult<CloudAccount>> {
         return flowOf(onSuccessResponse(RequestSignIn(accessToken = accessToken), Token(token = accessToken)))
             .asResult()
     }
@@ -128,7 +128,7 @@ internal class CloudLoginRepositoryImpl(
         ).flowOn(Dispatchers.IO)
     }
 
-    override suspend fun registerPersonal(email: String, language: String): Flow<Result<*>> {
+    override suspend fun registerPersonal(email: String, language: String): Flow<NetworkResult<*>> {
         return flowOf(cloudLoginDataSource.registerPersonalPortal(RequestRegister(email, language)))
             .flowOn(Dispatchers.IO)
             .asResult()
@@ -175,13 +175,13 @@ internal class CloudLoginRepositoryImpl(
         password: String,
         accessToken: String,
         provider: String
-    ): Flow<Result<*>> {
+    ): Flow<NetworkResult<*>> {
         return flowOf(cloudLoginDataSource.sendSms(userName, password, provider, accessToken))
             .flowOn(Dispatchers.IO)
             .asResult()
     }
 
-    override suspend fun passwordRecovery(portal: String, email: String): Flow<Result<*>> {
+    override suspend fun passwordRecovery(portal: String, email: String): Flow<NetworkResult<*>> {
         return flowOf(cloudLoginDataSource.forgotPassword(portal, email))
             .flowOn(Dispatchers.IO)
             .asResult()
@@ -192,13 +192,13 @@ internal class CloudLoginRepositoryImpl(
             .flowOn(Dispatchers.IO)
     }
 
-    override suspend fun changeNumber(requestNumber: RequestNumber): Flow<Result<*>> {
+    override suspend fun changeNumber(requestNumber: RequestNumber): Flow<NetworkResult<*>> {
         return flowOf(cloudLoginDataSource.changeNumber(requestNumber))
             .flowOn(Dispatchers.IO)
             .asResult()
     }
 
-    override suspend fun validatePortal(portalName: String): Flow<Result<*>> {
+    override suspend fun validatePortal(portalName: String): Flow<NetworkResult<*>> {
         return flow {
             cloudLoginDataSource.validatePortal(RequestValidatePortal(portalName))
             emit(null)

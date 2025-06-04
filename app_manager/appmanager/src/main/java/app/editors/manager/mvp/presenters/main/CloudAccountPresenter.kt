@@ -5,7 +5,7 @@ import android.os.Bundle
 import app.documents.core.login.CheckLoginResult
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.PortalProvider
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
@@ -79,8 +79,8 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 .collect { result ->
                     viewState.onHideDialog()
                     when (result) {
-                        is Result.Error -> fetchError(result.exception)
-                        is Result.Success -> {
+                        is NetworkResult.Error -> fetchError(result.exception)
+                        is NetworkResult.Success -> {
                             App.getApp().refreshAppComponent(context)
                             withContext(Dispatchers.Main) {
                                 viewState.onRender(
@@ -88,6 +88,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                                 )
                             }
                         }
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }
@@ -100,13 +101,14 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 .collect { result ->
                     viewState.onHideDialog()
                     when (result) {
-                        is Result.Error -> fetchError(result.exception)
-                        is Result.Success -> {
+                        is NetworkResult.Error -> fetchError(result.exception)
+                        is NetworkResult.Success -> {
                             withContext(Dispatchers.Main) {
                                 selection?.forEach { id -> deleteFromAccountProvider(id) }
-                                viewState.onRender(CloudAccountState.AccountLoadedState(result.result))
+                                viewState.onRender(CloudAccountState.AccountLoadedState(result.data))
                             }
                         }
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }
@@ -119,13 +121,14 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 .collect { result ->
                     viewState.onHideDialog()
                     when (result) {
-                        is Result.Error -> fetchError(result.exception)
-                        is Result.Success -> {
+                        is NetworkResult.Error -> fetchError(result.exception)
+                        is NetworkResult.Success -> {
                             withContext(Dispatchers.Main) {
                                 deleteFromAccountProvider(accountId)
-                                viewState.onRender(CloudAccountState.AccountLoadedState(result.result))
+                                viewState.onRender(CloudAccountState.AccountLoadedState(result.data))
                             }
                         }
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }

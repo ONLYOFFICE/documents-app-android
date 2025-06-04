@@ -5,7 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import app.documents.core.manager.ProgressRequestBody
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.*
@@ -67,7 +67,7 @@ class WebDavFileProvider @Inject constructor(
         cloudFile: CloudFile,
         editType: EditType,
         canBeShared: Boolean
-    ): Flow<Result<FileOpenResult>> {
+    ): Flow<NetworkResult<FileOpenResult>> {
         return flow {
             emit(FileOpenResult.Loading())
             emit(

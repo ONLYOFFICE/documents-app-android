@@ -10,6 +10,8 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import app.documents.core.network.common.NetworkResult
+import app.documents.core.network.common.mapResult
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.providers.CloudFileProvider
 import app.editors.manager.R
@@ -21,8 +23,6 @@ import app.editors.manager.managers.tools.EventSender
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.mvp.models.ui.FileVersionUi
-import app.editors.manager.mvp.models.ui.ResultUi
-import app.editors.manager.mvp.models.ui.asFlowResultUI
 import app.editors.manager.mvp.models.ui.toFileVersionUi
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import kotlinx.coroutines.delay
@@ -46,7 +46,7 @@ sealed interface DialogState {
 }
 
 data class VersionHistoryState(
-    val historyResult: ResultUi<Map<String, List<FileVersionUi>>> = ResultUi.Loading,
+    val historyResult: NetworkResult<Map<String, List<FileVersionUi>>> = NetworkResult.Loading,
     val currentItem: FileVersionUi? = null,
     val dialogState: DialogState = DialogState.Hidden,
     val isRefreshing: Boolean = false
@@ -89,7 +89,7 @@ class VersionHistoryViewModel(
 
     private suspend fun getVersionHistory() {
         cloudFileProvider.getVersionHistory(fileId)
-            .asFlowResultUI(::mapResult).collect { result ->
+            .mapResult(::mapResult).collect { result ->
                 _uiState.update { it.copy(
                     historyResult = result,
                     isRefreshing = false
@@ -167,12 +167,12 @@ class VersionHistoryViewModel(
     private fun handleVersionAction(
         successMsgId: Int,
         errorMsgId: Int,
-        apiCall: (FileVersionUi) -> Flow<Result<Unit>>
+        apiCall: (FileVersionUi) -> Flow<NetworkResult<Unit>>
     ){
         viewModelScope.launch {
             uiState.value.currentItem?.let { item ->
                 apiCall(item).collect { result ->
-                    if (result.isSuccess) onRefresh(msgRes = successMsgId)
+                    if (result is NetworkResult.Success) onRefresh(msgRes = successMsgId)
                     else sendMessage(errorMsgId)
                 }
             }

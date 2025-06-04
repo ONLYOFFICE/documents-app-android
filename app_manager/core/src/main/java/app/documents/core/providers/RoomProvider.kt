@@ -8,7 +8,7 @@ import app.documents.core.model.cloud.Order
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
@@ -93,11 +93,11 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .flatMap { if (it.isSuccessful) Observable.just(it.body()) else throw HttpException(it) }
     }
 
-    fun lockFile(id: String, lock: Boolean): Flow<Result<Unit>> = handleUnitResponse {
+    fun lockFile(id: String, lock: Boolean): Flow<NetworkResult<Unit>> = handleUnitResponse {
         roomService.lockFile(id = id, body = LockFileRequest(lock))
     }
 
-    fun enableCustomFilter(id: String, enable: Boolean): Flow<Result<Unit>> = handleUnitResponse {
+    fun enableCustomFilter(id: String, enable: Boolean): Flow<NetworkResult<Unit>> = handleUnitResponse {
         roomService.enableCustomFilter(id = id, body = CustomFilterRequest(enable))
     }
 
@@ -412,7 +412,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         }
     }
 
-    fun duplicate(roomId: String): Flow<Result<Int>> {
+    fun duplicate(roomId: String): Flow<NetworkResult<Int>> {
         return flow {
             val response =
                 roomService.duplicate(RequestBatchOperation().apply { folderIds = listOf(roomId) })
@@ -429,7 +429,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         }.asResult()
     }
 
-    fun muteRoomNotifications(roomId: String, muted: Boolean): Flow<Result<List<String>>> {
+    fun muteRoomNotifications(roomId: String, muted: Boolean): Flow<NetworkResult<List<String>>> {
         return flow {
             if (!roomId.isDigitsOnly()) throw IllegalArgumentException()
             val rooms = roomService.muteNotifications(
@@ -444,7 +444,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .asResult()
     }
 
-    fun getRoomsQuota(): Flow<Result<QuotaData>> {
+    fun getRoomsQuota(): Flow<NetworkResult<QuotaData>> {
         return flow {
             val quota = roomService.getQuota().response.roomsQuota
             emit(quota)
@@ -476,7 +476,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         if (!response.isSuccessful) throw HttpException(response)
     }
 
-    fun getRoomInfo(roomId: String): Flow<Result<CloudFolder>> {
+    fun getRoomInfo(roomId: String): Flow<NetworkResult<CloudFolder>> {
         return flow {
             val response = roomService.getRoomInfo(roomId)
             emit(response.response)
@@ -485,7 +485,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .asResult()
     }
 
-    fun order(itemList: List<Order>): Flow<Result<*>> {
+    fun order(itemList: List<Order>): Flow<NetworkResult<*>> {
         return flow {
             val response = roomService.order(RequestOrder(itemList))
             if (!response.isSuccessful) throw HttpException(response)
@@ -495,7 +495,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .asResult()
     }
 
-    fun reorder(roomId: String): Flow<Result<*>> {
+    fun reorder(roomId: String): Flow<NetworkResult<*>> {
         return flow {
             val response = roomService.reorder(roomId)
             if (!response.isSuccessful) throw HttpException(response)
@@ -505,7 +505,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .asResult()
     }
 
-    fun exportIndex(roomId: String): Flow<Result<ExportIndexOperation>> {
+    fun exportIndex(roomId: String): Flow<NetworkResult<ExportIndexOperation>> {
         return flow {
             val startResponse = roomService.startIndexExport(roomId)
             if (!startResponse.isSuccessful) throw HttpException(startResponse)
@@ -524,7 +524,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
     /**
      * @return id of room that is accessed via link
      * */
-    fun authRoomViaLink(requestToken: String, password: String): Flow<Result<String?>> {
+    fun authRoomViaLink(requestToken: String, password: String): Flow<NetworkResult<String?>> {
         return flow {
             val response = roomService
                 .authRoomViaLink(requestToken, RequestRoomAuthViaLink(password))
@@ -538,7 +538,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
     fun getRoomTemplates(
         filter: Map<String, String> = mapOf()
-    ): Flow<Result<List<CloudFolder>>> = flow {
+    ): Flow<NetworkResult<List<CloudFolder>>> = flow {
         val options = filter.plus("searchArea" to "Templates")
         val response = roomService.getAllTemplates(options)
         val explorer = response.body()?.response
@@ -557,7 +557,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         color: String? = null,
         logoSize: Size? = null,
         logoUrl: String? = null,
-    ): Flow<Result<String>> = flow {
+    ): Flow<NetworkResult<String>> = flow {
         try {
             roomService.createRoomFromTemplate(
                 RequestCreateRoomFromTemplate(
@@ -572,9 +572,9 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             )
 
             val resultId = pollCreationStatus(isRoom = true)
-            emit(Result.Success(resultId))
+            emit(NetworkResult.Success(resultId))
         } catch (e: Exception) {
-            emit(Result.Error(e))
+            emit(NetworkResult.Error(e))
         }
     }
 
@@ -591,7 +591,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         logoUrl: String? = null,
         share: List<String>? = null,
         groups: List<String>? = null
-    ): Flow<Result<String>> = flow {
+    ): Flow<NetworkResult<String>> = flow {
         try {
             roomService.createTemplate(
                 RequestCreateTemplate(
@@ -608,9 +608,9 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 )
             )
             val resultId = pollCreationStatus(isRoom = false)
-            emit(Result.Success(resultId))
+            emit(NetworkResult.Success(resultId))
         } catch (e: Exception) {
-            emit(Result.Error(e))
+            emit(NetworkResult.Error(e))
         }
     }
 
@@ -654,7 +654,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         throw TimeoutException()
     }
 
-    fun getTemplatePublic(templateId: String): Flow<Result<Boolean>> {
+    fun getTemplatePublic(templateId: String): Flow<NetworkResult<Boolean>> {
         return flow {
             val public = roomService.getTemplatePublic(templateId).response
             emit(public)
@@ -663,7 +663,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .asResult()
     }
 
-    fun getTemplateMembers(templateId: String): Flow<Result<List<Share>>> {
+    fun getTemplateMembers(templateId: String): Flow<NetworkResult<List<Share>>> {
         return flow {
             val members = roomService.getTemplateMembers(templateId).response
             emit(members)
@@ -672,11 +672,11 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .asResult()
     }
 
-    fun updateTemplatePublic(id: String, public: Boolean): Flow<Result<Unit>> = handleUnitResponse {
+    fun updateTemplatePublic(id: String, public: Boolean): Flow<NetworkResult<Unit>> = handleUnitResponse {
         roomService.updateTemplatePublic(RequestUpdatePublic(id, public))
     }
 
-    fun updateTemplateUserAccess(templateId: String, users: List<Member>): Flow<Result<Unit>> =
+    fun updateTemplateUserAccess(templateId: String, users: List<Member>): Flow<NetworkResult<Unit>> =
         handleUnitResponse {
             val invitations = users.map { UserIdInvitation(id = it.id, access = Access.Read.code) }
             val body = RequestRoomShare(invitations)
@@ -690,7 +690,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         tags: List<String>? = null,
         logoSize: Size? = null,
         logoUrl: String? = null
-    ): Flow<Result<Unit>> = handleUnitResponse {
+    ): Flow<NetworkResult<Unit>> = handleUnitResponse {
         val logo = logoUrl?.let { url ->
             logoSize?.let { size ->
                 RequestSetLogo(
@@ -712,7 +712,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         )
     }
 
-    private fun <T> handleUnitResponse(apiCall: suspend () -> Response<T>): Flow<Result<Unit>> = flow {
+    private fun <T> handleUnitResponse(apiCall: suspend () -> Response<T>): Flow<NetworkResult<Unit>> = flow {
         val response = apiCall()
         if (!response.isSuccessful) throw HttpException(response)
         emit(Unit)

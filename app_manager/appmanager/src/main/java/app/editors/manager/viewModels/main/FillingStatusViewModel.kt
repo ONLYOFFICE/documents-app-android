@@ -2,7 +2,7 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.FormRole
 import app.documents.core.providers.CloudFileProvider
@@ -56,11 +56,12 @@ class FillingStatusViewModel(
                 .collect { result ->
                     _state.update { it.copy(requestLoading = false) }
                     when (result) {
-                        is Result.Error -> _effect.emit(FillingStatusEffect.Error)
-                        is Result.Success<*> -> {
+                        is NetworkResult.Error -> _effect.emit(FillingStatusEffect.Error)
+                        is NetworkResult.Success<*> -> {
                             fetchFormInfo()
                             fetchRoles()
                         }
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }
@@ -70,15 +71,17 @@ class FillingStatusViewModel(
         cloudFileProvider.getFileInfo(formInfo.id)
             .collect { result ->
                 when (result) {
-                    is Result.Success<CloudFile> -> {
+                    is NetworkResult.Success<CloudFile> -> {
                         _state.update {
-                            it.copy(formInfo = result.result)
+                            it.copy(formInfo = result.data)
                         }
                     }
 
-                    is Result.Error -> {
+                    is NetworkResult.Error -> {
                         _effect.emit(FillingStatusEffect.Error)
                     }
+
+                    is NetworkResult.Loading -> Unit
                 }
             }
 
@@ -88,8 +91,8 @@ class FillingStatusViewModel(
         cloudFileProvider.getFillingStatus(formInfo.id)
             .collect { result ->
                 when (result) {
-                    is Result.Success<List<FormRole>> -> {
-                        val roles = result.result
+                    is NetworkResult.Success<List<FormRole>> -> {
+                        val roles = result.data
                         _state.update {
                             it.copy(
                                 loading = false,
@@ -99,9 +102,11 @@ class FillingStatusViewModel(
                         }
                     }
 
-                    is Result.Error -> {
+                    is NetworkResult.Error -> {
                         _effect.emit(FillingStatusEffect.Error)
                     }
+
+                    is NetworkResult.Loading -> Unit
                 }
             }
     }

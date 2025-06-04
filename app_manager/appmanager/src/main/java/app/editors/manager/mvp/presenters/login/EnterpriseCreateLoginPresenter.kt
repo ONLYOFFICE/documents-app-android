@@ -4,7 +4,7 @@ import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.login.User
 import app.documents.core.model.login.request.RequestSignIn
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
@@ -94,12 +94,13 @@ class EnterpriseCreateLoginPresenter : BaseLoginPresenter<EnterpriseCreateSignIn
             ).asResult()
                 .collect { result ->
                     when (result) {
-                        is Result.Success -> {
+                        is NetworkResult.Success -> {
                             FirebaseUtils.addAnalyticsCreatePortal(cloudPortal?.url.orEmpty(), email)
                             App.getApp().refreshLoginComponent(cloudPortal)
                             signInWithEmail(email, password)
                         }
-                        is Result.Error -> fetchError(result.exception)
+                        is NetworkResult.Error -> fetchError(result.exception)
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }

@@ -5,8 +5,9 @@ import android.content.Intent
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import app.documents.core.network.common.Result.Error
-import app.documents.core.network.common.Result.Success
+import app.documents.core.network.common.NetworkResult.Error
+import app.documents.core.network.common.NetworkResult.Success
+import app.documents.core.network.common.NetworkResult.Loading
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.receivers.RoomDuplicateReceiver
 import app.editors.manager.managers.utils.NotificationUtils
@@ -44,8 +45,9 @@ class RoomDuplicateWork(context: Context, workerParams: WorkerParameters) :
                     when (result) {
                         is Error -> onError()
                         is Success -> {
-                            if (result.result >= 100) onComplete() else onProgress(result.result)
+                            if (result.data >= 100) onComplete() else onProgress(result.data)
                         }
+                        is Loading -> Unit
                     }
                 }
             }
