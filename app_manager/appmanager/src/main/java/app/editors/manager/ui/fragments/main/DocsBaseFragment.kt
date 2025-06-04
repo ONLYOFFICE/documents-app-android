@@ -624,7 +624,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         val isEmpty = list?.isEmpty() ?: false
         setViewState(isEmpty)
         onStateMenuEnabled(!isEmpty)
-        explorerAdapter?.updateItems(list)
+        explorerAdapter?.updateItems(list, presenter.currentFolder?.id.orEmpty())
         recyclerView?.scheduleLayoutAnimation()
     }
 

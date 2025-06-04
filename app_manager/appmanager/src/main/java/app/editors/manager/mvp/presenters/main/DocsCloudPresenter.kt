@@ -99,6 +99,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private var roomProvider: RoomProvider? = null
 
     private var conversionJob: Job? = null
+    private var thumbnailsJobs: MutableList<Job> = mutableListOf()
 
 
     init {
@@ -121,8 +122,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
                 override fun isTemplatesRoot(id: String?) =
                     isTemplatesFolder && modelExplorerStack.last()?.pathParts?.firstOrNull()?.id == id
-
-                override fun isRoot(): Boolean = isRoot
             }
         }
 
@@ -150,6 +149,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         duplicateRoomReceiver.setListener(null)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(duplicateRoomReceiver)
+        cancelThumbnailsJobs()
     }
 
     override fun onItemClick(item: Item, position: Int) {
@@ -302,6 +302,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun loadSuccess(explorer: Explorer?) {
         super.loadSuccess(explorer)
+        cancelThumbnailsJobs()
         explorer?.let { loadThumbnails(explorer, getArgs(filteringValue).putFilters()) }
     }
 
@@ -464,10 +465,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun getBackStack(): Boolean {
         if (!isSelectionMode && !isFilteringMode){
-            if ((currentFolder?.isTemplate == true || isTemplatesFolder)) {
-                resetFilters()
-                return super.getBackStack()
-            }
+            if ((currentFolder?.isTemplate == true || isTemplatesFolder)) resetFilters()
+            cancelThumbnailsJobs()
+            val backStackResult =  super.getBackStack()
+            updateThumbnails()
+            return backStackResult
         }
         val backStackResult = super.getBackStack()
         if (modelExplorerStack.last()?.filterType != preferenceTool.filter.type.filterVal) {
@@ -1214,8 +1216,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             override fun isArchive(): Boolean = false
             override fun isRecent(): Boolean = false
             override fun isTemplatesRoot(id: String?): Boolean = isTemplatesFolder
-            override fun isRoot(): Boolean = isRoot
-
         }
     }
 
@@ -1386,24 +1386,57 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    private fun loadThumbnails(explorer: Explorer, filter: Map<String, String>) {
-        val id = explorer.current.id
-        (fileProvider as? CloudFileProvider)?.let { provider ->
-            presenterScope.launch(Dispatchers.IO) {
-                provider.getThumbnails(explorer, id, filter)
-                    .catch { e -> fetchError(e) }
-                    .collect { file ->
-                        withContext(Dispatchers.Main){
-                            updateFileThumbnail(file)
-                        }
-                    }
-            }
-
-
+    override fun refreshFilesThumbnails() {
+        modelExplorerStack.last()?.let { explorer ->
+            cancelThumbnailsJobs()
+            loadThumbnails(explorer, getArgs(filteringValue).putFilters())
         }
     }
 
-    private fun updateFileThumbnail(file: CloudFile){
+    private fun loadThumbnails(
+        explorer: Explorer,
+        filter: Map<String, String>,
+        initDelay: Boolean = true
+    ) {
+        val id = explorer.current.id
+        (fileProvider as? CloudFileProvider)?.let { provider ->
+            thumbnailsJobs.add(
+                presenterScope.launch(Dispatchers.Main) {
+                    provider.getThumbnails(explorer, id, filter, initDelay)
+                        .catch { e ->  fetchThumbnailsError(e) }
+                        .collect { file -> updateFileThumbnail(file) }
+                }
+            )
+        }
+    }
+
+    private fun updateThumbnails() {
+        modelExplorerStack.last()?.let { explorer ->
+            val requestsCount = modelExplorerStack.last()?.count
+                ?.takeIf { it > ITEMS_PER_PAGE }
+                ?.let { (it + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE }
+                ?: 1
+            val args = getArgs(filteringValue).toMutableMap()
+
+            repeat(requestsCount) { index ->
+                val loadPosition = ITEMS_PER_PAGE * index
+                args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
+                loadThumbnails(explorer, args.putFilters(), false)
+            }
+        }
+    }
+
+    private fun fetchThumbnailsError(e: Throwable) {
+        fetchError(e)
+        modelExplorerStack.last()?.let { explorer ->
+            explorer.files.forEach {
+                it.thumbnailStatus = ApiContract.ThumbnailStatus.ERROR
+                viewState.onStateUpdateThumbnail(it.id)
+            }
+        }
+    }
+
+    private fun updateFileThumbnail(file: CloudFile) {
         modelExplorerStack.last()?.let { explorer ->
             explorer.files.filter { it.id == file.id }.map {
                 it.thumbnailStatus = file.thumbnailStatus
@@ -1413,4 +1446,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    private fun cancelThumbnailsJobs() {
+        thumbnailsJobs.forEach { it.cancel() }
+        thumbnailsJobs.clear()
+    }
 }

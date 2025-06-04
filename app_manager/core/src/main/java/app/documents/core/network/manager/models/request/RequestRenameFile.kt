@@ -7,8 +7,4 @@ data class RequestRenameFile(
     @SerializedName("title")
     @Expose
     var title: String? = null,
-
-    @SerializedName("lastVersion")
-    @Expose
-    var lastVersion: Int = 0
 )

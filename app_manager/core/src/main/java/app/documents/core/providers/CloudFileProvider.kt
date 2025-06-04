@@ -81,7 +81,6 @@ class CloudFileProvider @Inject constructor(
     }
 
     interface RoomCallback {
-        fun isRoot(): Boolean
         fun isRoomRoot(id: String?): Boolean
         fun isArchive(): Boolean
         fun isRecent(): Boolean
@@ -112,6 +111,7 @@ class CloudFileProvider @Inject constructor(
         explorer: Explorer?,
         id: String,
         filter: Map<String, String>,
+        initDelay: Boolean = true,
         delayMs: Long = 2000,
         maxAttempts: Int = 5
     ): Flow<CloudFile> = flow {
@@ -121,7 +121,7 @@ class CloudFileProvider @Inject constructor(
             ApiContract.ThumbnailStatus.CREATING
         )
         val missingThumbnailsIds = explorer?.files
-            ?.filter { it.thumbnailStatus == ApiContract.ThumbnailStatus.WAITING }
+            ?.filter { it.thumbnailStatus in missingStatuses }
             ?.map { it.id }.orEmpty().toMutableList()
 
         if (missingThumbnailsIds.isEmpty()) return@flow
@@ -129,13 +129,13 @@ class CloudFileProvider @Inject constructor(
         val response = managerService.createThumbnails(
             RequestCreateThumbnails(fileIds = missingThumbnailsIds)
         )
-        if (!response.isSuccessful || roomCallback?.isRoot() == true) return@flow
+        if (!response.isSuccessful) return@flow
 
         repeat(maxAttempts) { index ->
-            delay(delayMs)
+            if (initDelay && index == 0 || index > 0) delay(delayMs)
             val fileResponse = managerService.getItemByIdFlow(id, filter)
-            val body = fileResponse.body()?.response ?: return@repeat
-            if (!fileResponse.isSuccessful) return@repeat
+            val body = fileResponse.body()?.response ?: return@flow
+            if (!fileResponse.isSuccessful) return@flow
 
             val readyFiles = body.files.filter { file ->
                 file.id in missingThumbnailsIds && file.thumbnailStatus !in missingStatuses
@@ -153,7 +153,7 @@ class CloudFileProvider @Inject constructor(
 
             if (missingThumbnailsIds.isEmpty()) return@flow
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     //TODO Rework the creation for collaboration
     override fun createFile(folderId: String, title: String): Observable<CloudFile> {
@@ -186,13 +186,12 @@ class CloudFileProvider @Inject constructor(
         return if (version == null) {
             folderRename(item.id, newName)
         } else {
-            fileRename(item.id, newName, version)
+            fileRename(item.id, newName)
         }
     }
 
-    private fun fileRename(id: String, newName: String, version: Int): Observable<Item> {
+    private fun fileRename(id: String, newName: String): Observable<Item> {
         val requestRenameFile = RequestRenameFile()
-        requestRenameFile.lastVersion = version
         requestRenameFile.title = newName
         return managerService.renameFile(id, requestRenameFile)
             .subscribeOn(Schedulers.io())

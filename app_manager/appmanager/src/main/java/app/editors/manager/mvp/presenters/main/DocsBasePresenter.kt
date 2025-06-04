@@ -336,6 +336,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                         updateViewsState()
                         viewState.onDocsRefresh(explorer)
                         onRefresh()
+                        refreshFilesThumbnails()
                     }, this::fetchError)
             )
             viewState.onSwipeEnable(true)
@@ -384,6 +385,8 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             }
         }
     }
+
+    open fun refreshFilesThumbnails() = Unit
 
     /**
      * Change docs
@@ -1121,7 +1124,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         modelExplorerStack.previous()?.let {
             val entities = getListWithHeaders(modelExplorerStack.last(), true)
             setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-            viewState.onDocsGet(entities)
+            viewState.onDocsRefresh(entities)
             viewState.onScrollToPosition(modelExplorerStack.listPosition)
         }
     }
@@ -1130,7 +1133,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         modelExplorerStack.popToRoot()?.let {
             val entities = getListWithHeaders(modelExplorerStack.last(), true)
             setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-            viewState.onDocsGet(entities)
+            viewState.onDocsRefresh(entities)
             viewState.onScrollToPosition(modelExplorerStack.listPosition)
             updateViewsState()
         }
@@ -1880,6 +1883,6 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
          * Requests values
          * */
 
-        private const val ITEMS_PER_PAGE = 25
+        const val ITEMS_PER_PAGE = 25
     }
 }
