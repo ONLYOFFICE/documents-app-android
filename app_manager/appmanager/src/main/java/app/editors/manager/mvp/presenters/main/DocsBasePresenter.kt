@@ -1773,16 +1773,12 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                 fileProvider.createFile(
                     folderId = folderId,
                     title = title
-                )
-                    .doOnNext { file ->
-                        viewState.onDialogClose()
-                        openFile(file, EditType.Edit(false), true)
-                    }
-                    .doOnError {
-                        viewState.onDialogClose()
-                        viewState.onError(context.getString(R.string.errors_create_local_file))
-                    }
-                    .subscribe()
+                ).subscribe({ file ->
+                    viewState.onDialogClose()
+                    openFile(file, EditType.Edit(false), true)
+                }, {
+                    fetchError(it)
+                })
             )
         }
     }
