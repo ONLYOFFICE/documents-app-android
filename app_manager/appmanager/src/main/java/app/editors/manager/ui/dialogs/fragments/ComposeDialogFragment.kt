@@ -22,12 +22,12 @@ abstract class ComposeDialogFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!UiUtils.isTablet(requireContext())) {
-            setStyle(
-                STYLE_NORMAL,
-                R.style.FullScreenDialog
-            )
+        val styleRes = if (!UiUtils.isTablet(requireContext())) {
+            R.style.FullScreenDialog
+        } else {
+            R.style.TabletDialog
         }
+        setStyle(STYLE_NORMAL, styleRes)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
