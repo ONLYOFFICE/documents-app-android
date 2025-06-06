@@ -63,7 +63,8 @@ import app.documents.core.network.common.Result as NetworkResult
 
 data class OpenDocumentResult(
     val info: String? = null,
-    val isPdf: Boolean = false
+    val isPdf: Boolean = false,
+    val isForm: Boolean = false
 )
 
 class CloudFileProvider @Inject constructor(
@@ -567,7 +568,9 @@ class CloudFileProvider @Inject constructor(
                             editType = editType
                         )
 
-                        if (document.isPdf || document.info == null) {
+                        if (document.isPdf || document.info == null
+                            || document.isForm && editType is EditType.View
+                        ) {
                             emit(
                                 FileOpenResult.OpenLocally(
                                     file = suspendGetCachedFile(context, cloudFile, token),
@@ -704,7 +707,7 @@ class CloudFileProvider @Inject constructor(
                     canShareable = canShareable,
                     editType = editType
                 )
-                OpenDocumentResult(info = info)
+                OpenDocumentResult(info = info, isForm = true)
             } else {
                 OpenDocumentResult(isPdf = false)
             }
