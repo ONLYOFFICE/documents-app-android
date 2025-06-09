@@ -37,4 +37,10 @@
         <item quantity="one">година</item>
         <item quantity="other">години</item>
     </plurals>
+
+    <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
+    <string name="help_and_feedback_contact_support">Свържете се с поддръжката</string>
+    <string name="help_and_feedback_help_center">Помощен център</string>
+    <string name="help_and_feedback_suggest_a_feature">Предложете характеристика</string>
+    <string name="help_and_feedback_title">Помощ и Обратна връзка</string>
 </resources>
