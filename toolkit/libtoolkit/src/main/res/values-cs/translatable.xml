@@ -37,4 +37,10 @@
         <item quantity="one">rok</item>
         <item quantity="other">roky</item>
     </plurals>
+
+    <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
+    <string name="help_and_feedback_contact_support">Kontaktovat podporu</string>
+    <string name="help_and_feedback_help_center">Centrum nápovědy</string>
+    <string name="help_and_feedback_suggest_a_feature">Navrhnout funkci</string>
+    <string name="help_and_feedback_title">Nápověda a zpětná vazba</string>
 </resources>

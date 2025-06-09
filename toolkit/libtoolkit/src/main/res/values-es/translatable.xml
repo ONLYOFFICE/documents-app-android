@@ -36,4 +36,10 @@
         <item quantity="one">año</item>
         <item quantity="other">años</item>
     </plurals>
+
+    <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
+    <string name="help_and_feedback_contact_support">Contactar con el equipo de soporte</string>
+    <string name="help_and_feedback_help_center">Centro de ayuda</string>
+    <string name="help_and_feedback_suggest_a_feature">Sugerir una característica</string>
+    <string name="help_and_feedback_title">Ayuda y comentarios</string>
 </resources>

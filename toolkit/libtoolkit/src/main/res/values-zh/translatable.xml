@@ -37,4 +37,10 @@
         <item quantity="one">年</item>
         <item quantity="other">年</item>
     </plurals>
+
+    <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
+    <string name="help_and_feedback_contact_support">联系客服</string>
+    <string name="help_and_feedback_help_center">帮助中心</string>
+    <string name="help_and_feedback_suggest_a_feature">建议功能</string>
+    <string name="help_and_feedback_title">帮助与反馈</string>
 </resources>
