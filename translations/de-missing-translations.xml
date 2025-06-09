@@ -2,160 +2,21 @@
 <resources>
     <!-- Missing translations for language: de -->
 
-    <!-- Module: appmanager - 122 strings -->
-    <string name="access_members_me_and_title">Ich und %s</string>
-    <string name="access_members_me_subtitle">(Ich)</string>
-    <string name="access_members_me_users_groups_title">Ich, %1$s und %2$s</string>
-    <string name="cloud_create_account">Kostenloses Konto erstellen</string>
-    <string name="context_menu_desc">Mehr</string>
-    <string name="desc_create_from_template">Erstellen Sie einen Raum basierend auf einer Vorlage. Alle Einstellungen, Benutzer, Ordner und Dateien werden aus der ausgewählten Raumvorlage übernommen.</string>
-    <string name="desc_info_template">Raumvorlage. Verwenden Sie diese Vorlage, um schnell einen neuen Raum zu erstellen.</string>
-    <string name="dialogs_warning_room_space_quota_exceed">Raum-Quo­te überschritten (%s).</string>
-    <string name="edit_comment_field_label">Kommentieren</string>
-    <string name="edit_comment_label">Kommentieren</string>
-    <string name="edit_comment_success">Kommentar erfolgreich gespeichert</string>
-    <string name="edit_comment_title">Kommentar bearbeiten</string>
-    <string name="error_create_room">Raum konnte nicht erstellt werden</string>
-    <string name="error_create_template">Vorlage konnte nicht erstellt werden</string>
-    <string name="error_edit_comment">Kommentar konnte nicht aktualisiert werden</string>
-    <string name="error_save_access_settings">Zugriffseinstellungen konnten nicht gespeichert werden.</string>
-    <string name="error_save_template">Vorlage konnte nicht gespeichert werden</string>
-    <string name="error_upload_logo">Logo konnte nicht geladen werden</string>
-    <string name="error_version_delete">Löschen fehlgeschlagen</string>
-    <string name="error_version_open">Dokument konnte nicht geöffnet werden</string>
-    <string name="error_version_restore">Die Version konnte nicht wiederhergestellt werden.</string>
-    <string name="errors_open_document">Fehler beim Öffnen des Dokuments</string>
-    <string name="errors_webdav_2fa_code">Falscher Bestätigungscode</string>
-    <string name="filling_form_complete">Kom­plett</string>
-    <string name="filling_form_filling_process_details">Prozessdetails</string>
-    <string name="filling_form_filling_status">Füllstatus</string>
-    <string name="filling_form_filling_status_desc">In diesem Bereich können Sie den Füllvorgang des Formulars überwachen, an dem Sie teilnehmen oder dessen Organisator Sie sind.</string>
-    <string name="filling_form_history_complete">Hat den zugewiesenen Teil des Formulars ausgefüllt und abgeschickt. Das Formular ist vollständig ausgefüllt.</string>
-    <string name="filling_form_history_opened">Das Formular zum Ausfüllen geöffnet</string>
-    <string name="filling_form_history_stopped">Ausfüllen wurde von %s gestoppt</string>
-    <string name="filling_form_history_submitted">Hat den zugewiesenen Teil ausgefüllt. Das Formular wurde an die nächste Rolle gesendet.</string>
-    <string name="filling_form_send_finalized">Formularabschnitt ausgefüllt</string>
-    <string name="filling_form_send_finalized_desc">Das Formular wurde von allen Rollen vollständig ausgefüllt und ist nun abgeschlossen. Die Datei ist im Nur-Ansicht-Modus verfügbar.</string>
-    <string name="filling_form_send_section_complete">Formularabschnitt ausgefüllt</string>
-    <string name="filling_form_send_section_complete_desc">Der zugewiesene Teil des PDF-Formulars wurde erfolgreich ausgefüllt. Der Füllstatus des Formulars kann im Raum und über das Feld Füllstatus verfolgt werden. Sobald das Formular vollständig ausgefüllt ist, wird eine E-Mail-Benachrichtigung gesendet.</string>
-    <string name="filling_form_stop_filling">Ausfüllen abbrechen</string>
-    <string name="filling_form_stop_filling_dialog_desc">Möchten Sie das Ausfüllen wirklich abbrechen? Nach dem Abbruch ist ein Fortsetzen des Formulars nicht mehr möglich. Das Ausfüllen wird an der aktuellen Stelle abgebrochen. Die Datei wird als \"Abgebrochen\" gekennzeichnet.</string>
-    <string name="filling_form_stop_filling_dialog_title">Ausfüllen abbrechen?</string>
-    <string name="filling_form_stopped">Abgebrochen</string>
-    <string name="filling_form_version_incompatible_desc">Die Client- und Serverversionen sind nicht kompatibel. Sie können das Dokument nur im Ansichtsmodus öffnen.</string>
-    <string name="filter_type_pdf_documents">PDF-Dokumente</string>
-    <string name="filter_type_pdf_forms">PDF-Formulare</string>
-    <string name="form_status_complete">Kom­plett</string>
-    <string name="form_status_draft">Entwurf</string>
-    <string name="form_status_in_progress">Im Gange</string>
-    <string name="form_status_stopped">Abgebrochen</string>
-    <string name="form_status_your_turn">Sie sind dran</string>
-    <string name="fragment_templates_title">Vorlagen</string>
-    <string name="list_action_doc_from_photo">Textdokument aus Foto</string>
-    <string name="list_context_access_settings">Zugriffseinstellungen</string>
-    <string name="list_context_delete_template">Vorlage löschen</string>
-    <string name="list_context_disable_custom_filter">Benutzerdefinierten Filter deaktivieren</string>
-    <string name="list_context_edit_comment">Kommentar bearbeiten</string>
-    <string name="list_context_edit_index">Index bearbeiten</string>
-    <string name="list_context_edit_template">Vorlage bearbeiten</string>
-    <string name="list_context_enable_custom_filter">Benutzerdefinierten Filter aktivieren</string>
-    <string name="list_context_lock">Sperren</string>
-    <string name="list_context_open_vesrion">Öffnen</string>
-    <string name="list_context_save_as_template">Als Vorlage speichern</string>
-    <string name="list_context_unlock">Entsperren</string>
-    <string name="list_context_upload_to_cloud">In die Cloud hochladen</string>
-    <string name="list_context_version_history">Versionsverlauf anzeigen</string>
-    <string name="on_boarding_collaborate_header">Zusammenarbeit mit Ihrem Team</string>
-    <string name="on_boarding_collaborate_info">
-Nutzen Sie im Onlinemodus die ONLYOFFICE-Funktionen der Zusammenarbeit in Echtzeit, um gemeinsam mit Ihren Portalmitgliedern an Dokumenten zu arbeiten, Dokumente freizugeben und gemeinsame Speicherordner zu erstellen.
-    </string>
-    <string name="on_boarding_edit_header">Arbeiten mit Office-Dateien</string>
-    <string name="on_boarding_edit_info">
-        Erstellen und bearbeiten Sie Dokumente mit der umfassenden Symbolleiste: Arbeiten Sie mit komplexen Objekten in Textdokumenten, führen Sie umfangreiche Berechnungen in Tabellenkalkulationen durch, erstellen Sie beeindruckende Präsentationen und zeigen Sie PDF-Dateien ohne Formatierungsverlust an.
-    </string>
-    <string name="on_boarding_finish_button">Loslegen</string>
-    <string name="on_boarding_locally_header">Dokumente lokal bearbeiten</string>
-    <string name="on_boarding_locally_info">
-        Arbeiten Sie offline mit Dokumenten. Erstellte Dateien können später in das Online-Portal hochgeladen und von jedem anderen Gerät aus abgerufen werden.
-    </string>
-    <string name="on_boarding_third_party_header">Speicher von Drittanbietern</string>
-    <string name="on_boarding_third_party_info">
-        Verbinden Sie Speicher von Drittanbietern wie Nextcloud, ownCloud, Dropbox und andere, die das WebDAV-Protokoll verwenden.
-    </string>
-    <string name="on_boarding_welcome_header">Erste Schritte</string>
-    <string name="on_boarding_welcome_info">
-        Willkommen bei der mobilen Bearbeitungssuite von ONLYOFFICE! Wischen Sie, um mehr über die App zu erfahren.
-    </string>
-    <string name="operation_disable_custom_filter">Benutzerdefinierter Filter für die ausgewählte Datei deaktiviert</string>
-    <string name="operation_enable_custom_filter">Benutzerdefinierter Filter für die ausgewählte Datei aktiviert</string>
-    <string name="placeholder_connection_button">Neu laden</string>
-    <string name="placeholder_connection_desc">Keine Netzwerkverbindung. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.</string>
-    <string name="placeholder_empty_templates_folder">Noch keine Vorlagen vorhanden</string>
-    <string name="placeholder_empty_templates_folder_desc">Sie können eine Vorlage aus einem Raum im Bereich Räume erstellen.</string>
-    <string name="room_access_via_link_title">Zugang über Link</string>
-    <string name="room_created_successfully">Raum erfolgreich erstellt</string>
-    <string name="room_placeholder_created_template_title">Vorlage erstellt!</string>
-    <string name="setting_access_desc">Zugriff auf die Vorlage. Sie können Mitglieder auswählen, die Räume basierend auf dieser Vorlage erstellen können.</string>
-    <string name="setting_access_list_title">Zugriff auf die Vorlage</string>
-    <string name="setting_access_members_title">Benutzer oder Gruppen hinzufügen</string>
-    <string name="setting_access_members_title_desc">Die hinzugefügten Administratoren können mithilfe dieser Vorlage Räume erstellen.</string>
-    <string name="setting_access_public">Vorlage für alle verfügbar</string>
-    <string name="setting_access_public_bold_docspace">DocSpace</string>
-    <string name="setting_access_public_bold_room">Raumadministratoren</string>
-    <string name="setting_access_public_desc">Alle DocSpace- und Raumadministratoren können mit dieser Vorlage Räume erstellen.</string>
-    <string name="setting_screen_on">Beim Anzeigen von Dokumenten</string>
-    <string name="setting_select_members_title">Mitglieder auswählen</string>
-    <string name="setting_tags_desc">Dem Raum, der auf Grundlage dieser Vorlage erstellt wird, werden Tags zugewiesen.</string>
-    <string name="setting_title_sreen_on">Bildschirm eingeschaltet lassen</string>
-    <string name="settings_saved_successfully">Vorlageneinstellungen gespeichert</string>
-    <string name="share_clipboard_external_custom_filter_copied">Der Link zur Datei mit dem aktivierten benutzerdefinierten Filter wurde erfolgreich in die Zwischenablage kopiert.</string>
-    <string name="share_user_type_room_portal_owner">Portalbesitzer</string>
-    <string name="share_user_type_room_workspace_owner">Workspace-Besitzer</string>
-    <string name="template_created_successfully">Vorlage «%s» gespeichert</string>
-    <string name="template_delete_success">Vorlage gelöscht</string>
-    <string name="template_name_hint">Vorlagenname</string>
-    <string name="template_subheader_title">Raumvorlage</string>
-    <string name="templates_delete_success">Vorlagen gelöscht</string>
-    <string name="title_access_settings">Zugriffseinstellungen</string>
-    <string name="title_create_from_template">Aus Vorlage</string>
-    <string name="title_edit_template">Vorlage bearbeiten</string>
-    <string name="title_save_template">Als Vorlage speichern</string>
-    <string name="version_delete_confirm">Löschen</string>
-    <string name="version_delete_done">Version wurde gelöscht</string>
-    <string name="version_delete_loading">Wird gelöscht</string>
-    <string name="version_delete_subtitle">Sie sind dabei, eine Dateiversion zu löschen. Sie kann dann nicht mehr angezeigt oder wiederhergestellt werden. Möchten Sie wirklich fortfahren?</string>
-    <string name="version_delete_title">Version löschen</string>
-    <string name="version_dialog_cancel">Stornieren</string>
-    <string name="version_edit_comment_title">Kommentar bearbeiten</string>
-    <string name="version_group_current_header">Aktuell – Version %s</string>
-    <string name="version_group_header">Version %s</string>
-    <string name="version_history_title">Versionsverlauf</string>
-    <string name="version_restore_confirm">Wiederherstellen</string>
-    <string name="version_restore_done">Version wurde wiederhergestellt</string>
-    <string name="version_restore_loading">Version wird wiederhergestellt</string>
-    <string name="version_restore_subtitle">Die aktuelle Datei wird im Versionsverlauf gespeichert.</string>
-    <string name="version_restore_title">Diese Version wiederherstellen?</string>
-
-    <!-- Module: libgdocs - 1 strings -->
-    <string name="review_line_spacing">@string/settings_line_spacing</string>
-
-    <!-- Module: libgeditors - 12 strings -->
-    <string name="comment_error">Fehler beim Ändern des Kommentars</string>
-    <string name="dialog_recognizing_title">Texterkennung…</string>
-    <string name="error_protection_edit">Sie dürfen diese Auswahl nicht bearbeiten, da sie geschützt ist.</string>
-    <string name="pdf_reader_error_password_version">Diese Android-Version unterstützt keine passwortgeschützten PDFs. Verwenden Sie eine andere Anwendung.</string>
-    <string name="recognize_empty">Auf dem Bild wurde kein Text zur Erkennung erkannt</string>
-    <string name="recognize_error">Fehler bei der Erkennung</string>
-    <string name="scan_document_title">Dokument scannen</string>
-    <string name="settings_draw_brush">Bürste</string>
-    <string name="settings_line_size_title">Zeilengröße</string>
-    <string name="take_gallery_image">Aus der Galerie</string>
-    <string name="take_photo">Vom Foto</string>
-    <string name="take_photo_error">Bild konnte nicht geladen werden</string>
-
-    <!-- Module: libtoolkit - 4 strings -->
-    <string name="help_and_feedback_contact_support">Support kontaktieren</string>
-    <string name="help_and_feedback_help_center">Hilfe-Center</string>
-    <string name="help_and_feedback_suggest_a_feature">Funktion vorschlagen</string>
-    <string name="help_and_feedback_title">Hilfe und Feedback</string>
+    <!-- Module: appmanager - 4 strings -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Do you really want to delete template room «%s»? The template cannot be restored.</item>
+                <item quantity="other">Do you really want to delete selected room templates? They cannot be restored.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Delete template</item>
+                <item quantity="other">Delete templates</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d user</item>
+                <item quantity="other">%d users</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d group</item>
+                <item quantity="other">%d groups</item>
+    </plurals>
 </resources>
