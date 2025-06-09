@@ -2,160 +2,21 @@
 <resources>
     <!-- Missing translations for language: pt-rBR -->
 
-    <!-- Module: appmanager - 122 strings -->
-    <string name="access_members_me_and_title">Eu e %s</string>
-    <string name="access_members_me_subtitle">(Eu)</string>
-    <string name="access_members_me_users_groups_title">Eu, %1$s e %2$s</string>
-    <string name="cloud_create_account">Criar conta gratuita</string>
-    <string name="context_menu_desc">Mais</string>
-    <string name="desc_create_from_template">Crie uma sala com base em um modelo. Todas as configurações, usuários, pastas e arquivos serão obtidos do modelo de sala selecionado.</string>
-    <string name="desc_info_template">Modelo de sala. Use este modelo para criar uma nova sala rapidamente.</string>
-    <string name="dialogs_warning_room_space_quota_exceed">Cota de espaço da sala excedida (%s).</string>
-    <string name="edit_comment_field_label">Comentário</string>
-    <string name="edit_comment_label">Comentário</string>
-    <string name="edit_comment_success">Comentário salvo com sucesso</string>
-    <string name="edit_comment_title">Editar comentário</string>
-    <string name="error_create_room">Falha ao criar sala</string>
-    <string name="error_create_template">Falha ao criar modelo</string>
-    <string name="error_edit_comment">Falha ao atualizar comentário</string>
-    <string name="error_save_access_settings">Falha ao salvar configurações de acesso</string>
-    <string name="error_save_template">Falha ao salvar modelo</string>
-    <string name="error_upload_logo">Falha ao carregar logotipo</string>
-    <string name="error_version_delete">Falha ao excluir</string>
-    <string name="error_version_open">Falha ao abrir documento</string>
-    <string name="error_version_restore">Falha ao restaurar versão</string>
-    <string name="errors_open_document">Falha ao abrir documento</string>
-    <string name="errors_webdav_2fa_code">Código de verificação incorreto</string>
-    <string name="filling_form_complete">Concluído</string>
-    <string name="filling_form_filling_process_details">Detalhes do processo</string>
-    <string name="filling_form_filling_status">Status do preenchimento</string>
-    <string name="filling_form_filling_status_desc">Neste painel, você pode monitorar o preenchimento do formulário do qual participa ou do qual é o organizador</string>
-    <string name="filling_form_history_complete">Concluiu e enviou sua parte do formulário. O formulário está totalmente preenchido.</string>
-    <string name="filling_form_history_opened">Abriu o formulário para preencher</string>
-    <string name="filling_form_history_stopped">O preenchimento foi interrompido por %s</string>
-    <string name="filling_form_history_submitted">Enviou sua parte. O formulário foi enviado para a próxima função.</string>
-    <string name="filling_form_send_finalized">Seção do formulário concluída</string>
-    <string name="filling_form_send_finalized_desc">O formulário foi totalmente preenchido por todas as funções e agora está finalizado. Ele está disponível somente para visualização.</string>
-    <string name="filling_form_send_section_complete">Seção do Formulário Concluída</string>
-    <string name="filling_form_send_section_complete_desc">A parte atribuída do formulário em PDF foi concluída com sucesso. O status de preenchimento do formulário pode ser monitorado na sala e através do painel de status de preenchimento. Uma notificação por e-mail será enviada assim que o formulário for totalmente preenchido.</string>
-    <string name="filling_form_stop_filling">Interromper o preenchimento</string>
-    <string name="filling_form_stop_filling_dialog_desc">Tem certeza de que deseja interromper o preenchimento? Será impossível retomar o preenchimento deste formulário após o cancelamento. O preenchimento do formulário será interrompido no estágio em que se encontra. O arquivo será marcado como \"Interrompido\".</string>
-    <string name="filling_form_stop_filling_dialog_title">Interromper o preenchimento?</string>
-    <string name="filling_form_stopped">Interrompido</string>
-    <string name="filling_form_version_incompatible_desc">As versões cliente e servidor são incompatíveis. Você só pode abrir o documento no modo de visualização.</string>
-    <string name="filter_type_pdf_documents">Documentos PDF</string>
-    <string name="filter_type_pdf_forms">Formulários PDF</string>
-    <string name="form_status_complete">Concluído</string>
-    <string name="form_status_draft">Rascunho</string>
-    <string name="form_status_in_progress">Em andamento</string>
-    <string name="form_status_stopped">Interrompido</string>
-    <string name="form_status_your_turn">Sua vez</string>
-    <string name="fragment_templates_title">Modelos</string>
-    <string name="list_action_doc_from_photo">Documento de texto a partir de uma foto</string>
-    <string name="list_context_access_settings">Configurações de acesso</string>
-    <string name="list_context_delete_template">Excluir modelo</string>
-    <string name="list_context_disable_custom_filter">Desativar filtro personalizado</string>
-    <string name="list_context_edit_comment">Editar comentário</string>
-    <string name="list_context_edit_index">Editar índice</string>
-    <string name="list_context_edit_template">Editar modelo</string>
-    <string name="list_context_enable_custom_filter">Habilitar filtro personalizado</string>
-    <string name="list_context_lock">Bloquear</string>
-    <string name="list_context_open_vesrion">Abrir</string>
-    <string name="list_context_save_as_template">Salvar como modelo</string>
-    <string name="list_context_unlock">Desbloquear</string>
-    <string name="list_context_upload_to_cloud">Carregar para a nuvem</string>
-    <string name="list_context_version_history">Mostrar histórico de versões</string>
-    <string name="on_boarding_collaborate_header">Colabore com sua equipe</string>
-    <string name="on_boarding_collaborate_info">
-No modo online, use os recursos de coedição em tempo real do ONLYOFFICE para trabalhar em documentos com os membros do seu portal, compartilhar documentos e criar pastas de armazenamento comuns.
-    </string>
-    <string name="on_boarding_edit_header">Trabalhe com arquivos do Office</string>
-    <string name="on_boarding_edit_info">
-        Crie e edite documentos com nossa barra de ferramentas abrangente: trabalhe com objetos complexos em documentos de texto, realize cálculos complexos em planilhas, crie apresentações impressionantes e visualize arquivos PDF sem perda de formatação.
-    </string>
-    <string name="on_boarding_finish_button">Comece agora</string>
-    <string name="on_boarding_locally_header">Edite documentos localmente</string>
-    <string name="on_boarding_locally_info">
-        Trabalhe com documentos offline. Os arquivos criados podem ser posteriormente carregados para o portal online e acessados de qualquer outro dispositivo.
-    </string>
-    <string name="on_boarding_third_party_header">Armazenamento de terceiros</string>
-    <string name="on_boarding_third_party_info">
-        Conecte armazenamentos de terceiros, como Nextcloud, ownCloud, Dropbox e outros que utilizam o protocolo WebDAV.
-    </string>
-    <string name="on_boarding_welcome_header">Começando</string>
-    <string name="on_boarding_welcome_info">
-      Bem-vindo ao pacote de edição móvel ONLYOFFICE! Deslize para saber mais sobre o aplicativo.
-    </string>
-    <string name="operation_disable_custom_filter">Filtro personalizado para o arquivo selecionado desativado</string>
-    <string name="operation_enable_custom_filter">Filtro personalizado para o arquivo selecionado ativado</string>
-    <string name="placeholder_connection_button">Recarregar</string>
-    <string name="placeholder_connection_desc">Nenhuma conexão de rede detectada. Verifique sua conexão e tente novamente</string>
-    <string name="placeholder_empty_templates_folder">Ainda não há modelos aqui</string>
-    <string name="placeholder_empty_templates_folder_desc">Você pode criar um modelo a partir de uma sala na seção Sala</string>
-    <string name="room_access_via_link_title">Acesso via link</string>
-    <string name="room_created_successfully">Sala criada com sucesso</string>
-    <string name="room_placeholder_created_template_title">Modelo criado!</string>
-    <string name="setting_access_desc">Acesso ao modelo. Você pode selecionar membros que podem criar salas com base neste modelo.</string>
-    <string name="setting_access_list_title">Acesso ao modelo</string>
-    <string name="setting_access_members_title">Adicionar usuários ou grupos</string>
-    <string name="setting_access_members_title_desc">Os administradores adicionados poderão criar salas usando este modelo.</string>
-    <string name="setting_access_public">Modelo disponível para todos</string>
-    <string name="setting_access_public_bold_docspace">DocSpace</string>
-    <string name="setting_access_public_bold_room">Administradores de salas</string>
-    <string name="setting_access_public_desc">Todos os administradores do DocSpace e de salas poderão criar salas usando este modelo.</string>
-    <string name="setting_screen_on">Ao visualizar documentos</string>
-    <string name="setting_select_members_title">Selecionar membros</string>
-    <string name="setting_tags_desc">As tags são aplicadas à sala, que será criada com base neste modelo.</string>
-    <string name="setting_title_sreen_on">Manter tela ligada</string>
-    <string name="settings_saved_successfully">Configurações do modelo salvas</string>
-    <string name="share_clipboard_external_custom_filter_copied">O link para o arquivo com o filtro personalizado habilitado foi copiado com sucesso para a área de transferência</string>
-    <string name="share_user_type_room_portal_owner">Proprietário do Portal</string>
-    <string name="share_user_type_room_workspace_owner">Proprietário do Espaço de Trabalho</string>
-    <string name="template_created_successfully">Modelo «%s» salvo</string>
-    <string name="template_delete_success">Modelo excluído</string>
-    <string name="template_name_hint">Nome do modelo</string>
-    <string name="template_subheader_title">Modelo da Sala</string>
-    <string name="templates_delete_success">Modelos excluídos</string>
-    <string name="title_access_settings">Configurações de acesso</string>
-    <string name="title_create_from_template">Do modelo</string>
-    <string name="title_edit_template">Editar modelo</string>
-    <string name="title_save_template">Salvar como modelo</string>
-    <string name="version_delete_confirm">Excluir</string>
-    <string name="version_delete_done">Versão excluída</string>
-    <string name="version_delete_loading">Excluindo</string>
-    <string name="version_delete_subtitle">Você está prestes a excluir uma versão de arquivo. Não será mais possível visualizá-la ou restaurá-la. Tem certeza de que deseja continuar?</string>
-    <string name="version_delete_title">Excluir versão</string>
-    <string name="version_dialog_cancel">Cancelar</string>
-    <string name="version_edit_comment_title">Editar Comentário</string>
-    <string name="version_group_current_header">Atual — Versão %s</string>
-    <string name="version_group_header">Versão %s</string>
-    <string name="version_history_title">Histórico de Versões</string>
-    <string name="version_restore_confirm">Restaurar</string>
-    <string name="version_restore_done">A versão foi restaurada</string>
-    <string name="version_restore_loading">Restaurando a versão</string>
-    <string name="version_restore_subtitle">O arquivo atual será salvo no histórico de versões.</string>
-    <string name="version_restore_title">Restaurar esta versão?</string>
-
-    <!-- Module: libgdocs - 1 strings -->
-    <string name="review_line_spacing">@string/settings_line_spacing</string>
-
-    <!-- Module: libgeditors - 12 strings -->
-    <string name="comment_error">Erro ao alterar comentário</string>
-    <string name="dialog_recognizing_title">Reconhecendo texto…</string>
-    <string name="error_protection_edit">Você não tem permissão para editar esta seleção porque ela está protegida</string>
-    <string name="pdf_reader_error_password_version">Esta versão para Android não suporta PDFs protegidos por senha. Use outro aplicativo.</string>
-    <string name="recognize_empty">Nenhum texto detectado na imagem para reconhecimento</string>
-    <string name="recognize_error">Erro durante o reconhecimento</string>
-    <string name="scan_document_title">Digitalizar documento</string>
-    <string name="settings_draw_brush">Pincel</string>
-    <string name="settings_line_size_title">Tamanho da linha</string>
-    <string name="take_gallery_image">Da galeria</string>
-    <string name="take_photo">Da foto</string>
-    <string name="take_photo_error">Falha ao carregar a imagem</string>
-
-    <!-- Module: libtoolkit - 4 strings -->
-    <string name="help_and_feedback_contact_support">Entre em contato com o suporte</string>
-    <string name="help_and_feedback_help_center">Central de Ajuda</string>
-    <string name="help_and_feedback_suggest_a_feature">Sugerir um Recurso</string>
-    <string name="help_and_feedback_title">Ajuda e Feedback</string>
+    <!-- Module: appmanager - 4 strings -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Do you really want to delete template room «%s»? The template cannot be restored.</item>
+                <item quantity="other">Do you really want to delete selected room templates? They cannot be restored.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Delete template</item>
+                <item quantity="other">Delete templates</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d user</item>
+                <item quantity="other">%d users</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d group</item>
+                <item quantity="other">%d groups</item>
+    </plurals>
 </resources>

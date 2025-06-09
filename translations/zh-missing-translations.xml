@@ -2,160 +2,21 @@
 <resources>
     <!-- Missing translations for language: zh -->
 
-    <!-- Module: appmanager - 122 strings -->
-    <string name="access_members_me_and_title">我和%s</string>
-    <string name="access_members_me_subtitle">（我）</string>
-    <string name="access_members_me_users_groups_title">我、%1$s和%2$s</string>
-    <string name="cloud_create_account">创建免费帐户</string>
-    <string name="context_menu_desc">更多</string>
-    <string name="desc_create_from_template">基于模板创建房间。所有设置、用户、文件夹和文件都将取自所选的房间模板。</string>
-    <string name="desc_info_template">房间模板。使用此模板快速创建新房间。</string>
-    <string name="dialogs_warning_room_space_quota_exceed">房间存储空间额度已超出 (%s)。</string>
-    <string name="edit_comment_field_label">批注</string>
-    <string name="edit_comment_label">批注</string>
-    <string name="edit_comment_success">批注已成功保存</string>
-    <string name="edit_comment_title">编辑批注</string>
-    <string name="error_create_room">创建房间失败</string>
-    <string name="error_create_template">创建模板失败</string>
-    <string name="error_edit_comment">无法更新批注</string>
-    <string name="error_save_access_settings">无法保存访问设置</string>
-    <string name="error_save_template">无法保存模板</string>
-    <string name="error_upload_logo">无法加载logo</string>
-    <string name="error_version_delete">无法删除</string>
-    <string name="error_version_open">无法打开文档</string>
-    <string name="error_version_restore">无法恢复版本</string>
-    <string name="errors_open_document">无法打开文档</string>
-    <string name="errors_webdav_2fa_code">验证码错误</string>
-    <string name="filling_form_complete">已完成</string>
-    <string name="filling_form_filling_process_details">流程详情</string>
-    <string name="filling_form_filling_status">填写状态</string>
-    <string name="filling_form_filling_status_desc">在此面板中，您可以监控您参与或发起的表单的填写进度</string>
-    <string name="filling_form_history_complete">已完成并提交他们的表单部分。表单已全部填写完毕。</string>
-    <string name="filling_form_history_opened">已打开表单进行填写</string>
-    <string name="filling_form_history_stopped">填写已被 %s 停止</string>
-    <string name="filling_form_history_submitted">已提交他们填写的部分，表单已发送至下一个角色。</string>
-    <string name="filling_form_send_finalized">表单部分已完成</string>
-    <string name="filling_form_send_finalized_desc">所有角色的用户已填写完表单，现已最终化，以只读模式提供。</string>
-    <string name="filling_form_send_section_complete">表单部分已完成</string>
-    <string name="filling_form_send_section_complete_desc">PDF 表单的指定部分已完成填写，可以通过房间或“填写状态”面板监控表单的填写状态。表单全部填写完成后，系统将自动发送邮件通知。</string>
-    <string name="filling_form_stop_filling">停止填写</string>
-    <string name="filling_form_stop_filling_dialog_desc">您确定要停止填写吗？停止后无法恢复填写进度，表单将停留在当前阶段，且文件将被标记为“已停止”。</string>
-    <string name="filling_form_stop_filling_dialog_title">停止填写？</string>
-    <string name="filling_form_stopped">已停止</string>
-    <string name="filling_form_version_incompatible_desc">客户端和服务器版本不兼容。仅可在查看模式下打开文档。</string>
-    <string name="filter_type_pdf_documents">PDF 文档</string>
-    <string name="filter_type_pdf_forms">PDF 表单</string>
-    <string name="form_status_complete">已完成</string>
-    <string name="form_status_draft">草稿</string>
-    <string name="form_status_in_progress">进行中</string>
-    <string name="form_status_stopped">已停止</string>
-    <string name="form_status_your_turn">轮到您了</string>
-    <string name="fragment_templates_title">模板</string>
-    <string name="list_action_doc_from_photo">从照片中提取文本文件</string>
-    <string name="list_context_access_settings">访问设置</string>
-    <string name="list_context_delete_template">删除模板</string>
-    <string name="list_context_disable_custom_filter">禁用自定义过滤器</string>
-    <string name="list_context_edit_comment">编辑批注</string>
-    <string name="list_context_edit_index">编辑索引</string>
-    <string name="list_context_edit_template">编辑模板</string>
-    <string name="list_context_enable_custom_filter">启用自定义过滤器</string>
-    <string name="list_context_lock">锁定</string>
-    <string name="list_context_open_vesrion">打开</string>
-    <string name="list_context_save_as_template">另存为模板</string>
-    <string name="list_context_unlock">解锁</string>
-    <string name="list_context_upload_to_cloud">上传到云端</string>
-    <string name="list_context_version_history">显示版本历史记录</string>
-    <string name="on_boarding_collaborate_header">与您的团队协作</string>
-    <string name="on_boarding_collaborate_info">
-在线模式下，使用 ONLYOFFICE 的实时协同编辑功能与门户成员一起处理文档、共享文档并创建公共存储文件夹。
-    </string>
-    <string name="on_boarding_edit_header">处理办公文件</string>
-    <string name="on_boarding_edit_info">
-      使用我们丰富的工具栏创建和编辑文档：轻松处理文本文档中的复杂对象、执行电子表格计算、制作演示文稿，并查看 PDF 文件，且无需担心格式丢失。
-    </string>
-    <string name="on_boarding_finish_button">开始</string>
-    <string name="on_boarding_locally_header">本地编辑文档</string>
-    <string name="on_boarding_locally_info">
-      离线处理文档。创建的文件稍后可以上传到在线门户，然后从任何其他设备访问。
-    </string>
-    <string name="on_boarding_third_party_header">第三方存储</string>
-    <string name="on_boarding_third_party_info">
-      连接第三方存储，例如 Nextcloud、ownCloud、Dropbox 以及其他使用 WebDAV 协议的存储。
-    </string>
-    <string name="on_boarding_welcome_header">开始</string>
-    <string name="on_boarding_welcome_info">
-      欢迎使用 ONLYOFFICE 移动办公套件！滑动屏幕了解更多应用详情。
-    </string>
-    <string name="operation_disable_custom_filter">已禁用所选文件的自定义过滤器</string>
-    <string name="operation_enable_custom_filter">已启用所选文件的自定义过滤器</string>
-    <string name="placeholder_connection_button">重新加载</string>
-    <string name="placeholder_connection_desc">未检测到网络连接。请检查连接并重试</string>
-    <string name="placeholder_empty_templates_folder">此处尚无模板</string>
-    <string name="placeholder_empty_templates_folder_desc">您可以在“房间”版块中创建模板</string>
-    <string name="room_access_via_link_title">通过链接访问</string>
-    <string name="room_created_successfully">房间创建成功</string>
-    <string name="room_placeholder_created_template_title">模板已创建！</string>
-    <string name="setting_access_desc">访问模板。您可以选择可以基于此模板创建房间的成员。</string>
-    <string name="setting_access_list_title">访问模板</string>
-    <string name="setting_access_members_title">添加用户或群组</string>
-    <string name="setting_access_members_title_desc">添加的管理员将能够使用此模板创建房间。</string>
-    <string name="setting_access_public">模板可供所有人使用</string>
-    <string name="setting_access_public_bold_docspace">协作空间</string>
-    <string name="setting_access_public_bold_room">房间管理员</string>
-    <string name="setting_access_public_desc">所有协作空间和房间管理员都可以使用此模板创建房间。</string>
-    <string name="setting_screen_on">查看文档时</string>
-    <string name="setting_select_members_title">选择成​​员</string>
-    <string name="setting_tags_desc">标签已应用于将基于此模板创建的房间。</string>
-    <string name="setting_title_sreen_on">保持屏幕常亮</string>
-    <string name="settings_saved_successfully">模板设置已保存</string>
-    <string name="share_clipboard_external_custom_filter_copied">已成功将启用自定义过滤器的文件链接复制到剪贴板</string>
-    <string name="share_user_type_room_portal_owner">门户所有者</string>
-    <string name="share_user_type_room_workspace_owner">工作区所有者</string>
-    <string name="template_created_successfully">模板 «%s» 已保存</string>
-    <string name="template_delete_success">模板已删除</string>
-    <string name="template_name_hint">模板名称</string>
-    <string name="template_subheader_title">房间模板</string>
-    <string name="templates_delete_success">模板已删除</string>
-    <string name="title_access_settings">访问设置</string>
-    <string name="title_create_from_template">来自模板</string>
-    <string name="title_edit_template">编辑模板</string>
-    <string name="title_save_template">另存为模板</string>
-    <string name="version_delete_confirm">删除</string>
-    <string name="version_delete_done">版本已删除</string>
-    <string name="version_delete_loading">正在删除</string>
-    <string name="version_delete_subtitle">您确定要继续吗？您即将删除一个文件版本，该版本将无法恢复或查看。确定要继续吗？</string>
-    <string name="version_delete_title">删除版本</string>
-    <string name="version_dialog_cancel">取消</string>
-    <string name="version_edit_comment_title">编辑批注</string>
-    <string name="version_group_current_header">当前版本 - 版本 %s</string>
-    <string name="version_group_header">版本 %s</string>
-    <string name="version_history_title">版本历史记录</string>
-    <string name="version_restore_confirm">恢复</string>
-    <string name="version_restore_done">版本已恢复</string>
-    <string name="version_restore_loading">正在恢复版本</string>
-    <string name="version_restore_subtitle">当前文件将保存在版本历史记录中。</string>
-    <string name="version_restore_title">是否恢复此版本？</string>
-
-    <!-- Module: libgdocs - 1 strings -->
-    <string name="review_line_spacing">@string/settings_line_spacing</string>
-
-    <!-- Module: libgeditors - 12 strings -->
-    <string name="comment_error">更改批注时出错</string>
-    <string name="dialog_recognizing_title">正在识别文本…</string>
-    <string name="error_protection_edit">您无法编辑此选择，因为它受保护</string>
-    <string name="pdf_reader_error_password_version">此 Android 版本不支持受密码保护的 PDF，请使用其他应用程序</string>
-    <string name="recognize_empty">图像上未检测到用于识别的文本</string>
-    <string name="recognize_error">识别过程中出错</string>
-    <string name="scan_document_title">扫描文档</string>
-    <string name="settings_draw_brush">画笔</string>
-    <string name="settings_line_size_title">线条大小</string>
-    <string name="take_gallery_image">来自图库</string>
-    <string name="take_photo">来自照片</string>
-    <string name="take_photo_error">加载失败图像</string>
-
-    <!-- Module: libtoolkit - 4 strings -->
-    <string name="help_and_feedback_contact_support">联系客服</string>
-    <string name="help_and_feedback_help_center">帮助中心</string>
-    <string name="help_and_feedback_suggest_a_feature">建议功能</string>
-    <string name="help_and_feedback_title">帮助与反馈</string>
+    <!-- Module: appmanager - 4 strings -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Do you really want to delete template room «%s»? The template cannot be restored.</item>
+                <item quantity="other">Do you really want to delete selected room templates? They cannot be restored.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Delete template</item>
+                <item quantity="other">Delete templates</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d user</item>
+                <item quantity="other">%d users</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d group</item>
+                <item quantity="other">%d groups</item>
+    </plurals>
 </resources>
