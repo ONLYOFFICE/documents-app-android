@@ -135,10 +135,10 @@ interface DocsBaseView : BaseViewExt {
      * On views
      */
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onDialogClose()
+    fun onDialogClose(force: Boolean = false)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onDialogWaiting(@Nullable title: String?, @Nullable tag: String?)
+    fun onDialogWaiting(@Nullable title: String?, @Nullable tag: String?, force: Boolean = false)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onDialogDownloadWaiting()

@@ -120,11 +120,6 @@ object ActivitiesUtils {
     }
 
     @JvmStatic
-    fun showBrowser(activity: Activity, chooseTitle: String?, url: String) {
-        showBrowser(activity.applicationContext, chooseTitle, url)
-    }
-
-    @JvmStatic
     fun showBrowser(context: Context, chooseTitle: String? = null, url: String) {
         val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
             if (context !is Activity) {
@@ -143,11 +138,11 @@ object ActivitiesUtils {
     @JvmStatic
     fun showPlayMarket(context: Context, packageId: String) {
         try {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(PLAY_MARKET + packageId))
+            val intent = Intent(Intent.ACTION_VIEW, (PLAY_MARKET + packageId).toUri())
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(PLAY_STORE + packageId))
+            val intent = Intent(Intent.ACTION_VIEW, (PLAY_STORE + packageId).toUri())
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
         }

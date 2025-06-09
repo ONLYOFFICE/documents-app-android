@@ -525,10 +525,15 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     private fun showFilter() {
+        val filterSection = when {
+            presenter.isRecentViaLinkSection() -> ApiContract.SectionType.CLOUD_RECENT
+            presenter.isTemplatesFolder -> ApiContract.SectionType.CLOUD_TEMPLATES
+            else -> section
+        }
         if (isTablet) {
             FilterDialogFragment.newInstance(
                 presenter.folderId,
-                if (!presenter.isRecentViaLinkSection()) section else ApiContract.SectionType.CLOUD_RECENT,
+                filterSection,
                 presenter.isRoot
             ).show(requireActivity().supportFragmentManager, FilterDialogFragment.TAG)
 
@@ -540,11 +545,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     }
                 }
         } else {
-            val filterSection = when {
-                presenter.isRecentViaLinkSection() -> ApiContract.SectionType.CLOUD_RECENT
-                presenter.isTemplatesFolder -> ApiContract.SectionType.CLOUD_TEMPLATES
-                else -> section
-            }
             filterActivity.launch(FilterActivity.getIntent(
                 this,
                 presenter.folderId,

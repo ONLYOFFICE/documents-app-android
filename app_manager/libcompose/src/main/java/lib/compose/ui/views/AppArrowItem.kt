@@ -29,7 +29,6 @@ import lib.toolkit.base.R
  * @param startIconTint pass null so as not to apply any tint
  * @param endIconTint pass null so as not to apply any tint
  **/
-
 @Composable
 fun AppArrowItem(
     modifier: Modifier = Modifier,
@@ -43,6 +42,7 @@ fun AppArrowItem(
     optionTint: Color = MaterialTheme.colors.colorTextSecondary,
     background: Color? = null,
     option: String? = null,
+    optionImage: Int? = null,
     arrowVisible: Boolean = true,
     dividerVisible: Boolean = true,
     enabled: Boolean = true,
@@ -71,6 +71,13 @@ fun AppArrowItem(
                         textAlign = TextAlign.End,
                     )
                 }
+                optionImage?.let { imageRes ->
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = imageRes),
+                        tint = optionTint,
+                        contentDescription = null
+                    )
+                }
                 if (arrowVisible) {
                     if (endIconTint != null) {
                         Icon(
@@ -87,46 +94,6 @@ fun AppArrowItem(
                 }
             }
         }
-    )
-}
-
-/**
- * @param startIconTint pass null so as not to apply any tint
- * @param endIconTint pass null so as not to apply any tint
- **/
-
-@Composable
-fun AppArrowItem(
-    modifier: Modifier = Modifier,
-    @StringRes title: Int,
-    subtitle: String? = null,
-    @DrawableRes startIcon: Int? = null,
-    startIconTint: Color? = MaterialTheme.colors.primary,
-    @DrawableRes endIcon: Int = R.drawable.ic_arrow_right,
-    endIconTint: Color? = MaterialTheme.colors.colorTextTertiary,
-    optionTint: Color = MaterialTheme.colors.colorTextTertiary,
-    background: Color? = null,
-    option: String? = null,
-    arrowVisible: Boolean = true,
-    dividerVisible: Boolean = true,
-    enabled: Boolean = true,
-    onClick: (() -> Unit)? = null
-) {
-    AppArrowItem(
-        modifier = modifier,
-        title = stringResource(id = title),
-        subtitle = subtitle,
-        startIcon = startIcon,
-        startIconTint = startIconTint,
-        endIcon = endIcon,
-        endIconTint = endIconTint,
-        optionTint = optionTint,
-        option = option,
-        background = background,
-        arrowVisible = arrowVisible,
-        dividerVisible = dividerVisible,
-        enabled = enabled,
-        onClick = onClick
     )
 }
 
@@ -135,7 +102,6 @@ fun AppArrowItem(
     modifier: Modifier = Modifier,
     @StringRes title: Int,
     titleColor: Color = MaterialTheme.colors.onSurface,
-    optionImage: Int,
     subtitle: String? = null,
     @DrawableRes startIcon: Int? = null,
     startIconTint: Color? = MaterialTheme.colors.primary,
@@ -143,45 +109,32 @@ fun AppArrowItem(
     endIconTint: Color? = MaterialTheme.colors.colorTextTertiary,
     optionTint: Color = MaterialTheme.colors.colorTextTertiary,
     background: Color? = null,
+    option: String? = null,
+    optionImage: Int? = null,
     arrowVisible: Boolean = true,
     dividerVisible: Boolean = true,
     enabled: Boolean = true,
+    singleLine: Boolean = true,
     onClick: (() -> Unit)? = null
 ) {
-    AppListItem(
+    AppArrowItem(
         modifier = modifier,
-        startIcon = startIcon,
-        startIconTint = startIconTint,
-        background = background,
-        dividerVisible = dividerVisible,
-        enabled = enabled,
-        onClick = onClick,
         title = stringResource(id = title),
         titleColor = titleColor,
         subtitle = subtitle,
-        endContent = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = optionImage),
-                    tint = optionTint,
-                    contentDescription = null
-                )
-                if (arrowVisible) {
-                    if (endIconTint != null) {
-                        Icon(
-                            painter = painterResource(id = endIcon),
-                            tint = endIconTint,
-                            contentDescription = null,
-                        )
-                    } else {
-                        Image(
-                            painter = painterResource(id = endIcon),
-                            contentDescription = null
-                        )
-                    }
-                }
-            }
-        }
+        startIcon = startIcon,
+        startIconTint = startIconTint,
+        endIcon = endIcon,
+        endIconTint = endIconTint,
+        optionTint = optionTint,
+        option = option,
+        optionImage = optionImage,
+        background = background,
+        arrowVisible = arrowVisible,
+        dividerVisible = dividerVisible,
+        enabled = enabled,
+        singleLine = singleLine,
+        onClick = onClick
     )
 }
 

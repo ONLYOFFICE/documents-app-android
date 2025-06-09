@@ -9,4 +9,4 @@ data class ViewAccessibility(
     @SerializedName("WebCustomFilterEditing")
     @Expose
     val webCustomFilterEditing: Boolean = false
-)
+): java.io.Serializable

@@ -28,7 +28,7 @@
     <color name="colorButtonBackground">@color/colorSurface</color>
     <color name="colorChipBackground">@color/colorSurface</color>
     <color name="colorIconBackground">@color/colorSurface</color>
-    <color name="colorOnBottomBarInActive">#99FFFFFF</color>
+    <color name="colorOnBottomBarInActive">@color/colorWhite60</color>
 
     <!-- Editors -->
     <color name="colorDocTint">#3B92F3</color>
@@ -39,10 +39,6 @@
     <color name="colorVideoTint">#00A9CD</color>
 
     <!-- Form filling status -->
-    <color name="colorFormDraft">#FF3B30</color>
-    <color name="colorFormYourTurn">#007AFF</color>
-    <color name="colorFormInProgress">#99FFFFFF</color>
-    <color name="colorFormComplete">#34C759</color>
-    <color name="colorFormStopped">#FF3B30</color>
+    <color name="colorFormInProgress">@color/colorWhite60</color>
 
 </resources>

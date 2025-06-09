@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
@@ -30,6 +31,7 @@ import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter.Companion.PERSONAL_DUE_DATE
 import app.editors.manager.mvp.views.main.MainActivityView
 import app.editors.manager.ui.activities.base.BaseAppActivity
+import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.compose.personal.PersonalPortalMigrationFragment
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
 import app.editors.manager.ui.fragments.main.CloudAccountFragment
@@ -95,8 +97,9 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         private const val FRAGMENT_KEY = "FRAGMENT_KEY"
         private const val URL_KEY = "url"
 
-        fun show(context: Context) {
+        fun show(context: Context, deepLink: Uri? = null) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
+                data = deepLink
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             })
         }
@@ -129,16 +132,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         super.onNewIntent(intent)
         intent.action?.let { action ->
             if (action == Intent.ACTION_VIEW) {
-                intent.data?.let {
-                    val fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
-                    if (fragment is MainPagerFragment && fragment.isVisible) {
-                        setIntent(intent)
-                        fragment.checkBundle()
-                    } else {
-                        setIntent(intent)
-                        openFile()
-                    }
-                }
+                onActionView(intent)
             }
 
             intent.extras?.let extras@{ extras ->
@@ -206,6 +200,18 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         }
     }
 
+    private fun onActionView(intent: Intent? = null) {
+        (intent ?: this.intent)?.data?.let { uri ->
+            // TODO: Refactor. Remove opening deeplink from MainPagerFragment
+            val fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
+            if (fragment is MainPagerFragment && fragment.isVisible) {
+                fragment.checkBundle(uri)
+            } else {
+                presenter.openDeeplink(uri)
+            }
+        }
+    }
+
     private fun init(savedInstanceState: Bundle?) {
         initViews()
         initToolbar()
@@ -228,6 +234,9 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
             InAppUpdateUtils.checkForUpdate(this@MainActivity)
         }
 
+        if (intent.action == Intent.ACTION_VIEW) {
+            onActionView()
+        }
     }
 
     private fun initViews() {
@@ -325,11 +334,14 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         }
     }
 
-    fun openFile() {
-        viewBinding.bottomNavigation.setOnItemSelectedListener(null)
-        viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
-        showOnCloudFragment()
-        viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
+    override fun signInAndOpenDeeplink(portal: String, email: String, uri: Uri) {
+        SignInActivity.showPortalSignIn(
+            context = this@MainActivity,
+            portal = portal,
+            login = email,
+            providers = null,
+            deeplink = uri
+        )
     }
 
     override fun showActionButton(isShow: Boolean) {
