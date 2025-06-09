@@ -820,14 +820,15 @@
     <string name="rooms_invalid_password">Contraseña no válida</string>
     <string name="rooms_invite_access_description">Los invitados, usuarios y grupos no pueden ser asignados como administradores de sala. Solo los administradores de sala y de DocSpace son adecuados para el rol especificado.</string>
     <string name="rooms_user_type_employees">Empleados</string>
-    <string name="whats_new_1">Integración mejorada con DocSpace v3.0</string>
-    <string name="whats_new_1_desc">Colaboración en documentos con las últimas actualizaciones y mejoras de ONLYOFFICE DocSpace v3.0</string>
-    <string name="whats_new_2">Interfaz con pestañas para tabletas y dispositivos de escritorio</string>
-    <string name="whats_new_2_desc">Navegación y edición simplificadas con la barra de herramientas con pestañas en tabletas y dispositivos de escritorio.</string>
-    <string name="whats_new_3">Nuevos tipos de gráficos</string>
-    <string name="whats_new_3_desc">Nuevos tipos de gráficos para visualizar los datos en presentaciones y análisis detallados.</string>
-    <string name="whats_new_4">Visualización de archivos de Apple Pages y HWP</string>
-    <string name="whats_new_4_desc">Capacidad para abrir y visualizar documentos en formato Apple Pages y Hangul Word.</string>
     <string name="whats_new_title">¿Qué hay de nuevo?</string>
     <string name="whats_new_next">Empiece a usar</string>
+    <string name="whats_new">Novedades en la v9.0</string>
+    <string name="whats_new_1">Reconocimiento de texto con la cámara del dispositivo</string>
+    <string name="whats_new_1_desc">Captura el texto impreso con tu cámara y crea documentos editables.</string>
+    <string name="whats_new_2">Interfaz con pestañas actualizada</string>
+    <string name="whats_new_2_desc">Disfruta de un diseño más limpio e intuitivo con la barra de herramientas rediseñada.</string>
+    <string name="whats_new_3">Compatibilidad con los formatos ODG y Markdown</string>
+    <string name="whats_new_3_desc">Abre y visualiza dibujos .odg y archivos .md directamente en tu dispositivo.</string>
+    <string name="whats_new_4">Compatibilidad mejorada con DocSpace 3.1</string>
+    <string name="whats_new_4_desc">Accede a versiones de documentos, rellenado de formularios basado en roles en las salas VDR, plantillas de salas y filtros personalizados cuando estés conectado a tu DocSpace.</string>
 </resources>

@@ -824,14 +824,15 @@ Nous vous recommandons de passer au service gratuit ONLYOFFICE DocSpace Cloud.</
     <string name="rooms_invalid_password">Mot de passe incorrect</string>
     <string name="rooms_invite_access_description">Les invités, les utilisateurs et les groupes ne peuvent pas être assignés en tant que responsables de salle. Seuls les administrateurs de salle et de DocSpace peuvent jouer ce rôle.</string>
     <string name="rooms_user_type_employees">Employés</string>
-    <string name="whats_new_1">Intégration améliorée avec DocSpace v3.0</string>
-    <string name="whats_new_1_desc">Collaborez sur les documents avec les dernières mises à jour et améliorations de ONLYOFFICE DocSpace v3.0.</string>
-    <string name="whats_new_2">Interface à onglets pour les tablettes et les ordinateurs de bureau</string>
-    <string name="whats_new_2_desc">Simplifiez la navigation et l\'édition grâce à la nouvelle barre d\'outils sur les tablettes et les ordinateurs de bureau.</string>
-    <string name="whats_new_3">Nouveaux types de graphiques</string>
-    <string name="whats_new_3_desc">Ajoutez de nouveaux types de graphiques pour visualiser vos données pour des présentations et des analyses détaillées.</string>
-    <string name="whats_new_4">Affichage des fichiers Apple Pages et HWP</string>
-    <string name="whats_new_4_desc">Ouvrez et visualisez des documents aux formats Apple Pages et Hangul Word.</string>
     <string name="whats_new_title">Quoi de neuf ?</string>
     <string name="whats_new_next">Commencer !</string>
+    <string name="whats_new">Nouveautés de la v9.0</string>
+    <string name="whats_new_1">Reconnaissance de texte avec la caméra</string>
+    <string name="whats_new_1_desc">Capturez du texte imprimé avec votre caméra et créez des documents modifiables.</string>
+    <string name="whats_new_2">Interface à onglets mise à jour</string>
+    <string name="whats_new_2_desc">Profitez d\'une navigation simplifiée et d\'un design moderne avec une barre d\'outils renouvelée.</string>
+    <string name="whats_new_3">Prise en charge des formats ODG et Markdown</string>
+    <string name="whats_new_3_desc">Ouvrez et affichez les dessins .odg et les fichiers .md directement depuis votre appareil.</string>
+    <string name="whats_new_4">Compatibilité améliorée avec DocSpace 3.1</string>
+    <string name="whats_new_4_desc">Accédez aux versions des documents, remplissez des formulaires selon les rôles dans la VDR, utilisez des modèles d\'espaces et appliquez des filtres personnalisés en vous connectant à votre DocSpace.</string>
 </resources>
