@@ -22,6 +22,7 @@ import app.editors.manager.ui.fragments.operations.DocsDropboxOperationFragment
 import app.editors.manager.ui.fragments.operations.DocsGoogleDriveOperationFragment
 import app.editors.manager.ui.fragments.operations.DocsOneDriveOperationFragment
 import app.editors.manager.ui.fragments.operations.DocsOperationSectionFragment
+import app.editors.manager.ui.fragments.operations.DocsWebDavOperationFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -195,8 +196,7 @@ class OperationDialogFragment : BaseDialogFragment() {
                                 )
                             }
                             is PortalProvider.Webdav -> {
-                                DocsCloudOperationFragment.newInstance(
-                                    sectionType = ApiContract.SectionType.CLOUD_VIRTUAL_ROOM,
+                                DocsWebDavOperationFragment.newInstance(
                                     operationType = operationType,
                                     explorer = explorer
                                 )

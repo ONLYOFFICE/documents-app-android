@@ -106,8 +106,8 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         }
     }
 
-    override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {
-        showMediaActivity(explorer, isWebDAv) {
+    override fun onFileMedia(explorer: Explorer, isWebDav: Boolean) {
+        showMediaActivity(explorer, isWebDav) {
             presenter.deleteTempFile()
         }
     }
