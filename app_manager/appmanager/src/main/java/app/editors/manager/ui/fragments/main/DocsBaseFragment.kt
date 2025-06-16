@@ -816,9 +816,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         showDownloadFolderActivity(uri ?: Uri.EMPTY)
     }
 
-    override fun onFileMedia(explorer: Explorer, isWebDAv: Boolean) {
+    override fun onFileMedia(explorer: Explorer, isWebDav: Boolean) {
         hideDialog()
-        showMediaActivity(explorer, isWebDAv)
+        showMediaActivity(explorer, isWebDav)
     }
 
     override fun onFileDownloadPermission() {
