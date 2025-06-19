@@ -54,7 +54,7 @@ class WhatsNewDialog : ComposeDialogFragment() {
         Feature(
             title = R.string.whats_new_1,
             description = R.string.whats_new_1_desc,
-            icon = R.drawable.ic_new_onlyoffice
+            icon = R.drawable.ic_new_1
         ),
         Feature(
             title = R.string.whats_new_2,
@@ -161,7 +161,7 @@ private fun WhatsNewScreenPreview() {
                    Feature(
                        title = R.string.whats_new_1,
                        description = R.string.whats_new_1_desc,
-                       icon = R.drawable.ic_new_onlyoffice
+                       icon = R.drawable.ic_new_1
                    ),
                    Feature(
                        title = R.string.whats_new_2,

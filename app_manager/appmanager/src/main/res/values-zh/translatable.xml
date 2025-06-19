@@ -876,16 +876,17 @@
     <string name="rooms_invalid_password">密码无效</string>
     <string name="rooms_invite_access_description">无法将访客、用户和群组指定为房间管理员。只有房间和协作空间管理员才适合指定角色。</string>
     <string name="rooms_user_type_employees">员工</string>
-    <string name="whats_new_1">增强与协作空间 3.0 版本的集成</string>
-    <string name="whats_new_1_desc">使用 ONLYOFFICE 协作空间 3.0 版本的最新更新和改进，高效协作处理文档。</string>
-    <string name="whats_new_2">适用于平板电脑和台式机的选项卡式界面</string>
-    <string name="whats_new_2_desc">使用平板电脑和台式机上的选项卡式工具栏简化导航和编辑过程。</string>
-    <string name="whats_new_3">新增图表类型</string>
-    <string name="whats_new_3_desc">新增图表类型，实现数据可视化，便于深入演示与分析。</string>
-    <string name="whats_new_4">查看 Apple Pages 和 HWP 文件</string>
-    <string name="whats_new_4_desc">支持打开并查看 Apple Pages 和 Hangul Word 格式的文档。</string>
     <string name="whats_new_title">新增功能</string>
     <string name="whats_new_next">开始</string>
+    <string name="whats_new">v9.0 新功能</string>
+    <string name="whats_new_1">使用设备摄像头识别文本</string>
+    <string name="whats_new_1_desc">使用手机摄像头拍摄文档，自动识别文字并生成可编辑文件。</string>
+    <string name="whats_new_2">全新选项卡式界面</string>
+    <string name="whats_new_2_desc">重新设计的工具栏，布局更简洁直观。</string>
+    <string name="whats_new_3">支持 ODG 和 Markdown 格式</string>
+    <string name="whats_new_3_desc">手机直接预览 .odg 图纸文件和 .md 文档。</string>
+    <string name="whats_new_4">改进与协作空间 3.1 的兼容性</string>
+    <string name="whats_new_4_desc">连接协作空间后，支持文档版本管理、在虚拟数据房间中按角色填写表单、使用房间模板并应用自定义过滤器。</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">我和%s</string>

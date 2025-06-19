@@ -811,16 +811,17 @@
     <string name="rooms_invalid_password">Невалидна парола</string>
     <string name="rooms_invite_access_description">Гости, Потребители и Групи не могат да бъдат назначени като Управител на стая. Само администраторите на Стаята и на DocSpace са подходящи за посочената роля.</string>
     <string name="rooms_user_type_employees">Служители</string>
-    <string name="whats_new_1">Подобрена интеграция с DocSpace v3.0</string>
-    <string name="whats_new_1_desc">Работете съвместно по документи с най-новите актуализации и подобрения на ONLYOFFICE DocSpace v3.0.</string>
-    <string name="whats_new_2">Интерфейс с раздели за таблети и настолни версии</string>
-    <string name="whats_new_2_desc">Опростете навигацията и редактирането с новата лента с подпрозорци за таблети и настолни устройства.</string>
-    <string name="whats_new_3">Нови видове графики</string>
-    <string name="whats_new_3_desc">Добавете нови видове графики, за да визуализирате данните си за по-подробни презентации и анализи.</string>
-    <string name="whats_new_4">Преглеждайте Apple Pages и HWP файлове</string>
-    <string name="whats_new_4_desc">Отваряйте и четете документи в Apple Pages и формати Hangul Word.</string>
     <string name="whats_new_title">Какво ново</string>
     <string name="whats_new_next">Първи стъпки</string>
+    <string name="whats_new">Нови във v9.0</string>
+    <string name="whats_new_1">Разпознаване на текст с камерата на устройството</string>
+    <string name="whats_new_1_desc">Заснемайте принтиран текст с камерата си и създавайте редактируеми документи.</string>
+    <string name="whats_new_2">Актуализиран интерфейс с подпрозорци</string>
+    <string name="whats_new_2_desc">Насладете се на по-изчистено и по-интуитивно оформление с модифицираната лента с инструменти.</string>
+    <string name="whats_new_3">Поддръжка на формати ODG и Markdown</string>
+    <string name="whats_new_3_desc">Отваряйте и преглеждайте .odg рисунки и .md файлове директно от устройството си.</string>
+    <string name="whats_new_4">Подсилена съвместимост с DocSpace 3.1</string>
+    <string name="whats_new_4_desc">Получавайте достъп до версии на документи, попълване на формуляри на базата на роли във VDR, шаблони на стаи и персонални филтри, когато сте свързани с вашия DocSpace.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Аз и %s</string>

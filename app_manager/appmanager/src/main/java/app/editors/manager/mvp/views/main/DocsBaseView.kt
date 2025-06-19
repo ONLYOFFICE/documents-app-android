@@ -108,7 +108,7 @@ interface DocsBaseView : BaseViewExt {
     fun onItemSelected(position: Int, countSelected: String)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onActionDialog(isThirdParty: Boolean, isShowDocs: Boolean, roomType: Int?)
+    fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean, roomType: Int?)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onDownloadActivity(uri: Uri?)
@@ -147,7 +147,7 @@ interface DocsBaseView : BaseViewExt {
     fun onDialogQuestion(@Nullable title: String?, @Nullable question: String?, @Nullable tag: String?)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onDialogWarning(title: String, question: String, @Nullable tag: String?)
+    fun onDialogWarning(title: String, message: String, @Nullable tag: String?)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onDialogDelete(count: Int, toTrash: Boolean, tag: String)

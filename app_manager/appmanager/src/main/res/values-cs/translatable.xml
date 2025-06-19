@@ -953,16 +953,17 @@
     <string name="rooms_invalid_password">Neplatné heslo</string>
     <string name="rooms_invite_access_description">Hosté, uživatelé a skupiny nemohou být přiřazeni jako správci místností. Pro zadanou roli jsou vhodní pouze správci místnosti a prostoru DocSpace.</string>
     <string name="rooms_user_type_employees">Zaměstnanci</string>
-    <string name="whats_new_1">Rozšířená integrace s DocSpace v3.0</string>
-    <string name="whats_new_1_desc">Spolupracujte na dokumentech díky nejnovějším aktualizacím a vylepšením pro ONLYOFFICE DocSpace v3.0.</string>
-    <string name="whats_new_2">Rozhraní s kartami pro tablety a stolní počítače</string>
-    <string name="whats_new_2_desc">Zjednodušte navigaci a úpravy pomocí panelu nástrojů s kartami na tabletech a stolních zařízeních.</string>
-    <string name="whats_new_3">Nové typy tabulek</string>
-    <string name="whats_new_3_desc">Přidejte nové typy grafů pro vizualizaci dat pro podrobné prezentace a analýzy.</string>
-    <string name="whats_new_4">Zobrazení souborů Apple Pages a HWP</string>
-    <string name="whats_new_4_desc">Otevírejte a prohlížejte si dokumenty ve formátech Apple Pages a Hangul Word.</string>
     <string name="whats_new_title">Co je nového</string>
     <string name="whats_new_next">Začít</string>
+    <string name="whats_new">Novinky ve verzi 9.0</string>
+    <string name="whats_new_1">Rozpoznávání textu pomocí kamery v zařízení</string>
+    <string name="whats_new_1_desc">Snímejte vytištěný text pomocí kamery a vytvářejte dokumenty, které lze upravovat.</string>
+    <string name="whats_new_2">Aktualizované rozhraní s kartami</string>
+    <string name="whats_new_2_desc">Vychutnejte si přehlednější a intuitivnější rozvržení s přepracovaným panelem nástrojů.</string>
+    <string name="whats_new_3">Podpora formátů ODG a Markdown</string>
+    <string name="whats_new_3_desc">Otevírejte a prohlížejte výkresy .odg a soubory .md přímo ze svého zařízení.</string>
+    <string name="whats_new_4">Vylepšená kompatibilita s aplikací DocSpace 3.1</string>
+    <string name="whats_new_4_desc">Přístup k verzím dokumentů, vyplňování formulářů na základě rolí ve VDR, šablonám místností a vlastním filtrům po připojení k prostoru DocSpace.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Já a %s</string>

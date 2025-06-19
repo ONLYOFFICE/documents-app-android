@@ -973,16 +973,17 @@
     <string name="rooms_invalid_password">Անվավեր գաղտնաբառ</string>
     <string name="rooms_invite_access_description">Հյուրերը, օգտատերերը և խմբերը չեն կարող նշանակվել որպես Սենյակի մենեջերներ: Միայն Սենյակի և DocSpace-ի ադմինները հարմար են նշված դերի համար:</string>
     <string name="rooms_user_type_employees">Աշխատակիցներ</string>
-    <string name="whats_new_1">Ընդլայնված ինտեգրացիա DocSpace 3.0 տարբերակի հետ</string>
-    <string name="whats_new_1_desc">Համագործակցեք փաստաթղթերում՝ ONLYOFFICE DocSpace 3.0 տարբերակի վերջին թարմացումներով և բարելավումներով:</string>
-    <string name="whats_new_2">Ներդիրներով ինտերֆեյս պլանշետների և համակարգիչների համար</string>
-    <string name="whats_new_2_desc">Պարզեցրեք նավիգացիան և խմբագրումը ներդիրներով գործիքագոտու միջոցով՝ պլանշետների և համակարգչային սարքերի համար:</string>
-    <string name="whats_new_3">Գծապատկերների նոր տեսակներ</string>
-    <string name="whats_new_3_desc">Ավելացրեք գծապատկերների նոր տեսակներ՝ վիզուալիզացնելու ձեր տվյալները մանրամասն ներկայացումների և վերլուծությունների համար:</string>
-    <string name="whats_new_4">Դիտեք Apple էջերը և HWP ֆայլերը</string>
-    <string name="whats_new_4_desc">Բացեք և դիտեք փաստաթղթերը Apple Pages և Hangul Word ձևաչափերով:</string>
     <string name="whats_new_title">Ինչ նորություն կա</string>
     <string name="whats_new_next">Սկսել!</string>
+    <string name="whats_new">Նորություններ v9.0-ում</string>
+    <string name="whats_new_1">Տեքստի ճանաչում սարքի տեսախցիկով</string>
+    <string name="whats_new_1_desc">Նկարեք տպագիր տեքստը ձեր տեսախցիկով և ստեղծեք խմբագրվող փաստաթղթեր։</string>
+    <string name="whats_new_2">Թարմացված ներդիրներով ինտերֆեյս</string>
+    <string name="whats_new_2_desc">Վայելեք ավելի պարզ, ավելի ինտուիտիվ դասավորություն վերաձևավորված գործիքագոտու միջոցով։</string>
+    <string name="whats_new_3">Աջակցություն ODG և Markdown ձևաչափերին</string>
+    <string name="whats_new_3_desc">Բացեք և դիտեք .odg նկարներն ու .md ֆայլերն անմիջապես ձեր սարքից։</string>
+    <string name="whats_new_4">Բարելավված համատեղելիություն DocSpace 3.1-ի հետ</string>
+    <string name="whats_new_4_desc">Մուտք՝ փաստաթղթերի տարբերակներ, դերի վրա հիմնված ձևաթղթերի լրացում ՎՏՍ-ում, սենյակի ձևանմուշներ և հատուկ ֆիլտրեր, երբ միացված եք DocSpace-ին։</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Ես և %s-ը</string>

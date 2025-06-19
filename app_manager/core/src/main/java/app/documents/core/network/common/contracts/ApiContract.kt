@@ -221,6 +221,7 @@ object ApiContract {
         val isDevice: Boolean get() = this == Device
         val isTrash: Boolean get() = this == Trash
         val isStorage: Boolean get() = this is Storage
+        val isWebdav: Boolean get() = this == Webdav
 
         companion object {
 
