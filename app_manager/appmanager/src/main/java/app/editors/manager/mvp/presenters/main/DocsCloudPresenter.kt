@@ -494,7 +494,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 return@launch
             }
 
-            openFile(if (file.security?.fillForms == true) EditType.Fill() else EditType.View())
+            openFile(EditType.Fill())
         }
     }
 
