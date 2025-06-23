@@ -70,7 +70,7 @@ interface IMainActivity {
     fun showNavigationButton(isShow: Boolean)
     fun showActionButton(isShow: Boolean)
     fun showAccount(isShow: Boolean)
-    fun setAppBarStates(isVisible: Boolean)
+    fun setAppBarStates(isVisible: Boolean, hideInfo: Boolean = true)
     fun onSwitchAccount()
     fun showOnCloudFragment()
     fun showAccountsActivity()
@@ -602,8 +602,8 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         }
     }
 
-    override fun setAppBarStates(isVisible: Boolean) {
-        setToolbarInfo(null)
+    override fun setAppBarStates(isVisible: Boolean, hideInfo: Boolean) {
+        if (hideInfo) setToolbarInfo(null)
         setAppBarMode(isVisible)
         showAccount(isVisible)
         showNavigationButton(!isVisible)
@@ -620,6 +620,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         drawable: Int?,
         drawablePadding: Int?
     ) {
+        if (title == viewBinding.infoLayout.infoText.text) return
         viewBinding.infoLayout.root.isVisible = title != null
         viewBinding.infoLayout.infoText.text = title
         viewBinding.infoLayout.infoText.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)

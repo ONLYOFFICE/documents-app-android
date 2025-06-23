@@ -1131,7 +1131,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     open fun setToolbarState(isVisible: Boolean) {
         val fragment = parentFragment
         if (fragment is MainPagerFragment) {
-            fragment.setToolbarState(isVisible)
+            val hideToolbarInfo = presenter.toolbarState == ToolbarState.None
+            fragment.setToolbarState(isVisible, hideToolbarInfo)
         } else if (fragment is DocsOneDriveFragment) {
             fragment.setToolbarState(isVisible)
         }
