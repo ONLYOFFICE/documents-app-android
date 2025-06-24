@@ -494,7 +494,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 return@launch
             }
 
-            openFile(if (file.security?.fillForms == true) EditType.Fill() else EditType.View())
+            openFile(EditType.Fill())
         }
     }
 
@@ -1099,6 +1099,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun interruptConversion(): Boolean {
+        if (conversionJob?.isCompleted == true) return false
         val cancelled = conversionJob?.isCancelled == true // conversionJob == null || isCancelled
         conversionJob?.cancel()
         return cancelled
