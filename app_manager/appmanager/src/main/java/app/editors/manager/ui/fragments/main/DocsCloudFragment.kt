@@ -47,9 +47,6 @@ import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_TYPE
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
-import app.editors.manager.ui.fragments.template.createroom.RoomFromTemplateFragment
-import app.editors.manager.ui.fragments.template.settings.TemplateAccessSettingsFragment
-import app.editors.manager.ui.fragments.template.settings.TemplateSettingsFragment
 import app.editors.manager.ui.fragments.main.versionhistory.RefreshListener
 import app.editors.manager.ui.fragments.main.versionhistory.VersionHistoryFragment
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment
@@ -58,7 +55,10 @@ import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
 import app.editors.manager.ui.fragments.share.ShareFragment
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
+import app.editors.manager.ui.fragments.template.createroom.RoomFromTemplateFragment
 import app.editors.manager.ui.fragments.template.info.TemplateInfoFragment
+import app.editors.manager.ui.fragments.template.settings.TemplateAccessSettingsFragment
+import app.editors.manager.ui.fragments.template.settings.TemplateSettingsFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
 import app.editors.manager.viewModels.main.TemplateSettingsMode
@@ -819,6 +819,28 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 showSnackBar(R.string.room_created_successfully)
             }
         }
+    }
+
+    override fun showEditDialogCreate(
+        title: String,
+        value: String?,
+        hint: String?,
+        endHint: String?,
+        tag: String,
+        acceptButton: String?,
+        cancelButton: String?,
+        forbiddenSymbols: String
+    ) {
+        super.showEditDialogCreate(
+            title = title,
+            value = value,
+            hint = hint,
+            endHint = endHint,
+            tag = tag,
+            acceptButton = acceptButton,
+            cancelButton = cancelButton,
+            forbiddenSymbols = StringUtils.DIALOG_CLOUD_FORBIDDEN_SYMBOLS
+        )
     }
 
     val isRoot: Boolean

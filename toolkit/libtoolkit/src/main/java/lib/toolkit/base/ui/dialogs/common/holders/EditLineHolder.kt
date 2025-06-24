@@ -15,6 +15,7 @@ import com.google.android.material.textfield.TextInputLayout
 import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.StringUtils.DIALOG_FORBIDDEN_SYMBOLS
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.views.edits.BaseInputFilter
 
@@ -36,6 +37,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
     private var errorValue: String? = null
     private var suffixValue: String? = null
     private var isPassword: Boolean = false
+    private var forbiddenSymbols: String = DIALOG_FORBIDDEN_SYMBOLS
 
     override fun onClick(v: View) {
         when (v.id) {
@@ -176,10 +178,10 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             acceptView.isEnabled = mResultString.trim { it <= ' ' }.isNotBlank()
 
             // Check for allowed symbols
-            val checkedString = StringUtils.getAllowedString(mResultString)
+            val checkedString = StringUtils.getAllowedString(mResultString, forbiddenSymbols)
             return if (checkedString != null) {
                 errorValue = dialog.getString(R.string.dialogs_edit_forbidden_symbols)
-                editInputLayout?.error = errorValue + StringUtils.DIALOG_FORBIDDEN_SYMBOLS
+                editInputLayout?.error = errorValue + forbiddenSymbols
                 acceptView.isEnabled = mResultString.length > 1
                 ""
             } else if (StringUtils.getAllowedName(mResultString)) {
@@ -244,6 +246,11 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
 
         fun setSuffix(value: String?): Builder {
             suffixValue = value
+            return this
+        }
+
+        fun setForbiddenSymbols(value: String): Builder {
+            forbiddenSymbols = value
             return this
         }
 

@@ -31,6 +31,7 @@ object StringUtils {
     val COMMON_MIME_TYPE = "*/*"
     val URI_ALLOWED_CHARS = "@#&=*+-_.,:!?()/~'%"
     @JvmField val DIALOG_FORBIDDEN_SYMBOLS = "*+:\"<>?|\\/"
+    @JvmField val DIALOG_CLOUD_FORBIDDEN_SYMBOLS = "$DIALOG_FORBIDDEN_SYMBOLS#"
     val DIALOG_FORBIDDEN_NAMES = arrayOf(".", "..")
     val PATTERN_FORBIDDEN_SYMBOLS = ".*([$DIALOG_FORBIDDEN_SYMBOLS]*).*"
     val PATTERN_ALPHA_NUMERIC = "^[a-zA-Z0-9-]*$"
