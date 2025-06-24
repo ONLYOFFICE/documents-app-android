@@ -169,6 +169,9 @@ interface DocsBaseView : BaseViewExt {
     )
 
     @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onOpenDocumentServer(file: CloudFile, info: String, type: EditType)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun onOpenLocalFile(
         file: CloudFile,
         editType: EditType,
