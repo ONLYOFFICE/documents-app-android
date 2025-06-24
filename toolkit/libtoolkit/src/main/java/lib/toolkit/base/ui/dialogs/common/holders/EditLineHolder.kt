@@ -102,17 +102,14 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             editInputLayout?.apply {
                 suffixText = suffixValue
                 hintValue?.let(::setHint)
-                if (!errorValue.isNullOrEmpty()) {
-                    isErrorEnabled = true
-                    error = errorValue
-                    if (isPassword) {
+                isErrorEnabled = errorValue.isNullOrEmpty()
+                error = errorValue
+                if (isPassword) {
+                    endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
+                    if (!errorValue.isNullOrEmpty()) {
                         errorIconDrawable = null
                         setEndIconTintList(ColorStateList.valueOf(context.getColor(R.color.colorError)))
                     }
-                }
-
-                if (isPassword) {
-                    endIconMode = TextInputLayout.END_ICON_PASSWORD_TOGGLE
                 }
             }
 
