@@ -24,7 +24,6 @@ import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.UserIdInvitation
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.CloudFileProvider.RoomCallback
-import app.documents.core.providers.FileOpenResult
 import app.documents.core.providers.RoomProvider
 import app.documents.core.utils.FirebaseTool
 import app.editors.manager.R
@@ -517,17 +516,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             canBeShared = canBeShared,
             access = cloudFile.access
         ).collect(::onFileOpenCollect)
-    }
-
-    override suspend fun onFileOpenCollect(result: FileOpenResult) {
-        if (result !is FileOpenResult.Loading) viewState.onDialogClose(true)
-        when (result) {
-            is FileOpenResult.OpenDocumentServer -> {
-                viewState.onOpenDocumentServer(result.cloudFile, result.info, result.editType)
-                FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, result.cloudFile.fileExst)
-            }
-            else -> super.onFileOpenCollect(result)
-        }
     }
 
     fun saveExternalLinkToClipboard() {

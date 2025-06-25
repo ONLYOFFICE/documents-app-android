@@ -350,6 +350,22 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         )
     }
 
+    override fun onOpenDocumentServer(file: CloudFile, info: String, editType: EditType) {
+        showEditors(
+            uri = null,
+            type = when (getExtension(file.fileExst)) {
+                StringUtils.Extension.DOC, StringUtils.Extension.FORM -> EditorsType.DOCS
+                StringUtils.Extension.SHEET -> EditorsType.CELLS
+                StringUtils.Extension.PRESENTATION -> EditorsType.PRESENTATION
+                StringUtils.Extension.PDF -> EditorsType.PDF
+                else -> return
+            },
+            info = info,
+            editType = editType,
+            access = file.access
+        )
+    }
+
     override fun onOpenLocalFile(uri: Uri, extension: String, editType: EditType, access: Access) {
         when (getExtension(extension)) {
             StringUtils.Extension.DOC,
