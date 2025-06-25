@@ -56,7 +56,9 @@ class WebDavStorageFragment : WebDavBaseFragment(), ConnectView {
                 login = it.storageWebDavLoginEdit.text.toString(),
                 password = it.storageWebDavPasswordEdit.text.toString(),
                 isCorporate = parentActivity?.isMySection == false,
-                title = parentActivity?.title ?: it.storageWebDavTitleEdit.text.toString()
+                title = providerKey.takeIf { parentActivity?.isRoomStorage == true }
+                    ?: parentActivity?.title
+                    ?: viewBinding?.storageWebDavTitleEdit?.text.toString()
             )
         }
     }
@@ -100,7 +102,9 @@ class WebDavStorageFragment : WebDavBaseFragment(), ConnectView {
             binding.storageWebDavServerEdit.setText(url)
             hideUrlLayout()
 
-            if (parentActivity?.title == null) {
+            if (parentActivity?.isRoomStorage == true) {
+                binding.storageWebDavTitleLayout.isVisible = false
+            } else if (parentActivity?.title == null) {
                 binding.storageWebDavTitleEdit.setText(title)
                 binding.storageWebDavTitleEdit.setActionDoneListener(this::onSaveClick)
             } else {
