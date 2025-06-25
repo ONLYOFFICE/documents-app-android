@@ -25,4 +25,22 @@
     <string name="sizes_megabytes">Mb</string>
     <string name="sizes_terabytes">Tb</string>
     <string name="text_hint_required">අවශ්‍යයි</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="days">
+        <item quantity="one">දවස</item>
+        <item quantity="other">දින</item>
+    </plurals>
+    <plurals name="hours">
+        <item quantity="one">පැය</item>
+        <item quantity="other">පැය</item>
+    </plurals>
+    <plurals name="months">
+        <item quantity="one">මාසය</item>
+        <item quantity="other">මාස</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">අවුරුද්ද</item>
+        <item quantity="other">අවුරුදු</item>
+    </plurals>
 </resources>

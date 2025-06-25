@@ -957,4 +957,22 @@ Aplikacja korzysta teraz z języka angielskiego, ponieważ zmieniono język syst
     <string name="whats_new_3_desc">Dodaj nowe typy wykresów, aby wizualizować dane na potrzeby szczegółowych prezentacji i analiz.</string>
     <string name="whats_new_4">Wyświetlanie plików Apple Pages i HWP</string>
     <string name="whats_new_4_desc">Otwieranie i wyświetlanie dokumentów w formatach Apple Pages i Hangul Word.</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Czy na pewno chcesz usunąć szablon pokoju «%s»? Szablon nie może zostać przywrócony.</item>
+        <item quantity="other">Czy na pewno chcesz usunąć wybrane szablony pokoi? Nie można ich przywrócić.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Usuń szablon</item>
+        <item quantity="other">Usuń szablony</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d użytkownik</item>
+        <item quantity="other">%d użytkowników</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d grupa</item>
+        <item quantity="other">%d grup</item>
+    </plurals>
 </resources>

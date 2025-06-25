@@ -4,19 +4,19 @@
 
     <!-- Module: appmanager - 4 strings -->
     <plurals name="dialogs_question_message_template">
-        <item quantity="one">Do you really want to delete template room «%s»? The template cannot be restored.</item>
-                <item quantity="other">Do you really want to delete selected room templates? They cannot be restored.</item>
+        <item quantity="one">Czy na pewno chcesz usunąć szablon pokoju «%s»? Szablon nie może zostać przywrócony.</item>
+                <item quantity="other">Czy na pewno chcesz usunąć wybrane szablony pokoi? Nie można ich przywrócić.</item>
     </plurals>
     <plurals name="dialogs_question_delete_template_title">
-        <item quantity="one">Delete template</item>
-                <item quantity="other">Delete templates</item>
+        <item quantity="one">Usuń szablon</item>
+                <item quantity="other">Usuń szablony</item>
     </plurals>
     <plurals name="access_members_users_title">
-        <item quantity="one">%d user</item>
-                <item quantity="other">%d users</item>
+        <item quantity="one">%d użytkownik</item>
+                <item quantity="other">%d użytkowników</item>
     </plurals>
     <plurals name="access_members_groups_title">
-        <item quantity="one">%d group</item>
-                <item quantity="other">%d groups</item>
+        <item quantity="one">%d grupa</item>
+                <item quantity="other">%d grup</item>
     </plurals>
 </resources>

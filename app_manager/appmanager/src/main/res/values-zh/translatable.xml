@@ -1011,4 +1011,22 @@
     <string name="version_restore_loading">正在恢复版本</string>
     <string name="version_restore_subtitle">当前文件将保存在版本历史记录中。</string>
     <string name="version_restore_title">是否恢复此版本？</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">您确定要删除房间模板“%s”吗？此房间模板删除后无法恢复。</item>
+        <item quantity="other">您确定要删除所选房间模板吗？房间模板删除后无法恢复。</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">删除模板</item>
+        <item quantity="other">删除模板</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d 用户</item>
+        <item quantity="other">%d 用户</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d 群组</item>
+        <item quantity="other">%d 群组</item>
+    </plurals>
 </resources>

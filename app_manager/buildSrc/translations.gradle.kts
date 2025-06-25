@@ -243,7 +243,6 @@ tasks.register("importXmlTranslations") {
         val inputDir = "${project.buildDir}/../../translations"
         val translationsDir = file(inputDir)
 
-
         if (!translationsDir.exists()) {
             println("Translations directory not found: $inputDir")
             return@doLast
@@ -286,7 +285,7 @@ tasks.register("importXmlTranslations") {
                     targetDir.mkdirs()
                 }
 
-                // Determine whether to import to strings.xml or translatable.xml
+                // Определяем, куда импортировать строки
                 val targetFile = file("${targetDir}/strings.xml")
                 val targetTranslatableFile = file("${targetDir}/translatable.xml")
 
@@ -298,16 +297,25 @@ tasks.register("importXmlTranslations") {
 
                 val fileToUpdate = if (useTranslatableFile) targetTranslatableFile else targetFile
 
-                val stringsToAdd = strings.filter { (_, value) -> value.isNotEmpty() }
+                // Разделяем строки на обычные и plurals
+                val regularStrings = mutableMapOf<String, String>()
+                val pluralStrings = mutableMapOf<String, String>()
 
-                if (stringsToAdd.isEmpty()) {
+                strings.filter { (_, value) -> value.isNotEmpty() }.forEach { (key, value) ->
+                    if (key.startsWith("plurals:")) {
+                        pluralStrings[key.removePrefix("plurals:")] = value
+                    } else {
+                        regularStrings[key] = value
+                    }
+                }
+
+                if (regularStrings.isEmpty() && pluralStrings.isEmpty()) {
                     println("    - No filled strings to import")
                     return@forEach
                 }
 
                 if (fileToUpdate.exists()) {
                     val existingContent = fileToUpdate.readText()
-
                     val closingTagIndex = existingContent.lastIndexOf("</resources>")
 
                     if (closingTagIndex != -1) {
@@ -317,8 +325,31 @@ tasks.register("importXmlTranslations") {
                             val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd")
                             val currentDate = dateFormat.format(java.util.Date())
                             writer.println("\n    <!-- Newly added translations (v$appVersion - $currentDate) -->")
-                            stringsToAdd.forEach { (key, value) ->
+
+                            // Добавляем обычные строки
+                            regularStrings.forEach { (key, value) ->
                                 writer.println("    <string name=\"$key\">$value</string>")
+                            }
+
+                            // Добавляем plurals в правильном формате
+                            pluralStrings.forEach { (key, value) ->
+                                writer.println("    <plurals name=\"$key\">")
+
+                                // Проверяем содержит ли значение уже теги item
+                                if (value.contains("<item quantity=")) {
+                                    // Вставляем item-строки напрямую с правильными отступами
+                                    value.lines().forEach { line ->
+                                        val trimmedLine = line.trim()
+                                        if (trimmedLine.isNotEmpty()) {
+                                            writer.println("        $trimmedLine")
+                                        }
+                                    }
+                                } else {
+                                    // Если это просто текст, то добавляем как одно значение
+                                    writer.println("        <item quantity=\"other\">$value</item>")
+                                }
+
+                                writer.println("    </plurals>")
                             }
 
                             // Закрываем тег resources
@@ -337,15 +368,36 @@ tasks.register("importXmlTranslations") {
                         val currentDate = dateFormat.format(java.util.Date())
                         writer.println("    <!-- Translations added in version $appVersion - $currentDate -->")
 
-                        stringsToAdd.forEach { (key, value) ->
+                        // Добавляем обычные строки
+                        regularStrings.forEach { (key, value) ->
                             writer.println("    <string name=\"$key\">$value</string>")
+                        }
+
+                        // Добавляем plurals в правильном формате
+                        pluralStrings.forEach { (key, value) ->
+                            writer.println("    <plurals name=\"$key\">")
+
+                            if (value.contains("<item quantity=")) {
+                                // Вставляем item-строки напрямую с правильными отступами
+                                value.lines().forEach { line ->
+                                    val trimmedLine = line.trim()
+                                    if (trimmedLine.isNotEmpty()) {
+                                        writer.println("        $trimmedLine")
+                                    }
+                                }
+                            } else {
+                                // Если это просто текст, то добавляем как одно значение
+                                writer.println("        <item quantity=\"other\">$value</item>")
+                            }
+
+                            writer.println("    </plurals>")
                         }
 
                         writer.println("</resources>")
                     }
                 }
 
-                println("    - Updated file: ${fileToUpdate.name} (added ${stringsToAdd.size} strings)")
+                println("    - Updated file: ${fileToUpdate.name} (added ${regularStrings.size} strings, ${pluralStrings.size} plurals)")
             }
         }
 
@@ -439,10 +491,18 @@ fun parseModuleTranslations(file: File): Map<String, Map<String, String>> {
             val value = stringMatch.groupValues[2]
                 .trim()
                 .replace("\n\\s*".toRegex(), " ")
-            moduleMap[key] = value
+
+            // Проверяем, является ли это plural в формате string
+            if (key.startsWith("plurals:")) {
+                // Сохраняем value как есть для правильной обработки позже
+                moduleMap[key] = value
+            } else {
+                // Обычные строки
+                moduleMap[key] = value
+            }
         }
 
-        // Find plurals in this module
+        // Find plurals in this module (стандартные plurals теги)
         val pluralsRegex = "\\s*<plurals\\s+name=\"([^\"]+)\"[^>]*>(.*?)</plurals>\\s*".toRegex(RegexOption.DOT_MATCHES_ALL)
         val pluralsMatches = pluralsRegex.findAll(moduleContent)
 

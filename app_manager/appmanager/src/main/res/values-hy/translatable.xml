@@ -1108,4 +1108,22 @@
     <string name="version_restore_loading">Տարբերակը վերականգնվում է</string>
     <string name="version_restore_subtitle">Ընթացիկ ֆայլը կպահվի տարբերակների պատմության մեջ։</string>
     <string name="version_restore_title">Վերականգնե՞լ այս տարբերակը։</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Իսկապե՞ս ցանկանում եք ջնջել «%s» սենյակի ձևանմուշը։ Ձևանմուշը չի կարող վերականգնվել։</item>
+        <item quantity="other">Իսկապե՞ս ցանկանում եք ջնջել ընտրված սենյակի ձևանմուշները։ Դրանք չեն կարող վերականգնվել։</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Ջնջել ձևանմուշը</item>
+        <item quantity="other">Ջնջել ձևանմուշները</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d օգտատեր</item>
+        <item quantity="other">%d օգտատերեր</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d խումբ</item>
+        <item quantity="other">%d խմբեր</item>
+    </plurals>
 </resources>
