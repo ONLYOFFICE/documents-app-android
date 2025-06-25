@@ -42,6 +42,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.DownloadWork
@@ -287,6 +288,13 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         when (result) {
             is FileOpenResult.DownloadNotSupportedFile -> viewState.onFileDownloadPermission()
             is FileOpenResult.Loading -> showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS, true)
+            is FileOpenResult.OpenDocumentServer -> {
+                viewState.onOpenDocumentServer(result.cloudFile, result.info, result.editType)
+                FirebaseUtils.addAnalyticsOpenEntity(
+                    context.accountOnline?.portalUrl.orEmpty(),
+                    result.cloudFile.fileExst
+                )
+            }
             is FileOpenResult.OpenLocally -> {
                 openFileFromPortal(result.file, result.fileId, result.editType, result.access)
             }
