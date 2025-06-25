@@ -39,29 +39,6 @@
                 tools:visibility="visible" />
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/badgeVersionCard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/default_margin_small"
-                android:visibility="gone"
-                app:cardBackgroundColor="@color/colorOnBottomBarInActive"
-                app:cardCornerRadius="4dp"
-                tools:visibility="visible">
-
-                <TextView
-                    android:id="@+id/badgeVersion"
-                    style="@style/Widget.Common.TextView.Micro"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:includeFontPadding="false"
-                    android:paddingHorizontal="@dimen/default_margin_small"
-                    android:paddingVertical="@dimen/default_margin_micro"
-                    android:textColor="@color/colorOnPrimary"
-                    tools:text="V.5" />
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
                 android:id="@+id/badgeNewCard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

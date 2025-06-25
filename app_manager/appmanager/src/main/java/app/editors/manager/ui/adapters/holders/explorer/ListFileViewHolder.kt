@@ -56,10 +56,6 @@ class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
         binding.editing.isVisible = element.isEditing
         binding.locked.isVisible = element.isLocked
         binding.customFilter.isVisible = element.customFilterEnabled
-        binding.badgeVersionCard.isVisible = element.version > 1
-        if (binding.badgeVersionCard.isVisible){
-            binding.badgeVersion.text = itemView.context.getString(R.string.badge_doc_version, element.version)
-        }
         binding.badgeFormStatus.setFormStatus(UiFormFillingStatus.from(element.formFillingStatus))
         setFileExpiring(element, binding.title)
         if (adapter.pickerMode == PickerMode.Ordering) {
