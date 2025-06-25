@@ -1075,4 +1075,24 @@
     <string name="whats_new_4_desc">ເປີດ ແລະເບິ່ງເອກະສານໃນຮູບແບບ Apple Pages ແລະ Hangul Word.</string>
     <string name="whats_new_next">ເລີ່ມຕົ້ນ</string>
     <string name="whats_new_title">ມີ​ຫຍັງ​ໃໝ່</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="other">ທ່ານຕ້ອງການລຶບແມ່ແບບຫ້ອງທີ່ເລືອກແທ້ໆບໍ? ພວກມັນບໍ່ສາມາດຟື້ນຟູໄດ້.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="other">ລຶບແມ່ແບບ</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_seconds">
+        <item quantity="other">ພະຍາຍາມຫຼາຍເກີນໄປ.\nລອງໃໝ່ໃນອີກ %d ວິນາທີ</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_minutes">
+        <item quantity="other">ພະຍາຍາມຫຼາຍເທື່ອເກີນໄປ.\nລອງໃໝ່ໃນອີກ %d ນາທີ</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="other">%d ຜູ້ໃຊ້</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="other">%d ກຸ່ມ</item>
+    </plurals>
 </resources>

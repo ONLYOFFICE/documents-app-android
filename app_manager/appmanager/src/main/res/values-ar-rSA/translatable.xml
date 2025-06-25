@@ -765,7 +765,6 @@
     <string name="app_settings_main_help">مساعدة</string>
     <string name="settings_language">لغة</string>
     <string name="clear_recents">"هل تريد مسح الأحداث الأخيرة؟"</string>
-    <!--  TODO example  -->
     <string name="settings_language_confirmation_message">
       الآن يستخدم التطبيق اللغة الإنجليزية بسبب تغير لغة
     </string>
@@ -1102,4 +1101,54 @@
     <string name="whats_new_3_desc">أضيفوا أنواعًا جديدة من المخططات لعرض البيانات بطريقة مفصّلة وعرض تقديمي أكثر فعالية.</string>
     <string name="whats_new_4">عرض ملفات "Apple Pages" "وHWP"</string>
     <string name="whats_new_4_desc">افتحوا واستعرضوا مستندات بصيغ "Apple Pages" و"Hangul Word".</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="zero">هل تريدون حقًا حذف قوالب الغرف المحددة؟ لا يمكن استعادتها.</item>
+        <item quantity="one">هل تريدون حقًا حذف قالب الغرفة «%s»؟ لا يمكن استعادة القالب.</item>
+        <item quantity="two">هل تريدون حقًا حذف قالبي الغرف المحددة؟ لا يمكن استعادتها.</item>
+        <item quantity="few">هل تريدون حقًا حذف قوالب الغرف المحددة؟ لا يمكن استعادتها.</item>
+        <item quantity="many">هل تريدون حقًا حذف قوالب الغرف المحددة؟ لا يمكن استعادتها.</item>
+        <item quantity="other">هل تريدون حقًا حذف قوالب الغرف المحددة؟ لا يمكن استعادتها.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="zero">حذف القوالب</item>
+        <item quantity="one">حذف القالب</item>
+        <item quantity="two">حذف القالبين</item>
+        <item quantity="few">حذف القوالب</item>
+        <item quantity="many">حذف القوالب</item>
+        <item quantity="other">حذف القوالب</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_seconds">
+        <item quantity="zero">محاولات كثيرة جدًا.\nحاول مرة أخرى خلال %d ثانية</item>
+        <item quantity="one">محاولات كثيرة جدًا.\nحاول مرة أخرى في %d ثانية</item>
+        <item quantity="two">محاولات كثيرة جدًا.\nحاول مرة أخرى خلال %d ثانيتين</item>
+        <item quantity="few">محاولات كثيرة جدًا.\nحاول مرة أخرى خلال %d ثواني</item>
+        <item quantity="many">محاولات كثيرة جدًا.\nحاول مرة أخرى خلال %d ثانية</item>
+        <item quantity="other">محاولات كثيرة جدًا.\nحاول مرة أخرى خلال %d ثانية</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_minutes">
+        <item quantity="zero">محاولات كثيرة جدًا.\nحاول مرة أخرى بعد %d دقيقة</item>
+        <item quantity="one">محاولات كثيرة جدًا.\nحاول مرة أخرى بعد %d دقيقة</item>
+        <item quantity="two">محاولات كثيرة جدًا.\nحاول مرة أخرى بعد %d دقيقتين</item>
+        <item quantity="few">محاولات كثيرة جدًا.\nحاول مرة أخرى بعد %d دقائق</item>
+        <item quantity="many">محاولات كثيرة جدًا.\nحاول مرة أخرى بعد %d دقيقة</item>
+        <item quantity="other">محاولات كثيرة جدًا.\nحاول مرة أخرى بعد %d دقيقة</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="zero">%d مستخدم</item>
+        <item quantity="one">%d مستخدم</item>
+        <item quantity="two">%d مستخدمان</item>
+        <item quantity="few">%d مستخدمين</item>
+        <item quantity="many">%d مستخدمًا</item>
+        <item quantity="other">%d مستخدمين</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="zero">%d مجموعة</item>
+        <item quantity="one">%d مجموعة</item>
+        <item quantity="two">%d مجموعتان</item>
+        <item quantity="few">%d مجموعات</item>
+        <item quantity="many">%d مجموعة</item>
+        <item quantity="other">%d مجموعات</item>
+    </plurals>
 </resources>

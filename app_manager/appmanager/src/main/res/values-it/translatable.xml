@@ -952,4 +952,22 @@
     <string name="version_restore_loading">Restoring version</string>
     <string name="version_restore_subtitle">Current file will be saved in version history.</string>
     <string name="version_restore_title">Restore this version?</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Vuoi davvero eliminare la stanza modello «%s»? Il modello non può essere ripristinato.</item>
+        <item quantity="other">Vuoi davvero eliminare i modelli di stanza selezionati? Non possono essere ripristinati.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Elimina modello</item>
+        <item quantity="other">Elimina modelli</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d utente</item>
+        <item quantity="other">%d utenti</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d gruppo</item>
+        <item quantity="other">%d gruppi</item>
+    </plurals>
 </resources>

@@ -946,4 +946,22 @@
     <string name="version_restore_loading">Възстановяване на версия</string>
     <string name="version_restore_subtitle">Текущият файл ще бъде запазен в историята на версиите.</string>
     <string name="version_restore_title">Възстанови тази версия?</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Наистина ли искате да изтриете шаблона за стая „%s“? Шаблонът не може да бъде възстановен.</item>
+        <item quantity="other">Наистина ли искате да изтриете избраните шаблони за стаи? Те не могат да бъдат възстановени.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Изтриване на шаблон</item>
+        <item quantity="other">Изтриване на шаблони</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d потребител</item>
+        <item quantity="other">%d потребители</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d група</item>
+        <item quantity="other">%d групи</item>
+    </plurals>
 </resources>
