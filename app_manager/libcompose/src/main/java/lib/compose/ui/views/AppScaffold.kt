@@ -7,15 +7,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarHost
 import androidx.compose.material.Surface
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import lib.compose.ui.addIf
 import lib.compose.ui.theme.LocalUseTabletPadding
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AppScaffold(
     modifier: Modifier = Modifier,
@@ -27,10 +32,10 @@ fun AppScaffold(
 ) {
     Scaffold(
         floatingActionButton = fab,
-        modifier = modifier,
+        modifier = modifier.semantics { testTagsAsResourceId = true},
         topBar = topBar,
         scaffoldState = scaffoldState,
-        snackbarHost = { scaffoldState.snackbarHostState }) { padding ->
+        snackbarHost = { SnackbarHost(hostState = scaffoldState.snackbarHostState) }) { padding ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()

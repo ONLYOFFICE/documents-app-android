@@ -4,12 +4,13 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.core.net.toUri
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
-import app.editors.manager.mvp.presenters.main.OpenState
 import app.editors.manager.mvp.presenters.storages.BaseStorageDocsPresenter
 import app.editors.manager.mvp.views.base.BaseStorageDocsView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
@@ -31,12 +32,13 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         const val KEY_UPLOAD = "KEY_UPLOAD"
         const val KEY_UPDATE = "KEY_UPDATE"
         const val KEY_CREATE = "KEY_CREATE"
-        const val KEY_MODIFIED = "EXTRA_IS_MODIFIED"
     }
 
     var account: CloudAccount? = null
 
     var activity: IMainActivity? = null
+
+    abstract val storagePresenter: BaseStorageDocsPresenter<*, *>
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -81,7 +83,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     }
 
     private fun loadFiles() {
-        presenter.getProvider()
+        storagePresenter.getItems()
     }
 
     override fun onStateEmptyBackStack() {
@@ -101,21 +103,19 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
 
     override fun onContextButtonClick(contextItem: ExplorerContextItem) {
         when (contextItem) {
-            is ExplorerContextItem.ExternalLink -> presenter.externalLink
+            is ExplorerContextItem.ExternalLink -> storagePresenter.externalLink
             else -> super.onContextButtonClick(contextItem)
         }
     }
 
-    override fun onOpenLocalFile(file: CloudFile, editType: EditType?) {
-        val uri = Uri.parse(file.webUrl)
+    override fun onOpenLocalFile(file: CloudFile, editType: EditType, access: Access) {
+        val uri = file.webUrl.toUri()
         when(StringUtils.getExtension(file.fileExst)) {
             StringUtils.Extension.IMAGE -> {
-                val state = OpenState.Media(getMediaFile(uri), false)
-                showMediaActivity(state.explorer, state.isWebDav)
+                showMediaActivity(getMediaFile(uri), false)
             }
-            else -> super.onOpenLocalFile(file, editType)
+            else -> super.onOpenLocalFile(file, editType, access)
         }
-
     }
 
     private fun getMediaFile(uri: Uri): Explorer =
@@ -164,7 +164,7 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
     override fun onError(message: String?) {
         when(message) {
             context?.getString(R.string.errors_client_unauthorized) -> {
-                presenter.refreshToken()
+                storagePresenter.refreshToken()
             }
             else -> {
                 message?.let { showSnackBar(it) }
@@ -172,9 +172,6 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
         }
 
     }
-
-    override val presenter: BaseStorageDocsPresenter<out BaseStorageDocsView>
-        get() = getDocsPresenter()
 
     override fun onFileUploadPermission(extension: String?) {
         showMultipleFilePickerActivity(extension) { uris ->
@@ -187,7 +184,4 @@ abstract class BaseStorageDocsFragment: DocsBaseFragment(), ActionButtonFragment
             }
         }
     }
-
-    abstract fun getDocsPresenter(): BaseStorageDocsPresenter<out BaseStorageDocsView>
-
 }

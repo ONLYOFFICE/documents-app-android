@@ -53,7 +53,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -81,8 +83,9 @@ import app.editors.manager.app.appComponent
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.models.ui.SizeUnit
+import app.editors.manager.mvp.models.ui.StorageQuota
 import app.editors.manager.ui.dialogs.AddRoomItem
-import app.editors.manager.viewModels.main.RoomSettingsLogoState
+import app.editors.manager.viewModels.base.RoomSettingsLogoState
 import app.editors.manager.viewModels.main.RoomSettingsState
 import app.editors.manager.viewModels.main.RoomSettingsStorage
 import app.editors.manager.viewModels.main.RoomSettingsWatermarkState
@@ -115,7 +118,6 @@ import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.capitalize
 import java.io.File
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun RoomSettingsScreen(
@@ -225,7 +227,6 @@ fun RoomSettingsScreen(
             if (loadingRoom) {
                 ActivityIndicatorView()
             } else {
-                val context = LocalContext.current
                 NestedColumn {
                     AddRoomItem(
                         roomType = state.type,
@@ -239,48 +240,13 @@ fun RoomSettingsScreen(
                             .padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(40.dp)
-                                .width(IntrinsicSize.Min)
-                                .height(IntrinsicSize.Min)
-                                .clickable(
-                                    onClick = {
-                                        keyboardController.clearFocus()
-                                        selectPhoto(false)
-                                    }
-                                )
-                        ) {
-                            logoState.logoPreview?.let { preview ->
-                                Image(
-                                    modifier = Modifier.fillMaxSize(),
-                                    bitmap = preview.asImageBitmap(),
-                                    contentScale = ContentScale.Crop,
-                                    contentDescription = null,
-                                )
-                            } ?: run {
-                                val urlWithToken = if (!LocalView.current.isInEditMode) {
-                                    GlideUtils.getCorrectLoad(
-                                        context.accountOnline?.portal?.urlWithScheme + logoState.logoWebUrl,
-                                        AccountUtils.getToken(
-                                            context,
-                                            context.appComponent.accountOnline?.accountName.orEmpty()
-                                        ).orEmpty()
-                                    )
-                                } else {
-                                    ""
-                                }
 
-                                GlideImage(
-                                    modifier = Modifier.fillMaxSize(),
-                                    model = urlWithToken,
-                                    contentDescription = null,
-                                    loading = placeholder(R.drawable.ic_empty_image),
-                                    failure = placeholder(R.drawable.ic_empty_image)
-                                )
-                            }
-                        }
+                        RoomLogo(
+                            logoState = logoState,
+                            keyboardController = keyboardController,
+                            selectPhoto = { selectPhoto(false) }
+                        )
+
                         AppTextFieldListItem(
                             modifier = Modifier
                                 .height(56.dp)
@@ -344,7 +310,7 @@ fun RoomSettingsScreen(
 
                     AnimatedVisibilityVerticalFade(visible = state.quota.visible) {
                         QuotaBlock(
-                            state = state,
+                            quota = state.quota,
                             onSetEnabled = onSetQuotaEnabled,
                             onSetValue = onSetQuotaValue,
                             onSetMeasurementUnit = onSetQuotaMeasurementUnit,
@@ -352,6 +318,59 @@ fun RoomSettingsScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun RoomLogo(
+    logoState: RoomSettingsLogoState,
+    keyboardController: FocusManager,
+    shape: Shape = CircleShape,
+    selectPhoto: () -> Unit
+) {
+    val context = LocalContext.current
+    Box(
+        modifier = Modifier
+            .clip(shape)
+            .size(36.dp)
+            .width(IntrinsicSize.Min)
+            .height(IntrinsicSize.Min)
+            .clickable(
+                onClick = {
+                    keyboardController.clearFocus()
+                    selectPhoto()
+                }
+            )
+    ) {
+        logoState.logoPreview?.let { preview ->
+            Image(
+                modifier = Modifier.fillMaxSize(),
+                bitmap = preview.asImageBitmap(),
+                contentScale = ContentScale.Crop,
+                contentDescription = null,
+            )
+        } ?: run {
+            val urlWithToken = if (!LocalView.current.isInEditMode) {
+                GlideUtils.getCorrectLoad(
+                    context.accountOnline?.portal?.urlWithScheme + logoState.logoWebUrl,
+                    AccountUtils.getToken(
+                        context,
+                        context.appComponent.accountOnline?.accountName.orEmpty()
+                    ).orEmpty()
+                )
+            } else {
+                ""
+            }
+
+            GlideImage(
+                modifier = Modifier.fillMaxSize(),
+                model = urlWithToken,
+                contentDescription = null,
+                loading = placeholder(R.drawable.ic_empty_image),
+                failure = placeholder(R.drawable.ic_empty_image)
+            )
         }
     }
 }
@@ -744,7 +763,7 @@ private fun WatermarkImageBlock(
             }
         }
         AppListItem(
-            title = stringResource(R.string.rooms_vdr_watermark_image_select),
+            title = stringResource(R.string.rooms_vdr_watermark_image_scale),
             endContent = {
                 val popupVisible = remember { mutableStateOf(false) }
 
@@ -816,8 +835,8 @@ private fun WatermarkImageBlock(
 }
 
 @Composable
-private fun QuotaBlock(
-    state: RoomSettingsState,
+fun QuotaBlock(
+    quota: StorageQuota,
     onSetEnabled: (Boolean) -> Unit,
     onSetValue: (Long) -> Unit,
     onSetMeasurementUnit: (SizeUnit) -> Unit
@@ -825,14 +844,14 @@ private fun QuotaBlock(
     Column {
         AppSwitchItem(
             title = stringResource(R.string.rooms_vdr_storage_quota_title),
-            checked = state.quota.enabled,
+            checked = quota.enabled,
             onCheck = onSetEnabled
         )
-        AnimatedVisibilityVerticalFade(visible = state.quota.enabled) {
+        AnimatedVisibilityVerticalFade(visible = quota.enabled) {
             Column {
                 AppTextField(
                     modifier = Modifier.padding(start = 16.dp),
-                    value = state.quota.value.toString(),
+                    value = quota.value.toString(),
                     onValueChange = { value ->
                         if (!value.isDigitsOnly() || value.length > 18) return@AppTextField
                         val digitValue = if (value.isEmpty()) 0 else value.toLong()
@@ -847,13 +866,13 @@ private fun QuotaBlock(
                         val popupVisible = remember { mutableStateOf(false) }
 
                         DropdownMenuButton(
-                            title = stringResource(state.quota.unit.title),
+                            title = stringResource(quota.unit.title),
                             state = popupVisible,
                             items = {
                                 SizeUnit.values().forEach { unit ->
                                     DropdownMenuItem(
                                         title = stringResource(unit.title),
-                                        selected = state.quota.unit == unit,
+                                        selected = quota.unit == unit,
                                         onClick = {
                                             onSetMeasurementUnit(unit)
                                             popupVisible.value = false
@@ -962,7 +981,7 @@ private fun LifeTimeBlock(
 
 @SuppressLint("MissingPermission")
 @Composable
-private fun ChooseImageBottomView(
+fun ChooseImageBottomView(
     onDelete: (() -> Unit)? = null,
     onSuccess: (Uri?) -> Unit,
 ) {

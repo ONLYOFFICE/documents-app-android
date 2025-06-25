@@ -13,19 +13,26 @@ import app.documents.core.network.manager.models.request.RequestRoomNotification
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.manager.models.response.ResponseExplorer
 import app.documents.core.network.manager.models.response.ResponseRoomNotifications
+import app.documents.core.network.room.models.CustomFilterRequest
+import app.documents.core.network.room.models.LockFileRequest
 import app.documents.core.network.room.models.RequestAddTags
+import app.documents.core.network.room.models.RequestCreateTemplate
 import app.documents.core.network.room.models.RequestArchive
 import app.documents.core.network.room.models.RequestCreateExternalLink
 import app.documents.core.network.room.models.RequestCreateRoom
+import app.documents.core.network.room.models.RequestCreateRoomFromTemplate
 import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestEditRoom
+import app.documents.core.network.room.models.RequestEditTemplate
 import app.documents.core.network.room.models.RequestOrder
 import app.documents.core.network.room.models.RequestRoomAuthViaLink
 import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSendLinks
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
+import app.documents.core.network.room.models.RequestUpdatePublic
+import app.documents.core.network.room.models.ResponseCreationStatus
 import app.documents.core.network.room.models.ResponseRoomAuthViaLink
 import app.documents.core.network.room.models.ResponseRoomShare
 import app.documents.core.network.room.models.ResponseTags
@@ -33,6 +40,7 @@ import app.documents.core.network.room.models.ResponseUpdateExternalLink
 import app.documents.core.network.room.models.ResponseUploadLogo
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.GroupShare
+import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.RequestAddInviteLink
 import app.documents.core.network.share.models.request.RequestCreateSharedLink
 import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
@@ -155,7 +163,7 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/tags")
-    suspend fun getTags(): ResponseTags
+    suspend fun getTags(): Response<ResponseTags>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -376,6 +384,20 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{id}/lock")
+    suspend fun lockFile(@Path("id") id: String, @Body body: LockFileRequest): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{id}/customfilter")
+    suspend fun enableCustomFilter(@Path("id") id: String, @Body body: CustomFilterRequest): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
     @POST("api/" + ApiContract.API_VERSION + "/settings/notification/rooms")
     suspend fun muteNotifications(@Body body: RequestRoomNotifications): app.documents.core.network.BaseResponse<ResponseRoomNotifications>
 
@@ -424,4 +446,46 @@ interface RoomService {
         @Path("roomId") roomId: String,
         @QueryMap options: Map<String, String> = mapOf(),
     ): app.documents.core.network.BaseResponse<List<Group>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/")
+    suspend fun getAllTemplates(@QueryMap options: Map<String, String>?): Response<ResponseExplorer>
+
+    @POST("api/" + ApiContract.API_VERSION + "/files/rooms/fromTemplate")
+    suspend fun createRoomFromTemplate(
+        @Body body: RequestCreateRoomFromTemplate,
+    ): Response<BaseResponse>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/fromTemplate/status")
+    suspend fun getRoomFromTemplateStatus(
+    ): app.documents.core.network.BaseResponse<ResponseCreationStatus>
+
+    @POST("api/" + ApiContract.API_VERSION + "/files/roomtemplate")
+    suspend fun createTemplate(
+        @Body body: RequestCreateTemplate,
+    ): Response<BaseResponse>
+
+    @PUT("api/" + ApiContract.API_VERSION + "/files/rooms/{id}")
+    suspend fun editTemplate(
+        @Path(value = "id") id: String,
+        @Body body: RequestEditTemplate,
+    ): Response<BaseResponse>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/roomtemplate/status")
+    suspend fun getRoomTemplateStatus(
+    ): app.documents.core.network.BaseResponse<ResponseCreationStatus>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/roomtemplate/{templateId}/public")
+    suspend fun getTemplatePublic(
+        @Path("templateId") templateId: String
+    ): app.documents.core.network.BaseResponse<Boolean>
+
+    @PUT("api/" + ApiContract.API_VERSION + "/files/roomtemplate/public")
+    suspend fun updateTemplatePublic(
+        @Body body: RequestUpdatePublic
+    ): Response<BaseResponse>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{templateId}/share")
+    suspend fun getTemplateMembers(
+        @Path(value = "templateId") id: String
+    ): app.documents.core.network.BaseResponse<List<Share>>
 }

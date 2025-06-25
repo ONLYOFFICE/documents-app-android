@@ -37,4 +37,10 @@
         <item quantity="one">Jahr</item>
         <item quantity="other">Jahre</item>
     </plurals>
+
+    <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
+    <string name="help_and_feedback_contact_support">Support kontaktieren</string>
+    <string name="help_and_feedback_help_center">Hilfe-Center</string>
+    <string name="help_and_feedback_suggest_a_feature">Funktion vorschlagen</string>
+    <string name="help_and_feedback_title">Hilfe und Feedback</string>
 </resources>

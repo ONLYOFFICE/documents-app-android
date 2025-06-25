@@ -1,9 +1,9 @@
 package app.editors.manager.managers.utils
 
-import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
@@ -25,7 +25,10 @@ import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import app.editors.manager.mvp.models.ui.AccessUI
 import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
+import lib.toolkit.base.managers.tools.FileExtensionUtils
+import lib.toolkit.base.managers.tools.FileGroup
 import lib.toolkit.base.managers.utils.StringUtils
+import androidx.core.graphics.toColorInt
 
 object ManagerUiUtils {
 
@@ -102,25 +105,15 @@ object ManagerUiUtils {
     }
 
     fun getFileThumbnail(ext: String, isGrid: Boolean): Int {
-        return when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC -> if (!isGrid) R.drawable.ic_type_document_row else R.drawable.ic_type_document_column
-            StringUtils.Extension.SHEET -> if (!isGrid) R.drawable.ic_type_spreadsheet_row else R.drawable.ic_type_spreadsheet_column
-            StringUtils.Extension.PRESENTATION -> if (!isGrid) R.drawable.ic_type_presentation_row else R.drawable.ic_type_presentation_column
-            StringUtils.Extension.IMAGE,
-            StringUtils.Extension.IMAGE_GIF,
-                -> if (!isGrid) R.drawable.ic_type_picture_row else R.drawable.ic_type_picture_column
-
-            StringUtils.Extension.HTML,
-            StringUtils.Extension.EBOOK,
-            StringUtils.Extension.PDF,
-                -> if (!isGrid) R.drawable.ic_type_pdf_row else R.drawable.ic_type_pdf_column
-
-            StringUtils.Extension.VIDEO_SUPPORT,
-            StringUtils.Extension.VIDEO,
-                -> if (!isGrid) R.drawable.ic_type_video_row else R.drawable.ic_type_video_column
-
-            StringUtils.Extension.ARCH -> if (!isGrid) R.drawable.ic_type_archive_row else R.drawable.ic_type_archive_column
-            StringUtils.Extension.FORM -> if (!isGrid) R.drawable.ic_type_docxf_row else R.drawable.ic_type_docxf_column
+        return when (FileExtensionUtils.getDocumentType(ext)) {
+            FileGroup.DOCUMENT -> if (!isGrid) R.drawable.ic_type_document_row else R.drawable.ic_type_document_column
+            FileGroup.SHEET -> if (!isGrid) R.drawable.ic_type_spreadsheet_row else R.drawable.ic_type_spreadsheet_column
+            FileGroup.PRESENTATION -> if (!isGrid) R.drawable.ic_type_presentation_row else R.drawable.ic_type_presentation_column
+            FileGroup.IMAGE, FileGroup.IMAGE_GIF -> if (!isGrid) R.drawable.ic_type_picture_row else R.drawable.ic_type_picture_column
+            FileGroup.HTML, FileGroup.PDF -> if (!isGrid) R.drawable.ic_type_pdf_row else R.drawable.ic_type_pdf_column
+            FileGroup.VIDEO -> if (!isGrid) R.drawable.ic_type_video_row else R.drawable.ic_type_video_column
+            FileGroup.ARCHIVE -> if (!isGrid) R.drawable.ic_type_archive_row else R.drawable.ic_type_archive_column
+//            StringUtils.Extension.FORM -> if (!isGrid) R.drawable.ic_type_docxf_row else R.drawable.ic_type_docxf_column
             else -> if (!isGrid) R.drawable.ic_type_other_row else R.drawable.ic_type_other_column
         }
     }
@@ -133,29 +126,17 @@ object ManagerUiUtils {
         externalBadge: ImageView,
         isGrid: Boolean,
     ) {
-        val logo = room.logo?.large
+        val backgroundColor = room.logo?.color?.let { color -> "#$color".toColorInt() }
+            ?: context.getColor(lib.toolkit.base.R.color.colorPrimary)
 
-        fun setInitials() {
-            val initials = RoomUtils.getRoomInitials(room.title)
-            if (!initials.isNullOrEmpty()) {
-                image.isVisible = false
-                text.isVisible = true
-                text.text = initials
-            }
-            setCardBackgroundColor(
-                room.logo?.color?.let { color -> Color.parseColor("#$color") }
-                    ?: context.getColor(lib.toolkit.base.R.color.colorPrimary)
-            )
-        }
-
-        if (!logo.isNullOrEmpty()) {
-            text.isVisible = false
-            image.isVisible = true
-            image.setRoomLogo(logo, isGrid, ::setInitials)
-            setCardBackgroundColor(context.getColor(lib.toolkit.base.R.color.colorTransparent))
-        } else {
-            setInitials()
-        }
+        setIconCommon(
+            item = room,
+            image = image,
+            text = text,
+            isGrid = isGrid,
+            isTemplate = false,
+            backgroundColor = backgroundColor
+        ) { setCardBackgroundColor(backgroundColor) }
 
         publicBadge.isVisible = false
         externalBadge.isVisible = false
@@ -174,6 +155,61 @@ object ManagerUiUtils {
                 }
             )
             publicBadge.isVisible = true
+        }
+    }
+
+    fun CardView.setTemplateIcon(
+        template: CloudFolder,
+        image: ImageView,
+        text: TextView,
+        isGrid: Boolean,
+    ) {
+        val logoColor = template.logo?.color?.let { color -> "#$color".toColorInt() }
+            ?: context.getColor(lib.toolkit.base.R.color.colorTextTertiary)
+        val backgroundColor = context.getColor(lib.toolkit.base.R.color.colorTransparent)
+
+        setIconCommon(
+            item = template,
+            image = image,
+            text = text,
+            isGrid = isGrid,
+            isTemplate = true,
+            backgroundColor = backgroundColor
+        ) { text.setTextColor(logoColor) }
+
+        val frame = AppCompatResources.getDrawable(context, R.drawable.room_template_logo)?.mutate()
+        frame?.setTint(logoColor)
+        background = frame
+    }
+
+    private fun CardView.setIconCommon(
+        item: CloudFolder,
+        image: ImageView,
+        text: TextView,
+        isGrid: Boolean,
+        isTemplate: Boolean,
+        backgroundColor: Int,
+        onSetInitials: (() -> Unit)? = null
+    ) {
+        val logo = item.logo?.large
+
+        fun setInitials() {
+            val initials = RoomUtils.getRoomInitials(item.title)
+            if (!initials.isNullOrEmpty()) {
+                image.isVisible = false
+                text.isVisible = true
+                text.text = initials
+            }
+            onSetInitials?.invoke()
+        }
+
+        if (!logo.isNullOrEmpty()) {
+            text.isVisible = false
+            image.isVisible = true
+            image.setRoomLogo(logo, isGrid, isTemplate, ::setInitials)
+            setCardBackgroundColor(backgroundColor)
+        } else {
+            setInitials()
         }
     }
 
@@ -206,6 +242,7 @@ object ManagerUiUtils {
                 StringUtils.Extension.PDF, StringUtils.Extension.OFORM -> {
                     add(Access.FormFiller)
                 }
+
                 else -> Unit
             }
             add(Access.Read)
@@ -251,12 +288,12 @@ fun Access.toUi(): AccessUI {
 
         Access.FormFiller -> arrayOf(
             R.drawable.ic_access_fill_form,
-            R.string.share_popup_access_fill_forms
+            R.string.share_access_room_form_filler
         )
 
         Access.Read -> arrayOf(
             R.drawable.ic_access_read,
-            R.string.share_popup_access_read_only
+            R.string.share_access_room_viewer
         )
 
         Access.Review -> arrayOf(
@@ -287,11 +324,19 @@ fun Access.toUi(): AccessUI {
     return AccessUI(this, title, icon)
 }
 
-val User.typeTitle: Int
-    get() = when (type) {
-        UserType.Owner -> R.string.share_user_type_room_docspace_owner
+fun User.getTypeTitle(provider: PortalProvider?): Int {
+    return when (type) {
+        UserType.Owner -> {
+            when (provider) {
+                is PortalProvider.Cloud.Workspace -> R.string.share_user_type_room_workspace_owner
+                is PortalProvider.Cloud.DocSpace -> R.string.share_user_type_room_docspace_owner
+                else -> R.string.share_user_type_room_portal_owner
+            }
+        }
+
         UserType.Admin -> R.string.share_user_type_room_docspace_admin
         UserType.RoomAdmin -> R.string.share_user_type_room_admin
         UserType.User -> R.string.profile_type_user
         UserType.Guest -> R.string.profile_type_visitor
     }
+}

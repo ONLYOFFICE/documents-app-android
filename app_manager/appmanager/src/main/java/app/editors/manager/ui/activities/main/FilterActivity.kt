@@ -96,8 +96,9 @@ class FilterActivity : BaseAppActivity(), IFilterActivity {
         val section = intent?.extras?.getInt(KEY_SECTION) ?: -1
         val isRoot = intent?.extras?.getBoolean(KEY_IS_ROOT) == true
         return when {
+            ApiContract.SectionType.isTemplates(section) -> RoomFilterFragment.newInstance(true)
             (ApiContract.SectionType.isRoom(section) || ApiContract.SectionType.isArchive(section))
-                    && isRoot -> RoomFilterFragment.newInstance(folderId)
+                    && isRoot -> RoomFilterFragment.newInstance()
             else -> CloudFilterFragment.newInstance(folderId, section)
         }
     }

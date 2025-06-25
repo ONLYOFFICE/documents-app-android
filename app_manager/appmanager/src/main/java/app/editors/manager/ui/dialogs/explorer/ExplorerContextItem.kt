@@ -22,12 +22,13 @@ sealed class ExplorerContextItem(
     class Edit(state: ExplorerContextState) : ExplorerContextItem(
         icon = R.drawable.ic_list_context_edit,
         title = getTitle(state)
-    ), ExplorerContextBlockOrder.Common {
+    ), ExplorerContextBlockOrder.Open {
 
         companion object {
 
             fun getTitle(state: ExplorerContextState) = when {
                 state.section.isRoom && state.isRoot -> R.string.list_context_edit_room
+                state.section.isTemplates -> R.string.list_context_edit_template
                 else -> R.string.list_context_edit
             }
         }
@@ -36,12 +37,17 @@ sealed class ExplorerContextItem(
     class Fill : ExplorerContextItem(
         icon = R.drawable.ic_access_fill_form,
         title =  R.string.list_context_fill
+    ), ExplorerContextBlockOrder.Open
+
+    object FillingStatus : ExplorerContextItem(
+        icon = R.drawable.ic_filling_status,
+        title =  R.string.filling_form_filling_status
     ), ExplorerContextBlockOrder.Common
 
-    class View : ExplorerContextItem(
+    object View : ExplorerContextItem(
         icon = R.drawable.ic_access_read,
         title =  lib.toolkit.base.R.string.settings_view
-    ), ExplorerContextBlockOrder.Common
+    ), ExplorerContextBlockOrder.Open
 
     object Share : ExplorerContextItem(
         icon = lib.toolkit.base.R.drawable.ic_list_context_share,
@@ -56,7 +62,10 @@ sealed class ExplorerContextItem(
         companion object {
 
             fun getTitle(state: ExplorerContextState) = when {
-                state.section.isRoom && state.isRoot && state.item is CloudFolder && state.item.roomType == ApiContract.RoomType.VIRTUAL_ROOM -> R.string.rooms_info_copy_link
+                state.section.isTemplates || state.section.isRoom
+                        && state.isRoot && state.item is CloudFolder
+                        && state.item.roomType == ApiContract.RoomType.VIRTUAL_ROOM -> R.string.rooms_info_copy_link
+
                 state.section.isRoom && state.isRoot -> R.string.list_context_copy_general_link
                 else -> R.string.list_context_get_external_link
             }
@@ -89,9 +98,34 @@ sealed class ExplorerContextItem(
         title = if (!pinned) R.string.list_context_pin_to_top else R.string.list_context_unpin
     ), ExplorerContextBlockOrder.Common
 
+    class Lock(locked: Boolean) : ExplorerContextItem(
+        icon = if (!locked) R.drawable.ic_list_context_lock else R.drawable.ic_list_context_unlock,
+        title = if (!locked) R.string.list_context_lock else R.string.list_context_unlock
+    ), ExplorerContextBlockOrder.Common
+
+    class CustomFilter(enabled: Boolean? = false) : ExplorerContextItem(
+        icon = R.drawable.ic_custom_filter,
+        title = if (enabled == true) R.string.list_context_disable_custom_filter else R.string.list_context_enable_custom_filter
+    ), ExplorerContextBlockOrder.Common
+
+    object SaveAsTemplate : ExplorerContextItem(
+        icon = R.drawable.ic_save_as_template,
+        title = R.string.list_context_save_as_template
+    ), ExplorerContextBlockOrder.Common
+
+    object AccessSettings : ExplorerContextItem(
+        icon = R.drawable.ic_add_users,
+        title = R.string.list_context_access_settings
+    ), ExplorerContextBlockOrder.Common
+
     object Download : ExplorerContextItem(
         icon = R.drawable.ic_list_context_download,
         title = R.string.list_context_create_download
+    ), ExplorerContextBlockOrder.Common
+
+    object EditIndex : ExplorerContextItem(
+        icon = R.drawable.ic_list_context_edit_index,
+        title = R.string.list_context_edit_index
     ), ExplorerContextBlockOrder.Common
 
     class Favorites(val enabled: Boolean, val favorite: Boolean) : ExplorerContextItem(
@@ -153,7 +187,7 @@ sealed class ExplorerContextItem(
 
     object Upload : ExplorerContextItem(
         icon = R.drawable.ic_list_action_upload,
-        title = R.string.list_context_upload_to_portal
+        title = R.string.list_context_upload_to_cloud
     ), ExplorerContextBlockOrder.Common
 
     object Rename : ExplorerContextItem(
@@ -166,19 +200,44 @@ sealed class ExplorerContextItem(
         title = R.string.dialog_create_room
     ), ExplorerContextBlockOrder.Common
 
+    object VersionHistory : ExplorerContextItem(
+        icon = R.drawable.ic_restore,
+        title = R.string.list_context_version_history
+    ), ExplorerContextBlockOrder.Common
+
+    object Open : ExplorerContextItem(
+        icon = R.drawable.ic_open_version,
+        title = R.string.list_context_open_vesrion
+    ), ExplorerContextBlockOrder.Common
+
+    object EditComment : ExplorerContextItem(
+        icon = R.drawable.ic_edit_comment,
+        title = R.string.list_context_edit_comment
+    ), ExplorerContextBlockOrder.Common
+
+    object DeleteVersion : ExplorerContextItem(
+        icon = R.drawable.ic_list_context_delete,
+        title = R.string.list_context_delete
+    ), ExplorerContextBlockOrder.Remove
+
     object Archive : ExplorerContextItem(
         icon = R.drawable.ic_room_archive,
         title = R.string.context_room_move_to_archive
     ), ExplorerContextBlockOrder.Remove
 
     object Restore : ExplorerContextItem(
-        icon = R.drawable.ic_trash_restore,
+        icon = R.drawable.ic_restore,
         title = R.string.device_trash_files_restore
     ), ExplorerContextBlockOrder.Remove
 
     object ShareDelete : ExplorerContextItem(
         icon = R.drawable.drawable_ic_visibility_off,
         title = R.string.list_context_remove_from_list
+    ), ExplorerContextBlockOrder.Remove
+
+    object StopFilling : ExplorerContextItem(
+        icon = R.drawable.ic_stop_filling,
+        title = R.string.filling_form_stop_filling
     ), ExplorerContextBlockOrder.Remove
 
     class Delete(state: ExplorerContextState) : ExplorerContextItem(

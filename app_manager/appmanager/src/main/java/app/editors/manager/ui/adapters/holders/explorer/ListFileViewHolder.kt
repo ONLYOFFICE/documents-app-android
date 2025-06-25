@@ -2,6 +2,7 @@ package app.editors.manager.ui.adapters.holders.explorer
 
 import android.annotation.SuppressLint
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -11,8 +12,10 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerListFileBinding
 import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.mvp.models.ui.UiFormFillingStatus
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.ExplorerAdapter
+import app.editors.manager.ui.views.badge.setFormStatus
 
 class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
     ListBaseViewHolder<CloudFile>(itemView, adapter) {
@@ -34,6 +37,9 @@ class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
     override val contextButton: Button
         get() = binding.contextButton
 
+    override val contextButtonLayout: ViewGroup
+        get() = binding.contextButtonLayout
+
     override val selectIcon: ImageView
         get() = binding.selectIcon
 
@@ -48,6 +54,13 @@ class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
         binding.favorite.isVisible = element.isFavorite
         binding.badgeNewCard.isVisible = element.isNew
         binding.editing.isVisible = element.isEditing
+        binding.locked.isVisible = element.isLocked
+        binding.customFilter.isVisible = element.customFilterEnabled
+        binding.badgeVersionCard.isVisible = element.version > 1
+        if (binding.badgeVersionCard.isVisible){
+            binding.badgeVersion.text = itemView.context.getString(R.string.badge_doc_version, element.version)
+        }
+        binding.badgeFormStatus.setFormStatus(UiFormFillingStatus.from(element.formFillingStatus))
         setFileExpiring(element, binding.title)
         if (adapter.pickerMode == PickerMode.Ordering) {
             initOrderingMode(binding.dragIcon, binding.contextButtonLayout)

@@ -17,9 +17,18 @@ import androidx.annotation.RequiresPermission
 import androidx.documentfile.provider.DocumentFile
 import lib.toolkit.base.BuildConfig
 import okhttp3.ResponseBody
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.net.URL
-import java.util.*
+import java.util.UUID
 
 object FileUtils {
 
@@ -318,10 +327,13 @@ object FileUtils {
     @JvmStatic
     fun createFile(dir: File, name: String): File? {
         return try {
+            if (!dir.exists()) {
+                dir.mkdirs()
+            }
             File(dir, name.replace("/", "_")).apply {
                 createNewFile()
             }
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             null
         }
     }

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Missing translations for language: si -->
+
+    <!-- Module: appmanager - 21 strings -->
+    <string name="dialogs_common_cancel_button">CANCEL</string>
+    <string name="dialogs_wait_title_storage">Connecting storage…</string>
+    <string name="dialogs_question_delete_all_title">Delete all items?</string>
+    <string name="dialogs_edit_feedback_rate_title">Would you mind sending us feedback?</string>
+    <string name="placeholder_no_users_found">No users found</string>
+    <string name="app_settings_passcode_confirm_title">Confirm passcode</string>
+    <string name="sign_in_terms_and_policy_text"><![CDATA[ By proceeding, you agree to the <a href="%1$s">Privacy Policy</a> and the <a href="%2$s">Terms of Service</a> ]]></string>
+    <string name="file_lifetime_title">File lifetime</string>
+    <string name="rooms_vdr_watermark_position">Position</string>
+    <string name="title_edit_template">Edit template</string>
+    <plurals name="dialogs_question_message_delete">
+        <item quantity="one">It will be irretrievably deleted.\nThis action is irreversible.</item>
+                <item quantity="other">They will be irretrievably deleted.\nThis action is irreversible.</item>
+    </plurals>
+    <plurals name="dialogs_question_message_to_trash">
+        <item quantity="one">It will be moved to the Trash.</item>
+                <item quantity="other">They will be moved to the Trash.</item>
+    </plurals>
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Do you really want to delete template room «%s»? The template cannot be restored.</item>
+                <item quantity="other">Do you really want to delete selected room templates? They cannot be restored.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_title">
+        <item quantity="one">Delete this item?</item>
+                <item quantity="other">Delete %1$d items?</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Delete template</item>
+                <item quantity="other">Delete templates</item>
+    </plurals>
+    <plurals name="operation_moved_to_trash">
+        <item quantity="one">Item moved to the Trash</item>
+                <item quantity="other">Items moved to the Trash</item>
+    </plurals>
+    <plurals name="operation_delete_irretrievably">
+        <item quantity="one">Item irretrievably deleted</item>
+                <item quantity="other">Items irretrievably deleted</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_seconds">
+        <item quantity="one">Too many attempts.\nTry again in %d second</item>
+                <item quantity="other">Too many attempts.\nTry again in %d seconds</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_minutes">
+        <item quantity="one">Too many attempts.\nTry again in %d minute</item>
+                <item quantity="other">Too many attempts.\nTry again in %d minutes</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d user</item>
+                <item quantity="other">%d users</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d group</item>
+                <item quantity="other">%d groups</item>
+    </plurals>
+
+    <!-- Module: libgcells - 1 strings -->
+    <string name="cells_csv_settings_delimiter_space">Space</string>
+
+    <!-- Module: libgdocs - 2 strings -->
+    <string name="docs_txt_settings_dialog_header">Choose TXT options</string>
+    <string name="review_final_desc">All changes accepted (Preview)</string>
+
+    <!-- Module: libgeditors - 4 strings -->
+    <string name="dialog_search_replace_hint"><font size="22"> Replace text </font></string>
+    <string name="dialog_search_find_hint"><font size="22"> Search text </font></string>
+    <string name="settings_shape_border_style">Border style</string>
+    <string name="settings_chart_chart_type">Chart type</string>
+
+    <!-- Module: libgslides - 1 strings -->
+    <string name="slides_settings_delete_slide">Delete slide</string>
+
+    <!-- Module: libtoolkit - 4 strings -->
+    <plurals name="days">
+        <item quantity="one">day</item>
+                <item quantity="other">days</item>
+    </plurals>
+    <plurals name="hours">
+        <item quantity="one">hour</item>
+                <item quantity="other">hours</item>
+    </plurals>
+    <plurals name="months">
+        <item quantity="one">month</item>
+                <item quantity="other">months</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">year</item>
+                <item quantity="other">years</item>
+    </plurals>
+</resources>

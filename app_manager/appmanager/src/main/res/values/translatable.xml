@@ -67,7 +67,9 @@
     <string name="errors_web_viewr">An error occurred while editing a web document</string>
     <string name="errors_webdav_sign_in">Wrong server, username or password</string>
     <string name="errors_webdav_username_password">Wrong username or password</string>
+    <string name="errors_webdav_2fa_code">Wrong verification code</string>
     <string name="errors_webdav_server">Wrong server</string>
+    <string name="errors_open_document">Failed open document</string>
 
     <!-- SignIn -->
     <string name="errors_sign_in_splash_error">Failed to access the portal</string>
@@ -229,15 +231,26 @@
         <item quantity="other">They will be moved to the Trash.</item>
     </plurals>
 
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Do you really want to delete template room «%s»? The template cannot be restored.</item>
+        <item quantity="other">Do you really want to delete selected room templates? They cannot be restored.</item>
+    </plurals>
+
     <plurals name="dialogs_question_delete_title">
         <item quantity="one">Delete this item?</item>
         <item quantity="other">Delete %1$d items?</item>
+    </plurals>
+
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Delete template</item>
+        <item quantity="other">Delete templates</item>
     </plurals>
 
     <string name="dialogs_warning_title">Warning</string>
     <string name="dialogs_warning_only_pdf_form_message">The file cannot be moved to this room. Please try to move the ONLYOFFICE PDF form.</string>
     <string name="dialogs_warning_pinned_room_limit">You can’t pin more than 10 rooms to the top. Unpin some that are currently pinned.</string>
     <string name="dialogs_warning_fill_forms_room_create">Creation based on several files and folders is not available for this type of room. To create such a room, go to the Rooms section or use one of the PDF forms.</string>
+    <string name="dialogs_warning_room_space_quota_exceed">Room space quota exceeded (%s).</string>
 
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">Rename</string>
@@ -270,6 +283,7 @@
     <string name="fragment_recent_title">Recent</string>
     <string name="fragment_on_device_title">On Device</string>
     <string name="fragment_profile_title">Profile</string>
+    <string name="fragment_templates_title">Templates</string>
 
     <!-- Drawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -288,7 +302,9 @@
     <string name="settings_clear_cache">Clear cache</string>
     <string name="settings_title_common">Common</string>
     <string name="setting_wifi">Upload files only using Wi-Fi</string>
+    <string name="setting_screen_on">While viewing documents</string>
     <string name="setting_title_wifi">Wi-Fi</string>
+    <string name="setting_title_sreen_on">Keep Screen On</string>
     <string name="setting_cache_cleared">Cache cleared</string>
 
     <!-- Main toolbar menu -->
@@ -333,26 +349,39 @@
     <string name="list_context_notification_enable">Enable notifications</string>
     <string name="list_context_notification_disable">Disable notifications</string>
     <string name="list_context_create_download">Download</string>
+    <string name="list_context_save_as_template">Save as template</string>
+    <string name="list_context_access_settings">Access settings</string>
+    <string name="list_context_edit_index">Edit index</string>
     <string name="list_context_open_location">Open location</string>
     <string name="list_context_rename">Rename</string>
     <string name="list_context_rename_success">Renamed successfully</string>
     <string name="list_context_delete">Delete</string>
+    <string name="list_context_delete_template">Delete template</string>
     <string name="list_context_delete_storage">Disconnect storage</string>
     <string name="list_context_delete_success">Deleted successfully</string>
     <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">Remove from recent</string>
-    <string name="list_context_upload_to_portal">Upload to portal</string>
+    <string name="list_context_upload_to_cloud">Upload to cloud</string>
     <string name="list_context_add_to_favorite">Add to Favorites</string>
     <string name="list_context_delete_from_favorite">Delete from Favorites</string>
     <string name="list_context_leave_room">Leave the room</string>
     <string name="list_context_copy_general_link">Copy general link</string>
     <string name="list_context_edit_room">Edit room</string>
+    <string name="list_context_edit_template">Edit template</string>
     <string name="list_context_fill">Fill</string>
+    <string name="list_context_lock">Lock</string>
+    <string name="list_context_unlock">Unlock</string>
+    <string name="list_context_version_history">Show version history</string>
+    <string name="list_context_open_vesrion">Open</string>
+    <string name="list_context_edit_comment">Edit comment</string>
+    <string name="list_context_enable_custom_filter">Enable custom filter</string>
+    <string name="list_context_disable_custom_filter">Disable custom filter</string>
 
     <!-- List action menu -->
     <string name="list_action_sheet">Spreadsheet</string>
     <string name="list_action_presentation">Presentation</string>
     <string name="list_action_doc">Text document</string>
+    <string name="list_action_doc_from_photo">Text document from photo</string>
     <string name="list_action_folder">Folder</string>
     <string name="list_action_photo">Make photo</string>
     <string name="list_action_upload">Upload file</string>
@@ -361,6 +390,13 @@
     <string name="list_action_image_from_library">Picture from Library</string>
     <string name="list_action_delete_link">Delete link</string>
     <string name="list_action_delete_image">Delete image</string>
+
+    <!-- Form filling status -->
+    <string name="form_status_draft">Draft</string>
+    <string name="form_status_your_turn">Your turn</string>
+    <string name="form_status_in_progress">In progress</string>
+    <string name="form_status_complete">Complete</string>
+    <string name="form_status_stopped">Stopped</string>
 
     <!-- Dialog info -->
 
@@ -376,6 +412,8 @@
 
     <!-- Placeholder -->
     <string name="placeholder_connection">Connection error</string>
+    <string name="placeholder_connection_desc">No network connection detected. Please check your connection and try again</string>
+    <string name="placeholder_connection_button">Reload</string>
     <string name="placeholder_empty">Empty folder</string>
     <string name="placeholder_search">Nothing found</string>
     <string name="placeholder_share">Not shared</string>
@@ -401,6 +439,8 @@
     <string name="placeholder_no_rooms_visitor_desc">Rooms shared with you will appear here</string>
     <string name="placeholder_empty_archive">No archived rooms here yet</string>
     <string name="placeholder_empty_archive_desc">You can archive rooms you don’t use and restore them in your DocSpace at any moment or delete them permanently. These rooms will appear here</string>
+    <string name="placeholder_empty_templates_folder">No templates here yet</string>
+    <string name="placeholder_empty_templates_folder_desc">You can create a template from a room in the Room section</string>
     <string name="placeholder_no_search_result">No search result</string>
     <string name="placeholder_no_search_result_desc">No results matching your search could be found. Please try another phrase</string>
     <string name="placeholder_empty_room_visitor_desc">Files and folders uploaded by admins will appeared here</string>
@@ -451,6 +491,7 @@
     <string name="share_access_success">External access successful</string>
     <string name="share_access_denied">External access denied</string>
     <string name="share_clipboard_external_copied">Secret link copied to clipboard</string>
+    <string name="share_clipboard_external_custom_filter_copied">The link to the file with the enabled Custom filter is successfully copied to the clipboard</string>
     <string name="share_clipboard_internal_copied">Link for portal users copied to clipboard</string>
     <string name="share_clipboard_external_link_label">External link</string>
 
@@ -523,6 +564,9 @@
     <string name="operation_share_send_link">SEND</string>
     <string name="operation_add_to_favorites">Added to Favorites</string>
     <string name="operation_remove_from_favorites">Removed from Favorites</string>
+    <string name="operation_enable_custom_filter">Custom filter for the selected file enabled</string>
+    <string name="operation_disable_custom_filter">Custom filter for the selected file disabled</string>
+
 
     <plurals name="operation_moved_to_trash">
         <item quantity="one">Item moved to the Trash</item>
@@ -593,31 +637,31 @@
     <string name="on_boarding_skip_button">SKIP</string>
     <string name="on_boarding_back_button">BACK</string>
     <string name="on_boarding_next_button">NEXT</string>
-    <string name="on_boarding_finish_button">DONE</string>
+    <string name="on_boarding_finish_button">Get Started</string>
 
-    <string name="on_boarding_welcome_header">Welcome to ONLYOFFICE</string>
+    <string name="on_boarding_welcome_header">Getting started</string>
     <string name="on_boarding_welcome_info">
-        We have significantly updated ONLYOFFICE Documents for Android. Swipe to learn more.
+        Welcome to ONLYOFFICE mobile editing suite! Swipe to learn more about the app.
     </string>
 
-    <string name="on_boarding_edit_header">Edit office documents</string>
+    <string name="on_boarding_edit_header">Work with office files</string>
     <string name="on_boarding_edit_info">
-        Create and edit text documents, spreadsheets and presentations on ONLYOFFICE portal.
+        Create and edit documents with our comprehensive toolbar: work with complex objects in text documents, perform extensive calculations in spreadsheets, create stunning presentations and view PDF files with no formatting loss.
     </string>
 
-    <string name="on_boarding_access_header">Grant access to docs</string>
-    <string name="on_boarding_access_info">
-        Share docs to your team granting full access, review or read only rights. Sharing via external link available as well.
+    <string name="on_boarding_locally_header">Edit documents locally</string>
+    <string name="on_boarding_locally_info">
+        Work with documents offline. Created files can later be uploaded to online portal and then accessed from any other device.
     </string>
 
-    <string name="on_boarding_collaborate_header">Collaborate</string>
+    <string name="on_boarding_collaborate_header">Collaborate with your team</string>
     <string name="on_boarding_collaborate_info">
-        Co-edit office documents with your teammates in real time.
+In online mode, use real-time co-editing features of ONLYOFFICE to work on documents together with your portal members, share documents and create common storage folders.
     </string>
 
-    <string name="on_boarding_third_party_header">Connect to third-party clouds</string>
+    <string name="on_boarding_third_party_header">Third-party storage</string>
     <string name="on_boarding_third_party_info">
-        Connect the app to other cloud storages you use: Google Drive, Dropbox, Nextcloud, etc.
+        Connect third-party storage like Nextcloud, ownCloud, Dropbox and others which use WebDAV protocol.
     </string>
 
     <!-- ======================================================================================= -->
@@ -659,7 +703,8 @@
     <string name="cloud_account_description">Collaborate in secure environment and connect third-party storages</string>
     <string name="cloud_account_start_button">Get started</string>
     <string name="cloud_account_other_storages_button">Other storages</string>
-    <string name="cloud_only_office">ONLYOFFICE Cloud</string>
+    <string name="cloud_only_office" translatable="false">ONLYOFFICE DocSpace</string>
+    <string name="cloud_create_account">Create free account</string>
     <string name="cloud_only_office_description">Store documents in the cloud and collaborate on them</string>
     <string name="cloud_accounts_title">Accounts</string>
     <string name="error_long_file_name">File name is too long</string>
@@ -680,8 +725,8 @@
 
     <string name="app_settings_analytic_title">Help improve the product</string>
     <string name="app_settings_analytic">Share app analytics</string>
-    <string name="app_manage_files_title">Access manage files</string>
-    <string name="app_manage_files_description">Need to grant access to the files. If access is denied all files after lost applications will be deleted.</string>
+    <string name="app_manage_files_title">Access to file management</string>
+    <string name="app_manage_files_description">To edit and create documents locally, you need to allow the app to access files on your device.</string>
 
     <string name="app_settings_security">Security</string>
     <string name="app_settings_passcode">Passcode lock</string>
@@ -738,6 +783,8 @@
     <string name="filter_type_spreadsheets">Spreadsheets</string>
     <string name="filter_type_form_templates">Form templates</string>
     <string name="filter_type_forms">Forms</string>
+    <string name="filter_type_pdf_documents">PDF-documents</string>
+    <string name="filter_type_pdf_forms">PDF-forms</string>
     <string name="filter_type_images">Images</string>
     <string name="filter_type_media">Media</string>
     <string name="filter_type_archives">Archives</string>
@@ -785,12 +832,14 @@
     <string name="room_search_not_found">No users found</string>
     <string name="room_search_not_found_desc">The list of users previously invited to DocSpace or separate rooms will appear here.</string>
     <string name="room_placeholder_created_room_title">Room created!</string>
+    <string name="room_placeholder_created_template_title">Template created!</string>
     <string name="room_placeholder_created_room_subtitle">Create new folders to organize your files.</string>
     <string name="room_placeholder_created_filling_form_room_title">Welcome to the Form filling room</string>
     <string name="room_placeholder_created_filling_form_room_subtitle">Upload a ready PDF form or create new folders to organize your files</string>
     <string name="room_placeholder_created_virtual_room_title">Welcome to the Virtual Data Room</string>
     <string name="room_placeholder_created_virtual_room_subtitle">Get started with quick actions:\nCreate a new file</string>
     <string name="room_recent_via_link">Accessible via link</string>
+    <string name="room_access_via_link_title">Access via link</string>
     <string name="room_manage_room">Manage room</string>
 
     <plurals name="rooms_restore_title">
@@ -886,6 +935,8 @@
     <string name="share_access_room_owner">Owner</string>
     <string name="share_user_type_room_docspace_admin">DocSpace admin</string>
     <string name="share_user_type_room_docspace_owner">DocSpace Owner</string>
+    <string name="share_user_type_room_workspace_owner">Workspace Owner</string>
+    <string name="share_user_type_room_portal_owner">Portal Owner</string>
     <string name="share_user_type_room_admin">Room admin</string>
     <string name="share_access_room_manager">Room manager</string>
     <string name="share_access_room_power_user">Content creator</string>
@@ -900,6 +951,8 @@
     <string name="share_invite_title">Invite</string>
     <string name="room_create_success">Room created</string>
     <string name="room_delete_success">Room deleted</string>
+    <string name="template_delete_success">Template deleted</string>
+    <string name="templates_delete_success">Templates deleted</string>
     <string name="room_create_thirdparty_storage_title">Third party storage</string>
     <string name="room_create_thirdparty_storage">Storage</string>
     <string name="room_create_thirdparty_location">Location</string>
@@ -1021,12 +1074,105 @@
 
     <string name="whats_new_title">What\'s new</string>
     <string name="whats_new_next">Get started</string>
-    <string name="whats_new_1">Enhanced integration with DocSpace v3.0</string>
-    <string name="whats_new_1_desc">Collaborate on docs with the latest updates and improvements for ONLYOFFICE DocSpace v3.0.</string>
-    <string name="whats_new_2">Tabbed interface for tablets and desktops</string>
-    <string name="whats_new_2_desc">Simplify navigation and editing with the tabbed toolbar on tablets and desktop devices.</string>
-    <string name="whats_new_3">New chart types</string>
-    <string name="whats_new_3_desc">Add new chart types to visualize your data for detailed presentations and analysis.</string>
-    <string name="whats_new_4">View Apple Pages and HWP files</string>
-    <string name="whats_new_4_desc">Open and view documents in Apple Pages and Hangul Word formats.</string>
+
+
+    <string name="version_history_title">Version History</string>
+    <string name="version_edit_comment_title">Edit Comment</string>
+    <string name="version_group_header">Version %s</string>
+    <string name="version_group_current_header">Current — Version %s</string>
+    <string name="edit_comment_title">Edit comment</string>
+    <string name="edit_comment_field_label">Comment</string>
+    <string name="edit_comment_success">Comment saved successfully</string>
+    <string name="context_menu_desc">More</string>
+    <string name="version_restore_done">Version has been restored</string>
+    <string name="version_delete_done">Version has been deleted</string>
+    <string name="edit_comment_label">Comment</string>
+    <string name="error_version_open">Failed to open document</string>
+    <string name="error_version_delete">Failed to delete</string>
+    <string name="error_version_restore">Failed to restore version</string>
+    <string name="error_edit_comment">Failed to update comment</string>
+    <!-- Version History Context Action Dialogs -->
+    <string name="version_restore_title">Restore this version?</string>
+    <string name="version_restore_subtitle">Current file will be saved in version history.</string>
+    <string name="version_restore_confirm">Restore</string>
+    <string name="version_restore_loading">Restoring version</string>
+    <string name="version_delete_title">Delete version</string>
+    <string name="version_delete_subtitle">You are about to delete a file version. It will be no possible to see or restore it anymore. Are you sure you want to continue?</string>
+    <string name="version_delete_confirm">Delete</string>
+    <string name="version_delete_loading">Deleting</string>
+    <string name="version_dialog_cancel">Cancel</string>
+
+    <!--    Room Templates-->
+    <string name="title_save_template">Save as template</string>
+    <string name="title_edit_template">Edit template</string>
+    <string name="title_create_from_template">From template</string>
+    <string name="title_access_settings">Access settings</string>
+
+    <string name="desc_create_from_template">Create a room based on a template. All settings, users, folders and files will be taken from the selected room template.</string>
+    <string name="desc_info_template">Room template. Use this template to quickly create a new room.</string>
+
+    <string name="access_members_me_and_title">Me and %s</string>
+    <string name="access_members_me_users_groups_title">Me, %1$s and %2$s</string>
+    <string name="access_members_me_subtitle">(Me)</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d user</item>
+        <item quantity="other">%d users</item>
+    </plurals>
+
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d group</item>
+        <item quantity="other">%d groups</item>
+    </plurals>
+
+    <string name="settings_saved_successfully">Template settings saved</string>
+    <string name="template_created_successfully">Template «%s» saved</string>
+    <string name="room_created_successfully">Room created successfully</string>
+
+    <string name="error_upload_logo">Failed to load logo</string>
+    <string name="error_create_template">Failed to create template</string>
+    <string name="error_create_room">Failed to create room</string>
+    <string name="error_save_template">Failed to save template</string>
+    <string name="error_save_access_settings">Failed to save access settings</string>
+
+    <string name="template_subheader_title">Room template</string>
+    <string name="template_name_hint">Template name</string>
+    <string name="setting_tags_desc">Tags are applied to the room which will be created based on this template.</string>
+    <string name="setting_access_desc">Access to template. You can select members who can create rooms based on this template.</string>
+    <string name="setting_access_public">Template available to everyone</string>
+    <string name="setting_access_public_desc">All DocSpace and Room admins will be able to create rooms using this template.</string>
+    <string name="setting_access_members_title">Add Users or Groups</string>
+    <string name="setting_access_members_title_desc">The added administrators will be able to create rooms using this template.</string>
+    <string name="setting_access_list_title">Access to template</string>
+    <string name="setting_select_members_title">Select Members</string>
+
+    <string name="setting_access_public_bold_docspace">DocSpace</string>
+    <string name="setting_access_public_bold_room">Room admins</string>
+
+    <string name="filling_form_complete">Complete</string>
+    <string name="filling_form_stopped">Stopped</string>
+    <string name="filling_form_history_opened">Opened the form to fill out</string>
+    <string name="filling_form_history_submitted">Submitted their part. The form was sent to the next role.</string>
+    <string name="filling_form_history_stopped">Filling was stopped by %s</string>
+    <string name="filling_form_history_complete">Has completed and submitted their part of the form. The form is fully filled out.</string>
+    <string name="filling_form_filling_status">Filling status</string>
+    <string name="filling_form_filling_status_desc">In this panel you can monitor the completion of the form in which you participate or in which you are the organizer of completion</string>
+    <string name="filling_form_filling_process_details">Process details</string>
+    <string name="filling_form_stop_filling">Stop filling</string>
+    <string name="filling_form_stop_filling_dialog_title">Stop filling?</string>
+    <string name="filling_form_stop_filling_dialog_desc">Are you sure you want to stop filling? It will be impossible to resume filling out this form after cancellation. Filling out the form will be stopped at the stage it is currently at. The file will be marked as "Stopped".</string>
+    <string name="filling_form_send_section_complete">Form Section Completed</string>
+    <string name="filling_form_send_section_complete_desc">The assigned portion of the PDF form has been successfully completed. The filling status of the form can be monitored in the room and via the Filling status panel. An email notification will be sent once the form is fully completed.</string>
+    <string name="filling_form_send_finalized">Form Section Completed</string>
+    <string name="filling_form_send_finalized_desc">The form has been fully completed by all roles and is now finalized. It is available in view-only mode.</string>
+    <string name="filling_form_version_incompatible_desc">The client and server versions are incompatible. You can only open the document in view mode.</string>
+    <string name="whats_new">What\'s new in v9.0</string>
+    <string name="whats_new_1">Text recognition with device camera</string>
+    <string name="whats_new_1_desc">Capture printed text with your camera and create editable documents.</string>
+    <string name="whats_new_2">Updated tabbed interface</string>
+    <string name="whats_new_2_desc">Enjoy a cleaner, more intuitive layout with the redesigned toolbar.</string>
+    <string name="whats_new_3">Support for ODG and Markdown formats</string>
+    <string name="whats_new_3_desc">Open and view .odg drawings and .md files right from your device.</string>
+    <string name="whats_new_4">Enhanced compatibility with DocSpace 3.1</string>
+    <string name="whats_new_4_desc">Access document versions, role-based form filling in VDR, room templates, and custom filters when connected to your DocSpace.</string>
 </resources>

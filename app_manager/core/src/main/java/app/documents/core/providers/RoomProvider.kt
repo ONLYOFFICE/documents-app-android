@@ -6,6 +6,7 @@ import androidx.core.text.isDigitsOnly
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.Order
 import app.documents.core.model.login.Group
+import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.asResult
@@ -21,18 +22,24 @@ import app.documents.core.network.manager.models.explorer.WatermarkType
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestRoomNotifications
 import app.documents.core.network.room.RoomService
+import app.documents.core.network.room.models.CustomFilterRequest
+import app.documents.core.network.room.models.LockFileRequest
 import app.documents.core.network.room.models.RequestAddTags
+import app.documents.core.network.room.models.RequestCreateTemplate
 import app.documents.core.network.room.models.RequestArchive
 import app.documents.core.network.room.models.RequestCreateExternalLink
 import app.documents.core.network.room.models.RequestCreateRoom
+import app.documents.core.network.room.models.RequestCreateRoomFromTemplate
 import app.documents.core.network.room.models.RequestCreateTag
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestEditRoom
+import app.documents.core.network.room.models.RequestEditTemplate
 import app.documents.core.network.room.models.RequestOrder
 import app.documents.core.network.room.models.RequestRoomAuthViaLink
 import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
+import app.documents.core.network.room.models.RequestUpdatePublic
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.Share
@@ -61,7 +68,9 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.HttpException
+import retrofit2.Response
 import java.util.UUID
+import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
 class RoomProvider @Inject constructor(private val roomService: RoomService) {
@@ -82,6 +91,14 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .flatMap { if (it.isSuccessful) Observable.just(it.body()) else throw HttpException(it) }
+    }
+
+    fun lockFile(id: String, lock: Boolean): Flow<Result<Unit>> = handleUnitResponse {
+        roomService.lockFile(id = id, body = LockFileRequest(lock))
+    }
+
+    fun enableCustomFilter(id: String, enable: Boolean): Flow<Result<Unit>> = handleUnitResponse {
+        roomService.enableCustomFilter(id = id, body = CustomFilterRequest(enable))
     }
 
     suspend fun createRoom(
@@ -110,6 +127,14 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         )
         if (!response.isSuccessful) throw HttpException(response)
         return checkNotNull(response.body()?.response?.id)
+    }
+
+    suspend fun getTags(): kotlin.Result<Array<String>> {
+        return runCatching {
+            val response = roomService.getTags()
+            if (!response.isSuccessful) throw HttpException(response)
+            checkNotNull(response.body()?.tags)
+        }
     }
 
     suspend fun createThirdPartyRoom(
@@ -148,14 +173,15 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
     }
 
     suspend fun addTags(roomId: String, tags: List<String>): Boolean {
-        val existTags = roomService.getTags().tags
-        withContext(Dispatchers.IO) {
-            tags.mapNotNull { newTag ->
-                async { roomService.createTag(RequestCreateTag(newTag)) }
-                    .takeIf { !existTags.contains(newTag) }
-            }
-        }.awaitAll()
-        return roomService.addTags(roomId, RequestAddTags(tags.toTypedArray())).isSuccessful
+        return getTags().mapCatching { existTags ->
+            withContext(Dispatchers.IO) {
+                tags.mapNotNull { newTag ->
+                    async { roomService.createTag(RequestCreateTag(newTag)) }
+                        .takeIf { !existTags.contains(newTag) }
+                }
+            }.awaitAll()
+            return roomService.addTags(roomId, RequestAddTags(tags.toTypedArray())).isSuccessful
+        }.getOrDefault(false)
     }
 
     suspend fun deleteTags(id: String, tag: List<String>): Boolean {
@@ -444,11 +470,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 lifetime = lifetime?.copy(value = lifetime.value.takeIf { it != 0 } ?: 1) ?: Lifetime(enabled = false, value = 1),
                 denyDownload = denyDownload,
                 indexing = indexing,
-                watermark = if (watermark?.type == WatermarkType.ViewerInfo) {
-                    watermark.copy(imageUrl = null)
-                } else {
-                    watermark
-                }
+                watermark = watermark
             )
         )
         if (!response.isSuccessful) throw HttpException(response)
@@ -513,4 +535,188 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             .flowOn(Dispatchers.IO)
             .asResult()
     }
+
+    fun getRoomTemplates(
+        filter: Map<String, String> = mapOf()
+    ): Flow<Result<List<CloudFolder>>> = flow {
+        val options = filter.plus("searchArea" to "Templates")
+        val response = roomService.getAllTemplates(options)
+        val explorer = response.body()?.response
+        if (!response.isSuccessful || explorer == null) throw HttpException(response)
+        emit(explorer.folders)
+    }
+        .flowOn(Dispatchers.IO)
+        .asResult()
+
+    fun createRoomFromTemplate(
+        templateId: String,
+        title: String,
+        tags: List<String>? = null,
+        quota: Long? = null,
+        copyLogo: Boolean? = null,
+        color: String? = null,
+        logoSize: Size? = null,
+        logoUrl: String? = null,
+    ): Flow<Result<String>> = flow {
+        try {
+            roomService.createRoomFromTemplate(
+                RequestCreateRoomFromTemplate(
+                    templateId = templateId,
+                    title = title,
+                    tags = tags,
+                    quota = quota,
+                    copylogo = copyLogo,
+                    color = color,
+                    logo = buildRequestLogo(logoSize, logoUrl)
+                )
+            )
+
+            val resultId = pollCreationStatus(isRoom = true)
+            emit(Result.Success(resultId))
+        } catch (e: Exception) {
+            emit(Result.Error(e))
+        }
+    }
+
+    //TODO: Waiting for backend hotfix to support both share and groups
+    fun createTemplate(
+        roomId: String,
+        title: String,
+        tags: List<String>? = null,
+        quota: Long? = null,
+        public: Boolean? = null,
+        copyLogo: Boolean? = null,
+        color: String? = null,
+        logoSize: Size? = null,
+        logoUrl: String? = null,
+        share: List<String>? = null,
+        groups: List<String>? = null
+    ): Flow<Result<String>> = flow {
+        try {
+            roomService.createTemplate(
+                RequestCreateTemplate(
+                    title = title,
+                    tags = tags,
+                    quota = quota,
+                    roomId = roomId,
+                    public = public,
+                    copylogo = copyLogo,
+                    color = color,
+                    logo = buildRequestLogo(logoSize, logoUrl),
+                    share = share,
+                    groups = groups
+                )
+            )
+            val resultId = pollCreationStatus(isRoom = false)
+            emit(Result.Success(resultId))
+        } catch (e: Exception) {
+            emit(Result.Error(e))
+        }
+    }
+
+    private fun buildRequestLogo(
+        logoSize: Size? = null,
+        logoUrl: String? = null
+    ): RequestSetLogo? {
+        return logoUrl?.let { url ->
+            logoSize?.let { size ->
+                RequestSetLogo(
+                    tmpFile = url,
+                    width = size.width,
+                    height = size.height
+                )
+            }
+        }
+    }
+
+    private suspend fun pollCreationStatus(
+        isRoom: Boolean,
+        maxAttempts: Int = 10,
+        delayMs: Long = 800L
+    ): String {
+        repeat(maxAttempts) {
+            val response = if (isRoom) {
+                roomService.getRoomFromTemplateStatus().response
+            } else {
+                roomService.getRoomTemplateStatus().response
+            }
+            with(response) {
+                if (isCompleted) {
+                    return when {
+                        templateId == "-1" || roomId == "-1" -> throw TimeoutException()
+                        isRoom -> roomId
+                        else -> templateId
+                    }
+                }
+            }
+            delay(delayMs)
+        }
+        throw TimeoutException()
+    }
+
+    fun getTemplatePublic(templateId: String): Flow<Result<Boolean>> {
+        return flow {
+            val public = roomService.getTemplatePublic(templateId).response
+            emit(public)
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
+    fun getTemplateMembers(templateId: String): Flow<Result<List<Share>>> {
+        return flow {
+            val members = roomService.getTemplateMembers(templateId).response
+            emit(members)
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
+    }
+
+    fun updateTemplatePublic(id: String, public: Boolean): Flow<Result<Unit>> = handleUnitResponse {
+        roomService.updateTemplatePublic(RequestUpdatePublic(id, public))
+    }
+
+    fun updateTemplateUserAccess(templateId: String, users: List<Member>): Flow<Result<Unit>> =
+        handleUnitResponse {
+            val invitations = users.map { UserIdInvitation(id = it.id, access = Access.Read.code) }
+            val body = RequestRoomShare(invitations)
+            roomService.setRoomUserAccess(templateId, body)
+        }
+
+    fun editTemplate(
+        id: String,
+        newTitle: String? = null,
+        quota: Long? = null,
+        tags: List<String>? = null,
+        logoSize: Size? = null,
+        logoUrl: String? = null
+    ): Flow<Result<Unit>> = handleUnitResponse {
+        val logo = logoUrl?.let { url ->
+            logoSize?.let { size ->
+                RequestSetLogo(
+                    tmpFile = url,
+                    width = size.width,
+                    height = size.height
+                )
+            }
+        }
+
+        roomService.editTemplate(
+            id = id,
+            body = RequestEditTemplate(
+                title = newTitle,
+                quota = quota,
+                tags = tags,
+                logo = logo
+            )
+        )
+    }
+
+    private fun <T> handleUnitResponse(apiCall: suspend () -> Response<T>): Flow<Result<Unit>> = flow {
+        val response = apiCall()
+        if (!response.isSuccessful) throw HttpException(response)
+        emit(Unit)
+    }
+        .flowOn(Dispatchers.IO)
+        .asResult()
 }

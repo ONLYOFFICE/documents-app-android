@@ -6,8 +6,11 @@ import android.content.Intent
 import android.net.Uri
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.OneDriveUtils
+import app.documents.core.providers.BaseFileProvider
 import app.editors.manager.app.App
+import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.storages.DocsOneDrivePresenter
+import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import app.editors.manager.ui.fragments.base.StorageLoginFragment
 import lib.toolkit.base.managers.utils.CameraPicker
@@ -24,37 +27,21 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
     }
 
     @InjectPresenter
-    override lateinit var presenter: DocsOneDrivePresenter
+    override lateinit var storagePresenter: DocsOneDrivePresenter
+
+    override val presenter: DocsBasePresenter<out DocsBaseView, out BaseFileProvider>
+        get() = storagePresenter
 
     override fun getSection(): ApiContract.Section = ApiContract.Section.Storage.OneDrive
-
-    override fun getDocsPresenter() = presenter
 
     init {
         App.getApp().appComponent.inject(this)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onEditorActivityResult(requestCode, resultCode, data)
         if (isActivePage && resultCode == Activity.RESULT_CANCELED) {
             onRefresh()
-        } else if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                BaseActivity.REQUEST_ACTIVITY_CAMERA -> {
-                    cameraUri?.let { uri ->
-                        presenter.upload(uri, null, KEY_UPLOAD)
-                    }
-                }
-                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> data?.data?.let { uri ->
-                    if(data.getBooleanExtra(KEY_MODIFIED, false)) {
-                        presenter.upload(
-                            uri,
-                            null,
-                            KEY_UPDATE
-                        )
-                    }
-                }
-            }
         }
     }
 
@@ -66,7 +53,7 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
         )
     }
 
-    override fun onShowCamera(photoUri: Uri) {
+    override fun onShowCamera(photoUri: Uri, isOCR: Boolean) {
         RequestPermissions(requireActivity().activityResultRegistry, { permissions ->
             if (permissions[Manifest.permission.CAMERA] == true) {
                 CameraPicker(requireActivity().activityResultRegistry, { isCreate ->

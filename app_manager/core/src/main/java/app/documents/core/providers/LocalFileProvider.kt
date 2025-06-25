@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import app.documents.core.network.common.Result
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -12,8 +13,6 @@ import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestCreate
-import app.documents.core.network.manager.models.request.RequestExternal
-import app.documents.core.network.manager.models.response.ResponseExternal
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.providers.ProviderError.Companion.throwErrorCreate
 import app.documents.core.providers.ProviderError.Companion.throwExistException
@@ -22,7 +21,10 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import lib.toolkit.base.managers.tools.LocalContentTools
+import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtensionFromPath
 import okhttp3.ResponseBody
@@ -33,7 +35,15 @@ import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
 
-class LocalFileProvider @Inject constructor(private val localContentTools: LocalContentTools) : BaseFileProvider {
+class LocalFileProvider @Inject constructor(
+    private val localContentTools: LocalContentTools
+) : BaseFileProvider {
+
+    override fun openFile(
+        cloudFile: CloudFile,
+        editType: EditType,
+        canBeShared: Boolean
+    ): Flow<Result<FileOpenResult>> = flowOf()
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.just(localContentTools.createRootDir())
@@ -53,11 +63,10 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
             .map { explorer: Explorer -> sortExplorer(explorer, filter) }
     }
 
-    override fun createFile(folderId: String, body: RequestCreate): Observable<CloudFile> {
+    override fun createFile(folderId: String, title: String): Observable<CloudFile> {
         val parentFile = File(folderId)
-        val name = body.title
         return try {
-            val localFile = localContentTools.createFile(name, parentFile, Locale.getDefault().language)
+            val localFile = localContentTools.createFile(title, parentFile, Locale.getDefault().language)
             Observable.just(localFile)
                 .map { createFile: File ->
                     if (createFile.exists()) {
@@ -67,7 +76,7 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
                         file.title = createFile.name
                         file.folderId = folderId
                         file.pureContentLength = createFile.length()
-                        file.fileExst = getExtensionFromPath(name)
+                        file.fileExst = getExtensionFromPath(title)
                         file.created = Date()
                         file.isJustCreated = true
                         return@map file
@@ -80,8 +89,6 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
                 .map { throw throwErrorCreate() }
         }
     }
-
-    override fun search(query: String?): Observable<String>? = null
 
     override fun createFolder(folderId: String, body: RequestCreate): Observable<CloudFolder> {
         val parentFile = File(folderId)
@@ -154,19 +161,11 @@ class LocalFileProvider @Inject constructor(private val localContentTools: Local
     // Stub to local
     override fun getStatusOperation(): ResponseOperation? = null
 
-    override fun download(items: List<Item>): Observable<Int>? = null
-    override fun share(
-        id: String,
-        requestExternal: RequestExternal
-    ): Observable<ResponseExternal>? = null
-
     override fun terminate(): Observable<List<Operation>>? = null
 
     override fun getDownloadResponse(cloudFile: CloudFile, token: String?): Single<Response<ResponseBody>> {
         return Single.error(RuntimeException("Stub"))
     }
-
-    override fun upload(folderId: String, uris: List<Uri?>): Observable<Int>? = null
 
     @SuppressLint("MissingPermission")
     fun import(context: Context, folderId: String, uri: Uri?): Observable<Int> {

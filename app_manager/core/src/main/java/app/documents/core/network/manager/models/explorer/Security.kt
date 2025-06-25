@@ -18,6 +18,10 @@ class Security : Serializable {
     @Expose
     var delete: Boolean = false
 
+    @SerializedName("CustomFilter")
+    @Expose
+    var customFilter: Boolean = false
+
     @SerializedName("EditRoom")
     @Expose
     var editRoom: Boolean = false
@@ -25,6 +29,10 @@ class Security : Serializable {
     @SerializedName("Rename")
     @Expose
     var rename: Boolean = false
+
+    @SerializedName("Lock")
+    @Expose
+    var lock: Boolean = false
 
     @SerializedName("CopyTo")
     @Expose
@@ -49,6 +57,18 @@ class Security : Serializable {
     @SerializedName("EditAccess")
     @Expose
     var editAccess: Boolean = false
+
+    @SerializedName("Edit")
+    @Expose
+    var edit: Boolean = false
+
+    @SerializedName("ReadHistory")
+    @Expose
+    var readHistory: Boolean = false
+
+    @SerializedName("EditHistory")
+    @Expose
+    var editHistory: Boolean = false
 
     @SerializedName("Duplicate")
     @Expose
@@ -89,4 +109,24 @@ class Security : Serializable {
     @SerializedName("IndexExport")
     @Expose
     var indexExport: Boolean = false
+
+    @SerializedName("FillForms")
+    @Expose
+    var fillForms: Boolean = false
+
+    @SerializedName("FillingStatus")
+    @Expose
+    var fillingStatus: Boolean = false
+
+    @SerializedName("StartFilling")
+    @Expose
+    var startFilling: Boolean = false
+
+    @SerializedName("StopFilling")
+    @Expose
+    var stopFilling: Boolean = false
+
+    @SerializedName("ResetFilling")
+    @Expose
+    var resetFilling: Boolean = false
 }

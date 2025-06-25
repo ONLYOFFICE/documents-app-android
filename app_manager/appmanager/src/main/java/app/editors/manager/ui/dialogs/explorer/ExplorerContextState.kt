@@ -16,7 +16,10 @@ data class ExplorerContextState(
     val provider: PortalProvider = PortalProvider.Cloud.Workspace,
     val isSearching: Boolean = false,
     val isRoot: Boolean = false,
-    val headerInfo: String? = null
+    val inTemplate: Boolean = false,
+    val editIndex: Boolean = false,
+    val headerInfo: String? = null,
+    val roomType: Int? = null
 ) : Serializable {
 
     val section: ApiContract.Section

@@ -16,7 +16,7 @@ import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 class ActionBottomDialog : BaseBottomDialog() {
 
     enum class Buttons {
-        NONE, SHEET, PRESENTATION, DOC, FOLDER, PHOTO, UPLOAD, STORAGE, IMPORT, ROOM
+        NONE, SHEET, PRESENTATION, DOC, FOLDER, CREATE_FROM_PHOTO, PHOTO, UPLOAD, STORAGE, IMPORT, ROOM
     }
 
     interface OnClickListener {
@@ -76,6 +76,7 @@ class ActionBottomDialog : BaseBottomDialog() {
             it.listExplorerActionSheet.setOnClickListener(Buttons.SHEET)
             it.listExplorerActionPresentation.setOnClickListener(Buttons.PRESENTATION)
             it.listExplorerActionImport.setOnClickListener(Buttons.IMPORT)
+            it.listExplorerActionDocsFromPhoto.setOnClickListener(Buttons.CREATE_FROM_PHOTO)
         }
     }
 
@@ -137,6 +138,7 @@ class ActionBottomDialog : BaseBottomDialog() {
                     listExplorerActionSheet,
                     listExplorerActionPresentation,
                     listExplorerActionStorage,
+                    listExplorerActionDocsFromPhoto,
                     viewLineSeparatorStorage.viewLineSeparator
                 ).forEach { it.isVisible = false }
                 listExplorerActionUploadText.setText(R.string.rooms_upload_pdf_from_docspace)

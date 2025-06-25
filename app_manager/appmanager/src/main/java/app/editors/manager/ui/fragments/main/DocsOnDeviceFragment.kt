@@ -31,14 +31,13 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
+import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
-import lib.toolkit.base.managers.utils.EditorsContract
-import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.FolderChooser
 import lib.toolkit.base.managers.utils.RequestPermissions
-import lib.toolkit.base.managers.utils.StringUtils.getHelpUrl
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.launchAfterResume
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
@@ -213,9 +212,6 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
             ExplorerContextItem.Upload -> presenter.upload()
             ExplorerContextItem.Copy -> showFolderChooser(OperationsState.OperationType.COPY)
             ExplorerContextItem.Move -> showFolderChooser(OperationsState.OperationType.MOVE)
-            is ExplorerContextItem.Edit -> presenter.getFileInfo(EditType.EDIT)
-            is ExplorerContextItem.Fill -> presenter.getFileInfo(EditType.FILL)
-            is ExplorerContextItem.View -> presenter.getFileInfo(EditType.VIEW)
             is ExplorerContextItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_DELETE_CONTEXT)
             else -> super.onContextButtonClick(contextItem)
         }
@@ -243,47 +239,12 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
         super.showDeleteDialog(count, false, tag)
     }
 
-    override fun onShowPdf(uri: Uri) {
-        showEditors(uri, EditorsType.PDF)
+    override fun onShowPdf(uri: Uri, editType: EditType) {
+        onOpenLocalFile(uri, FileExtensions.fromPath(ContentResolverUtils.getName(requireContext(), uri)).extension, editType)
     }
 
     override fun onOpenMedia(state: OpenState.Media) {
         showMediaActivity(state.explorer, state.isWebDav)
-    }
-
-    override fun onShowEditors(uri: Uri, type: EditorsType, editType: EditType?) {
-        showEditors(uri, type, null, editType)
-    }
-
-    override fun showEditors(uri: Uri?, type: EditorsType, info: String?, editType: EditType?) {
-        try {
-            val intent = Intent().apply {
-                data = uri
-                info?.let { putExtra(EditorsContract.KEY_DOC_SERVER, info) }
-                putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-                putExtra(EditorsContract.KEY_EDIT_TYPE, editType)
-                action = Intent.ACTION_VIEW
-                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            }
-            when (type) {
-                EditorsType.DOCS -> {
-                    intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
-                    startActivityForResult(intent, REQUEST_DOCS)
-                }
-
-                EditorsType.PDF -> {
-                    intent.setClassName(requireContext(), EditorsContract.PDF)
-                    startActivity(intent)
-                }
-
-                else -> {
-                    super.showEditors(uri, type, info, editType)
-                }
-            }
-        } catch (e: ActivityNotFoundException) {
-            e.printStackTrace()
-            showToast("Not found")
-        }
     }
 
     override fun onShowPortals() {

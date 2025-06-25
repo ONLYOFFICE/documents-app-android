@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import app.documents.core.model.cloud.CloudAccount
@@ -112,21 +113,26 @@ object GlideUtils {
             .into(this)
     }
 
-    fun ImageView.setRoomLogo(logo: String, isGrid: Boolean, onLoadError: () -> Unit) {
+    fun ImageView.setRoomLogo(
+        logo: String,
+        isGrid: Boolean,
+        isTemplate: Boolean,
+        onLoadError: () -> Unit
+    ) {
         context.accountOnline?.let { account ->
             val token = checkNotNull(AccountUtils.getToken(context, account.accountName))
             val url = getCorrectLoad(account.portal.scheme.value + account.portal.url + logo, token)
 
-            val cornerRadius = if (isGrid) {
-                context.resources.getDimension(lib.toolkit.base.R.dimen.grid_card_view_corner_radius)
-            } else {
-                context.resources.getDimension(lib.toolkit.base.R.dimen.default_corner_radius_medium)
+            val cornerRadiusRes = when {
+                isGrid && isTemplate -> lib.toolkit.base.R.dimen.default_corner_radius_medium
+                isGrid -> lib.toolkit.base.R.dimen.grid_card_view_corner_radius
+                else -> lib.toolkit.base.R.dimen.default_corner_radius_medium
             }
 
             Glide.with(context)
                 .load(url)
                 .apply(RequestOptions().timeout(30 * 1000))
-                .transform(RoundedCorners(cornerRadius.toInt()))
+                .transform(RoundedCorners(context.resources.getDimension(cornerRadiusRes).toInt()))
                 .addListener(object : RequestListener<Drawable> {
 
                     override fun onLoadFailed(
@@ -195,9 +201,10 @@ fun GlideAvatarImage(modifier: Modifier = Modifier, url: String) {
     GlideImage(
         modifier = modifier,
         model = GlideUtils.getCorrectLoad(
-            url = if (StringUtils.hasScheme(url)) url else "${account?.portal?.urlWithScheme}/$url",
+            url = if (StringUtils.hasScheme(url)) url else "${account?.portal?.urlWithScheme}$url",
             token = token.orEmpty()
         ),
+        contentScale = ContentScale.FillBounds,
         contentDescription = null,
         loading = placeholder(R.drawable.ic_account_placeholder),
         failure = placeholder(R.drawable.ic_account_placeholder),

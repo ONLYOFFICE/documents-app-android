@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.ExportIndexOperation
-import app.documents.core.network.manager.models.explorer.Lifetime
+import app.editors.manager.ui.fragments.main.ToolbarState
 import app.editors.manager.viewModels.main.CopyItems
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
@@ -41,7 +41,7 @@ interface DocsCloudView : DocsBaseView {
     fun showFillFormChooserFragment()
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onRoomLifetime(lifetime: Lifetime?)
+    fun setToolbarState(state: ToolbarState)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onRoomFileIndexing(indexing: Boolean)
@@ -54,4 +54,22 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showRoomInfoFragment()
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showVersionHistoryFragment(fileId: String)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showTemplateSettingsFragment(templateId: String, modeId: Int)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showTemplateAccessSettingsFragment(templateId: String)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showRoomFromTemplateFragment(templateId: String?)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showTemplateInfoFragment(templateId: String)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showFillFormIncompatibleVersionsDialog()
 }

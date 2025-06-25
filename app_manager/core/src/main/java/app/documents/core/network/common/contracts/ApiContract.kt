@@ -91,11 +91,18 @@ object ApiContract {
         const val STORAGE_NOT_AVAILABLE = "The content of third party folder are not available. Try to reconnect the account"
         const val PINNED_ROOM_LIMIT = "You can't pin a room"
         const val FILLING_FORM_ROOM_UPLOAD = "Please try to upload the ONLYOFFICE PDF form"
+        const val EXCEED_ROOM_SPACE_QUOTA = "Room space quota exceeded"
     }
 
     object ActivationStatus {
-        const val Activate = 1
-        const val Pending = 2
+        const val ACTIVATE = 1
+        const val PENDING = 2
+    }
+
+    object EmployeeStatus {
+        const val ACTIVE = 1
+        const val TERMINATED = 2
+        const val PENDING = 4
     }
 
     object Parameters {
@@ -128,8 +135,8 @@ object ApiContract {
         const val VAL_FILTER_SUBFOLDERS = "true"
         const val VAL_FILTER_BY_FOLDERS = "FoldersOnly"
         const val VAL_FILTER_BY_DOCUMENTS = "DocumentsOnly"
-        const val VAL_FILTER_BY_FORM_TEMPLATES = "OFormTemplateOnly"
-        const val VAL_FILTER_BY_FORMS = "OFormOnly"
+        const val VAL_FILTER_BY_PDF_DOCUMENTS = "Pdf"
+        const val VAL_FILTER_BY_PDF_FORMS = "PdfForm"
         const val VAL_FILTER_BY_PRESENTATIONS = "PresentationsOnly"
         const val VAL_FILTER_BY_SPREADSHEETS = "SpreadsheetsOnly"
         const val VAL_FILTER_BY_IMAGES = "ImagesOnly"
@@ -166,6 +173,7 @@ object ApiContract {
         const val CLOUD_PRIVATE_ROOM = 13
         const val CLOUD_VIRTUAL_ROOM = 14
         const val CLOUD_ARCHIVE_ROOM = 20
+        const val CLOUD_TEMPLATES = 30
 
         const val WEB_DAV = 100
         const val GOOGLE_DRIVE = 110
@@ -175,8 +183,8 @@ object ApiContract {
         const val LOCAL_RECENT = 200
 
         fun isRoom(type: Int): Boolean = type == 14
-        fun isArchive(type: String): Boolean = isArchive(type.toInt())
         fun isArchive(type: Int): Boolean = type == CLOUD_ARCHIVE_ROOM
+        fun isTemplates(type: Int?): Boolean = type == CLOUD_TEMPLATES
     }
 
     sealed class Section(val type: Int) {
@@ -188,13 +196,14 @@ object ApiContract {
         object Device : Section(SectionType.DEVICE_DOCUMENTS)
         object Favorites : Section(SectionType.CLOUD_FAVORITES)
         object Recent : Section(SectionType.CLOUD_RECENT)
+        object LocalRecent : Section(SectionType.LOCAL_RECENT)
         object Webdav : Section(SectionType.WEB_DAV)
 
         sealed class Room(type: Int) : Section(type) {
             object Private : Room(SectionType.CLOUD_PRIVATE_ROOM)
             object Virtual : Room(SectionType.CLOUD_VIRTUAL_ROOM)
             object Archive : Room(SectionType.CLOUD_ARCHIVE_ROOM)
-
+            object Templates : Room(SectionType.CLOUD_TEMPLATES)
         }
 
         sealed class Storage(type: Int) : Section(type) {
@@ -204,8 +213,15 @@ object ApiContract {
         }
 
         val isRoom: Boolean get() = this is Room
+        val isTemplates: Boolean get() = this is Room.Templates
+        val isUser: Boolean get() = this is User
         val isArchive: Boolean get() = this == Room.Archive
-        val isLocal: Boolean get() = this in listOf(Device, Recent)
+        val isLocal: Boolean get() = this in listOf(Device, Recent, LocalRecent)
+        val isLocalRecent: Boolean get() = this == LocalRecent
+        val isDevice: Boolean get() = this == Device
+        val isTrash: Boolean get() = this == Trash
+        val isStorage: Boolean get() = this is Storage
+        val isWebdav: Boolean get() = this == Webdav
 
         companion object {
 
@@ -219,11 +235,47 @@ object ApiContract {
                     SectionType.CLOUD_FAVORITES -> Favorites
                     SectionType.CLOUD_RECENT -> Recent
                     SectionType.WEB_DAV -> Webdav
+                    SectionType.CLOUD_TEMPLATES -> Room.Templates
                     SectionType.CLOUD_PRIVATE_ROOM -> Room.Private
                     SectionType.CLOUD_VIRTUAL_ROOM -> Room.Virtual
                     SectionType.CLOUD_ARCHIVE_ROOM -> Room.Archive
+                    SectionType.LOCAL_RECENT -> LocalRecent
+                    SectionType.GOOGLE_DRIVE -> Storage.GoogleDrive
+                    SectionType.DROPBOX -> Storage.Dropbox
+                    SectionType.ONEDRIVE -> Storage.OneDrive
                     else -> Common
                 }
+        }
+    }
+
+
+
+    sealed class FormFillingStatus(val type: Int){
+
+        data object None : FormFillingStatus(type = NONE)
+        data object Draft : FormFillingStatus(type = DRAFT_TYPE)
+        data object YourTurn : FormFillingStatus(type = YOUR_TURN_TYPE)
+        data object InProgress : FormFillingStatus(type = IN_PROGRESS_TYPE)
+        data object Complete : FormFillingStatus(type = COMPLETE_TYPE)
+        data object Stopped : FormFillingStatus(type = STOPPED_TYPE)
+
+        companion object {
+            fun fromType(statusType: Int): FormFillingStatus =
+                when(statusType){
+                    DRAFT_TYPE -> Draft
+                    YOUR_TURN_TYPE -> YourTurn
+                    IN_PROGRESS_TYPE -> InProgress
+                    COMPLETE_TYPE -> Complete
+                    STOPPED_TYPE -> Stopped
+                    else -> None
+                }
+
+            private const val NONE = 0
+            private const val DRAFT_TYPE = 1
+            private const val YOUR_TURN_TYPE = 2
+            private const val IN_PROGRESS_TYPE = 3
+            private const val COMPLETE_TYPE = 4
+            private const val STOPPED_TYPE = 5
         }
     }
 

@@ -23,6 +23,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
@@ -119,27 +120,29 @@ object ActivitiesUtils {
     }
 
     @JvmStatic
-    fun showBrowser(activity: Activity, chooseTitle: String?, url: String) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse(url)
+    fun showBrowser(context: Context, chooseTitle: String? = null, url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
+            if (context !is Activity) {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
         }
-        activity.startActivity(Intent.createChooser(intent, chooseTitle))
+        context.startActivity(Intent.createChooser(intent, chooseTitle ?: url))
     }
 
     fun getBrowserIntent(url: String): Intent {
         return Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse(url)
+            data = url.toUri()
         }
     }
 
     @JvmStatic
     fun showPlayMarket(context: Context, packageId: String) {
         try {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(PLAY_MARKET + packageId))
+            val intent = Intent(Intent.ACTION_VIEW, (PLAY_MARKET + packageId).toUri())
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(PLAY_STORE + packageId))
+            val intent = Intent(Intent.ACTION_VIEW, (PLAY_STORE + packageId).toUri())
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
         }

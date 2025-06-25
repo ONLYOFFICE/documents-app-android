@@ -34,18 +34,12 @@ fun PasscodeSettingScreen(
     passcodeLockState: PasscodeLockState,
     onPasscodeEnable: (Boolean) -> Unit,
     onFingerprintEnable: (Boolean) -> Unit,
-    onChangePassword: () -> Unit,
-    onBackClick: () -> Unit
+    onChangePassword: () -> Unit
 ) {
     Surface(color = MaterialTheme.colors.background) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(
-                    start = dimensionResource(id = R.dimen.screen_left_right_padding),
-                    end = dimensionResource(id = R.dimen.screen_left_right_padding)
-                )
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             AppSwitchItem(
                 title = app.editors.manager.R.string.app_Settings_passcode_enable,

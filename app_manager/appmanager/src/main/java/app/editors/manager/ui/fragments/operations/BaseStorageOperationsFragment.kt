@@ -13,6 +13,8 @@ abstract class BaseStorageOperationsFragment : DocsCloudOperationFragment(),
     OperationDialogFragment.OnActionClickListener,
     BaseStorageDocsView {
 
+    protected abstract val storagePresenter: BaseStorageDocsPresenter<*, *>
+
     override fun onDocsGet(list: List<Entity>?) {
         super.onDocsGet(list)
         setEnabledOperationButtons()
@@ -21,7 +23,7 @@ abstract class BaseStorageOperationsFragment : DocsCloudOperationFragment(),
     override fun onStateEmptyBackStack() {
         super.onStateEmptyBackStack()
         setActionBarTitle(getString(R.string.operation_title))
-        (presenter as BaseStorageDocsPresenter<*>).getProvider()
+        storagePresenter.getItems()
         arguments?.getSerializableExt<Explorer>(OperationDialogFragment.TAG_OPERATION_EXPLORER)?.let { explorer ->
             presenter.setOperationExplorer(explorer)
         }

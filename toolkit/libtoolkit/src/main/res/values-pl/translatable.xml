@@ -41,4 +41,10 @@
         <item quantity="one">rok</item>
         <item quantity="other">lat(a)</item>
     </plurals>
+
+    <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
+    <string name="help_and_feedback_contact_support">Skontaktuj się z obsługą klienta</string>
+    <string name="help_and_feedback_help_center">Centrum pomocy</string>
+    <string name="help_and_feedback_suggest_a_feature">Zaproponuj funkcję</string>
+    <string name="help_and_feedback_title">Pomoc i opinie</string>
 </resources>

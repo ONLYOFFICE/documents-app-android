@@ -46,3 +46,7 @@ val Colors.colorButtonBackground: Color
 val Colors.colorTopAppBar: Color
     @Composable
     get() = colorResource(id = lib.toolkit.base.R.color.colorAppBar)
+
+val Colors.colorGreen: Color
+    @Composable
+    get() = Color(0xFF15C95D)

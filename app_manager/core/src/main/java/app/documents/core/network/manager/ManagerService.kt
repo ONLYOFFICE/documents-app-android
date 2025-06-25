@@ -5,6 +5,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.FormRole
 import app.documents.core.network.manager.models.request.RequestBatchBase
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
@@ -14,6 +15,7 @@ import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
+import app.documents.core.network.manager.models.request.RequestStopFilling
 import app.documents.core.network.manager.models.request.RequestStorage
 import app.documents.core.network.manager.models.request.RequestTitle
 import app.documents.core.network.manager.models.response.ResponseCloudTree
@@ -31,6 +33,9 @@ import app.documents.core.network.manager.models.response.ResponseFolder
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.manager.models.response.ResponsePortal
 import app.documents.core.network.manager.models.response.ResponseThirdparty
+import app.documents.core.network.manager.models.response.ResponseVersionHistory
+import app.documents.core.network.room.models.DeleteVersionRequest
+import app.documents.core.network.room.models.EditCommentRequest
 import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.MultipartBody
@@ -146,7 +151,20 @@ interface ManagerService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}")
-    fun getFileInfo(@Path(value = "file_id") fileId: String?): Observable<Response<ResponseFile>>
+    fun getFileInfo(
+        @Path(value = "file_id") fileId: String?,
+        @Query(value = "version") version: Int? = null
+    ): Observable<Response<ResponseFile>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}")
+    suspend fun suspendGetFileInfo(
+        @Path(value = "file_id") fileId: String?,
+        @Query(value = "version") version: Int? = null
+    ): Response<ResponseFile>
 
 
     @Headers(
@@ -314,7 +332,22 @@ interface ManagerService {
      * */
     @Streaming
     @GET
-    fun downloadFile(@Url url: String, @Header("Cookie") cookie: String): Single<Response<ResponseBody>>
+    fun downloadFile(
+        @Url url: String,
+        @Header("Cookie") cookie: String
+    ): Single<Response<ResponseBody>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/presigneduri")
+    suspend fun getDownloadFileLink(
+        @Path(value = "file_id") fileId: String
+    ): app.documents.core.network.BaseResponse<String>
+
+    @Streaming
+    @GET
+    suspend fun suspendDownloadFile(
+        @Url url: String,
+        @Header("Cookie") cookie: String
+    ): Response<ResponseBody>
 
     @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/bulkdownload")
     fun downloadFiles(@Body requestDownload: RequestDownload): Single<ResponseDownload>
@@ -404,10 +437,28 @@ interface ManagerService {
         @Query("view") view: Boolean? = null
     ): Single<Response<ResponseBody>>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/openedit")
+    suspend fun suspendOpenFile(
+        @Path(value = "id") id: String,
+        @Query("version") version: Int,
+        @Query("fill") fill: Boolean? = null,
+        @Query("edit") edit: Boolean? = null,
+        @Query("view") view: Boolean? = null
+    ): Response<ResponseBody>
+
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/openedit")
     fun openFile(
         @Path(value = "id") id: String,
     ): Single<Response<ResponseBody>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/openedit")
+    suspend fun suspendOpenFile(
+        @Path(value = "id") id: String,
+    ): Response<ResponseBody>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -415,6 +466,13 @@ interface ManagerService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/docservice")
     fun getDocService(): Single<Response<ResponseBody>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/docservice")
+    suspend fun suspendGetDocService(): Response<ResponseBody>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
@@ -454,4 +512,60 @@ interface ManagerService {
     @GET("api/${ApiContract.API_VERSION}/settings/version/build")
     suspend fun getSettings(): app.documents.core.network.BaseResponse<Settings>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/history")
+    suspend fun getVersionHistory(
+        @Path(value = "file_id") fileId: String
+    ): Response<ResponseVersionHistory>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/restoreversion")
+    suspend fun restoreVersion(
+        @Path(value = "file_id") fileId: String,
+        @Query(value = "version") version: Int
+    ): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/comment")
+    suspend fun updateVersionComment(
+        @Path(value = "file_id") fileId: String,
+        @Body body: EditCommentRequest
+    ): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/deleteversion")
+    suspend fun deleteVersion(
+        @Body body: DeleteVersionRequest
+    ): Response<BaseResponse>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/formroles")
+    suspend fun getFillingStatus(
+        @Path(value = "file_id") fileId: String,
+    ): app.documents.core.network.BaseResponse<List<FormRole>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/manageformfilling")
+    suspend fun stopFilling(
+        @Path(value = "file_id") fileId: String,
+        @Body body: RequestStopFilling
+    ): Response<ResponseBody>
 }

@@ -5,8 +5,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import lib.toolkit.base.managers.utils.StringUtils.Extension
-import lib.toolkit.base.managers.utils.StringUtils.getExtension
+import lib.toolkit.base.managers.tools.FileExtensions
 import java.time.Duration
 import java.time.Instant
 import java.util.Date
@@ -45,6 +44,10 @@ open class CloudFile : Item() {
     @Expose
     var webUrl = ""
 
+    @SerializedName("shortWebUrl")
+    @Expose
+    var shortWebUrl = ""
+
     @SerializedName("fileType")
     @Expose
     var fileType = ""
@@ -56,6 +59,18 @@ open class CloudFile : Item() {
     @SerializedName("comment")
     @Expose
     var comment = ""
+
+    @SerializedName("customFilterEnabled")
+    @Expose
+    var customFilterEnabled = false
+
+    @SerializedName("locked")
+    @Expose
+    var isLocked = false
+
+    @SerializedName("formFillingStatus")
+    @Expose
+    var formFillingStatusType = 0
 
     @SerializedName("canWebRestrictedEditing")
     @Expose
@@ -81,6 +96,10 @@ open class CloudFile : Item() {
     @Expose
     var availableExternalRights: ExternalAccessRights? = null
 
+    @SerializedName("viewAccessibility")
+    @Expose
+    val viewAccessibility: ViewAccessibility? = null
+
     @SerializedName("isForm")
     @Expose
     var isForm: Boolean = false
@@ -95,7 +114,7 @@ open class CloudFile : Item() {
         get() = fileExst.replace(".", "")
 
     val isPdfForm: Boolean
-        get() = getExtension(fileExst) == Extension.PDF && isForm
+        get() = FileExtensions.fromExtension(fileExst) is FileExtensions.PDF && isForm
 
     val isFavorite: Boolean
         get() = (fileStatus and ApiContract.FileStatus.FAVORITE) != 0
@@ -113,6 +132,9 @@ open class CloudFile : Item() {
             val timePassed =  Duration.between(Instant.now(), created.toInstant()).abs()
             return timePassed.toMillis() >= totalDuration.toMillis() * 0.9
         }
+
+    val formFillingStatus: ApiContract.FormFillingStatus
+        get() = ApiContract.FormFillingStatus.fromType(formFillingStatusType)
 
     private fun String.toIntOrZero(): Int {
         return if (isNotEmpty()) toInt() else 0

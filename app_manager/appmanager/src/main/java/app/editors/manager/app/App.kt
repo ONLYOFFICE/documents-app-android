@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Process
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.login.LoginComponent
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
@@ -35,7 +36,6 @@ import app.editors.manager.managers.utils.GoogleUtils
 import app.editors.manager.managers.utils.KeyStoreUtils
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import java.util.Locale
 
@@ -176,9 +176,9 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        ThemePreferencesTools(this).also { pref ->
-            AppCompatDelegate.setDefaultNightMode(pref.mode)
-        }
+        AppCompatDelegate.setDefaultNightMode(appComponent.themePreferencesTools.mode)
+        LocalBroadcastManager.getInstance(applicationContext)
+            .registerReceiver(appComponent.downloadReceiver, appComponent.downloadReceiver.filter)
         init()
     }
 

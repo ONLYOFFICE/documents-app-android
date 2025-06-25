@@ -3,7 +3,9 @@ package app.editors.manager.ui.views.custom
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.core.view.isVisible
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludePlaceholdersTextBinding
@@ -16,7 +18,7 @@ import lib.compose.ui.views.PlaceholderView
 class PlaceholderViews(val view: View?) {
 
     enum class Type {
-        NONE, CONNECTION, EMPTY, EMPTY_ROOM, EMPTY_FORM_FILLING_ROOM, EMPTY_VIRTUAL_ROOM, VISITOR_EMPTY_ROOM, SEARCH, SHARE, ACCESS,
+        NONE, CONNECTION, EMPTY, EMPTY_TEMPLATES_FOLDER, EMPTY_ROOM, EMPTY_TEMPLATE, EMPTY_FORM_FILLING_ROOM, EMPTY_VIRTUAL_ROOM, VISITOR_EMPTY_ROOM, SEARCH, SHARE, ACCESS,
         SUBFOLDER, USERS, GROUPS, COMMON, MEDIA, LOAD, LOAD_GROUPS, LOAD_USERS,
         OTHER_ACCOUNTS, EMPTY_TRASH, EMPTY_ARCHIVE, NO_ROOMS, VISITOR_NO_ROOMS,
         EMPTY_RECENT_VIA_LINK, PAYMENT_REQUIRED, PERSONAL_PORTAL_END, EXTERNAL_STORAGE
@@ -55,10 +57,10 @@ class PlaceholderViews(val view: View?) {
                 setVisibility(false)
                 return
             }
-            Type.EMPTY, Type.LOAD, Type.EMPTY_ROOM, Type.SEARCH, Type.EMPTY_TRASH,
+            Type.EMPTY, Type.LOAD, Type.EMPTY_TEMPLATE, Type.EMPTY_TEMPLATES_FOLDER, Type.EMPTY_ROOM, Type.SEARCH, Type.EMPTY_TRASH,
             Type.EMPTY_ARCHIVE, Type.VISITOR_EMPTY_ROOM, Type.NO_ROOMS, Type.VISITOR_NO_ROOMS,
             Type.EMPTY_RECENT_VIA_LINK, Type.PAYMENT_REQUIRED, Type.EMPTY_FORM_FILLING_ROOM,
-            Type.EMPTY_VIRTUAL_ROOM, Type.EXTERNAL_STORAGE -> {
+            Type.EMPTY_VIRTUAL_ROOM, Type.EXTERNAL_STORAGE, Type.CONNECTION -> {
                 setVisibility(true)
                 with(binding.composeView) {
                     isVisible = true
@@ -82,7 +84,6 @@ class PlaceholderViews(val view: View?) {
                 }
                 return
             }
-            Type.CONNECTION -> R.string.placeholder_connection
             Type.SHARE -> R.string.placeholder_share
             Type.ACCESS -> R.string.placeholder_access_denied
             Type.SUBFOLDER -> R.string.placeholder_no_subfolders
@@ -118,6 +119,16 @@ class PlaceholderViews(val view: View?) {
                         image = lib.toolkit.base.R.drawable.placeholder_empty_folder
                         title = R.string.placeholder_empty_folder
                         subtitle = R.string.placeholder_empty_room_visitor_desc
+                    }
+                    Type.EMPTY_TEMPLATES_FOLDER -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_empty_folder
+                        title = R.string.placeholder_empty_templates_folder
+                        subtitle = R.string.placeholder_empty_templates_folder_desc
+                    }
+                    Type.EMPTY_TEMPLATE -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_empty_folder
+                        title = R.string.room_placeholder_created_template_title
+                        subtitle = R.string.room_placeholder_created_room_subtitle
                     }
                     Type.EMPTY_ROOM -> {
                         image = lib.toolkit.base.R.drawable.placeholder_empty_folder
@@ -174,6 +185,11 @@ class PlaceholderViews(val view: View?) {
                         title = R.string.app_manage_files_title
                         subtitle = R.string.app_manage_files_description
                     }
+                    Type.CONNECTION -> {
+                        image = lib.toolkit.base.R.drawable.placeholder_no_connection
+                        title = R.string.placeholder_connection
+                        subtitle = R.string.placeholder_connection_desc
+                    }
                     else -> error("${type.name} is invalid type")
                 }
 
@@ -182,16 +198,18 @@ class PlaceholderViews(val view: View?) {
                     title = context.getString(title),
                     subtitle = subtitle?.let(context::getString).orEmpty()
                 ) {
-                    if (type == Type.PAYMENT_REQUIRED) {
-                        AppButton(
-                            title = R.string.placeholder_payment_required_button,
-                            onClick = onClick
-                        )
+                    val buttonTitle = when(type){
+                        Type.PAYMENT_REQUIRED -> R.string.placeholder_payment_required_button
+                        Type.EXTERNAL_STORAGE -> R.string.settings_item_title
+                        Type.CONNECTION -> R.string.placeholder_connection_button
+                        else -> null
                     }
-                    if (type == Type.EXTERNAL_STORAGE) {
+
+                    buttonTitle?.let { title ->
                         AppButton(
-                            title = R.string.settings_item_title,
-                            onClick = onClick
+                            titleResId = title,
+                            onClick = onClick,
+                            modifier = Modifier.testTag(type.name),
                         )
                     }
                 }

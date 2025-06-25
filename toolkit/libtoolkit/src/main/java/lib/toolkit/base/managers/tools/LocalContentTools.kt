@@ -39,6 +39,7 @@ class LocalContentTools @Inject constructor(val context: Context) {
         const val POTX_EXTENSION = "potx"
         const val PPT_EXTENSION = "ppt"
         const val ODP_EXTENSION = "odp"
+        const val ODG_EXTENSION = "odg"
         const val OTP_EXTENSION = "otp"
         const val XLSX_EXTENSION = "xlsx"
         const val XLTX_EXTENSION = "xltx"
@@ -52,6 +53,7 @@ class LocalContentTools @Inject constructor(val context: Context) {
         const val KEY_EXTENSION = "key"
         const val HWP_EXTENSION = "hwp"
         const val HWPX_EXTENSION = "hwpx"
+        const val MD_EXTENSION = "md"
         private const val ASSETS_TEMPLATES = "templates"
 
         const val MIME_TYPE_DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -70,23 +72,6 @@ class LocalContentTools @Inject constructor(val context: Context) {
                 "${Environment.getExternalStorageDirectory().absolutePath}/${BuildConfig.ROOT_FOLDER}"
             }
         }
-
-        fun toOOXML(ext: String): String {
-            return when (ext) {
-                ODT_EXTENSION, OTT_EXTENSION, DOC_EXTENSION, PAGES_EXTENSION -> DOCX_EXTENSION
-                ODS_EXTENSION, OTS_EXTENSION, XLS_EXTENSION, NUMBERS_EXTENSION -> XLSX_EXTENSION
-                ODP_EXTENSION, OTP_EXTENSION, PPT_EXTENSION, KEY_EXTENSION -> PPTX_EXTENSION
-                else -> throw IllegalArgumentException(".$ext can not be converted to OOXML extension")
-            }
-        }
-
-        fun isOpenFormat(ext: String): Boolean {
-            return when (ext) {
-                ODT_EXTENSION, OTT_EXTENSION, ODS_EXTENSION, OTS_EXTENSION, ODP_EXTENSION, OTP_EXTENSION, DOC_EXTENSION, XLS_EXTENSION, PPT_EXTENSION -> true
-                else -> false
-            }
-        }
-
     }
 
     private val contentResolver: ContentResolver = context.contentResolver

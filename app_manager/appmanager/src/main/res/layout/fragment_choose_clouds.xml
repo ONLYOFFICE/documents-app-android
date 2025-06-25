@@ -1,153 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbars="vertical"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:scrollbars="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <FrameLayout
+        <app.editors.manager.ui.views.custom.ConnectCloudView
             android:id="@+id/cloudsItemOnlyOffice"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/item_three_line_height"
-            android:background="@color/colorCloudItem"
-            android:clickable="true"
-            android:focusable="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?attr/selectableItemBackground">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/onlyOfficeIcon"
-                    android:layout_width="@dimen/image_size"
-                    android:layout_height="@dimen/image_size"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/screen_margin_large"
-                    android:layout_marginTop="16dp"
-                    app:srcCompat="@drawable/ic_storage_onlyoffice"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="ContentDescription" />
-
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/onlyOfficeTitle"
-                    style="@style/Widget.Common.TextView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/screen_margin_large"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="@dimen/screen_margin_large"
-                    android:text="@string/cloud_only_office"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/onlyOfficeIcon"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/onlyOfficeDescription"
-                    style="@style/Widget.Common.TextView.Small.Secondary"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:lines="2"
-                    android:maxLines="2"
-                    android:minLines="1"
-                    android:text="@string/cloud_only_office_description"
-                    app:layout_constraintEnd_toEndOf="@+id/onlyOfficeTitle"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/onlyOfficeTitle"
-                    app:layout_constraintTop_toBottomOf="@+id/onlyOfficeTitle" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </FrameLayout>
+            android:layout_height="wrap_content" />
 
         <app.editors.manager.ui.views.custom.ConnectCloudView
-            android:layout_height="wrap_content"
             android:id="@+id/cloudsItemNextCloud"
             android:layout_width="match_parent"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cloudsItemOnlyOffice" />
+            android:layout_height="wrap_content" />
 
         <app.editors.manager.ui.views.custom.ConnectCloudView
-            android:layout_height="wrap_content"
             android:id="@+id/cloudsItemOwnCloud"
             android:layout_width="match_parent"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cloudsItemNextCloud" />
+            android:layout_height="wrap_content" />
 
         <app.editors.manager.ui.views.custom.ConnectCloudView
-            android:layout_height="wrap_content"
             android:id="@+id/cloudsItemKDrive"
             android:layout_width="match_parent"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cloudsItemOwnCloud" />
+            android:layout_height="wrap_content" />
 
         <app.editors.manager.ui.views.custom.ConnectCloudView
             android:id="@+id/cloudsItemYandex"
             android:layout_width="match_parent"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cloudsItemKDrive"
             android:layout_height="wrap_content" />
 
         <app.editors.manager.ui.views.custom.ConnectCloudView
-            android:id="@+id/cloudsItemWebDav"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cloudsItemGoogleDrive" />
-
-        <app.editors.manager.ui.views.custom.ConnectCloudView
             android:id="@+id/cloudsItemOneDrive"
-            layout="@layout/include_clouds_item"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/item_two_line_height"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cloudsItemYandex" />
+            android:layout_height="@dimen/item_two_line_height" />
 
         <app.editors.manager.ui.views.custom.ConnectCloudView
             android:id="@+id/cloudsItemDropbox"
-            layout="@layout/include_clouds_item"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/item_two_line_height"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cloudsItemOneDrive" />
+            android:layout_height="@dimen/item_two_line_height" />
 
         <app.editors.manager.ui.views.custom.ConnectCloudView
             android:id="@+id/cloudsItemGoogleDrive"
-            layout="@layout/include_clouds_item"
             android:layout_width="match_parent"
             android:layout_height="@dimen/item_two_line_height"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cloudsItemDropbox" />
+            android:visibility="gone" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <app.editors.manager.ui.views.custom.ConnectCloudView
+            android:id="@+id/cloudsItemWebDav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
 </androidx.core.widget.NestedScrollView>

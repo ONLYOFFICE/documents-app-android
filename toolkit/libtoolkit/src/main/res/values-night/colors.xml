@@ -28,6 +28,7 @@
     <color name="colorButtonBackground">@color/colorSurface</color>
     <color name="colorChipBackground">@color/colorSurface</color>
     <color name="colorIconBackground">@color/colorSurface</color>
+    <color name="colorOnBottomBarInActive">@color/colorWhite60</color>
 
     <!-- Editors -->
     <color name="colorDocTint">#3B92F3</color>
@@ -36,5 +37,8 @@
     <color name="colorPicTint">#BA86FC</color>
     <color name="colorPdfTint">#FA4B3C</color>
     <color name="colorVideoTint">#00A9CD</color>
+
+    <!-- Form filling status -->
+    <color name="colorFormInProgress">@color/colorWhite60</color>
 
 </resources>

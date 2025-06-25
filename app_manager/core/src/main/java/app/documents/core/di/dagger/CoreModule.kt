@@ -3,7 +3,7 @@ package app.documents.core.di.dagger
 import android.content.Context
 import app.documents.core.database.di.DatabaseModule
 import app.documents.core.model.cloud.CloudAccount
-import app.documents.core.model.exception.CloudAccountNotFoundException
+import app.documents.core.model.cloud.PortalSettings
 import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.interceptors.BaseInterceptor
 import app.documents.core.network.common.interceptors.CookieInterceptor
@@ -63,7 +63,7 @@ object CoreModule {
     ): OkHttpClient {
         return NetworkClient
             .getOkHttpBuilder(
-                cloudAccount?.portal?.settings ?: throw CloudAccountNotFoundException,
+                cloudAccount?.portal?.settings ?: PortalSettings(),
                 baseInterceptor,
                 cookieInterceptor
             )

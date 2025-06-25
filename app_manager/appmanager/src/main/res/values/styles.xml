@@ -18,6 +18,12 @@
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
+    <style name="TabletDialog" parent="AppTheme">
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+    </style>
+
     <style name="PasscodeActivityTheme" parent="NoActionBarTheme">
         <item name="android:statusBarColor">@color/colorBackground</item>
     </style>

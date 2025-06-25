@@ -21,6 +21,6 @@ class DocsOneDriveOperationFragment : BaseStorageOperationsFragment() {
     }
 
     @InjectPresenter
-    override lateinit var presenter: DocsOneDrivePresenter
+    override lateinit var storagePresenter: DocsOneDrivePresenter
 
 }

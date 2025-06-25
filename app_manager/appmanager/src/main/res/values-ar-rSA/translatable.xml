@@ -323,7 +323,6 @@
     <string name="list_context_delete_success">حذف بنجاح</string>
     <string name="list_context_remove_from_list" translatable="false">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">إزالة من الأخيرة</string>
-    <string name="list_context_upload_to_portal">تحميل إلى البوابة</string>
     <string name="list_context_add_to_favorite">اضافة الى المفضلة</string>
     <string name="list_context_delete_from_favorite">حذف من المفضلة</string>
     <string name="list_context_leave_room">غادر الغرفة</string>
@@ -540,32 +539,6 @@
     <string name="on_boarding_skip_button">تخطي</string>
     <string name="on_boarding_back_button">خلف</string>
     <string name="on_boarding_next_button">التالي</string>
-    <string name="on_boarding_finish_button">تم</string>
-
-    <string name="on_boarding_welcome_header">مرحبًا بك في ONLYOFFICE</string>
-    <string name="on_boarding_welcome_info">
-      لقد قمنا بتحديث مستندات ONLYOFFICE لنظام Android بشكل
-    </string>
-
-    <string name="on_boarding_edit_header">تحرير المستندات المكتبية</string>
-    <string name="on_boarding_edit_info">
-      قم بإنشاء وتحرير المستندات النصية وجداول البيانات والعروض
-    </string>
-
-    <string name="on_boarding_access_header">منح حق الوصول إلى المستندات</string>
-    <string name="on_boarding_access_info">
-      قم بمشاركة المستندات مع فريقك ومنحهم حقوق الوصول الكامل أو المراجعة أو القراءة فقط. المشاركة
-    </string>
-
-    <string name="on_boarding_collaborate_header">تعاون</string>
-    <string name="on_boarding_collaborate_info">
-      شارك في تحرير مستندات المكتب مع زملائك في الفريق في الوقت
-    </string>
-
-    <string name="on_boarding_third_party_header">الاتصال بسحابات الطرف الثالث</string>
-    <string name="on_boarding_third_party_info">
-      قم بتوصيل التطبيق بوحدات التخزين السحابية الأخرى التي تستخدمها: Google Drive، وDropbox،
-    </string>
 
     <!-- ======================================================================================= -->
     <!-- Media -->
@@ -607,7 +580,6 @@
     <string name="cloud_account_description">التعاون في بيئة آمنة وربط مخازن الطرف الثالث</string>
     <string name="cloud_account_start_button">البدء</string>
     <string name="cloud_account_other_storages_button">مخازن أخرى</string>
-    <string name="cloud_only_office">سحابة ONLYOFFICE</string>
     <string name="cloud_only_office_description">قم بتخزين المستندات في السحابة والتعاون عليها</string>
     <string name="cloud_accounts_title">حسابات</string>
     <string name="error_long_file_name">اسم الملف طويل جدًا</string>
@@ -629,7 +601,7 @@
     <string name="app_settings_analytic_title">المساعدة في تحسين المنتج</string>
     <string name="app_settings_analytic">مشاركة تحليلات التطبيق</string>
     <string name="app_manage_files_title">الوصول إلى إدارة الملفات</string>
-    <string name="app_manage_files_description">تحتاج إلى منح حق الوصول إلى الملفات. إذا تم رفض الوصول سيتم حذف كافة الملفات بعد التطبيقات</string>
+    <string name="app_manage_files_description">لتحرير المستندات وإنشائها محليًا، يجب عليك السماح للتطبيق بالوصول إلى الملفات الموجودة على جهازك.</string>
     //passcode
     <string name="app_settings_security">حماية</string>
     <string name="app_settings_passcode">قفل رمز المرور</string>
@@ -921,4 +893,213 @@
     <string name="list_action_delete_image">حذف الصورة</string>
     <string name="whats_new_title">ما الجديد</string>
     <string name="whats_new_next">إبدء الآن</string>
+
+    <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
+    <string name="access_members_me_and_title">أنا و%s</string>
+    <string name="access_members_me_subtitle">(أنا)</string>
+    <string name="access_members_me_users_groups_title">أنا، %1$s و %2$s</string>
+    <string name="cloud_create_account">أنشئوا حسابًا مجانيًا</string>
+    <string name="context_menu_desc">المزيد</string>
+    <string name="desc_create_from_template">.أنشئوا غرفة استنادًا إلى قالب. سيتم نسخ جميع الإعدادات والمستخدمين والمجلدات والملفات من قالب الغرفة المحدد</string>
+    <string name="desc_info_template">قالب الغرفة. استخدموا هذا القالب لإنشاء غرفة جديدة بسرعة.</string>
+    <string name="dialogs_common_close">إغلاق</string>
+    <string name="dialogs_warning_room_space_quota_exceed">تم تجاوز حصة مساحة الغرفة (%s).</string>
+    <string name="edit_comment_field_label">تعليق</string>
+    <string name="edit_comment_label">تعليق</string>
+    <string name="edit_comment_success">تم حفظ التعليق بنجاح</string>
+    <string name="edit_comment_title">حرروا التعليق</string>
+    <string name="error_create_room">فشل في إنشاء الغرفة</string>
+    <string name="error_create_template">فشل في إنشاء القالب</string>
+    <string name="error_edit_comment">فشل في تحديث التعليق</string>
+    <string name="error_save_access_settings">فشل في حفظ إعدادات الوصول</string>
+    <string name="error_save_template">فشل في حفظ القالب</string>
+    <string name="error_upload_logo">فشل في تحميل الشعار</string>
+    <string name="error_version_delete">فشل في الحذف</string>
+    <string name="error_version_open">فشل في فتح المستند</string>
+    <string name="error_version_restore">فشل في استعادة النسخة</string>
+    <string name="errors_open_document">فشل في فتح المستند</string>
+    <string name="errors_webdav_2fa_code">رمز التحقق غير صحيح</string>
+    <string name="file_lifetime_action">إجراء على الملفات</string>
+    <string name="file_lifetime_action_delete">حذف نهائي</string>
+    <string name="file_lifetime_action_move_to_trash">نقل إلى المهملات</string>
+    <string name="file_lifetime_desc">\"اضبطوا فترة صلاحية الملف لحذف الملفات في هذه الغرفة تلقائيًا بعد فترة زمنية محددة. تبدأ فترة الصلاحية من تاريخ رفع أو إنشاء الملف.\"</string>
+    <string name="file_lifetime_hint">الملفات الأقدم من</string>
+    <string name="file_lifetime_period_days">أيام</string>
+    <string name="file_lifetime_period_months">أشهر</string>
+    <string name="file_lifetime_period_years">سنوات</string>
+    <string name="file_lifetime_time_period">الفترة الزمنية</string>
+    <string name="file_lifetime_title">مدة صلاحية الملف</string>
+    <string name="file_lifetime_warning_desc">يبدأ العد التنازلي من تاريخ إنشاء الملف. بعض الملفات في هذه الغرفة تجاوزت المدة المقترحة وسيتم حذفها بمجرد تفعيل هذا الإعداد.</string>
+    <string name="file_lifetime_warning_title">سيتم حذف الملفات القديمة التي تجاوزت مدة صلاحيتها</string>
+    <string name="filling_form_complete">تم</string>
+    <string name="filling_form_filling_process_details">تفاصيل العملية</string>
+    <string name="filling_form_filling_status">حالة التعبئة</string>
+    <string name="filling_form_filling_status_desc">تابعوا من خلال هذه اللوحة مدى تقدم تعبئة النموذج الذي تشاركون فيه أو تنظمونه.</string>
+    <string name="filling_form_history_complete">أكمل وقدم الجزء الخاص به من النموذج. النموذج مكتمل بالكامل.</string>
+    <string name="filling_form_history_opened">فتح النموذج للتعبئة</string>
+    <string name="filling_form_history_stopped">تم إيقاف التعبئة من قِبل %s</string>
+    <string name="filling_form_history_submitted">أكمل الجزء الخاص به وتم إرسال النموذج إلى الدور التالي.</string>
+    <string name="filling_form_send_finalized">اكتمل قسم النموذج</string>
+    <string name="filling_form_send_finalized_desc">تم إكمال النموذج بالكامل من قِبل جميع الأدوار وأصبح الآن نهائيًا. النموذج متاح للعرض فقط.</string>
+    <string name="filling_form_send_section_complete">اكتمل قسم النموذج</string>
+    <string name="filling_form_send_section_complete_desc">تم إكمال الجزء المخصّص من نموذج "PDF" بنجاح. يمكن متابعة حالة تعبئة النموذج من داخل الغرفة أو من خلال لوحة حالة التعبئة. سيتم إرسال إشعار عبر البريد الإلكتروني عند إكمال النموذج بالكامل.</string>
+    <string name="filling_form_stop_filling">إيقاف التعبئة</string>
+    <string name="filling_form_stop_filling_dialog_desc">هل أنتم متأكدون من رغبتكم في إيقاف التعبئة؟ لن يكون بالإمكان استئناف تعبئة هذا النموذج بعد الإلغاء. سيتم إيقاف النموذج عند المرحلة الحالية، وسيتم تمييز الملف كـ "متوقف".</string>
+    <string name="filling_form_stop_filling_dialog_title">إيقاف التعبئة؟</string>
+    <string name="filling_form_stopped">تم الإيقاف</string>
+    <string name="filling_form_version_incompatible_desc">إصدارات العميل والخادم غير متوافقة. يمكنكم فتح المستند في وضع العرض فقط.</string>
+    <string name="filter_type_pdf_documents">مستندات "PDF"</string>
+    <string name="filter_type_pdf_forms">نماذج "PDF"</string>
+    <string name="form_status_complete">مكتمل</string>
+    <string name="form_status_draft">مسودة</string>
+    <string name="form_status_in_progress">قيد التنفيذ</string>
+    <string name="form_status_stopped">متوقف</string>
+    <string name="form_status_your_turn">دوركم الآن</string>
+    <string name="fragment_templates_title">قوالب</string>
+    <string name="list_action_doc_from_photo">مستند نصي من صورة</string>
+    <string name="list_context_access_settings">إعدادات الوصول</string>
+    <string name="list_context_delete_template">حذف القالب</string>
+    <string name="list_context_disable_custom_filter">تعطيل الفلتر المخصّص</string>
+    <string name="list_context_edit_comment">تعديل التعليق</string>
+    <string name="list_context_edit_index">تعديل الفهرس</string>
+    <string name="list_context_edit_template">تعديل القالب</string>
+    <string name="list_context_enable_custom_filter">تفعيل الفلتر المخصّص</string>
+    <string name="list_context_lock">قفل</string>
+    <string name="list_context_notification_disable">إيقاف الإشعارات</string>
+    <string name="list_context_notification_enable">تفعيل الإشعارات</string>
+    <string name="list_context_open_vesrion">فتح</string>
+    <string name="list_context_save_as_template">حفظ كقالب</string>
+    <string name="list_context_unlock">إلغاء القفل</string>
+    <string name="list_context_upload_to_cloud">رفع إلى السحابة</string>
+    <string name="list_context_version_history">عرض سجل الإصدارات</string>
+    <string name="on_boarding_collaborate_header">تعاونوا مع فريقكم</string>
+    <string name="on_boarding_collaborate_info">في الوضع المتصل، استخدموا ميزات التحرير التعاوني الفوري في ONLYOFFICE للعمل على المستندات مع أعضاء البوابة، ومشاركة الملفات، وإنشاء مجلدات تخزين مشتركة.</string>
+    <string name="on_boarding_edit_header">العمل مع ملفات المكتب</string>
+    <string name="on_boarding_edit_info">أنشئوا المستندات وحرروها باستخدام شريط الأدوات المتكامل: تعاملوا مع العناصر المعقّدة في مستندات النصوص، وأجروا حسابات متقدمة في جداول البيانات، وأنشئوا عروضًا تقديمية مبهرة، واطلعوا على ملفات "PDF" بدون فقدان التنسيق.</string>
+    <string name="on_boarding_finish_button">البدء</string>
+    <string name="on_boarding_locally_header">تحرير المستندات محليًا</string>
+    <string name="on_boarding_locally_info">يمكنكم العمل على المستندات دون اتصال بالإنترنت. يمكن رفع الملفات التي تم إنشاؤها لاحقًا إلى البوابة الإلكترونية والوصول إليها من أي جهاز آخر.</string>
+    <string name="on_boarding_third_party_header">تخزين خارجي</string>
+    <string name="on_boarding_third_party_info">يمكنكم ربط خدمات تخزين خارجية مثل "Nextcloud" و"ownCloud" و"Dropbox" وغيرها من الخدمات التي تستخدم بروتوكول "WebDAV".</string>
+    <string name="on_boarding_welcome_header">البدء</string>
+    <string name="on_boarding_welcome_info">مرحبًا بكم في مجموعة تحرير ONLYOFFICEعلى الأجهزة المحمولة! اسحبوا الشاشة للاطلاع على مزيد من المعلومات حول التطبيق.</string>
+    <string name="operation_disable_custom_filter">تم تعطيل الفلتر المخصّص للملف المحدد</string>
+    <string name="operation_enable_custom_filter">تم تفعيل الفلتر المخصّص للملف المحدد</string>
+    <string name="placeholder_connection_button">إعادة التحميل</string>
+    <string name="placeholder_connection_desc">لم يتم الكشف عن اتصال بالشبكة. يرجى التحقق من الاتصال والمحاولة مرة أخرى.</string>
+    <string name="placeholder_empty_templates_folder">لا توجد قوالب حتى الآن</string>
+    <string name="placeholder_empty_templates_folder_desc">يمكنكم إنشاء قالب من إحدى الغرف في قسم الغرف.</string>
+    <string name="room_access_via_link_title">الوصول عبر الرابط</string>
+    <string name="room_created_successfully">تم إنشاء الغرفة بنجاح</string>
+    <string name="room_placeholder_created_template_title">تم إنشاء القالب!</string>
+    <string name="room_placeholder_created_virtual_room_subtitle">ابدؤوا بالإجراءات السريعة: n\أنشئوا ملفًا جديدًا</string>
+    <string name="room_placeholder_created_virtual_room_title">مرحبًا بكم في غرفة البيانات الافتراضية</string>
+    <string name="rooms_error_logo_size_exceed">تم تجاوز الحد الأقصى لحجم الصورة (1 ميغابايت)</string>
+    <string name="rooms_expire_context_info">سيتم حذف الملف في %s</string>
+    <string name="rooms_filter_type_virtual_room">غرفة البيانات الافتراضية</string>
+    <string name="rooms_index_apply">تطبيق</string>
+    <string name="rooms_index_edit">تعديل الفهرس</string>
+    <string name="rooms_index_exit_no_saving">الخروج دون حفظ؟\nلقد أجريتم تعديلات على الفهرس. إذا واصلتم بدون حفظ، فلن يتم تطبيق هذه التغييرات.</string>
+    <string name="rooms_index_export">تصدير فهرس الغرفة</string>
+    <string name="rooms_index_reorder">إعادة الترتيب</string>
+    <string name="rooms_index_reorder_complete_desc">تم تصدير الملف %s إلى "المستندات"</string>
+    <string name="rooms_index_reorder_complete_title">تم تصدير الملف</string>
+    <string name="rooms_index_reorder_desc">إجراء إعادة الترتيب سيؤدي إلى إزالة الفراغات في الفهارس. سيتم إعادة فهرسة الملفات بترتيب متسلسل لتعويض الفهارس المفقودة.</string>
+    <string name="rooms_index_reorder_open_file">فتح الملف</string>
+    <string name="rooms_index_subtitle">الفهرس %s</string>
+    <string name="rooms_index_title">فهرسة الترتيب</string>
+    <string name="rooms_info_create_maximum_exceed">تم تجاوز الحد الأقصى لعدد الروابط</string>
+    <string name="rooms_info_delete_link_desc">سيتم حذف الروابط المؤدية إلى جميع الملفات في الغرفة. الروابط السابقة لملفات الغرفة والمستندات المضمّنة ستصبح غير متاحة.\n\nلا يمكن التراجع عن هذا الإجراء. هل أنتم متأكدون من المتابعة؟</string>
+    <string name="rooms_info_guests_title">الضيوف (%1d)</string>
+    <string name="rooms_info_password_allowed_symbols">الأحرف المسموح بها: a–z, A–Z, 0–9, !\"#%&amp;\'()*+,-./:;\u003C=>?@[]^_`{|}</string>
+    <string name="rooms_info_password_minimum_length">الحد الأدنى للطول: 8 أحرف</string>
+    <string name="rooms_info_revoke_link_desc">سيتم إنشاء روابط جديدة لجميع الملفات في الغرفة. الروابط السابقة لملفات الغرفة والمستندات المضمّنة ستصبح غير متاحة.\n\nلا يمكن التراجع عن هذا الإجراء. هل أنتم متأكدون من المتابعة؟</string>
+    <string name="rooms_invalid_password">كلمة المرور غير صالحة</string>
+    <string name="rooms_invite_access_description">لا يمكن تعيين الضيوف أو المستخدمين أو المجموعات كمديري غرفة. فقط مسؤولو الغرفة أو DocSpace يمكنهم أداء هذا الدور.</string>
+    <string name="rooms_notifications_disabled">تم تعطيل إشعارات الغرفة</string>
+    <string name="rooms_notifications_enabled">تم تفعيل إشعارات الغرفة</string>
+    <string name="rooms_protected_room">غرفة محمية</string>
+    <string name="rooms_user_type_employees">الموظفون</string>
+    <string name="rooms_vdr">غرفة البيانات الافتراضية</string>
+    <string name="rooms_vdr_desc">استخدموا غرفة البيانات الافتراضية ("VDR") لتعزيز أمان الملفات والشفافية أثناء تعبئة المستندات وتوقيعها خطوة بخطوة. يمكنكم تعيين علامات مائية، وفهرسة المحتوى وتتبع جميع العناصر تلقائيًا، بالإضافة إلى تقييد التنزيل والنسخ.</string>
+    <string name="rooms_vdr_file_restrict_desc">فعّلوا هذا الخيار لتعطيل التنزيل والطباعة ونسخ المحتوى للمستخدمين الذين لديهم دور "مشاهد".</string>
+    <string name="rooms_vdr_indexing_desc">تفعيل الفهرسة التلقائية لفهرسة الملفات والمجلدات حسب الرقم التسلسلي. سيتم تعيين الترتيب الرقمي كافتراضي لجميع المستخدمين.</string>
+    <string name="rooms_vdr_indexing_title">الفهرسة التلقائية</string>
+    <string name="rooms_vdr_lifetime_info">تم تعيين فترة صلاحية الملف إلى %1$d %2$s في هذه الغرفة</string>
+    <string name="rooms_vdr_measurement_unit">وحدة القياس</string>
+    <string name="rooms_vdr_size_quota">حصة التخزين</string>
+    <string name="rooms_vdr_storage_quota_desc">حصة التخزين المُخصصة لكل غرفة. يمكنكم تعديل هذه القيمة أو إيقاف الحدّ الأقصى للتخزين.</string>
+    <string name="rooms_vdr_storage_quota_title">حصة التخزين</string>
+    <string name="rooms_vdr_watermark_desc">قوموا بحماية جميع المستندات في هذه الغرفة باستخدام علامات مائية. إذا كان المستند يحتوي بالفعل على علامة مائية، فلن يتم استبدالها.</string>
+    <string name="rooms_vdr_watermark_image_desc">تُظهر هذه المعاينة التقريبية كيفية عرض العلامة المائية في ملفاتكم.</string>
+    <string name="rooms_vdr_watermark_image_rotate">تدوير</string>
+    <string name="rooms_vdr_watermark_image_scale">تحجيم</string>
+    <string name="rooms_vdr_watermark_image_select">اختيار صورة</string>
+    <string name="rooms_vdr_watermark_info_current_date">التاريخ الحالي</string>
+    <string name="rooms_vdr_watermark_info_email">بريد المستخدم الإلكتروني</string>
+    <string name="rooms_vdr_watermark_info_ip_address">استخدموا عنوان "IP"</string>
+    <string name="rooms_vdr_watermark_info_room_name">اسم الغرفة</string>
+    <string name="rooms_vdr_watermark_info_username">اسم المستخدم</string>
+    <string name="rooms_vdr_watermark_position">المنصب</string>
+    <string name="rooms_vdr_watermark_position_diagonal">قطريًا</string>
+    <string name="rooms_vdr_watermark_position_horizontal">أفقيًا</string>
+    <string name="rooms_vdr_watermark_static_text">نص ثابت</string>
+    <string name="rooms_vdr_watermark_title">أضيفوا علامات مائية إلى المستندات</string>
+    <string name="rooms_vdr_watermark_type">نوع العلامة المائية الزمنية</string>
+    <string name="rooms_vdr_watermark_type_image">صورة</string>
+    <string name="rooms_vdr_watermark_type_info">معلومات المشاهد</string>
+    <string name="setting_access_desc">الوصول إلى القالب. يمكنكم اختيار الأعضاء الذين يمكنهم إنشاء غرف استنادًا إلى هذا القالب.</string>
+    <string name="setting_access_list_title">الوصول إلى القالب</string>
+    <string name="setting_access_members_title">أضيفوا مستخدمين أو مجموعات</string>
+    <string name="setting_access_members_title_desc">سيتمكّن المسؤولون المُضافون من إنشاء غرف باستخدام هذا القالب.</string>
+    <string name="setting_access_public">القالب متاح للجميع</string>
+    <string name="setting_access_public_bold_docspace">DocSpace</string>
+    <string name="setting_access_public_bold_room">مسؤولو الغرفة</string>
+    <string name="setting_access_public_desc">سيتمكّن جميع مسؤولي DocSpace والغرف من إنشاء غرف باستخدام هذا القالب.</string>
+    <string name="setting_screen_on">أثناء عرض المستندات</string>
+    <string name="setting_select_members_title">اختيار الأعضاء</string>
+    <string name="setting_tags_desc">تُطبّق الوسوم على الغرفة التي سيتم إنشاؤها استنادًا إلى هذا القالب.</string>
+    <string name="setting_title_sreen_on">الإبقاء على الشاشة قيد التشغيل</string>
+    <string name="settings_saved_successfully">تم حفظ إعدادات القالب</string>
+    <string name="share_access_room_manager">مدير الغرفة</string>
+    <string name="share_access_room_power_user">منشئ المحتوى</string>
+    <string name="share_clipboard_external_custom_filter_copied">تم نسخ رابط الملف الذي تم تفعيل عامل التصفية المخصص له إلى الحافظة بنجاح</string>
+    <string name="share_goal_guest">الضيوف</string>
+    <string name="share_user_type_room_docspace_admin">مسؤول DocSpace</string>
+    <string name="share_user_type_room_docspace_owner">مالك DocSpace</string>
+    <string name="share_user_type_room_portal_owner">مالك البوابة</string>
+    <string name="share_user_type_room_workspace_owner">مالك مساحة العمل</string>
+    <string name="template_created_successfully">تم حفظ القالب «%s»</string>
+    <string name="template_delete_success">تم حذف القالب</string>
+    <string name="template_name_hint">اسم القالب</string>
+    <string name="template_subheader_title">قالب غرفة</string>
+    <string name="templates_delete_success">تم حذف القوالب</string>
+    <string name="title_access_settings">إعدادات الوصول</string>
+    <string name="title_create_from_template">من قالب</string>
+    <string name="title_edit_template">تعديل القالب</string>
+    <string name="title_save_template">حفظ كقالب</string>
+    <string name="trash_toolbar_info">يتم حذف العناصر الموجودة في المهملات تلقائيًا بعد 30 يومًا</string>
+    <string name="version_delete_confirm">حذف</string>
+    <string name="version_delete_done">تم حذف الإصدار</string>
+    <string name="version_delete_loading">جارٍ الحذف</string>
+    <string name="version_delete_subtitle">أنتم على وشك حذف إصدار من الملف. لن يكون بإمكانكم رؤيته أو استعادته بعد ذلك. هل أنتم متأكدون من المتابعة؟</string>
+    <string name="version_delete_title">حذف الإصدار</string>
+    <string name="version_dialog_cancel">إلغاء</string>
+    <string name="version_edit_comment_title">تعديل التعليق</string>
+    <string name="version_group_current_header">الحالي — الإصدار %s</string>
+    <string name="version_group_header">الإصدار %s</string>
+    <string name="version_history_title">سجل الإصدارات</string>
+    <string name="version_restore_confirm">استعادة</string>
+    <string name="version_restore_done">تمت استعادة الإصدار</string>
+    <string name="version_restore_loading">جارٍ استعادة الإصدار</string>
+    <string name="version_restore_subtitle">سيتم حفظ الملف الحالي في سجل الإصدارات.</string>
+    <string name="version_restore_title">هل ترغبون في استعادة هذا الإصدار؟</string>
+    <string name="whats_new_1">تكامل محسّن مع الإصدار 3.0 من DocSpace</string>
+    <string name="whats_new_1_desc">تعاونوا على المستندات باستخدام آخر التحديثات والتحسينات في الإصدار 3.0 من ONLYOFFICE DocSpace</string>
+    <string name="whats_new_2">واجهة مبوّبة للأجهزة اللوحية وأجهزة سطح المكتب</string>
+    <string name="whats_new_2_desc">بسّطوا التنقل والتحرير باستخدام شريط الأدوات المبوب على الأجهزة اللوحية وأجهزة الكمبيوتر.</string>
+    <string name="whats_new_3">أنواع جديدة من المخططات</string>
+    <string name="whats_new_3_desc">أضيفوا أنواعًا جديدة من المخططات لعرض البيانات بطريقة مفصّلة وعرض تقديمي أكثر فعالية.</string>
+    <string name="whats_new_4">عرض ملفات "Apple Pages" "وHWP"</string>
+    <string name="whats_new_4_desc">افتحوا واستعرضوا مستندات بصيغ "Apple Pages" و"Hangul Word".</string>
 </resources>

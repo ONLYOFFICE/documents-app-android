@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App.Companion.getApp
@@ -11,6 +12,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import lib.toolkit.base.managers.utils.FileUtils
 import retrofit2.HttpException
 
 object FirebaseUtils {
@@ -116,21 +118,71 @@ object FirebaseUtils {
         return liveData
     }
 
+    fun checkSdkVersion(
+        context: Context,
+        account: CloudAccount,
+        onResult: (isCoauthoring: Boolean) -> Unit
+    ) {
+        getSdk { allowCoauthoring, checkSdkFully ->
+            if (!allowCoauthoring) {
+                onResult(false)
+                return@getSdk
+            }
+
+            val webSdk = account
+                .portal
+                .version
+                .documentServerVersion
+                .replace(".", "")
+
+            if (webSdk.isEmpty()) {
+                onResult(false)
+                return@getSdk
+            }
+
+            val localSdk = FileUtils.readSdkVersion(context).replace(".", "")
+            //TODO: for without editors
+            if (localSdk.isEmpty()) {
+                onResult(false)
+                return@getSdk
+            }
+
+            var maxVersionIndex = 2
+
+            if (!checkSdkFully) {
+                maxVersionIndex = 1
+            }
+
+            for (i in 0..maxVersionIndex) {
+                if (webSdk[i] != localSdk[i]) {
+                    onResult(false)
+                    return@getSdk
+                }
+            }
+
+            onResult(true)
+        }
+    }
+
     /**
      * @param block First allow_coauthoring, second check_sdk_fully
      */
-    fun getSdk(block: (config: Pair<Boolean, Boolean>) -> Unit)  {
+    fun getSdk(block: (allowCoauthoring: Boolean, checkSdkFully: Boolean) -> Unit)  {
         getRemoteConfig()?.let { config ->
-            config.fetch(if (BuildConfig.DEBUG) 0 else TIME_FETCH).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    config.activate()
-                    block(Pair(first = config.getBoolean(KEY_ALLOW_COAUTHORING), second = config.getBoolean(KEY_SDK_FULLY)))
-                } else {
-                    block(Pair(true, false))
+            config.fetch(if (BuildConfig.DEBUG) 0 else TIME_FETCH)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        config.activate()
+                        block(
+                            config.getBoolean(KEY_ALLOW_COAUTHORING),
+                            config.getBoolean(KEY_SDK_FULLY)
+                        )
+                    } else {
+                        block(true, false)
+                    }
                 }
-            }
         } ?: {
-            block(Pair(true, false))
+            block(true, false)
         }
     }
 

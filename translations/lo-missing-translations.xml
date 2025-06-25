@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Missing translations for language: lo -->
+
+    <!-- Module: appmanager - 7 strings -->
+    <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Do you really want to delete template room «%s»? The template cannot be restored.</item>
+                <item quantity="other">Do you really want to delete selected room templates? They cannot be restored.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Delete template</item>
+                <item quantity="other">Delete templates</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_seconds">
+        <item quantity="one">Too many attempts.\nTry again in %d second</item>
+                <item quantity="other">Too many attempts.\nTry again in %d seconds</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_minutes">
+        <item quantity="one">Too many attempts.\nTry again in %d minute</item>
+                <item quantity="other">Too many attempts.\nTry again in %d minutes</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d user</item>
+                <item quantity="other">%d users</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d group</item>
+                <item quantity="other">%d groups</item>
+    </plurals>
+
+    <!-- Module: libtoolkit - 2 strings -->
+    <plurals name="months">
+        <item quantity="one">month</item>
+                <item quantity="other">months</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">year</item>
+                <item quantity="other">years</item>
+    </plurals>
+</resources>

@@ -2,8 +2,9 @@ package lib.toolkit.base.managers.tools
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
+import javax.inject.Inject
 
-class ThemePreferencesTools(val context: Context) {
+class ThemePreferencesTools @Inject constructor(val context: Context) {
 
     private val preferencesTools = context.getSharedPreferences(ThemePreferencesTools::class.java.simpleName, Context.MODE_PRIVATE)
 

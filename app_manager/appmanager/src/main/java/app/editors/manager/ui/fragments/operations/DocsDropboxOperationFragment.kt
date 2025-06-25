@@ -21,6 +21,5 @@ class DocsDropboxOperationFragment : BaseStorageOperationsFragment() {
     }
 
     @InjectPresenter
-    override lateinit var presenter: DocsDropboxPresenter
-
+    override lateinit var storagePresenter: DocsDropboxPresenter
 }

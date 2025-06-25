@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import androidx.work.Data
 import app.documents.core.model.cloud.PortalProvider
@@ -12,7 +13,6 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Current
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
-import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.ProviderError
 import app.documents.core.providers.WebDavFileProvider
@@ -30,17 +30,17 @@ import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
-import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.StringUtils.Extension
 import moxy.InjectViewState
 import moxy.presenterScope
 import java.io.File
 
 @InjectViewState
-class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
+class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvider>() {
 
     companion object {
         val TAG: String = DocsOnDevicePresenter::class.java.simpleName
@@ -63,73 +63,32 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
     override fun getItemsById(id: String?) {
         id?.let { path ->
             disposable.add(
-                fileProvider?.getFiles(path, getArgs(filteringValue).putFilters())?.map {
-                    if (modelExplorerStack.isStackEmpty && id == Environment.getExternalStorageDirectory().absolutePath) {
-                        modelExplorerStack.addStack(it)
+                fileProvider.getFiles(path, getArgs(filteringValue).putFilters())
+                    .map {
+                        if (modelExplorerStack.isStackEmpty && id == Environment.getExternalStorageDirectory().absolutePath) {
+                            modelExplorerStack.addStack(it)
+                        }
                     }
-                }?.flatMap {
-                    if (id == Environment.getExternalStorageDirectory().absolutePath) {
-                        fileProvider?.getFiles(
-                            LocalContentTools.getDir(context),
-                            getArgs(filteringValue).putFilters()
-                        )
-                    } else {
-                        fileProvider?.getFiles(path, getArgs(filteringValue).putFilters())
+                    .flatMap {
+                        if (id == Environment.getExternalStorageDirectory().absolutePath) {
+                            fileProvider.getFiles(
+                                LocalContentTools.getDir(context),
+                                getArgs(filteringValue).putFilters()
+                            )
+                        } else {
+                            fileProvider.getFiles(path, getArgs(filteringValue).putFilters())
+                        }
                     }
-                }
-                    ?.doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
-                    ?.subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)!!
-            )
+                    .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
+                    .doOnNext(::loadSuccess)
+                    .doOnError(::fetchError)
+                    .subscribe()
+                )
         }
     }
 
     override fun getNextList() {
         // Stub to local
-    }
-
-    override fun createDocs(title: String) {
-        val id = modelExplorerStack.currentId
-        if (id != null) {
-            val requestCreate = RequestCreate()
-            requestCreate.title = title
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.createFile(id, requestCreate)
-                    .subscribe({ file: CloudFile ->
-                        addFile(file)
-                        addRecent(file)
-                        openFile(file, EditType.EDIT)
-                    }) { viewState.onError(context.getString(R.string.errors_create_local_file)) })
-            }
-        }
-    }
-
-    override fun addRecent(file: CloudFile) {
-        presenterScope.launch {
-            recentDataSource.add(
-                Recent(
-                    path = file.webUrl,
-                    name = file.title,
-                    size = file.pureContentLength
-                )
-            )
-        }
-    }
-
-    private fun addRecent(uri: Uri) {
-        presenterScope.launch {
-            DocumentFile.fromSingleUri(context, uri)?.let { file ->
-                presenterScope.launch {
-                    recentDataSource.add(
-                        Recent(
-                            path = uri.toString(),
-                            name = file.name.toString(),
-                            size = file.length()
-                        )
-                    )
-                }
-            }
-        }
     }
 
     override fun updateViewsState() {
@@ -170,18 +129,17 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     override fun deleteItems() {
         val items = modelExplorerStack.selectedFiles + modelExplorerStack.selectedFolders
-        fileProvider?.let { provider ->
-            disposable.add(
-                provider.delete(items, null)
-                    .doOnComplete {
-                        modelExplorerStack.removeSelected()
-                        getBackStack()
-                        setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-                        viewState.onRemoveItems(*items.toTypedArray())
-                    }
-                    .subscribe()
-            )
-        }
+        disposable.add(
+            fileProvider.delete(items, null)
+                .doOnComplete {
+                    modelExplorerStack.removeSelected()
+                    getBackStack()
+                    setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
+                    viewState.onRemoveItems(*items.toTypedArray())
+                }
+                .doOnError(::fetchError)
+                .subscribe()
+        )
     }
 
     override fun uploadToMy(uri: Uri) {
@@ -236,10 +194,10 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             ) {
                 viewState.onDialogClose()
                 viewState.onSnackBar(context.getString(R.string.upload_manager_complete))
-                for (file in (fileProvider as WebDavFileProvider).uploadsFile) {
+                for (file in webDavFileProvider?.uploadsFile.orEmpty()) {
                     addFile(file)
                 }
-                (fileProvider as WebDavFileProvider).uploadsFile.clear()
+                webDavFileProvider?.uploadsFile?.clear()
             }
     }
 
@@ -270,7 +228,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
             return
         }
         try {
-            if ((fileProvider as LocalFileProvider).transfer(path, itemClicked, isCopy)) {
+            if (fileProvider.transfer(path, itemClicked, isCopy)) {
                 refresh()
                 viewState.onSnackBar(context.getString(R.string.operation_complete_message))
             } else {
@@ -283,15 +241,16 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     fun openFromChooser(uri: Uri) {
         val fileName = ContentResolverUtils.getName(context, uri)
-        val ext = StringUtils.getExtensionFromPath(fileName.lowercase())
-
-        addRecent(uri)
-        openFile(uri, ext, EditType.EDIT)
+        openFile(
+            uri = uri,
+            extension = StringUtils.getExtensionFromPath(fileName.lowercase()),
+            editType = EditType.Edit()
+        )
     }
 
     fun import(uri: Uri) {
         disposable.add(
-            (fileProvider as LocalFileProvider).import(
+            fileProvider.import(
             context,
             modelExplorerStack.currentId ?: throw RuntimeException(),
             uri
@@ -315,7 +274,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         uri?.let {
             val parentFile = File(modelExplorerStack.currentId ?: return)
             val path = PathUtils.getPath(context, uri)
-            Uri.parse(path).path?.let { filePath -> File(filePath) }?.let { file ->
+            path?.toUri()?.path?.let { filePath -> File(filePath) }?.let { file ->
                 FileUtils.deletePath(File(parentFile, file.name))
             }
         }
@@ -325,27 +284,25 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     private fun moveSelection(path: String?, isCopy: Boolean) {
         if (modelExplorerStack.countSelectedItems > 0) {
-            if (fileProvider is LocalFileProvider) {
-                val provider = fileProvider as LocalFileProvider
-                val items: MutableList<Item> = ArrayList()
-                val files = modelExplorerStack.selectedFiles
-                val folders = modelExplorerStack.selectedFolders
-                items.addAll(folders)
-                items.addAll(files)
-                for (item in items) {
-                    try {
-                        if (!provider.transfer(path, item, isCopy)) {
-                            viewState.onError(context.getString(R.string.operation_error_move_to_same))
-                            break
-                        }
-                    } catch (e: Exception) {
-                        catchTransferError(e)
+            val provider = fileProvider
+            val items: MutableList<Item> = ArrayList()
+            val files = modelExplorerStack.selectedFiles
+            val folders = modelExplorerStack.selectedFolders
+            items.addAll(folders)
+            items.addAll(files)
+            for (item in items) {
+                try {
+                    if (!provider.transfer(path, item, isCopy)) {
+                        viewState.onError(context.getString(R.string.operation_error_move_to_same))
+                        break
                     }
+                } catch (e: Exception) {
+                    catchTransferError(e)
                 }
-                getBackStack()
-                refresh()
-                viewState.onSnackBar(context.getString(R.string.operation_complete_message))
             }
+            getBackStack()
+            refresh()
+            viewState.onSnackBar(context.getString(R.string.operation_complete_message))
         } else {
             viewState.onError(context.getString(R.string.operation_empty_lists_data))
         }
@@ -353,16 +310,15 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
 
     fun deleteFile() {
         itemClicked?.let { item ->
-            fileProvider?.let { provider ->
-                disposable.add(
-                    provider.delete(listOf(item), null)
-                        .doOnComplete {
-                            modelExplorerStack.removeItemById(item.id)
-                            viewState.onRemoveItems(item)
-                        }
-                        .subscribe()
-                )
-            }
+            disposable.add(
+                fileProvider.delete(listOf(item), null)
+                    .doOnComplete {
+                        modelExplorerStack.removeItemById(item.id)
+                        viewState.onRemoveItems(item)
+                    }
+                    .doOnError(::fetchError)
+                    .subscribe()
+            )
         }
     }
 
@@ -416,8 +372,6 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
                 }
                 files = mutableListOf(explorerFile)
             }
-
-            addRecent(explorerFile)
         }
     }
 
@@ -442,60 +396,36 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView>() {
         }
     }
 
-    fun updateState() {
-        setSelection(false)
-        setFiltering(false)
-        updateViewsState()
+    override fun openFile(cloudFile: CloudFile, editType: EditType, canBeShared: Boolean) {
+        presenterScope.launch { addToRecent(cloudFile) }
+        openFile(
+            uri = File(cloudFile.id).toUri(),
+            extension = cloudFile.fileExst,
+            editType = editType
+        )
     }
 
-    override fun getFileInfo() {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            addRecent(file)
-            openFile(file, null)
-        }
-    }
-
-    fun getFileInfo(editType: EditType?) {
-        if (itemClicked != null && itemClicked is CloudFile) {
-            val file = itemClicked as CloudFile
-            addRecent(file)
-            openFile(file, editType)
-        }
-    }
-
-    private fun openFile(file: CloudFile, editType: EditType?) {
-        val path = file.id
-        val uri = Uri.fromFile(File(path))
-        val ext = StringUtils.getExtensionFromPath(file.id.lowercase())
-        openFile(uri, ext, editType)
-    }
-
-    private fun openFile(uri: Uri, ext: String, editType: EditType?) {
-        when (StringUtils.getExtension(ext)) {
-            StringUtils.Extension.DOC, StringUtils.Extension.HTML, StringUtils.Extension.EBOOK, StringUtils.Extension.FORM -> {
-                if (ext.contains(LocalContentTools.HWP_EXTENSION) || ext.contains(LocalContentTools.HWPX_EXTENSION)) {
-                    viewState.onShowEditors(uri, EditorsType.DOCS, EditType.VIEW)
-                } else {
-                    viewState.onShowEditors(uri, EditorsType.DOCS, editType)
-                }
-            }
-            StringUtils.Extension.SHEET -> {
-                viewState.onShowEditors(uri, EditorsType.CELLS, editType)
-            }
-            StringUtils.Extension.PRESENTATION -> {
-                viewState.onShowEditors(uri, EditorsType.PRESENTATION, editType)
-            }
-            StringUtils.Extension.PDF -> {
+    private fun openFile(uri: Uri, extension: String, editType: EditType) {
+        when (StringUtils.getExtension(extension)) {
+            Extension.PDF -> {
                 if (FileUtils.isOformPdf(context.contentResolver.openInputStream(uri))) {
-                    viewState.onShowEditors(uri, EditorsType.DOCS, editType ?: EditType.FILL)
+                    viewState.onOpenLocalFile(uri, extension, editType)
                 } else {
-                    viewState.onShowPdf(uri)
+                    viewState.onShowPdf(uri, editType)
                 }
             }
-
-            StringUtils.Extension.IMAGE, StringUtils.Extension.IMAGE_GIF, StringUtils.Extension.VIDEO_SUPPORT -> showMedia(uri)
-            else -> viewState.onError(context.getString(R.string.error_unsupported_format))
+            Extension.IMAGE,
+            Extension.IMAGE_GIF,
+            Extension.VIDEO_SUPPORT -> showMedia(uri)
+            else ->  viewState.onOpenLocalFile(uri, extension, editType)
         }
+    }
+
+    override fun cloudFileToRecent(cloudFile: CloudFile): Recent {
+        return Recent(
+            path = cloudFile.webUrl,
+            name = cloudFile.title,
+            size = cloudFile.pureContentLength
+        )
     }
 }

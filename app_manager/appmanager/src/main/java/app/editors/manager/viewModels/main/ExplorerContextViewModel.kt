@@ -6,6 +6,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.isFavorite
+import app.documents.core.network.manager.models.explorer.isLocked
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
@@ -30,7 +31,7 @@ class ExplorerContextViewModel : ViewModel() {
 
             state.section == ApiContract.Section.Recent -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Edit(state),
+                ExplorerContextItem.View,
                 ExplorerContextItem.Delete(state)
             )
 
@@ -43,6 +44,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.AddUsers,
                 ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Notifications((state.item as? CloudFolder)?.mute == true),
+                ExplorerContextItem.SaveAsTemplate,
                 ExplorerContextItem.Duplicate,
                 ExplorerContextItem.Download,
                 ExplorerContextItem.Archive,
@@ -50,10 +52,22 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Delete(state)
             )
 
+            state.section.isTemplates -> listOf(
+                ExplorerContextItem.Header(state),
+                ExplorerContextItem.RoomInfo,
+                ExplorerContextItem.CreateRoom,
+                ExplorerContextItem.Edit(state),
+                ExplorerContextItem.AccessSettings,
+                ExplorerContextItem.ExternalLink(state),
+                ExplorerContextItem.Delete(state)
+            )
+
             state.section is ApiContract.Section.Storage -> listOf(
                 ExplorerContextItem.Header(state),
                 ExplorerContextItem.Edit(state),
+                ExplorerContextItem.View,
                 ExplorerContextItem.Send,
+                ExplorerContextItem.Rename,
                 ExplorerContextItem.Move,
                 ExplorerContextItem.Copy,
                 ExplorerContextItem.Download,
@@ -62,8 +76,9 @@ class ExplorerContextViewModel : ViewModel() {
 
             state.section is ApiContract.Section.Device -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Fill().takeIf { ((state.item is CloudFile) && state.item.isPdfForm) },
+                ExplorerContextItem.Fill(),
                 ExplorerContextItem.Edit(state),
+                ExplorerContextItem.View,
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Move,
                 ExplorerContextItem.Copy,
@@ -80,24 +95,31 @@ class ExplorerContextViewModel : ViewModel() {
 
             else -> listOf(
                 ExplorerContextItem.Header(state),
-                ExplorerContextItem.Fill().takeIf { ((state.item is CloudFile) && state.item.isPdfForm) },
+                ExplorerContextItem.Fill(),
                 ExplorerContextItem.Edit(state),
+                ExplorerContextItem.View,
+                ExplorerContextItem.VersionHistory,
+                ExplorerContextItem.FillingStatus.takeIf { state.roomType == ApiContract.RoomType.VIRTUAL_ROOM },
                 ExplorerContextItem.Share.takeIf {
                     state.provider != PortalProvider.Cloud.DocSpace || state.section == ApiContract.Section.User && !((state.item is CloudFile) && state.item.isPdfForm)
                 },
                 ExplorerContextItem.CreateRoom.takeIf { state.provider == PortalProvider.Cloud.DocSpace },
                 ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.isFavorite),
+                ExplorerContextItem.CustomFilter((state.item as? CloudFile)?.customFilterEnabled),
                 ExplorerContextItem.Send,
                 ExplorerContextItem.Location,
                 ExplorerContextItem.Move,
                 ExplorerContextItem.Copy,
                 ExplorerContextItem.Download,
                 ExplorerContextItem.Upload,
+                ExplorerContextItem.EditIndex,
                 ExplorerContextItem.Rename,
                 ExplorerContextItem.Restore,
                 ExplorerContextItem.ShareDelete,
-                ExplorerContextItem.Delete(state)
+                ExplorerContextItem.StopFilling.takeIf { state.roomType == ApiContract.RoomType.VIRTUAL_ROOM },
+                ExplorerContextItem.Delete(state),
+                ExplorerContextItem.Lock(state.item.isLocked)
             )
         }.filterNotNull()
             .mapNotNull { item -> item.get(state) }

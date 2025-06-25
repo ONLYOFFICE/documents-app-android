@@ -1,6 +1,7 @@
 package app.editors.manager.ui.fragments.share
 
 import android.content.res.Configuration
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -50,8 +51,12 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.documents.core.model.cloud.Access
@@ -63,10 +68,11 @@ import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.utils.displayNameFromHtml
+import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
-import app.editors.manager.managers.utils.typeTitle
+import app.editors.manager.managers.utils.getTypeTitle
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.views.custom.SearchAppBar
 import app.editors.manager.ui.views.custom.UserListBottomContent
@@ -89,8 +95,8 @@ import lib.compose.ui.views.PlaceholderView
 import lib.compose.ui.views.TabRowItem
 import lib.compose.ui.views.TopAppBarAction
 import lib.compose.ui.views.VerticalSpacer
-import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.AccountUtils
+import lib.toolkit.base.R as R2
 
 private data class Header(val title: Int) : Member {
 
@@ -120,6 +126,7 @@ fun UserListScreen(
             when (effect) {
                 is UserListEffect.Error -> onSnackBar.invoke(effect.message)
                 is UserListEffect.Success -> onSuccess?.invoke(effect.user)
+                else -> Unit
             }
         }
     }
@@ -168,16 +175,16 @@ private fun MainScreen(
         listOfNotNull(
             TabRowItem(
                 if (portal.isDocSpace) {
-                    context.getString(app.editors.manager.R.string.rooms_user_type_employees)
+                    context.getString(R.string.rooms_user_type_employees)
                 } else {
-                    context.getString(app.editors.manager.R.string.share_goal_user)
+                    context.getString(R.string.share_goal_user)
                 }
             ),
             TabRowItem(
-                context.getString(app.editors.manager.R.string.share_goal_group)
-            ).takeIf { state.mode == UserListMode.Invite },
+                context.getString(R.string.share_goal_group)
+            ).takeIf { state.mode in listOf(UserListMode.Invite, UserListMode.TemplateAccess) },
             TabRowItem(
-                context.getString(app.editors.manager.R.string.share_goal_guest)
+                context.getString(R.string.share_goal_guest)
             ).takeIf { portal.isDocSpace && state.mode == UserListMode.Invite }
         )
     }
@@ -213,6 +220,7 @@ private fun MainScreen(
                         token = token,
                         portal = portal?.urlWithScheme,
                         isDocSpace = portal.isDocSpace,
+                        provider = portal?.provider,
                         onClick = onClick
                     )
                 } else {
@@ -223,7 +231,8 @@ private fun MainScreen(
                         onClick = onClick,
                         portal = portal?.urlWithScheme,
                         token = token,
-                        isDocSpace = portal.isDocSpace
+                        isDocSpace = portal.isDocSpace,
+                        provider = portal?.provider
                     )
                 }
                 bottomContent(state.selected.size, state.access ?: Access.None)
@@ -239,22 +248,23 @@ private fun SearchListScreen(
     onClick: (id: String) -> Unit,
     token: String,
     portal: String?,
+    provider: PortalProvider?,
     isDocSpace: Boolean
 ) {
     val members = mutableListOf<Member>()
 
     if (state.users.isNotEmpty()) {
-        members.add(Header(app.editors.manager.R.string.share_add_common_header_users))
+        members.add(Header(R.string.share_add_common_header_users))
         members.addAll(state.users)
     }
 
     if (state.groups.isNotEmpty()) {
-        members.add(Header(app.editors.manager.R.string.share_add_common_header_groups))
+        members.add(Header(R.string.share_add_common_header_groups))
         members.addAll(state.groups)
     }
 
     if (state.guests.isNotEmpty()) {
-        members.add(Header(app.editors.manager.R.string.share_goal_guest))
+        members.add(Header(R.string.share_goal_guest))
         members.addAll(state.guests)
     }
 
@@ -275,6 +285,7 @@ private fun SearchListScreen(
                         token = token,
                         portal = portal,
                         isDocSpace = isDocSpace,
+                        provider = provider,
                         onClick = onClick
                     )
                 }
@@ -282,6 +293,7 @@ private fun SearchListScreen(
                 is Group -> {
                     GroupItem(
                         group = member,
+                        mode = state.mode,
                         selected = state.selected.contains(member.id),
                         onClick = onClick
                     )
@@ -320,7 +332,7 @@ private fun AppBar(
                     backListener = onBack,
                     actions = {
                         TopAppBarAction(
-                            icon = app.editors.manager.R.drawable.ic_toolbar_search,
+                            icon = R.drawable.ic_toolbar_search,
                             onClick = { searchState.value = true }
                         )
                     }
@@ -345,6 +357,7 @@ private fun PagerScreen(
     onClick: (id: String) -> Unit,
     token: String,
     portal: String?,
+    provider: PortalProvider?,
     isDocSpace: Boolean
 ) {
     HorizontalPager(modifier = modifier, state = pagerState) {
@@ -358,13 +371,14 @@ private fun PagerScreen(
                         token = token,
                         portal = portal,
                         isDocSpace = isDocSpace,
+                        provider = provider,
                         onClick = onClick
                     )
                 } else {
                     PlaceholderView(
-                        image = app.editors.manager.R.drawable.placeholder_no_users,
-                        title = stringResource(id = app.editors.manager.R.string.placeholder_no_members_found),
-                        subtitle = stringResource(id = app.editors.manager.R.string.placeholder_no_members_found_desc)
+                        image = R.drawable.placeholder_no_users,
+                        title = stringResource(id = R.string.placeholder_no_members_found),
+                        subtitle = stringResource(id = R.string.placeholder_no_members_found_desc)
                     )
                 }
             }
@@ -375,6 +389,7 @@ private fun PagerScreen(
                         items(items = state.groups, key = Group::id) { group ->
                             GroupItem(
                                 group = group,
+                                mode = state.mode,
                                 selected = state.selected.contains(group.id),
                                 onClick = onClick
                             )
@@ -382,9 +397,9 @@ private fun PagerScreen(
                     }
                 } else {
                     PlaceholderView(
-                        image = app.editors.manager.R.drawable.placeholder_no_users,
-                        title = stringResource(id = app.editors.manager.R.string.placeholder_no_members_found),
-                        subtitle = stringResource(id = app.editors.manager.R.string.placeholder_no_members_found_desc)
+                        image = R.drawable.placeholder_no_users,
+                        title = stringResource(id = R.string.placeholder_no_members_found),
+                        subtitle = stringResource(id = R.string.placeholder_no_members_found_desc)
                     )
                 }
             }
@@ -398,13 +413,14 @@ private fun PagerScreen(
                         token = token,
                         portal = portal,
                         isDocSpace = isDocSpace,
+                        provider = provider,
                         onClick = onClick
                     )
                 } else {
                     PlaceholderView(
-                        image = app.editors.manager.R.drawable.placeholder_no_users,
-                        title = stringResource(id = app.editors.manager.R.string.placeholder_no_members_found),
-                        subtitle = stringResource(id = app.editors.manager.R.string.placeholder_no_members_found_desc)
+                        image = R.drawable.placeholder_no_users,
+                        title = stringResource(id = R.string.placeholder_no_members_found),
+                        subtitle = stringResource(id = R.string.placeholder_no_members_found_desc)
                     )
                 }
             }
@@ -422,12 +438,22 @@ private fun LazyItemScope.UserItem(
     token: String,
     portal: String?,
     isDocSpace: Boolean,
+    provider: PortalProvider?,
     onClick: (String) -> Unit,
 ) {
     val subtitle = if (isDocSpace) {
-        stringResource(user.typeTitle) + user.email?.let { " | $it" }
+        stringResource(user.getTypeTitle(provider)) + user.email?.let { " | $it" }
     } else {
         user.groups.joinToString { group -> group.name }
+    }
+
+    val shared = when (mode) {
+        UserListMode.TemplateAccess -> {
+            val currentUserId = LocalContext.current.accountOnline?.id.orEmpty()
+            currentUserId == user.id
+        }
+
+        else -> user.shared
     }
 
     ListItem(
@@ -435,7 +461,7 @@ private fun LazyItemScope.UserItem(
         letter = letter,
         name = user.displayNameFromHtml,
         subtitle = subtitle,
-        shared = mode == UserListMode.Invite && user.shared,
+        shared = shared,
         selected = selected,
         onClick = { onClick.invoke(user.id) },
         avatar = GlideUtils.getCorrectLoad(
@@ -447,11 +473,17 @@ private fun LazyItemScope.UserItem(
 }
 
 @Composable
-private fun LazyItemScope.GroupItem(group: Group, selected: Boolean, onClick: (String) -> Unit) {
+private fun LazyItemScope.GroupItem(
+    group: Group,
+    mode: UserListMode,
+    selected: Boolean,
+    onClick: (String) -> Unit
+) {
+    val shared = remember { if (mode == UserListMode.TemplateAccess) false else group.shared }
     ListItem(
         withLetter = false,
         name = group.name,
-        shared = group.shared,
+        shared = shared,
         letter = null,
         subtitle = null,
         avatar = null,
@@ -468,30 +500,53 @@ private fun UsersScreen(
     token: String,
     portal: String?,
     isDocSpace: Boolean,
+    provider: PortalProvider?,
     onClick: (String) -> Unit,
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        users.groupBy { user -> user.displayNameFromHtml.first().uppercaseChar() }
-            .toSortedMap()
-            .forEach { (letter, users) ->
-                itemsIndexed(items = users.orEmpty(), key = { _, item -> item.id }) { index, user ->
-                    UserItem(
-                        user = user,
-                        letter = letter?.toString().takeIf { index == 0 },
-                        withLetter = true,
-                        selected = selectedIdList.contains(user.id),
-                        mode = mode,
-                        token = token,
-                        portal = portal,
-                        isDocSpace = isDocSpace,
-                        onClick = onClick
+    Column {
+        if (mode == UserListMode.TemplateAccess) {
+            BoldedResourceText(
+                textResId = R.string.setting_access_public_desc,
+                boldPartsRes = listOf(
+                    R.string.setting_access_public_bold_docspace,
+                    R.string.setting_access_public_bold_room
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        start = 16.dp,
+                        top = 8.dp,
+                        bottom = 12.dp,
+                        end = 16.dp
                     )
+            )
+        }
+
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            users.groupBy { user -> user.displayNameFromHtml.first().uppercaseChar() }
+                .toSortedMap()
+                .forEach { (letter, users) ->
+                    itemsIndexed(
+                        items = users.orEmpty(),
+                        key = { _, item -> item.id }) { index, user ->
+                        UserItem(
+                            user = user,
+                            letter = letter?.toString().takeIf { index == 0 },
+                            withLetter = true,
+                            selected = selectedIdList.contains(user.id),
+                            mode = mode,
+                            token = token,
+                            portal = portal,
+                            isDocSpace = isDocSpace,
+                            provider = provider,
+                            onClick = onClick
+                        )
+                    }
                 }
-            }
+        }
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun LazyItemScope.ListItem(
     name: String,
@@ -531,29 +586,7 @@ private fun LazyItemScope.ListItem(
                 .clip(CircleShape)
                 .size(40.dp)
         ) {
-            if (avatar != null) {
-                GlideImage(
-                    modifier = Modifier.fillMaxSize(),
-                    model = avatar,
-                    contentDescription = null,
-                    loading = placeholder(app.editors.manager.R.drawable.ic_account_placeholder),
-                    failure = placeholder(app.editors.manager.R.drawable.ic_account_placeholder)
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(colorResource(id = R.color.colorIconBackground))
-                        .size(40.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = lib.toolkit.base.managers.utils.StringUtils.getAvatarName(name),
-                        style = MaterialTheme.typography.h6,
-                        color = MaterialTheme.colors.colorTextSecondary
-                    )
-                }
-            }
+            MemberAvatar(name, avatar)
             this@Row.AnimatedVisibility(visible = selected, enter = fadeIn(), exit = fadeOut()) {
                 Box(
                     modifier = Modifier
@@ -562,7 +595,7 @@ private fun LazyItemScope.ListItem(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_done),
+                        imageVector = ImageVector.vectorResource(R2.drawable.ic_done),
                         contentDescription = null,
                         tint = Color.White
                     )
@@ -595,12 +628,79 @@ private fun LazyItemScope.ListItem(
         if (shared) {
             Text(
                 modifier = Modifier.padding(end = 16.dp),
-                text = stringResource(id = app.editors.manager.R.string.invite_already_invited),
+                text = stringResource(R.string.invite_already_invited),
                 style = MaterialTheme.typography.body2,
                 color = MaterialTheme.colors.colorTextSecondary
             )
         }
     }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun MemberAvatar(
+    name: String,
+    avatar: Any?,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier) {
+        if (avatar != null) {
+            GlideImage(
+                modifier = Modifier.fillMaxSize(),
+                model = avatar,
+                contentDescription = null,
+                loading = placeholder(R.drawable.ic_account_placeholder),
+                failure = placeholder(R.drawable.ic_account_placeholder)
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(colorResource(id = R2.color.colorIconBackground))
+                    .size(40.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = lib.toolkit.base.managers.utils.StringUtils.getAvatarName(name),
+                    style = MaterialTheme.typography.h6,
+                    color = MaterialTheme.colors.colorTextSecondary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun BoldedResourceText(
+    @StringRes textResId: Int,
+    boldPartsRes: List<Int>,
+    modifier: Modifier = Modifier
+) {
+    val fullText = stringResource(id = textResId)
+    val annotatedString = buildAnnotatedString {
+        var lastIndex = 0
+        for (boldId in boldPartsRes) {
+            val boldPart = stringResource(boldId)
+            val startIndex = fullText.indexOf(boldPart, lastIndex)
+            if (startIndex >= 0) {
+                append(fullText.substring(lastIndex, startIndex))
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append(boldPart)
+                }
+                lastIndex = startIndex + boldPart.length
+            }
+        }
+
+        if (lastIndex < fullText.length) {
+            append(fullText.substring(lastIndex))
+        }
+    }
+    Text(
+        style = MaterialTheme.typography.body2,
+        color = MaterialTheme.colors.colorTextSecondary,
+        text = annotatedString,
+        modifier = modifier
+    )
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
@@ -609,7 +709,7 @@ private fun PreviewMainWithBottom() {
     ManagerTheme {
         val selected = remember { mutableStateListOf("id5") }
         MainScreen(
-            title = app.editors.manager.R.string.invite_choose_from_list,
+            title = R.string.invite_choose_from_list,
             state = UserListState(
                 mode = UserListMode.Invite,
                 loading = false,
@@ -659,7 +759,7 @@ private fun PreviewMainWithBottom() {
             onBack = {}
         ) { _, _ ->
             UserListBottomContent(
-                nextButtonTitle = app.editors.manager.R.string.share_invite_title,
+                nextButtonTitle = R.string.share_invite_title,
                 count = selected.size,
                 access = Access.Editor,
                 accessList = RoomUtils.getAccessOptions(ApiContract.RoomType.CUSTOM_ROOM, false),
@@ -681,7 +781,7 @@ private fun PreviewSearch() {
 private fun PreviewMain() {
     ManagerTheme {
         MainScreen(
-            title = app.editors.manager.R.string.room_set_owner_title,
+            title = R.string.room_set_owner_title,
             state = UserListState(
                 mode = UserListMode.ChangeOwner,
                 loading = false,
@@ -716,7 +816,7 @@ private fun PreviewMain() {
 private fun PreviewEmptyMain() {
     ManagerTheme {
         MainScreen(
-            title = app.editors.manager.R.string.room_set_owner_title,
+            title = R.string.room_set_owner_title,
             state = UserListState(
                 mode = UserListMode.ChangeOwner,
                 loading = false,

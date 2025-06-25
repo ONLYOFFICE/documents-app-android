@@ -3,6 +3,7 @@ package app.editors.manager.ui.adapters.holders.explorer
 import android.annotation.SuppressLint
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -21,6 +22,7 @@ abstract class ListBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
     abstract val title: TextView
     abstract val subtitle: TextView
     abstract val contextButton: Button
+    abstract val contextButtonLayout: ViewGroup
 
     override fun bind(element: T) {
         initListeners()
@@ -31,7 +33,8 @@ abstract class ListBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
     }
     override fun initSelecting(element: T): Boolean {
         val isSelected = super.initSelecting(element)
-        contextButton.isVisible = !adapter.isSelectMode && adapter.pickerMode != PickerMode.Folders
+        contextButtonLayout.isVisible = adapter.pickerMode != PickerMode.Folders
+        contextButton.isVisible = !adapter.isSelectMode
         return isSelected
     }
 

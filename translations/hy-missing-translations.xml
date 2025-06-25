@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Missing translations for language: hy -->
+
+    <!-- Module: appmanager - 4 strings -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Do you really want to delete template room «%s»? The template cannot be restored.</item>
+                <item quantity="other">Do you really want to delete selected room templates? They cannot be restored.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Delete template</item>
+                <item quantity="other">Delete templates</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d user</item>
+                <item quantity="other">%d users</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d group</item>
+                <item quantity="other">%d groups</item>
+    </plurals>
+</resources>

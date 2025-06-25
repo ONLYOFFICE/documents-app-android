@@ -6,13 +6,12 @@ import android.net.Uri
 import android.os.Build
 import android.text.Html
 import android.text.Spanned
-import android.text.TextUtils
 import android.util.Log
 import android.util.Patterns
 import android.webkit.MimeTypeMap
 import android.webkit.URLUtil
-import androidx.annotation.NonNull
 import androidx.annotation.StringRes
+import androidx.core.text.isDigitsOnly
 import lib.toolkit.base.R
 import org.json.JSONObject
 import java.math.BigInteger
@@ -25,8 +24,8 @@ import java.util.regex.Pattern
 
 
 object StringUtils {
-    @JvmField
-    val TAG = StringUtils::class.java.simpleName
+
+    private val TAG = StringUtils::class.java.simpleName
 
     val MD5 = "MD5"
     val COMMON_MIME_TYPE = "*/*"
@@ -42,12 +41,12 @@ object StringUtils {
     private val EXT_VIDEO_SUPPORT = "3gp|mp4|ts|webm|mkv"
     private val EXT_VIDEO = "$EXT_VIDEO_SUPPORT|3g2|3gpp|asf|avi|divx|f4v|flv|h264|ifo|m2ts|m4v|mod|mov|mpeg|mpg|mswmm|mts|mxf|ogv|rm|swf|ts|vep|vob|wlmp|wmv"
 
-    private val PATTERN_EXT_DOC = "^(doc|docx|docm|doct|dot|dotm|dotx|odt|ott|fodt|rtf|epub|txt|html|mht|hwp|hwpx|pages)$"
+    private val PATTERN_EXT_DOC = "^(doc|docx|docm|doct|dot|dotm|dotx|odt|ott|fodt|rtf|epub|txt|html|mht|hwp|hwpx|pages|md)$"
     private val PATTERN_EXT_FORM = "^(oform|docxf)$"
     private val PATTERN_EXT_DOCXF = "^(docxf)$"
     private val PATTERN_EXT_OFORM = "^(oform)$"
     private val PATTERN_EXT_SHEET = "^(xlst|xlsx|xlsm|xls|xlt|xltm|xltx|ods|fods|ots|csv|numbers)$"
-    private val PATTERN_EXT_PRESENTATION = "^(ppt|pptt|pptx|pps|odp|fodp|otp|pot|potm|potx|ppsm|ppsx|key)$"
+    private val PATTERN_EXT_PRESENTATION = "^(ppt|pptt|pptx|pps|odp|odg|fodp|otp|pot|potm|potx|ppsm|ppsx|key)$"
     private val PATTERN_EXT_HTML = "^(mht|html|htm)$"
     private val PATTERN_EXT_IMAGE = "^(png|jpeg|jpg|ico|bmp|heic|webp)$"
     private val PATTERN_EXT_IMAGE_GIF = "^(gif)$"
@@ -113,6 +112,12 @@ object StringUtils {
             Extension.SHEET, Extension.DOC, Extension.FORM, Extension.PRESENTATION, Extension.PDF -> true
             else -> false
         }
+    }
+
+    @JvmStatic
+    fun isMedia(extension: String): Boolean {
+        return getExtension(extension) in
+                arrayOf(Extension.IMAGE, Extension.IMAGE_GIF, Extension.VIDEO_SUPPORT)
     }
 
     @JvmStatic
@@ -320,7 +325,7 @@ object StringUtils {
     }
 
     @JvmStatic
-    fun isValidUrl(@NonNull url: String): Boolean {
+    fun isValidUrl(url: String): Boolean {
         return URLUtil.isValidUrl(url) && Patterns.WEB_URL.matcher(url).matches()
     }
 
@@ -330,7 +335,7 @@ object StringUtils {
     }
 
     @JvmStatic
-    fun cleanJson(@NonNull json: String): String {
+    fun cleanJson(json: String): String {
         return json.replace("[\\f|\\n|\\r|\\t|\\\\|]".toRegex(), "")
                 .replace("\"{", "{")
                 .replace("}\",", "},")
@@ -338,7 +343,7 @@ object StringUtils {
     }
 
     @JvmStatic
-    fun getJsonObject(@NonNull json: String): JSONObject? {
+    fun getJsonObject(json: String): JSONObject? {
         return try {
             val newJson = cleanJson(json)
             JSONObject(newJson)
@@ -354,7 +359,7 @@ object StringUtils {
             val digest = MessageDigest.getInstance(MD5)
             val md5Data = BigInteger(1, digest.digest(value?.toByteArray() ?: byteArrayOf()))
             String.format("%032X", md5Data).lowercase(Locale.getDefault())
-        } catch (e: NoSuchAlgorithmException) {
+        } catch (_: NoSuchAlgorithmException) {
             null
         }
     }
@@ -394,7 +399,7 @@ object StringUtils {
         return if (name.elementAt(name.lastIndex) == ')') {
             val value = name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')'))
 
-            if (TextUtils.isDigitsOnly(value)) {
+            if (value.isDigitsOnly()) {
                 StringBuilder(name.substringBeforeLast('('))
                         .append("(${value.toInt().plus(1)})")
                         .toString()
@@ -426,7 +431,7 @@ object StringUtils {
                     }
                 }
             }
-        } catch (error: IndexOutOfBoundsException) {
+        } catch (_: IndexOutOfBoundsException) {
             return "U"
         }
     }

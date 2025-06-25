@@ -153,6 +153,7 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
         when (result) {
             is CheckLoginResult.Success -> {
                 App.getApp().showPersonalPortalMigration = true
+                App.getApp().refreshAppComponent(context)
                 viewState.onSuccessLogin()
             }
 

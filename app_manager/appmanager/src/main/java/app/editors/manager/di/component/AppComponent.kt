@@ -17,13 +17,18 @@ import app.documents.core.network.webdav.WebDavService
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.OneDriveFileProvider
+import app.documents.core.providers.RecentFileProvider
 import app.documents.core.providers.RoomProvider
 import app.documents.core.providers.WebDavFileProvider
+import app.editors.manager.di.module.AppModule
+import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.tools.AppLocaleHelper
 import app.editors.manager.managers.tools.CacheTool
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.ErrorHandler
+import app.editors.manager.managers.tools.FontManager
 import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.managers.usecase.SaveAccessSettingsUseCase
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.filter.BaseFilterPresenter
 import app.editors.manager.mvp.presenters.filter.FilterAuthorPresenter
@@ -62,13 +67,12 @@ import app.editors.manager.ui.fragments.login.EnterprisePortalFragment
 import app.editors.manager.ui.fragments.login.EnterpriseSignInFragment
 import app.editors.manager.ui.fragments.login.EnterpriseSmsFragment
 import app.editors.manager.ui.fragments.login.PersonalPortalFragment
-import app.editors.manager.ui.fragments.main.AppSettingsFragment
 import app.editors.manager.ui.fragments.main.CloudsFragment
 import app.editors.manager.ui.fragments.main.DocsBaseFragment
 import app.editors.manager.ui.fragments.main.WebViewerFragment
+import app.editors.manager.ui.fragments.main.settings.AppSettingsFragment
 import app.editors.manager.ui.fragments.media.MediaImageFragment
 import app.editors.manager.ui.fragments.media.MediaVideoFragment
-import app.editors.manager.ui.fragments.onboarding.OnBoardingPagerFragment
 import app.editors.manager.ui.fragments.operations.DocsOperationSectionFragment
 import app.editors.manager.ui.fragments.room.order.RoomOrderDialogFragment
 import app.editors.manager.ui.fragments.room.order.RoomOrderFragment
@@ -88,9 +92,10 @@ import dagger.Component
 import lib.toolkit.base.managers.tools.GlideTool
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.tools.ResourcesProvider
+import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import javax.inject.Singleton
 
-@Component(modules = [CoreModule::class])
+@Component(modules = [CoreModule::class, AppModule::class])
 @Singleton
 interface AppComponent {
 
@@ -119,7 +124,10 @@ interface AppComponent {
     val accountOnline: CloudAccount?
     val appLocaleHelper: AppLocaleHelper
     val resourcesProvider: ResourcesProvider
+    val fontManager: FontManager
+    val themePreferencesTools: ThemePreferencesTools
     val errorHandler: ErrorHandler
+    val downloadReceiver: DownloadReceiver
 
     val cloudDataSource: CloudDataSource
     val recentDataSource: RecentDataSource
@@ -138,6 +146,9 @@ interface AppComponent {
     val localFileProvider: LocalFileProvider
     val roomProvider: RoomProvider
     val webDavFileProvider: WebDavFileProvider
+    val recentFileProvider: RecentFileProvider
+
+    val saveAccessSettingsUseCase: SaveAccessSettingsUseCase
 
     /*
    * Login
@@ -199,7 +210,6 @@ interface AppComponent {
     /*
     * On boarding
     * */
-    fun inject(onBoardingPagerFragment: OnBoardingPagerFragment?)
     fun inject(portalsActivity: PortalsActivity?)
 
     /*

@@ -14,6 +14,7 @@ import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsCloudFragment
+import app.editors.manager.ui.fragments.main.ToolbarState
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment
 import app.editors.manager.viewModels.main.CopyItems
 import lib.toolkit.base.managers.utils.getIntExt
@@ -125,7 +126,7 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
                 setEnabledActionButton(security.editAccess || security.editRoom)
                 operationDialogFragment?.setEnabledCreateFolderButton(security.create, isRoomsRoot)
             } else {
-                val editable = current.access == Access.ReadWrite || cloudPresenter.isContextOwner
+                val editable = current.access == Access.ReadWrite || presenter.isContextOwner
                 setEnabledActionButton(editable)
                 operationDialogFragment?.setEnabledCreateFolderButton(editable, isRoomsRoot)
             }
@@ -160,9 +161,9 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
         when (operationType) {
             OperationType.COPY_TO_FILL_FORM_ROOM,
             OperationType.COPY -> presenter.copy()
-            OperationType.MOVE -> cloudPresenter.tryMove()
-            OperationType.RESTORE -> cloudPresenter.tryMove()
-            OperationType.PICK_PDF_FORM -> cloudPresenter.copyFilesToCurrent()
+            OperationType.MOVE -> presenter.tryMove()
+            OperationType.RESTORE -> presenter.tryMove()
+            OperationType.PICK_PDF_FORM -> presenter.copyFilesToCurrent()
             else -> {}
         }
     }
@@ -181,7 +182,7 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
         presenter.checkBackStack()
 
         if (operationType == OperationType.COPY_TO_FILL_FORM_ROOM) {
-            cloudPresenter.setFilterByRoom(ApiContract.RoomType.FILL_FORMS_ROOM)
+            presenter.setFilterByRoom(ApiContract.RoomType.FILL_FORMS_ROOM)
         }
     }
 
@@ -222,18 +223,18 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
         }
     }
 
-    override fun onRoomLifetime(lifetime: Lifetime?) {
-        if (lifetime != null) {
+    override fun setToolbarState(state: ToolbarState) {
+        if (state is ToolbarState.RoomLifetime){
             operationDialogFragment?.setToolbarInfo(
                 title = getString(
                     R.string.rooms_vdr_lifetime_info,
-                    lifetime.value,
-                    when (lifetime.period) {
+                    state.lifetime.value,
+                    when (state.lifetime.period) {
                         Lifetime.PERIOD_DAYS -> lib.toolkit.base.R.plurals.days
                         Lifetime.PERIOD_MONTHS -> lib.toolkit.base.R.plurals.months
                         Lifetime.PERIOD_YEARS ->lib.toolkit.base.R.plurals.years
                         else -> return
-                    }.let { resources.getQuantityText(it, lifetime.value) }
+                    }.let { resources.getQuantityText(it, state.lifetime.value) }
                 ),
                 drawable = lib.toolkit.base.R.drawable.ic_expiring
             )

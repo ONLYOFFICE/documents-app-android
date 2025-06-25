@@ -36,4 +36,10 @@
         <item quantity="one">anno</item>
         <item quantity="other">anni</item>
     </plurals>
+
+    <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
+    <string name="help_and_feedback_contact_support">Contact support</string>
+    <string name="help_and_feedback_help_center">Help Center</string>
+    <string name="help_and_feedback_suggest_a_feature">Suggest a Feature</string>
+    <string name="help_and_feedback_title">Help &amp; Feedback</string>
 </resources>

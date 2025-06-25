@@ -94,7 +94,7 @@ internal fun ShareUsersList(
                                     onClick.invoke(
                                         share.sharedTo.id,
                                         share.access.code,
-                                        share.sharedTo.isOwner || share.sharedTo.isAdmin
+                                        share.sharedTo.isOwner || share.sharedTo.isAdmin || share.sharedTo.isRoomAdmin
                                     )
                                 }
                             }
@@ -103,7 +103,7 @@ internal fun ShareUsersList(
                                     onClick.invoke(
                                         share.sharedTo.id,
                                         share.access.code,
-                                        share.sharedTo.isOwner || share.sharedTo.isAdmin
+                                        share.sharedTo.isOwner || share.sharedTo.isAdmin || share.sharedTo.isRoomAdmin
                                     )
                                 }
                             }
