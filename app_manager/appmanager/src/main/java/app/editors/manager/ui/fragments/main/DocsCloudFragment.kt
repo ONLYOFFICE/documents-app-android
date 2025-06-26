@@ -524,7 +524,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     private fun showFilter() {
         val filterSection = when {
             presenter.isRecentViaLinkSection() -> ApiContract.SectionType.CLOUD_RECENT
-            presenter.isTemplatesFolder -> ApiContract.SectionType.CLOUD_TEMPLATES
+            presenter.isTemplatesFolder -> ApiContract.SectionType.ROOM_TEMPLATES_FOLDER
             else -> section
         }
         if (isTablet) {
