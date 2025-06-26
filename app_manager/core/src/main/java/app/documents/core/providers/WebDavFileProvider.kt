@@ -8,7 +8,12 @@ import app.documents.core.manager.ProgressRequestBody
 import app.documents.core.network.common.Result
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.manager.models.explorer.*
+import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.network.manager.models.explorer.CloudFolder
+import app.documents.core.network.manager.models.explorer.Current
+import app.documents.core.network.manager.models.explorer.Explorer
+import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.webdav.WebDavService
@@ -46,7 +51,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.UnsupportedEncodingException
-import java.util.*
+import java.util.Collections
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class WebDavFileProvider @Inject constructor(
@@ -593,9 +600,9 @@ class WebDavFileProvider @Inject constructor(
                 ApiContract.Parameters.VAL_SORT_BY_TYPE -> {
                     files.sortBy { it.fileExst }
                 }
-                ApiContract.Parameters.VAL_SORT_BY_CREATED -> {
-                    files.sortBy { it.created }
-                    folders.sortBy { it.created }
+                ApiContract.Parameters.VAL_SORT_BY_UPDATED -> {
+                    files.sortBy { it.updated }
+                    folders.sortBy { it.updated }
                 }
             }
             if (order == ApiContract.Parameters.VAL_SORT_ORDER_ASC) {
