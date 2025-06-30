@@ -448,12 +448,17 @@ class CloudFileProvider @Inject constructor(
     ): Flow<NetworkResult<FileOpenResult>> {
         return flow {
             emit(FileOpenResult.Loading())
-            val api = NetworkClient.getRetrofit<ManagerService>(
+
+            val accountOnline = accountRepository.getOnlineAccount()
+            val api = managerService.takeIf {
+                accountOnline != null && accountOnline.portal.urlWithScheme == portal
+            } ?: NetworkClient.getRetrofit<ManagerService>(
                 url = portal,
-                token = accountRepository.getOnlineToken() ?: token,
+                token = token,
                 context = context,
-                headerType = HeaderType.AUTHORIZATION
+                headerType = HeaderType.REQUEST_TOKEN
             )
+
             val fileJson = JSONObject(api.suspendOpenFile(id).body()?.string().toString())
                 .getJSONObject(KEY_RESPONSE)
 
