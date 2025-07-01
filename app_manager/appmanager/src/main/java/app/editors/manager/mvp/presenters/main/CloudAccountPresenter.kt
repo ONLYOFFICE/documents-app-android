@@ -188,11 +188,15 @@ class CloudAccountPresenter : BaseLoginPresenter<CloudAccountView>() {
                 "com.onlyoffice.projects"
             )
         ) {
-            context.contentResolver.delete(
-                Uri.parse("content://com.onlyoffice.projects.accounts/accounts/$accountId"),
-                null,
-                null
-            )
+            try {
+                context.contentResolver.delete(
+                    Uri.parse("content://com.onlyoffice.projects.accounts/accounts/$accountId"),
+                    null,
+                    null
+                )
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
+            }
         }
     }
 
