@@ -219,5 +219,26 @@ platform :android do
   end
 
 
+  desc "Upload metadata to Google Play Store"
+  lane :upload_metadata do |options|
+     production_version_codes = google_play_track_version_codes(
+       track: 'production'
+     )
+
+    latest_production_version = production_version_codes.max
+
+    UI.message("Using production version code: #{latest_production_version}")
+    upload_to_play_store(
+      track: 'production',
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      metadata_path: options[:metadata_path] || '../mobile-store/documents-playmarket/metadata',
+      version_code: latest_production_version
+    )
+
+    UI.success("Metadata uploaded successfully")
+  end
+
+
 end
 

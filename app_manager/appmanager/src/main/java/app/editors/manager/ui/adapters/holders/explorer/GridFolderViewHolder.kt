@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerGridFolderBinding
@@ -48,8 +49,8 @@ class GridFolderViewHolder(view: View, adapter: ExplorerAdapter) :
     private fun bindFolderType(folder: CloudFolder) {
         binding.image.setImageResource(
             when (folder.type) {
-                26 -> R.drawable.ic_folder_column_in_process
-                25 -> R.drawable.ic_folder_column_complete
+                ApiContract.SectionType.IN_PROCESS_FORM_FOLDER -> R.drawable.ic_folder_column_in_process
+                ApiContract.SectionType.READY_FORM_FOLDER -> R.drawable.ic_folder_column_complete
                 else -> R.drawable.ic_folder_column
             }
         )

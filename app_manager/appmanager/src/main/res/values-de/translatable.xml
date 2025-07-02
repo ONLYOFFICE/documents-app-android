@@ -955,4 +955,22 @@ Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</
     <string name="version_restore_loading">Version wird wiederhergestellt</string>
     <string name="version_restore_subtitle">Die aktuelle Datei wird im Versionsverlauf gespeichert.</string>
     <string name="version_restore_title">Diese Version wiederherstellen?</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Möchten Sie die Raumvorlage «%s» wirklich löschen? Die Vorlage kann nicht wiederhergestellt werden.</item>
+        <item quantity="other">Möchten Sie die ausgewählten Raumvorlagen wirklich löschen? Sie können nicht wiederhergestellt werden.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Vorlage löschen</item>
+        <item quantity="other">Vorlagen löschen</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d Benutzer</item>
+        <item quantity="other">%d Benutzer</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d Gruppe</item>
+        <item quantity="other">%d Gruppen</item>
+    </plurals>
 </resources>
