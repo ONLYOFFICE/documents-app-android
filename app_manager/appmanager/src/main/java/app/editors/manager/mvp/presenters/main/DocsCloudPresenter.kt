@@ -508,9 +508,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         editType: EditType,
         canBeShared: Boolean
     ) {
+        val newEditType = if (currentFolder?.type == ApiContract.SectionType.FORM_FILLING_FOLDER_DONE && cloudFile.isForm) {
+            EditType.View()
+        } else {
+            editType
+        }
+
         fileProvider.openFile(
             cloudFile = cloudFile,
-            editType = editType,
+            editType = newEditType,
             canBeShared = canBeShared,
             access = cloudFile.access
         ).collect(::onFileOpenCollect)

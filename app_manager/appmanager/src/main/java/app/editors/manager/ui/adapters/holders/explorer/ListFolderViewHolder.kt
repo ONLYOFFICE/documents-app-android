@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerListFolderBinding
@@ -54,8 +55,8 @@ class ListFolderViewHolder(view: View, adapter: ExplorerAdapter) :
     private fun bindFolderType(folder: CloudFolder) {
         binding.image.setImageResource(
             when (folder.type) {
-                26 -> R.drawable.ic_folder_list_in_process
-                25 -> R.drawable.ic_folder_list_complete
+                ApiContract.SectionType.IN_PROCESS_FORM_FOLDER -> R.drawable.ic_folder_list_in_process
+                ApiContract.SectionType.READY_FORM_FOLDER -> R.drawable.ic_folder_list_complete
                 else -> R.drawable.ic_folder_list
             }
         )

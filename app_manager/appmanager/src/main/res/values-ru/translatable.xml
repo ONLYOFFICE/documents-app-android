@@ -968,4 +968,22 @@
     <string name="version_restore_loading">Восстановление версии</string>
     <string name="version_restore_subtitle">Текущий файл будет сохранен в истории версий.</string>
     <string name="version_restore_title">Восстановить эту версию?</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Вы действительно хотите удалить шаблон комнаты «%s»? Шаблон нельзя будет восстановить.</item>
+        <item quantity="other">Вы действительно хотите удалить выбранные шаблоны комнат? Их нельзя будет восстановить.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Удалить шаблон</item>
+        <item quantity="other">Удалить шаблоны</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d пользователь</item>
+        <item quantity="other">%d пользователей</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d группа</item>
+        <item quantity="other">%d групп</item>
+    </plurals>
 </resources>

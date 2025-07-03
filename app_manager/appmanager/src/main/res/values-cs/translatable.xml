@@ -1088,4 +1088,22 @@
     <string name="version_restore_loading">Obnovení verze</string>
     <string name="version_restore_subtitle">Aktuální soubor bude uložen v historii verzí.</string>
     <string name="version_restore_title">Obnovit tuto verzi?</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Opravdu chcete smazat šablonu místnosti „%s“? Šablonu nelze obnovit.</item>
+        <item quantity="other">Opravdu chcete smazat vybrané šablony místností? Nelze je obnovit.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Smazat šablonu</item>
+        <item quantity="other">Smazat šablony</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d uživatel</item>
+        <item quantity="other">%d uživatelů</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d skupina</item>
+        <item quantity="other">%d skupin</item>
+    </plurals>
 </resources>

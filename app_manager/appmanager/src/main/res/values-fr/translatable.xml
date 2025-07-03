@@ -959,4 +959,22 @@ Nous vous recommandons de passer au service gratuit ONLYOFFICE DocSpace Cloud.</
     <string name="version_restore_loading">Restauration de la version</string>
     <string name="version_restore_subtitle">Le fichier actuel est enregistré dans l\'historique des versions.</string>
     <string name="version_restore_title">Restaurer cette version ?</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Voulez-vous vraiment supprimer le modèle de salle « %s » ? Le modèle ne peut pas être restauré.</item>
+        <item quantity="other">Voulez-vous vraiment supprimer les modèles de salle sélectionnés ? Ils ne peuvent pas être restaurés.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Supprimer le modèle</item>
+        <item quantity="other">Supprimer les modèles</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d utilisateur</item>
+        <item quantity="other">%d utilisateurs</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d groupe</item>
+        <item quantity="other">%d groupes</item>
+    </plurals>
 </resources>
