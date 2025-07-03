@@ -33,7 +33,8 @@ data class AppSettingsState(
     val wifi: Boolean = false,
     val keepScreenOn: Boolean = false,
     val passcodeEnabled: Boolean = false,
-    val fonts: List<File> = emptyList()
+    val fonts: List<File> = emptyList(),
+    val developerMode: Boolean = false
 )
 
 sealed class AppSettingsEffect {
@@ -75,7 +76,8 @@ class AppSettingsViewModel(
                 keepScreenOn = preferenceTool.keepScreenOn,
                 passcodeEnabled = preferenceTool.passcodeLock.enabled,
                 themeMode = themePrefs.mode,
-                fonts = File(FileUtils.getFontsDir(resourcesProvider.context)).listFiles()?.toList().orEmpty()
+                fonts = File(FileUtils.getFontsDir(resourcesProvider.context)).listFiles()?.toList().orEmpty(),
+                developerMode = preferenceTool.developMode
             )
         )
     }.mutableStateIn(viewModelScope, AppSettingsState())
@@ -170,5 +172,14 @@ class AppSettingsViewModel(
 
     fun cancelJob() {
         addFontsJob?.cancel()
+    }
+
+    fun setDeveloperMode(enabled: Boolean) {
+        preferenceTool.developMode = enabled
+        _settingsState.value = _settingsState.value.copy(developerMode = enabled)
+    }
+
+    fun toggleDeveloperMode() {
+        setDeveloperMode(!_settingsState.value.developerMode)
     }
 }
