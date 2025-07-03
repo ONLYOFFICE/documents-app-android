@@ -40,11 +40,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.documents.core.model.login.User
-import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.base.FillResult
 import app.documents.core.network.manager.models.explorer.CloudFile
+import app.documents.core.providers.CloudFileProvider
 import app.editors.manager.R
-import app.editors.manager.app.api
+import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.managers.utils.GlideAvatarImage
 import app.editors.manager.managers.utils.StringUtils
 import kotlinx.coroutines.Dispatchers
@@ -74,8 +74,10 @@ private sealed class FormCompleteState {
 }
 
 private class FormCompleteViewModel(
-    private val managerService: ManagerService,
-    private val sessionId: String
+    private val cloudFileProvider: CloudFileProvider,
+    private val sessionId: String,
+    private val portal: String?,
+    private val token: String?,
 ) : ViewModel() {
 
     private val _roomState: MutableStateFlow<FormCompleteState> = MutableStateFlow(FormCompleteState.Loading)
@@ -88,7 +90,7 @@ private class FormCompleteViewModel(
     private fun getResult() {
         viewModelScope.launch(Dispatchers.Default) {
             try {
-                val result = managerService.getFillResult(sessionId).response
+                val result = cloudFileProvider.getFillResult(sessionId, portal, token)
                 _roomState.emit(FormCompleteState.Success(result))
             } catch (error: Throwable) {
                 _roomState.emit(FormCompleteState.Error(error.message ?: ""))
@@ -103,19 +105,30 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
     companion object {
 
         private const val KEY_SESSION_ID = "key_id"
+        private const val KEY_PORTAL = "key_portal"
+        private const val KEY_TOKEN = "key_token"
         const val KEY_RESULT = "fill_form"
 
 
         private fun newInstance(
-            sessionId: String
+            sessionId: String,
+            portal: String?,
+            token: String?
         ): FormCompletedDialogFragment {
             return FormCompletedDialogFragment().putArgs(
-                KEY_SESSION_ID to sessionId
+                KEY_SESSION_ID to sessionId,
+                KEY_PORTAL to portal,
+                KEY_TOKEN to token
             )
         }
 
-        fun show(fragmentManager: FragmentManager, sessionId: String) {
-            newInstance(sessionId).show(fragmentManager, null)
+        fun show(
+            fragmentManager: FragmentManager,
+            sessionId: String,
+            portal: String? = null,
+            token: String? = null
+        ) {
+            newInstance(sessionId, portal, token).show(fragmentManager, null)
         }
     }
 
@@ -139,8 +152,10 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
 
             val viewModel = viewModel {
                 FormCompleteViewModel(
-                    managerService = requireContext().api,
-                    sessionId = arguments?.getSerializableExt<String>(KEY_SESSION_ID) ?: ""
+                    cloudFileProvider = requireContext().cloudFileProvider,
+                    sessionId = arguments?.getSerializableExt<String>(KEY_SESSION_ID) ?: "",
+                    portal = arguments?.getString(KEY_PORTAL),
+                    token = arguments?.getString(KEY_TOKEN)
                 )
             }
 
@@ -162,7 +177,8 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
 
                         is FormCompleteState.Success -> {
                             FormCompletedScreen(
-                                response.fillResul,
+                                fillResult = response.fillResul,
+                                showBackToRoom = arguments?.getString(KEY_PORTAL) == null,
                                 onSendEmailClick = {
                                     ActivitiesUtils.showEmail(
                                         context = requireContext(),
@@ -199,6 +215,7 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
 @Composable
 fun FormCompletedScreen(
     fillResult: FillResult,
+    showBackToRoom: Boolean,
     onSendEmailClick: () -> Unit,
     onLinkClick: () -> Unit,
     onBackToRoomClick: () -> Unit,
@@ -263,14 +280,21 @@ fun FormCompletedScreen(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AppTextButton(
-                title = R.string.rooms_fill_form_complete_back_to_room,
-                onClick = onBackToRoomClick
-            )
-            AppTextButton(
-                title = R.string.rooms_fill_form_complete_check_forms,
-                onClick = onCheckReadyFormsClick
-            )
+            if (showBackToRoom) {
+                AppTextButton(
+                    title = R.string.rooms_fill_form_complete_back_to_room,
+                    onClick = onBackToRoomClick
+                )
+                AppTextButton(
+                    title = R.string.rooms_fill_form_complete_check_forms,
+                    onClick = onCheckReadyFormsClick
+                )
+            } else {
+                AppTextButton(
+                    title = R.string.dialogs_common_close,
+                    onClick = onBackToRoomClick
+                )
+            }
         }
     }
 }
@@ -339,10 +363,11 @@ private fun FormCompletedScreenPreview() {
                     roomId = 123,
                     isRoomMember = true
                 ),
+                true,
                 {},
                 {},
                 {},
-                {}
+                {},
             )
         }
     }

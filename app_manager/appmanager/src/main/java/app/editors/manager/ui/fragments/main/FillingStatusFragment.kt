@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
@@ -105,8 +106,8 @@ class FillingStatusFragment : ComposeDialogFragment() {
                 activity
             ) { _, bundle ->
                 when {
-                    bundle.getBoolean(RESULT_START_FILL_KEY) == true -> onStartFill()
-                    bundle.getBoolean(RESULT_ON_CLOSE_KEY) == true -> onClose()
+                    bundle.getBoolean(RESULT_START_FILL_KEY) -> onStartFill()
+                    bundle.getBoolean(RESULT_ON_CLOSE_KEY) -> onClose()
                 }
             }
             newInstance(file, isSendForm).show(activity.supportFragmentManager, "")
@@ -372,7 +373,12 @@ private fun FormInfoContent(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = StringUtils.removeExtension(formInfo.title))
+                Text(
+                    modifier = Modifier.weight(1f, false),
+                    text = StringUtils.removeExtension(formInfo.title),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
                 Text(
                     modifier = Modifier
                         .padding(start = 8.dp)

@@ -192,7 +192,9 @@ fun GlideAvatarImage(modifier: Modifier = Modifier, url: String) {
 
     if (!LocalView.current.isInEditMode) {
         account = context.accountOnline
-        token = AccountUtils.getToken(context, account?.accountName.orEmpty())
+        token = account?.accountName
+            ?.takeIf(String::isNotEmpty)
+            ?.let { AccountUtils.getToken(context, it) }
     } else {
         account = null
         token = null

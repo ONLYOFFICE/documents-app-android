@@ -4,14 +4,19 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.net.toUri
 import app.documents.core.account.AccountPreferences
+import app.documents.core.account.AccountRepository
+import app.documents.core.login.CheckLoginResult
 import app.documents.core.login.PortalResult
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.Scheme
+import app.documents.core.network.common.Result
+import app.documents.core.providers.FileOpenResult
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
+import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
@@ -49,6 +54,9 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     @Inject
     lateinit var accountPreferences: AccountPreferences
+
+    @Inject
+    lateinit var accountRepository: AccountRepository
 
     private val disposable = CompositeDisposable()
 
@@ -204,36 +212,106 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     fun openDeeplink(uri: Uri) {
         val data = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(uri.query))
+        val hasToken = data.share.isNotEmpty()
+        val account = context.accountOnline
+        val isAccountOnline = account?.portal?.urlWithScheme == data.portal &&
+                account?.login == data.email
+
+        presenterScope.launch(Dispatchers.Default) {
+            if (isAccountOnline || hasToken) {
+                openFile(data)
+                return@launch
+            }
+
+            when (val result = accountRepository.checkLoginWithEmail(data.email.orEmpty())) {
+                is CheckLoginResult.Success -> {
+                    viewState.restartActivity(deeplink = uri)
+                }
+                is CheckLoginResult.NeedLogin -> {
+                    signInAndOpenDeeplink(data, uri)
+                }
+                is CheckLoginResult.Error -> fetchError(result.exception)
+                else -> Unit
+            }
+        }
+    }
+
+    private suspend fun signInAndOpenDeeplink(data: OpenDataModel, uri: Uri) {
         val portalUri = data.portal?.toUri() ?: return
         val portalScheme = Scheme.valueOf("${portalUri.scheme}://")
 
         App.getApp().refreshLoginComponent(
             CloudPortal(url = portalUri.host.orEmpty(), scheme = portalScheme)
         )
-        
-        presenterScope.launch(Dispatchers.Default) {
-            App.getApp().loginComponent.cloudLoginRepository
-                .checkPortal(portalUri.host.orEmpty(), portalScheme)
-                .collect { result ->
-                    withContext(Dispatchers.Main) {
-                        when (result) {
-                            is PortalResult.Error -> {
-                                viewState.onError(context.getString(R.string.errors_unknown_error))
-                            }
 
-                            is PortalResult.Success -> {
-                                App.getApp().refreshLoginComponent(result.cloudPortal)
-                                viewState.signInAndOpenDeeplink(
-                                    portal = data.portal,
-                                    email = data.email.orEmpty(),
-                                    uri = uri
-                                )
-                            }
-
-                            else -> Unit
+        App.getApp().loginComponent.cloudLoginRepository
+            .checkPortal(portalUri.host.orEmpty(), portalScheme)
+            .collect { result ->
+                withContext(Dispatchers.Main) {
+                    when (result) {
+                        is PortalResult.Error -> {
+                            viewState.onError(context.getString(R.string.errors_unknown_error))
                         }
+
+                        is PortalResult.Success -> {
+                            App.getApp().refreshLoginComponent(result.cloudPortal)
+                            viewState.signInAndOpenDeeplink(
+                                portal = data.portal,
+                                email = data.email.orEmpty(),
+                                uri = uri
+                            )
+                        }
+
+                        else -> Unit
                     }
                 }
+            }
+    }
+
+    private suspend fun openFile(data: OpenDataModel) {
+        context.cloudFileProvider
+            .openDeeplink(
+                portal = data.portal.orEmpty(),
+                token = data.share,
+                login = data.email.orEmpty(),
+                id = data.file?.id.orEmpty(),
+                extension = data.file?.extension.orEmpty(),
+                title = data.file?.title.orEmpty()
+            )
+            .collect { result ->
+                when (result) {
+                    is Result.Error -> fetchError(result.exception)
+                    is Result.Success<FileOpenResult> -> {
+                        handleFileOpenResult(result.result)
+                    }
+                }
+            }
+    }
+
+    private fun handleFileOpenResult(result: FileOpenResult) {
+        when (result) {
+            is FileOpenResult.OpenDocumentServer -> with(result) {
+                viewState.onDialogClose()
+                viewState.showEditors(
+                    data = info,
+                    extension = cloudFile.fileExst,
+                    access = cloudFile.access,
+                    editType = editType,
+                    onResultListener = null
+                )
+            }
+
+            is FileOpenResult.OpenLocally -> with(result) {
+                viewState.onDialogClose()
+                viewState.showEditors(
+                    uri = file.toUri(),
+                    editType = editType,
+                    access = access,
+                    onResultListener = null
+                )
+            }
+
+            else -> Unit
         }
     }
 }

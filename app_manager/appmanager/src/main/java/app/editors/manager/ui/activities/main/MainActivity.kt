@@ -10,11 +10,14 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
+import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -26,7 +29,9 @@ import app.editors.manager.managers.receivers.AppLocaleReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.RoomDuplicateReceiver
 import app.editors.manager.managers.receivers.UploadReceiver
+import app.editors.manager.managers.utils.EditorsUtils
 import app.editors.manager.managers.utils.InAppUpdateUtils
+import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.main.MainActivityPresenter
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter.Companion.PERSONAL_DUE_DATE
 import app.editors.manager.mvp.views.main.MainActivityView
@@ -34,6 +39,7 @@ import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.activities.login.SignInActivity
 import app.editors.manager.ui.compose.personal.PersonalPortalMigrationFragment
 import app.editors.manager.ui.dialogs.fragments.CloudAccountDialogFragment
+import app.editors.manager.ui.dialogs.fragments.FormCompletedDialogFragment
 import app.editors.manager.ui.fragments.main.CloudAccountFragment
 import app.editors.manager.ui.fragments.main.DocsOnDeviceFragment
 import app.editors.manager.ui.fragments.main.DocsRecentFragment
@@ -53,6 +59,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import lib.toolkit.base.managers.utils.CryptUtils
+import lib.toolkit.base.managers.utils.EditType
+import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
 import lib.toolkit.base.managers.utils.RequestPermission
@@ -84,6 +93,19 @@ interface IMainActivity {
         drawable: Int? = null,
         drawablePadding: Int? = null
     )
+    fun showEditors(
+        uri: Uri,
+        editType: EditType,
+        access: Access,
+        onResultListener: ((Int, Intent?) -> Unit)? = null
+    )
+    fun showEditors(
+        data: String,
+        extension: String,
+        editType: EditType,
+        access: Access,
+        onResultListener: ((Int, Intent?) -> Unit)? = null
+    )
 }
 
 class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBottomDialogCloseListener,
@@ -99,7 +121,10 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
 
         fun show(context: Context, deepLink: Uri? = null) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
-                data = deepLink
+                if (deepLink != null) {
+                    data = deepLink
+                    action = Intent.ACTION_VIEW
+                }
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             })
         }
@@ -121,6 +146,13 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
 
     private val toolbarElevation by lazy { resources.getDimension(lib.toolkit.base.R.dimen.default_elevation_height) }
 
+    private var editorsLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(StartActivityForResult()) { result ->
+            editorsLauncherListener(result.resultCode, result.data)
+        }
+
+    private var editorsLauncherListener: (Int, Intent?) -> Unit = ::onEditorActivityResult
+
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(ACCOUNT_KEY, Json.encodeToString(viewBinding.appBarToolbar.account))
         outState.putInt(FRAGMENT_KEY, viewBinding.bottomNavigation.selectedItemId)
@@ -133,6 +165,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         intent.action?.let { action ->
             if (action == Intent.ACTION_VIEW) {
                 onActionView(intent)
+                this.intent = intent
             }
 
             intent.extras?.let extras@{ extras ->
@@ -201,15 +234,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
     }
 
     private fun onActionView(intent: Intent? = null) {
-        (intent ?: this.intent)?.data?.let { uri ->
-            // TODO: Refactor. Remove opening deeplink from MainPagerFragment
-            val fragment = supportFragmentManager.findFragmentByTag(MainPagerFragment.TAG)
-            if (fragment is MainPagerFragment && fragment.isVisible) {
-                fragment.checkBundle(uri)
-            } else {
-                presenter.openDeeplink(uri)
-            }
-        }
+        (intent ?: this.intent)?.data?.let(presenter::openDeeplink)
     }
 
     private fun init(savedInstanceState: Bundle?) {
@@ -638,6 +663,43 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         viewBinding.infoLayout.infoText.compoundDrawablePadding = drawablePadding ?: 4
     }
 
+
+    override fun restartActivity(deeplink: Uri?) {
+        show(this, deeplink)
+    }
+
+    override fun showEditors(
+        uri: Uri,
+        editType: EditType,
+        access: Access,
+        onResultListener: ((Int, Intent?) -> Unit)?
+    ) {
+        val intent = EditorsUtils.getLocalEditorIntent(
+            context = this,
+            uri = uri,
+            editType = editType,
+            access = access
+        )
+        showEditors(intent, onResultListener)
+    }
+
+    override fun showEditors(
+        data: String,
+        extension: String,
+        editType: EditType,
+        access: Access,
+        onResultListener: ((Int, Intent?) -> Unit)?
+    ) {
+        val intent = EditorsUtils.getDocumentServerEditorIntent(
+            context = this,
+            data = data,
+            extension = extension,
+            editType = editType,
+            access = access
+        )
+        showEditors(intent, onResultListener)
+    }
+
     private fun isNotification(): Boolean =
         intent?.categories?.contains(Intent.CATEGORY_LAUNCHER) == true && intent.extras?.contains(URL_KEY) == true
 
@@ -664,4 +726,27 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         }.commit()
     }
 
+    private fun showEditors(intent: Intent, onResultListener: ((Int, Intent?) -> Unit)?) {
+        intent.putExtra(EditorsContract.KEY_KEEP_SCREEN_ON, presenter.preferenceTool.keepScreenOn)
+        editorsLauncherListener = onResultListener ?: ::onEditorActivityResult
+        editorsLauncher.launch(intent)
+    }
+
+    private fun onEditorActivityResult(resultCode: Int, data: Intent?) {
+        when (resultCode) {
+            RESULT_OK -> {
+                if (data == null) return
+                val isSendForm = data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)
+                val sessionId = data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION)
+                if (isSendForm && sessionId != null) {
+                    val data = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(intent.data?.query))
+                    FormCompletedDialogFragment.show(supportFragmentManager, sessionId, data.portal, data.share)
+                }
+            }
+
+            EditorsContract.RESULT_FAILED_OPEN -> {
+                showSnackBar(R.string.errors_open_document)
+            }
+        }
+    }
 }

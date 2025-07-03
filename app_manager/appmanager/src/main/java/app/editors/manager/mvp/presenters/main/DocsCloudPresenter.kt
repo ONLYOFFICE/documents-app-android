@@ -44,7 +44,6 @@ import app.editors.manager.managers.works.RoomDuplicateWork
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.list.Templates
-import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.MoveCopyDialog
@@ -67,7 +66,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
@@ -675,36 +673,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun openFileById(id: String, editType: EditType) {
         openFile(CloudFile().apply { this.id = id }, editType)
-    }
-
-    fun openFile(data: String) {
-        val model = Json.decodeFromString<OpenDataModel>(data)
-        val fileId = model.file?.id
-        val folderId = model.folder?.id
-
-        if (fileId == null && folderId != null) {
-            openFolder(folderId, 0)
-            return
-        }
-
-        openFileJob?.cancel()
-        openFileJob = presenterScope.launch {
-            if (model.share.isNotEmpty() && !model.portal.isNullOrEmpty()) {
-                fileProvider.openFile(
-                    portal = model.portal,
-                    token = model.share,
-                    id = fileId.orEmpty(),
-                    title = model.file?.title.orEmpty(),
-                    extension = model.file?.extension.orEmpty(),
-                ).collect(::onFileOpenCollect)
-            } else {
-                fileProvider.openFile(
-                    cloudFile = CloudFile().apply { this.id = fileId.orEmpty() },
-                    editType = EditType.from(model.action),
-                    canBeShared  = false
-                ).collect(::onFileOpenCollect)
-            }
-        }
     }
 
     fun openLocation() {

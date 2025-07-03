@@ -1,7 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +10,9 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.lifecycleScope
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
-import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -32,7 +29,6 @@ import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.pager.ViewPagerAdapter
 import app.editors.manager.ui.views.pager.ViewPagerAdapter.Container
-import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.clearIntent
 import moxy.presenter.InjectPresenter
@@ -122,9 +118,6 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             viewBinding?.mainViewPager?.post {
                 activeFragment?.onResume()
             }
-            if (requireActivity().intent?.data != null) {
-                checkBundle(requireActivity().intent.data)
-            }
         }
     }
 
@@ -161,25 +154,8 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             restoreStates(savedInstanceState)
         } else {
             placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD)
-            checkBundle()
+            presenter.getState()
         }
-    }
-
-    @Suppress("JSON_FORMAT_REDUNDANT")
-    fun checkBundle(uri: Uri? = null) {
-        val bundle = requireActivity().intent?.extras
-        var data = uri ?: requireActivity().intent?.data
-        if (bundle != null && bundle.containsKey("data")) {
-            val model = bundle.getString("data")
-            data = Uri.parse("${BuildConfig.PUSH_SCHEME}://openfile?data=${model}&push=true")
-        }
-        if (adapter != null && adapter?.fragmentList?.isNotEmpty() == true){
-            lifecycleScope.launch {
-                presenter.checkFileData(uri)
-            }
-            return
-        }
-        presenter.getState(data)
     }
 
     private fun restoreStates(savedInstanceState: Bundle) {
@@ -219,10 +195,8 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             }
             setAdapter(fragments, true)
         } else {
-            checkBundle()
-            return
+            presenter.getState()
         }
-
     }
 
     fun isActivePage(fragment: Fragment?): Boolean {
@@ -330,7 +304,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     override fun onRetryClick() {
         placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.LOAD)
-        checkBundle()
+        presenter.getState()
     }
 
     override fun onError(@StringRes res: Int) {
@@ -362,17 +336,6 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 }
             }
         }
-    }
-
-    override fun setFileData(fileData: String) {
-        viewBinding?.root?.postDelayed({
-            childFragmentManager.fragments.find { it is DocsRoomFragment || it is DocsCloudFragment }?.let { fragment ->
-                if (fragment.isAdded) {
-                    (fragment as DocsCloudFragment).setFileData(fileData)
-                    requireActivity().intent.clearIntent()
-                }
-            }
-        }, 250)
     }
 
     override fun onSwitchAccount(data: OpenDataModel) {
