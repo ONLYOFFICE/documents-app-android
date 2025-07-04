@@ -12,6 +12,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import app.documents.core.login.LoginComponent
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.network.common.RequestsCollector
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.share.ShareService
@@ -215,6 +216,7 @@ class App : Application() {
         refreshDropboxInstance()
         refreshGoogleDriveInstance()
         refreshOneDriveInstance()
+        RequestsCollector.setDeveloperMode(appComponent.preference.developMode)
     }
 
     private fun initCrashlytics() {

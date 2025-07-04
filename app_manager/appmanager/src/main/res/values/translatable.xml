@@ -1166,6 +1166,9 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="filling_form_send_finalized">Form Section Completed</string>
     <string name="filling_form_send_finalized_desc">The form has been fully completed by all roles and is now finalized. It is available in view-only mode.</string>
     <string name="filling_form_version_incompatible_desc">The client and server versions are incompatible. You can only open the document in view mode.</string>
+    <string name="dev_mode_system_logs">System logs</string>
+    <string name="dev_mode_network_requests">Network requests</string>
+<!--    Wats new-->
     <string name="whats_new">What\'s new in v9.0</string>
     <string name="whats_new_1">Text recognition with device camera</string>
     <string name="whats_new_1_desc">Capture printed text with your camera and create editable documents.</string>

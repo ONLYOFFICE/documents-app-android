@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import app.documents.core.network.common.RequestsCollector
 import app.editors.manager.R
 import app.editors.manager.managers.tools.FontManager
 import app.editors.manager.managers.tools.PreferenceTool
@@ -175,6 +176,7 @@ class AppSettingsViewModel(
     }
 
     fun setDeveloperMode(enabled: Boolean) {
+        RequestsCollector.setDeveloperMode(enabled)
         preferenceTool.developMode = enabled
         _settingsState.value = _settingsState.value.copy(developerMode = enabled)
     }
