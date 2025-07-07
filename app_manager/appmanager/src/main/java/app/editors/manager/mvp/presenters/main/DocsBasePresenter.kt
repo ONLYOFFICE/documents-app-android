@@ -441,7 +441,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     private fun renameFile(id: Item, title: String, version: Int) {
         modelExplorerStack.currentId?.let { currentId ->
             disposable.add(
-                fileProvider.rename(id, title, version)
+                fileProvider.rename(id, title, null)
                     .flatMap { fileProvider.getFiles(currentId, getArgs(null)) }
                     .subscribe({ item ->
                         viewState.onDialogClose()

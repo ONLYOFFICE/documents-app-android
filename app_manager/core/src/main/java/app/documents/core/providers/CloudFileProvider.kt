@@ -185,7 +185,7 @@ class CloudFileProvider @Inject constructor(
     }
 
     override fun rename(item: Item, newName: String, version: Int?): Observable<Item> {
-        return if (version == null) {
+        return if (item is CloudFolder) {
             folderRename(item.id, newName)
         } else {
             fileRename(item.id, newName)
