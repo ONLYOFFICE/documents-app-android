@@ -251,7 +251,6 @@
     <string name="dialogs_warning_pinned_room_limit">You can’t pin more than 10 rooms to the top. Unpin some that are currently pinned.</string>
     <string name="dialogs_warning_fill_forms_room_create">Creation based on several files and folders is not available for this type of room. To create such a room, go to the Rooms section or use one of the PDF forms.</string>
     <string name="dialogs_warning_room_space_quota_exceed">Room space quota exceeded (%s).</string>
-    <string name="dialogs_warning_downgrade_to_guest">Your user type has been changed to \"Guest\" by the DocSpace admin.\n\nYour personal files and folders in the Documents section will be deleted since Guests don\'t have access to this section. Files remain available for viewing and downloading for 30 days.\n\nFor any questions, please contact your DocSpace admin.</string>
 
     <!-- Edit -->
     <string name="dialogs_edit_rename_title">Rename</string>
@@ -1075,14 +1074,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
 
     <string name="whats_new_title">What\'s new</string>
     <string name="whats_new_next">Get started</string>
-    <string name="whats_new_1">Enhanced integration with DocSpace v3.0</string>
-    <string name="whats_new_1_desc">Collaborate on docs with the latest updates and improvements for ONLYOFFICE DocSpace v3.0.</string>
-    <string name="whats_new_2">Tabbed interface for tablets and desktops</string>
-    <string name="whats_new_2_desc">Simplify navigation and editing with the tabbed toolbar on tablets and desktop devices.</string>
-    <string name="whats_new_3">New chart types</string>
-    <string name="whats_new_3_desc">Add new chart types to visualize your data for detailed presentations and analysis.</string>
-    <string name="whats_new_4">View Apple Pages and HWP files</string>
-    <string name="whats_new_4_desc">Open and view documents in Apple Pages and Hangul Word formats.</string>
+
 
     <string name="version_history_title">Version History</string>
     <string name="version_edit_comment_title">Edit Comment</string>
@@ -1175,6 +1167,17 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="filling_form_send_finalized_desc">The form has been fully completed by all roles and is now finalized. It is available in view-only mode.</string>
     <string name="filling_form_version_incompatible_desc">The client and server versions are incompatible. You can only open the document in view mode.</string>
 
+    <string name="whats_new">What\'s new in v9.0</string>
+    <string name="whats_new_1">Text recognition with device camera</string>
+    <string name="whats_new_1_desc">Capture printed text with your camera and create editable documents.</string>
+    <string name="whats_new_2">Updated tabbed interface</string>
+    <string name="whats_new_2_desc">Enjoy a cleaner, more intuitive layout with the redesigned toolbar.</string>
+    <string name="whats_new_3">Support for ODG and Markdown formats</string>
+    <string name="whats_new_3_desc">Open and view .odg drawings and .md files right from your device.</string>
+    <string name="whats_new_4">Enhanced compatibility with DocSpace 3.1</string>
+    <string name="whats_new_4_desc">Access document versions, role-based form filling in VDR, room templates, and custom filters when connected to your DocSpace.</string>
+
+    <string name="dialogs_warning_downgrade_to_guest">Your user type has been changed to \"Guest\" by the DocSpace admin.\n\nYour personal files and folders in the Documents section will be deleted since Guests don\'t have access to this section. Files remain available for viewing and downloading for 30 days.\n\nFor any questions, please contact your DocSpace admin.</string>
     <string name="rooms_warning_downgrade_to_guest">Your user type has been changed to Guest. Personal files will be deleted in 30 days.</string>
 
 </resources>

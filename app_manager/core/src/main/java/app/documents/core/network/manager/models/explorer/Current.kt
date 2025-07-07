@@ -96,6 +96,14 @@ class Current : Cloneable, Serializable {
     @Expose
     var indexing: Boolean = false
 
+    @SerializedName("parentRoomType")
+    @Expose
+    var parentRoomType: Int = -1
+
+    @SerializedName("type")
+    @Expose
+    var type: Int = -1
+
     public override fun clone(): Current {
         return (super.clone() as Current).apply {
             createdBy = createdBy.clone()

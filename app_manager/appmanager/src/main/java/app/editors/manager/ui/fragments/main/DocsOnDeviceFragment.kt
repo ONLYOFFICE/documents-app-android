@@ -14,7 +14,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.core.net.toFile
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
@@ -32,8 +31,10 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.views.custom.PlaceholderViews
+import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.ActivitiesUtils
+import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FolderChooser
 import lib.toolkit.base.managers.utils.RequestPermissions
@@ -96,7 +97,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override fun onStateMenuDefault(sortBy: String, isAsc: Boolean) {
         super.onStateMenuDefault(sortBy, isAsc)
-        openItem?.isVisible = true
+        menu?.findItem(R.id.toolbar_item_open)?.isVisible = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -239,7 +240,7 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
     }
 
     override fun onShowPdf(uri: Uri, editType: EditType) {
-        onOpenLocalFile(uri, uri.toFile().extension, editType)
+        onOpenLocalFile(uri, FileExtensions.fromPath(ContentResolverUtils.getName(requireContext(), uri)).extension, editType)
     }
 
     override fun onOpenMedia(state: OpenState.Media) {

@@ -173,7 +173,16 @@ object ApiContract {
         const val CLOUD_PRIVATE_ROOM = 13
         const val CLOUD_VIRTUAL_ROOM = 14
         const val CLOUD_ARCHIVE_ROOM = 20
-        const val CLOUD_TEMPLATES = 30
+        const val EDITING_ROOM = 16
+        const val CUSTOM_ROOM = 19
+        const val THIRDPARTY_BACKUP = 21
+        const val PUBLIC_ROOM = 22
+        const val READY_FORM_FOLDER = 25
+        const val IN_PROCESS_FORM_FOLDER = 26
+        const val FORM_FILLING_FOLDER_DONE = 27
+        const val FORM_FILLING_FOLDER_IN_PROGRESS = 28
+        const val VIRTUAL_DATA_ROOM = 29
+        const val ROOM_TEMPLATES_FOLDER = 30
 
         const val WEB_DAV = 100
         const val GOOGLE_DRIVE = 110
@@ -184,7 +193,7 @@ object ApiContract {
 
         fun isRoom(type: Int): Boolean = type == 14
         fun isArchive(type: Int): Boolean = type == CLOUD_ARCHIVE_ROOM
-        fun isTemplates(type: Int?): Boolean = type == CLOUD_TEMPLATES
+        fun isTemplates(type: Int?): Boolean = type == ROOM_TEMPLATES_FOLDER
     }
 
     sealed class Section(val type: Int) {
@@ -203,7 +212,7 @@ object ApiContract {
             object Private : Room(SectionType.CLOUD_PRIVATE_ROOM)
             object Virtual : Room(SectionType.CLOUD_VIRTUAL_ROOM)
             object Archive : Room(SectionType.CLOUD_ARCHIVE_ROOM)
-            object Templates : Room(SectionType.CLOUD_TEMPLATES)
+            object Templates : Room(SectionType.ROOM_TEMPLATES_FOLDER)
         }
 
         sealed class Storage(type: Int) : Section(type) {
@@ -221,6 +230,7 @@ object ApiContract {
         val isDevice: Boolean get() = this == Device
         val isTrash: Boolean get() = this == Trash
         val isStorage: Boolean get() = this is Storage
+        val isWebdav: Boolean get() = this == Webdav
 
         companion object {
 
@@ -234,7 +244,7 @@ object ApiContract {
                     SectionType.CLOUD_FAVORITES -> Favorites
                     SectionType.CLOUD_RECENT -> Recent
                     SectionType.WEB_DAV -> Webdav
-                    SectionType.CLOUD_TEMPLATES -> Room.Templates
+                    SectionType.ROOM_TEMPLATES_FOLDER -> Room.Templates
                     SectionType.CLOUD_PRIVATE_ROOM -> Room.Private
                     SectionType.CLOUD_VIRTUAL_ROOM -> Room.Virtual
                     SectionType.CLOUD_ARCHIVE_ROOM -> Room.Archive
@@ -287,11 +297,6 @@ object ApiContract {
 
         fun hasExternalLink(roomType: Int?): Boolean =
             roomType in arrayOf(PUBLIC_ROOM, FILL_FORMS_ROOM, CUSTOM_ROOM)
-    }
-
-    object FolderType {
-        const val IN_PROGRESS = 26
-        const val COMPLETE = 25
     }
 
     object SectionPath {

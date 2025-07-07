@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Missing translations for language: si -->
+
+    <!-- Module: appmanager - 21 strings -->
+    <string name="dialogs_common_cancel_button">අවලංගු කරන්න</string>
+    <string name="dialogs_wait_title_storage">ගබඩාව සම්බන්ධ කරමින්...</string>
+    <string name="dialogs_question_delete_all_title">සියලුම අයිතම මකන්නද?</string>
+    <string name="dialogs_edit_feedback_rate_title">අපට ප්‍රතිපෝෂණ එවීමට ඔබට කමක් නැද්ද?</string>
+    <string name="placeholder_no_users_found">පරිශීලකයින් කිසිවෙකු හමු නොවීය</string>
+    <string name="app_settings_passcode_confirm_title">මුර කේතය තහවුරු කරන්න</string>
+    <string name="sign_in_terms_and_policy_text"><![CDATA[ By proceeding, you agree to the <a href="%1$s">Privacy Policy</a> and the <a href="%2$s">Terms of Service</a> ]]></string>
+    <string name="file_lifetime_title">ගොනු ආයු කාලය</string>
+    <string name="rooms_vdr_watermark_position">ස්ථානය</string>
+    <string name="title_edit_template">අච්චුව සංස්කරණය කරන්න</string>
+    <plurals name="dialogs_question_message_delete">
+        <item quantity="one">එය ආපසු ලබා ගත නොහැකි ලෙස මකා දැමෙනු ඇත.\nමෙම ක්‍රියාව ආපසු හැරවිය නොහැක.</item>
+                <item quantity="other">ඒවා ආපසු ලබා ගත නොහැකි ලෙස මකා දමනු ලැබේ.\nමෙම ක්‍රියාව ආපසු හැරවිය නොහැක.</item>
+    </plurals>
+    <plurals name="dialogs_question_message_to_trash">
+        <item quantity="one">එය කුණු කූඩයට ගෙන යනු ලැබේ.</item>
+                <item quantity="other">ඒවා කුණු කූඩයට ගෙන යනු ලැබේ.</item>
+    </plurals>
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">ඔබට ඇත්තටම සැකිලි කාමරය «%s» මැකීමට අවශ්‍යද? සැකිල්ල ප්‍රතිසාධනය කළ නොහැක.</item>
+                <item quantity="other">තෝරාගත් කාමර සැකිලි මැකීමට ඔබට ඇත්තටම අවශ්‍යද? ඒවා ප්‍රතිසාධනය කළ නොහැක.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_title">
+        <item quantity="one">මෙම අයිතමය මකන්නද?</item>
+                <item quantity="other">අයිතම %1$dක් මකන්නද?</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">අච්චුව මකන්න</item>
+                <item quantity="other">සැකිලි මකන්න</item>
+    </plurals>
+    <plurals name="operation_moved_to_trash">
+        <item quantity="one">අයිතමය කුණු කූඩයට ගෙන යන ලදී</item>
+                <item quantity="other">අයිතම කුණු කූඩයට ගෙන යන ලදී</item>
+    </plurals>
+    <plurals name="operation_delete_irretrievably">
+        <item quantity="one">අයිතමය ආපසු ලබා ගත නොහැකි ලෙස මකා දමන ලදී</item>
+                <item quantity="other">ආපසු ලබා ගත නොහැකි ලෙස මකා දැමූ අයිතම</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_seconds">
+        <item quantity="one">උත්සාහයන් වැඩියි.\nතත්පර %d කින් නැවත උත්සාහ කරන්න</item>
+                <item quantity="other">උත්සාහයන් වැඩියි.\nතත්පර %d කින් නැවත උත්සාහ කරන්න</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_minutes">
+        <item quantity="one">උත්සාහයන් වැඩියි.\nමිනිත්තු %d කින් නැවත උත්සාහ කරන්න</item>
+                <item quantity="other">උත්සාහයන් වැඩියි.\nමිනිත්තු %d කින් නැවත උත්සාහ කරන්න</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">පරිශීලකයන් %d</item>
+                <item quantity="other">පරිශීලකයින් %d</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">කණ්ඩායම %d</item>
+                <item quantity="other">කණ්ඩායම් %d</item>
+    </plurals>
+
+    <!-- Module: libgcells - 1 strings -->
+    <string name="cells_csv_settings_delimiter_space">අවකාශය</string>
+
+    <!-- Module: libgdocs - 2 strings -->
+    <string name="docs_txt_settings_dialog_header">TXT විකල්ප තෝරන්න</string>
+    <string name="review_final_desc">සියලු වෙනස්කම් පිළිගනු ලැබේ (පෙරදසුන)</string>
+
+    <!-- Module: libgeditors - 4 strings -->
+    <string name="dialog_search_replace_hint"><font size="22">      පෙළ ප්‍රතිස්ථාපනය කරන්න    </font></string>
+    <string name="dialog_search_find_hint"><font size="22">      පෙළ සොයන්න    </font></string>
+    <string name="settings_shape_border_style">මායිම් විලාසය</string>
+    <string name="settings_chart_chart_type">ප්‍රස්ථාර වර්ගය</string>
+
+    <!-- Module: libgslides - 1 strings -->
+    <string name="slides_settings_delete_slide">ස්ලයිඩය මකන්න</string>
+
+    <!-- Module: libtoolkit - 4 strings -->
+    <plurals name="days">
+        <item quantity="one">දවස</item>
+                <item quantity="other">දින</item>
+    </plurals>
+    <plurals name="hours">
+        <item quantity="one">පැය</item>
+                <item quantity="other">පැය</item>
+    </plurals>
+    <plurals name="months">
+        <item quantity="one">මාසය</item>
+                <item quantity="other">මාස</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">අවුරුද්ද</item>
+                <item quantity="other">අවුරුදු</item>
+    </plurals>
+</resources>

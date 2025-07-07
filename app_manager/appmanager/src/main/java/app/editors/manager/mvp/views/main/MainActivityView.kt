@@ -1,5 +1,6 @@
 package app.editors.manager.mvp.views.main
 
+import android.net.Uri
 import androidx.annotation.StringRes
 import app.editors.manager.mvp.views.base.BaseViewExt
 import com.google.android.play.core.review.ReviewInfo
@@ -21,5 +22,6 @@ interface MainActivityView : BaseViewExt {
     fun onShowOnBoarding()
     fun onCloseActionDialog()
     fun onLocaleConfirmation()
+    fun signInAndOpenDeeplink(portal: String, email: String, uri: Uri)
     fun onDowngradeToGuestDialog()
 }

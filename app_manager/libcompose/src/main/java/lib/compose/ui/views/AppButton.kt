@@ -12,7 +12,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -21,14 +20,32 @@ import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.R
 
+/**
+ * Button types for the app.
+ */
+enum class AppButtonType {
+    Default,
+    Error
+}
+
+/**
+ * Universal button composable for the app.
+ */
 @Composable
-private fun AppBaseButton(
+fun AppButton(
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-    backgroundColor: Color = MaterialTheme.colors.primary,
-    enabled: Boolean,
-    onClick: () -> Unit
+    title: String? = null,
+    titleResId: Int? = null,
+    enabled: Boolean = true,
+    buttonType: AppButtonType = AppButtonType.Default,
+    onClick: () -> Unit,
 ) {
+    val buttonText = titleResId?.let { stringResource(id = it) } ?: title ?: ""
+    val backgroundColor = when (buttonType) {
+        AppButtonType.Default -> MaterialTheme.colors.primary
+        AppButtonType.Error -> MaterialTheme.colors.error
+    }
+
     Button(
         onClick = onClick,
         enabled = enabled,
@@ -40,74 +57,13 @@ private fun AppBaseButton(
             .width(dimensionResource(id = R.dimen.default_button_width))
             .heightIn(min = dimensionResource(id = R.dimen.default_button_height))
     ) {
-        content()
+        Text(
+            text = buttonText,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
-@Composable
-fun AppButton(
-    modifier: Modifier = Modifier,
-    title: String,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    AppBaseButton(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = modifier,
-        content = {
-            Text(textAlign = TextAlign.Center, text = title)
-        }
-    )
-}
-
-@Composable
-fun AppButton(
-    modifier: Modifier = Modifier,
-    title: Int,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    AppButton(
-        modifier = modifier,
-        enabled = enabled,
-        title = stringResource(id = title),
-        onClick = onClick
-    )
-}
-
-@Composable
-fun AppErrorButton(
-    modifier: Modifier = Modifier,
-    title: String,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    AppBaseButton(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = modifier,
-        backgroundColor = MaterialTheme.colors.error,
-        content = {
-            Text(text = title)
-        }
-    )
-}
-
-@Composable
-fun AppErrorButton(
-    modifier: Modifier = Modifier,
-    title: Int,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    AppErrorButton(
-        modifier = modifier,
-        enabled = enabled,
-        title = stringResource(id = title),
-        onClick = onClick
-    )
-}
 
 @Preview
 @Preview(uiMode = UI_MODE_NIGHT_YES)
@@ -123,12 +79,14 @@ private fun AppButtonPreview() {
                     enabled = false,
                     title = "Disabled app button"
                 ) { }
-                AppErrorButton(
-                    title = "Error button"
+                AppButton(
+                    title = "Error button",
+                    buttonType = AppButtonType.Error
                 ) { }
-                AppErrorButton(
+                AppButton(
                     enabled = false,
-                    title = "Disabled error button"
+                    title = "Disabled error button",
+                    buttonType = AppButtonType.Error
                 ) { }
             }
         }

@@ -1,13 +1,19 @@
 package app.editors.manager.mvp.presenters.main
 
+import android.net.Uri
 import android.os.Build
+import androidx.core.net.toUri
 import app.documents.core.account.AccountPreferences
+import app.documents.core.login.PortalResult
+import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.Scheme
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.appComponent
 import app.editors.manager.mvp.models.filter.Filter
+import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.MainActivityView
 import com.google.android.gms.tasks.Task
@@ -16,6 +22,9 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
+import lib.toolkit.base.managers.utils.CryptUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import moxy.InjectViewState
 import moxy.presenterScope
@@ -199,6 +208,41 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     fun checkOnBoardingShowed() {
         if (!preferenceTool.onBoarding) {
             viewState.onShowOnBoarding()
+        }
+    }
+
+    fun openDeeplink(uri: Uri) {
+        val data = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(uri.query))
+        val portalUri = data.portal?.toUri() ?: return
+        val portalScheme = Scheme.valueOf("${portalUri.scheme}://")
+
+        App.getApp().refreshLoginComponent(
+            CloudPortal(url = portalUri.host.orEmpty(), scheme = portalScheme)
+        )
+        
+        presenterScope.launch(Dispatchers.Default) {
+            App.getApp().loginComponent.cloudLoginRepository
+                .checkPortal(portalUri.host.orEmpty(), portalScheme)
+                .collect { result ->
+                    withContext(Dispatchers.Main) {
+                        when (result) {
+                            is PortalResult.Error -> {
+                                viewState.onError(context.getString(R.string.errors_unknown_error))
+                            }
+
+                            is PortalResult.Success -> {
+                                App.getApp().refreshLoginComponent(result.cloudPortal)
+                                viewState.signInAndOpenDeeplink(
+                                    portal = data.portal,
+                                    email = data.email.orEmpty(),
+                                    uri = uri
+                                )
+                            }
+
+                            else -> Unit
+                        }
+                    }
+                }
         }
     }
 }

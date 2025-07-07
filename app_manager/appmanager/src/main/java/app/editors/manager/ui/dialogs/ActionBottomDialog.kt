@@ -138,6 +138,7 @@ class ActionBottomDialog : BaseBottomDialog() {
                     listExplorerActionSheet,
                     listExplorerActionPresentation,
                     listExplorerActionStorage,
+                    listExplorerActionDocsFromPhoto,
                     viewLineSeparatorStorage.viewLineSeparator
                 ).forEach { it.isVisible = false }
                 listExplorerActionUploadText.setText(R.string.rooms_upload_pdf_from_docspace)

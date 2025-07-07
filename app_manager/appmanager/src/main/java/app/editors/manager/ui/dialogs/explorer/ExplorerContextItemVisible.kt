@@ -177,15 +177,11 @@ interface ExplorerContextItemVisible {
         }
 
     private val ExplorerContextState.share: Boolean
-        get() = if (provider is PortalProvider.Cloud.DocSpace) {
-            item.isCanShare
-        } else if (item is CloudFile) {
-            !item.isDenySharing && access in arrayOf(
-                Access.ReadWrite,
-                Access.None
-            )
-        } else {
-            isShareVisible(access, section)
+        get() = when {
+            section.isWebdav -> false
+            provider is PortalProvider.Cloud.DocSpace -> item.isCanShare
+            item is CloudFile && access in arrayOf(Access.ReadWrite, Access.None) && !item.isDenySharing -> true
+            else -> isShareVisible(access, section)
         }
 
     private val ExplorerContextState.shareDelete: Boolean

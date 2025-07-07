@@ -28,4 +28,20 @@
         <item quantity="other">ຊົ່ວໂມງ</item>
     </plurals>
     <string name="settings_view">ເບິ່ງ</string>
+
+    <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
+    <string name="help_and_feedback_contact_support">ຕິດຕໍ່ຝ່າຍຊ່ວຍເຫຼືອ</string>
+    <string name="help_and_feedback_help_center">ສູນ​ຊ່ວຍ​ເຫຼືອ</string>
+    <string name="help_and_feedback_suggest_a_feature">ແນະນຳຄຸນສົມບັດ</string>
+    <string name="help_and_feedback_title">ຊ່ວຍ​ເຫຼືອ ແລະ​ຄຳ​ຕິ​ຊົມ</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="months">
+        <item quantity="one">ເດືອນ</item>
+        <item quantity="other">ເດືອນ</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">ປີ</item>
+        <item quantity="other">ປີ</item>
+    </plurals>
 </resources>

@@ -1,8 +1,8 @@
 package app.editors.manager.mvp.models.models
 
-import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.core.net.toUri
 import app.documents.core.network.IntOrStringAsStringSerializer
 import app.documents.core.network.common.contracts.ApiContract
 import kotlinx.serialization.Serializable
@@ -55,15 +55,20 @@ data class OpenDataModel(
         return portal
     }
 
+
     val share: String
-        get() {
-            if (originalUrl == null) return ""
-            return try {
-                Uri.parse(originalUrl).getQueryParameter("share") ?: ""
-            } catch (error: Exception) {
-                ""
-            }
-        }
+        get() = runCatching {
+            checkNotNull(originalUrl)
+                .toUri()
+                .getQueryParameter("share")
+        }.getOrNull().orEmpty()
+
+    val action: String
+        get() = runCatching {
+            checkNotNull(originalUrl)
+                .toUri()
+                .getQueryParameter("action")
+        }.getOrNull().orEmpty()
 }
 
 @Serializable

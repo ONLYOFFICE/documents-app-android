@@ -4,13 +4,19 @@ import android.accounts.AccountAuthenticatorResponse
 import android.accounts.AccountManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import app.editors.manager.R
 import app.editors.manager.ui.activities.base.BaseAppActivity
-import app.editors.manager.ui.fragments.login.*
+import app.editors.manager.ui.fragments.login.EnterpriseCreatePortalFragment
+import app.editors.manager.ui.fragments.login.EnterprisePhoneFragment
+import app.editors.manager.ui.fragments.login.EnterpriseSignInFragment
+import app.editors.manager.ui.fragments.login.EnterpriseSmsFragment
+import app.editors.manager.ui.fragments.login.PasswordRecoveryFragment
+import app.editors.manager.ui.fragments.login.PersonalSignUpFragment
 import lib.toolkit.base.managers.utils.AccountUtils
 
 class SignInActivity : BaseAppActivity() {
@@ -34,12 +40,19 @@ class SignInActivity : BaseAppActivity() {
         const val KEY_PROVIDERS = "KEY_PROVIDERS"
 
         @JvmStatic
-        fun showPortalSignIn(context: Context, portal: String?, login: String?, providers: Array<String>?) {
+        fun showPortalSignIn(
+            context: Context,
+            portal: String?,
+            login: String?,
+            providers: Array<String>?,
+            deeplink: Uri? = null
+        ) {
             val intent = Intent(context, SignInActivity::class.java)
             intent.putExtra(KEY_PORTAL, portal)
             intent.putExtra(KEY_LOGIN, login)
             intent.putExtra(KEY_PROVIDERS, providers)
             intent.putExtra(TAG_ACTION, TAG_PORTAL_SIGN_IN)
+            intent.data = deeplink
             context.startActivity(intent)
         }
 

@@ -300,10 +300,15 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
     }
 
     override suspend fun onFileOpenCollect(result: FileOpenResult) {
-        if (result !is FileOpenResult.Loading) viewState.onDialogClose()
         when (result) {
-            is FileOpenResult.RecentNoAccount -> viewState.onSnackBar(context.getString(R.string.error_recent_enter_account))
-            is FileOpenResult.RecentFileNotFound -> viewState.onSnackBar(context.getString(R.string.error_recent_account))
+            is FileOpenResult.RecentNoAccount -> {
+                viewState.onSnackBar(context.getString(R.string.error_recent_enter_account))
+                viewState.onDialogClose()
+            }
+            is FileOpenResult.RecentFileNotFound -> {
+                viewState.onSnackBar(context.getString(R.string.error_recent_account))
+                viewState.onDialogClose()
+            }
             else -> super.onFileOpenCollect(result)
         }
     }

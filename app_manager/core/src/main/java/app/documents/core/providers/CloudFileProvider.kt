@@ -8,6 +8,7 @@ import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.NetworkClient
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.interceptors.HeaderType
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -42,8 +43,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -62,7 +63,8 @@ import app.documents.core.network.common.Result as NetworkResult
 
 data class OpenDocumentResult(
     val info: String? = null,
-    val isPdf: Boolean = false
+    val isPdf: Boolean = false,
+    val isForm: Boolean = false
 )
 
 class CloudFileProvider @Inject constructor(
@@ -445,7 +447,13 @@ class CloudFileProvider @Inject constructor(
         extension: String,
     ): Flow<NetworkResult<FileOpenResult>> {
         return flow {
-            val api = NetworkClient.getRetrofit<ManagerService>(portal, token, context)
+            emit(FileOpenResult.Loading())
+            val api = NetworkClient.getRetrofit<ManagerService>(
+                url = portal,
+                token = accountRepository.getOnlineToken() ?: token,
+                context = context,
+                headerType = HeaderType.AUTHORIZATION
+            )
             val fileJson = JSONObject(api.suspendOpenFile(id).body()?.string().toString())
                 .getJSONObject(KEY_RESPONSE)
 
@@ -462,11 +470,30 @@ class CloudFileProvider @Inject constructor(
                     .replace(STATIC_DOC_URL, "")
             }
 
-            val result = withContext(Dispatchers.IO) {
-                fileJson
-                    .put("url", docService)
-                    .put("fileId", id)
-                    .put("canShareable", false)
+            val result = fileJson
+                .put("url", docService)
+                .put("fileId", id)
+                .put("canShareable", false)
+
+            // opening not form pdf locally
+            if (fileJson.getString("documentType") == "pdf" && !fileJson
+                    .getJSONObject("document")
+                    .getBoolean("isForm")
+            ) {
+                val cloudFile = CloudFile().apply { this.id = id; this.title = title }
+                emit(
+                    FileOpenResult.OpenLocally(
+                        file = suspendGetCachedFile(
+                            context = context,
+                            cloudFile = cloudFile,
+                            token = accountRepository.getOnlineToken() ?: token
+                        ),
+                        fileId = cloudFile.id,
+                        editType = EditType.View(),
+                        access = Access.None
+                    )
+                )
+                return@flow
             }
 
             emit(
@@ -477,7 +504,19 @@ class CloudFileProvider @Inject constructor(
                         this.fileExst = extension
                     },
                     info = result.toString(),
-                    editType = EditType.Edit()
+                    editType = if (fileJson.getJSONObject("editorConfig")
+                            .getString("mode") == "view"
+                    ) {
+                        EditType.View()
+                    } else if (fileJson.getString("documentType") == "pdf") {
+                        if (fileJson.getJSONObject("document").getBoolean("isForm")) {
+                            EditType.Fill()
+                        } else {
+                            EditType.View()
+                        }
+                    } else {
+                        EditType.Edit()
+                    }
                 )
             )
         }
@@ -485,12 +524,29 @@ class CloudFileProvider @Inject constructor(
             .asResult()
     }
 
+    @OptIn(InternalCoroutinesApi::class)
     override fun openFile(
         cloudFile: CloudFile,
         editType: EditType,
         canBeShared: Boolean
     ): Flow<NetworkResult<FileOpenResult>> {
-        return flowOf()
+        return flow {
+            emit(NetworkResult.Success(FileOpenResult.Loading()))
+            val cloudFile = suspendCancellableCoroutine<CloudFile> { cont ->
+                fileInfo(cloudFile)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnNext { cloudFile -> cont.resume(cloudFile) }
+                    .doOnError { error -> cont.tryResumeWithException(error) }
+                    .subscribe()
+            }
+            openFile(
+                cloudFile = cloudFile,
+                editType = if (cloudFile.isForm) EditType.Fill() else editType,
+                canBeShared = canBeShared,
+                access = cloudFile.access
+            ).collect { emit(it) }
+        }.catch { NetworkResult.Error(it) }
     }
 
     fun openFile(
@@ -505,14 +561,16 @@ class CloudFileProvider @Inject constructor(
             when {
                 StringUtils.isDocument(cloudFile.fileExst) -> {
                     if (firebaseTool.isCoauthoring()) {
-                        val document = openDocument(
+                        val document = checkPdfForm(
                             cloudFile = cloudFile,
                             token = token,
                             canShareable = canBeShared,
                             editType = editType
                         )
 
-                        if (document.isPdf || document.info == null) {
+                        if (document.isPdf || document.info == null
+                            || document.isForm && editType is EditType.View
+                        ) {
                             emit(
                                 FileOpenResult.OpenLocally(
                                     file = suspendGetCachedFile(context, cloudFile, token),
@@ -630,7 +688,7 @@ class CloudFileProvider @Inject constructor(
     }
 
     @SuppressLint("CheckResult")
-    private suspend fun openDocument(
+    private suspend fun checkPdfForm(
         cloudFile: CloudFile,
         token: String?,
         canShareable: Boolean,
@@ -649,7 +707,7 @@ class CloudFileProvider @Inject constructor(
                     canShareable = canShareable,
                     editType = editType
                 )
-                OpenDocumentResult(info = info)
+                OpenDocumentResult(info = info, isForm = true)
             } else {
                 OpenDocumentResult(isPdf = false)
             }

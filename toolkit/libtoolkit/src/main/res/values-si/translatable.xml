@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
+    <string name="about_email_subject">Android ප්‍රතිපෝෂණ සඳහා ONLYOFFICE ලේඛන</string>
+    <string name="about_feedback">ප්‍රතිපෝෂණ සහ සහාය</string>
+    <string name="chooser_email_client">ඊමේල් සේවාදායකයා තෝරන්න…</string>
+    <string name="common_accept">පිළිගන්න</string>
+    <string name="common_cancel">අවලංගු කරන්න</string>
+    <string name="common_done">නිම කළා</string>
+    <string name="common_next">ඊළඟ</string>
+    <string name="common_ok">හරි</string>
+    <string name="common_previous">පෙර</string>
+    <string name="dialogs_edit_forbidden_name">වලංගු නොවන නම</string>
+    <string name="dialogs_edit_forbidden_symbols">මෙම සංකේත භාවිතා නොකරන්න\u0020</string>
+    <string name="export_send_copy">පිටපතක් යවන්න</string>
+    <string name="help_and_feedback_contact_support">සහාය අමතන්න</string>
+    <string name="help_and_feedback_help_center">උදව් මධ්‍යස්ථානය</string>
+    <string name="help_and_feedback_suggest_a_feature">විශේෂාංගයක් යෝජනා කරන්න</string>
+    <string name="help_and_feedback_title">උදව් සහ ප්‍රතිපෝෂණ</string>
+    <string name="settings_fonts_title">අකුරු</string>
+    <string name="settings_view">බලන්න</string>
+    <string name="sizes_bytes">බයිට්</string>
+    <string name="sizes_gigabytes">Gb</string>
+    <string name="sizes_kilobytes">Kb</string>
+    <string name="sizes_megabytes">Mb</string>
+    <string name="sizes_terabytes">Tb</string>
+    <string name="text_hint_required">අවශ්‍යයි</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="days">
+        <item quantity="one">දවස</item>
+        <item quantity="other">දින</item>
+    </plurals>
+    <plurals name="hours">
+        <item quantity="one">පැය</item>
+        <item quantity="other">පැය</item>
+    </plurals>
+    <plurals name="months">
+        <item quantity="one">මාසය</item>
+        <item quantity="other">මාස</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">අවුරුද්ද</item>
+        <item quantity="other">අවුරුදු</item>
+    </plurals>
+</resources>

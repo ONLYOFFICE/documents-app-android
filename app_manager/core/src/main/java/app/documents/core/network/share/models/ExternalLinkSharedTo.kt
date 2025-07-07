@@ -15,7 +15,7 @@ data class ExternalLinkSharedTo(
     val isExpired: Boolean,
     val primary: Boolean,
     val requestToken: String = "",
-    val expirationDate: String?
+    val expirationDate: String? = null
 ) {
 
     private fun dateToLong(): Long {

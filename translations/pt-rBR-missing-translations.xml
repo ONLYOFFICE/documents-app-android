@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Missing translations for language: pt-rBR -->
+
+    <!-- Module: appmanager - 4 strings -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Deseja realmente excluir o modelo de sala «%s»? O modelo não pode ser restaurado.</item>
+                <item quantity="other">Deseja realmente excluir os modelos de sala selecionados? Eles não podem ser restaurados.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Excluir modelo</item>
+                <item quantity="other">Excluir modelos</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d usuário</item>
+                <item quantity="other">%d usuários</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d grupo</item>
+                <item quantity="other">%d grupos</item>
+    </plurals>
+</resources>

@@ -24,7 +24,6 @@ import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.UserIdInvitation
 import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.CloudFileProvider.RoomCallback
-import app.documents.core.providers.FileOpenResult
 import app.documents.core.providers.RoomProvider
 import app.documents.core.utils.FirebaseTool
 import app.editors.manager.R
@@ -506,7 +505,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 return@launch
             }
 
-            openFile(if (file.security?.fillForms == true) EditType.Fill() else EditType.View())
+            openFile(EditType.Fill())
         }
     }
 
@@ -523,23 +522,18 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         editType: EditType,
         canBeShared: Boolean
     ) {
+        val newEditType = if (currentFolder?.type == ApiContract.SectionType.FORM_FILLING_FOLDER_DONE && cloudFile.isForm) {
+            EditType.View()
+        } else {
+            editType
+        }
+
         fileProvider.openFile(
             cloudFile = cloudFile,
-            editType = editType,
+            editType = newEditType,
             canBeShared = canBeShared,
             access = cloudFile.access
         ).collect(::onFileOpenCollect)
-    }
-
-    override suspend fun onFileOpenCollect(result: FileOpenResult) {
-        if (result !is FileOpenResult.Loading) viewState.onDialogClose()
-        when (result) {
-            is FileOpenResult.OpenDocumentServer -> {
-                viewState.onOpenDocumentServer(result.cloudFile, result.info, result.editType)
-                FirebaseUtils.addAnalyticsOpenEntity(account.portalUrl, result.cloudFile.fileExst)
-            }
-            else -> super.onFileOpenCollect(result)
-        }
     }
 
     fun saveExternalLinkToClipboard() {
@@ -724,7 +718,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             } else {
                 fileProvider.openFile(
                     cloudFile = CloudFile().apply { this.id = fileId.orEmpty() },
-                    editType = EditType.Edit(),
+                    editType = EditType.from(model.action),
                     canBeShared  = false
                 ).collect(::onFileOpenCollect)
             }
@@ -1118,6 +1112,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun interruptConversion(): Boolean {
+        if (conversionJob?.isCompleted == true) return false
         val cancelled = conversionJob?.isCancelled == true // conversionJob == null || isCancelled
         conversionJob?.cancel()
         return cancelled

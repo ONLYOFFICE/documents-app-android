@@ -207,9 +207,9 @@ class PlaceholderViews(val view: View?) {
 
                     buttonTitle?.let { title ->
                         AppButton(
-                            title = title,
+                            titleResId = title,
                             onClick = onClick,
-                            modifier = Modifier.testTag(type.name)
+                            modifier = Modifier.testTag(type.name),
                         )
                     }
                 }

@@ -345,7 +345,6 @@ internal class CloudLoginRepositoryImpl(
     private suspend fun getDeviceToken(): String {
         return FirebaseMessaging.getInstance()
             .token
-            .addOnFailureListener(::error)
             .await()
     }
 }
