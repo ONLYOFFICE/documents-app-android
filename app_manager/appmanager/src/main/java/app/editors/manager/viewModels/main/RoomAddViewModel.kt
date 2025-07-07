@@ -106,7 +106,7 @@ class RoomAddViewModel(
         }
 
         updateStorageState {
-            it.copy(
+            it?.copy(
                 id = folder.id,
                 providerKey = folder.providerKey,
                 location = null,
@@ -123,13 +123,13 @@ class RoomAddViewModel(
 
     fun setCreateNewFolder(value: Boolean) {
         updateStorageState {
-            it.copy(createAsNewFolder = value)
+            it?.copy(createAsNewFolder = value)
         }
     }
 
     fun setStorageLocation(pathParts: List<PathPart>) {
         updateStorageState {
-            it.copy(
+            it?.copy(
                 id = pathParts.last().id,
                 location = if (pathParts.size > 1) {
                     pathParts.toMutableList()

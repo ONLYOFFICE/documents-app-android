@@ -42,6 +42,7 @@ import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.PreferenceTool
+import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.DownloadWork
@@ -283,10 +284,17 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
     protected open suspend fun onFileOpenCollect(result: FileOpenResult) {
-        if (result !is FileOpenResult.Loading) viewState.onDialogClose()
+        if (result !is FileOpenResult.Loading) viewState.onDialogClose(true)
         when (result) {
             is FileOpenResult.DownloadNotSupportedFile -> viewState.onFileDownloadPermission()
-            is FileOpenResult.Loading -> showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
+            is FileOpenResult.Loading -> showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS, true)
+            is FileOpenResult.OpenDocumentServer -> {
+                viewState.onOpenDocumentServer(result.cloudFile, result.info, result.editType)
+                FirebaseUtils.addAnalyticsOpenEntity(
+                    context.accountOnline?.portalUrl.orEmpty(),
+                    result.cloudFile.fileExst
+                )
+            }
             is FileOpenResult.OpenLocally -> {
                 openFileFromPortal(result.file, result.fileId, result.editType, result.access)
             }
@@ -1324,8 +1332,8 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     /**
      * Dialogs templates
      * */
-    protected fun showDialogWaiting(tag: String?) {
-        viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title), tag)
+    protected fun showDialogWaiting(tag: String?, force: Boolean = false) {
+        viewState.onDialogWaiting(context.getString(R.string.dialogs_wait_title), tag, force)
     }
 
     protected fun showDialogProgress(isHideButtons: Boolean, tag: String?) {
@@ -1772,16 +1780,12 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                 fileProvider.createFile(
                     folderId = folderId,
                     title = title
-                )
-                    .doOnNext { file ->
-                        viewState.onDialogClose()
-                        openFile(file, EditType.Edit(false), true)
-                    }
-                    .doOnError {
-                        viewState.onDialogClose()
-                        viewState.onError(context.getString(R.string.errors_create_local_file))
-                    }
-                    .subscribe()
+                ).subscribe({ file ->
+                    viewState.onDialogClose()
+                    openFile(file, EditType.Edit(false), true)
+                }, {
+                    fetchError(it)
+                })
             )
         }
     }

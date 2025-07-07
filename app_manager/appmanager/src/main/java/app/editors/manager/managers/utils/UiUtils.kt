@@ -302,7 +302,7 @@ fun Access.toUi(): AccessUI {
 
         Access.FormFiller -> arrayOf(
             R.drawable.ic_access_fill_form,
-            R.string.share_popup_access_fill_forms
+            R.string.share_access_room_form_filler
         )
 
         Access.Read -> arrayOf(

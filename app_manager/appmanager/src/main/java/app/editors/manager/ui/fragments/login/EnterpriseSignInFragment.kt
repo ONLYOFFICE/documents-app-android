@@ -213,7 +213,6 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         return false
     }
 
-
     private fun onEmailTouchListener(): Boolean {
         viewBinding?.loginEnterprisePortalEmailEdit?.isFocusableInTouchMode = true
         viewBinding?.loginEnterprisePortalPasswordEdit?.isFocusableInTouchMode = true
@@ -222,7 +221,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
 
     override fun onSuccessLogin() {
         hideDialog()
-        MainActivity.show(requireContext())
+        MainActivity.show(requireContext(), requireActivity().intent.data)
         requireActivity().finish()
     }
 

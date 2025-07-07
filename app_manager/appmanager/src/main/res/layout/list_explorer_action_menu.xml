@@ -89,7 +89,7 @@
                 style="@style/ContextListItemLayout">
 
                 <ImageView
-                    style="@style/Widget.Common.ImageView.ActionBottomMenu"
+                    style="@style/Widget.Common.ImageView.Context"
                     app:srcCompat="@drawable/ic_list_action_photo"
                     tools:ignore="ContentDescription" />
 

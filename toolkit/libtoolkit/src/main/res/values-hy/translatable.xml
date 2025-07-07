@@ -45,4 +45,10 @@
     </plurals>
     <string name="settings_fonts_title">Տառատեսակներ</string>
     <string name="settings_view">Դիտել</string>
+
+    <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
+    <string name="help_and_feedback_contact_support">Կապվել աջակցության ծառայության հետ</string>
+    <string name="help_and_feedback_help_center">Օգնության կենտրոն</string>
+    <string name="help_and_feedback_suggest_a_feature">Առաջարկել ֆունկցիա</string>
+    <string name="help_and_feedback_title">Օգնություն &amp; Հետադարձ կապ</string>
 </resources>

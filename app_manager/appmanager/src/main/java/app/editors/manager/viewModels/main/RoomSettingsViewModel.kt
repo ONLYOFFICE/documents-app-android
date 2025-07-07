@@ -220,8 +220,14 @@ abstract class RoomSettingsViewModel(
         _state.update { it.copy(lifetime = block(it.lifetime)) }
     }
 
-    fun updateStorageState(block: (RoomSettingsStorage) -> RoomSettingsStorage) {
-        _state.update { it.copy(storageState = it.storageState?.let(block)) }
+    fun updateStorageState(block: (RoomSettingsStorage?) -> RoomSettingsStorage?) {
+        _state.update {
+            it.copy(
+                storageState = block.invoke(
+                    it.storageState ?: RoomSettingsStorage("", "", null, null)
+                )
+            )
+        }
     }
 
     fun updateStorageQuota(block: (StorageQuota) -> StorageQuota) {

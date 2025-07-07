@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Missing translations for language: pl -->
+
+    <!-- Module: appmanager - 4 strings -->
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">Czy na pewno chcesz usunąć szablon pokoju «%s»? Szablon nie może zostać przywrócony.</item>
+                <item quantity="other">Czy na pewno chcesz usunąć wybrane szablony pokoi? Nie można ich przywrócić.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">Usuń szablon</item>
+                <item quantity="other">Usuń szablony</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d użytkownik</item>
+                <item quantity="other">%d użytkowników</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d grupa</item>
+                <item quantity="other">%d grup</item>
+    </plurals>
+</resources>

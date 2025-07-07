@@ -47,9 +47,6 @@ import app.editors.manager.ui.dialogs.fragments.OperationDialogFragment
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_ID
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.KEY_RESULT_ROOM_TYPE
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_PROTECTED_ROOM_SHOW_INFO
-import app.editors.manager.ui.fragments.template.createroom.RoomFromTemplateFragment
-import app.editors.manager.ui.fragments.template.settings.TemplateAccessSettingsFragment
-import app.editors.manager.ui.fragments.template.settings.TemplateSettingsFragment
 import app.editors.manager.ui.fragments.main.versionhistory.RefreshListener
 import app.editors.manager.ui.fragments.main.versionhistory.VersionHistoryFragment
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment
@@ -58,7 +55,10 @@ import app.editors.manager.ui.fragments.share.SetRoomOwnerFragment
 import app.editors.manager.ui.fragments.share.ShareFragment
 import app.editors.manager.ui.fragments.share.link.RoomInfoFragment
 import app.editors.manager.ui.fragments.share.link.ShareSettingsFragment
+import app.editors.manager.ui.fragments.template.createroom.RoomFromTemplateFragment
 import app.editors.manager.ui.fragments.template.info.TemplateInfoFragment
+import app.editors.manager.ui.fragments.template.settings.TemplateAccessSettingsFragment
+import app.editors.manager.ui.fragments.template.settings.TemplateSettingsFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.CopyItems
 import app.editors.manager.viewModels.main.TemplateSettingsMode
@@ -68,9 +68,6 @@ import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.DialogUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
-import lib.toolkit.base.managers.utils.EditorsType
-import lib.toolkit.base.managers.utils.StringUtils
-import lib.toolkit.base.managers.utils.StringUtils.getExtension
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.contains
@@ -525,10 +522,15 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     private fun showFilter() {
+        val filterSection = when {
+            presenter.isRecentViaLinkSection() -> ApiContract.SectionType.CLOUD_RECENT
+            presenter.isTemplatesFolder -> ApiContract.SectionType.ROOM_TEMPLATES_FOLDER
+            else -> section
+        }
         if (isTablet) {
             FilterDialogFragment.newInstance(
                 presenter.folderId,
-                if (!presenter.isRecentViaLinkSection()) section else ApiContract.SectionType.CLOUD_RECENT,
+                filterSection,
                 presenter.isRoot
             ).show(requireActivity().supportFragmentManager, FilterDialogFragment.TAG)
 
@@ -540,11 +542,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     }
                 }
         } else {
-            val filterSection = when {
-                presenter.isRecentViaLinkSection() -> ApiContract.SectionType.CLOUD_RECENT
-                presenter.isTemplatesFolder -> ApiContract.SectionType.CLOUD_TEMPLATES
-                else -> section
-            }
             filterActivity.launch(FilterActivity.getIntent(
                 this,
                 presenter.folderId,
@@ -709,22 +706,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             }
         }
         AddRoomBottomDialog().show(parentFragmentManager, AddRoomBottomDialog.TAG)
-    }
-
-    override fun onOpenDocumentServer(file: CloudFile, info: String, editType: EditType) {
-        showEditors(
-            uri = null,
-            type = when (getExtension(file.fileExst)) {
-                StringUtils.Extension.DOC, StringUtils.Extension.FORM -> EditorsType.DOCS
-                StringUtils.Extension.SHEET -> EditorsType.CELLS
-                StringUtils.Extension.PRESENTATION -> EditorsType.PRESENTATION
-                StringUtils.Extension.PDF -> EditorsType.PDF
-                else -> return
-            },
-            info = info,
-            editType = editType,
-            access = file.access
-        )
     }
 
     override fun showFillFormIncompatibleVersionsDialog() {

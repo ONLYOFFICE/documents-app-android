@@ -111,7 +111,7 @@ interface DocsBaseView : BaseViewExt {
     fun onItemSelected(position: Int, countSelected: String)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onActionDialog(isThirdParty: Boolean, isShowDocs: Boolean, roomType: Int?)
+    fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean, roomType: Int?)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onDownloadActivity(uri: Uri?)
@@ -138,10 +138,10 @@ interface DocsBaseView : BaseViewExt {
      * On views
      */
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onDialogClose()
+    fun onDialogClose(force: Boolean = false)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onDialogWaiting(@Nullable title: String?, @Nullable tag: String?)
+    fun onDialogWaiting(@Nullable title: String?, @Nullable tag: String?, force: Boolean = false)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onDialogDownloadWaiting()
@@ -150,7 +150,7 @@ interface DocsBaseView : BaseViewExt {
     fun onDialogQuestion(@Nullable title: String?, @Nullable question: String?, @Nullable tag: String?)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onDialogWarning(title: String, question: String, @Nullable tag: String?)
+    fun onDialogWarning(title: String, message: String, @Nullable tag: String?)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onDialogDelete(count: Int, toTrash: Boolean, tag: String)
@@ -170,6 +170,9 @@ interface DocsBaseView : BaseViewExt {
         @NonNull button: String,
         @NonNull action: View.OnClickListener
     )
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onOpenDocumentServer(file: CloudFile, info: String, type: EditType)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onOpenLocalFile(

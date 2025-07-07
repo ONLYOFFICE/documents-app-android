@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Missing translations for language: ar-rSA -->
+
+    <!-- Module: appmanager - 7 strings -->
+    <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
+    <plurals name="dialogs_question_message_template">
+        <item quantity="one">هل تريدون حقًا حذف قالب الغرفة «%s»؟ لا يمكن استعادة القالب.</item>
+                <item quantity="other">هل تريدون حقًا حذف قوالب الغرف المحددة؟ لا يمكن استعادتها.</item>
+    </plurals>
+    <plurals name="dialogs_question_delete_template_title">
+        <item quantity="one">حذف القالب</item>
+                <item quantity="other">حذف القوالب</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_seconds">
+        <item quantity="one">محاولات كثيرة جدًا.\nحاول مرة أخرى في %d ثانية</item>
+                <item quantity="other">محاولات كثيرة جدًا.\nحاول مرة أخرى خلال %d ثانية</item>
+    </plurals>
+    <plurals name="app_settings_passcode_many_attempt_minutes">
+        <item quantity="one">محاولات كثيرة جدًا.\nحاول مرة أخرى بعد %d دقيقة</item>
+                <item quantity="other">محاولات كثيرة جدًا.\nحاول مرة أخرى بعد %d دقيقة</item>
+    </plurals>
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d مستخدم</item>
+                <item quantity="other">%d مستخدمين</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d مجموعة</item>
+                <item quantity="other">%d مجموعات</item>
+    </plurals>
+
+    <!-- Module: libtoolkit - 2 strings -->
+    <plurals name="months">
+        <item quantity="one">شهر</item>
+                <item quantity="other">شهر</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">سنة</item>
+                <item quantity="other">سنة</item>
+    </plurals>
+</resources>

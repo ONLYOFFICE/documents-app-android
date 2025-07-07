@@ -231,7 +231,14 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 if (commonDialog?.isAdded == true || forceHide) {
-                    commonDialog?.dismiss()
+                    try {
+                        commonDialog?.dismissAllowingStateLoss()
+                    } catch (e: IllegalStateException) {
+                        // Handle case where fragment isn't attached
+                        if (forceHide) {
+                            commonDialog?.dismiss()
+                        }
+                    }
                 }
             }
         }

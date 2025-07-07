@@ -36,4 +36,20 @@
     </plurals>
     <string name="settings_fonts_title">خطوط</string>
     <string name="settings_view">عرض</string>
+
+    <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
+    <string name="help_and_feedback_contact_support">اتصلوا بالدعم</string>
+    <string name="help_and_feedback_help_center">مركز المساعدة</string>
+    <string name="help_and_feedback_suggest_a_feature">اقترحوا ميزة جديدة</string>
+    <string name="help_and_feedback_title">المساعدة والملاحظات</string>
+
+    <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
+    <plurals name="months">
+        <item quantity="one">شهر</item>
+        <item quantity="other">شهر</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">سنة</item>
+        <item quantity="other">سنة</item>
+    </plurals>
 </resources>
