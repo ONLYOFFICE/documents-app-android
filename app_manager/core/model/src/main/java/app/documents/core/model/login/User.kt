@@ -25,6 +25,7 @@ data class User(
     val contacts: List<Contact> = emptyList(),
     val groups: List<Group> = emptyList(),
     val avatarMedium: String = "",
+    val avatarMax: String = "",
     val avatar: String = "",
     val isOnline: Boolean = false,
     val isAdmin: Boolean = false,
@@ -52,4 +53,9 @@ data class User(
             isGuest -> UserType.Guest
             else -> UserType.User
         }
+
+    val avatarUrl: String
+        get() = avatarMax.takeIf { it.isNotBlank() }
+            ?: avatar.takeIf { it.isNotBlank() }
+            ?: avatarMedium
 }
