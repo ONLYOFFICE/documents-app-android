@@ -142,7 +142,7 @@ internal class CloudLoginRepositoryImpl(
 
                     accountRepository.updateAccount(accountId) { account ->
                         account.copy(
-                            avatarUrl = userInfo.avatarMedium,
+                            avatarUrl = userInfo.avatarUrl,
                             name = userInfo.displayNameFromHtml,
                             isAdmin = userInfo.isAdmin,
                             isVisitor = userInfo.isVisitor,
@@ -255,7 +255,7 @@ internal class CloudLoginRepositoryImpl(
             portalUrl = requireNotNull(cloudPortal).url,
             login = request.userName.ifEmpty { userInfo.email.orEmpty() },
             name = userInfo.displayNameFromHtml,
-            avatarUrl = userInfo.avatarMedium,
+            avatarUrl = userInfo.avatarUrl,
             socialProvider = request.provider,
             isAdmin = userInfo.isAdmin,
             isVisitor = userInfo.isVisitor,
