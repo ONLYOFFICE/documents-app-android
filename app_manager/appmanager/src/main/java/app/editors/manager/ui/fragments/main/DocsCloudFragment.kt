@@ -802,6 +802,28 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
+    override fun showEditDialogCreate(
+        title: String,
+        value: String?,
+        hint: String?,
+        endHint: String?,
+        tag: String,
+        acceptButton: String?,
+        cancelButton: String?,
+        forbiddenSymbols: String
+    ) {
+        super.showEditDialogCreate(
+            title = title,
+            value = value,
+            hint = hint,
+            endHint = endHint,
+            tag = tag,
+            acceptButton = acceptButton,
+            cancelButton = cancelButton,
+            forbiddenSymbols = StringUtils.DIALOG_CLOUD_FORBIDDEN_SYMBOLS
+        )
+    }
+
     val isRoot: Boolean
         get() = presenter.isRoot
 

@@ -30,6 +30,7 @@ import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.PermissionUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.holders.CustomHolder
@@ -472,12 +473,14 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         isPassword: Boolean = false,
         error: String?,
         tag: String?,
-        suffix: String? = null
+        suffix: String? = null,
+        forbiddenSymbols: String = StringUtils.DIALOG_FORBIDDEN_SYMBOLS
     ) {
         getEditDialog(title, bottomTitle, value, editHint, acceptTitle, cancelTitle, tag)?.run {
             setIsPassword(isPassword)
             setError(error)
             setSuffix(suffix)
+            setForbiddenSymbols(forbiddenSymbols)
             show(supportFragmentManager)
         }
     }
