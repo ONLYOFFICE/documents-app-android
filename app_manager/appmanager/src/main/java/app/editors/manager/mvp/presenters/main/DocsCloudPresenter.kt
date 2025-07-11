@@ -293,6 +293,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun updateViewsState() {
+        val lifetime = currentFolder?.lifetime
+        toolbarState = when {
+            currentFolder?.isTemplate == true -> ToolbarState.RoomTemplate
+            lifetime != null -> ToolbarState.RoomLifetime(lifetime)
+            else -> ToolbarState.None
+        }
+
         if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
             if (pickerMode is PickerMode.Files) {
@@ -344,12 +351,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             }
             viewState.onStateAdapterRoot(true)
             viewState.onStateUpdateRoot(true)
-        }
-        val lifetime = currentFolder?.lifetime
-        val toolbarState = when {
-            currentFolder?.isTemplate == true -> ToolbarState.RoomTemplate
-            lifetime != null -> ToolbarState.RoomLifetime(lifetime)
-            else -> ToolbarState.None
         }
         viewState.setToolbarState(toolbarState)
         viewState.onRoomFileIndexing(isIndexing)

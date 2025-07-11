@@ -58,6 +58,7 @@ import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.models.ui.StorageQuota
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
+import app.editors.manager.ui.fragments.main.ToolbarState
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.gson.Gson
 import io.reactivex.Observable
@@ -1375,6 +1376,8 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     val isTemplatesFolder: Boolean
         get() = ApiContract.SectionType.isTemplates(modelExplorerStack.rootFolderType)
                 && modelExplorerStack.last()?.pathParts.orEmpty().size < 2
+
+    var toolbarState: ToolbarState = ToolbarState.None
 
     val currentSelectedFolderTitle: String
         get() = modelExplorerStack.selectedFolders.firstOrNull()?.title ?: itemClickedTitle

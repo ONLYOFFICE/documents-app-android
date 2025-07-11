@@ -633,7 +633,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     )
                 }
 
-                ToolbarState.None -> activity.setToolbarInfo(null)
+                ToolbarState.None -> Unit
             }
         }
     }
