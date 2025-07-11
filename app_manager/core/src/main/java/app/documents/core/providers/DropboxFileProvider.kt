@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.DropboxUtils
@@ -58,7 +58,7 @@ class DropboxFileProvider(
         cloudFile: CloudFile,
         editType: EditType,
         canBeShared: Boolean
-    ): Flow<Result<FileOpenResult>> {
+    ): Flow<NetworkResult<FileOpenResult>> {
         return flow {
             emit(FileOpenResult.Loading())
             emit(

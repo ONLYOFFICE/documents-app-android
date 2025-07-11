@@ -8,7 +8,7 @@ import androidx.work.WorkManager
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.isDocSpace
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
 import app.documents.core.network.manager.ManagerService
@@ -911,8 +911,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             roomProvider.lockFile(id = file.id, lock = !file.isLocked)
                 .collect { result ->
                     when (result) {
-                        is Result.Success -> refresh()
-                        is Result.Error -> fetchError(result.exception)
+                        is NetworkResult.Success -> refresh()
+                        is NetworkResult.Error -> fetchError(result.exception)
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }
@@ -926,7 +927,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             roomProvider.enableCustomFilter(id = file.id, enable = enable)
                 .collect { result ->
                     when (result) {
-                        is Result.Success -> {
+                        is NetworkResult.Success -> {
                             file.customFilterEnabled = enable
                             viewState.onUpdateItemState()
                             viewState.onSnackBar(
@@ -937,7 +938,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                                 }
                             )
                         }
-                        is Result.Error -> fetchError(result.exception)
+                        is NetworkResult.Error -> fetchError(result.exception)
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }
@@ -1280,11 +1282,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             val roomId = roomClicked?.id.orEmpty()
             roomProvider?.muteRoomNotifications(roomId, muted)?.collect { result ->
                 when (result) {
-                    is Result.Error -> withContext(Dispatchers.Main) {
+                    is NetworkResult.Error -> withContext(Dispatchers.Main) {
                         viewState.onError(context.getString(R.string.errors_unknown_error))
                     }
-                    is Result.Success -> withContext(Dispatchers.Main) {
-                        roomClicked?.mute = roomId in result.result
+                    is NetworkResult.Success -> withContext(Dispatchers.Main) {
+                        roomClicked?.mute = roomId in result.data
                         viewState.onSnackBar(
                             context.getString(
                                 if (muted) {
@@ -1295,6 +1297,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             )
                         )
                     }
+                    is NetworkResult.Loading -> Unit
                 }
             }
         }
@@ -1309,9 +1312,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         presenterScope.launch {
             roomProvider?.exportIndex(roomClicked?.id.orEmpty())?.collect { result ->
                 when (result) {
-                    is Result.Error -> fetchError(result.exception)
-                    is Result.Success -> {
-                        val operation = result.result
+                    is NetworkResult.Error -> fetchError(result.exception)
+                    is NetworkResult.Success -> {
+                        val operation = result.data
                         val progress = operation.percentage
                         viewState.onDialogProgress(100, progress)
                         if (progress == 100 || operation.isCompleted) {
@@ -1319,6 +1322,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             viewState.onRoomExportIndex(operation)
                         }
                     }
+                    is NetworkResult.Loading -> Unit
                 }
             }
         }
@@ -1330,9 +1334,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             val requestToken = roomClicked?.requestToken.orEmpty()
             roomProvider?.authRoomViaLink(requestToken, password)?.collect { result ->
                 when (result) {
-                    is Result.Error -> fetchError(result.exception)
-                    is Result.Success -> {
-                        val roomId = result.result
+                    is NetworkResult.Error -> fetchError(result.exception)
+                    is NetworkResult.Success -> {
+                        val roomId = result.data
                         if (roomId == null) {
                             viewState.onRoomViaLinkPasswordRequired(true, tag)
                         } else {
@@ -1340,13 +1344,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             refresh {
                                 viewState.onDialogClose()
                                 when (tag) {
-                                    TAG_PROTECTED_ROOM_OPEN_FOLDER -> openFolder(result.result, 0)
+                                    TAG_PROTECTED_ROOM_OPEN_FOLDER -> openFolder(result.data, 0)
                                     TAG_PROTECTED_ROOM_DOWNLOAD -> createDownloadFile()
                                     TAG_PROTECTED_ROOM_SHOW_INFO -> viewState.showRoomInfoFragment()
                                 }
                             }
                         }
                     }
+                    is NetworkResult.Loading -> Unit
                 }
             }
         }
@@ -1360,8 +1365,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 .collect { result ->
                     viewState.onDialogClose()
                     when (result) {
-                        is Result.Error -> fetchError(result.exception)
-                        is Result.Success -> refresh()
+                        is NetworkResult.Error -> fetchError(result.exception)
+                        is NetworkResult.Success -> refresh()
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }

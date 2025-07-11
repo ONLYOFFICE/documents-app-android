@@ -19,7 +19,7 @@ import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.Recent
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -276,10 +276,11 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         disposable.dispose()
     }
 
-    protected suspend fun onFileOpenCollect(result: Result<FileOpenResult>) {
+    protected suspend fun onFileOpenCollect(result: NetworkResult<FileOpenResult>) {
         when (result) {
-            is Result.Error -> fetchError(result.exception)
-            is Result.Success<FileOpenResult> -> onFileOpenCollect(result.result)
+            is NetworkResult.Error -> fetchError(result.exception)
+            is NetworkResult.Success<FileOpenResult> -> onFileOpenCollect(result.data)
+            is NetworkResult.Loading -> Unit
         }
     }
 
