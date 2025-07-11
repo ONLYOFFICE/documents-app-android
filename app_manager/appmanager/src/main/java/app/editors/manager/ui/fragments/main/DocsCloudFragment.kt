@@ -68,6 +68,7 @@ import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.DialogUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.contains
