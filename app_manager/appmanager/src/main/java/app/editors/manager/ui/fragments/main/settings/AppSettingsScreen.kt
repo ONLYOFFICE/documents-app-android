@@ -157,7 +157,11 @@ fun AppSettingsScreenHost(
                             context = context,
                             url = context.getString(url)
                         )
-                    }
+                    },
+                    onDeveloperModeTrigger = {
+                        viewModel.toggleDeveloperMode()
+                    },
+                    viewModel = viewModel
                 )
             }
             composable(AppSettingsScreen.HelpAndFeedback.route) {
