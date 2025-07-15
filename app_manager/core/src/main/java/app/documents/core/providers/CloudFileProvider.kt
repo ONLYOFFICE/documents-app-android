@@ -20,6 +20,7 @@ import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestBatchBase
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestCreateThumbnails
 import app.documents.core.network.manager.models.request.RequestDeleteRecent
 import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
@@ -108,6 +109,54 @@ class CloudFileProvider @Inject constructor(
         }
     }
 
+    fun getThumbnails(
+        explorer: Explorer?,
+        id: String,
+        filter: Map<String, String>,
+        initDelay: Boolean = true,
+        delayMs: Long = 2000,
+        maxAttempts: Int = 5
+    ): Flow<CloudFile> = flow {
+
+        val missingStatuses = listOf(
+            ApiContract.ThumbnailStatus.WAITING,
+            ApiContract.ThumbnailStatus.CREATING
+        )
+        val missingThumbnailsIds = explorer?.files
+            ?.filter { it.thumbnailStatus in missingStatuses }
+            ?.map { it.id }.orEmpty().toMutableList()
+
+        if (missingThumbnailsIds.isEmpty()) return@flow
+
+        val response = managerService.createThumbnails(
+            RequestCreateThumbnails(fileIds = missingThumbnailsIds)
+        )
+        if (!response.isSuccessful) return@flow
+
+        repeat(maxAttempts) { index ->
+            if (initDelay && index == 0 || index > 0) delay(delayMs)
+            val fileResponse = managerService.getItemByIdFlow(id, filter)
+            val body = fileResponse.body()?.response ?: return@flow
+            if (!fileResponse.isSuccessful) return@flow
+
+            val readyFiles = body.files.filter { file ->
+                file.id in missingThumbnailsIds && file.thumbnailStatus !in missingStatuses
+            }
+            readyFiles.forEach { file ->
+                missingThumbnailsIds.remove(file.id)
+                emit(file.apply { thumbnailStatus = ApiContract.ThumbnailStatus.CREATED })
+            }
+
+            if (index == maxAttempts - 1) {
+                body.files.filter { it.id in missingThumbnailsIds }.forEach { file ->
+                    emit(file.apply { thumbnailStatus = ApiContract.ThumbnailStatus.NOT_REQUIRED })
+                }
+            }
+
+            if (missingThumbnailsIds.isEmpty()) return@flow
+        }
+    }.flowOn(Dispatchers.IO)
+
     //TODO Rework the creation for collaboration
     override fun createFile(folderId: String, title: String): Observable<CloudFile> {
         return managerService.createDocs(folderId, RequestCreate(title))
@@ -136,16 +185,15 @@ class CloudFileProvider @Inject constructor(
     }
 
     override fun rename(item: Item, newName: String, version: Int?): Observable<Item> {
-        return if (version == null) {
+        return if (item is CloudFolder) {
             folderRename(item.id, newName)
         } else {
-            fileRename(item.id, newName, version)
+            fileRename(item.id, newName)
         }
     }
 
-    private fun fileRename(id: String, newName: String, version: Int): Observable<Item> {
+    private fun fileRename(id: String, newName: String): Observable<Item> {
         val requestRenameFile = RequestRenameFile()
-        requestRenameFile.lastVersion = version
         requestRenameFile.title = newName
         return managerService.renameFile(id, requestRenameFile)
             .subscribeOn(Schedulers.io())

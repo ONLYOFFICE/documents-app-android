@@ -131,6 +131,20 @@ object ManagerUiUtils {
         }
     }
 
+    fun getFileBadge(ext: String): Int {
+        return when (StringUtils.getExtension(ext)) {
+            StringUtils.Extension.DOC -> R.drawable.ic_type_document_badge
+            StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet_badge
+            StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation_badge
+
+            StringUtils.Extension.HTML,
+            StringUtils.Extension.EBOOK,
+            StringUtils.Extension.PDF -> R.drawable.ic_type_pdf_badge
+
+            else -> 0
+        }
+    }
+
     fun CardView.setRoomIcon(
         room: CloudFolder,
         image: ImageView,

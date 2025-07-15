@@ -2,6 +2,7 @@ package app.editors.manager.ui.adapters
 
 import android.content.Context
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.ItemTouchHelper.DOWN
 import androidx.recyclerview.widget.ItemTouchHelper.UP
@@ -18,6 +19,7 @@ import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.list.Templates
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.base.BaseAdapter
+import app.editors.manager.ui.adapters.diffutilscallback.EntityDiffUtilsCallback
 import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
 import app.editors.manager.ui.adapters.holders.explorer.GridFileViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.GridFolderViewHolder
@@ -47,6 +49,7 @@ interface AdapterState {
     val accountId: String?
     val sortBy: String?
 
+    var currentFolderId: String
     var isRoot: Boolean
     var isFooter: Boolean
     var isSectionMy: Boolean
@@ -106,6 +109,7 @@ class ExplorerAdapter(
 
     override val accountId: String? by lazy { context.accountOnline?.id }
 
+    override var currentFolderId: String = ""
     override var isRoot: Boolean = false
     override var isFooter: Boolean = false
     override var isSectionMy: Boolean = false
@@ -120,20 +124,34 @@ class ExplorerAdapter(
     var isSelectMode = false
         set(isSelectMode) {
             field = isSelectMode
-            notifyDataSetChanged()
+            notifyItemRangeChanged(0, itemCount - 1, ExplorerPayload.SELECTION)
         }
 
     var pickerMode: PickerMode = PickerMode.None
-        set(mode) {
-            field = mode
-            notifyDataSetChanged()
-        }
-
 
     private val footer: Footer = Footer()
 
     init {
         getApp().appComponent.inject(this)
+    }
+
+    fun updateItems(list: List<Entity>?, currentId: String? = null) {
+        if (list == null) return
+        val listCurrentId = currentId ?: currentFolderId
+        if (itemList != null && listCurrentId == currentFolderId) {
+            val callback = EntityDiffUtilsCallback(list, itemList)
+            val result = DiffUtil.calculateDiff(callback)
+            super.setData(list)
+            result.dispatchUpdatesTo(this)
+        } else {
+            currentFolderId = listCurrentId
+            super.setItems(list)
+        }
+    }
+
+    fun updateItemById(id: String, payload: ExplorerPayload) {
+        val position = itemList.indexOfFirst { it.getEntityId() == id }
+        if (position != -1) notifyItemChanged(position, payload)
     }
 
     override fun onCreateViewHolder(view: ViewGroup, type: Int): BaseViewHolderExplorer<*> {
@@ -149,6 +167,7 @@ class ExplorerAdapter(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
         position: Int,
@@ -157,6 +176,19 @@ class ExplorerAdapter(
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position)
             return
+        }
+        for (payload in payloads) {
+            when (payload) {
+                ExplorerPayload.SELECTION -> {
+                    (holder as? BaseViewHolderExplorer<Entity>)?.bindSelection(mList[position])
+                }
+                ExplorerPayload.THUMBNAIL -> {
+                    if (!isGridView) return
+                    (mList[position] as? CloudFile?)?.let { file ->
+                        (holder as? GridFileViewHolder)?.bindThumbnail(file)
+                    }
+                }
+            }
         }
     }
 
@@ -218,5 +250,9 @@ class ExplorerAdapter(
         val indexTo = (list[to] as Item).index
         (list[from] as Item).index = indexTo
         (list[to] as Item).index = indexFrom
+    }
+
+    enum class ExplorerPayload {
+        SELECTION, THUMBNAIL
     }
 }

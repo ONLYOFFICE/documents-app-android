@@ -56,7 +56,7 @@ abstract class ListBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
             }
             setOnLongClickListener { view ->
                 adapter.mOnItemLongClickListener?.onItemLongClick(view, layoutPosition)
-                return@setOnLongClickListener false
+                return@setOnLongClickListener true
             }
         }
     }

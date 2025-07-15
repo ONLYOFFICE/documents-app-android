@@ -346,6 +346,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                         updateViewsState()
                         viewState.onDocsRefresh(explorer)
                         onRefresh()
+                        refreshFilesThumbnails()
                     }, this::fetchError)
             )
             viewState.onSwipeEnable(true)
@@ -395,6 +396,8 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         }
     }
 
+    open fun refreshFilesThumbnails() = Unit
+
     /**
      * Change docs
      * */
@@ -440,7 +443,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     private fun renameFile(id: Item, title: String, version: Int) {
         modelExplorerStack.currentId?.let { currentId ->
             disposable.add(
-                fileProvider.rename(id, title, version)
+                fileProvider.rename(id, title, null)
                     .flatMap { fileProvider.getFiles(currentId, getArgs(null)) }
                     .subscribe({ item ->
                         viewState.onDialogClose()
@@ -452,7 +455,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
 
-    protected fun loadSuccess(explorer: Explorer?) {
+    protected open fun loadSuccess(explorer: Explorer?) {
         modelExplorerStack.addStack(explorer)
         updateViewsState()
         setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
@@ -1131,7 +1134,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         modelExplorerStack.previous()?.let {
             val entities = getListWithHeaders(modelExplorerStack.last(), true)
             setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-            viewState.onDocsGet(entities)
+            viewState.onDocsRefresh(entities)
             viewState.onScrollToPosition(modelExplorerStack.listPosition)
         }
     }
@@ -1140,7 +1143,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         modelExplorerStack.popToRoot()?.let {
             val entities = getListWithHeaders(modelExplorerStack.last(), true)
             setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-            viewState.onDocsGet(entities)
+            viewState.onDocsRefresh(entities)
             viewState.onScrollToPosition(modelExplorerStack.listPosition)
             updateViewsState()
         }
@@ -1190,14 +1193,9 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         }
     }
 
-    fun setSelectionAll() {
-        setSelection(true)
-        selectAll()
-    }
-
     fun selectAll() {
         viewState.onItemsSelection(modelExplorerStack.setSelection(true).toString())
-        viewState.onStateUpdateSelection(true)
+        setSelection(true)
     }
 
     fun deselectAll() {
@@ -1269,6 +1267,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             this.roomType = it
         } }
         getItemsById(id)
+        viewState.onScrollToPosition(0)
     }
 
     /**
@@ -1892,6 +1891,6 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
          * Requests values
          * */
 
-        private const val ITEMS_PER_PAGE = 25
+        const val ITEMS_PER_PAGE = 25
     }
 }
