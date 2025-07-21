@@ -7,7 +7,11 @@ object MetricUtils {
 
     fun mmToPt(value: Double): Double = value * 72 / 25.4
 
+    fun mmToPt(value: Float): Float = value * 72 / 25.4f
+
     fun ptToMm(value: Double): Double = value * 25.4 / 72
+
+    fun ptToMm(value: Float): Float = value * 25.4f / 72
 
     fun mmToCm(value: Double): Double = value / 10
 

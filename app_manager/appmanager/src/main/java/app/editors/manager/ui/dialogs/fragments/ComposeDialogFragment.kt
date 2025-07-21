@@ -8,7 +8,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.DialogFragment
-import app.editors.manager.R
+import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.UiUtils
 
 abstract class ComposeDialogFragment : DialogFragment() {
@@ -44,7 +44,7 @@ abstract class ComposeDialogFragment : DialogFragment() {
     }
 
     private fun setDialogSize() {
-        val width = resources.getDimension(lib.toolkit.base.R.dimen.accounts_dialog_fragment_width)
+        val width = resources.getDimension(R.dimen.accounts_dialog_fragment_width)
         val height = if (UiUtils.isLandscape(requireContext())) {
             resources.displayMetrics.heightPixels / 1.2
         } else {

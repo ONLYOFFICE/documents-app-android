@@ -51,7 +51,7 @@ class SetRoomOwnerFragment : BaseDialogFragment() {
         if (!UiUtils.isTablet(requireContext())) {
             setStyle(
                 STYLE_NORMAL,
-                R.style.FullScreenDialog
+                lib.toolkit.base.R.style.FullScreenDialog
             )
         }
     }
