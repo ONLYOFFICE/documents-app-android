@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColorInt
 import androidx.core.view.isVisible
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.CloudAccount
@@ -26,9 +27,9 @@ import app.editors.manager.mvp.models.ui.AccessUI
 import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
 import lib.toolkit.base.managers.tools.FileExtensionUtils
+import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.tools.FileGroup
 import lib.toolkit.base.managers.utils.StringUtils
-import androidx.core.graphics.toColorInt
 
 object ManagerUiUtils {
 
@@ -106,7 +107,19 @@ object ManagerUiUtils {
 
     fun getFileThumbnail(ext: String, isGrid: Boolean): Int {
         return when (FileExtensionUtils.getDocumentType(ext)) {
-            FileGroup.DOCUMENT -> if (!isGrid) R.drawable.ic_type_document_row else R.drawable.ic_type_document_column
+            FileGroup.DOCUMENT -> if (FileExtensions.fromExtension(ext) == FileExtensions.TXT) {
+                if (!isGrid) {
+                    R.drawable.ic_type_txt_row
+                } else {
+                    R.drawable.ic_type_txt_column
+                }
+            } else {
+                if (!isGrid) {
+                    R.drawable.ic_type_document_row
+                } else {
+                    R.drawable.ic_type_document_column
+                }
+            }
             FileGroup.SHEET -> if (!isGrid) R.drawable.ic_type_spreadsheet_row else R.drawable.ic_type_spreadsheet_column
             FileGroup.PRESENTATION -> if (!isGrid) R.drawable.ic_type_presentation_row else R.drawable.ic_type_presentation_column
             FileGroup.IMAGE, FileGroup.IMAGE_GIF -> if (!isGrid) R.drawable.ic_type_picture_row else R.drawable.ic_type_picture_column
@@ -115,6 +128,20 @@ object ManagerUiUtils {
             FileGroup.ARCHIVE -> if (!isGrid) R.drawable.ic_type_archive_row else R.drawable.ic_type_archive_column
 //            StringUtils.Extension.FORM -> if (!isGrid) R.drawable.ic_type_docxf_row else R.drawable.ic_type_docxf_column
             else -> if (!isGrid) R.drawable.ic_type_other_row else R.drawable.ic_type_other_column
+        }
+    }
+
+    fun getFileBadge(ext: String): Int {
+        return when (StringUtils.getExtension(ext)) {
+            StringUtils.Extension.DOC -> R.drawable.ic_type_document_badge
+            StringUtils.Extension.SHEET -> R.drawable.ic_type_spreadsheet_badge
+            StringUtils.Extension.PRESENTATION -> R.drawable.ic_type_presentation_badge
+
+            StringUtils.Extension.HTML,
+            StringUtils.Extension.EBOOK,
+            StringUtils.Extension.PDF -> R.drawable.ic_type_pdf_badge
+
+            else -> 0
         }
     }
 

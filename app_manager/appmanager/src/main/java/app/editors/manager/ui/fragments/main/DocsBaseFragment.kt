@@ -44,6 +44,7 @@ import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.adapters.ExplorerAdapter
+import app.editors.manager.ui.adapters.ExplorerAdapter.ExplorerPayload
 import app.editors.manager.ui.adapters.diffutilscallback.EntityDiffUtilsCallback
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import app.editors.manager.ui.dialogs.ActionBottomDialog
@@ -584,26 +585,26 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         val isEmpty = list?.isEmpty() ?: false
         setViewState(isEmpty)
         onStateMenuEnabled(!isEmpty)
-        explorerAdapter?.setItems(list)
+        explorerAdapter?.updateItems(list, presenter.currentFolder?.id.orEmpty())
     }
 
     override fun onDocsRefresh(list: List<Entity>?) {
         val isEmpty = list?.isEmpty() ?: false
         setViewState(isEmpty)
         onStateMenuEnabled(!isEmpty)
-        explorerAdapter?.setItems(list)
+        explorerAdapter?.updateItems(list, presenter.currentFolder?.id.orEmpty())
         recyclerView?.scheduleLayoutAnimation()
     }
 
     override fun onDocsFilter(list: List<Entity>?) {
         val isEmpty = list != null && list.isEmpty()
         setViewState(isEmpty)
-        explorerAdapter?.setItems(list)
+        explorerAdapter?.updateItems(list)
     }
 
     override fun onDocsNext(list: List<Entity>?) {
         setViewState(false)
-        explorerAdapter?.setItems(list)
+        explorerAdapter?.updateItems(list)
     }
 
     override fun onFinishDownload(uri: Uri?) {
@@ -637,6 +638,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 searchView?.collapse()
             }
         }
+    }
+
+    override fun onStateUpdateThumbnail(id: String) {
+        explorerAdapter?.updateItemById(id, ExplorerPayload.THUMBNAIL)
     }
 
     override fun onStateUpdateSelection(isSelection: Boolean) {
@@ -762,12 +767,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     @SuppressLint("NotifyDataSetChanged")
     override fun onItemsSelection(countSelected: String) {
         onActionBarTitle(countSelected)
-        explorerAdapter?.notifyDataSetChanged()
     }
 
     override fun onItemSelected(position: Int, countSelected: String) {
         onActionBarTitle(countSelected)
-        explorerAdapter?.notifyItemChanged(position)
+        explorerAdapter?.notifyItemChanged(position, ExplorerPayload.SELECTION)
     }
 
     override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean, roomType: Int?) {
@@ -1099,7 +1103,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     open fun setToolbarState(isVisible: Boolean) {
         val fragment = parentFragment
         if (fragment is MainPagerFragment) {
-            fragment.setToolbarState(isVisible)
+            val hideToolbarInfo = presenter.toolbarState == ToolbarState.None
+            fragment.setToolbarState(isVisible, hideToolbarInfo)
         } else if (fragment is DocsOneDriveFragment) {
             fragment.setToolbarState(isVisible)
         }
@@ -1213,7 +1218,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             is ActionMenuItem.GridView -> presenter.setGridView(true)
             is ActionMenuItem.ListView -> presenter.setGridView(false)
             ActionMenuItem.Select -> presenter.setSelection(true)
-            ActionMenuItem.SelectAll -> presenter.setSelectionAll()
+            ActionMenuItem.SelectAll -> presenter.selectAll()
             ActionMenuItem.Deselect -> presenter.deselectAll()
             ActionMenuItem.Download -> presenter.createDownloadFile()
             ActionMenuItem.EmptyTrash -> {

@@ -6,7 +6,7 @@ import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Scheme
 import app.documents.core.model.login.request.RequestNumber
 import app.documents.core.model.login.response.ResponseRegisterPortal
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import kotlinx.coroutines.flow.Flow
 import java.io.IOException
 
@@ -44,7 +44,7 @@ interface CloudLoginRepository : LoginRepository {
 
     suspend fun signInWithProvider(accessToken: String?, provider: String, code: String?): Flow<LoginResult>
 
-    suspend fun signInWithSSO(accessToken: String): Flow<Result<CloudAccount>>
+    suspend fun signInWithSSO(accessToken: String): Flow<NetworkResult<CloudAccount>>
 
     suspend fun registerPortal(
         portalName: String,
@@ -55,23 +55,23 @@ interface CloudLoginRepository : LoginRepository {
         recaptchaResponse: String
     ): Flow<ResponseRegisterPortal>
 
-    suspend fun registerPersonal(email: String, language: String): Flow<Result<*>>
+    suspend fun registerPersonal(email: String, language: String): Flow<NetworkResult<*>>
 
     suspend fun checkPortal(url: String, scheme: Scheme): Flow<PortalResult>
 
-    suspend fun logOut(accountId: String): Flow<Result<*>>
+    suspend fun logOut(accountId: String): Flow<NetworkResult<*>>
 
-    suspend fun deleteAccounts(vararg accountIds: String): Flow<Result<List<CloudAccount>>>
+    suspend fun deleteAccounts(vararg accountIds: String): Flow<NetworkResult<List<CloudAccount>>>
 
     suspend fun checkLogin(accountId: String): Flow<CheckLoginResult>
 
-    suspend fun sendSms(userName: String, password: String, accessToken: String, provider: String): Flow<Result<*>>
+    suspend fun sendSms(userName: String, password: String, accessToken: String, provider: String): Flow<NetworkResult<*>>
 
-    suspend fun passwordRecovery(portal: String, email: String): Flow<Result<*>>
+    suspend fun passwordRecovery(portal: String, email: String): Flow<NetworkResult<*>>
 
-    suspend fun changeNumber(requestNumber: RequestNumber): Flow<Result<*>>
+    suspend fun changeNumber(requestNumber: RequestNumber): Flow<NetworkResult<*>>
 
-    suspend fun validatePortal(portalName: String): Flow<Result<*>>
+    suspend fun validatePortal(portalName: String): Flow<NetworkResult<*>>
 
     suspend fun registerDevice(portalUrl: String, token: String, deviceToken: String)
 

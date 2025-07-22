@@ -1,6 +1,6 @@
 package app.editors.manager.mvp.presenters.login
 
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
@@ -36,8 +36,9 @@ class PasswordRecoveryPresenter : BaseLoginPresenter<PasswordRecoveryView>() {
                 email = email
             ).collect { result ->
                 when (result) {
-                    is Result.Success -> viewState.onPasswordRecoverySuccess(email)
-                    is Result.Error -> fetchError(result.exception)
+                    is NetworkResult.Success -> viewState.onPasswordRecoverySuccess(email)
+                    is NetworkResult.Error -> fetchError(result.exception)
+                    is NetworkResult.Loading -> Unit
                 }
             }
         }

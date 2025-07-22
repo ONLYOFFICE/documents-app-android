@@ -208,10 +208,10 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         viewBinding?.mainViewPager?.isPaging = this.isScroll
     }
 
-    fun setToolbarState(isRoot: Boolean) {
+    fun setToolbarState(isRoot: Boolean, hideToolbarInfo: Boolean) {
         if (!isVisible) return
         isVisibleRoot = isRoot
-        activity?.setAppBarStates(isVisibleRoot)
+        activity?.setAppBarStates(isVisibleRoot, hideToolbarInfo)
         viewBinding?.let { binding ->
             binding.appBarTabs.isVisible = isVisibleRoot
             if (!isTablet) {
@@ -325,7 +325,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             viewBinding?.mainViewPager?.addOnPageChangeListener(it)
         }
         viewBinding?.appBarTabs?.setupWithViewPager(viewBinding?.mainViewPager, true)
-        setToolbarState(true)
+        setToolbarState(true, true)
         if (isRestore) {
             viewBinding?.mainViewPager?.currentItem = selectedPage
         } else {

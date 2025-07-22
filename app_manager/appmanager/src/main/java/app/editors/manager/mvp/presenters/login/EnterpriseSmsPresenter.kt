@@ -2,7 +2,7 @@ package app.editors.manager.mvp.presenters.login
 
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.login.request.RequestSignIn
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.login.EnterpriseSmsView
@@ -41,8 +41,9 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
                 provider = requestNumber.provider
             ).collect { result ->
                 when (result) {
-                    is Result.Success -> viewState.onResendSms()
-                    is Result.Error -> viewState.onError(context.getString(R.string.errors_client_portal_sms))
+                    is NetworkResult.Success -> viewState.onResendSms()
+                    is NetworkResult.Error -> viewState.onError(context.getString(R.string.errors_client_portal_sms))
+                    is NetworkResult.Loading -> Unit
                 }
             }
         }

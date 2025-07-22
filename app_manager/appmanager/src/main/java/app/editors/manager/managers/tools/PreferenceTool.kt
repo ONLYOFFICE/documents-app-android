@@ -2,6 +2,7 @@ package app.editors.manager.managers.tools
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.states.PasscodeLockState
@@ -188,10 +189,11 @@ class PreferenceTool @Inject constructor(val context: Context) {
     fun unregisterChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
     }
+
     var developMode: Boolean
         get() = sharedPreferences.getBoolean(KEY_DEVELOPER_MODE, false)
         set(value) {
-            sharedPreferences.edit().putBoolean(KEY_DEVELOPER_MODE, value).apply()
+            sharedPreferences.edit { putBoolean(KEY_DEVELOPER_MODE, value) }
         }
 
 }

@@ -3,7 +3,7 @@ package app.editors.manager.viewModels.main
 import android.content.ContentResolver
 import androidx.lifecycle.viewModelScope
 import app.documents.core.model.login.User
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.manager.models.explorer.Lifetime
 import app.documents.core.network.manager.models.explorer.Watermark
 import app.documents.core.network.manager.models.explorer.WatermarkType
@@ -34,11 +34,11 @@ class RoomEditViewModel(
             _loadingRoom.value = true
             roomProvider.getRoomInfo(roomId).collect { result ->
                 when (result) {
-                    is Result.Error -> emitEffect(RoomSettingsEffect.Error(R.string.errors_unknown_error))
-                    is Result.Success -> {
-                        val roomInfo = result.result
+                    is NetworkResult.Error -> emitEffect(RoomSettingsEffect.Error(R.string.errors_unknown_error))
+                    is NetworkResult.Success -> {
+                        val roomInfo = result.data
 
-                        initialTags = result.result.tags.toList()
+                        initialTags = result.data.tags.toList()
 
                         updateState {
                             RoomSettingsState(
@@ -81,16 +81,18 @@ class RoomEditViewModel(
                             )
                         }
                     }
+
+                    is NetworkResult.Loading -> Unit
                 }
             }
             _loadingRoom.value = false
         }
         viewModelScope.launch(Dispatchers.IO) {
             roomProvider.getRoomsQuota().collect { result ->
-                if (result is Result.Success) {
+                if (result is NetworkResult.Success) {
                     updateState {
                         it.copy(
-                            quota = it.quota.copy(visible = result.result.enabled)
+                            quota = it.quota.copy(visible = result.data.enabled)
                         )
                     }
                 }

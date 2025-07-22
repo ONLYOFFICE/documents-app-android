@@ -21,6 +21,7 @@ import app.documents.core.network.manager.models.explorer.Operation
 import app.documents.core.network.manager.models.request.RequestBatchBase
 import app.documents.core.network.manager.models.request.RequestBatchOperation
 import app.documents.core.network.manager.models.request.RequestCreate
+import app.documents.core.network.manager.models.request.RequestCreateThumbnails
 import app.documents.core.network.manager.models.request.RequestDeleteRecent
 import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
@@ -59,7 +60,7 @@ import retrofit2.Response
 import java.io.InputStream
 import javax.inject.Inject
 import kotlin.coroutines.resume
-import app.documents.core.network.common.Result as NetworkResult
+import app.documents.core.network.common.NetworkResult as NetworkResult
 
 
 data class OpenDocumentResult(
@@ -109,6 +110,54 @@ class CloudFileProvider @Inject constructor(
         }
     }
 
+    fun getThumbnails(
+        explorer: Explorer?,
+        id: String,
+        filter: Map<String, String>,
+        initDelay: Boolean = true,
+        delayMs: Long = 2000,
+        maxAttempts: Int = 5
+    ): Flow<CloudFile> = flow {
+
+        val missingStatuses = listOf(
+            ApiContract.ThumbnailStatus.WAITING,
+            ApiContract.ThumbnailStatus.CREATING
+        )
+        val missingThumbnailsIds = explorer?.files
+            ?.filter { it.thumbnailStatus in missingStatuses }
+            ?.map { it.id }.orEmpty().toMutableList()
+
+        if (missingThumbnailsIds.isEmpty()) return@flow
+
+        val response = managerService.createThumbnails(
+            RequestCreateThumbnails(fileIds = missingThumbnailsIds)
+        )
+        if (!response.isSuccessful) return@flow
+
+        repeat(maxAttempts) { index ->
+            if (initDelay && index == 0 || index > 0) delay(delayMs)
+            val fileResponse = managerService.getItemByIdFlow(id, filter)
+            val body = fileResponse.body()?.response ?: return@flow
+            if (!fileResponse.isSuccessful) return@flow
+
+            val readyFiles = body.files.filter { file ->
+                file.id in missingThumbnailsIds && file.thumbnailStatus !in missingStatuses
+            }
+            readyFiles.forEach { file ->
+                missingThumbnailsIds.remove(file.id)
+                emit(file.apply { thumbnailStatus = ApiContract.ThumbnailStatus.CREATED })
+            }
+
+            if (index == maxAttempts - 1) {
+                body.files.filter { it.id in missingThumbnailsIds }.forEach { file ->
+                    emit(file.apply { thumbnailStatus = ApiContract.ThumbnailStatus.NOT_REQUIRED })
+                }
+            }
+
+            if (missingThumbnailsIds.isEmpty()) return@flow
+        }
+    }.flowOn(Dispatchers.IO)
+
     //TODO Rework the creation for collaboration
     override fun createFile(folderId: String, title: String): Observable<CloudFile> {
         return managerService.createDocs(folderId, RequestCreate(title))
@@ -137,16 +186,15 @@ class CloudFileProvider @Inject constructor(
     }
 
     override fun rename(item: Item, newName: String, version: Int?): Observable<Item> {
-        return if (version == null) {
+        return if (item is CloudFolder) {
             folderRename(item.id, newName)
         } else {
-            fileRename(item.id, newName, version)
+            fileRename(item.id, newName)
         }
     }
 
-    private fun fileRename(id: String, newName: String, version: Int): Observable<Item> {
+    private fun fileRename(id: String, newName: String): Observable<Item> {
         val requestRenameFile = RequestRenameFile()
-        requestRenameFile.lastVersion = version
         requestRenameFile.title = newName
         return managerService.renameFile(id, requestRenameFile)
             .subscribeOn(Schedulers.io())
@@ -799,14 +847,14 @@ class CloudFileProvider @Inject constructor(
             }
     }
 
-    fun getVersionHistory(fileId: String): Flow<Result<List<CloudFile>>> = apiFlow {
+    fun getVersionHistory(fileId: String): Flow<NetworkResult<List<CloudFile>>> = apiFlow {
         val response = managerService.getVersionHistory(fileId)
         val files = response.body()?.response
         if (response.isSuccessful && files != null) files
         else throw HttpException(response)
     }
 
-    fun restoreVersion(fileId: String, version: Int): Flow<Result<Unit>> = apiFlow {
+    fun restoreVersion(fileId: String, version: Int): Flow<NetworkResult<Unit>> = apiFlow {
         val response = managerService.restoreVersion(fileId, version)
         if (!response.isSuccessful) throw HttpException(response)
     }
@@ -815,7 +863,7 @@ class CloudFileProvider @Inject constructor(
         fileId: String,
         version: Int,
         comment: String
-    ): Flow<Result<Unit>> = apiFlow {
+    ): Flow<NetworkResult<Unit>> = apiFlow {
         val body = EditCommentRequest(version, comment)
         val response = managerService.updateVersionComment(fileId, body)
         if (!response.isSuccessful) throw HttpException(response)
@@ -824,7 +872,7 @@ class CloudFileProvider @Inject constructor(
     fun deleteVersion(
         fileId: String,
         version: Int
-    ): Flow<Result<Unit>> = apiFlow {
+    ): Flow<NetworkResult<Unit>> = apiFlow {
         val body = DeleteVersionRequest(fileId, arrayOf(version))
         val response = managerService.deleteVersion(body)
         if (!response.isSuccessful) throw HttpException(response)
@@ -859,8 +907,10 @@ class CloudFileProvider @Inject constructor(
         return api.getFillResult(sessionId).response
     }
 
-    private fun <T> apiFlow(apiCall: suspend () -> T): Flow<Result<T>> = flow {
-        val result = kotlin.runCatching { apiCall() }
+    private fun <T> apiFlow(apiCall: suspend () -> T): Flow<NetworkResult<T>> = flow {
+        val result = apiCall()
         emit(result)
-    }.flowOn(Dispatchers.IO)
+    }
+        .flowOn(Dispatchers.IO)
+        .asResult()
 }

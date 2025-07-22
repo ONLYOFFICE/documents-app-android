@@ -68,6 +68,7 @@ import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.DialogUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.contains
@@ -621,7 +622,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     )
                 }
 
-                ToolbarState.None -> activity.setToolbarInfo(null)
+                ToolbarState.None -> Unit
             }
         }
     }
@@ -788,6 +789,28 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 showSnackBar(R.string.room_created_successfully)
             }
         }
+    }
+
+    override fun showEditDialogCreate(
+        title: String,
+        value: String?,
+        hint: String?,
+        endHint: String?,
+        tag: String,
+        acceptButton: String?,
+        cancelButton: String?,
+        forbiddenSymbols: String
+    ) {
+        super.showEditDialogCreate(
+            title = title,
+            value = value,
+            hint = hint,
+            endHint = endHint,
+            tag = tag,
+            acceptButton = acceptButton,
+            cancelButton = cancelButton,
+            forbiddenSymbols = StringUtils.DIALOG_CLOUD_FORBIDDEN_SYMBOLS
+        )
     }
 
     val isRoot: Boolean
