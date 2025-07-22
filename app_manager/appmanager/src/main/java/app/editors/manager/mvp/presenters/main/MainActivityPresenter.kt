@@ -9,7 +9,7 @@ import app.documents.core.login.CheckLoginResult
 import app.documents.core.login.PortalResult
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.Scheme
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.providers.FileOpenResult
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
@@ -280,10 +280,11 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
             )
             .collect { result ->
                 when (result) {
-                    is Result.Error -> fetchError(result.exception)
-                    is Result.Success<FileOpenResult> -> {
-                        handleFileOpenResult(result.result)
+                    is NetworkResult.Error -> fetchError(result.exception)
+                    is NetworkResult.Success<FileOpenResult> -> {
+                        handleFileOpenResult(result.data)
                     }
+                    else -> Unit
                 }
             }
     }
