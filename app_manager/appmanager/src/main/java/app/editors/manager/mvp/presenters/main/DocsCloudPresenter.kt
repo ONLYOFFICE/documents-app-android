@@ -524,6 +524,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         ).collect(::onFileOpenCollect)
     }
 
+    fun unlockFileCoauthoring() {
+        presenterScope.launch {
+            fileProvider.unlockFileCoauthoring()
+        }
+    }
+
     fun saveExternalLinkToClipboard() {
         itemClicked?.let { item ->
             presenterScope.launch {

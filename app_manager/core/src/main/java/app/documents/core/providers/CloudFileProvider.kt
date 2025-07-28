@@ -43,6 +43,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -55,9 +56,11 @@ import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.HttpException
 import retrofit2.Response
+import java.io.File
 import java.io.InputStream
 import javax.inject.Inject
 import kotlin.coroutines.resume
+import kotlin.time.Duration.Companion.seconds
 import app.documents.core.network.common.Result as NetworkResult
 
 
@@ -65,6 +68,11 @@ data class OpenDocumentResult(
     val info: String? = null,
     val isPdf: Boolean = false,
     val isForm: Boolean = false
+)
+
+data class LockCoauthoringData(
+    val fileId: String,
+    val docKey: String
 )
 
 class CloudFileProvider @Inject constructor(
@@ -89,6 +97,8 @@ class CloudFileProvider @Inject constructor(
     }
 
     var roomCallback: RoomCallback? = null
+
+    private var lockCoauthoringData: LockCoauthoringData? = null
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return when {
@@ -481,17 +491,15 @@ class CloudFileProvider @Inject constructor(
                     .getBoolean("isForm")
             ) {
                 val cloudFile = CloudFile().apply { this.id = id; this.title = title }
-                emit(
-                    FileOpenResult.OpenLocally(
-                        file = suspendGetCachedFile(
-                            context = context,
-                            cloudFile = cloudFile,
-                            token = accountRepository.getOnlineToken() ?: token
-                        ),
-                        fileId = cloudFile.id,
-                        editType = EditType.View(),
-                        access = Access.None
-                    )
+                emitOpenFileLocally(
+                    file = suspendGetCachedFile(
+                        context = context,
+                        cloudFile = cloudFile,
+                        token = accountRepository.getOnlineToken() ?: token
+                    ),
+                    fileId = cloudFile.id,
+                    editType = EditType.View(),
+                    access = Access.None
                 )
                 return@flow
             }
@@ -571,13 +579,11 @@ class CloudFileProvider @Inject constructor(
                         if (document.isPdf || document.info == null
                             || document.isForm && editType is EditType.View
                         ) {
-                            emit(
-                                FileOpenResult.OpenLocally(
-                                    file = suspendGetCachedFile(context, cloudFile, token),
-                                    fileId = cloudFile.id,
-                                    editType = editType,
-                                    access = access
-                                )
+                            emitOpenFileLocally(
+                                file = suspendGetCachedFile(context, cloudFile, token),
+                                fileId = cloudFile.id,
+                                editType = editType,
+                                access = access
                             )
                         } else {
                             emit(
@@ -589,13 +595,11 @@ class CloudFileProvider @Inject constructor(
                             )
                         }
                     } else {
-                        emit(
-                            FileOpenResult.OpenLocally(
-                                file = suspendGetCachedFile(context, cloudFile, token),
-                                fileId = cloudFile.id,
-                                editType = editType,
-                                access = access
-                            )
+                        emitOpenFileLocally(
+                            file = suspendGetCachedFile(context, cloudFile, token),
+                            fileId = cloudFile.id,
+                            editType = editType,
+                            access = access
                         )
                     }
                 }
@@ -670,17 +674,15 @@ class CloudFileProvider @Inject constructor(
                 url = "${cloudFile.viewUrl}&version=$version",
                 cookie = ApiContract.COOKIE_HEADER + token
             )
-            emit(
-                FileOpenResult.OpenLocally(
-                    file = mapDownloadResponse(context, cloudFile, response),
-                    fileId = cloudFile.id,
-                    editType = EditType.Edit(),
-                    access = if (version == cloudFile.version) {
-                        cloudFile.access
-                    } else {
-                        Access.Read
-                    }
-                )
+            emitOpenFileLocally(
+                file = mapDownloadResponse(context, cloudFile, response),
+                fileId = cloudFile.id,
+                editType = EditType.Edit(),
+                access = if (version == cloudFile.version) {
+                    cloudFile.access
+                } else {
+                    Access.Read
+                }
             )
         }
             .flowOn(Dispatchers.IO)
@@ -827,6 +829,41 @@ class CloudFileProvider @Inject constructor(
         }
             .flowOn(Dispatchers.IO)
             .asResult()
+    }
+
+    suspend fun unlockFileCoauthoring() {
+        lockCoauthoringData?.let { data ->
+            managerService.trackEdit(data.fileId, data.docKey, true)
+            lockCoauthoringData = null
+        }
+    }
+
+    private suspend fun FlowCollector<FileOpenResult>.emitOpenFileLocally(
+        file: File,
+        fileId: String,
+        editType: EditType,
+        access: Access
+    ) {
+        emit(
+            FileOpenResult.OpenLocally(
+                file = file,
+                fileId = fileId,
+                editType = editType,
+                access = access
+            )
+        )
+        lockFileCoauthoring(fileId)
+    }
+
+    private suspend fun lockFileCoauthoring(fileId: String) {
+        val key = managerService.startEdit(fileId).response
+        if (!key.isEmpty()) {
+            lockCoauthoringData = LockCoauthoringData(fileId, key)
+            while (lockCoauthoringData != null) {
+                managerService.trackEdit(fileId, key)
+                delay(4.seconds)
+            }
+        }
     }
 
     private fun <T> apiFlow(apiCall: suspend () -> T): Flow<Result<T>> = flow {

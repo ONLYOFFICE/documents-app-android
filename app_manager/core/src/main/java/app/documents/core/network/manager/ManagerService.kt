@@ -15,6 +15,7 @@ import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
+import app.documents.core.network.manager.models.request.RequestStartEdit
 import app.documents.core.network.manager.models.request.RequestStopFilling
 import app.documents.core.network.manager.models.request.RequestStorage
 import app.documents.core.network.manager.models.request.RequestTitle
@@ -568,4 +569,26 @@ interface ManagerService {
         @Path(value = "file_id") fileId: String,
         @Body body: RequestStopFilling
     ): Response<ResponseBody>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/startedit")
+    suspend fun startEdit(
+        @Path(value = "fileId") fileId: String,
+        @Body body: RequestStartEdit = RequestStartEdit()
+    ): app.documents.core.network.BaseResponse<String>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/trackeditfile")
+    suspend fun trackEdit(
+        @Path(value = "fileId") fileId: String,
+        @Query(value = "docKeyForTrack") docKey: String,
+        @Query(value = "isFinish") isFinish: Boolean = false,
+    ): Response<BaseResponse>
+
 }

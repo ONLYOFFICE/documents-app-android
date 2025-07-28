@@ -107,6 +107,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     private var refreshListener: RefreshListener? = null
 
     override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        presenter.unlockFileCoauthoring()
         super.onEditorActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
