@@ -428,7 +428,7 @@ class CloudFileProvider @Inject constructor(
     }
 
     override fun updateDocument(id: String, body: MultipartBody.Part): Single<Boolean> {
-        return managerService.updateDocument(id, body)
+        return managerService.saveEditing(id, body)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread()).map { response ->
                 return@map response.isSuccessful

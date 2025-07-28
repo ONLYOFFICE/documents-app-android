@@ -1816,7 +1816,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         context.contentResolver.openInputStream(uri).use {
             val file = uri.toFile()
             val body = MultipartBody.Part.createFormData(
-                file.name,
+                "File",
                 file.name,
                 RequestBody.create(
                     MediaType.parse(ContentResolverUtils.getMimeType(context, uri)),

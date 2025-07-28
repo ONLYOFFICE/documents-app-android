@@ -591,4 +591,15 @@ interface ManagerService {
         @Query(value = "isFinish") isFinish: Boolean = false,
     ): Response<BaseResponse>
 
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @Multipart
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/saveediting")
+    fun saveEditing(
+        @Path(value = "fileId") id: String,
+        @Part file: MultipartBody.Part
+    ): Single<Response<ResponseBody>>
+
 }
