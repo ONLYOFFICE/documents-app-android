@@ -49,22 +49,29 @@ class BaseInterceptor(
             }
 
             val request = newBuilder.build()
-            val startTime = System.currentTimeMillis()
             val response = chain.proceed(request)
 
-            val responseBody = response.body()?.string()
-            val contentType = response.body()?.contentType()
+            val url = request.url().toString()
+            val shouldSkipLogging = url.contains("presigneduri") || url.contains("filehandler.ashx")
 
-            val loggedResponseBody = RequestsCollector.logRequest(
-                request = request,
-                response = response,
-                responseBodyString = responseBody,
-                startTime = startTime
-            )
+            return if (shouldSkipLogging) {
+                response
+            } else {
+                val startTime = System.currentTimeMillis()
+                val responseBody = response.body()?.string()
+                val contentType = response.body()?.contentType()
 
-            return response.newBuilder()
-                .body(ResponseBody.create(contentType, loggedResponseBody ?: ""))
-                .build()
+                val loggedResponseBody = RequestsCollector.logRequest(
+                    request = request,
+                    response = response,
+                    responseBodyString = responseBody,
+                    startTime = startTime
+                )
+
+                response.newBuilder()
+                    .body(ResponseBody.create(contentType, loggedResponseBody ?: ""))
+                    .build()
+            }
         } catch (_: NoConnectivityException) {
             val responseBody = ResponseBody.create(
                 MediaType.parse("application/json"),
