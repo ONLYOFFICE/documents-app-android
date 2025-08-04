@@ -19,6 +19,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -48,6 +49,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
@@ -73,6 +75,7 @@ fun AppTextField(
     keyboardType: KeyboardType = KeyboardType.Text,
     keyboardOptions: KeyboardOptions? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    textStyle: TextStyle = LocalTextStyle. current,
     label: Int? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -104,6 +107,7 @@ fun AppTextField(
             trailingIcon = trailingIcon,
             leadingIcon = leadingIcon,
             visualTransformation = visualTransformation,
+            textStyle = textStyle,
             keyboardActions = KeyboardActions(
                 onDone = { onDone?.invoke() },
                 onNext = { if (value.isNotEmpty()) focusManager?.moveFocus(FocusDirection.Down) }
