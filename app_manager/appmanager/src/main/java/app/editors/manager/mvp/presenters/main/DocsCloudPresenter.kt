@@ -492,23 +492,23 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         super.createDownloadFile()
     }
 
-    fun openFillFormFile() {
+    fun openFillFormFile(startFilling: Boolean = false) {
         val file = itemClicked as? CloudFile ?: return
 
         presenterScope.launch {
-            if (file.formFillingStatus == ApiContract.FormFillingStatus.YourTurn &&
+            if ((file.formFillingStatus == ApiContract.FormFillingStatus.YourTurn || startFilling) &&
                 !firebaseTool.isCoauthoring()
             ) {
                 viewState.showFillFormIncompatibleVersionsDialog()
                 return@launch
             }
 
-            if (account.portal.isDocSpace && file.isPdfForm && isUserSection) {
+            if (account.portal.isDocSpace && file.isPdfForm && isUserSection && !startFilling) {
                 viewState.showFillFormChooserFragment()
                 return@launch
             }
 
-            openFile(EditType.Fill())
+            openFile(EditType.Fill(startFilling = startFilling))
         }
     }
 

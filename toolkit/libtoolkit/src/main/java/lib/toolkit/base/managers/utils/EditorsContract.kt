@@ -42,8 +42,8 @@ enum class EditorsType {
 
 sealed class EditType : Serializable {
     class Edit(val initialView: Boolean = true) : EditType()
+    class Fill(val startFilling: Boolean = false) : EditType()
     class View : EditType()
-    class Fill : EditType()
 
     companion object {
 
