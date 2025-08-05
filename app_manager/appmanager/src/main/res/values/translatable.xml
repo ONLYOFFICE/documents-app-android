@@ -1178,4 +1178,6 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="whats_new_3_desc">Open and view .odg drawings and .md files right from your device.</string>
     <string name="whats_new_4">Enhanced compatibility with DocSpace 3.1</string>
     <string name="whats_new_4_desc">Access document versions, role-based form filling in VDR, room templates, and custom filters when connected to your DocSpace.</string>
+
+    <string name="start_filling_title">Start filling</string>
 </resources>
