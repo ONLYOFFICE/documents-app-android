@@ -76,6 +76,7 @@ fun AppTextField(
     keyboardOptions: KeyboardOptions? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     textStyle: TextStyle = LocalTextStyle. current,
+    dividerColor: Color? = null,
     label: Int? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -120,8 +121,8 @@ fun AppTextField(
                 textColor = MaterialTheme.colors.onSurface,
                 disabledTextColor = Color.Transparent,
                 backgroundColor = Color.Transparent,
-                focusedIndicatorColor = MaterialTheme.colors.primary,
-                unfocusedIndicatorColor = Color.Gray,
+                focusedIndicatorColor = dividerColor ?: MaterialTheme.colors.primary,
+                unfocusedIndicatorColor = dividerColor ?: Color.Gray,
                 disabledIndicatorColor = Color.Gray,
                 focusedLabelColor = MaterialTheme.colors.primary
             ),
