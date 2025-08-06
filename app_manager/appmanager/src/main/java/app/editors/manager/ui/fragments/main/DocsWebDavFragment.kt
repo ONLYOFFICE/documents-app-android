@@ -1,8 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import app.documents.core.model.cloud.WebdavProvider
@@ -16,7 +14,6 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.getSerializableExt
-import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
 open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButtonFragment {
@@ -46,19 +43,6 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
         super.onViewCreated(view, savedInstanceState)
         presenter.setSectionType(ApiContract.SectionType.WEB_DAV)
         init()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (resultCode) {
-            Activity.RESULT_CANCELED -> {
-                if (isActivePage && (requestCode == BaseActivity.REQUEST_ACTIVITY_MEDIA ||
-                            requestCode == REQUEST_PDF)
-                ) {
-                    presenter.deleteTempFile()
-                }
-            }
-        }
     }
 
     override fun onSwipeRefresh(): Boolean {

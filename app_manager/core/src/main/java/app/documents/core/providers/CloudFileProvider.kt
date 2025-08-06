@@ -11,6 +11,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.interceptors.HeaderType
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.ManagerService
+import app.documents.core.network.manager.models.base.FillResult
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -487,21 +488,29 @@ class CloudFileProvider @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun openFile(
+    fun openDeeplink(
         portal: String,
         token: String,
+        login: String,
         id: String,
         title: String,
         extension: String,
     ): Flow<NetworkResult<FileOpenResult>> {
         return flow {
             emit(FileOpenResult.Loading())
-            val api = NetworkClient.getRetrofit<ManagerService>(
+
+            val accountOnline = accountRepository.getOnlineAccount()
+            val api = managerService.takeIf {
+                accountOnline != null &&
+                accountOnline.portal.urlWithScheme == portal &&
+                accountOnline.login == login
+            } ?: NetworkClient.getRetrofit<ManagerService>(
                 url = portal,
-                token = accountRepository.getOnlineToken() ?: token,
+                token = token,
                 context = context,
-                headerType = HeaderType.AUTHORIZATION
+                headerType = HeaderType.REQUEST_TOKEN
             )
+
             val fileJson = JSONObject(api.suspendOpenFile(id).body()?.string().toString())
                 .getJSONObject(KEY_RESPONSE)
 
@@ -524,9 +533,12 @@ class CloudFileProvider @Inject constructor(
                 .put("canShareable", false)
 
             // opening not form pdf locally
-            if (fileJson.getString("documentType") == "pdf" && !fileJson
+            if (fileJson.getString("documentType") == "pdf" && (!fileJson
                     .getJSONObject("document")
-                    .getBoolean("isForm")
+                    .getBoolean("isForm") || !fileJson
+                    .getJSONObject("document")
+                    .getJSONObject("permissions")
+                    .getBoolean("fillForms"))
             ) {
                 val cloudFile = CloudFile().apply { this.id = id; this.title = title }
                 emit(
@@ -616,14 +628,19 @@ class CloudFileProvider @Inject constructor(
                             editType = editType
                         )
 
-                        if (document.isPdf || document.info == null
-                            || document.isForm && editType is EditType.View
-                        ) {
+                        val isNotFillableForm = document.isForm &&
+                                if (cloudFile.security != null) {
+                                    cloudFile.security?.fillForms != true
+                                } else {
+                                    false
+                                }
+
+                        if (document.isPdf || document.info == null || isNotFillableForm) {
                             emit(
                                 FileOpenResult.OpenLocally(
                                     file = suspendGetCachedFile(context, cloudFile, token),
                                     fileId = cloudFile.id,
-                                    editType = editType,
+                                    editType = if (isNotFillableForm) EditType.View() else editType,
                                     access = access
                                 )
                             )
@@ -875,6 +892,19 @@ class CloudFileProvider @Inject constructor(
         }
             .flowOn(Dispatchers.IO)
             .asResult()
+    }
+
+    suspend fun getFillResult(sessionId: String, portal: String?, token: String?): FillResult {
+        val api = managerService.takeIf {
+            token.isNullOrEmpty()
+        } ?: NetworkClient.getRetrofit<ManagerService>(
+            url = portal.orEmpty(),
+            token = token.orEmpty(),
+            context = context,
+            headerType = HeaderType.REQUEST_TOKEN
+        )
+
+        return api.getFillResult(sessionId).response
     }
 
     private fun <T> apiFlow(apiCall: suspend () -> T): Flow<NetworkResult<T>> = flow {
