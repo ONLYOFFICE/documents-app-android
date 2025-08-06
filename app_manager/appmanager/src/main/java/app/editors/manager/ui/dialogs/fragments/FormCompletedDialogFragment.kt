@@ -122,7 +122,7 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return ComponentDialog(
             requireContext(),
-            if (!UiUtils.isTablet(requireContext())) R.style.FullScreenDialog else 0
+            if (!UiUtils.isTablet(requireContext())) lib.toolkit.base.R.style.FullScreenDialog else 0
         )
     }
 

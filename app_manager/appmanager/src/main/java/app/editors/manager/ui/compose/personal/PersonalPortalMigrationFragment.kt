@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
-import app.editors.manager.R
+import lib.toolkit.base.R
 import app.editors.manager.app.App
 import app.editors.manager.ui.dialogs.fragments.BaseDialogFragment
 import lib.compose.ui.theme.ManagerTheme
