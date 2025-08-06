@@ -6,8 +6,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
 import app.editors.manager.ui.compose.share.ShareDocSpaceScreen
-import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.viewModels.link.ShareSettingsViewModel
+import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.managers.utils.openSendTextActivity
 import lib.toolkit.base.managers.utils.putArgs

@@ -1,11 +1,5 @@
 package app.editors.manager.ui.dialogs.fragments
 
-import android.app.Dialog
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.activity.ComponentDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +21,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,6 +44,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppDescriptionItem
@@ -98,7 +92,7 @@ private class FormCompleteViewModel(
 
 }
 
-class FormCompletedDialogFragment : BaseDialogFragment() {
+class FormCompletedDialogFragment : ComposeDialogFragment() {
 
     companion object {
 
@@ -119,76 +113,59 @@ class FormCompletedDialogFragment : BaseDialogFragment() {
         }
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return ComponentDialog(
-            requireContext(),
-            if (!UiUtils.isTablet(requireContext())) R.style.FullScreenDialog else 0
-        )
-    }
+    @Composable
+    override fun Content() {
+        val viewModel = viewModel {
+            FormCompleteViewModel(
+                managerService = requireContext().api,
+                sessionId = arguments?.getSerializableExt<String>(KEY_SESSION_ID) ?: ""
+            )
+        }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return ComposeView(requireContext())
-    }
+        val response = viewModel.roomState.collectAsState().value
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        (view as? ComposeView)?.setContent {
+        ManagerTheme {
+            AppScaffold(topBar = {
+                AppTopBar(title = R.string.rooms_fill_form_complete_toolbar_title)
+            }, useTablePaddings = false) {
+                when (response) {
+                    is FormCompleteState.Error -> {
+                        //TODO add placeholder
+                        UiUtils.getSnackBar(requireActivity()).setText(response.message).show()
+                    }
 
-            val viewModel = viewModel {
-                FormCompleteViewModel(
-                    managerService = requireContext().api,
-                    sessionId = arguments?.getSerializableExt<String>(KEY_SESSION_ID) ?: ""
-                )
-            }
+                    FormCompleteState.Loading -> {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
 
-            val response = viewModel.roomState.collectAsState().value
-
-            ManagerTheme {
-                AppScaffold(topBar = {
-                    AppTopBar(title = R.string.rooms_fill_form_complete_toolbar_title)
-                }, useTablePaddings = false) {
-                    when (response) {
-                        is FormCompleteState.Error -> {
-                            //TODO add placeholder
-                            UiUtils.getSnackBar(requireActivity()).setText(response.message).show()
-                        }
-
-                        FormCompleteState.Loading -> {
-                            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                        }
-
-                        is FormCompleteState.Success -> {
-                            FormCompletedScreen(
-                                response.fillResul,
-                                onSendEmailClick = {
-                                    ActivitiesUtils.showEmail(
-                                        context = requireContext(),
-                                        chooseTitle = "",
-                                        to = response.fillResul.manager.email ?: "",
-                                        subject = "",
-                                        body = ""
-                                    )
-                                },
-                                onLinkClick = {
-                                    KeyboardUtils.setDataToClipboard(
-                                        requireContext(),
-                                        response.fillResul.completedForm.webUrl,
-                                        requireContext().getString(R.string.share_clipboard_external_link_label)
-                                    )
-                                },
-                                onCheckReadyFormsClick = {
-                                    setFragmentResult(
-                                        requestKey = KEY_RESULT,
-                                        result = bundleOf("id" to response.fillResul.completedForm.folderId)
-                                    )
-                                    dismiss()
-                                },
-                                onBackToRoomClick = ::dismiss,
-                            )
-                        }
+                    is FormCompleteState.Success -> {
+                        FormCompletedScreen(
+                            response.fillResul,
+                            onSendEmailClick = {
+                                ActivitiesUtils.showEmail(
+                                    context = requireContext(),
+                                    chooseTitle = "",
+                                    to = response.fillResul.manager.email ?: "",
+                                    subject = "",
+                                    body = ""
+                                )
+                            },
+                            onLinkClick = {
+                                KeyboardUtils.setDataToClipboard(
+                                    requireContext(),
+                                    response.fillResul.completedForm.webUrl,
+                                    requireContext().getString(R.string.share_clipboard_external_link_label)
+                                )
+                            },
+                            onCheckReadyFormsClick = {
+                                setFragmentResult(
+                                    requestKey = KEY_RESULT,
+                                    result = bundleOf("id" to response.fillResul.completedForm.folderId)
+                                )
+                                dismiss()
+                            },
+                            onBackToRoomClick = ::dismiss,
+                        )
                     }
                 }
             }

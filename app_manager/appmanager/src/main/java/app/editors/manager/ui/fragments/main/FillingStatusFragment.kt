@@ -50,12 +50,12 @@ import app.editors.manager.R
 import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.mvp.models.ui.UiFormFillingStatus
 import app.editors.manager.mvp.models.ui.toUi
-import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.views.custom.FillingStatusRoleList
 import app.editors.manager.ui.views.custom.FormCompleteStatus
 import app.editors.manager.viewModels.main.FillingStatusEffect
 import app.editors.manager.viewModels.main.FillingStatusState
 import app.editors.manager.viewModels.main.FillingStatusViewModel
+import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorGreen
 import lib.compose.ui.theme.colorTextSecondary

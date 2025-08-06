@@ -42,7 +42,6 @@ import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.toUi
-import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.InviteUserState
@@ -52,6 +51,7 @@ import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.UserListMode
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextPrimary
 import lib.compose.ui.utils.popBackStackWhenResumed

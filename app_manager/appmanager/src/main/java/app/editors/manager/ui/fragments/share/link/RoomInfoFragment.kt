@@ -40,7 +40,6 @@ import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
-import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.InviteUsersScreen
 import app.editors.manager.viewModels.link.RoomAccessViewModel
 import app.editors.manager.viewModels.link.RoomInfoEffect
@@ -48,6 +47,7 @@ import app.editors.manager.viewModels.link.RoomInfoState
 import app.editors.manager.viewModels.link.RoomInfoViewModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AnimatedVisibilityVerticalFade

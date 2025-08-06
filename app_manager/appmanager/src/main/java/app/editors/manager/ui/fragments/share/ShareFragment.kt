@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentActivity
 import app.editors.manager.app.api
 import app.editors.manager.app.shareApi
 import app.editors.manager.ui.compose.share.ShareScreen
-import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
+import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.managers.utils.putArgs
 
