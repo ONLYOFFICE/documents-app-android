@@ -31,6 +31,14 @@ object LoginNetworkModule {
     }
 
     @Provides
+    fun provideTwitterLoginDataSource(
+        json: Json,
+        @LoginOkHttpClient okHttpClient: OkHttpClient
+    ): TwitterLoginDataSource {
+        return TwitterLoginDataSourceImpl(json, okHttpClient)
+    }
+
+    @Provides
     fun provideDropboxLoginDataSource(
         json: Json,
         @LoginOkHttpClient okHttpClient: OkHttpClient

@@ -44,3 +44,5 @@ const val ONEDRIVE_AUTH_URL = "https://login.microsoftonline.com/"
 const val ONEDRIVE_PORTAL_URL = "graph.microsoft.com"
 const val ONEDRIVE_API_VERSION = "v1.0"
 const val ONEDRIVE_VALUE_SCOPE = "User.Read files.readwrite.all offline_access"
+
+const val TWITTER_BASE_URL = "https://api.x.com/"
