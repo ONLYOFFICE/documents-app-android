@@ -84,6 +84,7 @@ glideOkHttpIntegration = "4.16.0"
 glideCompose = "1.0.0-beta01"
 photoView = "2.3.0"
 colorPicker = "2.3.0"
+appAuth = "0.11.1"
 
 [libraries]
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx" }
@@ -186,6 +187,7 @@ glideOkhttp = { module = "com.github.bumptech.glide:okhttp3-integration", versio
 glideCompose = { module = "com.github.bumptech.glide:compose", version.ref = "glideCompose" }
 photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoView" }
 colorPicker = { module = "com.github.skydoves:colorpickerview", version.ref = "colorPicker" }
+appAuth = { module = "net.openid:appauth", version.ref = "appAuth" }
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "gradle" }

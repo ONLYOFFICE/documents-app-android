@@ -86,13 +86,11 @@
             android:exported="false"
             android:launchMode="standard"
             android:theme="@style/NoActionBarTheme"
-            android:taskAffinity=""
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name="app.editors.manager.ui.activities.login.SignInActivity"
             android:launchMode="singleTask"
             android:theme="@style/NoActionBarTheme"
-            android:taskAffinity=""
             android:windowSoftInputMode="adjustResize|stateUnchanged">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -319,7 +317,17 @@
                 <data android:scheme="@string/facebook_id_sheme" android:host="@string/facebook_host"/>
             </intent-filter>
         </activity>
-
+        <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:launchMode="singleTask"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="oauth2social" android:host="onlyoffice.app.manager"/>
+            </intent-filter>
+        </activity>
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_notify" />

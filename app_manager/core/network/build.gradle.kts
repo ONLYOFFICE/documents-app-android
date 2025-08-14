@@ -55,6 +55,15 @@ android {
         buildConfigField("String", "ONE_DRIVE_VALUE_RESPONSE_TYPE","\"" + keystoreProperties["ONE_DRIVE_AUTH_URL"] + "\"" )
         buildConfigField("String", "ONE_DRIVE_VALUE_SCOPE","\"" + keystoreProperties["ONE_DRIVE_AUTH_URL"] + "\"" )
 
+        buildConfigField("String", "SOCIALS_REDIRECT_URL","\"" + keystoreProperties["SOCIALS_REDIRECT_URL"] + "\"" )
+        buildConfigField("String", "SOCIALS_STATE","\"" + keystoreProperties["SOCIALS_STATE"] + "\"" )
+        buildConfigField("String", "TWITTER_CLIENT_ID","\"" + keystoreProperties["TWITTER_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "TWITTER_SECRET_KEY","\"" + keystoreProperties["TWITTER_SECRET_KEY"] + "\"" )
+        buildConfigField("String", "TWITTER_OAUTH1_STATE","\"" + keystoreProperties["TWITTER_OAUTH1_STATE"] + "\"" )
+        buildConfigField("String", "ZOOM_CLIENT_ID","\"" + keystoreProperties["ZOOM_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "LINKEDIN_CLIENT_ID","\"" + keystoreProperties["LINKEDIN_CLIENT_ID"] + "\"" )
+        buildConfigField("String", "APPLE_CLIENT_ID","\"" + keystoreProperties["APPLE_CLIENT_ID"] + "\"" )
+
     }
     buildTypes {
         release {

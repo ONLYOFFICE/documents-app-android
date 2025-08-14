@@ -80,6 +80,7 @@ android {
 
         manifestPlaceholders["facebookId"] = keystoreProperties["FACEBOOK_APP_ID"] as String? ?: ""
         manifestPlaceholders["dropboxKey"] = keystoreProperties["DROP_BOX_COM_CLIENT_ID"] as? String ?: ""
+        manifestPlaceholders["appAuthRedirectScheme"] = "oauth2social"
 
         buildConfigField("boolean", "IS_BETA", "false")
         buildConfigField("String", "RELEASE_ID", "\"" + appId + "\"")
@@ -327,6 +328,7 @@ dependencies {
     implementation(libs.glideCompose)
     implementation(libs.photoView)
     implementation(libs.androidWorkManager)
+    implementation (libs.appAuth)
 
     //TODO add to base module
     implementation(libs.lifecycle.viewmodel)
