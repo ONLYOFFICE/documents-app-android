@@ -46,6 +46,9 @@ object ApiContract {
         const val TWITTER = "twitter"
         const val FACEBOOK = "facebook"
         const val GOOGLE = "google"
+        const val ZOOM = "zoom"
+        const val LINKEDIN = "linkedin"
+        const val APPLE_ID = "appleid"
     }
 
     object Modules {

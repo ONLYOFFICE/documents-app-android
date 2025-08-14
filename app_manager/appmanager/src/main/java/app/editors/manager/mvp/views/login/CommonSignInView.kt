@@ -1,6 +1,7 @@
 package app.editors.manager.mvp.views.login
 
 import android.content.Intent
+import app.documents.core.network.common.utils.SocialSignIn
 import app.editors.manager.mvp.views.base.BaseView
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
@@ -12,5 +13,7 @@ interface CommonSignInView : BaseView {
     fun onGooglePermission(intent: Intent)
     fun onEmailNameError(message: String)
     fun onTwoFactorAuthTfa(secretKey: String?, request: String)
-    fun onWaitingDialog(message: String, tag: String)
+    fun onWaitingDialog()
+    fun onSocialAuth(socialSignIn: SocialSignIn?)
+    fun onSocialAuth(url: String, token: String)
 }

@@ -43,7 +43,7 @@ class EnterprisePhoneViewModel : BaseViewModel() {
                 userName = userName,
                 password = password,
                 provider = provider,
-                accessToken = accessToken
+                accessToken = accessToken.orEmpty()
             )
         }
 

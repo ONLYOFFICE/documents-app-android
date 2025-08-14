@@ -9,9 +9,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.utils.SocialSignIn
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -30,6 +35,12 @@ import com.google.android.gms.auth.GoogleAuthUtil
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.CommonDialog.Dialogs
 import moxy.presenter.InjectPresenter
+import net.openid.appauth.AuthorizationException
+import net.openid.appauth.AuthorizationRequest
+import net.openid.appauth.AuthorizationResponse
+import net.openid.appauth.AuthorizationService
+import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.ResponseTypeValues
 
 class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDialog.OnClickListener,
     OnSocialNetworkCallbacks {
@@ -66,12 +77,21 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     private val login: String?
         get() = arguments?.getString(SignInActivity.KEY_LOGIN)
 
+    private val socialAuthLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+        ::handleSocialAuthResult
+    )
+
+    private val authService by lazy {
+        AuthorizationService(requireActivity().applicationContext)
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         App.getApp().appComponent.inject(this)
         signInActivity = try {
             context as SignInActivity
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             throw RuntimeException(
                 EnterpriseSignInFragment::class.java.simpleName + " - must implement - " +
                         EnterpriseSignInFragment::class.java.simpleName
@@ -260,8 +280,12 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         viewBinding?.loginEnterprisePortalEmailLayout?.error = message
     }
 
-    override fun onWaitingDialog(message: String, tag: String) {
-        showWaitingDialog(message, getString(R.string.dialogs_common_cancel_button), tag)
+    override fun onWaitingDialog() {
+        showWaitingDialog(
+            getString(R.string.dialogs_wait_title),
+            getString(R.string.dialogs_common_cancel_button),
+            EnterpriseLoginPresenter.TAG_DIALOG_WAITING
+        )
     }
 
     override fun onError(message: String?) {
@@ -270,11 +294,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
     override fun onTwitterSuccess(token: String) {
-        showWaitingDialog(
-            getString(R.string.dialogs_wait_title),
-            getString(R.string.dialogs_common_cancel_button),
-            EnterpriseLoginPresenter.TAG_DIALOG_WAITING
-        )
+        onWaitingDialog()
         presenter.signInWithProvider(token, ApiContract.Social.TWITTER)
     }
 
@@ -284,11 +304,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
     override fun onFacebookSuccess(token: String) {
-        showWaitingDialog(
-            getString(R.string.dialogs_wait_title),
-            getString(R.string.dialogs_common_cancel_button),
-            EnterpriseLoginPresenter.TAG_DIALOG_WAITING
-        )
+        onWaitingDialog()
         presenter.signInWithProvider(token, ApiContract.Social.FACEBOOK)
     }
 
@@ -313,11 +329,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
     override fun onGoogleSuccess(account: Account) {
-        showWaitingDialog(
-            getString(R.string.dialogs_wait_title),
-            getString(R.string.dialogs_common_cancel_button),
-            EnterpriseLoginPresenter.TAG_DIALOG_WAITING
-        )
+        onWaitingDialog()
         val scope = requireContext().getString(R.string.google_scope)
         val accessToken = GoogleAuthUtil.getToken(requireContext(), account, scope)
         presenter.signInWithProvider(accessToken, ApiContract.Social.GOOGLE)
@@ -339,6 +351,64 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         args
         intent
         restoreViews(savedInstanceState)
+    }
+
+    override fun onSocialClick(social: String) {
+        presenter.signInPortalSocial(social)
+    }
+
+    override fun onSocialAuth(socialSignIn: SocialSignIn?) {
+        socialSignIn?.let { social ->
+            val serviceConfig = AuthorizationServiceConfiguration(
+                social.authUrl.toUri(),
+                "".toUri()
+            )
+            val authRequest = AuthorizationRequest.Builder(
+                serviceConfig,
+                social.clientId,
+                ResponseTypeValues.CODE,
+                social.redirectUri.toUri()
+            )
+                .setState(social.state)
+                .setScope(social.scope)
+                .setNonce(null)
+                .setCodeVerifier(null)
+                .build()
+
+            authService.browserDescriptor.packageName
+            val authIntent = authService.getAuthorizationRequestIntent(authRequest)
+            socialAuthLauncher.launch(authIntent)
+        }
+    }
+
+    override fun onSocialAuth(url: String, token: String) {
+        val customTabsIntent = CustomTabsIntent.Builder().build().also {
+            it.intent.`package` = authService.browserDescriptor.packageName
+        }
+        customTabsIntent.launchUrl(requireContext(), "$url?oauth_token=$token".toUri())
+    }
+
+    fun requestAccessToken(oauthToken: String, oauthVerifier: String) {
+        presenter.requestAccessToken(oauthToken, oauthVerifier)
+    }
+
+    private fun handleSocialAuthResult(result: ActivityResult) {
+        val intent = result.data ?: return
+        onWaitingDialog()
+        val response = AuthorizationResponse.fromIntent(intent)
+        if (response != null) {
+            presenter.signInWithProvider(
+                accessToken = null,
+                codeOauth = response.authorizationCode.orEmpty(),
+                provider = presenter.socialSignIn?.providerKey.orEmpty(),
+            )
+        } else {
+            val ex = AuthorizationException.fromIntent(intent)
+            hideDialog()
+            if (ex?.code != 1) { // USER_CANCELED_AUTH_FLOW
+                showSnackBar(R.string.socials_failed_auth)
+            }
+        }
     }
 
     private val args: Unit

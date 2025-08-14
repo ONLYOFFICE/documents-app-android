@@ -2,7 +2,6 @@ package app.editors.manager.ui.fragments.login
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -31,6 +30,7 @@ import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.presenter.InjectPresenter
+import androidx.core.net.toUri
 
 class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
 
@@ -254,7 +254,7 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
                             binding.authSecretKeyEditText.text.toString().replace(" ", "")
                         )
                     }
-                    if (request.provider.isNotEmpty() && request.accessToken.isNotEmpty()) {
+                    if (request.provider.isNotEmpty() && !request.accessToken.isNullOrEmpty()) {
                         presenter.signInWithProvider(
                             request.accessToken,
                             request.provider,
@@ -271,7 +271,7 @@ class AuthPageFragment : BaseAppFragment(), EnterpriseAppView {
         try {
             val uri =
                 "otpauth://totp/" + request.userName + "?secret=" + key + "&issuer= " + context?.accountOnline?.portalUrl
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+            val intent = Intent(Intent.ACTION_VIEW, uri.toUri())
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             Log.d(TAG, "openAuth: " + e.message)
