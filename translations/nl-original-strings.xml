@@ -8,19 +8,16 @@
     <string name="app_versions_title">Versie 3.0 uitgegeven</string>
     <string name="app_versions_cancel">Later</string>
     <string name="app_versions_without_release_accept">Installeer officiële app</string>
-    <string name="app_versions_without_release_info">
-      Dank u voor het beta testen! ONLYOFFICE Documents 3.0 is nu uitgegeven, en beta versie is niet langer ondersteund.
-      Switch naar de officiële app om updates te blijven ontvangen.
+    <string name="app_versions_without_release_info">Dank u voor het beta testen! ONLYOFFICE Documents 3.0 is nu uitgegeven, en beta versie is niet langer ondersteund.
+        Switch naar de officiële app om updates te blijven ontvangen.
     </string>
     <string name="app_versions_update_accept">Update officiële app</string>
-    <string name="app_versions_update_info">
-      Dank u voor het beta testen! ONLYOFFICE Documents 3.0 is nu uitgegeven, en beta versie is niet langer ondersteund.
-      Switch naar de officiële app om updates te blijven ontvangen.
+    <string name="app_versions_update_info">Dank u voor het beta testen! ONLYOFFICE Documents 3.0 is nu uitgegeven, en beta versie is niet langer ondersteund.
+        Switch naar de officiële app om updates te blijven ontvangen.
     </string>
     <string name="app_versions_actual_release_accept">Open de officiële app</string>
-    <string name="app_versions_actual_release_info">
-      Dank u voor het beta testen! ONLYOFFICE Documents 3.0 is nu uitgegeven, en beta versie is niet langer ondersteund.
-      Switch naar de officiële app om updates te blijven ontvangen.
+    <string name="app_versions_actual_release_info">Dank u voor het beta testen! ONLYOFFICE Documents 3.0 is nu uitgegeven, en beta versie is niet langer ondersteund.
+        Switch naar de officiële app om updates te blijven ontvangen.
     </string>
     <string name="snackbar_copied">Gekopieerd</string>
     <string name="snackbar_undo">ONGEDAAN MAKEN</string>
@@ -41,7 +38,7 @@
     <string name="errors_client_host_not_found">Adres niet gevonden</string>
     <string name="errors_client_forbidden">Toegang geweigerd</string>
     <string name="errors_client_unauthorized">Ongeautoriseerd verzoek</string>
-    <string name="errors_client_payment_required"> Betaling vereist</string>
+    <string name="errors_client_payment_required">Betaling vereist</string>
     <string name="errors_server_error">Onbekende server fout met code:\u0020</string>
     <string name="errors_server_auth_error">Authenticatie fout</string>
     <string name="errors_server_auth_too_many_attempts">Te veel pogingen. Probeer het later opnieuw</string>
@@ -55,6 +52,7 @@
     <string name="errors_web_viewr">Er is een fout opgetreden tijdens het bewerken van een webdocument</string>
     <string name="errors_webdav_sign_in">Verkeerde server, gebruikersnaam of wachtwoord</string>
     <string name="errors_webdav_username_password">Verkeerde gebruikersnaam of wachtwoord</string>
+    <string name="errors_webdav_2fa_code">Wrong verification code</string>
     <string name="errors_webdav_server">Verkeerde server</string>
     <string name="errors_open_document">Document openen mislukt</string>
     <string name="errors_sign_in_splash_error">Toegang tot de portal mislukt</string>
@@ -90,12 +88,11 @@
     <string name="login_not_authorization_button">PROBEER OPNIEUW</string>
     <string name="errors_first_name">Voornaam is niet geldig</string>
     <string name="errors_last_name">Achternaam is niet geldig</string>
-    <string name="login_password_recovery_hint">
-    Voer het e-mailadres in dat u hebt gebruikt voor registratie op de portal. De instructies voor wachtwoordherstel worden naar dit e-mailadres verzonden.
-  </string>
+    <string name="login_password_recovery_hint">Voer het e-mailadres in dat u hebt gebruikt voor registratie op de portal. De instructies voor wachtwoordherstel worden naar
+        dit e-mailadres verzonden.
+    </string>
     <string name="login_password_recovery_button_text">TERUG NAAR HET LOGIN-SCHERM</string>
-    <string name="login_password_recovery_success_hint">
-      Als er een gebruiker met het e-mailadres %1$s bestaat, zijn de instructies voor het wijzigen van het wachtwoord naar dit e-mailadres verzonden.
+    <string name="login_password_recovery_success_hint">Als er een gebruiker met het e-mailadres %1$s bestaat, zijn de instructies voor het wijzigen van het wachtwoord naar dit e-mailadres verzonden.
     </string>
     <string name="login_password_recovery_toolbar_title">Wachtwoordherstel</string>
     <string name="login_personal_edit_email_hint">Email</string>
@@ -105,9 +102,7 @@
     <string name="login_personal_signup_title">Meld u aan voor personal portal</string>
     <string name="login_personal_signup_edit_info">Bevestigingslink wordt naar dit adres verzonden</string>
     <string name="login_personal_signup_dialog_info">Bevestigingslink verzonden naar e-mail %1$s\nVolg de link in de e-mail voordat u verdergaat</string>
-    <string name="login_personal_info">
-    Verbind met ONLYOFFICE Personal om bestanden in de cloud op te slaan
-    </string>
+    <string name="login_personal_info">Verbind met ONLYOFFICE Personal om bestanden in de cloud op te slaan</string>
     <string name="login_web_dav_title">Verbind met to %1$s</string>
     <string name="login_create_portal_title">Creër portal voor organisatie</string>
     <string name="login_create_portal_address_hint">Portal adres</string>
@@ -122,7 +117,8 @@
     <string name="login_create_signin_passwords_mismatch">Wachtwoorden komen niet overeen</string>
     <string name="login_create_signin_passwords_length">Wachtwoord moet bevatten: van 8 tot 30 tekens</string>
     <string name="login_create_signin_info">Door op deze knop te klikken, accepteert u onze Servicevoorwaarden</string>
-    <string name="login_sms_send_again">OPNIEUW VERZENDEN</string>
+    <string name="login_sms_code_label">We hebben een sms-bericht met de code naar nummer</string>
+  <string name="login_sms_send_again">OPNIEUW VERZENDEN</string>
     <string name="login_sms_send_again_after">OPNIEUW VERZENDEN NA</string>
     <string name="login_sms_change_number">WIJZIG NUMMER</string>
     <string name="login_sms_phone_number_verification">Telefoonnummer verificatie</string>
@@ -175,7 +171,9 @@
     <string name="dialogs_warning_title">Waarschuwing</string>
     <string name="dialogs_warning_only_pdf_form_message">Het bestand kan niet naar deze ruimte worden verplaatst. Probeer het ONLYOFFICE PDF-formulier te verplaatsen.</string>
     <string name="dialogs_warning_pinned_room_limit">Je kunt niet meer dan 10 ruimtes bovenaan vastpinnen. Maak de vastgepinde ruimtes los.</string>
-    <string name="dialogs_warning_fill_forms_room_create">Creatie op basis van meerdere bestanden en mappen is niet beschikbaar voor dit type ruimte. Om zo'n ruimte te creëren, ga naar de sectie Kamers of gebruik een van de PDF-formulieren.</string>
+    <string name="dialogs_warning_fill_forms_room_create">Creatie op basis van meerdere bestanden en mappen is niet beschikbaar voor dit type ruimte. Om zo'n ruimte te creëren,
+        ga naar de sectie Kamers of gebruik een van de PDF-formulieren.
+    </string>
     <string name="dialogs_warning_room_space_quota_exceed">Ruimtequotum overschreden (%s).</string>
     <string name="dialogs_edit_rename_title">Hernoemen</string>
     <string name="dialogs_edit_hint">Titel invoeren</string>
@@ -215,7 +213,9 @@
     <string name="settings_clear_cache">Wis cache</string>
     <string name="settings_title_common">Algemeen</string>
     <string name="setting_wifi">Upload files only using Wi-Fi</string>
+    <string name="setting_screen_on">While viewing documents</string>
     <string name="setting_title_wifi">Wi-Fi</string>
+    <string name="setting_title_sreen_on">Keep Screen On</string>
     <string name="setting_cache_cleared">Cache gewist</string>
     <string name="toolbar_menu_search_result">Zoekresultaat</string>
     <string name="toolbar_menu_search_hint">Zoek…</string>
@@ -243,7 +243,7 @@
     <string name="toolbar_menu_sort_asc">Oplopend</string>
     <string name="toolbar_menu_sort_desc">Aflopend</string>
     <string name="toolbar_menu_main_download">Download</string>
-    <string name="toolbar_menu_main_open">Open</string>
+    <string name="toolbar_menu_main_open">Openen</string>
     <string name="toolbar_menu_main_filter">Filter</string>
     <string name="list_context_folder_name">Map naam</string>
     <string name="list_context_folder_title">Map titel</string>
@@ -256,10 +256,14 @@
     <string name="list_context_notification_enable">Meldingen inschakelen</string>
     <string name="list_context_notification_disable">Meldingen uitschakelen</string>
     <string name="list_context_create_download">Download</string>
+    <string name="list_context_save_as_template">Save as template</string>
+    <string name="list_context_access_settings">Access settings</string>
+    <string name="list_context_edit_index">Edit index</string>
     <string name="list_context_open_location">Open locatie</string>
     <string name="list_context_rename">Hernoemen</string>
     <string name="list_context_rename_success">Hernoemen succesvol</string>
     <string name="list_context_delete">Verwijder</string>
+    <string name="list_context_delete_template">Delete template</string>
     <string name="list_context_delete_storage">Opslag loskoppelen</string>
     <string name="list_context_delete_success">Verwijdering succesvol</string>
     <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
@@ -270,17 +274,19 @@
     <string name="list_context_leave_room">Verlaat ruimte</string>
     <string name="list_context_copy_general_link">Kopieer algemene link</string>
     <string name="list_context_edit_room">Bewerk Ruimte</string>
+    <string name="list_context_edit_template">Edit template</string>
     <string name="list_context_fill">Opvulling</string>
     <string name="list_context_lock">Slot</string>
     <string name="list_context_unlock">Ontgrendelen</string>
     <string name="list_context_version_history">Versiegeschiedenis weergeven</string>
-    <string name="list_context_open_vesrion">Open</string>
+    <string name="list_context_open_vesrion">Openen</string>
     <string name="list_context_edit_comment">Commentaar bewerken</string>
     <string name="list_context_enable_custom_filter">Aangepast filter inschakelen</string>
     <string name="list_context_disable_custom_filter">Aangepast filter uitschakelen</string>
     <string name="list_action_sheet">Spreadsheet</string>
     <string name="list_action_presentation">Presentatie</string>
     <string name="list_action_doc">Tekst document</string>
+    <string name="list_action_doc_from_photo">Text document from photo</string>
     <string name="list_action_folder">Map</string>
     <string name="list_action_photo">Maak foto</string>
     <string name="list_action_upload">Upload bestand</string>
@@ -303,6 +309,8 @@
     <string name="main_pager_docs_virtual_room">Ruimtes</string>
     <string name="main_pager_docs_archive_room">Archief</string>
     <string name="placeholder_connection">Verbindingsfout</string>
+    <string name="placeholder_connection_desc">No network connection detected. Please check your connection and try again</string>
+    <string name="placeholder_connection_button">Reload</string>
     <string name="placeholder_empty">Lege map</string>
     <string name="placeholder_search">Niets gevonden</string>
     <string name="placeholder_share">Niet gedeeld</string>
@@ -316,24 +324,34 @@
     <string name="placeholder_loading_files">Bestanden laden…</string>
     <string name="placeholder_loading_users">Gebruikers laden…</string>
     <string name="placeholder_loading_groups">Groepen laden…</string>
-    <string name="placeholder_other_accounts">Nog geen andere accounts hier...</string>
-    <string name="placeholder_empty_folder">Nog geen documenten hier...</string>
-    <string name="placeholder_empty_trash_desc">Alle verwijderde bestanden worden verplaatst naar \'Prullenbak\'. Herstel bestanden die per ongeluk zijn verwijderd of verwijder ze permanent. Bestanden in \'Prullenbak\' worden automatisch verwijderd na 30 dagen. Let op, de bestanden die uit de \'Prullenbak\' zijn verwijderd, kunnen niet meer worden hersteld.</string>
+    <string name="placeholder_other_accounts">Nog geen andere accounts hier</string>
+    <string name="placeholder_empty_folder">Nog geen documenten hier</string>
+    <string name="placeholder_empty_trash_desc">Alle verwijderde bestanden worden verplaatst naar \'Prullenbak\'. Herstel bestanden die per ongeluk zijn verwijderd of verwijder ze permanent. Bestanden in
+        \'Prullenbak\' worden automatisch verwijderd na 30 dagen. Let op, de bestanden die uit de \'Prullenbak\' zijn verwijderd, kunnen niet meer worden hersteld.
+    </string>
     <string name="placeholder_no_users_found">Geen gebruikers gevonden</string>
-    <string name="placeholder_no_users_found_desc">Er zijn geen gebruikers die aan uw zoekopdracht voldoen. Pas uw zoekparameters aan of wis het zoekveld om de volledige lijst met gebruikers te bekijken.</string>
+    <string name="placeholder_no_users_found_desc">Er zijn geen gebruikers die aan uw zoekopdracht voldoen. Pas uw zoekparameters aan of wis het zoekveld om de volledige
+        lijst met gebruikers te bekijken.
+    </string>
     <string name="placeholder_no_members_found">Geen teamleden gevonden</string>
     <string name="placeholder_no_members_found_desc">U kunt handmatig nieuwe teamleden toevoegen of hen via een link uitnodigen</string>
     <string name="placeholder_no_rooms">Welkom bij DocSpace!</string>
     <string name="placeholder_no_rooms_desc">Maak de eerste ruimte aan</string>
     <string name="placeholder_no_rooms_visitor_desc">Gedeelde ruimtes met u verschijnen hier</string>
     <string name="placeholder_empty_archive">Nog geen gearchiveerde ruimtes hier...</string>
-    <string name="placeholder_empty_archive_desc">U kunt ruimtes die u niet gebruikt archiveren en ze op elk gewenst moment in uw DocSpace herstellen of ze permanent verwijderen. Deze ruimtes verschijnen hier</string>
+    <string name="placeholder_empty_archive_desc">U kunt ruimtes die u niet gebruikt archiveren en ze op elk gewenst moment in uw DocSpace herstellen of ze
+        permanent verwijderen. Deze ruimtes verschijnen hier
+    </string>
+    <string name="placeholder_empty_templates_folder">No templates here yet</string>
+    <string name="placeholder_empty_templates_folder_desc">You can create a template from a room in the Room section</string>
     <string name="placeholder_no_search_result">Geen zoekresultaten</string>
     <string name="placeholder_no_search_result_desc">Er zijn geen resultaten gevonden die overeenkomen met uw zoekopdracht. Probeer andere zoekopdracht</string>
     <string name="placeholder_empty_room_visitor_desc">Bestanden en mappen die door beheerders zijn geüpload, worden hier weergegeven</string>
     <string name="placeholder_empty_recent_via_link_desc">Hier vindt u een lijst met de recent geopende bestanden die met u zijn gedeeld via een externe link</string>
     <string name="placeholder_payment_required">Zakelijk abonnement verlopen</string>
-    <string name="placeholder_payment_required_desc">Uw huidige tariefplan "Business" is verlopen. Vernieuw uw abonnement in de accountinstellingen om uw DocSpace te kunnen gebruiken. Als u vragen hebt, neem dan contact op met support</string>
+    <string name="placeholder_payment_required_desc">Uw huidige tariefplan "Business" is verlopen. Vernieuw uw abonnement in de accountinstellingen
+        om uw DocSpace te kunnen gebruiken. Als u vragen hebt, neem dan contact op met support.
+    </string>
     <string name="placeholder_payment_required_button">Vernieuw business abonnement</string>
     <string name="placeholder_no_fonts">Geen lettertypen</string>
     <string name="list_headers_folder">Mappen</string>
@@ -368,7 +386,9 @@
     <string name="share_access_success">Externe toegang succesvol</string>
     <string name="share_access_denied">Externe toegang geweigerd</string>
     <string name="share_clipboard_external_copied">Geheime link gekopieerd naar klembord</string>
-    <string name="share_clipboard_internal_copied">Link voor portaalgebruikers gekopieerd naar klembord</string>
+    <string name="share_clipboard_internal_copied">Link voor portaalgebruikers gekopieerd naar klembord
+    </string>
+    <string name="share_clipboard_internal_copied">Link for portal users copied to clipboard</string>
     <string name="share_clipboard_external_link_label">Externe link</string>
     <string name="share_tab_users">GEBRUIKERS</string>
     <string name="share_tab_groups">GROEPEN</string>
@@ -385,8 +405,8 @@
     <string name="storage_select_box">Box</string>
     <string name="storage_select_share_point">SharePoint</string>
     <string name="storage_select_own_cloud">ownCloud</string>
-    <string name="storage_select_kdrive" translatable="false">KDrive</string>
-    <string name="krdive_password_helper_text">Als u dubbele authenticatie hebt geactiveerd, genereer dan een CDM-applicatie vanuit de Infomaniak-manager.</string>
+    <string name="krdive_password_helper_text">Als u dubbele authenticatie hebt geactiveerd, genereer dan een CDM-applicatie vanuit de Infomaniak-manager.
+    </string>
     <string name="kdrive_info_title">Om deze service te kunnen gebruiken, moet u over een betaalde versie van de player beschikken.</string>
     <string name="storage_email_connection">E-mailverbinding</string>
     <string name="storage_select_web_dav">Andere WebDAV-opslag</string>
@@ -475,16 +495,16 @@
     <string name="on_boarding_welcome_header">Welkom bij ONLYOFFICE</string>
     <string name="on_boarding_welcome_info">We hebben ONLYOFFICE Documents voor Android aanzienlijk geüpdate. Swipe om meer te weten te komen.</string>
     <string name="on_boarding_edit_header">Bewerk office documenten</string>
-    <string name="on_boarding_edit_info">
-      Maak en bewerk tekstdocumenten, spreadsheets en presentaties op het ONLYOFFICE-portal.
+    <string name="on_boarding_edit_info">Create and edit documents with our comprehensive toolbar: work with complex objects in text documents, perform
+        extensive calculations in spreadsheets, create stunning presentations and view PDF files with no formatting loss.
     </string>
-    <string name="on_boarding_third_party_header">Verbind met third-party clouds</string>
-    <string name="on_boarding_third_party_info">
-    Verbind de app met andere cloudopslagplatformen die u gebruikt: Google Drive, Dropbox, Nextcloud, etc.
+    <string name="on_boarding_locally_header">Edit documents locally</string>
+    <string name="on_boarding_locally_info">Work with documents offline. Created files can later be uploaded to online portal and then accessed from any other
+        device.
     </string>
-    <string name="on_boarding_collaborate_header">Werk samen</string>
-    <string name="on_boarding_collaborate_info">
-    Bewerk Office-documenten samen met uw teamgenoten in realtime.
+    <string name="on_boarding_collaborate_header">Collaborate with your team</string>
+    <string name="on_boarding_collaborate_info">In online mode, use real-time co-editing features of ONLYOFFICE to work on documents together with your portal
+    members, share documents and create common storage folders.
     </string>
     <string name="on_boarding_third_party_header">Verbind met third-party clouds</string>
     <string name="on_boarding_third_party_info">Verbind de app met andere cloudopslagplatformen die u gebruikt: Google Drive, Dropbox, Nextcloud, etc.</string>
@@ -492,7 +512,9 @@
     <string name="media_image_list_info">Media bestanden: %1$s</string>
     <string name="media_video_error">Speler onbekend fout: %1$s</string>
     <string name="auth_header_screen_1">Twee-factor-authenticatie instellen</string>
-    <string name="auth_info_screen_1">Installeer een authenticator-app om toegangscodes te genereren (bijv. Google Authenticator, Authy) om te kunnen blijven werken met uw portal</string>
+    <string name="auth_info_screen_1">Installeer een authenticator-app om toegangscodes te genereren (bijv. Google Authenticator, Authy) om te kunnen blijven werken met uw
+        portal
+    </string>
     <string name="auth_header_screen_2">Start een authenticator-app</string>
     <string name="auth_info_screen_2">Open de app en tik op het pictogram voor een nieuw account</string>
     <string name="auth_header_screen_3">Voeg een geheime sleutel toe</string>
@@ -514,9 +536,9 @@
     <string name="operation_move_file_existing">%1$s bestand bestaat al in de doelmap.</string>
     <string name="upload_to_portal">Upload naar portal</string>
     <string name="this_device">Dit apparaat</string>
-    <string name="dialog_clear_cache">
-    Cache wissen?\nDeze bewerking maakt ruimte vrij op uw apparaat door tijdelijke bestanden te verwijderen. Uw offline bestanden en persoonlijke gegevens worden niet verwijderd.
-  </string>
+    <string name="dialog_clear_cache">Cache wissen?\nDeze bewerking maakt ruimte vrij op uw apparaat door tijdelijke bestanden te verwijderen. Uw offline bestanden en persoonlijke
+        gegevens worden niet verwijderd.
+    </string>
     <string name="error_unsupported_path">Niet-ondersteund pad</string>
     <string name="error_unsupported_format">Niet-ondersteund formaat</string>
     <string name="cloud_account_description">Samenwerken in een veilige omgeving en verbinding maken met cloudopslag van derden</string>
@@ -527,13 +549,13 @@
     <string name="cloud_accounts_title">Accounts</string>
     <string name="error_long_file_name">Bestandsnaam is te lang</string>
     <string name="dialog_remove_account_title">Verwijderen van apparaat</string>
-    <string name="dialog_remove_account_description">
-    Gebruiker met %1$s van de %2$s portal wordt uitgelogd en verwijderd uit de accountlijst. \n\nLet op: om in te loggen, moet u uw portaladres, e-mailadres en wachtwoord invoeren. Al uw bestanden zijn veilig.
-  </string>
+    <string name="dialog_remove_account_description">Gebruiker met %1$s van de %2$s portal wordt uitgelogd en verwijderd uit de accountlijst. \n\nLet op:
+        om in te loggen, moet u uw portaladres, e-mailadres en wachtwoord invoeren. Al uw bestanden zijn veilig.
+    </string>
     <string name="dialog_logout_account_title">Weet u zeker dat u wilt uitloggen?</string>
-    <string name="dialog_logout_account_description">
-    Nadat u bent uitgelogd, hoeft u uw portaladres of e-mailadres niet in te voeren, alleen het wachtwoord. Maakt u zich geen zorgen, alle bestanden zijn veilig in de cloud.
-  </string>
+    <string name="dialog_logout_account_description">Nadat u bent uitgelogd, hoeft u uw portaladres of e-mailadres niet in te voeren, alleen het wachtwoord. Maakt u zich geen zorgen,
+        alle bestanden zijn veilig in de cloud.
+    </string>
     <string name="profile_username_title">Gebruikersnaam</string>
     <string name="profile_portal_address">Portal adres</string>
     <string name="profile_type_admin">Admin</string>
@@ -559,13 +581,14 @@
     <string name="app_settings_passcode_confirm_error">Toegangscodes komen niet overeen</string>
     <string name="app_settings_passcode_change_disable_title">Voer uw huidige toegangscode in</string>
     <string name="app_settings_passcode_change_disable_error">Onjuiste toegangscode ingevoerd</string>
-    <string name="app_settings_passcode_description"> - dit is de code die bij het starten van de applicatie is aangevraagd.\n\Let op! Als u de toegangscode vergeet, moet u de applicatie verwijderen of installeren. Alle lokale documenten op het apparaat gaan verloren.</string>
+    <string name="app_settings_passcode_description"> - dit is de code die bij het starten van de applicatie is aangevraagd.\n\Let op! Als u de toegangscode vergeet,
+        moet u de applicatie verwijderen of installeren. Alle lokale documenten op het apparaat gaan verloren.
+    </string>
     <string name="app_settings_passcode_fingerprint_title">Toegang tot Documenten</string>
     <string name="app_internal_error">Interne fout</string>
     <string name="app_fragment_crash_error">Sluit deze app en probeer het opnieuw</string>
     <string name="item_owner_self">Mezelf</string>
-    <string name="sign_in_terms_and_policy_text">
-      <![CDATA[
+    <string name="sign_in_terms_and_policy_text"><![CDATA[
  Door verder te gaan, gaat u akkoord met de
  <a href="%1$s">Privacy Policy</a>
  en de
@@ -586,6 +609,8 @@
     <string name="filter_type_spreadsheets">Spreadsheets</string>
     <string name="filter_type_form_templates">Formulier templates</string>
     <string name="filter_type_forms">Formulieren</string>
+    <string name="filter_type_pdf_documents">PDF-documents</string>
+    <string name="filter_type_pdf_forms">PDF-formulieren</string>
     <string name="filter_type_images">Afbeeldingen</string>
     <string name="filter_type_media">Media</string>
     <string name="filter_type_archives">Archieven</string>
@@ -604,11 +629,15 @@
     <string name="rooms_add_collaboration">Samenwerkingsruimte</string>
     <string name="rooms_add_collaboration_des">Werk samen met uw team aan één of meerdere documenten</string>
     <string name="rooms_add_public_room">Publieke ruimte</string>
-    <string name="rooms_add_public_room_des">Nodig gebruikers uit via gedeelde links om documenten te bekijken zonder registratie. U kunt deze ruimte ook in elke webinterface embedden.</string>
+    <string name="rooms_add_public_room_des">Nodig gebruikers uit via gedeelde links om documenten te bekijken zonder registratie. U kunt deze ruimte ook in elke
+        webinterface embedden.
+    </string>
     <string name="rooms_add_custom">Aangepaste ruimte</string>
     <string name="rooms_add_custom_des">Pas uw eigen instellingen toe om deze ruimte voor elk gewenst doel te gebruiken</string>
     <string name="rooms_add_fill_forms">Ruimte voor het invullen van formulieren</string>
-    <string name="rooms_add_fill_forms_des">PDF-formulieren uploaden naar de ruimte. Gebruikers uitnodigen om een ​​PDF-formulier in te vullen. Voltooide formulieren bekijken en automatisch verzamelde gegevens in een spreadsheet analyseren.</string>
+    <string name="rooms_add_fill_forms_des">PDF-formulieren uploaden naar de ruimte. Gebruikers uitnodigen om een ​​PDF-formulier in te vullen. Voltooide formulieren bekijken en
+        automatisch verzamelde gegevens in een spreadsheet analyseren.
+    </string>
     <string name="rooms_choose_room">Kies type ruimte</string>
     <string name="room_name_hint">Naam ruimte</string>
     <string name="room_add_tag_hint">Voeg tags toe</string>
@@ -625,16 +654,19 @@
     <string name="room_search_not_found">Geen gebruikers gevonden</string>
     <string name="room_search_not_found_desc">Hier verschijnt de lijst met gebruikers die eerder zijn uitgenodigd voor DocSpace of separate ruimtes.</string>
     <string name="room_placeholder_created_room_title">Ruimte aangemaakt!</string>
-    <string name="room_placeholder_created_room_subtitle">Maak nieuwe mappen om uw bestanden te ordenen.</string>
+    <string name="room_placeholder_created_template_title">Template created!</string>
+  <string name="room_placeholder_created_room_subtitle">Maak nieuwe mappen om uw bestanden te ordenen.</string>
     <string name="room_placeholder_created_filling_form_room_title">Welkom in de formulieren invul-ruimte</string>
     <string name="room_placeholder_created_filling_form_room_subtitle">Upload een kant-en-klaar PDF-formulier of maak nieuwe mappen om uw bestanden te ordenen</string>
     <string name="room_placeholder_created_virtual_room_title">Welkom bij de virtuele data-ruimte</string>
     <string name="room_placeholder_created_virtual_room_subtitle">Aan de slag met snelle acties:\nMaak een nieuw bestand</string>
     <string name="room_recent_via_link">Toegankelijk via link</string>
+    <string name="room_access_via_link_title">Access via link</string>
     <string name="room_manage_room">Beheer ruimte</string>
-    <string name="rooms_move_to_public_title">Verplaatsen naar openbare ruimte</string>
     <string name="rooms_move_to_public_title">Verplaats naar publieke ruimte</string>
     <string name="rooms_move_to_public_title_desc">Deze ruimte en alle inhoud ervan zijn beschikbaar voor iedereen met de link. Wilt u doorgaan?</string>
+    <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.
+    </string>
     <string name="rooms_info_general_link">Algemene link</string>
     <string name="rooms_info_edit_link">Bewerk link</string>
     <string name="rooms_info_create_link_title">Maak link</string>
@@ -645,9 +677,13 @@
     <string name="rooms_info_create_maximum_exceed">Het maximum aantal links is overschreden</string>
     <string name="rooms_info_delete_link">Verwijder link</string>
     <string name="rooms_info_delete_link_complete">Link is verwijderd</string>
-    <string name="rooms_info_delete_link_desc">Links naar alle bestanden in de ruimte worden verwijderd. Eerdere links naar ruimte-bestanden en ingesloten documenten worden niet meer beschikbaar.\n\nDeze actie kan niet ongedaan worden gemaakt. Weet u zeker dat u wilt doorgaan?</string>
+    <string name="rooms_info_delete_link_desc">Links naar alle bestanden in de ruimte worden verwijderd. Eerdere links naar ruimte-bestanden en ingesloten documenten worden niet meer beschikbaar.\n\nDeze actie kan niet ongedaan worden
+        gemaakt. Weet u zeker dat u wilt doorgaan?
+    </string>
     <string name="rooms_info_revoke_link">Link intrekken</string>
-    <string name="rooms_info_revoke_link_desc">Links naar alle bestanden in de ruimte worden opnieuw gegenereerd. Eerdere links naar ruimte-bestanden en ingesloten documenten worden ongeldig.\n\nDeze actie kan niet ongedaan worden gemaakt. Weet u zeker dat u wilt doorgaan?</string>
+    <string name="rooms_info_revoke_link_desc">Links naar alle bestanden in de ruimte worden opnieuw gegenereerd. Eerdere links naar ruimte-bestanden en ingesloten documenten worden
+        ongeldig.\n\nDeze actie kan niet ongedaan worden gemaakt. Weet u zeker dat u wilt doorgaan?
+    </string>
     <string name="rooms_info_revoke_link_complete">Link is ingetrokken</string>
     <string name="rooms_info_revoke">Intrekken</string>
     <string name="rooms_info_copy_link">Kopieer link</string>
@@ -656,6 +692,7 @@
     <string name="rooms_info_admin_title">Administratie (%d)</string>
     <string name="rooms_info_users_title">Gebruikers (%1d)</string>
     <string name="rooms_info_groups_title">Groepen (%1d)</string>
+    <string name="rooms_info_guests_title">Gasten (%1d)</string>
     <string name="rooms_info_expected_title">Verwachte gebruikers (%1d)</string>
     <string name="rooms_info_link_expired">De link is verlopen</string>
     <string name="rooms_info_link_expired_full">De link is verlopen en is uitgeschakeld</string>
@@ -710,6 +747,8 @@
     <string name="share_access_room_owner">Eigenaar</string>
     <string name="share_user_type_room_docspace_admin">DocSpace beheerder</string>
     <string name="share_user_type_room_docspace_owner">DocSpace eigenaar</string>
+    <string name="share_user_type_room_workspace_owner">Workspace Owner</string>
+    <string name="share_user_type_room_portal_owner">Portal Owner</string>
     <string name="share_user_type_room_admin">Ruimte admin</string>
     <string name="share_access_room_manager">Ruimte manager</string>
     <string name="share_access_room_power_user">Contentmaker</string>
@@ -724,12 +763,16 @@
     <string name="share_invite_title">Nodig uit</string>
     <string name="room_create_success">Ruimte aangemaakt</string>
     <string name="room_delete_success">Ruimte verwijderd</string>
+    <string name="template_delete_success">Template deleted</string>
+    <string name="templates_delete_success">Templates deleted</string>
     <string name="room_create_thirdparty_storage_title">Third-party opslag</string>
     <string name="room_create_thirdparty_storage">Opslag</string>
     <string name="room_create_thirdparty_location">Locatie</string>
     <string name="room_create_thirdparty_location_root">Hoofdmap</string>
     <string name="room_create_thirdparty_new_folder">Maak nieuwe map aan</string>
-    <string name="room_create_thirdparty_desc">Gebruik services van derden als dataopslag voor deze ruimte. Er wordt een nieuwe map gemaakt voor het opslaan van de data van deze ruimte in de opslag service die is verbonden</string>
+    <string name="room_create_thirdparty_desc">Gebruik services van derden als dataopslag voor deze ruimte. Er wordt een nieuwe map gemaakt voor het opslaan van de data van deze ruimte in de opslag
+        service die is verbonden
+    </string>
     <string name="room_storage_reconnect">Opslag opnieuw verbinden</string>
     <string name="room_storage_not_availabale">De inhoud van de third-party map is niet beschikbaar. Probeer het account opnieuw te verbinden.</string>
     <string name="switch_account_title">Account wisselen?</string>
@@ -743,15 +786,17 @@
     <string name="settings_language_confirmation_accept">Goed</string>
     <string name="settings_language_continue_using_app_language">Blijf %1$s gebruiken</string>
     <string name="conversion_dialog_title">Document converteren en openen</string>
-    <string name="conversion_dialog_message">Het document dat u opent is geen OOXML (Office Open XML) bestand. Converteer het naar OOXML formaat voor snellere weergave en bewerking.</string>
+    <string name="conversion_dialog_message">Het document dat u opent is geen OOXML (Office Open XML) bestand. Converteer het naar OOXML formaat voor snellere weergave
+        en bewerking.
+    </string>
     <string name="conversion_dialog_open_in_view_mode">Openen in weergavemodus</string>
     <string name="conversion_dialog_convert_to">Converteer naar %1s</string>
     <string name="conversion_dialog_converting_to">Converteren naar %1s</string>
     <string name="personal_portal_end_button">Maak een gratis account aan</string>
     <string name="personal_portal_end_title">ONLYOFFICE Personal is aan het afronden</string>
-  <string name="personal_portal_end_text">
-    ONLYOFFICE Personal wordt stopgezet op 1 september 2024.\nWij raden u aan om over te stappen op de gratis ONLYOFFICE DocSpace Cloud.
-  </string>
+  <string name="personal_portal_end_text">ONLYOFFICE Personal wordt stopgezet op 1 september 2024.\nWij raden u aan om over te stappen op de gratis ONLYOFFICE
+        DocSpace Cloud.
+    </string>
     <string name="rooms_upload_pdf_from_docspace">PDF-formulier uploaden vanuit DocSpace</string>
     <string name="rooms_upload_pdf_from_device">PDF-formulier uploaden vanaf apparaat</string>
     <string name="rooms_fill_in_as_title">Vul in als</string>
@@ -759,7 +804,9 @@
     <string name="rooms_fill_out_form_yourself_desc">Vul de velden van het originele formulier in het editorvenster in.</string>
     <string name="rooms_share_and_collect">Deel &amp; verzamel</string>
     <string name="rooms_share_and_collect_desc">Deel uw formulier en verzamel reacties via de formulier invul ruimte.</string>
-    <string name="rooms_fill_form_complete_desc">Het ingevulde PDF-formulier wordt opgeslagen en is beschikbaar voor u in de map Compleet. Om de status te controleren, neemt u contact op met de eigenaar van het formulier en geeft u het toegewezen nummer door.</string>
+    <string name="rooms_fill_form_complete_desc">Het ingevulde PDF-formulier wordt opgeslagen en is beschikbaar voor u in de map Compleet. Om de status te controleren, neemt u contact op met de eigenaar van het formulier
+        en geeft u het toegewezen nummer door.
+    </string>
     <string name="rooms_fill_form_complete_number_title">Formulier nummer</string>
     <string name="rooms_fill_form_complete_owner_title">Formulier eigenaar</string>
     <string name="rooms_fill_form_complete_toolbar_title">Formulier succesvol voltooid</string>
@@ -769,12 +816,18 @@
     <string name="rooms_notifications_disabled">Ruimte meldingen uitgeschakeld</string>
     <string name="rooms_notifications_enabled">Ruimte meldingen ingeschakeld</string>
     <string name="rooms_vdr">Virtuele Data Ruimte</string>
-    <string name="rooms_vdr_desc">Gebruik VDR voor geavanceerde bestandsbeveiliging en transparantie tijdens het stapsgewijs invullen en ondertekenen van documenten. Stel watermerken in, indexeer en volg automatisch alle content, beperk downloaden en kopiëren.</string>
-    <string name="file_lifetime_desc">"Stel de levensduur van het bestand in om de bestanden in deze ruimte automatisch te verwijderen na een bepaalde periode. De levensduur begint op de datum van uploaden/aanmaken van het bestand."</string>
+    <string name="rooms_vdr_desc">Gebruik VDR voor geavanceerde bestandsbeveiliging en transparantie tijdens het stapsgewijs invullen en ondertekenen van documenten. Stel watermerken in, indexeer en volg
+        automatisch alle content, beperk downloaden en kopiëren.
+    </string>
+    <string name="file_lifetime_desc">"Stel de levensduur van het bestand in om de bestanden in deze ruimte automatisch te verwijderen na een bepaalde periode. De levensduur begint op de datum van
+        uploaden/aanmaken van het bestand."
+    </string>
     <string name="file_lifetime_title">Levensduur bestand</string>
     <string name="file_lifetime_hint">Bestanden ouder dan</string>
     <string name="file_lifetime_warning_title">Oudere bestanden waarvan de levensduur is overschreden, worden verwijderd</string>
-    <string name="file_lifetime_warning_desc">Aftellen van de levensduur begint op de datum van aanmaak van het bestand. Sommige bestanden in deze ruimte overschrijden de voorgestelde levensduur en worden verwijderd zodra u de instelling inschakelt.</string>
+    <string name="file_lifetime_warning_desc">Aftellen van de levensduur begint op de datum van aanmaak van het bestand. Sommige bestanden in deze ruimte overschrijden de voorgestelde levensduur
+        en worden verwijderd zodra u de instelling inschakelt.
+    </string>
     <string name="file_lifetime_action">Acties met bestanden</string>
     <string name="file_lifetime_action_delete">Verwijder permanent </string>
     <string name="file_lifetime_action_move_to_trash">Verplaats naar prullenbak</string>
@@ -782,11 +835,16 @@
     <string name="file_lifetime_period_days">Dagen</string>
     <string name="file_lifetime_period_months">Maanden</string>
     <string name="file_lifetime_period_years">Jaren</string>
-    <string name="rooms_vdr_file_restrict_desc">Schakel deze instelling in om downloads, afdrukken en kopiëren van inhoud uit te schakelen voor gebruikers met de rol 'Viewer'</string>
+    <string name="rooms_vdr_file_restrict_desc">Schakel deze instelling in om downloads, afdrukken en kopiëren van inhoud uit te schakelen voor gebruikers met de rol 'Viewer'
+    </string>
     <string name="rooms_vdr_watermark_title">Watermerken toevoegen aan documenten</string>
-    <string name="rooms_vdr_watermark_desc">Bescherm alle documenten in deze ruimte met watermerken. Als een document er al een bevat, wordt deze niet vervangen.</string>
+    <string name="rooms_vdr_watermark_desc">Bescherm alle documenten in deze ruimte met watermerken. Als een document er al een bevat, wordt deze niet vervangen.
+    </string>
     <string name="rooms_vdr_indexing_title">Automatische indexering</string>
-    <string name="rooms_vdr_indexing_desc">Schakel automatische indexering in om bestanden en mappen te indexeren op serienummer. Sorteren op nummer wordt standaard ingesteld voor alle gebruikers.</string>
+    <string name="rooms_vdr_indexing_desc">Schakel automatische indexering in om bestanden en mappen te indexeren op serienummer. Sorteren op nummer wordt standaard ingesteld voor
+        alle gebruikers.
+    </string>
+    <string name="rooms_vdr_storage_quota_title">Storage quota</string>
     <string name="rooms_vdr_storage_quota_desc">Opslagquotum ingesteld per ruimte. U kunt deze waarde wijzigen of de opslaglimiet uitschakelen.</string>
     <string name="rooms_vdr_size_quota">Grootte quotum</string>
     <string name="rooms_vdr_measurement_unit">Meeteenheid</string>
@@ -815,48 +873,53 @@
     <string name="rooms_index_title">Sortering index</string>
     <string name="rooms_index_reorder">Opnieuw ordenen</string>
     <string name="rooms_index_apply">Toepassen</string>
-    <string name="rooms_index_exit_no_saving">Afsluiten zonder op te slaan?\nU hebt wijzigingen in de index aangebracht. Als u doorgaat zonder op te slaan, worden die wijzigingen niet toegepast.</string>
-    <string name="rooms_index_reorder_desc">De Opnieuw ordenen-actie verwijdert spaties in de indexen. De bestanden worden opnieuw geïndexeerd in volgorde met offset om ontbrekende indexen op te vullen.</string>
+    <string name="rooms_index_exit_no_saving">Afsluiten zonder op te slaan?\nU hebt wijzigingen in de index aangebracht. Als u doorgaat zonder op te slaan, worden die wijzigingen niet
+        toegepast.
+    </string>
+    <string name="rooms_index_reorder_desc">De Opnieuw ordenen-actie verwijdert spaties in de indexen. De bestanden worden opnieuw geïndexeerd in volgorde met offset om ontbrekende
+        indexen op te vullen.
+    </string>
     <string name="rooms_index_reorder_complete_title">Bestand geëxporteerd</string>
     <string name="rooms_index_reorder_complete_desc">%s bestand geëxporteerd naar Documenten</string>
     <string name="rooms_index_reorder_open_file">Open bestand</string>
     <string name="rooms_protected_room">Beveiligde ruimte</string>
     <string name="rooms_invalid_password">Ongeldig wachtwoord</string>
-
-    <string name="rooms_invite_access_description">Gasten, gebruikers en groepen kunnen niet worden toegewezen als Ruimte managers. Alleen Ruimte- en DocSpace admins zijn geschikt voor de opgegeven rol.</string>
+    <string name="rooms_invite_access_description">Gasten, gebruikers en groepen kunnen niet worden toegewezen als Ruimte managers. Alleen Ruimte- en DocSpace admins zijn geschikt
+        voor de opgegeven rol.
+    </string>
     <string name="rooms_user_type_employees">Medewerkers</string>
     <string name="whats_new_title">What\'s new</string>
     <string name="whats_new_next">Get started</string>
-    <string name="version_history_title">Version History</string>
-    <string name="version_edit_comment_title">Edit Comment</string>
-    <string name="version_group_header">Version %s</string>
+    <string name="version_history_title">Versie geschiedenis</string>
+    <string name="version_edit_comment_title">Opmerking bewerken</string>
+    <string name="version_group_header">Versie %s</string>
     <string name="version_group_current_header">Current — Version %s</string>
-    <string name="edit_comment_title">Edit comment</string>
-    <string name="edit_comment_field_label">Comment</string>
+    <string name="edit_comment_title">Opmerking bewerken</string>
+    <string name="edit_comment_field_label">Opmerking</string>
     <string name="edit_comment_success">Comment saved successfully</string>
-    <string name="context_menu_desc">More</string>
+    <string name="context_menu_desc">Meer</string>
     <string name="version_restore_done">Version has been restored</string>
     <string name="version_delete_done">Version has been deleted</string>
-    <string name="edit_comment_label">Comment</string>
+    <string name="edit_comment_label">Opmerking</string>
     <string name="error_version_open">Failed to open document</string>
     <string name="error_version_delete">Failed to delete</string>
     <string name="error_version_restore">Failed to restore version</string>
     <string name="error_edit_comment">Failed to update comment</string>
     <string name="version_restore_title">Restore this version?</string>
     <string name="version_restore_subtitle">Current file will be saved in version history.</string>
-    <string name="version_restore_confirm">Restore</string>
+    <string name="version_restore_confirm">Herstellen</string>
     <string name="version_restore_loading">Restoring version</string>
     <string name="version_delete_title">Delete version</string>
     <string name="version_delete_subtitle">You are about to delete a file version. It will be no possible to see or restore it anymore. Are you sure you want to
         continue?
     </string>
-    <string name="version_delete_confirm">Delete</string>
-    <string name="version_delete_loading">Deleting</string>
-    <string name="version_dialog_cancel">Cancel</string>
+    <string name="version_delete_confirm">Verwijderd</string>
+    <string name="version_delete_loading">Verwijderen</string>
+    <string name="version_dialog_cancel">Annuleren</string>
     <string name="title_save_template">Save as template</string>
     <string name="title_edit_template">Edit template</string>
     <string name="title_create_from_template">From template</string>
-    <string name="title_access_settings">Access settings</string>
+    <string name="title_access_settings">Toegangsherstel</string>
     <string name="desc_create_from_template">Create a room based on a template. All settings, users, folders and files will be taken from the selected room
         template.
     </string>
@@ -974,12 +1037,12 @@
         </item>
     </plurals>
     <plurals name="access_members_users_title">
-        <item quantity="one">%d user</item>
-        <item quantity="other">%d users</item>
+        <item quantity="one">%d Gebruiker</item>
+        <item quantity="other">%d Gebruikers</item>
     </plurals>
     <plurals name="access_members_groups_title">
-        <item quantity="one">%d group</item>
-        <item quantity="other">%d groups</item>
+        <item quantity="one">%d Groep</item>
+        <item quantity="other">%d Groepen</item>
     </plurals>
 
     <!-- Module: libgcells - 198 strings -->
@@ -1059,7 +1122,9 @@
     <string name="cells_settings_format_custom_create_exists_error">Deze notatie bestaat al</string>
     <string name="cells_settings_format_custom_create">Maak aangepaste notatie</string>
     <string name="cells_settings_format_custom_delete">Verwijder notatie</string>
-    <string name="cells_settings_format_custom_desc">Voer de aangepaste getalnotatie zorgvuldig in. Spreadsheet Editor controleert aangepaste notaties niet op fouten die het xlsx-bestand kunnen beïnvloeden.</string>
+    <string name="cells_settings_format_custom_desc">Voer de aangepaste getalnotatie zorgvuldig in. Spreadsheet Editor controleert aangepaste notaties niet op
+        fouten die het xlsx-bestand kunnen beïnvloeden.
+    </string>
     <string name="cells_format_dollar_title">Dollar</string>
     <string name="cells_format_euro_title">Euro</string>
     <string name="cells_format_pound_title">Pond</string>
@@ -1173,12 +1238,16 @@
     <string name="cells_choose_region">Kies regio</string>
     <string name="cells_follow_system_info">Als de optie niet is geselecteerd, komen de regionale instellingen overeen met de instellingen van het besturingssysteem</string>
     <string name="cells_choose_region_info">Selecteer de regio waarop u de regionale instellingen wilt toepassen</string>
-    <string name="cells_separator_info">Gebruik om decimale en duizendste scheidingstekens in te stellen. Als de optie is uitgeschakeld, worden de scheidingstekens ingesteld volgens de regionale parameters</string>
+    <string name="cells_separator_info">Gebruik om decimale en duizendste scheidingstekens in te stellen. Als de optie is uitgeschakeld, worden de scheidingstekens ingesteld volgens de
+        regionale parameters
+    </string>
     <string name="cells_special_separator">Stel speciaal scheidingsteken in</string>
     <string name="cells_decimal_separator">Decimaal scheidingsteken</string>
     <string name="cells_group_separator">Groepsscheidingsteken</string>
     <string name="cells_separator_space">Spatie</string>
     <string name="cells_enter_separators_info">Voer één teken in dat als scheidingsteken moet worden gebruikt</string>
+    <string name="cells_context_settings_main_info">Spreadsheetinfo</string>
+    <string name="cells_formulas_description">Formula description</string>
 
     <!-- Module: libgdocs - 195 strings -->
     <string name="docs_title">Documents</string>
@@ -1319,11 +1388,11 @@
     <string name="forms_clear_fields">Wis alle velden</string>
     <string name="forms_choose_option">Kies een optie</string>
     <string name="forms_choose_image">Kies een afbeelding</string>
-    <string name="forms_signature_title">Signatures</string>
+    <string name="forms_signature_title">Handtekeningen</string>
     <string name="forms_signatures_empty_placeholder">Please, add new signature</string>
     <string name="forms_signatures_error_placeholder">Failed to load signatures</string>
     <string name="forms_new_signature">New signature</string>
-    <string name="forms_signature_draw_title">Draw</string>
+    <string name="forms_signature_draw_title">Teken</string>
     <string name="forms_signature_draw_mm">mm</string>
     <string name="forms_signature_draw_placeholder">Draw Signature Here</string>
     <string name="forms_signature_image_placeholder">Add Image</string>
@@ -1356,12 +1425,16 @@
     <string name="docs_footnote_conver">Converteer voetnoot</string>
     <string name="docs_footnote_clear">Wis voetnoten</string>
     <string name="docs_footnote_clear_endnote">Wis eindnoot</string>
-    <string name="docs_footnote_restart_descriptions">De parameter specificeert of de nummering sequentieel zal zijn in het hele document. Of opnieuw zal beginnen vanaf een nieuwe pagina of in een nieuwe sectie.</string>
+    <string name="docs_footnote_restart_descriptions">De parameter specificeert of de nummering sequentieel zal zijn in het hele document. Of opnieuw zal beginnen
+        vanaf een nieuwe pagina of in een nieuwe sectie.
+    </string>
     <string name="docs_footnote_convert_footnote">Converteer naar voetnoot</string>
     <string name="docs_footnote_convert_endnote">Converteer naar eindnoot</string>
     <string name="docs_footnote_swap">Wissel voetnoten om</string>
-    <string name="docs_footnote_convert_descriprion">Verandert één type voetnoot in een ander type of verwisselt voetnoten: gewone voetnoten worden eindnoten en eindnoten worden gewone voetnoten.</string>
-    <string name="docs_context_settings_main_info">Document info</string>
+    <string name="docs_footnote_convert_descriprion">Verandert één type voetnoot in een ander type of verwisselt voetnoten: gewone voetnoten worden eindnoten en
+        eindnoten worden gewone voetnoten.
+    </string>
+    <string name="docs_context_settings_main_info">Documentinfo</string>
     <string name="docs_protection_dialog_title">Het document is beveiligd</string>
     <string name="docs_protection_dialog_message_read_only">U mag dit document alleen bekijken</string>
     <string name="docs_protection_dialog_message_fill_forms">U mag alleen formulieren in dit document invullen</string>
@@ -1375,8 +1448,7 @@
     <string name="docs_column_right">Rechts</string>
     <string name="docs_add_ribbon_page_break">Pagina</string>
     <string name="docs_add_ribbon_section_break">Sectie</string>
-    <string name="docs_mobile_view_notification">
-      Een deel van de inhoud van dit document is verborgen in de mobiele weergave. Om deze te bekijken, schakelt u over naar de standaardweergave.
+    <string name="docs_mobile_view_notification">Een deel van de inhoud van dit document is verborgen in de mobiele weergave. Om deze te bekijken, schakelt u over naar de standaardweergave.
     </string>
 
     <!-- Module: libgeditors - 502 strings -->
@@ -1498,9 +1570,11 @@
     <string name="settings_color_schemes">Kleurenschema\'s</string>
     <string name="settings_color_background">Achtergrond</string>
     <string name="settings_fonts_size_pt">pt</string>
+    <string name="settings_fonts_main">Main Text</string>
     <string name="settings_delay_second">s</string>
     <string name="settings_size_inch">inch</string>
     <string name="settings_text_size_title">Grootte</string>
+    <string name="settings_line_size_title">Line size</string>
     <string name="docs_settings_highlight_color">Markeer kleur</string>
     <string name="docs_settings_advanced_settings">Geavanceerde instellingen</string>
     <string name="settings_bullets">Opsommingstekens</string>
@@ -1571,23 +1645,23 @@
     <string name="settings_table_flow">Flow</string>
     <string name="settings_table_distance_from_text">Afstand tot tekst</string>
     <string name="settings_table_align">Uitlijnen</string>
-    <string name="settings_table_style_row">Row</string>
-    <string name="settings_table_style_column">Column</string>
-    <string name="settings_table_style_header_row">Header Row</string>
-    <string name="settings_table_style_total_row">Total Row</string>
-    <string name="settings_table_style_banded_row">Banded Row</string>
-    <string name="settings_table_style_first_column">First Column</string>
-    <string name="settings_table_style_last_column">Last Column</string>
-    <string name="settings_table_style_banded_column">Banded Column</string>
-    <string name="settings_table_insert_row_above">Insert row above</string>
-    <string name="settings_table_insert_row_below">Insert row below</string>
-    <string name="settings_table_insert_column_left">Insert column left</string>
-    <string name="settings_table_insert_column_right">Insert column right</string>
-    <string name="settings_table_delete_row">Delete row</string>
-    <string name="settings_table_delete_column">Delete column</string>
-    <string name="settings_table_insert">Insert</string>
-    <string name="settings_table_delete">Delete</string>
-    <string name="settings_table_rows_and_columns">Rows and columns</string>
+    <string name="settings_table_style_row">Rij</string>
+    <string name="settings_table_style_column">Kolom</string>
+    <string name="settings_table_style_header_row">Koprij</string>
+    <string name="settings_table_style_total_row">Totaalrij</string>
+    <string name="settings_table_style_banded_row">Gestreepte rij</string>
+    <string name="settings_table_style_first_column">Eerste kolom</string>
+    <string name="settings_table_style_last_column">Laatste kolom</string>
+    <string name="settings_table_style_banded_column">Gestreepte kolom</string>
+    <string name="settings_table_insert_row_above">Rij boven invoegen</string>
+    <string name="settings_table_insert_row_below">Rij onder invoegen</string>
+    <string name="settings_table_insert_column_left">Kolom links invoegen</string>
+    <string name="settings_table_insert_column_right">Kolom rechts invoegen</string>
+    <string name="settings_table_delete_row">Rij verwijderen</string>
+    <string name="settings_table_delete_column">Kolom verwijderen</string>
+    <string name="settings_table_insert">Invoegen</string>
+    <string name="settings_table_delete">Verwijder</string>
+    <string name="settings_table_rows_and_columns">Rijen en kolommen</string>
     <string name="settings_shape_title">Vormstijl</string>
     <string name="settings_shape_border_style">Randstijl</string>
     <string name="settings_shape_fill">Vorm vullen</string>
@@ -1629,8 +1703,10 @@
     <string name="settings_align_top">Boven uitlijnen</string>
     <string name="settings_align_middle">Midden uitlijnen</string>
     <string name="settings_align_bottom">Onder uitlijnen</string>
+    <string name="settings_align_horizontally">Distribute horizontally</string>
+    <string name="settings_align_vertically">Distribute vertically</string>
     <string name="settings_text">Tekst</string>
-    <string name="settings_info_appbar_title">Document info</string>
+    <string name="settings_info_appbar_title">Documentinfo</string>
     <string name="settings_text_orientation_title">Tekst oriëntatie</string>
     <string name="settings_text_orientation_horizontal">Horizontale tekst</string>
     <string name="settings_text_orientation_counterclockwise">Hoek tegen de klok in</string>
@@ -1802,7 +1878,7 @@
     <string name="language_dutch">Nederlands</string>
     <string name="language_finnish">Finnish</string>
     <string name="language_french">French</string>
-    <string name="language_deutsch">Deutsch</string>
+    <string name="language_deutsch">German</string>
     <string name="language_greek">Greek</string>
     <string name="language_hungarian">Hungarian</string>
     <string name="language_indonesian">Indonesian</string>
@@ -1823,7 +1899,7 @@
     <string name="language_turkish">Turkish</string>
     <string name="language_ukrainian">Ukrainian</string>
     <string name="language_vietnamese">Vietnamese</string>
-    <string name="language_armenian">Armenia</string>
+    <string name="language_armenian">Armenian</string>
     <string name="license_expired">Uw licentie is verlopen</string>
     <string name="license_invalid">Uw licentie is ongeldig</string>
     <string name="custom_fonts_loaded">Lettertypen geladen.</string>
@@ -1842,6 +1918,7 @@
     <string name="context_protection_editing_type">Type bewerking</string>
     <string name="context_protection_editing_type_read_only">Geen wijzigingen toestaan (alleen-lezen)</string>
     <string name="context_protection_editing_type_filling_forms">Formulieren invullen</string>
+    <string name="context_protection_editing_type_tracked_changes">Tracked changes</string>
     <string name="context_protection_editing_type_comments">Opmerkingen</string>
     <string name="context_protection_editing_type_desc">Sta alleen dit type bewerking toe in het document.</string>
     <string name="dialog_edit_password_title">Beveiligd bestand</string>
@@ -1850,6 +1927,7 @@
     <string name="settings_add_draw">Teken</string>
     <string name="settings_draw_settings_preview">Voorbeeld</string>
     <string name="settings_draw_settings">Teken instellingen</string>
+    <string name="settings_draw_brush">Brush</string>
     <string name="settings_common_width">Breedte</string>
     <string name="settings_common_height">Hoogte</string>
     <string name="settings_size_invalid_format">Ongeldige opmaak</string>
@@ -1862,10 +1940,11 @@
     <string name="settings_unit_of_measurement">Meeteenheid</string>
     <string name="table_merge_cells">Cellen samenvoegen</string>
     <string name="table_split_cells">Cellen splitsen</string>
+    <string name="table_delete">Delete table</string>
     <string name="settings_document_language">Documenttaal</string>
     <string name="style_normal">Normaal</string>
     <string name="style_title">Titel</string>
-    <string name="pdf_title">Pdf</string>
+    <string name="pdf_title">PDF</string>
     <string name="sending_form_title">Formulier verzenden</string>
     <string name="form_send">Verzend</string>
     <string name="form_send_title">Voltooien &amp; indienen</string>
@@ -1897,8 +1976,6 @@
     <string name="slides_context_settings_download_header_title">Opslaan als…</string>
     <string name="slides_context_settings_download_pptx">PPTX</string>
     <string name="slides_context_settings_download_odp">ODP</string>
-    <string name="slides_context_settings_download_potx" translatable="false">POTX</string>
-    <string name="slides_context_settings_download_otp" translatable="false">OTP</string>
     <string name="slides_play_end_title">Einde diavoorstelling. Swipe vooruit om af te sluiten.</string>
     <string name="slides_about_top_text">Enkele topteksten voor presentaties over het scherm</string>
     <string name="slides_about_bottom_text">Enkele onderste tekst voor presentatie over scherm</string>
@@ -1974,6 +2051,7 @@
     <string name="slide_theme_turtle">Schildpad</string>
     <string name="slides_add_slide_title">Voeg dia toe</string>
     <string name="slides_plate">%1$d van %2$d</string>
+    <string name="slides_slide_show_count">Dia %1$d van %2$d</string>
 
     <!-- Module: libtoolkit - 28 strings -->
     <string name="dialogs_edit_forbidden_symbols">Gebruik niet deze symbolen\u0020</string>
