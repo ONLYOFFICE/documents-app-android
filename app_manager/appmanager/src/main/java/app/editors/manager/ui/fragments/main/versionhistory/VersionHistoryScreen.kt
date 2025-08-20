@@ -41,11 +41,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.mvp.models.ui.FileVersionUi
-import app.editors.manager.mvp.models.ui.ResultUi
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.managers.tools.BaseEvent
@@ -142,15 +142,15 @@ fun VersionHistoryScreenContent(
         onRefresh = onRefresh
     ) {
         when (state.historyResult) {
-            ResultUi.Loading -> LoadingPlaceholder()
-            is ResultUi.Success -> VersionHistoryScreenContent(
+            NetworkResult.Loading -> LoadingPlaceholder()
+            is NetworkResult.Success -> VersionHistoryScreenContent(
                 history = state.historyResult.data,
                 currentItem = state.currentItem,
                 setSelectedItem = setSelectedItem,
                 onContextMenuItemClick = onContextMenuItemClick,
                 goToEditComment = goToEditComment
             )
-            is ResultUi.Error -> {
+            is NetworkResult.Error -> {
                 PlaceholderView(
                     image = null,
                     title = stringResource(R.string.placeholder_connection),
@@ -364,7 +364,7 @@ fun VersionHistoryScreenContentPreview() {
             setSelectedItem = {},
             onContextMenuItemClick = {},
             state = VersionHistoryState(
-                historyResult = ResultUi.Success(mapOf(("1" to listOf(item, item))))
+                historyResult = NetworkResult.Success(mapOf(("1" to listOf(item, item))))
             )
         )
     }

@@ -11,7 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,7 +36,7 @@ fun AppSliderItem(
     onValueChange: (Float) -> Unit = {},
     onValueChangeFinished: (Float) -> Unit = {}
 ) {
-    var value by remember { mutableStateOf(initValue) }
+    var value by remember { mutableFloatStateOf(initValue) }
     val formattedValue by remember { derivedStateOf { String.format("%.0${digitsAfterPoint}f", value) } }
 
     Column {
@@ -58,13 +58,14 @@ fun AppSliderItem(
                 onValueChangeFinished = {
                     onValueChangeFinished.invoke(value)
                 })
-            Box() {
+            Box {
                 Text(
                     modifier = Modifier.alpha(0f),
                     text = "${String.format("%.0${digitsAfterPoint}f", valueRange.endInclusive)} ${unit.orEmpty()}"
                 )
                 Text(
                     modifier = Modifier.alpha(1f),
+                    color = MaterialTheme.colors.onSurface,
                     text = "$formattedValue ${unit.orEmpty()}"
                 )
             }

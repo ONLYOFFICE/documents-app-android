@@ -1,6 +1,7 @@
 package app.documents.core.network.common.interceptors
 
 import android.content.Context
+import app.documents.core.network.common.RequestsCollector
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.exceptions.NoConnectivityException
 import lib.toolkit.base.managers.utils.NetworkUtils.isOnline
@@ -23,7 +24,6 @@ class BaseInterceptor(
 ) : Interceptor {
 
     companion object {
-
         private const val KEY_AUTH = "Bearer "
     }
 
@@ -48,7 +48,30 @@ class BaseInterceptor(
                 }
             }
 
-            return chain.proceed(newBuilder.build())
+            val request = newBuilder.build()
+            val response = chain.proceed(request)
+
+            val url = request.url().toString()
+            val shouldSkipLogging = url.contains("presigneduri") || url.contains("filehandler.ashx")
+
+            return if (shouldSkipLogging) {
+                response
+            } else {
+                val startTime = System.currentTimeMillis()
+                val responseBody = response.body()?.string()
+                val contentType = response.body()?.contentType()
+
+                val loggedResponseBody = RequestsCollector.logRequest(
+                    request = request,
+                    response = response,
+                    responseBodyString = responseBody,
+                    startTime = startTime
+                )
+
+                response.newBuilder()
+                    .body(ResponseBody.create(contentType, loggedResponseBody ?: ""))
+                    .build()
+            }
         } catch (_: NoConnectivityException) {
             val responseBody = ResponseBody.create(
                 MediaType.parse("application/json"),

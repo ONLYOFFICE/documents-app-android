@@ -44,6 +44,8 @@ interface AccountRepository {
 
     suspend fun checkLogin(accountId: String): CheckLoginResult
 
+    suspend fun checkLoginWithEmail(email: String): CheckLoginResult
+
     suspend fun getPortals(): List<String>
 
     suspend fun handleIOException(exception: IOException): Boolean
@@ -118,6 +120,11 @@ internal class AccountRepositoryImpl(
     ) {
         accountManager.setToken(accountName, token)
         accountManager.setPassword(accountName, password)
+    }
+
+    override suspend fun checkLoginWithEmail(email: String): CheckLoginResult {
+        val accountId = cloudDataSource.getAccountByLogin(email)?.id.orEmpty()
+        return checkLogin(accountId)
     }
 
     override suspend fun checkLogin(accountId: String): CheckLoginResult {

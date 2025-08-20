@@ -3,7 +3,7 @@ package app.editors.manager.mvp.presenters.storages
 import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.DropboxUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -144,14 +144,15 @@ class DocsDropboxPresenter : BaseStorageDocsPresenter<BaseStorageDocsView, Dropb
             App.getApp().loginComponent.dropboxLoginRepository.refreshToken()
                 .collect { result ->
                     when (result) {
-                        is Result.Success -> {
+                        is NetworkResult.Success -> {
                             App.getApp().refreshDropboxInstance()
                             getItemsById(DropboxUtils.DROPBOX_ROOT)
                         }
-                        is Result.Error -> {
+                        is NetworkResult.Error -> {
                             FirebaseUtils.addCrash(result.exception)
                             viewState.onAuthorization()
                         }
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }

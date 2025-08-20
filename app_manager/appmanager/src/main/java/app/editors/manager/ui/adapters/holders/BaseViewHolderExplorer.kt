@@ -45,6 +45,10 @@ abstract class BaseViewHolderExplorer<T>(
 
     abstract fun bind(element: T)
 
+    fun bindSelection(element: T) {
+        initSelecting(element)
+    }
+
     protected abstract fun getCachedIcon(): View?
 
     protected open fun initSelecting(element: T): Boolean {

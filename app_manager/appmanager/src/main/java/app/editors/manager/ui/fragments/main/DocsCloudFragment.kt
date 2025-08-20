@@ -68,6 +68,7 @@ import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.DialogUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.contains
@@ -115,29 +116,22 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             .firstOrNull()
     }
 
-
-    override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onEditorActivityResult(requestCode, resultCode, data)
+    override fun onEditorActivityResult(resultCode: Int, data: Intent?) {
+        super.onEditorActivityResult(resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
-                    if (data?.data != null) {
-                        val isSendForm = data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)
-                        val fillSession = data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION)
-                        if (isSendForm) {
-                            val clickedFile = presenter.itemClicked as? CloudFile
-                            if (clickedFile?.formFillingStatus != ApiContract.FormFillingStatus.None) {
-                                showFillingStatusFragment(true)
-                            } else if (fillSession != null) {
-                                showFillResultFragment(fillSession)
-                            }
-                        }
+            if (data?.data != null) {
+                val isSendForm = data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)
+                val fillSession = data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION)
+                if (isSendForm) {
+                    val clickedFile = presenter.itemClicked as? CloudFile
+                    if (clickedFile?.formFillingStatus != ApiContract.FormFillingStatus.None) {
+                        showFillingStatusFragment(true)
+                    } else if (fillSession != null) {
+                        showFillResultFragment(fillSession)
                     }
-                    refreshAfterEditing()
                 }
             }
-        } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
-            onRefresh()
+            refreshAfterEditing()
         }
     }
 
@@ -159,8 +153,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     onRefresh()
                 }
             }
-        } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
-            onRefresh()
         }
     }
 
@@ -341,10 +333,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         if (requireActivity() is IMainActivity) {
             (requireActivity() as IMainActivity).showWebViewer(file, isEditMode)
         }
-    }
-
-    fun setFileData(fileData: String) {
-        presenter.openFile(fileData)
     }
 
     /*
@@ -654,10 +642,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     mainPagerFragment?.setToolbarInfo(getString(R.string.trash_toolbar_info))
                 }
 
-                ToolbarState.None -> {
-                    mainPagerFragment?.setToolbarInfo(null)
-                    activity.setToolbarInfo(null)
-                }
+                ToolbarState.None -> Unit
             }
         }
     }
@@ -824,6 +809,28 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 showSnackBar(R.string.room_created_successfully)
             }
         }
+    }
+
+    override fun showEditDialogCreate(
+        title: String,
+        value: String?,
+        hint: String?,
+        endHint: String?,
+        tag: String,
+        acceptButton: String?,
+        cancelButton: String?,
+        forbiddenSymbols: String
+    ) {
+        super.showEditDialogCreate(
+            title = title,
+            value = value,
+            hint = hint,
+            endHint = endHint,
+            tag = tag,
+            acceptButton = acceptButton,
+            cancelButton = cancelButton,
+            forbiddenSymbols = StringUtils.DIALOG_CLOUD_FORBIDDEN_SYMBOLS
+        )
     }
 
     val isRoot: Boolean

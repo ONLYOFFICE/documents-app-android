@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -19,8 +19,6 @@ import app.documents.core.providers.ProviderError.Companion.throwExistException
 import app.documents.core.providers.ProviderError.Companion.throwUnsupportedException
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import lib.toolkit.base.managers.tools.LocalContentTools
@@ -43,12 +41,10 @@ class LocalFileProvider @Inject constructor(
         cloudFile: CloudFile,
         editType: EditType,
         canBeShared: Boolean
-    ): Flow<Result<FileOpenResult>> = flowOf()
+    ): Flow<NetworkResult<FileOpenResult>> = flowOf()
 
     override fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer> {
         return Observable.just(localContentTools.createRootDir())
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
             .map<List<File?>> { file: File ->
                 if (file.exists()) {
                     return@map localContentTools.getFiles(File(checkNotNull(id)))

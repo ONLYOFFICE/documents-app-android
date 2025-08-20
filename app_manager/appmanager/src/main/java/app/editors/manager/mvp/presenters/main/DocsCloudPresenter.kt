@@ -8,7 +8,7 @@ import androidx.work.WorkManager
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.isDocSpace
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.extensions.request
 import app.documents.core.network.manager.ManagerService
@@ -44,7 +44,6 @@ import app.editors.manager.managers.works.RoomDuplicateWork
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.list.Templates
-import app.editors.manager.mvp.models.models.OpenDataModel
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.MoveCopyDialog
@@ -64,10 +63,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.FileUtils
@@ -97,6 +96,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private var roomProvider: RoomProvider? = null
 
     private var conversionJob: Job? = null
+    private var thumbnailsJobs: MutableList<Job> = mutableListOf()
+
 
     init {
         App.getApp().appComponent.inject(this)
@@ -145,6 +146,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         duplicateRoomReceiver.setListener(null)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(uploadReceiver)
         LocalBroadcastManager.getInstance(context).unregisterReceiver(duplicateRoomReceiver)
+        cancelThumbnailsJobs()
     }
 
     override fun onItemClick(item: Item, position: Int) {
@@ -168,7 +170,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 }
                 modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
                 if (!isSelectedItemsEmpty) {
-                    viewState.onStateUpdateSelection(true)
                     viewState.onItemSelected(
                         position,
                         modelExplorerStack.countSelectedItems.toString()
@@ -262,11 +263,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (id != null && loadPosition > 0) {
             val args = getArgs(filteringValue).toMutableMap()
             args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
-            disposable.add(fileProvider.getFiles(id, args.putFilters()).subscribe({ explorer: Explorer? ->
-                modelExplorerStack.addOnNext(explorer)
+            val filter = args.putFilters()
+            disposable.add(fileProvider.getFiles(id, filter).subscribe({ explorer: Explorer? ->
+                modelExplorerStack.addOnNext(explorer?.apply {
+                    filterType = modelExplorerStack.last()?.filterType.orEmpty()
+                })
                 val last = modelExplorerStack.last()
                 if (last != null) {
                     viewState.onDocsNext(getListWithHeaders(last, true))
+                    explorer?.let { loadThumbnails(explorer, filter) }
                 }
             }) { throwable: Throwable -> fetchError(throwable) })
         }
@@ -292,7 +297,20 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    override fun loadSuccess(explorer: Explorer?) {
+        super.loadSuccess(explorer)
+        cancelThumbnailsJobs()
+        explorer?.let { loadThumbnails(explorer, getArgs(filteringValue).putFilters()) }
+    }
+
     override fun updateViewsState() {
+        val lifetime = currentFolder?.lifetime
+        toolbarState = when {
+            currentFolder?.isTemplate == true -> ToolbarState.RoomTemplate
+            lifetime != null -> ToolbarState.RoomLifetime(lifetime)
+            else -> ToolbarState.None
+        }
+
         if (isSelectionMode) {
             viewState.onStateUpdateSelection(true)
             if (pickerMode is PickerMode.Files) {
@@ -344,17 +362,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             }
             viewState.onStateAdapterRoot(true)
             viewState.onStateUpdateRoot(true)
-        }
-        val lifetime = currentFolder?.lifetime
-        val toolbarState = when {
-            isGuestDocuments -> {
-                viewState.onStateActionButton(false)
-                ToolbarState.GuestDocuments
-            }
-            currentFolder?.isTemplate == true -> ToolbarState.RoomTemplate
-            lifetime != null -> ToolbarState.RoomLifetime(lifetime)
-            currentSectionType == ApiContract.SectionType.CLOUD_TRASH -> ToolbarState.Trash
-            else -> ToolbarState.None
         }
         viewState.setToolbarState(toolbarState)
         viewState.onRoomFileIndexing(isIndexing)
@@ -462,11 +469,12 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     override fun getBackStack(): Boolean {
-        if ((currentFolder?.isTemplate == true || isTemplatesFolder)
-            && !isSelectionMode && !isFilteringMode
-        ) {
-            resetFilters()
-            return super.getBackStack()
+        if (!isSelectionMode && !isFilteringMode){
+            if ((currentFolder?.isTemplate == true || isTemplatesFolder)) resetFilters()
+            cancelThumbnailsJobs()
+            val backStackResult =  super.getBackStack()
+            updateThumbnails()
+            return backStackResult
         }
         val backStackResult = super.getBackStack()
         if (modelExplorerStack.last()?.filterType != preferenceTool.filter.type.filterVal) {
@@ -695,36 +703,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         openFile(CloudFile().apply { this.id = id }, editType)
     }
 
-    fun openFile(data: String) {
-        val model = Json.decodeFromString<OpenDataModel>(data)
-        val fileId = model.file?.id
-        val folderId = model.folder?.id
-
-        if (fileId == null && folderId != null) {
-            openFolder(folderId, 0)
-            return
-        }
-
-        openFileJob?.cancel()
-        openFileJob = presenterScope.launch {
-            if (model.share.isNotEmpty() && !model.portal.isNullOrEmpty()) {
-                fileProvider.openFile(
-                    portal = model.portal,
-                    token = model.share,
-                    id = fileId.orEmpty(),
-                    title = model.file?.title.orEmpty(),
-                    extension = model.file?.extension.orEmpty(),
-                ).collect(::onFileOpenCollect)
-            } else {
-                fileProvider.openFile(
-                    cloudFile = CloudFile().apply { this.id = fileId.orEmpty() },
-                    editType = EditType.from(model.action),
-                    canBeShared  = false
-                ).collect(::onFileOpenCollect)
-            }
-        }
-    }
-
     fun openLocation() {
         resetFilters()
         if (folderId != itemFolderId) {
@@ -930,8 +908,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             roomProvider.lockFile(id = file.id, lock = !file.isLocked)
                 .collect { result ->
                     when (result) {
-                        is Result.Success -> refresh()
-                        is Result.Error -> fetchError(result.exception)
+                        is NetworkResult.Success -> refresh()
+                        is NetworkResult.Error -> fetchError(result.exception)
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }
@@ -945,7 +924,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             roomProvider.enableCustomFilter(id = file.id, enable = enable)
                 .collect { result ->
                     when (result) {
-                        is Result.Success -> {
+                        is NetworkResult.Success -> {
                             file.customFilterEnabled = enable
                             viewState.onUpdateItemState()
                             viewState.onSnackBar(
@@ -956,7 +935,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                                 }
                             )
                         }
-                        is Result.Error -> fetchError(result.exception)
+                        is NetworkResult.Error -> fetchError(result.exception)
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }
@@ -1216,9 +1196,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             override fun isArchive(): Boolean = false
             override fun isRecent(): Boolean = false
             override fun isTemplatesRoot(id: String?): Boolean = isTemplatesFolder
-
         }
     }
+
 
     fun duplicateRoom() {
         val workData = Data.Builder()
@@ -1299,11 +1279,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             val roomId = roomClicked?.id.orEmpty()
             roomProvider?.muteRoomNotifications(roomId, muted)?.collect { result ->
                 when (result) {
-                    is Result.Error -> withContext(Dispatchers.Main) {
+                    is NetworkResult.Error -> withContext(Dispatchers.Main) {
                         viewState.onError(context.getString(R.string.errors_unknown_error))
                     }
-                    is Result.Success -> withContext(Dispatchers.Main) {
-                        roomClicked?.mute = roomId in result.result
+                    is NetworkResult.Success -> withContext(Dispatchers.Main) {
+                        roomClicked?.mute = roomId in result.data
                         viewState.onSnackBar(
                             context.getString(
                                 if (muted) {
@@ -1314,6 +1294,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             )
                         )
                     }
+                    is NetworkResult.Loading -> Unit
                 }
             }
         }
@@ -1328,9 +1309,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         presenterScope.launch {
             roomProvider?.exportIndex(roomClicked?.id.orEmpty())?.collect { result ->
                 when (result) {
-                    is Result.Error -> fetchError(result.exception)
-                    is Result.Success -> {
-                        val operation = result.result
+                    is NetworkResult.Error -> fetchError(result.exception)
+                    is NetworkResult.Success -> {
+                        val operation = result.data
                         val progress = operation.percentage
                         viewState.onDialogProgress(100, progress)
                         if (progress == 100 || operation.isCompleted) {
@@ -1338,6 +1319,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             viewState.onRoomExportIndex(operation)
                         }
                     }
+                    is NetworkResult.Loading -> Unit
                 }
             }
         }
@@ -1349,9 +1331,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             val requestToken = roomClicked?.requestToken.orEmpty()
             roomProvider?.authRoomViaLink(requestToken, password)?.collect { result ->
                 when (result) {
-                    is Result.Error -> fetchError(result.exception)
-                    is Result.Success -> {
-                        val roomId = result.result
+                    is NetworkResult.Error -> fetchError(result.exception)
+                    is NetworkResult.Success -> {
+                        val roomId = result.data
                         if (roomId == null) {
                             viewState.onRoomViaLinkPasswordRequired(true, tag)
                         } else {
@@ -1359,13 +1341,14 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                             refresh {
                                 viewState.onDialogClose()
                                 when (tag) {
-                                    TAG_PROTECTED_ROOM_OPEN_FOLDER -> openFolder(result.result, 0)
+                                    TAG_PROTECTED_ROOM_OPEN_FOLDER -> openFolder(result.data, 0)
                                     TAG_PROTECTED_ROOM_DOWNLOAD -> createDownloadFile()
                                     TAG_PROTECTED_ROOM_SHOW_INFO -> viewState.showRoomInfoFragment()
                                 }
                             }
                         }
                     }
+                    is NetworkResult.Loading -> Unit
                 }
             }
         }
@@ -1379,10 +1362,76 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 .collect { result ->
                     viewState.onDialogClose()
                     when (result) {
-                        is Result.Error -> fetchError(result.exception)
-                        is Result.Success -> refresh()
+                        is NetworkResult.Error -> fetchError(result.exception)
+                        is NetworkResult.Success -> refresh()
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }
+    }
+
+    override fun refreshFilesThumbnails() {
+        modelExplorerStack.last()?.let { explorer ->
+            cancelThumbnailsJobs()
+            loadThumbnails(explorer, getArgs(filteringValue).putFilters())
+        }
+    }
+
+    private fun loadThumbnails(
+        explorer: Explorer,
+        filter: Map<String, String>,
+        initDelay: Boolean = true
+    ) {
+        val id = explorer.current.id
+        (fileProvider as? CloudFileProvider)?.let { provider ->
+            thumbnailsJobs.add(
+                presenterScope.launch(Dispatchers.Main) {
+                    provider.getThumbnails(explorer, id, filter, initDelay)
+                        .catch { e ->  fetchThumbnailsError(e) }
+                        .collect { file -> updateFileThumbnail(file) }
+                }
+            )
+        }
+    }
+
+    private fun updateThumbnails() {
+        modelExplorerStack.last()?.let { explorer ->
+            val requestsCount = modelExplorerStack.last()?.count
+                ?.takeIf { it > ITEMS_PER_PAGE }
+                ?.let { (it + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE }
+                ?: 1
+            val args = getArgs(filteringValue).toMutableMap()
+
+            repeat(requestsCount) { index ->
+                val loadPosition = ITEMS_PER_PAGE * index
+                args[ApiContract.Parameters.ARG_START_INDEX] = loadPosition.toString()
+                loadThumbnails(explorer, args.putFilters(), false)
+            }
+        }
+    }
+
+    private fun fetchThumbnailsError(e: Throwable) {
+        fetchError(e)
+        modelExplorerStack.last()?.let { explorer ->
+            explorer.files.forEach {
+                it.thumbnailStatus = ApiContract.ThumbnailStatus.ERROR
+                viewState.onStateUpdateThumbnail(it.id)
+            }
+        }
+    }
+
+    private fun updateFileThumbnail(file: CloudFile) {
+        modelExplorerStack.last()?.let { explorer ->
+            explorer.files.filter { it.id == file.id }.map {
+                it.thumbnailStatus = file.thumbnailStatus
+                it.thumbnailUrl = file.thumbnailUrl
+                viewState.onStateUpdateThumbnail(it.id)
+            }
+        }
+    }
+
+    private fun cancelThumbnailsJobs() {
+        thumbnailsJobs.forEach { it.cancel() }
+        thumbnailsJobs.clear()
     }
 }

@@ -2,7 +2,7 @@ package app.editors.manager.viewModels.main
 
 import android.content.ContentResolver
 import androidx.lifecycle.viewModelScope
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Lifetime
 import app.documents.core.network.manager.models.explorer.PathPart
@@ -31,11 +31,11 @@ class RoomAddViewModel(
         }
         viewModelScope.launch {
             roomProvider.getRoomsQuota().collect { result ->
-                if (result is Result.Success) {
-                    if (result.result.enabled) {
+                if (result is NetworkResult.Success) {
+                    if (result.data.enabled) {
                         updateState {
                             it.copy(
-                                quota = StorageQuota.fromBytes(result.result.value)
+                                quota = StorageQuota.fromBytes(result.data.value)
                             )
                         }
                     }

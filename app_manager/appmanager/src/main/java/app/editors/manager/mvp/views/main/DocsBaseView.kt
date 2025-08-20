@@ -51,6 +51,9 @@ interface DocsBaseView : BaseViewExt {
     fun onStateUpdateSelection(isSelection: Boolean)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onStateUpdateThumbnail(id: String)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun onStateAdapterRoot(isRoot: Boolean)
 
     @StateStrategyType(OneExecutionStateStrategy::class)

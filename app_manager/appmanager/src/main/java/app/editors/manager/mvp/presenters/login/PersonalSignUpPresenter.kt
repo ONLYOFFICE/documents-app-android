@@ -1,7 +1,7 @@
 package app.editors.manager.mvp.presenters.login
 
 import app.documents.core.model.cloud.CloudPortal
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -54,8 +54,9 @@ class PersonalSignUpPresenter : BaseLoginPresenter<PersonalRegisterView>() {
             loginRepository.registerPersonal(email, Locale.getDefault().language)
                 .collect { result ->
                     when (result) {
-                        is Result.Success -> viewState.onRegisterPortal()
-                        is Result.Error -> fetchError(result.exception)
+                        is NetworkResult.Success -> viewState.onRegisterPortal()
+                        is NetworkResult.Error -> fetchError(result.exception)
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }

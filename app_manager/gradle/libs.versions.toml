@@ -63,6 +63,7 @@ gson = "2.12.1"
 safetynet = "18.1.0"
 app-update = "2.1.0"
 text-recognition = "16.0.1"
+object-detection = "17.0.2"
 
 jackson = "2.18.3"
 
@@ -116,6 +117,7 @@ google-safetynet = { module = "com.google.android.gms:play-services-safetynet", 
 google-update = { module = "com.google.android.play:app-update-ktx", version.ref = "app-update" }
 google-ml-text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "text-recognition" }
 google-ml-text-recognitionchinese = { module = "com.google.mlkit:text-recognition-chinese", version.ref = "text-recognition" }
+google-ml-objects-detection = { module = "com.google.mlkit:object-detection", version.ref = "object-detection" }
 
 #kotlin
 kotlin-core = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
