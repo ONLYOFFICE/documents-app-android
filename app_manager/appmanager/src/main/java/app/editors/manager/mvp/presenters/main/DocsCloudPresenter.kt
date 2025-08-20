@@ -308,6 +308,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         toolbarState = when {
             currentFolder?.isTemplate == true -> ToolbarState.RoomTemplate
             lifetime != null -> ToolbarState.RoomLifetime(lifetime)
+            isGuestDocuments -> ToolbarState.GuestDocuments
+            currentSectionType == ApiContract.SectionType.CLOUD_TRASH -> ToolbarState.Trash
             else -> ToolbarState.None
         }
 

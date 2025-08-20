@@ -2,7 +2,6 @@ package app.editors.manager.ui.fragments.main
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -220,6 +219,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         if (!isVisible) return
         isVisibleRoot = isRoot
         activity?.setAppBarStates(isVisibleRoot, hideToolbarInfo)
+        if (hideToolbarInfo) setToolbarInfo(null)
         viewBinding?.let { binding ->
             binding.appBarTabs.isVisible = isVisibleRoot
             if (!isTablet) {
