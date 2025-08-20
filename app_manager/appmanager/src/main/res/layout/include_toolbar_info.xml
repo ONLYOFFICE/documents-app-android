@@ -8,6 +8,7 @@
     android:visibility="gone">
 
     <View
+        android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="@dimen/line_separator_height"
         android:background="@color/colorOutline" />

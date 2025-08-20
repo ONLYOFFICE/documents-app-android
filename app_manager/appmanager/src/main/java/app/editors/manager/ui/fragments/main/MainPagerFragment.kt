@@ -218,7 +218,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     fun setToolbarState(isRoot: Boolean, hideToolbarInfo: Boolean) {
         if (!isVisible) return
         isVisibleRoot = isRoot
-        activity?.setAppBarStates(isVisibleRoot, hideToolbarInfo)
+        activity?.setAppBarStates(isVisibleRoot)
         if (hideToolbarInfo) setToolbarInfo(null)
         viewBinding?.let { binding ->
             binding.appBarTabs.isVisible = isVisibleRoot
@@ -386,13 +386,15 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         @ColorRes drawableTint: Int?
     ) {
         viewBinding?.infoLayout?.let { layout ->
+            if (title == layout.infoText.text) return
+            layout.divider.isVisible = viewBinding?.appBarTabs?.isVisible == true
             layout.root.isVisible = title != null
             layout.infoText.text = title
             layout.infoText.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
-            if (title != null && drawableTint != null) {
+            if (title != null) {
                 TextViewCompat.setCompoundDrawableTintList(
                     layout.infoText,
-                    ColorStateList.valueOf(requireContext().getColor(drawableTint))
+                    drawableTint?.let { ColorStateList.valueOf(requireContext().getColor(it)) }
                 )
             }
         }

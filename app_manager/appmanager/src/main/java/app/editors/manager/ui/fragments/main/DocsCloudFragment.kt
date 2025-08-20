@@ -605,45 +605,43 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun setToolbarState(state: ToolbarState) {
-        (activity as? IMainActivity)?.let { activity ->
-            when (state) {
-                is ToolbarState.RoomLifetime -> {
-                    activity.setToolbarInfo(
-                        title = getString(
-                            R.string.rooms_vdr_lifetime_info,
-                            state.lifetime.value,
-                            when (state.lifetime.period) {
-                                Lifetime.PERIOD_DAYS -> lib.toolkit.base.R.plurals.days
-                                Lifetime.PERIOD_MONTHS -> lib.toolkit.base.R.plurals.months
-                                Lifetime.PERIOD_YEARS -> lib.toolkit.base.R.plurals.years
-                                else -> return@let
-                            }.let { resources.getQuantityText(it, state.lifetime.value) }
-                        ),
-                        drawable = lib.toolkit.base.R.drawable.ic_expiring,
-                        drawableTint = null
-                    )
-                }
-
-                is ToolbarState.RoomTemplate -> {
-                    activity.setToolbarInfo(
-                        title = getString(R.string.template_subheader_title),
-                        drawable = R.drawable.ic_template_subheader
-                    )
-                }
-
-                is ToolbarState.GuestDocuments -> {
-                    mainPagerFragment?.setToolbarInfo(
-                        title = getString(R.string.rooms_warning_downgrade_to_guest),
-                        drawable = lib.toolkit.base.R.drawable.ic_info_filled
-                    )
-                }
-
-                is ToolbarState.Trash -> {
-                    mainPagerFragment?.setToolbarInfo(getString(R.string.trash_toolbar_info))
-                }
-
-                ToolbarState.None -> Unit
+        when (state) {
+            is ToolbarState.RoomLifetime -> {
+                mainPagerFragment?.setToolbarInfo(
+                    title = getString(
+                        R.string.rooms_vdr_lifetime_info,
+                        state.lifetime.value,
+                        when (state.lifetime.period) {
+                            Lifetime.PERIOD_DAYS -> lib.toolkit.base.R.plurals.days
+                            Lifetime.PERIOD_MONTHS -> lib.toolkit.base.R.plurals.months
+                            Lifetime.PERIOD_YEARS -> lib.toolkit.base.R.plurals.years
+                            else -> return
+                        }.let { resources.getQuantityText(it, state.lifetime.value) }
+                    ),
+                    drawable = lib.toolkit.base.R.drawable.ic_expiring,
+                    drawableTint = null
+                )
             }
+
+            is ToolbarState.RoomTemplate -> {
+                mainPagerFragment?.setToolbarInfo(
+                    title = getString(R.string.template_subheader_title),
+                    drawable = R.drawable.ic_template_subheader
+                )
+            }
+
+            is ToolbarState.GuestDocuments -> {
+                mainPagerFragment?.setToolbarInfo(
+                    title = getString(R.string.rooms_warning_downgrade_to_guest),
+                    drawable = lib.toolkit.base.R.drawable.ic_info_filled
+                )
+            }
+
+            is ToolbarState.Trash -> {
+                mainPagerFragment?.setToolbarInfo(getString(R.string.trash_toolbar_info))
+            }
+
+            ToolbarState.None -> Unit
         }
     }
 

@@ -5,18 +5,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.annotation.ColorRes
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.StringRes
-import androidx.core.view.isVisible
-import androidx.core.widget.TextViewCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
@@ -85,18 +81,13 @@ interface IMainActivity {
     fun showNavigationButton(isShow: Boolean)
     fun showActionButton(isShow: Boolean)
     fun showAccount(isShow: Boolean)
-    fun setAppBarStates(isVisible: Boolean, hideInfo: Boolean = true)
+    fun setAppBarStates(isVisible: Boolean)
     fun onSwitchAccount()
     fun showOnCloudFragment()
     fun showAccountsActivity()
     fun showWebViewer(file: CloudFile, isEditMode: Boolean = false, callback: (() -> Unit)? = null)
     fun onLogOut()
     fun showPersonalMigrationFragment()
-    fun setToolbarInfo(
-        title: String?,
-        drawable: Int? = null,
-        @ColorRes drawableTint: Int? = lib.toolkit.base.R.color.colorPrimary
-    )
     fun showEditors(
         uri: Uri,
         editType: EditType,
@@ -652,8 +643,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         }
     }
 
-    override fun setAppBarStates(isVisible: Boolean, hideInfo: Boolean) {
-        if (hideInfo) setToolbarInfo(null)
+    override fun setAppBarStates(isVisible: Boolean) {
         setAppBarMode(isVisible)
         showAccount(isVisible)
         showNavigationButton(!isVisible)
@@ -664,26 +654,6 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
             PersonalPortalMigrationFragment.newInstance().show(supportFragmentManager, "")
         }
     }
-
-    override fun setToolbarInfo(
-        title: String?,
-        drawable: Int?,
-        @ColorRes drawableTint: Int?
-    ) {
-        if (title == viewBinding.infoLayout.infoText.text) return
-        with(viewBinding.infoLayout) {
-            root.isVisible = title != null
-            infoText.text = title
-            infoText.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable ?: 0, 0, 0, 0)
-            if (title != null && drawableTint != null) {
-                TextViewCompat.setCompoundDrawableTintList(
-                    infoText,
-                    ColorStateList.valueOf(getColor(drawableTint))
-                )
-            }
-        }
-    }
-
 
     override fun restartActivity(deeplink: Uri?) {
         show(this, deeplink)
