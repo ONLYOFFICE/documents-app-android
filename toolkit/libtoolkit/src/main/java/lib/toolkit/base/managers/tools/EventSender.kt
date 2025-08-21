@@ -1,9 +1,8 @@
-package app.editors.manager.managers.tools
+package lib.toolkit.base.managers.tools
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
-import lib.toolkit.base.managers.tools.ResourcesProvider
 
 interface BaseEvent {
     data class ShowMessage(val msg: String) : BaseEvent

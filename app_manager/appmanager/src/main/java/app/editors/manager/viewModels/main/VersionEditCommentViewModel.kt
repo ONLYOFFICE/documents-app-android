@@ -13,9 +13,9 @@ import app.documents.core.network.common.NetworkResult
 import app.documents.core.providers.CloudFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.managers.tools.BaseEvent
-import app.editors.manager.managers.tools.BaseEventSender
-import app.editors.manager.managers.tools.EventSender
+import lib.toolkit.base.managers.tools.BaseEvent
+import lib.toolkit.base.managers.tools.BaseEventSender
+import lib.toolkit.base.managers.tools.EventSender
 import app.editors.manager.ui.fragments.main.versionhistory.VersionHistoryFragment
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
