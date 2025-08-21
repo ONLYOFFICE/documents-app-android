@@ -22,21 +22,20 @@ import app.editors.manager.ui.compose.share.ShareScreen
 import app.editors.manager.viewModels.link.ShareSettingsViewModel
 import lib.compose.ui.theme.BaseAppTheme
 import lib.compose.ui.theme.LocalUseTabletPadding
+import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.openSendTextActivity
 
 class ShareActivity : BaseAppActivity() {
 
     companion object {
-        private const val KEY_SHARE_ITEM_ID: String = "KEY_SHARE_ITEM_ID"
         private const val KEY_SHARE_ITEM_EXTENSION: String = "KEY_SHARE_ITEM_EXTENSION"
         private const val KEY_SHARE_IS_FOLDER: String = "KEY_SHARE_IS_FOLDER"
-        private const val KEY_EDITOR_COLOR: String = "KEY_EDITOR_COLOR"
 
         @JvmStatic
         fun show(fragment: Fragment, itemId: String, isFolder: Boolean, extension: String) {
             fragment.startActivityForResult(
                 Intent(fragment.context, ShareActivity::class.java).apply {
-                    putExtra(KEY_SHARE_ITEM_ID, itemId)
+                    putExtra(EditorsContract.EXTRA_ITEM_ID, itemId)
                     putExtra(KEY_SHARE_IS_FOLDER, isFolder)
                     putExtra(KEY_SHARE_ITEM_EXTENSION, extension)
                 },
@@ -49,7 +48,7 @@ class ShareActivity : BaseAppActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val color = intent?.getIntExtra(KEY_EDITOR_COLOR, -1)?.let { Color(it) }
+            val color = intent?.getIntExtra(EditorsContract.EXTRA_THEME_COLOR, -1)?.let { Color(it) }
                 ?: Color(getColor(lib.toolkit.base.R.color.colorPrimary))
 
             CompositionLocalProvider(LocalUseTabletPadding provides true) {
@@ -59,7 +58,7 @@ class ShareActivity : BaseAppActivity() {
                             viewModel = viewModel {
                                 ShareSettingsViewModel(
                                     roomProvider = roomProvider,
-                                    fileId = intent.getStringExtra(KEY_SHARE_ITEM_ID).orEmpty(),
+                                    fileId = intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty(),
                                 )
                             },
                             fileExtension = intent.getStringExtra(KEY_SHARE_ITEM_EXTENSION).orEmpty(),
@@ -75,7 +74,7 @@ class ShareActivity : BaseAppActivity() {
                     } else {
                         ShareScreen(
                             isFolder = remember { intent.getBooleanExtra(KEY_SHARE_IS_FOLDER, false) },
-                            itemId = remember { intent.getStringExtra(KEY_SHARE_ITEM_ID).orEmpty() },
+                            itemId = remember { intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty() },
                             useTabletPaddings = true,
                             shareApi = shareApi,
                             managerService = api,
