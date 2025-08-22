@@ -228,7 +228,7 @@ class EditRoomFragment : ComposeDialogFragment() {
                     UserListScreen(
                         viewModel = userListViewModel,
                         title = R.string.room_set_owner_title,
-                        onClick = { userId -> userListViewModel.setOwner(userId, leave = false) },
+                        onClick = { user -> userListViewModel.setOwner(user.id, leave = false) },
                         onBack = navController::popBackStackWhenResumed,
                         closeable = false,
                         onSuccess = {

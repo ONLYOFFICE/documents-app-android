@@ -112,7 +112,8 @@ fun InviteUsersScreen(
     roomType: Int,
     roomId: String,
     roomProvider: RoomProvider,
-    onShareLink: (String) -> Unit,
+    fromList: Boolean = false,
+    onShareLink: (String) -> Unit = {},
     onSnackBar: (String) -> Unit,
     onBack: () -> Unit
 ) {
@@ -129,7 +130,12 @@ fun InviteUsersScreen(
             }
         }
 
-        NavHost(navController = navController, startDestination = Screens.Main.name) {
+        NavHost(
+            navController = navController,
+            startDestination = if (fromList)
+                Screens.UserList.name else
+                Screens.Main.name
+        ) {
             composable(Screens.Main.name) {
                 MainScreen(
                     state = state,
@@ -170,8 +176,14 @@ fun InviteUsersScreen(
                     title = R.string.filter_toolbar_users_title,
                     closeable = false,
                     viewModel = userListViewModel,
-                    onClick = userListViewModel::toggleSelect,
-                    onBack = navController::popBackStackWhenResumed,
+                    onClick = { userListViewModel.toggleSelect(it.id) },
+                    onBack = {
+                        if (fromList) {
+                            onBack()
+                        } else {
+                            navController.popBackStackWhenResumed()
+                        }
+                    },
                     onSnackBar = onSnackBar
                 ) { size, access ->
                     UserListBottomContent(
@@ -225,9 +237,13 @@ fun InviteUsersScreen(
                     onSnackBar = onSnackBar,
                     onSuccess = {
                         onSnackBar.invoke(context.getString(R.string.invite_link_send_success))
-                        navController.navigate(Screens.Main.name) {
-                            popUpTo(Screens.Main.name) {
-                                inclusive = true
+                        if (fromList) {
+                            onBack()
+                        } else {
+                            navController.navigate(Screens.Main.name) {
+                                popUpTo(Screens.Main.name) {
+                                    inclusive = true
+                                }
                             }
                         }
                     }

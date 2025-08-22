@@ -107,16 +107,30 @@ private data class Header(val title: Int) : Member {
         get() = false
 }
 
+private sealed class PagerTab(title: Int): TabRowItem(title) {
+    class Users(isDocSpace: Boolean) : PagerTab(
+        if (isDocSpace) {
+            R.string.rooms_user_type_employees
+        } else {
+            R.string.share_goal_user
+        }
+    )
+
+    data object Groups : PagerTab(R.string.share_goal_group)
+    data object Guests : PagerTab(R.string.share_goal_guest)
+}
+
 @Composable
 fun UserListScreen(
     viewModel: UserListViewModel,
     title: Int,
     closeable: Boolean = true,
     useTabletPaddings: Boolean = false,
-    onClick: (id: String) -> Unit,
+    onClick: (Member) -> Unit,
     onBack: () -> Unit,
     onSnackBar: (String) -> Unit,
     onSuccess: ((User) -> Unit)? = null,
+    topBarActions: @Composable () -> Unit = {},
     bottomContent: @Composable (Int, Access) -> Unit = { _, _ -> },
 ) {
     val state by viewModel.viewState.collectAsState()
@@ -139,7 +153,8 @@ fun UserListScreen(
         onClick = onClick,
         onSearch = viewModel::search,
         onBack = onBack,
-        bottomContent = bottomContent
+        bottomContent = bottomContent,
+        topBarActions = topBarActions
     )
 }
 
@@ -149,9 +164,10 @@ private fun MainScreen(
     title: Int,
     closeable: Boolean = true,
     useTabletPaddings: Boolean = false,
-    onClick: (id: String) -> Unit,
+    onClick: (Member) -> Unit,
     onSearch: (String) -> Unit,
     onBack: () -> Unit,
+    topBarActions: @Composable () -> Unit = {},
     bottomContent: @Composable (count: Int, access: Access) -> Unit = { _, _ -> },
 ) {
     val searchState = remember { mutableStateOf(false) }
@@ -173,19 +189,14 @@ private fun MainScreen(
     }
     val tabs = remember {
         listOfNotNull(
-            TabRowItem(
-                if (portal.isDocSpace) {
-                    context.getString(R.string.rooms_user_type_employees)
-                } else {
-                    context.getString(R.string.share_goal_user)
-                }
-            ),
-            TabRowItem(
-                context.getString(R.string.share_goal_group)
-            ).takeIf { state.mode in listOf(UserListMode.Invite, UserListMode.TemplateAccess) },
-            TabRowItem(
-                context.getString(R.string.share_goal_guest)
-            ).takeIf { portal.isDocSpace && state.mode == UserListMode.Invite }
+            PagerTab.Users(portal.isDocSpace),
+            PagerTab.Groups.takeIf {
+                state.mode in listOf(UserListMode.Invite, UserListMode.TemplateAccess)
+            },
+            PagerTab.Guests.takeIf {
+                portal.isDocSpace &&
+                    state.mode in listOf(UserListMode.Invite, UserListMode.StartFilling)
+            }
         )
     }
     val pagerState = rememberPagerState(pageCount = tabs::size)
@@ -200,7 +211,8 @@ private fun MainScreen(
                 pagerState = pagerState,
                 tabs = tabs,
                 onSearch = onSearch,
-                onBack = onBack
+                onBack = onBack,
+                topBarActions = topBarActions
             )
         }
     ) {
@@ -228,6 +240,7 @@ private fun MainScreen(
                         modifier = Modifier.weight(1f),
                         pagerState = pagerState,
                         state = state,
+                        tabs = tabs,
                         onClick = onClick,
                         portal = portal?.urlWithScheme,
                         token = token,
@@ -245,7 +258,7 @@ private fun MainScreen(
 private fun SearchListScreen(
     modifier: Modifier,
     state: UserListState,
-    onClick: (id: String) -> Unit,
+    onClick: (Member) -> Unit,
     token: String,
     portal: String?,
     provider: PortalProvider?,
@@ -312,6 +325,7 @@ private fun AppBar(
     tabs: List<TabRowItem>,
     onSearch: (String) -> Unit,
     onBack: () -> Unit,
+    topBarActions: @Composable () -> Unit = {},
 ) {
     val coroutineScope = rememberCoroutineScope()
     Column {
@@ -335,6 +349,7 @@ private fun AppBar(
                             icon = R.drawable.ic_toolbar_search,
                             onClick = { searchState.value = true }
                         )
+                        topBarActions()
                     }
                 )
             }
@@ -354,15 +369,16 @@ private fun PagerScreen(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
     state: UserListState,
-    onClick: (id: String) -> Unit,
+    tabs: List<PagerTab>,
+    onClick: (Member) -> Unit,
     token: String,
     portal: String?,
     provider: PortalProvider?,
     isDocSpace: Boolean
 ) {
     HorizontalPager(modifier = modifier, state = pagerState) {
-        when (it) {
-            0 -> {
+        when (tabs[it]) {
+            is PagerTab.Users -> {
                 if (state.users.isNotEmpty()) {
                     UsersScreen(
                         users = state.users,
@@ -383,7 +399,7 @@ private fun PagerScreen(
                 }
             }
 
-            1 -> {
+            PagerTab.Groups -> {
                 if (state.groups.isNotEmpty()) {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(items = state.groups, key = Group::id) { group ->
@@ -404,7 +420,7 @@ private fun PagerScreen(
                 }
             }
 
-            2 -> {
+            PagerTab.Guests -> {
                 if (state.guests.isNotEmpty()) {
                     UsersScreen(
                         users = state.guests,
@@ -439,7 +455,7 @@ private fun LazyItemScope.UserItem(
     portal: String?,
     isDocSpace: Boolean,
     provider: PortalProvider?,
-    onClick: (String) -> Unit,
+    onClick: (Member) -> Unit,
 ) {
     val subtitle = if (isDocSpace) {
         stringResource(user.getTypeTitle(provider)) + user.email?.let { " | $it" }
@@ -453,6 +469,8 @@ private fun LazyItemScope.UserItem(
             currentUserId == user.id
         }
 
+        UserListMode.StartFilling -> false
+
         else -> user.shared
     }
 
@@ -463,7 +481,7 @@ private fun LazyItemScope.UserItem(
         subtitle = subtitle,
         shared = shared,
         selected = selected,
-        onClick = { onClick.invoke(user.id) },
+        onClick = { onClick.invoke(user) },
         avatar = GlideUtils.getCorrectLoad(
             user.avatarMedium,
             token,
@@ -477,7 +495,7 @@ private fun LazyItemScope.GroupItem(
     group: Group,
     mode: UserListMode,
     selected: Boolean,
-    onClick: (String) -> Unit
+    onClick: (Member) -> Unit
 ) {
     val shared = remember { if (mode == UserListMode.TemplateAccess) false else group.shared }
     ListItem(
@@ -488,7 +506,7 @@ private fun LazyItemScope.GroupItem(
         subtitle = null,
         avatar = null,
         selected = selected,
-        onClick = { onClick.invoke(group.id) }
+        onClick = { onClick.invoke(group) }
     )
 }
 
@@ -501,7 +519,7 @@ private fun UsersScreen(
     portal: String?,
     isDocSpace: Boolean,
     provider: PortalProvider?,
-    onClick: (String) -> Unit,
+    onClick: (Member) -> Unit,
 ) {
     Column {
         if (mode == UserListMode.TemplateAccess) {
@@ -711,7 +729,7 @@ private fun PreviewMainWithBottom() {
         MainScreen(
             title = R.string.invite_choose_from_list,
             state = UserListState(
-                mode = UserListMode.Invite,
+                mode = UserListMode.StartFilling,
                 loading = false,
                 requestLoading = false,
                 selected = selected,
@@ -751,8 +769,8 @@ private fun PreviewMainWithBottom() {
             ),
             closeable = false,
             onClick = { user ->
-                if (selected.contains(user)) selected.remove(user) else selected.add(
-                    user
+                if (selected.contains(user.id)) selected.remove(user.id) else selected.add(
+                    user.id
                 )
             },
             onSearch = {},

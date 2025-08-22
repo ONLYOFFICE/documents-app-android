@@ -32,6 +32,7 @@ object EditorsContract {
     const val EXTRA_FORM_ROLES = "EXTRA_FORM_ROLES"
     const val EXTRA_THEME_COLOR = "EXTRA_THEME_COLOR"
     const val EXTRA_ITEM_ID = "EXTRA_ITEM_ID"
+    const val EXTRA_ROOM_ID = "EXTRA_ROOM_ID"
 
     const val RESULT_FAILED_OPEN = 4000
 

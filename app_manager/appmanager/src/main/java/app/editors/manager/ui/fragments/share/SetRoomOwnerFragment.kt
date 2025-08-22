@@ -56,7 +56,7 @@ class SetRoomOwnerFragment : ComposeDialogFragment() {
             UserListScreen(
                 viewModel = viewModel,
                 title = R.string.room_set_owner_title,
-                onClick = { userId -> viewModel.setOwner(userId, leave = true) },
+                onClick = { user -> viewModel.setOwner(user.id, leave = true) },
                 onBack = ::dismiss,
                 onSuccess = {
                     requireActivity()

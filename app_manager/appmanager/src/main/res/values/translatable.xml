@@ -1180,4 +1180,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="whats_new_4_desc">Access document versions, role-based form filling in VDR, room templates, and custom filters when connected to your DocSpace.</string>
 
     <string name="start_filling_title">Start filling</string>
+    <string name="start_filling_start">Start</string>
+    <string name="start_filling_desc">In this panel you can monitor the completion of the form in which you participate or in which you are the organizer of completion</string>
+    <string name="start_filling_header">Roles from the form:</string>
 </resources>

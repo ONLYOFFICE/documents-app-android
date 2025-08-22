@@ -216,7 +216,7 @@ fun ShareScreen(
             UserListScreen(
                 viewModel = userListViewModel,
                 title = R.string.share_invite_user,
-                onClick = userListViewModel::toggleSelect,
+                onClick = { userListViewModel.toggleSelect(it.id) },
                 closeable = false,
                 useTabletPaddings = useTabletPaddings,
                 onBack = navController::popBackStackWhenResumed,
