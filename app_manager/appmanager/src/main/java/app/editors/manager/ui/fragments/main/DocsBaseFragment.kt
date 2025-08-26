@@ -1227,6 +1227,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                         startActivity(intent)
                     } else {
                         intent.putExtra(EditorsContract.EXTRA_ROOM_ID, presenter.roomClicked?.id)
+                        intent.putExtra(EditorsContract.EXTRA_ITEM_ID, presenter.itemClicked?.id)
                         intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
                         editorLaunchers[REQUEST_DOCS]?.launch(intent)
                     }

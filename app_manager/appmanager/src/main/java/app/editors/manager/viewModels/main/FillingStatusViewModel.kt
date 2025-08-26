@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class FillingStatusState(
-    val formInfo: CloudFile,
+    val formInfo: CloudFile = CloudFile(),
     val loading: Boolean = false,
     val requestLoading: Boolean = false,
     val roles: List<FormRole> = emptyList(),
@@ -30,12 +30,12 @@ sealed class FillingStatusEffect {
 }
 
 class FillingStatusViewModel(
-    private val formInfo: CloudFile,
+    private val formId: String,
     private val cloudFileProvider: CloudFileProvider
 ) : ViewModel() {
 
     private val _state: MutableStateFlow<FillingStatusState> =
-        MutableStateFlow(FillingStatusState(formInfo))
+        MutableStateFlow(FillingStatusState())
     val state: StateFlow<FillingStatusState> = _state.asStateFlow()
 
     private val _effect: MutableSharedFlow<FillingStatusEffect> = MutableSharedFlow(1)
@@ -52,7 +52,7 @@ class FillingStatusViewModel(
     fun stopFilling() {
         viewModelScope.launch {
             _state.update { it.copy(requestLoading = true) }
-            cloudFileProvider.stopFilling(formInfo.id)
+            cloudFileProvider.stopFilling(formId)
                 .collect { result ->
                     _state.update { it.copy(requestLoading = false) }
                     when (result) {
@@ -68,7 +68,7 @@ class FillingStatusViewModel(
     }
 
     private suspend fun fetchFormInfo() {
-        cloudFileProvider.getFileInfo(formInfo.id)
+        cloudFileProvider.getFileInfo(formId)
             .collect { result ->
                 when (result) {
                     is NetworkResult.Success<CloudFile> -> {
@@ -88,7 +88,7 @@ class FillingStatusViewModel(
     }
 
     private suspend fun fetchRoles() {
-        cloudFileProvider.getFillingStatus(formInfo.id)
+        cloudFileProvider.getFillingStatus(formId)
             .collect { result ->
                 when (result) {
                     is NetworkResult.Success<List<FormRole>> -> {

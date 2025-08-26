@@ -118,7 +118,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                         if (isSendForm) {
                             val clickedFile = presenter.itemClicked as? CloudFile
                             if (clickedFile?.formFillingStatus != ApiContract.FormFillingStatus.None) {
-                                showFillingStatusFragment(true)
+                                showFillingStatusFragment(FillingStatusMode.SendForm)
                             } else if (fillSession != null) {
                                 showFillResultFragment(fillSession)
                             }
@@ -265,7 +265,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> presenter.addToFavorite()
             is ExplorerContextItem.VersionHistory -> presenter.showVersionHistory()
-            is ExplorerContextItem.FillingStatus -> showFillingStatusFragment(false)
+            is ExplorerContextItem.FillingStatus -> showFillingStatusFragment(FillingStatusMode.None)
             is ExplorerContextItem.StopFilling -> showStopFillingQuestionDialog()
             else -> super.onContextButtonClick(contextItem)
         }
@@ -285,11 +285,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    private fun showFillingStatusFragment(isSendForm: Boolean) {
+    private fun showFillingStatusFragment(fillingStatusMode: FillingStatusMode) {
         FillingStatusFragment.show(
             activity = requireActivity(),
-            file = presenter.itemClicked as? CloudFile ?: return,
-            isSendForm = isSendForm,
+            formId = presenter.itemClicked?.id ?: return,
+            fillingStatusMode = fillingStatusMode,
             onClose = { presenter.refresh() },
             onStartFill = { presenter.openFile(EditType.Fill(), false) }
         )

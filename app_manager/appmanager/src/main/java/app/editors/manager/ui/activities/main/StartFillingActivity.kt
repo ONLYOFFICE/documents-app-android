@@ -1,8 +1,11 @@
 package app.editors.manager.ui.activities.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -46,11 +50,18 @@ import app.documents.core.model.login.User
 import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
+import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.app.roomProvider
+import app.editors.manager.managers.tools.BaseEvent
 import app.editors.manager.managers.utils.GlideAvatarImage
+import app.editors.manager.ui.fragments.main.FillingStatusMode
+import app.editors.manager.ui.fragments.main.FillingStatusRoute
 import app.editors.manager.ui.fragments.share.InviteUsersScreen
 import app.editors.manager.ui.fragments.share.UserListScreen
+import app.editors.manager.viewModels.main.FillingStatusViewModel
 import app.editors.manager.viewModels.main.RoomUserListViewModel
+import app.editors.manager.viewModels.main.StartFillingEvent
+import app.editors.manager.viewModels.main.StartFillingState
 import app.editors.manager.viewModels.main.StartFillingViewModel
 import app.editors.manager.viewModels.main.UserListMode
 import kotlinx.serialization.Serializable
@@ -81,6 +92,9 @@ private sealed class Screen {
     data object InviteToRoom : Screen()
 
     @Serializable
+    data object FillingStatus : Screen()
+
+    @Serializable
     data class UserList(val index: Int) : Screen()
 }
 
@@ -97,6 +111,10 @@ class StartFillingActivity : ComponentActivity() {
         intent.getStringExtra(EditorsContract.EXTRA_ROOM_ID).orEmpty()
     }
 
+    private val formId: String by lazy {
+        intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -105,14 +123,41 @@ class StartFillingActivity : ComponentActivity() {
             ) {
                 CompositionLocalProvider(LocalUseTabletPadding provides true) {
                     val navController = rememberNavController()
-                    val viewModel = viewModel { StartFillingViewModel(formRoles) }
-                    val rolesWithUsers = viewModel.rolesWithUsers.collectAsState()
+                    val viewModel = viewModel {
+                        StartFillingViewModel(
+                            roomProvider = roomProvider,
+                            roomId = roomId,
+                            formId = formId,
+                            formRoles = formRoles,
+                            resourcesProvider = appComponent.resourcesProvider,
+                        )
+                    }
+                    val state = viewModel.state.collectAsState()
+                    val lifecycleOwner = LocalLifecycleOwner.current
+
+                    LaunchedEffect(viewModel.events) {
+                        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                            viewModel.events.collect { event ->
+                                when (event) {
+                                    is BaseEvent.ShowMessage -> {
+                                        UiUtils.getSnackBar(this@StartFillingActivity)
+                                            .setText(event.msg)
+                                            .show()
+                                    }
+
+                                    is StartFillingEvent.Success -> {
+                                        navController.navigate(Screen.FillingStatus)
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     NavHost(navController = navController, startDestination = Screen.Main) {
                         composable<Screen.Main> {
                             StartFillingScreen(
-                                roles = rolesWithUsers.value,
-                                onStart = {},
+                                state = state.value,
+                                onStart = viewModel::startFilling,
                                 onClose = ::finish,
                                 onDeleteClick = viewModel::deleteUser,
                                 onAddClick = { index ->
@@ -121,7 +166,6 @@ class StartFillingActivity : ComponentActivity() {
                             )
                         }
                         composable<Screen.UserList> { backStackEntry ->
-                            val lifecycleOwner = LocalLifecycleOwner.current
                             val index = backStackEntry.toRoute<Screen.UserList>().index
                             val userListViewModel = viewModel {
                                 RoomUserListViewModel(
@@ -170,6 +214,28 @@ class StartFillingActivity : ComponentActivity() {
                                 onBack = navController::popBackStack,
                             )
                         }
+                        composable<Screen.FillingStatus> {
+                            val fillingStatusViewModel = viewModel<FillingStatusViewModel> {
+                                FillingStatusViewModel(
+                                    formId = formId,
+                                    cloudFileProvider = cloudFileProvider
+                                )
+                            }
+
+                            BackHandler(onBack = ::finish)
+
+                            FillingStatusRoute(
+                                fillingStatusMode = FillingStatusMode.StartFilling,
+                                viewModel = fillingStatusViewModel,
+                                onBack = ::finish,
+                                onFillClick = { Log.e("sdsd", "onStartFill") },
+                                onSnackBar = {
+                                    UiUtils.getSnackBar(this@StartFillingActivity)
+                                        .setText(it)
+                                        .show()
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -191,7 +257,7 @@ class StartFillingActivity : ComponentActivity() {
 @Composable
 private fun StartFillingScreen(
     modifier: Modifier = Modifier,
-    roles: List<Pair<FormRole, User?>>,
+    state: StartFillingState,
     onAddClick: (Int) -> Unit,
     onDeleteClick: (Int) -> Unit,
     onStart: () -> Unit,
@@ -208,6 +274,11 @@ private fun StartFillingScreen(
         }
     ) {
         Column {
+            AnimatedVisibility(state.isLoading) {
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
             NestedColumn(
                 modifier = Modifier.weight(1f)
             ) {
@@ -218,8 +289,9 @@ private fun StartFillingScreen(
                 AppHeaderItem(
                     title = R.string.start_filling_header
                 )
-                roles.forEachIndexed { index, (role, user) ->
+                state.rolesWithUsers.forEachIndexed { index, (role, user) ->
                     RoleItem(
+                        enabled = !state.isLoading,
                         index = index + 1,
                         roleName = role.name,
                         roleColor = Color(role.color),
@@ -240,6 +312,7 @@ private fun StartFillingScreen(
                         onClick = onClose
                     )
                     AppTextButton(
+                        enabled = state.rolesWithUsers.none { it.second == null } && !state.isLoading,
                         modifier = Modifier.padding(horizontal = 8.dp),
                         title = R.string.start_filling_start,
                         onClick = onStart
@@ -253,6 +326,7 @@ private fun StartFillingScreen(
 @Composable
 private fun RoleItem(
     modifier: Modifier = Modifier,
+    enabled: Boolean,
     index: Int,
     roleName: String,
     roleColor: Color,
@@ -321,6 +395,7 @@ private fun RoleItem(
         }
         if (user != null) {
             IconButton(
+                enabled = enabled,
                 onClick = onDeleteClick
             ) {
                 Icon(
@@ -341,13 +416,16 @@ private fun StartFillingScreenPreview() {
         primaryColor = colorResource(lib.toolkit.base.R.color.colorPdfTint)
     ) {
         StartFillingScreen(
-            roles = List(15) {
-                FormRole("Role name", Color.Green.toArgb(), 0) to if (it == 0) {
-                    User(displayName = "Username")
-                } else {
-                    null
-                }
-            },
+            state = StartFillingState(
+                rolesWithUsers = List(15) {
+                    FormRole("Role name", Color.Green.toArgb(), 0) to if (it == 0) {
+                        User(displayName = "Username")
+                    } else {
+                        null
+                    }
+                },
+                isLoading = false
+            ),
             onClose = {},
             onStart = {},
             onAddClick = {},
