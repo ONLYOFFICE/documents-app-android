@@ -1,7 +1,6 @@
 package app.editors.manager.ui.activities.main
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -228,7 +227,10 @@ class StartFillingActivity : ComponentActivity() {
                                 fillingStatusMode = FillingStatusMode.StartFilling,
                                 viewModel = fillingStatusViewModel,
                                 onBack = ::finish,
-                                onFillClick = { Log.e("sdsd", "onStartFill") },
+                                onFillClick = {
+                                    setResult(EditorsContract.RESULT_FILL_FORM)
+                                    finish()
+                                },
                                 onSnackBar = {
                                     UiUtils.getSnackBar(this@StartFillingActivity)
                                         .setText(it)

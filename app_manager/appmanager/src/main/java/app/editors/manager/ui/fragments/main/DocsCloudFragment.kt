@@ -129,6 +129,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             }
         } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
             onRefresh()
+        } else if (resultCode == EditorsContract.RESULT_FILL_FORM) {
+            presenter.openFile(EditType.Fill(), false)
         }
     }
 

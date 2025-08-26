@@ -35,6 +35,7 @@ object EditorsContract {
     const val EXTRA_ROOM_ID = "EXTRA_ROOM_ID"
 
     const val RESULT_FAILED_OPEN = 4000
+    const val RESULT_FILL_FORM = 4001
 
     const val INTERNAL_EDIT_ACCESS_EDIT = 0
     const val INTERNAL_EDIT_ACCESS_READ = 1
