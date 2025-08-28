@@ -114,6 +114,10 @@ class StartFillingActivity : ComponentActivity() {
         intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty()
     }
 
+    private val isComplete: Boolean by lazy {
+        intent.getBooleanExtra(EditorsContract.EXTRA_START_FILLING_COMPLETE, false)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -145,14 +149,18 @@ class StartFillingActivity : ComponentActivity() {
                                     }
 
                                     is StartFillingEvent.Success -> {
-                                        navController.navigate(Screen.FillingStatus)
+                                        setResult(RESULT_OK)
+                                        finish()
                                     }
                                 }
                             }
                         }
                     }
 
-                    NavHost(navController = navController, startDestination = Screen.Main) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = if (isComplete) Screen.FillingStatus else Screen.Main
+                    ) {
                         composable<Screen.Main> {
                             StartFillingScreen(
                                 state = state.value,

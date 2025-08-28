@@ -262,7 +262,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 acceptErrorTint = true
             )
             is ExplorerContextItem.Fill -> presenter.openFillFormFile()
-            is ExplorerContextItem.StartFilling -> presenter.openFillFormFile(true)
+            is ExplorerContextItem.StartFilling -> presenter.openStartFilling()
             is ExplorerContextItem.ExternalLink -> presenter.saveExternalLinkToClipboard()
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> presenter.addToFavorite()
