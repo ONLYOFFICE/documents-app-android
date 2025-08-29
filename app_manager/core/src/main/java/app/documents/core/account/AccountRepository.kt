@@ -44,7 +44,7 @@ interface AccountRepository {
 
     suspend fun checkLogin(accountId: String): CheckLoginResult
 
-    suspend fun checkLoginWithEmail(email: String): CheckLoginResult
+    suspend fun checkLoginWithEmailAndPortal(email: String, portalUrl: String? = null): CheckLoginResult
 
     suspend fun getPortals(): List<String>
 
@@ -105,8 +105,16 @@ internal class AccountRepositoryImpl(
         accountManager.setPassword(accountName, password)
     }
 
-    override suspend fun checkLoginWithEmail(email: String): CheckLoginResult {
+    override suspend fun checkLoginWithEmailAndPortal(email: String, portalUrl: String?): CheckLoginResult {
         val accountId = cloudDataSource.getAccountByLogin(email)?.id.orEmpty()
+
+        if (accountId.isNotEmpty() && portalUrl != null) {
+            val account = cloudDataSource.getAccount(accountId)
+            if (account != null && account.portal.url != portalUrl) {
+                return CheckLoginResult.NeedLogin
+            }
+        }
+
         return checkLogin(accountId)
     }
 
