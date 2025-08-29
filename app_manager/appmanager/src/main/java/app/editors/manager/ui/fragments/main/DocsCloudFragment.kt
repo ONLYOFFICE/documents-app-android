@@ -133,7 +133,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 onRefresh()
             }
             EditorsContract.RESULT_START_FILLING_COMPLETE -> {
-                showFillingStatusFragment(FillingStatusMode.StartFilling)
+                requireView().postDelayed({
+                    showFillingStatusFragment(FillingStatusMode.StartFilling)
+                }, 500)
             }
         }
     }
