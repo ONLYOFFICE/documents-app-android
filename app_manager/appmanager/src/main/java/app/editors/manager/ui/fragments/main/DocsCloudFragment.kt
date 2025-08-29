@@ -109,28 +109,32 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onEditorActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
-                    if (data?.data != null) {
-                        val isSendForm = data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)
-                        val fillSession = data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION)
-                        if (isSendForm) {
-                            val clickedFile = presenter.itemClicked as? CloudFile
-                            if (clickedFile?.formFillingStatus != ApiContract.FormFillingStatus.None) {
-                                showFillingStatusFragment(FillingStatusMode.SendForm)
-                            } else if (fillSession != null) {
-                                showFillResultFragment(fillSession)
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                when (requestCode) {
+                    REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
+                        if (data?.data != null) {
+                            val isSendForm = data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)
+                            val fillSession = data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION)
+                            if (isSendForm) {
+                                val clickedFile = presenter.itemClicked as? CloudFile
+                                if (clickedFile?.formFillingStatus != ApiContract.FormFillingStatus.None) {
+                                    showFillingStatusFragment(FillingStatusMode.SendForm)
+                                } else if (fillSession != null) {
+                                    showFillResultFragment(fillSession)
+                                }
                             }
                         }
+                        refreshAfterEditing()
                     }
-                    refreshAfterEditing()
                 }
             }
-        } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
-            onRefresh()
-        } else if (resultCode == EditorsContract.RESULT_FILL_FORM) {
-            presenter.openFile(EditType.Fill(), false)
+            BaseActivity.REQUEST_ACTIVITY_REFRESH -> {
+                onRefresh()
+            }
+            EditorsContract.RESULT_START_FILLING_COMPLETE -> {
+                showFillingStatusFragment(FillingStatusMode.StartFilling)
+            }
         }
     }
 

@@ -2,7 +2,6 @@ package app.editors.manager.ui.activities.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -49,15 +48,11 @@ import app.documents.core.model.login.User
 import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
-import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.tools.BaseEvent
 import app.editors.manager.managers.utils.GlideAvatarImage
-import app.editors.manager.ui.fragments.main.FillingStatusMode
-import app.editors.manager.ui.fragments.main.FillingStatusRoute
 import app.editors.manager.ui.fragments.share.InviteUsersScreen
 import app.editors.manager.ui.fragments.share.UserListScreen
-import app.editors.manager.viewModels.main.FillingStatusViewModel
 import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.StartFillingEvent
 import app.editors.manager.viewModels.main.StartFillingState
@@ -91,9 +86,6 @@ private sealed class Screen {
     data object InviteToRoom : Screen()
 
     @Serializable
-    data object FillingStatus : Screen()
-
-    @Serializable
     data class UserList(val index: Int) : Screen()
 }
 
@@ -112,10 +104,6 @@ class StartFillingActivity : ComponentActivity() {
 
     private val formId: String by lazy {
         intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty()
-    }
-
-    private val isComplete: Boolean by lazy {
-        intent.getBooleanExtra(EditorsContract.EXTRA_START_FILLING_COMPLETE, false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -159,7 +147,7 @@ class StartFillingActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = if (isComplete) Screen.FillingStatus else Screen.Main
+                        startDestination = Screen.Main
                     ) {
                         composable<Screen.Main> {
                             StartFillingScreen(
@@ -219,31 +207,6 @@ class StartFillingActivity : ComponentActivity() {
                                 fromList = true,
                                 onSnackBar = ::onSnackBar,
                                 onBack = navController::popBackStack,
-                            )
-                        }
-                        composable<Screen.FillingStatus> {
-                            val fillingStatusViewModel = viewModel<FillingStatusViewModel> {
-                                FillingStatusViewModel(
-                                    formId = formId,
-                                    cloudFileProvider = cloudFileProvider
-                                )
-                            }
-
-                            BackHandler(onBack = ::finish)
-
-                            FillingStatusRoute(
-                                fillingStatusMode = FillingStatusMode.StartFilling,
-                                viewModel = fillingStatusViewModel,
-                                onBack = ::finish,
-                                onFillClick = {
-                                    setResult(EditorsContract.RESULT_FILL_FORM)
-                                    finish()
-                                },
-                                onSnackBar = {
-                                    UiUtils.getSnackBar(this@StartFillingActivity)
-                                        .setText(it)
-                                        .show()
-                                }
                             )
                         }
                     }

@@ -33,10 +33,9 @@ object EditorsContract {
     const val EXTRA_THEME_COLOR = "EXTRA_THEME_COLOR"
     const val EXTRA_ITEM_ID = "EXTRA_ITEM_ID"
     const val EXTRA_ROOM_ID = "EXTRA_ROOM_ID"
-    const val EXTRA_START_FILLING_COMPLETE = "EXTRA_START_FILLING_COMPLETE"
 
     const val RESULT_FAILED_OPEN = 4000
-    const val RESULT_FILL_FORM = 4001
+    const val RESULT_START_FILLING_COMPLETE = 4001
 
     const val INTERNAL_EDIT_ACCESS_EDIT = 0
     const val INTERNAL_EDIT_ACCESS_READ = 1
