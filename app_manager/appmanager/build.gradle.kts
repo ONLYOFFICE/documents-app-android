@@ -133,8 +133,8 @@ android {
     buildTypes {
 
         release {
-//            isMinifyEnabled = true
-//            isShrinkResources = true
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
 
             signingConfig = signingConfigs.getByName("onlyoffice")
