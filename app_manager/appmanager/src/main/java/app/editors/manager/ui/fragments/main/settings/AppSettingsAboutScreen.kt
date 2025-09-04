@@ -5,6 +5,7 @@ import android.webkit.WebView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -139,7 +140,10 @@ private fun MainScreen(
                             Image(
                                 painter = painterResource(id = lib.toolkit.base.R.drawable.image_onlyoffice_text),
                                 contentDescription = null,
-                                modifier = Modifier.clickable {
+                                modifier = Modifier.clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
                                     tapCount.intValue++
                                     if (tapCount.intValue >= 10) {
                                         tapCount.intValue = 0
