@@ -1,9 +1,9 @@
 [versions]
-compileSdk = "35"
+compileSdk = "36"
 minSdk = "26"
 targetSdk = "35"
-ndk = "28.1.13356709"
-gradle = "8.7.3"
+ndk = "28.2.13676358"
+gradle = "8.13.0"
 
 #kotlin
 kotlin = "1.9.24"
