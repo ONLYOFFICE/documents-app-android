@@ -72,4 +72,8 @@
         <item name="android:translationY">@dimen/default_margin_small</item>
     </style>
 
+    <style name="App.NavigationRail.TextAppearance" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">10sp</item>
+    </style>
+
 </resources>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:theme="@style/AppTheme">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        style="@style/Widget.Common.AppBarLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/navigation_rail"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <app.editors.manager.ui.views.custom.MainToolbar
+            android:id="@+id/app_bar_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:minHeight="?attr/actionBarSize" />
+
+        <include android:id="@+id/infoLayout" layout="@layout/include_toolbar_info" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <com.google.android.material.navigationrail.NavigationRailView
+        android:id="@+id/navigation_rail"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:itemTextAppearanceActive="@style/App.NavigationRail.TextAppearance"
+        app:itemTextAppearanceInactive="@style/App.NavigationRail.TextAppearance"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_navigation"
+        app:menuGravity="center" />
+
+    <FrameLayout
+        android:id="@+id/frame_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fitsSystemWindows="true"
+        app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/navigation_rail"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- The BottomNavigationView is removed as NavigationRailView will be used -->
+    <!-- The FloatingActionButton might need repositioning or rethinking with NavigationRailView -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/app_floating_action_button"
+        style="@style/App.Fab.Style"
+        android:layout_width="@dimen/default_action_bottom_size"
+        android:layout_height="@dimen/default_action_bottom_size"
+        android:layout_margin="@dimen/screen_margin_large"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="center"
+        android:src="@drawable/ic_default_add"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="ContentDescription" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

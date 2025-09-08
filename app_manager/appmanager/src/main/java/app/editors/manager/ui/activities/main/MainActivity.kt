@@ -51,6 +51,8 @@ import app.editors.manager.ui.fragments.storages.DocsDropboxFragment
 import app.editors.manager.ui.fragments.storages.DocsGoogleDriveFragment
 import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import com.google.android.gms.tasks.Task
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigationrail.NavigationRailView
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.delay
@@ -135,6 +137,9 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
 
     private lateinit var viewBinding: ActivityMainBinding
 
+    private val activeNavigationView: Any?
+        get() = if (isTablet) viewBinding.navigationRail else viewBinding.bottomNavigation
+
     private val navigationListener: (item: MenuItem) -> Boolean = { item ->
         if (presenter.isDialogOpen) {
             false
@@ -155,7 +160,12 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putString(ACCOUNT_KEY, Json.encodeToString(viewBinding.appBarToolbar.account))
-        outState.putInt(FRAGMENT_KEY, viewBinding.bottomNavigation.selectedItemId)
+        val selectedItemId = when (val navView = activeNavigationView) {
+            is BottomNavigationView -> navView.selectedItemId
+            is NavigationRailView -> navView.selectedItemId
+            else -> R.id.menu_item_on_device // Default or throw error
+        }
+        outState.putInt(FRAGMENT_KEY, selectedItemId)
         super.onSaveInstanceState(outState)
     }
 
@@ -249,7 +259,14 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         }
 
         App.getApp().appComponent.recentDataSource.getRecentListFlow().flowWithLifecycle(lifecycle)
-            .onEach { viewBinding.bottomNavigation.menu.getItem(0).isEnabled = it.isNotEmpty() }
+            .onEach {
+                val menu = when (val navView = activeNavigationView) {
+                    is BottomNavigationView -> navView.menu
+                    is NavigationRailView -> navView.menu
+                    else -> null
+                }
+                menu?.getItem(0)?.isEnabled = it.isNotEmpty()
+            }
             .launchIn(lifecycleScope)
 
         checkState(savedInstanceState)
@@ -267,7 +284,10 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
     private fun initViews() {
         viewBinding.appFloatingActionButton.visibility = View.GONE
         viewBinding.appFloatingActionButton.setOnClickListener { onFloatingButtonClick() }
-        viewBinding.bottomNavigation.setOnItemSelectedListener(navigationListener)
+        when (val navView = activeNavigationView) {
+            is BottomNavigationView -> navView.setOnItemSelectedListener(navigationListener)
+            is NavigationRailView -> navView.setOnItemSelectedListener(navigationListener)
+        }
     }
 
     private fun initToolbar() {
@@ -285,20 +305,26 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         presenter.init()
 
         if (savedInstanceState != null) {
-            viewBinding.bottomNavigation.selectedItemId = savedInstanceState.getInt(FRAGMENT_KEY)
+            when (val navView = activeNavigationView) {
+                is BottomNavigationView -> navView.selectedItemId = savedInstanceState.getInt(FRAGMENT_KEY)
+                is NavigationRailView -> navView.selectedItemId = savedInstanceState.getInt(FRAGMENT_KEY)
+            }
             viewBinding.appBarToolbar.bind()
             return
         }
 
-        if (intent?.extras?.contains("create_type") == true) {
-            viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
+        val initialItemId = if (intent?.extras?.contains("create_type") == true) {
+            R.id.menu_item_on_device
         } else {
             accountOnline?.let {
                 viewBinding.appBarToolbar.bind()
-                viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_cloud
-            } ?: run {
-                viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_on_device
-            }
+                R.id.menu_item_cloud
+            } ?: R.id.menu_item_on_device
+        }
+
+        when (val navView = activeNavigationView) {
+            is BottomNavigationView -> navView.selectedItemId = initialItemId
+            is NavigationRailView -> navView.selectedItemId = initialItemId
         }
 
         checkNotification()
@@ -528,7 +554,10 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
             CloudAccountFragment.newInstance(),
             R.id.frame_container
         )
-        viewBinding.bottomNavigation.selectedItemId = R.id.menu_item_settings
+        when (val navView = activeNavigationView) {
+            is BottomNavigationView -> navView.selectedItemId = R.id.menu_item_settings
+            is NavigationRailView -> navView.selectedItemId = R.id.menu_item_settings
+        }
     }
 
     private fun showOnDeviceFragment() {
