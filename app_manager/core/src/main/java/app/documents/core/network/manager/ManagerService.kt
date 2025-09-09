@@ -19,6 +19,7 @@ import app.documents.core.network.manager.models.request.RequestRenameFile
 import app.documents.core.network.manager.models.request.RequestStopFilling
 import app.documents.core.network.manager.models.request.RequestStorage
 import app.documents.core.network.manager.models.request.RequestTitle
+import app.documents.core.network.manager.models.request.RequestUploadCheck
 import app.documents.core.network.manager.models.response.ResponseCloudTree
 import app.documents.core.network.manager.models.response.ResponseConversionStatus
 import app.documents.core.network.manager.models.response.ResponseCount
@@ -34,6 +35,7 @@ import app.documents.core.network.manager.models.response.ResponseFolder
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.manager.models.response.ResponsePortal
 import app.documents.core.network.manager.models.response.ResponseThirdparty
+import app.documents.core.network.manager.models.response.ResponseUploadCheck
 import app.documents.core.network.manager.models.response.ResponseVersionHistory
 import app.documents.core.network.room.models.DeleteVersionRequest
 import app.documents.core.network.room.models.EditCommentRequest
@@ -373,6 +375,16 @@ interface ManagerService {
     @Multipart
     @POST("api/" + ApiContract.API_VERSION + "/files/@my/upload")
     fun uploadFileToMy(@Part part: MultipartBody.Part): Call<ResponseFile>
+
+    @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/upload/check")
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    suspend fun uploadCheck(
+        @Path(value = "folder_id") folderId: String,
+        @Body body: RequestUploadCheck
+    ): Response<ResponseUploadCheck>
 
     /*
      * Insert  file

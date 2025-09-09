@@ -27,6 +27,7 @@ import app.documents.core.network.manager.models.request.RequestFavorites
 import app.documents.core.network.manager.models.request.RequestRenameFile
 import app.documents.core.network.manager.models.request.RequestStopFilling
 import app.documents.core.network.manager.models.request.RequestTitle
+import app.documents.core.network.manager.models.request.RequestUploadCheck
 import app.documents.core.network.manager.models.response.ResponseCreateFile
 import app.documents.core.network.manager.models.response.ResponseCreateFolder
 import app.documents.core.network.manager.models.response.ResponseExplorer
@@ -893,6 +894,17 @@ class CloudFileProvider @Inject constructor(
             .flowOn(Dispatchers.IO)
             .asResult()
     }
+
+    fun checkDuplicateFiles(
+        folderId: String,
+        filenames: List<String>
+    ): Flow<NetworkResult<List<String>>> = flow {
+        val response = managerService.uploadCheck(folderId, RequestUploadCheck(filenames))
+        if (!response.isSuccessful) throw HttpException(response)
+        emit(response.body()?.response.orEmpty())
+    }
+        .flowOn(Dispatchers.IO)
+        .asResult()
 
     suspend fun getFillResult(sessionId: String, portal: String?, token: String?): FillResult {
         val api = managerService.takeIf {
