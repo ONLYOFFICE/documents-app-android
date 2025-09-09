@@ -55,6 +55,7 @@ import app.editors.manager.mvp.models.list.Templates
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.mvp.models.ui.DuplicateFilesChoice
 import app.editors.manager.mvp.models.ui.StorageQuota
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
@@ -158,6 +159,8 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     private var placeholderViewType: PlaceholderViews.Type = PlaceholderViews.Type.NONE
     protected var operationStack: ExplorerStackMap? = null
     private var uploadUri: Uri? = null
+    protected var uploadFiles: List<UploadFile>? = null
+    protected var duplicateFiles: List<String>? = null
     private var sendingFile: File? = null
 
     protected var filters: Map<String, String> = mapOf()
@@ -820,37 +823,64 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
     protected fun addUploadFiles(uriList: List<Uri>, id: String) {
-        val uploadFiles = mutableListOf<UploadFile>()
-        for (uri in uriList) {
-            if (ContentResolverUtils.getSize(context, uri) > FileUtils.STRICT_SIZE) {
-                viewState.onSnackBar(context.getString(R.string.upload_manager_error_file_size))
-                continue
-            }
-            uploadFiles.add(UploadFile().apply {
-                progress = 0
-                folderId = id
-                name = ContentResolverUtils.getName(context, uri)
-                size = setSize(uri)
-                this.uri = uri
-                this.id = uri.path
-            })
-        }
-
-        if (uploadFiles.isNotEmpty()) {
-            UploadWork.putNewUploadFiles(id, ArrayList(uploadFiles))
-            for (uri in uploadFiles) {
-                val workData = Data.Builder()
-                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.uri.toString())
-                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD)
-                    .putString(UploadWork.TAG_FOLDER_ID, id)
-                    .build()
-                startUpload(workData)
-            }
-
-            if (modelExplorerStack.last()?.itemsCount == 0) {
-                refresh()
+        uploadFiles = buildList {
+            for (uri in uriList) {
+                if (ContentResolverUtils.getSize(context, uri) > FileUtils.STRICT_SIZE) {
+                    viewState.onSnackBar(context.getString(R.string.upload_manager_error_file_size))
+                    continue
+                }
+                add(UploadFile().apply {
+                    progress = 0
+                    folderId = id
+                    name = ContentResolverUtils.getName(context, uri)
+                    size = setSize(uri)
+                    this.uri = uri
+                    this.id = uri.path
+                })
             }
         }
+
+        if (!uploadFiles.isNullOrEmpty()) {
+            handleDuplicatesUpload(id)
+        }
+    }
+
+    fun startUpload(folderId: String, result: DuplicateFilesChoice) {
+        val filesToUpload = if (result == DuplicateFilesChoice.SKIP) {
+            uploadFiles?.filterNot { duplicateFiles?.contains(it.name) ?: false }
+        } else {
+            uploadFiles
+        }
+
+        if (filesToUpload.isNullOrEmpty()) return
+
+        UploadWork.putNewUploadFiles(folderId, ArrayList(uploadFiles.orEmpty()))
+        for (uploadFile in filesToUpload) {
+            val duplicateAction = if (duplicateFiles?.contains(uploadFile.name) == true) {
+                result
+            } else {
+                DuplicateFilesChoice.COPY
+            }
+
+            val workData = Data.Builder()
+                .putString(UploadWork.TAG_UPLOAD_FILES, uploadFile.uri.toString())
+                .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD)
+                .putString(UploadWork.TAG_FOLDER_ID, folderId)
+                .putString(UploadWork.TAG_DUPLICATE_ACTION, duplicateAction.name)
+                .build()
+
+            startUpload(workData)
+        }
+
+        if (modelExplorerStack.last()?.itemsCount == 0) {
+            refresh()
+            cleanUploadFiles()
+        }
+    }
+
+    fun cleanUploadFiles() {
+        duplicateFiles = null
+        uploadFiles = null
     }
 
     fun startUpload(data: Data) {
@@ -861,6 +891,10 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                 .build()
             downloadManager.enqueue(request)
         }
+    }
+
+    protected open fun handleDuplicatesUpload(folderId: String) {
+        startUpload(folderId, DuplicateFilesChoice.COPY)
     }
 
     private fun setSize(uri: Uri): String {

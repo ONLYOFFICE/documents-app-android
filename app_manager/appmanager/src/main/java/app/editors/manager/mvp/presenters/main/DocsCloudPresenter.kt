@@ -242,6 +242,26 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    override fun handleDuplicatesUpload(folderId: String) {
+        presenterScope.launch {
+            fileProvider.checkDuplicateFiles(
+                folderId = folderId,
+                filenames = uploadFiles?.map { it.name.orEmpty() }.orEmpty()
+            ).collect { result ->
+                duplicateFiles = when (result) {
+                    is NetworkResult.Success -> result.data
+                    else -> null
+                }
+                if (!duplicateFiles.isNullOrEmpty()) {
+                    val filename = if (duplicateFiles?.size == 1) duplicateFiles?.firstOrNull() else null
+                    viewState.showDuplicateFilesDialog(filename)
+                } else {
+                    super.handleDuplicatesUpload(folderId)
+                }
+            }
+        }
+    }
+
     private fun checkFillFormsRoom(): Boolean {
         val explorer = operationStack?.explorer ?: return false
         if (roomClicked?.roomType == ApiContract.RoomType.FILL_FORMS_ROOM) {
