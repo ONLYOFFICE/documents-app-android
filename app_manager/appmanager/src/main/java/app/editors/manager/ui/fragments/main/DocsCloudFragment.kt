@@ -29,6 +29,7 @@ import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
+import app.editors.manager.mvp.models.ui.DuplicateFilesChoice
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter
 import app.editors.manager.mvp.views.main.DocsCloudView
@@ -704,6 +705,26 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             description = getString(R.string.filling_form_version_incompatible_desc),
             acceptTitle = getString(R.string.conversion_dialog_open_in_view_mode),
             acceptListener = { presenter.openFile(EditType.View()) },
+        )
+    }
+
+    override fun showDuplicateFilesDialog(filename: String?) {
+        val folderId = presenter.folderId.orEmpty()
+        UiUtils.showQuestionDialog(
+            context = requireContext(),
+            title = getString(R.string.upload_manager_duplicate_title),
+            description = if (filename != null) {
+                getString(R.string.upload_manager_duplicate_text, filename)
+            } else {
+                getString(R.string.upload_manager_duplicates_text)
+            },
+            acceptTitle = getString(R.string.upload_manager_duplicate_overwrite),
+            acceptListener = { presenter.startUpload(folderId, DuplicateFilesChoice.OVERWRITE) },
+            neutralTitle = getString(R.string.upload_manager_duplicate_skip),
+            neutralListener = { presenter.startUpload(folderId, DuplicateFilesChoice.SKIP) },
+            cancelTitle = getString(R.string.upload_manager_duplicate_copy),
+            cancelListener = { presenter.startUpload(folderId, DuplicateFilesChoice.COPY) },
+            dismissListener = { presenter.cleanUploadFiles() }
         )
     }
 

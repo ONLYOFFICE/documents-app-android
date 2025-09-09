@@ -72,4 +72,7 @@ interface DocsCloudView : DocsBaseView {
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showFillFormIncompatibleVersionsDialog()
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showDuplicateFilesDialog(filename: String?)
 }

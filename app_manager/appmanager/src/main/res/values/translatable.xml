@@ -617,6 +617,12 @@
     <string name="upload_manager_error_file_size">The file size cannot be more than 100 megabytes</string>
     <string name="upload_manager_notification_cancel_upload">Cancel upload</string>
     <string name="upload_manager_waiting_title">Waiting for upload</string>
+    <string name="upload_manager_duplicate_title">Action required</string>
+    <string name="upload_manager_duplicate_text">The destination already contains a file named «%s». Please select the action:</string>
+    <string name="upload_manager_duplicates_text">The destination already contains files with the same name. Please select the action:</string>
+    <string name="upload_manager_duplicate_overwrite">Overwrite with version update</string>
+    <string name="upload_manager_duplicate_copy">Create file copy</string>
+    <string name="upload_manager_duplicate_skip">Skip</string>
     <string name="upload_error_wifi">You can upload only when Wi-Fi is enabled</string>
 
     <string name="room_duplicate_progress_title">Duplicate in progress</string>
