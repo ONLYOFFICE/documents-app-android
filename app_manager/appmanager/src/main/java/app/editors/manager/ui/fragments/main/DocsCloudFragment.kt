@@ -107,30 +107,23 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     private var refreshListener: RefreshListener? = null
 
-    override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onEditorActivityResult(requestCode, resultCode, data)
+    override fun onEditorActivityResult(resultCode: Int, data: Intent?) {
+        super.onEditorActivityResult(resultCode, data)
         when (resultCode) {
             Activity.RESULT_OK -> {
-                when (requestCode) {
-                    REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
-                        if (data?.data != null) {
-                            val isSendForm = data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)
-                            val fillSession = data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION)
-                            if (isSendForm) {
-                                val clickedFile = presenter.itemClicked as? CloudFile
-                                if (clickedFile?.formFillingStatus != ApiContract.FormFillingStatus.None) {
-                                    showFillingStatusFragment(FillingStatusMode.SendForm)
-                                } else if (fillSession != null) {
-                                    showFillResultFragment(fillSession)
-                                }
-                            }
+                if (data?.data != null) {
+                    val isSendForm = data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)
+                    val fillSession = data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION)
+                    if (isSendForm) {
+                        val clickedFile = presenter.itemClicked as? CloudFile
+                        if (clickedFile?.formFillingStatus != ApiContract.FormFillingStatus.None) {
+                            showFillingStatusFragment(true)
+                        } else if (fillSession != null) {
+                            showFillResultFragment(fillSession)
                         }
-                        refreshAfterEditing()
                     }
                 }
-            }
-            BaseActivity.REQUEST_ACTIVITY_REFRESH -> {
-                onRefresh()
+                refreshAfterEditing()
             }
             EditorsContract.RESULT_START_FILLING_COMPLETE -> {
                 requireView().postDelayed({
@@ -158,8 +151,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     onRefresh()
                 }
             }
-        } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
-            onRefresh()
         }
     }
 
@@ -341,10 +332,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         if (requireActivity() is IMainActivity) {
             (requireActivity() as IMainActivity).showWebViewer(file, isEditMode)
         }
-    }
-
-    fun setFileData(fileData: String) {
-        presenter.openFile(fileData)
     }
 
     /*

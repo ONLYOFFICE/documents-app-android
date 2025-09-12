@@ -12,7 +12,6 @@ interface MainPagerView : BaseView {
     fun onError(@StringRes res: Int)
     fun onRender(sections: List<Explorer>?)
     fun onFinishRequest()
-    fun setFileData(fileData: String)
     fun onSwitchAccount(data: OpenDataModel)
     fun onPersonalPortalEnd()
 }

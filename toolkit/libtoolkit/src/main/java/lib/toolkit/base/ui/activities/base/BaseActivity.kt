@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.RequiresPermission
@@ -280,8 +281,32 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     }
 
     @JvmOverloads
-    protected fun showSnackBar(string: String, button: String? = null, action: View.OnClickListener? = null): Snackbar {
+    protected fun showSnackBar(
+        string: String,
+        button: String? = null,
+        action: View.OnClickListener? = null,
+    ): Snackbar {
         return UiUtils.getSnackBar(this).apply {
+            setText(string)
+            setAction(button, action)
+            show()
+            snackBar = this
+        }
+    }
+
+    @JvmOverloads
+    protected fun showTopSnackBar(
+        string: String,
+        button: String? = null,
+        topMargin: Int = 0,
+        action: View.OnClickListener? = null
+    ): Snackbar {
+        return UiUtils.getSnackBar(this).apply {
+            val params = view.layoutParams as? FrameLayout.LayoutParams
+            params?.gravity = Gravity.TOP
+            params?.topMargin = topMargin
+            view.layoutParams = params
+            duration = Snackbar.LENGTH_LONG
             setText(string)
             setAction(button, action)
             show()

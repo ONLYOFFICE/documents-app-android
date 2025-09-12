@@ -3,6 +3,7 @@ package lib.compose.ui.views
 import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalElevationOverlay
@@ -17,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTopAppBar
@@ -28,6 +30,7 @@ fun AppTopBar(
     title: @Composable () -> Unit,
     isClose: Boolean = false,
     tint: Color? = null,
+    elevation: Dp = AppBarDefaults. TopAppBarElevation,
     actions: @Composable (() -> Unit)? = null,
     backListener: (() -> Unit)? = null
 ) {
@@ -36,6 +39,7 @@ fun AppTopBar(
             modifier = modifier,
             title = { title.invoke() },
             backgroundColor = MaterialTheme.colors.colorTopAppBar,
+            elevation = elevation,
             navigationIcon = backListener?.let {
                 {
                     IconButton(onClick = backListener) {
@@ -59,6 +63,7 @@ fun AppTopBar(
     title: String,
     isClose: Boolean = false,
     tint: Color? = null,
+    elevation: Dp = AppBarDefaults. TopAppBarElevation,
     actions: @Composable (() -> Unit)? = null,
     backListener: (() -> Unit)? = null
 ) {
@@ -75,6 +80,7 @@ fun AppTopBar(
         },
         isClose = isClose,
         tint = tint,
+        elevation = elevation,
         actions = actions,
         backListener = backListener
     )
@@ -86,6 +92,7 @@ fun AppTopBar(
     @StringRes title: Int,
     isClose: Boolean = false,
     tint: Color? = null,
+    elevation: Dp = AppBarDefaults. TopAppBarElevation,
     actions: @Composable (() -> Unit)? = null,
     backListener: (() -> Unit)? = null
 ) {
@@ -94,6 +101,7 @@ fun AppTopBar(
         title = stringResource(id = title),
         isClose = isClose,
         tint = tint,
+        elevation = elevation,
         actions = actions,
         backListener = backListener
     )

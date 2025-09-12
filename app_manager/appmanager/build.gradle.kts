@@ -67,8 +67,8 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 643
-        versionName = "9.0.4"
+        versionCode = 648
+        versionName = "9.1.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
 
@@ -133,8 +133,8 @@ android {
     buildTypes {
 
         release {
-//            isMinifyEnabled = true
-//            isShrinkResources = true
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
 
             signingConfig = signingConfigs.getByName("onlyoffice")
@@ -217,9 +217,13 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
-        jniLibs.useLegacyPackaging = true
-        arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
-            jniLibs.pickFirsts.add("lib/$abi/libc++_shared.so")
+        packaging {
+            jniLibs {
+                pickFirsts.add("lib/armeabi-v7a/libc++_shared.so")
+                pickFirsts.add("lib/x86/libc++_shared.so")
+                pickFirsts.add("lib/arm64-v8a/libc++_shared.so")
+                pickFirsts.add("lib/x86_64/libc++_shared.so")
+            }
         }
     }
     composeOptions {

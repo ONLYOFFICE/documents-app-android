@@ -1,8 +1,6 @@
 package app.editors.manager.ui.fragments.storages
 
 import android.Manifest
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.OneDriveUtils
@@ -15,7 +13,6 @@ import app.editors.manager.ui.fragments.base.BaseStorageDocsFragment
 import app.editors.manager.ui.fragments.base.StorageLoginFragment
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.RequestPermissions
-import lib.toolkit.base.ui.activities.base.BaseActivity
 import moxy.presenter.InjectPresenter
 
 class DocsOneDriveFragment : BaseStorageDocsFragment() {
@@ -36,13 +33,6 @@ class DocsOneDriveFragment : BaseStorageDocsFragment() {
 
     init {
         App.getApp().appComponent.inject(this)
-    }
-
-    override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onEditorActivityResult(requestCode, resultCode, data)
-        if (isActivePage && resultCode == Activity.RESULT_CANCELED) {
-            onRefresh()
-        }
     }
 
     override fun onAuthorization() {
