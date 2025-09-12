@@ -328,7 +328,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             data = info,
             editType = editType,
             access = file.access,
-            onResultListener = ::onEditorActivityResult
+            onResultListener = ::onEditorActivityResult,
+            roomId = presenter.roomClicked?.id,
+            fileId = presenter.itemClicked?.id
         )
     }
 

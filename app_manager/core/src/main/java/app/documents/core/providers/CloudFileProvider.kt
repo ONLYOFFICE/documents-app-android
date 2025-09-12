@@ -628,6 +628,17 @@ class CloudFileProvider @Inject constructor(
                             editType = editType
                         )
 
+                        if (editType is EditType.StartFilling && document.info != null) {
+                            emit(
+                                FileOpenResult.OpenDocumentServer(
+                                    cloudFile = cloudFile,
+                                    info = document.info,
+                                    editType = editType
+                                )
+                            )
+                            return@flow
+                        }
+
                         val isNotFillableForm = document.isForm &&
                                 if (cloudFile.security != null) {
                                     cloudFile.security?.fillForms != true

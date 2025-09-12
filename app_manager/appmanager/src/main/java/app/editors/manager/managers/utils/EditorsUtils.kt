@@ -34,7 +34,9 @@ object EditorsUtils {
         data: String,
         extension: String,
         editType: EditType,
-        access: Access
+        access: Access,
+        roomId: String? = null,
+        fileId: String? = null
     ): Intent {
         return getEditorIntent(
             context = context,
@@ -42,7 +44,9 @@ object EditorsUtils {
             info = data,
             extension = FileExtensions.Companion.fromExtension(extension),
             editType = editType,
-            access = access
+            access = access,
+            roomId = roomId,
+            fileId = fileId
         )
     }
 
@@ -50,9 +54,11 @@ object EditorsUtils {
         context: Context,
         uri: Uri?,
         extension: FileExtensions,
-        info: String? = null,
         editType: EditType,
         access: Access,
+        info: String? = null,
+        roomId: String? = null,
+        fileId: String? = null
     ): Intent {
         val type = when (extension.group) {
             FileGroup.DOCUMENT -> EditorsType.DOCS
@@ -71,7 +77,9 @@ object EditorsUtils {
             } else {
                 editType
             },
-            access = access
+            access = access,
+            roomId = roomId,
+            fileId = fileId
         ).apply {
             val className = when (type) {
                 EditorsType.DOCS -> EditorsContract.EDITOR_DOCUMENTS
@@ -90,9 +98,11 @@ object EditorsUtils {
     private fun getIntent(
         context: Context,
         uri: Uri?,
-        info: String? = null,
         editType: EditType,
-        access: Access
+        access: Access,
+        info: String? = null,
+        roomId: String? = null,
+        fileId: String? = null
     ): Intent {
         return Intent().apply {
             data = uri
@@ -101,6 +111,8 @@ object EditorsUtils {
             putExtra(EditorsContract.KEY_HELP_URL, StringUtils.getHelpUrl(context))
             putExtra(EditorsContract.KEY_EDIT_TYPE, editType)
             putExtra(EditorsContract.KEY_EDIT_ACCESS, access.toEditAccess())
+            putExtra(EditorsContract.EXTRA_ROOM_ID, roomId)
+            putExtra(EditorsContract.EXTRA_ITEM_ID, fileId)
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
     }

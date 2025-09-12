@@ -117,7 +117,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     if (isSendForm) {
                         val clickedFile = presenter.itemClicked as? CloudFile
                         if (clickedFile?.formFillingStatus != ApiContract.FormFillingStatus.None) {
-                            showFillingStatusFragment(true)
+                            showFillingStatusFragment(FillingStatusMode.SendForm)
                         } else if (fillSession != null) {
                             showFillResultFragment(fillSession)
                         }

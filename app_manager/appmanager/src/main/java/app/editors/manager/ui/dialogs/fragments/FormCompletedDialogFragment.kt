@@ -74,7 +74,8 @@ private class FormCompleteViewModel(
     private val token: String?,
 ) : ViewModel() {
 
-    private val _roomState: MutableStateFlow<FormCompleteState> = MutableStateFlow(FormCompleteState.Loading)
+    private val _roomState: MutableStateFlow<FormCompleteState> =
+        MutableStateFlow(FormCompleteState.Loading)
     val roomState: StateFlow<FormCompleteState> = _roomState
 
     init {
@@ -133,7 +134,8 @@ class FormCompletedDialogFragment : ComposeDialogFragment() {
                 cloudFileProvider = requireContext().cloudFileProvider,
                 sessionId = arguments?.getSerializableExt<String>(KEY_SESSION_ID) ?: "",
                 portal = arguments?.getString(KEY_PORTAL),
-                token = arguments?.getString(KEY_TOKEN)            )
+                token = arguments?.getString(KEY_TOKEN)
+            )
         }
 
         val response = viewModel.roomState.collectAsState().value
@@ -152,36 +154,35 @@ class FormCompletedDialogFragment : ComposeDialogFragment() {
                         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                     }
 
-                        is FormCompleteState.Success -> {
-                            FormCompletedScreen(
-                                fillResult = response.fillResul,
-                                showBackToRoom = arguments?.getString(KEY_PORTAL) == null,
-                                onSendEmailClick = {
-                                    ActivitiesUtils.showEmail(
-                                        context = requireContext(),
-                                        chooseTitle = "",
-                                        to = response.fillResul.manager.email ?: "",
-                                        subject = "",
-                                        body = ""
-                                    )
-                                },
-                                onLinkClick = {
-                                    KeyboardUtils.setDataToClipboard(
-                                        requireContext(),
-                                        response.fillResul.completedForm.webUrl,
-                                        requireContext().getString(R.string.share_clipboard_external_link_label)
-                                    )
-                                },
-                                onCheckReadyFormsClick = {
-                                    setFragmentResult(
-                                        requestKey = KEY_RESULT,
-                                        result = bundleOf("id" to response.fillResul.completedForm.folderId)
-                                    )
-                                    dismiss()
-                                },
-                                onBackToRoomClick = ::dismiss,
-                            )
-                        }
+                    is FormCompleteState.Success -> {
+                        FormCompletedScreen(
+                            fillResult = response.fillResul,
+                            showBackToRoom = arguments?.getString(KEY_PORTAL) == null,
+                            onSendEmailClick = {
+                                ActivitiesUtils.showEmail(
+                                    context = requireContext(),
+                                    chooseTitle = "",
+                                    to = response.fillResul.manager.email ?: "",
+                                    subject = "",
+                                    body = ""
+                                )
+                            },
+                            onLinkClick = {
+                                KeyboardUtils.setDataToClipboard(
+                                    requireContext(),
+                                    response.fillResul.completedForm.webUrl,
+                                    requireContext().getString(R.string.share_clipboard_external_link_label)
+                                )
+                            },
+                            onCheckReadyFormsClick = {
+                                setFragmentResult(
+                                    requestKey = KEY_RESULT,
+                                    result = bundleOf("id" to response.fillResul.completedForm.folderId)
+                                )
+                                dismiss()
+                            },
+                            onBackToRoomClick = ::dismiss,
+                        )
                     }
                 }
             }
