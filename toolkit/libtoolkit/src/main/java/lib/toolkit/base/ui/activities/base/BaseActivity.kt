@@ -306,7 +306,7 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
             params?.gravity = Gravity.TOP
             params?.topMargin = topMargin
             view.layoutParams = params
-            setDuration(5000)
+            duration = Snackbar.LENGTH_LONG
             setText(string)
             setAction(button, action)
             show()
