@@ -37,6 +37,7 @@ import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.room.models.DeleteVersionRequest
 import app.documents.core.network.room.models.EditCommentRequest
+import app.documents.core.network.room.models.RequestFormRoleMapping
 import app.documents.core.utils.FirebaseTool
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -916,6 +917,15 @@ class CloudFileProvider @Inject constructor(
         )
 
         return api.getFillResult(sessionId).response
+    }
+
+    fun resetFilling(fileId: String): Flow<NetworkResult<Unit>> {
+        return flow {
+            roomService.startFilling(fileId, RequestFormRoleMapping(fileId, emptyList()))
+            emit(Unit)
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
     }
 
     private fun <T> apiFlow(apiCall: suspend () -> T): Flow<NetworkResult<T>> = flow {

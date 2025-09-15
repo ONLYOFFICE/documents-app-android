@@ -45,6 +45,7 @@ interface ExplorerContextItemVisible {
             is ExplorerContextItem.Lock -> lock
             is ExplorerContextItem.CustomFilter -> customFilter
             ExplorerContextItem.StartFilling -> startFilling
+            ExplorerContextItem.ResetFilling -> resetFilling
             ExplorerContextItem.VersionHistory -> versionHistory
             ExplorerContextItem.EditComment -> false
             ExplorerContextItem.Open -> false
@@ -233,6 +234,9 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.startFilling: Boolean
         get() = item.security?.startFilling == true
+
+    private val ExplorerContextState.resetFilling: Boolean
+        get() = item.security?.resetFilling == true
 
     private val ExplorerContextState.saveAsTemplate: Boolean
         get() = (item is CloudFolder) && item.isRoom && item.security?.editRoom == true

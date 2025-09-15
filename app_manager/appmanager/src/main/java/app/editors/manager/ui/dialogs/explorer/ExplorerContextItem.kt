@@ -220,6 +220,11 @@ sealed class ExplorerContextItem(
         title = R.string.list_context_edit_comment
     ), ExplorerContextBlockOrder.Common
 
+    object ResetFilling : ExplorerContextItem(
+        icon = R.drawable.ic_refresh,
+        title = R.string.list_context_reset_filling
+    ), ExplorerContextBlockOrder.Common
+
     object DeleteVersion : ExplorerContextItem(
         icon = R.drawable.ic_list_context_delete,
         title = R.string.list_context_delete
