@@ -48,7 +48,7 @@ class PlaceholderViews(val view: View?) {
         SHARE, ACCESS, SUBFOLDER, USERS, GROUPS, COMMON,
         MEDIA, LOAD_GROUPS, LOAD_USERS, OTHER_ACCOUNTS;
 
-        val isComposeType: Boolean get() = this in EMPTY..CONNECTION
+        val isComposeType: Boolean get() = this in EMPTY..EMPTY_CUSTOM_ROOM_VIEWER
         val isPersonalPortalEnd: Boolean get() = this == PERSONAL_PORTAL_END
         val isSimpleText: Boolean get() = this in SHARE..OTHER_ACCOUNTS
     }
@@ -83,24 +83,10 @@ class PlaceholderViews(val view: View?) {
         binding.composeView.isVisible = false
 
         when {
-            type == Type.NONE -> {
-                setVisibility(false)
-                return
-            }
-
-            type.isComposeType -> {
-                showComposePlaceholder(type, onClick)
-                return
-            }
-
-            type.isPersonalPortalEnd -> {
-                showPersonalPortalEndScreen()
-                return
-            }
-
-            type.isSimpleText -> {
-                showSimpleText(getSimpleTextTitle(type))
-            }
+            type == Type.NONE -> setVisibility(false)
+            type.isComposeType -> showComposePlaceholder(type, onClick)
+            type.isPersonalPortalEnd -> showPersonalPortalEndScreen()
+            type.isSimpleText -> showSimpleText(getSimpleTextTitle(type))
         }
     }
 
@@ -351,7 +337,10 @@ class PlaceholderViews(val view: View?) {
             buttonTitleRes = R.string.placeholder_connection_button
         )
 
-        else -> error("${type.name} is invalid type")
+        else -> PlaceholderConfig(
+            image = null,
+            titleRes = R.string.placeholder_empty_folder
+        )
     }
 
     private fun setTitle(@StringRes resId: Int) {

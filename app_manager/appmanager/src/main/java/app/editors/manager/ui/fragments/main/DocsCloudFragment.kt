@@ -432,10 +432,34 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 roomType != null && roomType > 0 -> {
                     when {
                         presenter.currentFolder?.isTemplate == true -> PlaceholderViews.Type.EMPTY_TEMPLATE
-                        presenter.itemClicked?.security?.editRoom != true -> PlaceholderViews.Type.VISITOR_EMPTY_ROOM
-                        roomType == ApiContract.RoomType.FILL_FORMS_ROOM -> PlaceholderViews.Type.EMPTY_FORM_FILLING_ROOM
-                        roomType == ApiContract.RoomType.VIRTUAL_ROOM -> PlaceholderViews.Type.EMPTY_VIRTUAL_ROOM
-                        else -> PlaceholderViews.Type.EMPTY_ROOM
+
+                        roomType == ApiContract.RoomType.PUBLIC_ROOM && presenter.roomContentCreator ->
+                            PlaceholderViews.Type.EMPTY_PUBLIC_ROOM_CREATOR
+
+                        roomType == ApiContract.RoomType.PUBLIC_ROOM -> PlaceholderViews.Type.EMPTY_PUBLIC_ROOM_VIEWER
+
+                        roomType == ApiContract.RoomType.FILL_FORMS_ROOM && presenter.roomContentCreator ->
+                            PlaceholderViews.Type.EMPTY_FILL_FORM_ROOM_CREATOR
+
+                        roomType == ApiContract.RoomType.FILL_FORMS_ROOM -> PlaceholderViews.Type.EMPTY_FILL_FORM_ROOM_VIEWER
+
+                        roomType == ApiContract.RoomType.VIRTUAL_ROOM && presenter.roomContentCreator ->
+                            PlaceholderViews.Type.EMPTY_VDR_ROOM_CREATOR
+
+                        roomType == ApiContract.RoomType.VIRTUAL_ROOM -> PlaceholderViews.Type.EMPTY_VDR_ROOM_VIEWER
+
+                        roomType == ApiContract.RoomType.COLLABORATION_ROOM && presenter.roomContentCreator ->
+                            PlaceholderViews.Type.EMPTY_COLLABORATION_ROOM_CREATOR
+
+                        roomType == ApiContract.RoomType.COLLABORATION_ROOM -> PlaceholderViews.Type.EMPTY_COLLABORATION_ROOM_VIEWER
+
+                        roomType == ApiContract.RoomType.CUSTOM_ROOM && presenter.roomContentCreator ->
+                            PlaceholderViews.Type.EMPTY_CUSTOM_ROOM_CREATOR
+
+                        roomType == ApiContract.RoomType.CUSTOM_ROOM -> PlaceholderViews.Type.EMPTY_CUSTOM_ROOM_VIEWER
+
+                        presenter.roomContentCreator -> PlaceholderViews.Type.EMPTY_ROOM
+                        else -> PlaceholderViews.Type.VISITOR_EMPTY_ROOM
                     }
                 }
                 presenter.isTemplatesFolder -> PlaceholderViews.Type.EMPTY_TEMPLATES_FOLDER

@@ -1054,10 +1054,10 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                 PlaceholderViews.Type.SEARCH
             } else {
                 if (ApiContract.SectionType.isRoom(currentSectionType) && isRoot) {
-                    if (itemClicked?.security?.editRoom == true) {
-                        PlaceholderViews.Type.NO_ROOMS
-                    } else {
+                    if (isRegularUser) {
                         PlaceholderViews.Type.VISITOR_NO_ROOMS
+                    } else {
+                        PlaceholderViews.Type.NO_ROOMS
                     }
                 } else {
                     PlaceholderViews.Type.EMPTY
