@@ -79,5 +79,7 @@ interface CloudLoginRepository : LoginRepository {
 
     suspend fun updatePortalSettings()
 
+    suspend fun checkUserRegular(): Boolean
+
     fun getSavedPortals(): Flow<List<String>>
 }

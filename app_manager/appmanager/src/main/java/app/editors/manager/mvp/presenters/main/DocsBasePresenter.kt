@@ -15,6 +15,7 @@ import androidx.core.net.toFile
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import app.documents.core.account.AccountPreferences
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.model.cloud.Access
@@ -132,6 +133,9 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     lateinit var preferenceTool: PreferenceTool
 
     @Inject
+    lateinit var accountPreferences: AccountPreferences
+
+    @Inject
     lateinit var operationsState: OperationsState
 
     @Inject
@@ -171,6 +175,9 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
 
     val keepScreenOnSetting: Boolean
         get() = preferenceTool.keepScreenOn
+
+    val isRegularUser: Boolean
+        get() = accountPreferences.isRegularUser
 
     /**
      * Modes

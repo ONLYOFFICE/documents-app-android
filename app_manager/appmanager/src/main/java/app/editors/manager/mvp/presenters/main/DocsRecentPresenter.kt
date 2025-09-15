@@ -3,7 +3,6 @@ package app.editors.manager.mvp.presenters.main
 import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import app.documents.core.account.AccountPreferences
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Recent
 import app.documents.core.network.common.contracts.ApiContract
@@ -32,7 +31,6 @@ import moxy.InjectViewState
 import moxy.presenterScope
 import java.io.File
 import java.util.Date
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
 sealed class RecentState {
@@ -53,9 +51,6 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
     companion object {
         val TAG: String = DocsRecentPresenter::class.java.simpleName
     }
-
-    @Inject
-    lateinit var accountPreferences: AccountPreferences
 
     init {
         App.getApp().appComponent.inject(this)
