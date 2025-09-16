@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.core.view.isVisible
+import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.databinding.IncludePlaceholdersTextBinding
 import app.editors.manager.ui.compose.personal.PersonalMigrationScreen
@@ -29,12 +30,11 @@ class PlaceholderViews(val view: View?) {
 
         // Compose-based placeholders
         EMPTY, LOAD, EMPTY_TEMPLATE, EMPTY_TEMPLATES_FOLDER,
-        EMPTY_FOLDER_CREATOR, EMPTY_FORM_FOLDER,
+        EMPTY_FOLDER_CREATOR, EMPTY_FORM_FOLDER_CREATOR, EMPTY_FORM_FOLDER_VIEWER,
         EMPTY_ROOM, SEARCH, EMPTY_TRASH, EMPTY_ARCHIVE,
         VISITOR_EMPTY_ARCHIVE, VISITOR_EMPTY_ROOM, NO_ROOMS,
         VISITOR_NO_ROOMS, EMPTY_RECENT_VIA_LINK,
-        PAYMENT_REQUIRED, EMPTY_FORM_FILLING_ROOM,
-        EMPTY_VIRTUAL_ROOM, EXTERNAL_STORAGE, CONNECTION,
+        PAYMENT_REQUIRED, EXTERNAL_STORAGE, CONNECTION,
         EMPTY_PUBLIC_ROOM_CREATOR, EMPTY_PUBLIC_ROOM_VIEWER,
         EMPTY_FILL_FORM_ROOM_CREATOR, EMPTY_FILL_FORM_ROOM_VIEWER,
         EMPTY_VDR_ROOM_CREATOR, EMPTY_VDR_ROOM_VIEWER,
@@ -172,16 +172,16 @@ class PlaceholderViews(val view: View?) {
             subtitleRes = R.string.placeholder_empty_folder_desc_creator
         )
 
-        Type.EMPTY_FORM_FOLDER -> PlaceholderConfig(
+        Type.EMPTY_FORM_FOLDER_CREATOR -> PlaceholderConfig(
             image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
             titleRes = R.string.placeholder_empty_form_folder,
             subtitleRes = R.string.placeholder_empty_form_folder_desc
         )
 
-        Type.VISITOR_EMPTY_ROOM -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
-            titleRes = R.string.placeholder_empty_folder,
-            subtitleRes = R.string.placeholder_empty_room_visitor_desc
+        Type.EMPTY_FORM_FOLDER_VIEWER -> PlaceholderConfig(
+            image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
+            titleRes = R.string.placeholder_empty_form_folder_viewer,
+            subtitleRes = R.string.placeholder_empty_form_folder_viewer_desc
         )
 
         Type.EMPTY_TEMPLATES_FOLDER -> PlaceholderConfig(
@@ -200,6 +200,12 @@ class PlaceholderViews(val view: View?) {
             image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
             titleRes = R.string.room_placeholder_created_room_title,
             subtitleRes = R.string.room_placeholder_created_room_subtitle
+        )
+
+        Type.VISITOR_EMPTY_ROOM -> PlaceholderConfig(
+            image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
+            titleRes = R.string.placeholder_empty_folder,
+            subtitleRes = R.string.placeholder_empty_room_visitor_desc
         )
 
         Type.EMPTY_PUBLIC_ROOM_CREATOR -> PlaceholderConfig(
@@ -260,18 +266,6 @@ class PlaceholderViews(val view: View?) {
             image = lib.toolkit.base.R.drawable.placeholder_empty_custom_room_viewer,
             titleRes = R.string.room_placeholder_empty_viewer_title,
             subtitleRes = R.string.room_placeholder_empty_viewer_subtitle
-        )
-
-        Type.EMPTY_FORM_FILLING_ROOM -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
-            titleRes = R.string.room_placeholder_form_room_creator_title,
-            subtitleRes = R.string.room_placeholder_created_filling_form_room_subtitle
-        )
-
-        Type.EMPTY_VIRTUAL_ROOM -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_virtual_room,
-            titleRes = R.string.room_placeholder_created_virtual_room_title,
-            subtitleRes = R.string.room_placeholder_created_virtual_room_subtitle
         )
 
         Type.SEARCH -> PlaceholderConfig(
@@ -345,5 +339,40 @@ class PlaceholderViews(val view: View?) {
 
     private fun setTitle(@StringRes resId: Int) {
         binding.placeholderText.setText(resId)
+    }
+
+    companion object {
+
+        fun getPlaceholderTypeForRoom(roomType: Int, roomContentCreator: Boolean): Type {
+            return when {
+                roomType == ApiContract.RoomType.PUBLIC_ROOM && roomContentCreator ->
+                    Type.EMPTY_PUBLIC_ROOM_CREATOR
+
+                roomType == ApiContract.RoomType.PUBLIC_ROOM -> Type.EMPTY_PUBLIC_ROOM_VIEWER
+
+                roomType == ApiContract.RoomType.FILL_FORMS_ROOM && roomContentCreator ->
+                    Type.EMPTY_FILL_FORM_ROOM_CREATOR
+
+                roomType == ApiContract.RoomType.FILL_FORMS_ROOM -> Type.EMPTY_FILL_FORM_ROOM_VIEWER
+
+                roomType == ApiContract.RoomType.VIRTUAL_ROOM && roomContentCreator ->
+                    Type.EMPTY_VDR_ROOM_CREATOR
+
+                roomType == ApiContract.RoomType.VIRTUAL_ROOM -> Type.EMPTY_VDR_ROOM_VIEWER
+
+                roomType == ApiContract.RoomType.COLLABORATION_ROOM && roomContentCreator ->
+                    Type.EMPTY_COLLABORATION_ROOM_CREATOR
+
+                roomType == ApiContract.RoomType.COLLABORATION_ROOM -> Type.EMPTY_COLLABORATION_ROOM_VIEWER
+
+                roomType == ApiContract.RoomType.CUSTOM_ROOM && roomContentCreator ->
+                    Type.EMPTY_CUSTOM_ROOM_CREATOR
+
+                roomType == ApiContract.RoomType.CUSTOM_ROOM -> Type.EMPTY_CUSTOM_ROOM_VIEWER
+
+                roomContentCreator -> Type.EMPTY_ROOM
+                else -> Type.VISITOR_EMPTY_ROOM
+            }
+        }
     }
 }
