@@ -30,16 +30,20 @@ class PlaceholderViews(val view: View?) {
 
         // Compose-based placeholders
         EMPTY, LOAD, EMPTY_TEMPLATE, EMPTY_TEMPLATES_FOLDER,
-        EMPTY_FOLDER_CREATOR, EMPTY_FORM_FOLDER_CREATOR, EMPTY_FORM_FOLDER_VIEWER,
-        EMPTY_ROOM, SEARCH, EMPTY_TRASH, EMPTY_ARCHIVE,
-        VISITOR_EMPTY_ARCHIVE, VISITOR_EMPTY_ROOM, NO_ROOMS,
-        VISITOR_NO_ROOMS, EMPTY_RECENT_VIA_LINK,
-        PAYMENT_REQUIRED, EXTERNAL_STORAGE, CONNECTION,
+        EMPTY_FOLDER_CREATOR, EMPTY_FOLDER_VIEWER,
+        EMPTY_FORM_FOLDER_CREATOR, EMPTY_FORM_FOLDER_VIEWER,
+        EMPTY_FORM_DONE,EMPTY_FORM_DONE_FOLDER,
+        EMPTY_FORM_IN_PROGRESS, EMPTY_FORM_IN_PROGRESS_FOLDER,
+        EMPTY_ROOM, EMPTY_ROOM_VIEWER,
+        EMPTY_ARCHIVE, EMPTY_ARCHIVE_VIEWER,
+        NO_ROOMS, NO_ROOMS_VIEWER, EMPTY_TRASH,
         EMPTY_PUBLIC_ROOM_CREATOR, EMPTY_PUBLIC_ROOM_VIEWER,
         EMPTY_FILL_FORM_ROOM_CREATOR, EMPTY_FILL_FORM_ROOM_VIEWER,
         EMPTY_VDR_ROOM_CREATOR, EMPTY_VDR_ROOM_VIEWER,
         EMPTY_COLLABORATION_ROOM_CREATOR, EMPTY_COLLABORATION_ROOM_VIEWER,
         EMPTY_CUSTOM_ROOM_CREATOR, EMPTY_CUSTOM_ROOM_VIEWER,
+        EMPTY_RECENT_VIA_LINK, SEARCH,
+        PAYMENT_REQUIRED, EXTERNAL_STORAGE, CONNECTION,
 
         // Special compose screen
         PERSONAL_PORTAL_END,
@@ -48,7 +52,7 @@ class PlaceholderViews(val view: View?) {
         SHARE, ACCESS, SUBFOLDER, USERS, GROUPS, COMMON,
         MEDIA, LOAD_GROUPS, LOAD_USERS, OTHER_ACCOUNTS;
 
-        val isComposeType: Boolean get() = this in EMPTY..EMPTY_CUSTOM_ROOM_VIEWER
+        val isComposeType: Boolean get() = this in EMPTY..CONNECTION
         val isPersonalPortalEnd: Boolean get() = this == PERSONAL_PORTAL_END
         val isSimpleText: Boolean get() = this in SHARE..OTHER_ACCOUNTS
     }
@@ -168,8 +172,14 @@ class PlaceholderViews(val view: View?) {
 
         Type.EMPTY_FOLDER_CREATOR -> PlaceholderConfig(
             image = lib.toolkit.base.R.drawable.placeholder_empty_folder_creator,
-            titleRes = R.string.placeholder_empty_folder_creator,
+            titleRes = R.string.placeholder_empty_folder_common,
             subtitleRes = R.string.placeholder_empty_folder_desc_creator
+        )
+
+        Type.EMPTY_FOLDER_VIEWER -> PlaceholderConfig(
+            image = lib.toolkit.base.R.drawable.placeholder_empty_folder_viewer,
+            titleRes = R.string.placeholder_empty_folder_common,
+            subtitleRes = R.string.room_placeholder_empty_viewer_subtitle
         )
 
         Type.EMPTY_FORM_FOLDER_CREATOR -> PlaceholderConfig(
@@ -182,6 +192,30 @@ class PlaceholderViews(val view: View?) {
             image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
             titleRes = R.string.placeholder_empty_form_folder_viewer,
             subtitleRes = R.string.placeholder_empty_form_folder_viewer_desc
+        )
+
+        Type.EMPTY_FORM_DONE -> PlaceholderConfig(
+            image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
+            titleRes = R.string.placeholder_empty_form_done,
+            subtitleRes = R.string.placeholder_empty_form_done_desc
+        )
+
+        Type.EMPTY_FORM_DONE_FOLDER -> PlaceholderConfig(
+            image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
+            titleRes = R.string.placeholder_empty_form_subfolder,
+            subtitleRes = R.string.placeholder_empty_form_done_folder_desc
+        )
+
+        Type.EMPTY_FORM_IN_PROGRESS -> PlaceholderConfig(
+            image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
+            titleRes = R.string.placeholder_empty_form_in_progress,
+            subtitleRes = R.string.placeholder_empty_form_in_progress_desc
+        )
+
+        Type.EMPTY_FORM_IN_PROGRESS_FOLDER -> PlaceholderConfig(
+            image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
+            titleRes = R.string.placeholder_empty_form_subfolder,
+            subtitleRes = R.string.placeholder_empty_form_in_progress_folder_desc
         )
 
         Type.EMPTY_TEMPLATES_FOLDER -> PlaceholderConfig(
@@ -202,7 +236,7 @@ class PlaceholderViews(val view: View?) {
             subtitleRes = R.string.room_placeholder_created_room_subtitle
         )
 
-        Type.VISITOR_EMPTY_ROOM -> PlaceholderConfig(
+        Type.EMPTY_ROOM_VIEWER -> PlaceholderConfig(
             image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
             titleRes = R.string.placeholder_empty_folder,
             subtitleRes = R.string.placeholder_empty_room_visitor_desc
@@ -286,7 +320,7 @@ class PlaceholderViews(val view: View?) {
             subtitleRes = R.string.placeholder_empty_archive_desc
         )
 
-        Type.VISITOR_EMPTY_ARCHIVE -> PlaceholderConfig(
+        Type.EMPTY_ARCHIVE_VIEWER -> PlaceholderConfig(
             image = lib.toolkit.base.R.drawable.placeholder_empty_archieve_visitor,
             titleRes = R.string.placeholder_empty_archive,
             subtitleRes = R.string.placeholder_empty_archive_visitor_desc
@@ -298,7 +332,7 @@ class PlaceholderViews(val view: View?) {
             subtitleRes = R.string.placeholder_no_rooms_desc
         )
 
-        Type.VISITOR_NO_ROOMS -> PlaceholderConfig(
+        Type.NO_ROOMS_VIEWER -> PlaceholderConfig(
             image = lib.toolkit.base.R.drawable.placeholder_no_rooms_visitor,
             titleRes = R.string.placeholder_no_rooms_visitor,
             subtitleRes = R.string.placeholder_no_rooms_visitor_desc
@@ -371,7 +405,18 @@ class PlaceholderViews(val view: View?) {
                 roomType == ApiContract.RoomType.CUSTOM_ROOM -> Type.EMPTY_CUSTOM_ROOM_VIEWER
 
                 roomContentCreator -> Type.EMPTY_ROOM
-                else -> Type.VISITOR_EMPTY_ROOM
+                else -> Type.EMPTY_ROOM_VIEWER
+            }
+        }
+
+        fun getPlaceholderTypeForFormRoom(isCreator: Boolean, type: Int?): Type {
+            return when {
+                isCreator && type == -1 -> Type.EMPTY_FORM_FOLDER_CREATOR
+                type == 25 -> Type.EMPTY_FORM_DONE
+                type == 26 -> Type.EMPTY_FORM_IN_PROGRESS
+                type == 27 -> Type.EMPTY_FORM_DONE_FOLDER
+                type == 28 -> Type.EMPTY_FORM_IN_PROGRESS_FOLDER
+                else -> Type.EMPTY_FORM_FOLDER_VIEWER
             }
         }
     }

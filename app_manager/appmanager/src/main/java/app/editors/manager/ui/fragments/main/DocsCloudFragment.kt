@@ -444,11 +444,13 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
                 presenter.isTemplatesFolder -> PlaceholderViews.Type.EMPTY_TEMPLATES_FOLDER
                 presenter.isRecentViaLinkSection() -> PlaceholderViews.Type.EMPTY_RECENT_VIA_LINK
-                isCloudForms && isCreator && presenter.currentFolder?.type == -1 -> PlaceholderViews.Type.EMPTY_FORM_FOLDER_CREATOR
-                isCloudForms && isCreator -> type
-                isCloudForms -> PlaceholderViews.Type.EMPTY_FORM_FOLDER_VIEWER
+                isCloudForms -> PlaceholderViews.getPlaceholderTypeForFormRoom(
+                    isCreator = isCreator,
+                    type = presenter.currentFolder?.type
+                )
+
                 isCreator -> PlaceholderViews.Type.EMPTY_FOLDER_CREATOR
-                else -> type
+                else -> PlaceholderViews.Type.EMPTY_FOLDER_VIEWER
             }
         } else type
         super.onPlaceholder(placeholder)

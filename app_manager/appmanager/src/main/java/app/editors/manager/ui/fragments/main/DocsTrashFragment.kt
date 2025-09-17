@@ -140,7 +140,7 @@ class DocsTrashFragment : DocsCloudFragment() {
     override fun onPlaceholder(type: PlaceholderViews.Type) {
         val placeholder = when {
             type == PlaceholderViews.Type.EMPTY && isRoot && isArchive && presenter.isRegularUser ->
-                PlaceholderViews.Type.VISITOR_EMPTY_ARCHIVE
+                PlaceholderViews.Type.EMPTY_ARCHIVE_VIEWER
 
             type == PlaceholderViews.Type.EMPTY && isRoot && isArchive ->
                 PlaceholderViews.Type.EMPTY_ARCHIVE

@@ -1055,7 +1055,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             } else {
                 if (ApiContract.SectionType.isRoom(currentSectionType) && isRoot) {
                     if (isRegularUser) {
-                        PlaceholderViews.Type.VISITOR_NO_ROOMS
+                        PlaceholderViews.Type.NO_ROOMS_VIEWER
                     } else {
                         PlaceholderViews.Type.NO_ROOMS
                     }
