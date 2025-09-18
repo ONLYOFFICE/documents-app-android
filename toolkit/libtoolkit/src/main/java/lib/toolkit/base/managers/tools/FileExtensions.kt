@@ -84,18 +84,19 @@ sealed class FileExtensions(
     object UNKNOWN : FileExtensions("", "", FileGroup.UNKNOWN)
 
     companion object {
+        private val values = listOf(
+            DOCX, DOC, DOTX, ODT, OTT, TXT, RTF, HTML, MHT, HTM, EPUB, MOBI, DJVU, MD, HWP, HWPX, PAGES,
+            PPTX, PPSX, POTX, PPT, ODP, ODG, OTP, KEY,
+            XLSX, XLTX, XLS, ODS, OTS, CSV, NUMBERS,
+            PDF, PDFA,
+            PNG, JPEG, JPG, ICO, BMP, HEIC, WEBP, GIF,
+            MP4, TS, WEBM, MKV, THREEGP,
+            THREEG2, THREEGPP, AVI, MOV, MPG, MPEG,
+            ZIP, RAR, SEVENZ, TAR, GZ,
+            UNKNOWN
+        )
+
         private val extensionMap by lazy {
-            val values = listOf(
-                DOCX, DOC, DOTX, ODT, OTT, TXT, RTF, HTML, MHT, HTM, EPUB, MOBI, DJVU, MD, HWP, HWPX, PAGES,
-                PPTX, PPSX, POTX, PPT, ODP, ODG, OTP, KEY,
-                XLSX, XLTX, XLS, ODS, OTS, CSV, NUMBERS,
-                PDF, PDFA,
-                PNG, JPEG, JPG, ICO, BMP, HEIC, WEBP, GIF,
-                MP4, TS, WEBM, MKV, THREEGP,
-                THREEG2, THREEGPP, AVI, MOV, MPG, MPEG,
-                ZIP, RAR, SEVENZ, TAR, GZ,
-                UNKNOWN
-            )
             values.associateBy { it.extension.lowercase() }
         }
 
@@ -109,6 +110,12 @@ sealed class FileExtensions(
         fun fromExtension(ext: String): FileExtensions {
             val cleanExt = ext.replace(".", "")
             return extensionMap[cleanExt] ?: UNKNOWN
+        }
+
+        @JvmStatic
+        fun fromMime(mime: String): FileExtensions {
+            val mimeMap = values.associateBy { it.mimeType.lowercase() }
+            return mimeMap[mime] ?: UNKNOWN
         }
 
         @JvmStatic
@@ -171,12 +178,14 @@ object FileExtensionUtils {
     }
 
     @JvmStatic
-    fun getFileExtension(input: String): FileExtensions {
-        return if (isExtensionOnly(input)) {
-            FileExtensions.fromExtension(input)
-        } else {
-            val extension = getExtensionFromPath(input).replace(".", "")
-            FileExtensions.fromExtension(extension)
+    fun getFileExtension(input: String, isMime: Boolean = false): FileExtensions {
+        return when {
+            isMime -> FileExtensions.fromMime(input)
+            isExtensionOnly(input) -> FileExtensions.fromExtension(input)
+            else -> {
+                val extension = getExtensionFromPath(input).replace(".", "")
+                FileExtensions.fromExtension(extension)
+            }
         }
     }
 

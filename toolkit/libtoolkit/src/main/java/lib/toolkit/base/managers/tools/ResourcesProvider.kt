@@ -48,6 +48,8 @@ class ResourcesProvider @Inject constructor(val context: Context) {
 
     fun getFileNameByUri(uri: Uri): String = ContentResolverUtils.getName(context, uri)
 
+    fun getMimeTypeByUri(uri: Uri): String? = ContentResolverUtils.getMimeType(context, uri)
+
     fun getHtmlSpanned(@StringRes resource: Int, vararg args: String): Spanned {
         return StringUtils.getHtmlSpanned(
             context.getString(
