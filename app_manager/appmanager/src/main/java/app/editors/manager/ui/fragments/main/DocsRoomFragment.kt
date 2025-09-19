@@ -195,7 +195,9 @@ class DocsRoomFragment : DocsCloudFragment() {
 
     private fun prepareDocsList(list: List<Entity>?): List<Entity> {
         val newList = list.orEmpty().toMutableList()
-        if (ApiContract.SectionType.isRoom(presenter.getSectionType()) && presenter.isRoot) {
+        if (ApiContract.SectionType.isRoom(presenter.getSectionType()) && presenter.isRoot
+            && (!presenter.isRegularUser || presenter.currentFolder?.security?.create == true)
+        ) {
             newList.add(0, Templates)
         }
         return newList
