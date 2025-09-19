@@ -99,9 +99,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private var thumbnailsJobs: MutableList<Job> = mutableListOf()
 
     val roomContentCreator: Boolean
-        get() = itemClicked?.security?.editRoom == true
-                || itemClicked?.access == Access.ContentCreator
-                || itemClicked?.access == Access.RoomManager
+        get() = currentFolder?.security?.editRoom == true
+                || currentFolder?.access == Access.ContentCreator
+                || currentFolder?.access == Access.RoomManager
 
     init {
         App.getApp().appComponent.inject(this)

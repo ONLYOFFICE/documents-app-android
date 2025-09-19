@@ -429,10 +429,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         val roomType = presenter.currentFolder?.roomType
         val isCloudForms = presenter.currentFolder?.parentRoomType == ApiContract.SectionType.CLOUD_FILLING_FORMS_ROOM
         val isCreator = presenter.roomContentCreator
+        val isFolderInRoom = presenter.currentFolder?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM
 
         val placeholder = if (type == PlaceholderViews.Type.EMPTY) {
             when {
-                roomType != null && roomType > 0 -> {
+                roomType != null && roomType > 0 && !getSection().isArchive -> {
                     when {
                         presenter.currentFolder?.isTemplate == true -> PlaceholderViews.Type.EMPTY_TEMPLATE
                         else -> PlaceholderViews.getPlaceholderTypeForRoom(
@@ -449,8 +450,9 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     type = presenter.currentFolder?.type
                 )
 
-                isCreator -> PlaceholderViews.Type.EMPTY_FOLDER_CREATOR
-                else -> PlaceholderViews.Type.EMPTY_FOLDER_VIEWER
+                isFolderInRoom && isCreator -> PlaceholderViews.Type.EMPTY_FOLDER_CREATOR
+                isFolderInRoom -> PlaceholderViews.Type.EMPTY_FOLDER_VIEWER
+                else -> PlaceholderViews.Type.EMPTY
             }
         } else type
         super.onPlaceholder(placeholder)
