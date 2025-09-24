@@ -29,6 +29,7 @@
     <color name="colorChipBackground">@color/colorSurface</color>
     <color name="colorIconBackground">@color/colorSurface</color>
     <color name="colorOnBottomBarInActive">@color/colorWhite60</color>
+    <color name="colorBottomDialogBorder">@color/colorBackground</color>
 
     <!-- Editors -->
     <color name="colorDocTint">#3B92F3</color>
