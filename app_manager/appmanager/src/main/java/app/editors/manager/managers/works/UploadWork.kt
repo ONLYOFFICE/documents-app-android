@@ -26,6 +26,8 @@ import java.io.IOException
 import java.util.Collections
 import androidx.core.net.toUri
 import app.editors.manager.mvp.models.ui.DuplicateFilesChoice
+import okhttp3.MediaType
+import okhttp3.RequestBody
 
 class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
 
@@ -82,12 +84,12 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
         val responseFile: ResponseFile
         path = from?.path
         title = ContentResolverUtils.getName(applicationContext, from ?: Uri.EMPTY)
-        //val createNewIfExist = RequestBody.create(MediaType.parse("text/plain"), copy)
+        val createNewIfExist = RequestBody.create(MediaType.parse("text/plain"), (!copy).toString())
 
         call = if (action == ACTION_UPLOAD_MY) {
-            createMultipartBody(from)?.let { api.uploadFileToMy(it) }
+            createMultipartBody(from)?.let { api.uploadFileToMy(it, createNewIfExist) }
         } else {
-            createMultipartBody(from)?.let { api.uploadFile(folderId ?: "", it) }
+            createMultipartBody(from)?.let { api.uploadFile(folderId ?: "", it, createNewIfExist) }
         }
         try {
             val response = call?.execute()

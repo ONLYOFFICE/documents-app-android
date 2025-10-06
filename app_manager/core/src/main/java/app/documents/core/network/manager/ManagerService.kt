@@ -42,6 +42,7 @@ import app.documents.core.network.room.models.EditCommentRequest
 import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
@@ -362,7 +363,8 @@ interface ManagerService {
     @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/upload")
     fun uploadFile(
         @Path(value = "folder_id") folderId: String,
-        @Part part: MultipartBody.Part
+        @Part part: MultipartBody.Part,
+        @Part("createNewIfExist") createNewIfExist: RequestBody
     ): Call<ResponseFile>
 
     @Multipart
@@ -374,7 +376,10 @@ interface ManagerService {
 
     @Multipart
     @POST("api/" + ApiContract.API_VERSION + "/files/@my/upload")
-    fun uploadFileToMy(@Part part: MultipartBody.Part): Call<ResponseFile>
+    fun uploadFileToMy(
+        @Part part: MultipartBody.Part,
+        @Part("createNewIfExist") createNewIfExist: RequestBody
+    ): Call<ResponseFile>
 
     @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/upload/check")
     @Headers(
