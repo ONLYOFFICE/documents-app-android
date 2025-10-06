@@ -19,6 +19,7 @@ plugins {
 }
 
 val withEditors: Boolean = project.findProperty("withEditors")?.toString()?.toBoolean() ?: true
+val isBuildingBundle = gradle.startParameter.taskNames.any { it.lowercase().contains("bundle") }
 
 // Onlyoffice
 val appId = "com.onlyoffice.documents"
@@ -67,7 +68,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 648
+        versionCode = 649
         versionName = "9.1.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
@@ -114,7 +115,7 @@ android {
 
     splits {
         abi {
-            isEnable = true
+            isEnable = !isBuildingBundle
             reset()
             include("armeabi-v7a", "arm64-v8a", "x86", "x86_64") //comment to armv7
             isUniversalApk = true
@@ -217,9 +218,13 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
-        jniLibs.useLegacyPackaging = true
-        arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
-            jniLibs.pickFirsts.add("lib/$abi/libc++_shared.so")
+        packaging {
+            jniLibs {
+                pickFirsts.add("lib/armeabi-v7a/libc++_shared.so")
+                pickFirsts.add("lib/x86/libc++_shared.so")
+                pickFirsts.add("lib/arm64-v8a/libc++_shared.so")
+                pickFirsts.add("lib/x86_64/libc++_shared.so")
+            }
         }
     }
     composeOptions {
