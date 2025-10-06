@@ -101,13 +101,15 @@ sealed class FileExtensions(
 
         @JvmStatic
         fun fromPath(input: String): FileExtensions {
-            val cleanExt = FileExtensionUtils.getExtensionFromPath(input).replace(".", "")
+            val cleanExt = FileExtensionUtils.getExtensionFromPath(input)
+                .replace(".", "")
+                .lowercase()
             return extensionMap[cleanExt] ?: UNKNOWN
         }
 
         @JvmStatic
         fun fromExtension(ext: String): FileExtensions {
-            val cleanExt = ext.replace(".", "")
+            val cleanExt = ext.replace(".", "").lowercase()
             return extensionMap[cleanExt] ?: UNKNOWN
         }
 
