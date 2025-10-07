@@ -123,6 +123,15 @@ class StartFillingActivity : ComponentActivity() {
                             resourcesProvider = appComponent.resourcesProvider,
                         )
                     }
+                    val userListViewModel = viewModel {
+                        RoomUserListViewModel(
+                            roomId = roomId,
+                            mode = UserListMode.StartFilling,
+                            roomProvider = roomProvider,
+                            resourcesProvider = appComponent.resourcesProvider
+                        )
+                    }
+
                     val state = viewModel.state.collectAsState()
                     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -162,14 +171,6 @@ class StartFillingActivity : ComponentActivity() {
                         }
                         composable<Screen.UserList> { backStackEntry ->
                             val index = backStackEntry.toRoute<Screen.UserList>().index
-                            val userListViewModel = viewModel {
-                                RoomUserListViewModel(
-                                    roomId = roomId,
-                                    mode = UserListMode.StartFilling,
-                                    roomProvider = roomProvider,
-                                    resourcesProvider = appComponent.resourcesProvider
-                                )
-                            }
 
                             LaunchedEffect(Unit) {
                                 lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
