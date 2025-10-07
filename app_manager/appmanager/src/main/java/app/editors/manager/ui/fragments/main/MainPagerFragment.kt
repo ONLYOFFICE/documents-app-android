@@ -149,6 +149,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     private fun init(savedInstanceState: Bundle?) {
+        supportActionBar?.title = ""
         placeholderViews = PlaceholderViews(viewBinding?.placeholderLayout?.root)
         if (savedInstanceState != null) {
             restoreStates(savedInstanceState)

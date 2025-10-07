@@ -19,6 +19,7 @@ plugins {
 }
 
 val withEditors: Boolean = project.findProperty("withEditors")?.toString()?.toBoolean() ?: true
+val isBuildingBundle = gradle.startParameter.taskNames.any { it.lowercase().contains("bundle") }
 
 // Onlyoffice
 val appId = "com.onlyoffice.documents"
@@ -67,7 +68,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 648
+        versionCode = 650
         versionName = "9.1.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
@@ -114,7 +115,7 @@ android {
 
     splits {
         abi {
-            isEnable = true
+            isEnable = !isBuildingBundle
             reset()
             include("armeabi-v7a", "arm64-v8a", "x86", "x86_64") //comment to armv7
             isUniversalApk = true
