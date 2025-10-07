@@ -63,7 +63,7 @@ tasks.register("clearAssets") {
     }
 }
 
-tasks.create("buildAar") {
+tasks.register("buildAar") {
     childProjects.forEach { (projectKey, project) ->
         if (projectKey == "libtoolkit" || projectKey == "appmanager" || projectKey == "core") {
             return@forEach
@@ -80,13 +80,3 @@ tasks.create("buildAar") {
         }
     }
 }
-
-//tasks.create("publishToGithub") {
-//    childProjects.forEach { (projectKey, _) ->
-//        if (projectKey == "libtoolkit" || projectKey == "appmanager" || projectKey == "core") {
-//            return@forEach
-//        }
-//        dependsOn("$projectKey::assembleRelease")
-//        dependsOn("$projectKey::publish")
-//    }
-//}
