@@ -58,7 +58,6 @@ fun SelectMembersScreen(
         viewModel = viewModel,
         onClick = { viewModel.toggleSelect(it.id) },
         onBack = onBack,
-        onSnackBar = {}
     ) { size, _ ->
         UserListBottomContent(
             nextButtonTitle = lib.toolkit.base.R.string.common_next,

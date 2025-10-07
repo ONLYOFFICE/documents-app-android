@@ -274,7 +274,6 @@ class RoomInfoFragment : ComposeDialogFragment() {
                             roomType = room.roomType,
                             roomId = room.id,
                             roomProvider = requireContext().roomProvider,
-                            onSnackBar = { UiUtils.getSnackBar(requireView()).setText(it).show() },
                             onShareLink = { link ->
                                 requireContext().openSendTextActivity(
                                     getString(R.string.toolbar_menu_main_share),

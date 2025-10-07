@@ -238,9 +238,6 @@ class EditRoomFragment : ComposeDialogFragment() {
                                 TAG_RESULT,
                                 Bundle.EMPTY
                             )
-                        },
-                        onSnackBar = {
-                            UiUtils.getSnackBar(requireActivity()).setText(it).show()
                         }
                     )
                 }

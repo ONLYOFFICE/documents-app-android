@@ -96,7 +96,6 @@ class InviteUsersFragment : ComposeDialogFragment() {
                         link
                     )
                 },
-                onSnackBar = { UiUtils.getSnackBar(requireView()).setText(it).show() },
                 onBack = ::dismiss
             )
         }
@@ -114,7 +113,6 @@ fun InviteUsersScreen(
     roomProvider: RoomProvider,
     fromList: Boolean = false,
     onShareLink: (String) -> Unit = {},
-    onSnackBar: (String) -> Unit,
     onBack: () -> Unit
 ) {
     Surface(color = MaterialTheme.colors.background) {
@@ -184,7 +182,6 @@ fun InviteUsersScreen(
                             navController.popBackStackWhenResumed()
                         }
                     },
-                    onSnackBar = onSnackBar
                 ) { size, access ->
                     UserListBottomContent(
                         nextButtonTitle = lib.toolkit.base.R.string.common_next,
@@ -234,9 +231,7 @@ fun InviteUsersScreen(
                     description = stringResource(R.string.rooms_invite_access_description),
                     viewModel = inviteAccessViewModel,
                     onBack = navController::popBackStackWhenResumed,
-                    onSnackBar = onSnackBar,
                     onSuccess = {
-                        onSnackBar.invoke(context.getString(R.string.invite_link_send_success))
                         if (fromList) {
                             onBack()
                         } else {

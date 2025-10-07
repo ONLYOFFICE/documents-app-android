@@ -131,7 +131,6 @@ class StartFillingActivity : ComponentActivity() {
                             resourcesProvider = appComponent.resourcesProvider
                         )
                     }
-
                     val state = viewModel.state.collectAsState()
                     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -190,7 +189,6 @@ class StartFillingActivity : ComponentActivity() {
                                         navController.popBackStack()
                                     }
                                 },
-                                onSnackBar = ::onSnackBar,
                                 topBarActions = {
                                     TopAppBarAction(
                                         icon = R.drawable.ic_add_users
@@ -206,7 +204,6 @@ class StartFillingActivity : ComponentActivity() {
                                 roomId = roomId,
                                 roomProvider = roomProvider,
                                 fromList = true,
-                                onSnackBar = ::onSnackBar,
                                 onBack = navController::popBackStack,
                             )
                         }
@@ -214,12 +211,6 @@ class StartFillingActivity : ComponentActivity() {
                 }
             }
         }
-    }
-
-    private fun onSnackBar(text: String) {
-        UiUtils.getSnackBar(this@StartFillingActivity)
-            .setText(text)
-            .show()
     }
 
     private fun getThemeColor(): Color {

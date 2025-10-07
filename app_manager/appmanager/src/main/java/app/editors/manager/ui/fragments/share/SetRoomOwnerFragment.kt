@@ -12,7 +12,6 @@ import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.UserListMode
 import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
-import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.putArgs
 
@@ -64,7 +63,6 @@ class SetRoomOwnerFragment : ComposeDialogFragment() {
                         .setFragmentResult(SET_OWNER_REQUEST_KEY, Bundle.EMPTY)
                     dismiss()
                 },
-                onSnackBar = { UiUtils.getSnackBar(requireActivity()).setText(it).show() },
             )
         }
     }

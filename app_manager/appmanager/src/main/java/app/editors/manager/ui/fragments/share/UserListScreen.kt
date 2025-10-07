@@ -30,7 +30,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -128,17 +130,19 @@ fun UserListScreen(
     useTabletPaddings: Boolean = false,
     onClick: (Member) -> Unit,
     onBack: () -> Unit,
-    onSnackBar: (String) -> Unit,
     onSuccess: ((User) -> Unit)? = null,
     topBarActions: @Composable () -> Unit = {},
     bottomContent: @Composable (Int, Access) -> Unit = { _, _ -> },
 ) {
     val state by viewModel.viewState.collectAsState()
+    val scaffoldState = rememberScaffoldState()
 
     LaunchedEffect(viewModel) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is UserListEffect.Error -> onSnackBar.invoke(effect.message)
+                is UserListEffect.Error -> {
+                    scaffoldState.snackbarHostState.showSnackbar(effect.message)
+                }
                 is UserListEffect.Success -> onSuccess?.invoke(effect.user)
                 else -> Unit
             }
@@ -146,6 +150,7 @@ fun UserListScreen(
     }
 
     MainScreen(
+        scaffoldState = scaffoldState,
         state = state,
         title = title,
         closeable = closeable,
@@ -160,6 +165,7 @@ fun UserListScreen(
 
 @Composable
 private fun MainScreen(
+    scaffoldState: ScaffoldState,
     state: UserListState,
     title: Int,
     closeable: Boolean = true,
@@ -202,6 +208,7 @@ private fun MainScreen(
     val pagerState = rememberPagerState(pageCount = tabs::size)
 
     AppScaffold(
+        scaffoldState = scaffoldState,
         useTablePaddings = useTabletPaddings,
         topBar = {
             AppBar(
@@ -727,6 +734,7 @@ private fun PreviewMainWithBottom() {
     ManagerTheme {
         val selected = remember { mutableStateListOf("id5") }
         MainScreen(
+            scaffoldState = rememberScaffoldState(),
             title = R.string.invite_choose_from_list,
             state = UserListState(
                 mode = UserListMode.StartFilling,
@@ -799,6 +807,7 @@ private fun PreviewSearch() {
 private fun PreviewMain() {
     ManagerTheme {
         MainScreen(
+            scaffoldState = rememberScaffoldState(),
             title = R.string.room_set_owner_title,
             state = UserListState(
                 mode = UserListMode.ChangeOwner,
@@ -834,6 +843,7 @@ private fun PreviewMain() {
 private fun PreviewEmptyMain() {
     ManagerTheme {
         MainScreen(
+            scaffoldState = rememberScaffoldState(),
             title = R.string.room_set_owner_title,
             state = UserListState(
                 mode = UserListMode.ChangeOwner,
