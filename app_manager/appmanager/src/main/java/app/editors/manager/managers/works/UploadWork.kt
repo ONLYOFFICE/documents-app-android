@@ -69,7 +69,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
     private var title: String? = null
     private var from: Uri? = null
     private var timeMark = 0L
-    private var copy: Boolean = true
+    private var copy: Boolean? = null
 
     private val headers: Headers by lazy {
         Headers.Builder()
@@ -84,7 +84,9 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
         val responseFile: ResponseFile
         path = from?.path
         title = ContentResolverUtils.getName(applicationContext, from ?: Uri.EMPTY)
-        val createNewIfExist = RequestBody.create(MediaType.parse("text/plain"), (!copy).toString())
+        val createNewIfExist = copy?.let {
+            RequestBody.create(MediaType.parse("text/plain"), (!it).toString())
+        }
 
         call = if (action == ACTION_UPLOAD_MY) {
             createMultipartBody(from)?.let { api.uploadFileToMy(it, createNewIfExist) }
@@ -142,7 +144,9 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
             action = it.getString(ACTION_UPLOAD_MY)
             from = it.getString(TAG_UPLOAD_FILES)?.toUri()
             folderId = it.getString(TAG_FOLDER_ID)
-            copy = it.getString(TAG_DUPLICATE_ACTION) == DuplicateFilesChoice.COPY.name
+            copy = it.getString(TAG_DUPLICATE_ACTION)?.let { act ->
+                act == DuplicateFilesChoice.COPY.name
+            }
         }
     }
 

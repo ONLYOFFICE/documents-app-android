@@ -364,7 +364,7 @@ interface ManagerService {
     fun uploadFile(
         @Path(value = "folder_id") folderId: String,
         @Part part: MultipartBody.Part,
-        @Part("createNewIfExist") createNewIfExist: RequestBody
+        @Part("createNewIfExist") createNewIfExist: RequestBody? = null
     ): Call<ResponseFile>
 
     @Multipart
@@ -378,7 +378,7 @@ interface ManagerService {
     @POST("api/" + ApiContract.API_VERSION + "/files/@my/upload")
     fun uploadFileToMy(
         @Part part: MultipartBody.Part,
-        @Part("createNewIfExist") createNewIfExist: RequestBody
+        @Part("createNewIfExist") createNewIfExist: RequestBody? = null
     ): Call<ResponseFile>
 
     @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/upload/check")

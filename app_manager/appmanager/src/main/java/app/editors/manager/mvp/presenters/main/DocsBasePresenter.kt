@@ -845,7 +845,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         }
     }
 
-    fun startUpload(folderId: String, result: DuplicateFilesChoice) {
+    fun startUpload(folderId: String, result: DuplicateFilesChoice?) {
         val filesToUpload = if (result == DuplicateFilesChoice.SKIP) {
             uploadFiles?.filterNot { duplicateFiles?.contains(it.name) ?: false }
         } else {
@@ -856,17 +856,18 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
 
         UploadWork.putNewUploadFiles(folderId, ArrayList(uploadFiles.orEmpty()))
         for (uploadFile in filesToUpload) {
-            val duplicateAction = if (duplicateFiles?.contains(uploadFile.name) == true) {
-                result
-            } else {
-                DuplicateFilesChoice.COPY
-            }
+            val duplicateAction =
+                if (result == null || duplicateFiles?.contains(uploadFile.name) == true) {
+                    result
+                } else {
+                    DuplicateFilesChoice.COPY
+                }
 
             val workData = Data.Builder()
                 .putString(UploadWork.TAG_UPLOAD_FILES, uploadFile.uri.toString())
                 .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD)
                 .putString(UploadWork.TAG_FOLDER_ID, folderId)
-                .putString(UploadWork.TAG_DUPLICATE_ACTION, duplicateAction.name)
+                .putString(UploadWork.TAG_DUPLICATE_ACTION, duplicateAction?.name)
                 .build()
 
             startUpload(workData)
@@ -894,7 +895,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
     protected open fun handleDuplicatesUpload(folderId: String) {
-        startUpload(folderId, DuplicateFilesChoice.COPY)
+        startUpload(folderId, null)
     }
 
     private fun setSize(uri: Uri): String {
