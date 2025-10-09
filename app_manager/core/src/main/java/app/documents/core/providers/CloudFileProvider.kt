@@ -6,6 +6,7 @@ import app.documents.core.account.AccountRepository
 import app.documents.core.manager.ManagerRepository
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.NetworkClient
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.asResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.interceptors.HeaderType
@@ -36,6 +37,7 @@ import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.room.models.DeleteVersionRequest
 import app.documents.core.network.room.models.EditCommentRequest
+import app.documents.core.network.room.models.RequestFormRoleMapping
 import app.documents.core.utils.FirebaseTool
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -60,7 +62,6 @@ import retrofit2.Response
 import java.io.InputStream
 import javax.inject.Inject
 import kotlin.coroutines.resume
-import app.documents.core.network.common.NetworkResult as NetworkResult
 
 
 data class OpenDocumentResult(
@@ -602,7 +603,7 @@ class CloudFileProvider @Inject constructor(
             }
             openFile(
                 cloudFile = cloudFile,
-                editType = if (cloudFile.isForm) EditType.Fill() else editType,
+                editType = if (cloudFile.isForm && editType != EditType.StartFilling()) EditType.Fill() else editType,
                 canBeShared = canBeShared,
                 access = cloudFile.access
             ).collect { emit(it) }
@@ -627,6 +628,17 @@ class CloudFileProvider @Inject constructor(
                             canShareable = canBeShared,
                             editType = editType
                         )
+
+                        if (editType is EditType.StartFilling && document.info != null) {
+                            emit(
+                                FileOpenResult.OpenDocumentServer(
+                                    cloudFile = cloudFile,
+                                    info = document.info,
+                                    editType = editType
+                                )
+                            )
+                            return@flow
+                        }
 
                         val isNotFillableForm = document.isForm &&
                                 if (cloudFile.security != null) {
@@ -804,7 +816,7 @@ class CloudFileProvider @Inject constructor(
         val response = managerService.suspendOpenFile(
             id = file.id,
             version = version ?: file.version,
-            edit = editType is EditType.Edit,
+            edit = editType is EditType.Edit || editType is EditType.StartFilling,
             fill = editType is EditType.Fill,
             view = editType is EditType.View,
         )
@@ -905,6 +917,15 @@ class CloudFileProvider @Inject constructor(
         )
 
         return api.getFillResult(sessionId).response
+    }
+
+    fun resetFilling(fileId: String): Flow<NetworkResult<Unit>> {
+        return flow {
+            roomService.startFilling(fileId, RequestFormRoleMapping(fileId, emptyList()))
+            emit(Unit)
+        }
+            .flowOn(Dispatchers.IO)
+            .asResult()
     }
 
     private fun <T> apiFlow(apiCall: suspend () -> T): Flow<NetworkResult<T>> = flow {

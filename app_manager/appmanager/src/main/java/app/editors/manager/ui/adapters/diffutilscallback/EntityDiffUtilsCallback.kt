@@ -45,6 +45,7 @@ class EntityDiffUtilsCallback(
                         && newEntity.customFilterEnabled == oldEntity.customFilterEnabled
                         && newEntity.isEditing == oldEntity.isEditing
                         && newEntity.thumbnailStatus == oldEntity.thumbnailStatus
+                        && newEntity.formFillingStatusType == oldEntity.formFillingStatusType
 
             oldEntity is CloudFolder && newEntity is CloudFolder ->
                 newEntity.title == oldEntity.title

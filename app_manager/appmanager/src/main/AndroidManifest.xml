@@ -164,6 +164,14 @@
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
         </activity>
         <activity
+            android:name="app.editors.manager.ui.activities.main.StartFillingActivity"
+            android:configChanges="screenSize"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:theme="@style/NoActionBarTheme"
+            android:windowSoftInputMode="adjustResize|stateHidden">
+        </activity>
+        <activity
             android:name="app.editors.manager.ui.activities.main.OnBoardingActivity"
             android:exported="false"
             android:launchMode="singleTop">

@@ -104,6 +104,8 @@ interface IMainActivity {
         extension: String,
         editType: EditType,
         access: Access,
+        roomId: String?,
+        fileId: String?,
         onResultListener: ((Int, Intent?) -> Unit)? = null
     )
 }
@@ -689,6 +691,8 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         extension: String,
         editType: EditType,
         access: Access,
+        roomId: String?,
+        fileId: String?,
         onResultListener: ((Int, Intent?) -> Unit)?
     ) {
         val intent = EditorsUtils.getDocumentServerEditorIntent(
@@ -696,7 +700,9 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
             data = data,
             extension = extension,
             editType = editType,
-            access = access
+            access = access,
+            roomId = roomId,
+            fileId = fileId
         )
         showEditors(intent, onResultListener)
     }

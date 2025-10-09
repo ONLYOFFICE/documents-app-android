@@ -26,11 +26,11 @@ import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.activities.main.StorageActivity
 import app.editors.manager.ui.dialogs.AddRoomItem
-import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.main.SelectFolderScreen
 import app.editors.manager.viewModels.main.CopyItems
 import app.editors.manager.viewModels.main.RoomAddViewModel
 import app.editors.manager.viewModels.main.RoomSettingsEffect
+import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTopBar

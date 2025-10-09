@@ -42,7 +42,6 @@ import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.toUi
-import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.InviteUserState
@@ -52,6 +51,7 @@ import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.UserListMode
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextPrimary
 import lib.compose.ui.utils.popBackStackWhenResumed
@@ -96,7 +96,6 @@ class InviteUsersFragment : ComposeDialogFragment() {
                         link
                     )
                 },
-                onSnackBar = { UiUtils.getSnackBar(requireView()).setText(it).show() },
                 onBack = ::dismiss
             )
         }
@@ -112,8 +111,8 @@ fun InviteUsersScreen(
     roomType: Int,
     roomId: String,
     roomProvider: RoomProvider,
-    onShareLink: (String) -> Unit,
-    onSnackBar: (String) -> Unit,
+    fromList: Boolean = false,
+    onShareLink: (String) -> Unit = {},
     onBack: () -> Unit
 ) {
     Surface(color = MaterialTheme.colors.background) {
@@ -129,7 +128,12 @@ fun InviteUsersScreen(
             }
         }
 
-        NavHost(navController = navController, startDestination = Screens.Main.name) {
+        NavHost(
+            navController = navController,
+            startDestination = if (fromList)
+                Screens.UserList.name else
+                Screens.Main.name
+        ) {
             composable(Screens.Main.name) {
                 MainScreen(
                     state = state,
@@ -170,9 +174,14 @@ fun InviteUsersScreen(
                     title = R.string.filter_toolbar_users_title,
                     closeable = false,
                     viewModel = userListViewModel,
-                    onClick = userListViewModel::toggleSelect,
-                    onBack = navController::popBackStackWhenResumed,
-                    onSnackBar = onSnackBar
+                    onClick = { userListViewModel.toggleSelect(it.id) },
+                    onBack = {
+                        if (fromList) {
+                            onBack()
+                        } else {
+                            navController.popBackStackWhenResumed()
+                        }
+                    },
                 ) { size, access ->
                     UserListBottomContent(
                         nextButtonTitle = lib.toolkit.base.R.string.common_next,
@@ -222,12 +231,14 @@ fun InviteUsersScreen(
                     description = stringResource(R.string.rooms_invite_access_description),
                     viewModel = inviteAccessViewModel,
                     onBack = navController::popBackStackWhenResumed,
-                    onSnackBar = onSnackBar,
                     onSuccess = {
-                        onSnackBar.invoke(context.getString(R.string.invite_link_send_success))
-                        navController.navigate(Screens.Main.name) {
-                            popUpTo(Screens.Main.name) {
-                                inclusive = true
+                        if (fromList) {
+                            onBack()
+                        } else {
+                            navController.navigate(Screens.Main.name) {
+                                popUpTo(Screens.Main.name) {
+                                    inclusive = true
+                                }
                             }
                         }
                     }

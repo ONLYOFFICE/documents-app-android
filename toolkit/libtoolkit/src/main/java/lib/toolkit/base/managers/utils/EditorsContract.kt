@@ -5,6 +5,8 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.Serializable
 
 object EditorsContract {
@@ -20,12 +22,20 @@ object EditorsContract {
     const val EDITOR_SLIDES = "lib.editors.gslides.ui.activities.SlidesActivity"
     const val PDF = "lib.editors.gbase.ui.activities.PdfActivity"
 
+    const val START_FILLING_CLASSNAME = "app.editors.manager.ui.activities.main.StartFillingActivity"
+    const val SHARE_CLASSNAME = "app.editors.manager.ui.activities.main.ShareActivity"
+
     const val EXTRA_IS_MODIFIED = "EXTRA_IS_MODIFIED"
     const val EXTRA_IS_REFRESH = "EXTRA_IS_REFRESH"
     const val EXTRA_IS_SEND_FORM = "EXTRA_IS_SEND_FORM"
     const val EXTRA_FILL_SESSION = "EXTRA_FILL_SESSION"
+    const val EXTRA_FORM_ROLES = "EXTRA_FORM_ROLES"
+    const val EXTRA_THEME_COLOR = "EXTRA_THEME_COLOR"
+    const val EXTRA_ITEM_ID = "EXTRA_ITEM_ID"
+    const val EXTRA_ROOM_ID = "EXTRA_ROOM_ID"
 
     const val RESULT_FAILED_OPEN = 4000
+    const val RESULT_START_FILLING_COMPLETE = 4001
 
     const val INTERNAL_EDIT_ACCESS_EDIT = 0
     const val INTERNAL_EDIT_ACCESS_READ = 1
@@ -42,8 +52,9 @@ enum class EditorsType {
 
 sealed class EditType : Serializable {
     class Edit(val initialView: Boolean = true) : EditType()
-    class View : EditType()
     class Fill : EditType()
+    class StartFilling : EditType()
+    class View : EditType()
 
     companion object {
 
@@ -72,4 +83,28 @@ class EditorsForResult(
         launchActivity.launch(intent)
     }
 
+}
+
+@kotlinx.serialization.Serializable
+data class FormRole(
+    val name: String,
+    val color: Int,
+    val fieldCount: Int
+)
+
+@kotlinx.serialization.Serializable
+data class FormRoleList(
+    val formRoles: List<FormRole> = emptyList()
+) {
+
+    fun toJson(): String =
+        runCatching { Json.encodeToString(this) }
+            .getOrDefault("")
+
+    companion object {
+
+        fun fromJson(string: String?): List<FormRole> =
+            runCatching { Json.decodeFromString<FormRoleList>(string.orEmpty()).formRoles }
+                .getOrDefault(emptyList())
+    }
 }

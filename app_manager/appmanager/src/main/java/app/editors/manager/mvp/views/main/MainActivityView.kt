@@ -38,6 +38,8 @@ interface MainActivityView : BaseViewExt {
         extension: String,
         editType: EditType,
         access: Access,
+        roomId: String? = null,
+        fileId: String? = null,
         onResultListener: ((Int, Intent?) -> Unit)?
     )
 }

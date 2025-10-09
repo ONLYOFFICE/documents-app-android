@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -40,7 +41,7 @@ import lib.compose.ui.theme.colorTextSecondary
 
 
 @Immutable
-class TabRowItem(val title: String)
+open class TabRowItem(val title: Int)
 
 @Immutable
 private data class TabOffset(val left: Dp = 0.dp, val width: Dp = 0.dp)
@@ -67,7 +68,7 @@ fun AppTabRow(pagerState: PagerState, tabs: List<TabRowItem>, onTabClick: (Int) 
                 onClick = { onTabClick.invoke(index) },
                 text = {
                     Text(
-                        text = tab.title,
+                        text = stringResource(tab.title),
                         modifier = Modifier.onPlaced {
                             with(density) {
                                 tabsOffset[index] = TabOffset(
@@ -117,7 +118,7 @@ private fun BoxScope.TabRowIndicator(tabOffset: TabOffset) {
 private fun Preview() {
     ManagerTheme {
         Column {
-            val tabs = listOf(TabRowItem("People"), TabRowItem("Groups"))
+            val tabs = listOf(TabRowItem(lib.toolkit.base.R.string.app_title), TabRowItem(lib.toolkit.base.R.string.app_title))
             val pagerState = rememberPagerState { tabs.size }
             val coroutineScope = rememberCoroutineScope()
 

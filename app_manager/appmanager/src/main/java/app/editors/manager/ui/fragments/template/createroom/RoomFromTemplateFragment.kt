@@ -10,12 +10,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.template.settings.TemplateSettingsScreen
 import app.editors.manager.viewModels.main.RoomFromTemplateViewModel
 import app.editors.manager.viewModels.main.TemplateSettingsMode
 import app.editors.manager.viewModels.main.TemplateSettingsViewModel
 import kotlinx.serialization.Serializable
+import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.toolkit.base.managers.utils.putArgs

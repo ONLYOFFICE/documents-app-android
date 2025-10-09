@@ -16,15 +16,16 @@ import app.documents.core.network.manager.models.response.ResponseRoomNotificati
 import app.documents.core.network.room.models.CustomFilterRequest
 import app.documents.core.network.room.models.LockFileRequest
 import app.documents.core.network.room.models.RequestAddTags
-import app.documents.core.network.room.models.RequestCreateTemplate
 import app.documents.core.network.room.models.RequestArchive
 import app.documents.core.network.room.models.RequestCreateExternalLink
 import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestCreateRoomFromTemplate
 import app.documents.core.network.room.models.RequestCreateTag
+import app.documents.core.network.room.models.RequestCreateTemplate
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestEditRoom
 import app.documents.core.network.room.models.RequestEditTemplate
+import app.documents.core.network.room.models.RequestFormRoleMapping
 import app.documents.core.network.room.models.RequestOrder
 import app.documents.core.network.room.models.RequestRoomAuthViaLink
 import app.documents.core.network.room.models.RequestRoomOwner
@@ -488,4 +489,10 @@ interface RoomService {
     suspend fun getTemplateMembers(
         @Path(value = "templateId") id: String
     ): app.documents.core.network.BaseResponse<List<Share>>
+
+    @POST("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/formrolemapping")
+    suspend fun startFilling(
+        @Path(value = "fileId") fileId: String,
+        @Body body: RequestFormRoleMapping
+    ): Response<ResponseBody>
 }

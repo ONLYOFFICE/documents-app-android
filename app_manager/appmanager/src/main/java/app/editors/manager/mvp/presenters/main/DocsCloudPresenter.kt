@@ -65,6 +65,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.tools.FileExtensions
@@ -494,7 +495,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         val file = itemClicked as? CloudFile ?: return
 
         presenterScope.launch {
-            if (file.formFillingStatus == ApiContract.FormFillingStatus.YourTurn &&
+            if ((file.formFillingStatus == ApiContract.FormFillingStatus.YourTurn) &&
                 !firebaseTool.isCoauthoring()
             ) {
                 viewState.showFillFormIncompatibleVersionsDialog()
@@ -508,6 +509,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
             openFile(EditType.Fill())
         }
+    }
+
+    fun openStartFilling() {
+        openFile(EditType.StartFilling())
     }
 
     override fun openFile(editType: EditType, canBeShared: Boolean) {
@@ -1202,22 +1207,23 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private fun openRecentViaLink() {
         setPlaceholderType(PlaceholderViews.Type.LOAD)
-        (fileProvider as? CloudFileProvider)?.let { provider ->
-            disposable.add(
-                provider.getRecentViaLink()
-                    .subscribe({ explorer ->
-                        loadSuccess(explorer.apply { current.title = context.getString(R.string.room_access_via_link_title) })
-                    }, ::fetchError)
-            )
-        }
+        disposable.add(
+            fileProvider.getRecentViaLink()
+                .subscribe({ explorer ->
+                    loadSuccess(
+                        explorer.apply {
+                            current.title = context.getString(R.string.room_access_via_link_title)
+                        }
+                    )
+                }, ::fetchError)
+        )
     }
 
     private fun openTemplates() {
-        val cloudProvider = (fileProvider as? CloudFileProvider) ?: return
         resetFilters()
         setPlaceholderType(PlaceholderViews.Type.LOAD)
         disposable.add(
-            cloudProvider.getRoomTemplates(getArgs(filteringValue).putFilters())
+            fileProvider.getRoomTemplates(getArgs(filteringValue).putFilters())
                 .subscribe(::loadSuccess, ::fetchError)
         )
     }
@@ -1341,16 +1347,32 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun stopFillingForm() {
-        showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         requestJob = presenterScope.launch {
-            (fileProvider as? CloudFileProvider ?: return@launch)
+            fileProvider
                 .stopFilling(itemClicked?.id.orEmpty())
+                .onStart { showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS) }
                 .collect { result ->
                     viewState.onDialogClose()
                     when (result) {
                         is NetworkResult.Error -> fetchError(result.exception)
                         is NetworkResult.Success -> refresh()
                         is NetworkResult.Loading -> Unit
+                    }
+                }
+        }
+    }
+
+    fun resetFilling() {
+        requestJob = presenterScope.launch {
+            fileProvider
+                .resetFilling(itemClicked?.id.orEmpty())
+                .onStart { showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS) }
+                .collect { result ->
+                    viewState.onDialogClose()
+                    when (result) {
+                        is NetworkResult.Error -> fetchError(result.exception)
+                        is NetworkResult.Success<*> -> refresh()
+                        NetworkResult.Loading -> Unit
                     }
                 }
         }
@@ -1369,15 +1391,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         initDelay: Boolean = true
     ) {
         val id = explorer.current.id
-        (fileProvider as? CloudFileProvider)?.let { provider ->
-            thumbnailsJobs.add(
-                presenterScope.launch(Dispatchers.Main) {
-                    provider.getThumbnails(explorer, id, filter, initDelay)
-                        .catch { e ->  fetchThumbnailsError(e) }
-                        .collect { file -> updateFileThumbnail(file) }
-                }
-            )
-        }
+        thumbnailsJobs.add(
+            presenterScope.launch(Dispatchers.Main) {
+                fileProvider.getThumbnails(explorer, id, filter, initDelay)
+                    .catch { e ->  fetchThumbnailsError(e) }
+                    .collect { file -> updateFileThumbnail(file) }
+            }
+        )
     }
 
     private fun updateThumbnails() {
