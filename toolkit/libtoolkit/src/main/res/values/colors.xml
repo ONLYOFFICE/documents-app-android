@@ -34,6 +34,7 @@
     <color name="colorBottomDialogBorder">@color/colorOutline</color>
 
     <!-- Editors -->
+    <color name="colorCanvasBackground">#EEEEEE</color>
     <color name="colorDocTint">#446995</color>
     <color name="colorSheetTint">#40865C</color>
     <color name="colorPresentationTint">#AA5252</color>
