@@ -136,6 +136,7 @@ class EditMultilineHolder(private val dialog: CommonDialog) : BaseHolder(dialog)
         }
 
         fun show(fragmentManager: FragmentManager) {
+            isEditorPreloader = false
             dialog.show(fragmentManager, getType())
         }
     }

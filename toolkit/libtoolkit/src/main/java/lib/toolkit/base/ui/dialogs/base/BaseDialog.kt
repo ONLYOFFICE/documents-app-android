@@ -3,10 +3,10 @@ package lib.toolkit.base.ui.dialogs.base
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Point
 import android.graphics.Rect
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -24,6 +24,7 @@ import androidx.lifecycle.Lifecycle
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
+import com.google.android.material.shape.MaterialShapeDrawable
 
 
 abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
@@ -85,7 +86,11 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return getCustomDialog().apply {
             requestWindowFeature(Window.FEATURE_NO_TITLE)
-            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            val shapeDrawable = MaterialShapeDrawable().apply {
+                fillColor = ColorStateList.valueOf(Color.TRANSPARENT)
+                setCornerSize(12f * resources.displayMetrics.density)
+            }
+            window?.setBackgroundDrawable(shapeDrawable)
             window?.decorView?.setPadding(0, 0, 0, 0)
             setCanceledOnTouchOutside(true)
             setOnShowListener(this@BaseDialog)
@@ -133,7 +138,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
         }
     }
 
-    protected open fun setLayout() {
+    open fun setLayout() {
         val sizes = screenSize
         val size = Math.min(sizes.width, sizes.height)
         if (activity != null && isAdded) {

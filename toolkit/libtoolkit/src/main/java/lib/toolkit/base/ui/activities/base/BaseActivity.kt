@@ -519,9 +519,11 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         acceptTitle: String?,
         cancelTitle: String?,
         question: String?,
-        acceptErrorTint: Boolean = false
+        acceptErrorTint: Boolean = false,
+        isEditorPreloader: Boolean = false
     ) {
-        getQuestionDialog(title, acceptTitle, cancelTitle, question, tag, acceptErrorTint)?.show(supportFragmentManager)
+        getQuestionDialog(title, acceptTitle, cancelTitle, question, tag, acceptErrorTint)
+            ?.show(supportFragmentManager, isEditorPreloader)
     }
 
     fun showEditMultilineDialog(title: String, hint: String, acceptTitle: String?, cancelTitle: String?, tag: String?) {

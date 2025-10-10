@@ -43,6 +43,7 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
     protected var textColor: Int = 0
     protected var topTitleGravity: Int = Gravity.START
     override var isBackPress: Boolean = true
+    override var isEditorPreloader: Boolean = true
 
     protected val colorPrimary: Int
         get() {
@@ -76,6 +77,11 @@ abstract class BaseHolder(private val dialog: CommonDialog) : CommonDialog.ViewH
     }
 
     override fun show() {
+        with(dialog) {
+            dialog?.updateElevation()
+            setLayout()
+        }
+
         frameLayout.visibility = View.VISIBLE
         acceptView.setOnClickListener(this)
         cancelView.setOnClickListener(this)

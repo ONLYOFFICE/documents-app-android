@@ -252,6 +252,7 @@ class EditLineHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         }
 
         fun show(fragmentManager: FragmentManager) {
+            isEditorPreloader = false
             dialog.show(fragmentManager, CommonDialog.Dialogs.EDIT_LINE)
         }
 

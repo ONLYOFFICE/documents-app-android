@@ -63,7 +63,8 @@ class QuestionHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             return this
         }
 
-        fun show(fragmentManager: FragmentManager) {
+        fun show(fragmentManager: FragmentManager, isEditorPreloader: Boolean = false) {
+            this@QuestionHolder.isEditorPreloader = isEditorPreloader
             dialog.show(fragmentManager, getType())
         }
     }

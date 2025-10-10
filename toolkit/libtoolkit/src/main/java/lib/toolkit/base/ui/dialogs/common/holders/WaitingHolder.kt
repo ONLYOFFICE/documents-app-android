@@ -111,7 +111,8 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
             return this
         }
 
-        fun show(fragmentManager: FragmentManager) {
+        fun show(fragmentManager: FragmentManager, isEditorPreloader: Boolean = false) {
+            this@WaitingHolder.isEditorPreloader = isEditorPreloader
             dialog.show(fragmentManager, CommonDialog.Dialogs.WAITING)
         }
     }

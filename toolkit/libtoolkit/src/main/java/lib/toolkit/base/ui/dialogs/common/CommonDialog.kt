@@ -4,9 +4,11 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.FragmentManager
 import lib.toolkit.base.R
 import lib.toolkit.base.ui.dialogs.base.BaseDialog
@@ -55,6 +57,7 @@ class CommonDialog : BaseDialog() {
         fun getTag(): String?
         fun getValue(): String? = null
         var isBackPress: Boolean
+        var isEditorPreloader: Boolean
     }
 
     enum class Dialogs {
@@ -132,6 +135,34 @@ class CommonDialog : BaseDialog() {
 
         onClickListener?.onCancelClick(dialogType, viewHolders[dialogType]?.getTag())
         return false
+    }
+
+    fun Dialog.updateElevation() {
+        if (viewHolders[dialogType]?.isEditorPreloader == true) {
+            window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            window?.decorView?.elevation = 24 * resources.displayMetrics.density
+        } else {
+            window?.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+            window?.decorView?.elevation = 0f
+        }
+    }
+
+    override fun setLayout() {
+        if (anchorRect != null) return
+        val wrapContent = viewHolders[dialogType]?.isEditorPreloader == true
+                && dialogType == Dialogs.WAITING
+
+        if (wrapContent) {
+            dialog?.window?.apply {
+                setGravity(Gravity.CENTER)
+                setLayout(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
+            }
+        } else {
+            super.setLayout()
+        }
     }
 
     private fun init(savedInstanceState: Bundle?) {
