@@ -7,7 +7,7 @@ val baseLocale = "values"
 val targetLocales = listOf(
     "values-ru", "values-fr", "values-es", "values-de", "values-it",
     "values-ar-rSA", "values-bg", "values-zh", "values-cs",
-    "values-pt-rBR", "values-lo", "values-pl", "values-hy", "values-si"
+    "values-pt-rBR", "values-lo", "values-pl", "values-hy", "values-si", "values-nl"
 )
 
 /**
