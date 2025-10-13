@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import androidx.fragment.app.FragmentManager
@@ -50,6 +51,21 @@ class WaitingHolder(private val dialog: CommonDialog) : BaseHolder(dialog) {
         rootLayout?.visibility = View.VISIBLE
         progressBarView?.visibility = View.VISIBLE
         progressBarView?.indeterminateTintList = ColorStateList.valueOf(colorPrimary)
+
+        progressBarView?.apply {
+            val params = layoutParams as? ViewGroup.MarginLayoutParams
+            if (isEditorPreloader && progressType == ProgressType.CIRCLE) {
+                params?.setMargins(
+                    0,
+                    (8 * resources.displayMetrics.density).toInt(),
+                    0,
+                    (12 * resources.displayMetrics.density).toInt()
+                )
+            } else {
+                params?.setMargins(0, 0, 0, 0)
+            }
+            layoutParams = params
+        }
 //
 //        UiUtils.setProgressBarColorDrawable(
 //            progressBarView,
