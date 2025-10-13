@@ -518,7 +518,7 @@
     <string name="storage_select_box">Box</string>
     <string name="storage_select_share_point">SharePoint</string>
     <string name="storage_select_own_cloud">ownCloud</string>
-    <string name="storage_select_kdrive" translatable="false">KDrive</string>
+    <string name="storage_select_kdrive" translatable="false">kDrive</string>
     <string name="krdive_password_helper_text">If you have activated double authentication, please generate a CDM application from the Infomaniak manager.</string>
     <string name="kdrive_info_title">You must have a paid version of the player to use this service.</string>
     <string name="storage_email_connection">Email connection</string>
