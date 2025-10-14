@@ -44,24 +44,24 @@ tasks.register("clean", Delete::class) {
     delete(rootProject.layout.buildDirectory)
 }
 
-tasks.register("clearAssets") {
-    childProjects.forEach { (projectKey, project) ->
-        if (projectKey == "libtoolkit"
-            || projectKey == "appmanager"
-            || projectKey == "core"
-            || projectKey == "libcompose"
-            || projectKey == "libgeditors"
-        ) {
-            return@forEach
-        }
-
-        val assets = File("${project.projectDir.path}/src/main/assets")
-        println("Delete path: ${assets.path}")
-        if (assets.exists()) {
-            assets.deleteRecursively()
-        }
-    }
-}
+//tasks.register("clearAssets") {
+//    childProjects.forEach { (projectKey, project) ->
+//        if (projectKey == "libtoolkit"
+//            || projectKey == "appmanager"
+//            || projectKey == "core"
+//            || projectKey == "libcompose"
+//            || projectKey == "libgeditors"
+//        ) {
+//            return@forEach
+//        }
+//
+//        val assets = File("${project.projectDir.path}/src/main/assets")
+//        println("Delete path: ${assets.path}")
+//        if (assets.exists()) {
+//            assets.deleteRecursively()
+//        }
+//    }
+//}
 
 tasks.register("buildAar") {
     childProjects.forEach { (projectKey, project) ->
