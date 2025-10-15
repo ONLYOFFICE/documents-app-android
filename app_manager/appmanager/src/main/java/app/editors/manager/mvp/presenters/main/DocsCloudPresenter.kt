@@ -243,6 +243,31 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    override fun handleDuplicatesUpload(folderId: String) {
+        val requiredDocSpaceVersion = "3.5.0"
+        if (checkDocSpaceVersion(requiredDocSpaceVersion)) {
+            presenterScope.launch {
+                fileProvider.checkDuplicateFiles(
+                    folderId = folderId,
+                    filenames = uploadFiles?.map { it.name.orEmpty() }.orEmpty()
+                ).collect { result ->
+                    duplicateFiles = when (result) {
+                        is NetworkResult.Success -> result.data
+                        else -> null
+                    }
+                    if (!duplicateFiles.isNullOrEmpty()) {
+                        val filename = if (duplicateFiles?.size == 1) duplicateFiles?.firstOrNull() else null
+                        viewState.showDuplicateFilesDialog(filename)
+                    } else {
+                        super.handleDuplicatesUpload(folderId)
+                    }
+                }
+            }
+        } else {
+            super.handleDuplicatesUpload(folderId)
+        }
+    }
+
     private fun checkFillFormsRoom(): Boolean {
         val explorer = operationStack?.explorer ?: return false
         if (roomClicked?.roomType == ApiContract.RoomType.FILL_FORMS_ROOM) {
@@ -1439,5 +1464,22 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private fun cancelThumbnailsJobs() {
         thumbnailsJobs.forEach { it.cancel() }
         thumbnailsJobs.clear()
+    }
+
+    private fun checkDocSpaceVersion(required: String): Boolean {
+        val current = account.portal.version.docSpaceVersion
+        if (current.isEmpty()) return false
+
+        val currentParts = current.split(".").map { it.toIntOrNull() ?: 0 }
+        val requiredParts = required.split(".").map { it.toIntOrNull() ?: 0 }
+        val maxLength = maxOf(currentParts.size, requiredParts.size)
+        val c = currentParts + List(maxLength - currentParts.size) { 0 }
+        val r = requiredParts + List(maxLength - requiredParts.size) { 0 }
+
+        for (i in 0 until maxLength) {
+            if (c[i] > r[i]) return true
+            if (c[i] < r[i]) return false
+        }
+        return true
     }
 }

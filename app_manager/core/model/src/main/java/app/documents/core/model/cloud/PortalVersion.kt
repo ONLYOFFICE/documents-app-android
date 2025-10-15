@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PortalVersion(
     val serverVersion: String = "",
-    val documentServerVersion: String = ""
+    val documentServerVersion: String = "",
+    val docSpaceVersion: String = ""
 )
