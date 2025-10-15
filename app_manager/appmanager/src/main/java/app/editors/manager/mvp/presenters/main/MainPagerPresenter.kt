@@ -1,6 +1,5 @@
 package app.editors.manager.mvp.presenters.main
 
-import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -48,14 +47,9 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
 
         presenterScope.launch(Dispatchers.IO) {
             getPortalModules().onSuccess { sections ->
-                val data = if (context.accountOnline.isDocSpace) {
-                    sections.filter { it.current.rootFolderType != ApiContract.SectionType.CLOUD_FAVORITES }
-                } else {
-                    sections
-                }
                 withContext(Dispatchers.Main) {
                     viewState.onFinishRequest()
-                    viewState.onRender(data)
+                    viewState.onRender(sections)
                 }
             }.onFailure { error ->
                 withContext(Dispatchers.Main) { fetchError(error) }
@@ -96,6 +90,9 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
             sortedList.add(it)
         }
         response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_FAVORITES }?.let {
+            sortedList.add(it)
+        }
+        response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_RECENT }?.let {
             sortedList.add(it)
         }
         response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_COMMON }?.let {

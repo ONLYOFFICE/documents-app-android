@@ -253,7 +253,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             val fragments = sections.mapNotNull { section ->
                 type?.add(section.current.rootFolderType)
                 when (val folderType = section.current.rootFolderType) {
-                    ApiContract.SectionType.CLOUD_PRIVATE_ROOM, ApiContract.SectionType.CLOUD_RECENT -> null
+                    ApiContract.SectionType.CLOUD_PRIVATE_ROOM -> null
                     else -> {
                         tabTile?.add(getTabTitle(folderType))
                         MainPagerContainer(
@@ -393,6 +393,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             ApiContract.SectionType.CLOUD_PROJECTS -> requireContext().getString(R.string.main_pager_docs_projects)
             ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> requireContext().getString(R.string.main_pager_docs_virtual_room)
             ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> requireContext().getString(R.string.main_pager_docs_archive_room)
+            ApiContract.SectionType.CLOUD_RECENT -> requireContext().getString(R.string.fragment_recent_title)
             else -> ""
         }
 

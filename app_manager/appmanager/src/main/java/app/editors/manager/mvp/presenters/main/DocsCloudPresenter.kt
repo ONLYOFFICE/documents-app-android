@@ -115,7 +115,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 override fun isArchive(): Boolean = ApiContract.SectionType.isArchive(currentSectionType)
 
                 override fun isRecent(): Boolean {
-                    return modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_RECENT
+                    return modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_RECENT &&
+                            !context.accountOnline?.portal?.version?.docSpaceVersion?.startsWith("3.5")!!
                 }
 
                 override fun isTemplatesRoot(id: String?) =

@@ -366,7 +366,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         val newList = list.orEmpty().toMutableList()
         if (presenter.getSectionType() == ApiContract.SectionType.CLOUD_USER &&
             context?.accountOnline.isDocSpace &&
-            presenter.isRoot
+            presenter.isRoot &&
+            !context?.accountOnline?.portal?.version?.docSpaceVersion?.startsWith("3.5")!!
         ) {
             newList.add(0, RecentViaLink)
         }
