@@ -51,6 +51,8 @@ tasks.register("clearAssets") {
             || projectKey == "core"
             || projectKey == "libcompose"
             || projectKey == "libgeditors"
+            || projectKey == "libgdocs"
+            || projectKey == "libgcells"
         ) {
             return@forEach
         }
