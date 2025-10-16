@@ -62,3 +62,5 @@
 -keep class app.editors.manager.ui.dialogs.** { *; }
 #-keep class lib.toolkit.base.managers.utils.JsonUtils { *; }
 #-keepclassmembers class lib.toolkit.base.managers.utils.JsonUtils { *; }
+
+-keep class com.google.android.material.bottomsheet.BottomSheetBehavior { *; }
