@@ -248,6 +248,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         registerAppLocaleBroadcastReceiver()
 
         val isRestart = intent.getBooleanExtra(STARTED_FROM_SHOW_KEY, false)
+                || savedInstanceState != null
         if (!isRestart) presenter.setCheckVPN(false)
 
         if (isNotification()) {
