@@ -164,7 +164,7 @@ class FillingStatusFragment : ComposeDialogFragment() {
     }
 
     private fun showStopFillingQuestionDialog(onAccept: () -> Unit) {
-        dismiss()
+//        dismiss()
         UiUtils.showQuestionDialog(
             context = requireContext(),
             title = getString(R.string.filling_form_stop_filling_dialog_title),
