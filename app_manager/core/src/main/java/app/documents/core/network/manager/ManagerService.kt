@@ -439,7 +439,8 @@ interface ManagerService {
     @GET("api/" + ApiContract.API_VERSION + "/files/@root")
     suspend fun getRootFolder(
         @QueryMap filterMap: Map<String, Int>,
-        @QueryMap flagMap: Map<String, Boolean>
+        @QueryMap flagMap: Map<String, Boolean>,
+        @Query("count") count: Int = 1
     ): ResponseCloudTree
 
     @Headers(

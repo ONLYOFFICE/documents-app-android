@@ -10,7 +10,6 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
@@ -54,7 +53,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         private const val TAG_PERSONAL_END = "TAG_PERSONAL_END"
         private const val TAG_PAYMENT_REQUIRED = "TAG_PAYMENT_REQUIRED"
         private const val TAG_CONNECTION = "TAG_CONNECTION"
-        private const val OFFSCREEN_COUNT = 5
+        private const val OFFSCREEN_COUNT = 2
 
         fun newInstance(): MainPagerFragment {
             return MainPagerFragment()
@@ -264,7 +263,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                                 }
 
                                 ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> {
-                                    DocsRoomFragment.newInstance(folderType, section.current.id)
+                                    DocsRoomFragment.newInstance(folderType, "rooms")
                                 }
 
                                 else -> {
@@ -330,10 +329,13 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         if (isRestore) {
             viewBinding?.mainViewPager?.currentItem = selectedPage
         } else {
-            if (context?.accountOnline.isDocSpace) {
-                viewBinding?.mainViewPager?.post {
-                    viewBinding?.mainViewPager?.currentItem =
-                        fragments.indexOf(fragments.find { it.mFragment is DocsRoomFragment })
+            viewBinding?.mainViewPager?.post {
+                val roomFragmentIndex = fragments.indexOfFirst { container ->
+                    container.sectionType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM
+                }
+
+                if (roomFragmentIndex > -1) {
+                    viewBinding?.mainViewPager?.currentItem = roomFragmentIndex
                 }
             }
         }
