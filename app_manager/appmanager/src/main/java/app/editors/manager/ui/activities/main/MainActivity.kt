@@ -95,6 +95,7 @@ interface IMainActivity {
     )
     fun showEditors(
         uri: Uri,
+        extension: String,
         editType: EditType,
         access: Access,
         onResultListener: ((Int, Intent?) -> Unit)? = null
@@ -673,6 +674,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
 
     override fun showEditors(
         uri: Uri,
+        extension: String,
         editType: EditType,
         access: Access,
         onResultListener: ((Int, Intent?) -> Unit)?
@@ -680,9 +682,16 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         val intent = EditorsUtils.getLocalEditorIntent(
             context = this,
             uri = uri,
+            extension = extension,
             editType = editType,
             access = access
         )
+
+        if (intent == null) {
+            showSnackBar(R.string.error_version_open)
+            return
+        }
+
         showEditors(intent, onResultListener)
     }
 
@@ -704,6 +713,12 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
             roomId = roomId,
             fileId = fileId
         )
+
+        if (intent == null) {
+            showSnackBar(R.string.error_version_open)
+            return
+        }
+
         showEditors(intent, onResultListener)
     }
 

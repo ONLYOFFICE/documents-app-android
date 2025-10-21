@@ -345,6 +345,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             StringUtils.Extension.PDF -> {
                 (activity as? IMainActivity)?.showEditors(
                     uri = uri,
+                    extension = extension,
                     editType = editType,
                     access = access,
                     onResultListener = ::onEditorActivityResult

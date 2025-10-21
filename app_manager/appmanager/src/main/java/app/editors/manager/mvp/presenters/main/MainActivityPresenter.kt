@@ -308,6 +308,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                 viewState.onDialogClose()
                 viewState.showEditors(
                     uri = file.toUri(),
+                    extension = file.extension,
                     editType = editType,
                     access = access,
                     onResultListener = null

@@ -29,6 +29,7 @@ interface MainActivityView : BaseViewExt {
     fun restartActivity(deeplink: Uri? = null)
     fun showEditors(
         uri: Uri,
+        extension: String,
         editType: EditType,
         access: Access,
         onResultListener: ((Int, Intent?) -> Unit)?
