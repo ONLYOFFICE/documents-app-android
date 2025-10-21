@@ -16,14 +16,14 @@ object EditorsUtils {
     fun getLocalEditorIntent(
         context: Context,
         uri: Uri,
+        extension: String,
         editType: EditType,
         access: Access
     ): Intent? {
-        val extension = FileExtensions.Companion.fromPath(uri.path.orEmpty())
         return getEditorIntent(
             context = context,
             uri = uri,
-            extension = extension,
+            extension = FileExtensions.fromExtension(extension),
             editType = editType,
             access = access
         )
