@@ -201,7 +201,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     fun isActivePage(fragment: Fragment?): Boolean {
-        return adapter?.isActiveFragment(viewBinding?.mainViewPager, fragment) == true
+        return adapter?.isActiveFragment(fragment) == true
     }
 
     fun setScrollViewPager(isScroll: Boolean) {
