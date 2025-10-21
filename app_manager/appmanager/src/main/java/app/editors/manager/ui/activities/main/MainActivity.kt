@@ -683,6 +683,12 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
             editType = editType,
             access = access
         )
+
+        if (intent == null) {
+            showSnackBar(R.string.error_version_open)
+            return
+        }
+
         showEditors(intent, onResultListener)
     }
 
@@ -704,6 +710,12 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
             roomId = roomId,
             fileId = fileId
         )
+
+        if (intent == null) {
+            showSnackBar(R.string.error_version_open)
+            return
+        }
+
         showEditors(intent, onResultListener)
     }
 

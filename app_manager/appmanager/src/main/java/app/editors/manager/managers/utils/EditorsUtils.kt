@@ -18,7 +18,7 @@ object EditorsUtils {
         uri: Uri,
         editType: EditType,
         access: Access
-    ): Intent {
+    ): Intent? {
         val extension = FileExtensions.Companion.fromPath(uri.path.orEmpty())
         return getEditorIntent(
             context = context,
@@ -37,7 +37,7 @@ object EditorsUtils {
         access: Access,
         roomId: String? = null,
         fileId: String? = null
-    ): Intent {
+    ): Intent? {
         return getEditorIntent(
             context = context,
             uri = null,
@@ -59,13 +59,13 @@ object EditorsUtils {
         info: String? = null,
         roomId: String? = null,
         fileId: String? = null
-    ): Intent {
+    ): Intent? {
         val type = when (extension.group) {
             FileGroup.DOCUMENT -> EditorsType.DOCS
             FileGroup.SHEET -> EditorsType.CELLS
             FileGroup.PRESENTATION -> EditorsType.PRESENTATION
             FileGroup.PDF -> EditorsType.PDF
-            else -> throw RuntimeException("invalid extension")
+            else -> return null
         }
 
         return getIntent(
