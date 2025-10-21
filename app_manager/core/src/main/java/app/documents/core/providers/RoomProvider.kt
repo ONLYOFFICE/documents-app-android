@@ -389,8 +389,12 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return roomService.getGroupUsers(roomId, groupId).response
     }
 
-    suspend fun getExternalLink(roomId: String): String {
-        return roomService.getExternalLink(roomId).response.sharedTo.shareLink
+    suspend fun getExternalLink(id: String, isFile: Boolean = false): String {
+        return if (isFile) {
+            roomService.getPublicExternalLink(id).response.sharedTo.shareLink
+        } else {
+            roomService.getExternalLink(id).response.sharedTo.shareLink
+        }
     }
 
     suspend fun copyItems(roomId: String, folderIds: List<String>, fileIds: List<String>) {

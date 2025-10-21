@@ -163,6 +163,15 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/link")
+    suspend fun getPublicExternalLink(
+        @Path("id") id: String,
+    ): app.documents.core.network.BaseResponse<ExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
     @GET("api/" + ApiContract.API_VERSION + "/files/tags")
     suspend fun getTags(): Response<ResponseTags>
 
