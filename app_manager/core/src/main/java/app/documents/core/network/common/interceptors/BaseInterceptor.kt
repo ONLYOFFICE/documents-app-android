@@ -25,12 +25,7 @@ class BaseInterceptor(
 
     companion object {
         private const val KEY_AUTH = "Bearer "
-        private val BINARY_MEDIA_TYPES = listOf(
-            "application/",
-            "image/",
-            "video/",
-            "audio/"
-        )
+        private const val PEEK_BODY_LIMIT = 1 * 512 * 512L
     }
 
     @Throws(IOException::class)
@@ -57,35 +52,20 @@ class BaseInterceptor(
             val request = newBuilder.build()
             val response = chain.proceed(request)
 
-            val url = request.url().toString()
-            val shouldSkipLogging = url.contains("presigneduri") ||
-                    url.contains("filehandler.ashx") ||
-                    url.contains("download") ||
-                    url.contains("upload") ||
-                    url.contains("files/")
+            val startTime = System.currentTimeMillis()
 
-            return if (shouldSkipLogging) {
-                response
-            } else {
-                val contentType = response.body()?.contentType()?.toString() ?: ""
-                if (BINARY_MEDIA_TYPES.any { contentType.startsWith(it) }) {
-                    response
-                } else {
-                    val startTime = System.currentTimeMillis()
-                    val responseBody = response.body()?.string()
+            val responseBody = response.peekBody(PEEK_BODY_LIMIT).string()
 
-                    val loggedResponseBody = RequestsCollector.logRequest(
-                        request = request,
-                        response = response,
-                        responseBodyString = responseBody,
-                        startTime = startTime
-                    )
+            RequestsCollector.logRequest(
+                request = request,
+                response = response,
+                responseBodyString = responseBody,
+                startTime = startTime
+            )
 
-                    response.newBuilder()
-                        .body(ResponseBody.create(response.body()?.contentType(), loggedResponseBody ?: ""))
-                        .build()
-                }
-            }
+            return response
+
+
         } catch (_: NoConnectivityException) {
             val responseBody = ResponseBody.create(
                 MediaType.parse("application/json"),
