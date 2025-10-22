@@ -793,21 +793,15 @@
     <string name="conversion_dialog_converting_to">Փոխակերպվում է %1s-ի</string>
 
     <string name="errors_sign_in_ldap_checkbox">Մուտք գործեl որպես LDAP Օգտատեր</string>
-    <string name="placeholder_empty_folder">Այստեղ դեռ փաստաթղթեր չկան</string>
-    <string name="placeholder_empty_trash_desc">Բոլոր ջնջված ֆայլերը տեղափոխվում են \'Աղբարկղ\': Վերականգնել սխալմամբ ջնջված ֆայլերը կամ ընդմիշտ ջնջել դրանք: \'Աղբարկղի\' ֆայլերն ավտոմատ կերպով ջնջվում են 30 օր հետո: Խնդրում ենք նկատի ունենալ, որ \'Աղբարկղից\' ջնջված ֆայլերն այլևս չեն կարող վերականգնվել</string>
     <string name="placeholder_no_users_found">Ոչ մի օգտատեր չի գտնվել</string>
     <string name="placeholder_no_users_found_desc">Ոչ մի օգտատեր չի համապատասխանում ձեր որոնմանը: Խնդրում ենք կարգավորել ձեր որոնման պարամետրերը կամ մաքրել որոնման դաշտը՝ օգտատերերի ամբողջական ցանկը դիտելու համար</string>
     <string name="placeholder_no_members_found">Անդամները չեն գտնվել</string>
     <string name="placeholder_no_members_found_desc">Դուք կարող եք ձեռքով ավելացնել թիմի նոր անդամներ կամ հրավիրել նրանց հղման միջոցով</string>
     <string name="placeholder_no_rooms">Բարի գալուստ DocSpace:</string>
-    <string name="placeholder_no_rooms_desc">Խնդրում ենք ստեղծել առաջին սենյակը</string>
-    <string name="placeholder_no_rooms_visitor_desc">Ձեզ հետ կիսված սենյակները կհայտնվեն այստեղ</string>
     <string name="placeholder_empty_archive">Այստեղ դեռ արխիվացված սենյակներ չկան</string>
-    <string name="placeholder_empty_archive_desc">Դուք կարող եք արխիվացնել այն սենյակները, որոնք չեք օգտագործում և ցանկացած պահի վերականգնել դրանք ձեր DocSpace-ում կամ ընդմիշտ ջնջել դրանք: Այս սենյակները կհայտնվեն այստեղ</string>
     <string name="placeholder_no_search_result">Որոնման արդյունք չկա</string>
     <string name="placeholder_no_search_result_desc">Ձեր որոնմանը համապատասխանող արդյունքներ չեն գտնվել: Խնդրում ենք փորձել մեկ այլ արտահայտություն</string>
     <string name="placeholder_empty_room_visitor_desc">Ադմինիստրատորների կողմից վերբեռնված ֆայլերը և թղթապանակները կհայտնվեն այստեղ</string>
-    <string name="placeholder_empty_recent_via_link_desc">Այստեղ դուք կգտնեք վերջերս բացված ֆայլերի ցանկը, որոնցով ձեզ հետ կիսվել են արտաքին հղման միջոցով</string>
     <string name="placeholder_payment_required">Բիզնես բաժանորդագրության ժամկետը սպառվել է</string>
     <string name="placeholder_payment_required_desc">Ձեր ընթացիկ սակագնային «Բիզնես» պլանի ժամկետը լրացել է: Խնդրում ենք թարմացնել ձեր բաժանորդագրությունը հաշվի կարգավորումներում, որպեսզի կարողանաք օգտագործել ձեր DocSpace-ը: Եթե ​​ունեք հարցեր, կարող եք դիմել աջակցության ծառայությունը</string>
     <string name="placeholder_payment_required_button">Բիզնես պլանի թարմացում</string>
@@ -884,7 +878,7 @@
     <string name="rooms_add_fill_forms">Ձևաթղթերի լրացման սենյակ</string>
     <string name="rooms_add_fill_forms_des">Վերբեռնեք PDF ձևերը սենյակ: Հրավիրեք օգտատերերին լրացնել PDF ձևը: Վերանայեք լրացված ձևերը և վերլուծեք աղյուսակում ավտոմատ հավաքագրված տվյալները:</string>
     <string name="rooms_error_logo_size_exceed">Նկարի առավելագույն չափը գերազանցված է (1 ՄԲ)</string>
-    <string name="room_placeholder_created_filling_form_room_title">Բարի գալուստ Ձևաթղթերի լրացման սենյակ</string>
+    <string name="room_placeholder_form_room_creator_title">Բարի գալուստ Ձևաթղթերի լրացման սենյակ</string>
     <string name="room_placeholder_created_filling_form_room_subtitle">Վերբեռնեք պատրաստ PDF ձև կամ ստեղծեք նոր թղթապանակներ՝ ձեր ֆայլերը կազմակերպելու համար</string>
     <string name="room_placeholder_created_virtual_room_title">Բարի գալուստ Վիրտուալ Տվյալների Սենյակ</string>
     <string name="room_placeholder_created_virtual_room_subtitle">Սկսեք արագ գործողություններով.\nՍտեղծեք նոր ֆայլ</string>
@@ -1063,7 +1057,6 @@
     <string name="placeholder_connection_button">Վերաբեռնել</string>
     <string name="placeholder_connection_desc">Ցանցային կապ չի հայտնաբերվել։ Ստուգեք ձեր կապը և կրկին փորձեք։</string>
     <string name="placeholder_empty_templates_folder">Այստեղ դեռևս ձևանմուշներ չկան</string>
-    <string name="placeholder_empty_templates_folder_desc">Դուք կարող եք ստեղծել ձևանմուշ սենյակից՝ Սենյակ բաժնում։</string>
     <string name="room_access_via_link_title">Մուտք հղումով</string>
     <string name="room_created_successfully">Սենյակը հաջողությամբ ստեղծվեց</string>
     <string name="room_placeholder_created_template_title">Ձևանմուշը ստեղծված է։</string>

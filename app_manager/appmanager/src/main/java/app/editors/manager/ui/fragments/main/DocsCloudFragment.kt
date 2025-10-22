@@ -439,21 +439,33 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {
+        val roomType = presenter.currentFolder?.roomType
+        val isCloudForms = presenter.currentFolder?.parentRoomType == ApiContract.SectionType.CLOUD_FILLING_FORMS_ROOM
+        val isCreator = presenter.roomContentCreator
+        val isFolderInRoom = presenter.currentFolder?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM
+
         val placeholder = if (type == PlaceholderViews.Type.EMPTY) {
-            val roomType = presenter.currentFolder?.roomType
             when {
-                roomType != null && roomType > 0 -> {
+                roomType != null && roomType > 0 && !getSection().isArchive -> {
                     when {
                         presenter.currentFolder?.isTemplate == true -> PlaceholderViews.Type.EMPTY_TEMPLATE
-                        presenter.itemClicked?.security?.editRoom != true -> PlaceholderViews.Type.VISITOR_EMPTY_ROOM
-                        roomType == ApiContract.RoomType.FILL_FORMS_ROOM -> PlaceholderViews.Type.EMPTY_FORM_FILLING_ROOM
-                        roomType == ApiContract.RoomType.VIRTUAL_ROOM -> PlaceholderViews.Type.EMPTY_VIRTUAL_ROOM
-                        else -> PlaceholderViews.Type.EMPTY_ROOM
+                        else -> PlaceholderViews.getPlaceholderTypeForRoom(
+                            roomType = roomType,
+                            roomContentCreator = isCreator
+                        )
                     }
                 }
+
                 presenter.isTemplatesFolder -> PlaceholderViews.Type.EMPTY_TEMPLATES_FOLDER
                 presenter.isRecentViaLinkSection() -> PlaceholderViews.Type.EMPTY_RECENT_VIA_LINK
-                else -> type
+                isCloudForms -> PlaceholderViews.getPlaceholderTypeForFormRoom(
+                    isCreator = isCreator,
+                    type = presenter.currentFolder?.type
+                )
+
+                isFolderInRoom && isCreator -> PlaceholderViews.Type.EMPTY_FOLDER_CREATOR
+                isFolderInRoom -> PlaceholderViews.Type.EMPTY_FOLDER_VIEWER
+                else -> PlaceholderViews.Type.EMPTY
             }
         } else type
         super.onPlaceholder(placeholder)

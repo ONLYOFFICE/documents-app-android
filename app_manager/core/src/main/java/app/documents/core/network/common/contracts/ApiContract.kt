@@ -180,6 +180,7 @@ object ApiContract {
         const val CLOUD_RECENT = 11
         const val CLOUD_PRIVATE_ROOM = 13
         const val CLOUD_VIRTUAL_ROOM = 14
+        const val CLOUD_FILLING_FORMS_ROOM = 15
         const val CLOUD_ARCHIVE_ROOM = 20
         const val EDITING_ROOM = 16
         const val CUSTOM_ROOM = 19

@@ -138,11 +138,20 @@ class DocsTrashFragment : DocsCloudFragment() {
     }
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {
-        if (type == PlaceholderViews.Type.EMPTY && isRoot) {
-            super.onPlaceholder(if (isArchive) PlaceholderViews.Type.EMPTY_ARCHIVE else PlaceholderViews.Type.EMPTY_TRASH)
-        } else {
-            super.onPlaceholder(type)
+        val placeholder = when {
+            type == PlaceholderViews.Type.EMPTY && isRoot && isArchive && presenter.isRegularUser ->
+                PlaceholderViews.Type.EMPTY_ARCHIVE_VIEWER
+
+            type == PlaceholderViews.Type.EMPTY && isRoot && isArchive ->
+                PlaceholderViews.Type.EMPTY_ARCHIVE
+
+            type == PlaceholderViews.Type.EMPTY && isRoot && !isArchive ->
+                PlaceholderViews.Type.EMPTY_TRASH
+
+            else -> type
         }
+
+        super.onPlaceholder(placeholder)
     }
 
     private fun showRestoreDialog() {

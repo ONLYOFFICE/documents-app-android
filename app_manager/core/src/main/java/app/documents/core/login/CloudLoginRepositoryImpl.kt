@@ -223,6 +223,15 @@ internal class CloudLoginRepositoryImpl(
         }
     }
 
+    override suspend fun checkUserRegular(): Boolean {
+        return try {
+            val token = accountRepository.getToken(accountRepository.getOnlineAccount()?.accountName.orEmpty())
+            cloudLoginDataSource.getUserInfo(token.orEmpty()).isRegularUser
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     override suspend fun registerDevice(portalUrl: String, token: String, deviceToken: String) {
         cloudLoginDataSource.registerDevice(portalUrl, token, deviceToken)
     }
