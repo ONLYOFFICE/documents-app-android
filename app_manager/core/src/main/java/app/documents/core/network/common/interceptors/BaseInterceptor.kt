@@ -50,9 +50,9 @@ class BaseInterceptor(
             }
 
             val request = newBuilder.build()
-            val response = chain.proceed(request)
 
             val startTime = System.currentTimeMillis()
+            val response = chain.proceed(request)
 
             val responseBody = response.peekBody(PEEK_BODY_LIMIT).string()
 
