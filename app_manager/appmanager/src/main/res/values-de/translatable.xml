@@ -214,7 +214,7 @@
     <string name="list_action_presentation">Präsentation</string>
     <string name="list_action_doc">Textdokument</string>
     <string name="list_action_folder">Ordner</string>
-    <string name="list_action_photo">Photo machen</string>
+    <string name="list_action_photo">Foto aufnehmen</string>
     <string name="list_action_upload">Datei hochladen</string>
     <string name="list_action_storage">Speicher von Drittanbietern verbinden</string>
     <!-- Dialog info --> <!-- Pager -->

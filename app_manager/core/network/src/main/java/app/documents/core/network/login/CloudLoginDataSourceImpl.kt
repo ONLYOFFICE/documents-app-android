@@ -248,7 +248,8 @@ internal class CloudLoginDataSourceImpl(
         return cloudPortal.copy(
             version = PortalVersion(
                 serverVersion = settings.communityServer.orEmpty(),
-                documentServerVersion = settings.documentServer.orEmpty()
+                documentServerVersion = settings.documentServer.orEmpty(),
+                docSpaceVersion = settings.docSpace.orEmpty()
             ),
             provider = when {
                 allSettings.docSpace -> PortalProvider.Cloud.DocSpace

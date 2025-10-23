@@ -44,6 +44,11 @@ sealed class ExplorerContextItem(
         title =  R.string.filling_form_filling_status
     ), ExplorerContextBlockOrder.Common
 
+    object StartFilling : ExplorerContextItem(
+        icon = R.drawable.ic_access_fill_form,
+        title =  R.string.start_filling_title
+    ), ExplorerContextBlockOrder.Common
+
     object View : ExplorerContextItem(
         icon = R.drawable.ic_access_read,
         title =  lib.toolkit.base.R.string.settings_view
@@ -213,6 +218,11 @@ sealed class ExplorerContextItem(
     object EditComment : ExplorerContextItem(
         icon = R.drawable.ic_edit_comment,
         title = R.string.list_context_edit_comment
+    ), ExplorerContextBlockOrder.Common
+
+    object ResetFilling : ExplorerContextItem(
+        icon = R.drawable.ic_refresh,
+        title = R.string.list_context_reset_filling
     ), ExplorerContextBlockOrder.Common
 
     object DeleteVersion : ExplorerContextItem(

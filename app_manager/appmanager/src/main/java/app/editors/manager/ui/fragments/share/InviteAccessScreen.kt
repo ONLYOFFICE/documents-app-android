@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -62,12 +63,12 @@ fun InviteAccessScreen(
     viewModel: InviteAccessViewModel,
     description: String? = null,
     onBack: () -> Unit,
-    onSuccess: () -> Unit,
-    onSnackBar: (String) -> Unit,
+    onSuccess: () -> Unit
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsState()
     val portal = context.accountOnline?.portal
+    val scaffoldState = rememberScaffoldState()
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -78,7 +79,7 @@ fun InviteAccessScreen(
                         is HttpException -> context.getString(R.string.errors_client_error) + exception.code()
                         else -> context.getString(R.string.errors_unknown_error)
                     }
-                    onSnackBar(text)
+                    scaffoldState.snackbarHostState.showSnackbar(text)
                 }
             }
         }

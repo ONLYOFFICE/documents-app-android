@@ -29,6 +29,7 @@ interface MainActivityView : BaseViewExt {
     fun restartActivity(deeplink: Uri? = null)
     fun showEditors(
         uri: Uri,
+        extension: String,
         editType: EditType,
         access: Access,
         onResultListener: ((Int, Intent?) -> Unit)?
@@ -38,6 +39,8 @@ interface MainActivityView : BaseViewExt {
         extension: String,
         editType: EditType,
         access: Access,
+        roomId: String? = null,
+        fileId: String? = null,
         onResultListener: ((Int, Intent?) -> Unit)?
     )
 }

@@ -430,7 +430,6 @@
     <string name="storage_select_box">Box</string>
     <string name="storage_select_share_point">SharePoint</string>
     <string name="storage_select_own_cloud">ownCloud</string>
-    <string name="storage_select_kdrive" translatable="false">KDrive</string>
     <string name="krdive_password_helper_text">إذا قمت بتنشيط المصادقة المزدوجة، فيرجى إنشاء تطبيق</string>
     <string name="kdrive_info_title">يجب أن يكون لديك نسخة مدفوعة من المشغل لاستخدام هذه الخدمة.</string>
     <string name="storage_email_connection">اتصال البريد الإلكتروني</string>

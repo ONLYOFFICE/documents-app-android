@@ -17,12 +17,12 @@ import androidx.navigation.compose.rememberNavController
 import app.documents.core.network.manager.models.explorer.Watermark
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
-import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.viewModels.main.RoomEditViewModel
 import app.editors.manager.viewModels.main.RoomSettingsEffect
 import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.UserListMode
+import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppTextButton
@@ -228,7 +228,7 @@ class EditRoomFragment : ComposeDialogFragment() {
                     UserListScreen(
                         viewModel = userListViewModel,
                         title = R.string.room_set_owner_title,
-                        onClick = { userId -> userListViewModel.setOwner(userId, leave = false) },
+                        onClick = { user -> userListViewModel.setOwner(user.id, leave = false) },
                         onBack = navController::popBackStackWhenResumed,
                         closeable = false,
                         onSuccess = {
@@ -238,9 +238,6 @@ class EditRoomFragment : ComposeDialogFragment() {
                                 TAG_RESULT,
                                 Bundle.EMPTY
                             )
-                        },
-                        onSnackBar = {
-                            UiUtils.getSnackBar(requireActivity()).setText(it).show()
                         }
                     )
                 }

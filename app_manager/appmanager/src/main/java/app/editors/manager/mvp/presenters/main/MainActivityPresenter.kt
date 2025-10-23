@@ -223,7 +223,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                 return@launch
             }
 
-            when (val result = accountRepository.checkLoginWithEmail(data.email.orEmpty())) {
+            when (val result = accountRepository.checkLoginWithEmailAndPortal(email = data.email.orEmpty(), portalUrl = data.portal)) {
                 is CheckLoginResult.Success -> {
                     viewState.restartActivity(deeplink = uri)
                 }
@@ -238,10 +238,12 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     private suspend fun signInAndOpenDeeplink(data: OpenDataModel, uri: Uri) {
         val portalUri = data.portal?.toUri() ?: return
-        val portalScheme = Scheme.valueOf("${portalUri.scheme}://")
+        val portalScheme = portalUri.scheme?.let { Scheme.valueOf("$it://") }
+            ?: data.originalUrl?.toUri()?.scheme?.let { Scheme.valueOf("$it://") }
+            ?: Scheme.Https
 
         App.getApp().refreshLoginComponent(
-            CloudPortal(url = portalUri.host.orEmpty(), scheme = portalScheme)
+            CloudPortal(url = portalUri.host.takeIf { it.isNullOrEmpty() } ?: portalUri.toString(), scheme = portalScheme)
         )
 
         App.getApp().loginComponent.cloudLoginRepository
@@ -306,6 +308,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                 viewState.onDialogClose()
                 viewState.showEditors(
                     uri = file.toUri(),
+                    extension = file.extension,
                     editType = editType,
                     access = access,
                     onResultListener = null

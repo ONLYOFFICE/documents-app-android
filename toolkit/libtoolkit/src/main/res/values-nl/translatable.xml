@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Translations added in version 9.1.0 - 2025-10-10 -->
+    <string name="dialogs_edit_forbidden_symbols">Gebruik niet deze symbolen\u0020</string>
+    <string name="dialogs_edit_forbidden_name">Ongeldige naam</string>
+    <string name="sizes_bytes">Bytes</string>
+    <string name="sizes_kilobytes">Kb</string>
+    <string name="sizes_megabytes">Mb</string>
+    <string name="sizes_gigabytes">Gb</string>
+    <string name="sizes_terabytes">Tb</string>
+    <string name="chooser_email_client">Kies email client…</string>
+    <string name="about_email_subject">ONLYOFFICE Documents voor Android feedback</string>
+    <string name="about_feedback">Feedback en ondersteuning</string>
+    <string name="text_hint_required">Vereist</string>
+    <string name="help_and_feedback_title">Hulp en feedback</string>
+    <string name="help_and_feedback_suggest_a_feature">Stel een functie voor</string>
+    <string name="help_and_feedback_contact_support">Neem contact op met de ondersteuning</string>
+    <string name="help_and_feedback_help_center">Stel een functie voor</string>
+    <string name="export_send_copy">Stuur kopie</string>
+    <string name="common_accept">Accepteer</string>
+    <string name="common_cancel">Annuleer</string>
+    <string name="common_next">Volgende</string>
+    <string name="common_previous">Vorige</string>
+    <string name="common_done">Klaar</string>
+    <string name="common_ok">OK</string>
+    <string name="settings_fonts_title">Fonts</string>
+    <string name="settings_view">Weergave</string>
+    <plurals name="days">
+        <item quantity="one">dag</item>
+        <item quantity="other">dagen</item>
+    </plurals>
+    <plurals name="hours">
+        <item quantity="one">uur</item>
+        <item quantity="other">uren</item>
+    </plurals>
+    <plurals name="months">
+        <item quantity="one">maand</item>
+        <item quantity="other">maanden</item>
+    </plurals>
+    <plurals name="years">
+        <item quantity="one">jaar</item>
+        <item quantity="other">jaren</item>
+    </plurals>
+</resources>

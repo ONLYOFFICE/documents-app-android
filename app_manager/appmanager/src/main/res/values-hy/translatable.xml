@@ -439,7 +439,6 @@
     <string name="storage_select_box">Box</string>
     <string name="storage_select_share_point">SharePoint</string>
     <string name="storage_select_own_cloud">ownCloud</string>
-    <string name="storage_select_kdrive" translatable="false">KDrive</string>
     <string name="krdive_password_helper_text">Եթե ​​դուք ակտիվացրել եք կրկնակի նույնականացում, խնդրում ենք ստեղծել CDM հավելված Infomaniak մենեջերից:</string>
     <string name="kdrive_info_title">Այս ծառայությունից օգտվելու համար դուք պետք է ունենաք փլեյերի վճարովի տարբերակ:</string>
     <string name="storage_email_connection">Էլ․փոստի միացում</string>

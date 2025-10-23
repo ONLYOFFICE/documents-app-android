@@ -328,7 +328,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             data = info,
             editType = editType,
             access = file.access,
-            onResultListener = ::onEditorActivityResult
+            onResultListener = ::onEditorActivityResult,
+            roomId = presenter.roomClicked?.id,
+            fileId = presenter.itemClicked?.id
         )
     }
 
@@ -343,6 +345,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             StringUtils.Extension.PDF -> {
                 (activity as? IMainActivity)?.showEditors(
                     uri = uri,
+                    extension = extension,
                     editType = editType,
                     access = access,
                     onResultListener = ::onEditorActivityResult

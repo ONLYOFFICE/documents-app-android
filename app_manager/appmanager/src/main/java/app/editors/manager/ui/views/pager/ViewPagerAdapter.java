@@ -98,8 +98,11 @@ public class ViewPagerAdapter extends FragmentPagerAdapter implements ViewPager.
         return (Fragment) instantiateItem(viewPager, mSelectedPage);
     }
 
-    public boolean isActiveFragment(final ViewPager viewPager, final Fragment fragment) {
-        return fragment.equals(getActiveFragment(viewPager));
+    public boolean isActiveFragment(final Fragment fragment) {
+        if (fragment == null || mSelectedPage < 0 || mSelectedPage >= mFragmentList.size()) {
+            return false;
+        }
+        return fragment.equals(mFragmentList.get(mSelectedPage).mFragment);
     }
 
     public boolean isLastPagePosition() {

@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
-import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.viewModels.main.TemplateSettingsMode
+import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.toolkit.base.managers.utils.putArgs
 

@@ -95,6 +95,7 @@ interface IMainActivity {
     )
     fun showEditors(
         uri: Uri,
+        extension: String,
         editType: EditType,
         access: Access,
         onResultListener: ((Int, Intent?) -> Unit)? = null
@@ -104,6 +105,8 @@ interface IMainActivity {
         extension: String,
         editType: EditType,
         access: Access,
+        roomId: String?,
+        fileId: String?,
         onResultListener: ((Int, Intent?) -> Unit)? = null
     )
 }
@@ -671,6 +674,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
 
     override fun showEditors(
         uri: Uri,
+        extension: String,
         editType: EditType,
         access: Access,
         onResultListener: ((Int, Intent?) -> Unit)?
@@ -678,9 +682,16 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         val intent = EditorsUtils.getLocalEditorIntent(
             context = this,
             uri = uri,
+            extension = extension,
             editType = editType,
             access = access
         )
+
+        if (intent == null) {
+            showSnackBar(R.string.error_version_open)
+            return
+        }
+
         showEditors(intent, onResultListener)
     }
 
@@ -689,6 +700,8 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         extension: String,
         editType: EditType,
         access: Access,
+        roomId: String?,
+        fileId: String?,
         onResultListener: ((Int, Intent?) -> Unit)?
     ) {
         val intent = EditorsUtils.getDocumentServerEditorIntent(
@@ -696,8 +709,16 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
             data = data,
             extension = extension,
             editType = editType,
-            access = access
+            access = access,
+            roomId = roomId,
+            fileId = fileId
         )
+
+        if (intent == null) {
+            showSnackBar(R.string.error_version_open)
+            return
+        }
+
         showEditors(intent, onResultListener)
     }
 

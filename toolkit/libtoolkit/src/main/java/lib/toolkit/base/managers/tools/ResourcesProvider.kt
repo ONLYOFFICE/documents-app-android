@@ -24,7 +24,7 @@ class ResourcesProvider @Inject constructor(val context: Context) {
 
     fun getString(@StringRes res: Int) = context.getString(res)
 
-    fun getString(@StringRes res: Int, vararg args: String) = context.getString(res, args)
+    fun getString(@StringRes res: Int, vararg args: String) = context.getString(res, *args)
 
     fun getStringArray(@ArrayRes res: Int): Array<String> = context.resources.getStringArray(res)
 
@@ -47,6 +47,8 @@ class ResourcesProvider @Inject constructor(val context: Context) {
     }
 
     fun getFileNameByUri(uri: Uri): String = ContentResolverUtils.getName(context, uri)
+
+    fun getMimeTypeByUri(uri: Uri): String? = ContentResolverUtils.getMimeType(context, uri)
 
     fun getHtmlSpanned(@StringRes resource: Int, vararg args: String): Spanned {
         return StringUtils.getHtmlSpanned(

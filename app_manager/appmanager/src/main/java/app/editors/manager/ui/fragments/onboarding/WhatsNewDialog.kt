@@ -25,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentManager
 import app.editors.manager.R
-import app.editors.manager.ui.dialogs.fragments.ComposeDialogFragment
 import app.editors.manager.ui.fragments.room.add.AddRoomFragment.Companion.TAG
+import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppButton

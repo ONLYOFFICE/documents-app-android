@@ -50,7 +50,7 @@ dependencies {
     implementation(project(":libtoolkit"))
 
     implementation(libs.kotlin.core)
-
+    implementation(libs.appcompat)
 
     implementation(libs.compose.ui)
     implementation(libs.compose.material)

@@ -65,6 +65,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.tools.FileExtensions
@@ -114,7 +115,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 override fun isArchive(): Boolean = ApiContract.SectionType.isArchive(currentSectionType)
 
                 override fun isRecent(): Boolean {
-                    return modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_RECENT
+                    return modelExplorerStack.rootFolderType == ApiContract.SectionType.CLOUD_RECENT &&
+                            !context.accountOnline?.portal?.version?.docSpaceVersion?.startsWith("3.5")!!
                 }
 
                 override fun isTemplatesRoot(id: String?) =
@@ -239,6 +241,31 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                 fileIds = pickerMode.selectedIds
             }
             disposable.add(fileProvider.copyFiles(request).subscribe({ onBatchOperations() }, ::fetchError))
+        }
+    }
+
+    override fun handleDuplicatesUpload(folderId: String) {
+        val requiredDocSpaceVersion = "3.5.0"
+        if (checkDocSpaceVersion(requiredDocSpaceVersion)) {
+            presenterScope.launch {
+                fileProvider.checkDuplicateFiles(
+                    folderId = folderId,
+                    filenames = uploadFiles?.map { it.name.orEmpty() }.orEmpty()
+                ).collect { result ->
+                    duplicateFiles = when (result) {
+                        is NetworkResult.Success -> result.data
+                        else -> null
+                    }
+                    if (!duplicateFiles.isNullOrEmpty()) {
+                        val filename = if (duplicateFiles?.size == 1) duplicateFiles?.firstOrNull() else null
+                        viewState.showDuplicateFilesDialog(filename)
+                    } else {
+                        super.handleDuplicatesUpload(folderId)
+                    }
+                }
+            }
+        } else {
+            super.handleDuplicatesUpload(folderId)
         }
     }
 
@@ -494,7 +521,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         val file = itemClicked as? CloudFile ?: return
 
         presenterScope.launch {
-            if (file.formFillingStatus == ApiContract.FormFillingStatus.YourTurn &&
+            if ((file.formFillingStatus == ApiContract.FormFillingStatus.YourTurn) &&
                 !firebaseTool.isCoauthoring()
             ) {
                 viewState.showFillFormIncompatibleVersionsDialog()
@@ -508,6 +535,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
             openFile(EditType.Fill())
         }
+    }
+
+    fun openStartFilling() {
+        openFile(EditType.StartFilling())
     }
 
     override fun openFile(editType: EditType, canBeShared: Boolean) {
@@ -862,6 +893,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun copyLinkFromContextMenu() {
         val item = itemClicked
         when {
+            item is CloudFile && currentFolder?.roomType == ApiContract.RoomType.PUBLIC_ROOM -> copyRoomLink(item.id)
             (item as? CloudFolder)?.isRoom == true -> copyRoomLink()
             item is CloudFolder -> saveLink(getInternalLink(item))
             else -> saveExternalLinkToClipboard()
@@ -1202,47 +1234,56 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private fun openRecentViaLink() {
         setPlaceholderType(PlaceholderViews.Type.LOAD)
-        (fileProvider as? CloudFileProvider)?.let { provider ->
-            disposable.add(
-                provider.getRecentViaLink()
-                    .subscribe({ explorer ->
-                        loadSuccess(explorer.apply { current.title = context.getString(R.string.room_access_via_link_title) })
-                    }, ::fetchError)
-            )
-        }
+        disposable.add(
+            fileProvider.getRecentViaLink()
+                .subscribe({ explorer ->
+                    loadSuccess(
+                        explorer.apply {
+                            current.title = context.getString(R.string.room_access_via_link_title)
+                        }
+                    )
+                }, ::fetchError)
+        )
     }
 
     private fun openTemplates() {
-        val cloudProvider = (fileProvider as? CloudFileProvider) ?: return
         resetFilters()
         setPlaceholderType(PlaceholderViews.Type.LOAD)
         disposable.add(
-            cloudProvider.getRoomTemplates(getArgs(filteringValue).putFilters())
+            fileProvider.getRoomTemplates(getArgs(filteringValue).putFilters())
                 .subscribe(::loadSuccess, ::fetchError)
         )
     }
 
-    private fun copyRoomLink() {
-        roomClicked?.let { room ->
-            if (isTemplatesFolder || room.roomType == ApiContract.RoomType.COLLABORATION_ROOM
-                || room.roomType == ApiContract.RoomType.VIRTUAL_ROOM
-            ) {
-                setDataToClipboard(getInternalLink(room))
-            } else {
-                presenterScope.launch {
-                    try {
-                        val externalLink = roomProvider?.getExternalLink(roomClicked?.id.orEmpty())
-                        withContext(Dispatchers.Main) {
-                            if (externalLink.isNullOrEmpty()) {
-                                viewState.onError(context.getString(R.string.errors_unknown_error))
-                            } else {
-                                saveLink(externalLink)
-                            }
-                        }
-                    } catch (error: Throwable) {
-                        fetchError(error)
+    private fun copyRoomLink(itemId: String? = null) {
+        if (itemId != null) {
+            handleExternalLink(id = itemId, isFile = true)
+        } else {
+            roomClicked?.let { room ->
+                if (isTemplatesFolder || room.roomType == ApiContract.RoomType.COLLABORATION_ROOM
+                    || room.roomType == ApiContract.RoomType.VIRTUAL_ROOM
+                ) {
+                    setDataToClipboard(getInternalLink(room))
+                } else {
+                    handleExternalLink(room.id)
+                }
+            }
+        }
+    }
+
+    private fun handleExternalLink(id: String, isFile: Boolean = false) {
+        presenterScope.launch {
+            try {
+                val externalLink = roomProvider?.getExternalLink(id = id, isFile = isFile)
+                withContext(Dispatchers.Main) {
+                    if (externalLink.isNullOrEmpty()) {
+                        viewState.onError(context.getString(R.string.errors_unknown_error))
+                    } else {
+                        saveLink(externalLink)
                     }
                 }
+            } catch (error: Throwable) {
+                fetchError(error)
             }
         }
     }
@@ -1341,16 +1382,32 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun stopFillingForm() {
-        showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS)
         requestJob = presenterScope.launch {
-            (fileProvider as? CloudFileProvider ?: return@launch)
+            fileProvider
                 .stopFilling(itemClicked?.id.orEmpty())
+                .onStart { showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS) }
                 .collect { result ->
                     viewState.onDialogClose()
                     when (result) {
                         is NetworkResult.Error -> fetchError(result.exception)
                         is NetworkResult.Success -> refresh()
                         is NetworkResult.Loading -> Unit
+                    }
+                }
+        }
+    }
+
+    fun resetFilling() {
+        requestJob = presenterScope.launch {
+            fileProvider
+                .resetFilling(itemClicked?.id.orEmpty())
+                .onStart { showDialogWaiting(TAG_DIALOG_CANCEL_SINGLE_OPERATIONS) }
+                .collect { result ->
+                    viewState.onDialogClose()
+                    when (result) {
+                        is NetworkResult.Error -> fetchError(result.exception)
+                        is NetworkResult.Success<*> -> refresh()
+                        NetworkResult.Loading -> Unit
                     }
                 }
         }
@@ -1369,15 +1426,13 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         initDelay: Boolean = true
     ) {
         val id = explorer.current.id
-        (fileProvider as? CloudFileProvider)?.let { provider ->
-            thumbnailsJobs.add(
-                presenterScope.launch(Dispatchers.Main) {
-                    provider.getThumbnails(explorer, id, filter, initDelay)
-                        .catch { e ->  fetchThumbnailsError(e) }
-                        .collect { file -> updateFileThumbnail(file) }
-                }
-            )
-        }
+        thumbnailsJobs.add(
+            presenterScope.launch(Dispatchers.Main) {
+                fileProvider.getThumbnails(explorer, id, filter, initDelay)
+                    .catch { e ->  fetchThumbnailsError(e) }
+                    .collect { file -> updateFileThumbnail(file) }
+            }
+        )
     }
 
     private fun updateThumbnails() {
@@ -1419,5 +1474,22 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private fun cancelThumbnailsJobs() {
         thumbnailsJobs.forEach { it.cancel() }
         thumbnailsJobs.clear()
+    }
+
+    private fun checkDocSpaceVersion(required: String): Boolean {
+        val current = account.portal.version.docSpaceVersion
+        if (current.isEmpty()) return false
+
+        val currentParts = current.split(".").map { it.toIntOrNull() ?: 0 }
+        val requiredParts = required.split(".").map { it.toIntOrNull() ?: 0 }
+        val maxLength = maxOf(currentParts.size, requiredParts.size)
+        val c = currentParts + List(maxLength - currentParts.size) { 0 }
+        val r = requiredParts + List(maxLength - requiredParts.size) { 0 }
+
+        for (i in 0 until maxLength) {
+            if (c[i] > r[i]) return true
+            if (c[i] < r[i]) return false
+        }
+        return true
     }
 }

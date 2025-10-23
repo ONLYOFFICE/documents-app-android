@@ -34,9 +34,9 @@ import app.documents.core.model.login.User
 import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.ui.fragments.template.rememberAccountContext
 import app.editors.manager.ui.fragments.share.MemberAvatar
 import app.editors.manager.ui.fragments.share.UserListScreen
+import app.editors.manager.ui.fragments.template.rememberAccountContext
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.TemplateUserListViewModel
 import lib.compose.ui.theme.ManagerTheme
@@ -56,9 +56,8 @@ fun SelectMembersScreen(
         closeable = false,
         useTabletPaddings = false,
         viewModel = viewModel,
-        onClick = viewModel::toggleSelect,
+        onClick = { viewModel.toggleSelect(it.id) },
         onBack = onBack,
-        onSnackBar = {}
     ) { size, _ ->
         UserListBottomContent(
             nextButtonTitle = lib.toolkit.base.R.string.common_next,

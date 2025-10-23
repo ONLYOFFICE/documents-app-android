@@ -2,17 +2,23 @@
 <resources>
     <!-- Original strings for reference -->
 
-    <!-- Module: appmanager - 904 strings -->
+    <!-- Module: appmanager - 907 strings -->
     <string name="app_name">Documents</string>
     <string name="app_name_full">ONLYOFFICE Documents</string>
     <string name="app_versions_title">Version 3.0 released</string>
     <string name="app_versions_cancel">Later</string>
     <string name="app_versions_without_release_accept">Install official app</string>
-    <string name="app_versions_without_release_info">Thanks for beta testing! ONLYOFFICE Documents 3.0 is now released, and beta version is no longer supported. Switch to the official app to receive further updates.</string>
+    <string name="app_versions_without_release_info">Thanks for beta testing! ONLYOFFICE Documents 3.0 is now released, and beta version is no longer supported.
+        Switch to the official app to receive further updates.
+    </string>
     <string name="app_versions_update_accept">Update official app</string>
-    <string name="app_versions_update_info">Thanks for beta testing! ONLYOFFICE Documents 3.0 is now released, and beta version is no longer supported. Please, switch to official app to receive further updates.</string>
+    <string name="app_versions_update_info">Thanks for beta testing! ONLYOFFICE Documents 3.0 is now released, and beta version is no longer supported. Please,
+        switch to official app to receive further updates.
+    </string>
     <string name="app_versions_actual_release_accept">Open official app</string>
-    <string name="app_versions_actual_release_info">Thanks for beta testing! ONLYOFFICE Documents 3.0 is now released, and beta version is no longer supported. Please, switch to the official app.</string>
+    <string name="app_versions_actual_release_info">Thanks for beta testing! ONLYOFFICE Documents 3.0 is now released, and beta version is no longer supported.
+        Please, switch to the official app.
+    </string>
     <string name="snackbar_copied">Copied</string>
     <string name="snackbar_undo">UNDO</string>
     <string name="about_title">About</string>
@@ -82,9 +88,12 @@
     <string name="login_not_authorization_button">TRY AGAIN</string>
     <string name="errors_first_name">First name is not valid</string>
     <string name="errors_last_name">Last name is not valid</string>
-    <string name="login_password_recovery_hint">Enter the email which you used for registration on the portal. The instructions for password recovery will be sent to this email.</string>
+    <string name="login_password_recovery_hint">Enter the email which you used for registration on the portal. The instructions for password recovery will be
+        sent to this email.
+    </string>
     <string name="login_password_recovery_button_text">RETURN TO ENTER SCREEN</string>
-    <string name="login_password_recovery_success_hint">If a user with the email %1$s exists, the instructions for password change were sent to this email.</string>
+    <string name="login_password_recovery_success_hint">If a user with the email %1$s exists, the instructions for password change were sent to this email.
+    </string>
     <string name="login_password_recovery_toolbar_title">Password recovery</string>
     <string name="login_personal_edit_email_hint">Email</string>
     <string name="login_personal_edit_password_hint">Password</string>
@@ -162,7 +171,9 @@
     <string name="dialogs_warning_title">Warning</string>
     <string name="dialogs_warning_only_pdf_form_message">The file cannot be moved to this room. Please try to move the ONLYOFFICE PDF form.</string>
     <string name="dialogs_warning_pinned_room_limit">You can’t pin more than 10 rooms to the top. Unpin some that are currently pinned.</string>
-    <string name="dialogs_warning_fill_forms_room_create">Creation based on several files and folders is not available for this type of room. To create such a room, go to the Rooms section or use one of the PDF forms.</string>
+    <string name="dialogs_warning_fill_forms_room_create">Creation based on several files and folders is not available for this type of room. To create such a
+        room, go to the Rooms section or use one of the PDF forms.
+    </string>
     <string name="dialogs_warning_room_space_quota_exceed">Room space quota exceeded (%s).</string>
     <string name="dialogs_edit_rename_title">Rename</string>
     <string name="dialogs_edit_hint">Enter title</string>
@@ -315,16 +326,22 @@
     <string name="placeholder_loading_groups">Loading groups…</string>
     <string name="placeholder_other_accounts">No other accounts here yet</string>
     <string name="placeholder_empty_folder">No docs here yet</string>
-    <string name="placeholder_empty_trash_desc">All deleted files are moved to \'Trash\'. Restore files deleted by mistake or delete them permanently. Files in \'Trash\' are automatically deleted after 30 days. Please note, that the files deleted from the \'Trash\' cannot be restored any longer</string>
+    <string name="placeholder_empty_trash_desc">All deleted files are moved to \'Trash\'. Restore files deleted by mistake or delete them permanently. Files in
+        \'Trash\' are automatically deleted after 30 days. Please note, that the files deleted from the \'Trash\' cannot be restored any longer
+    </string>
     <string name="placeholder_no_users_found">No users found</string>
-    <string name="placeholder_no_users_found_desc">No users match your search. Please adjust your search parameters or clear the search field to view the full list of users</string>
+    <string name="placeholder_no_users_found_desc">No users match your search. Please adjust your search parameters or clear the search field to view the full
+        list of users
+    </string>
     <string name="placeholder_no_members_found">No members found</string>
     <string name="placeholder_no_members_found_desc">You can add new team members manually or invite them via link</string>
     <string name="placeholder_no_rooms">Welcome to DocSpace!</string>
     <string name="placeholder_no_rooms_desc">Please create the first room</string>
     <string name="placeholder_no_rooms_visitor_desc">Rooms shared with you will appear here</string>
     <string name="placeholder_empty_archive">No archived rooms here yet</string>
-    <string name="placeholder_empty_archive_desc">You can archive rooms you don’t use and restore them in your DocSpace at any moment or delete them permanently. These rooms will appear here</string>
+    <string name="placeholder_empty_archive_desc">You can archive rooms you don’t use and restore them in your DocSpace at any moment or delete them
+        permanently. These rooms will appear here
+    </string>
     <string name="placeholder_empty_templates_folder">No templates here yet</string>
     <string name="placeholder_empty_templates_folder_desc">You can create a template from a room in the Room section</string>
     <string name="placeholder_no_search_result">No search result</string>
@@ -332,7 +349,9 @@
     <string name="placeholder_empty_room_visitor_desc">Files and folders uploaded by admins will appeared here</string>
     <string name="placeholder_empty_recent_via_link_desc">Here you will find a list of the recently opened files shared with you via an external link</string>
     <string name="placeholder_payment_required">Business subscription expired</string>
-    <string name="placeholder_payment_required_desc">Your current tariff plan "Business" expired. Please renew your subscription in the account settings to be able to use your DocSpace. If you have any questions, please contact support</string>
+    <string name="placeholder_payment_required_desc">Your current tariff plan "Business" expired. Please renew your subscription in the account settings to be
+        able to use your DocSpace. If you have any questions, please contact support
+    </string>
     <string name="placeholder_payment_required_button">Renew Business plan</string>
     <string name="placeholder_no_fonts">No fonts</string>
     <string name="list_headers_folder">Folders</string>
@@ -367,7 +386,8 @@
     <string name="share_access_success">External access successful</string>
     <string name="share_access_denied">External access denied</string>
     <string name="share_clipboard_external_copied">Secret link copied to clipboard</string>
-    <string name="share_clipboard_external_custom_filter_copied">The link to the file with the enabled Custom filter is successfully copied to the clipboard</string>
+    <string name="share_clipboard_external_custom_filter_copied">The link to the file with the enabled Custom filter is successfully copied to the clipboard
+    </string>
     <string name="share_clipboard_internal_copied">Link for portal users copied to clipboard</string>
     <string name="share_clipboard_external_link_label">External link</string>
     <string name="share_tab_users">USERS</string>
@@ -385,7 +405,8 @@
     <string name="storage_select_box">Box</string>
     <string name="storage_select_share_point">SharePoint</string>
     <string name="storage_select_own_cloud">ownCloud</string>
-    <string name="krdive_password_helper_text">If you have activated double authentication, please generate a CDM application from the Infomaniak manager.</string>
+    <string name="krdive_password_helper_text">If you have activated double authentication, please generate a CDM application from the Infomaniak manager.
+    </string>
     <string name="kdrive_info_title">You must have a paid version of the player to use this service.</string>
     <string name="storage_email_connection">Email connection</string>
     <string name="storage_select_web_dav">Other WebDAV storage</string>
@@ -474,18 +495,26 @@
     <string name="on_boarding_welcome_header">Getting started</string>
     <string name="on_boarding_welcome_info">Welcome to ONLYOFFICE mobile editing suite! Swipe to learn more about the app.</string>
     <string name="on_boarding_edit_header">Work with office files</string>
-    <string name="on_boarding_edit_info">Create and edit documents with our comprehensive toolbar: work with complex objects in text documents, perform extensive calculations in spreadsheets, create stunning presentations and view PDF files with no formatting loss.</string>
+    <string name="on_boarding_edit_info">Create and edit documents with our comprehensive toolbar: work with complex objects in text documents, perform
+        extensive calculations in spreadsheets, create stunning presentations and view PDF files with no formatting loss.
+    </string>
     <string name="on_boarding_locally_header">Edit documents locally</string>
-    <string name="on_boarding_locally_info">Work with documents offline. Created files can later be uploaded to online portal and then accessed from any other device.</string>
+    <string name="on_boarding_locally_info">Work with documents offline. Created files can later be uploaded to online portal and then accessed from any other
+        device.
+    </string>
     <string name="on_boarding_collaborate_header">Collaborate with your team</string>
-    <string name="on_boarding_collaborate_info">In online mode, use real-time co-editing features of ONLYOFFICE to work on documents together with your portal members, share documents and create common storage folders.</string>
+    <string name="on_boarding_collaborate_info">In online mode, use real-time co-editing features of ONLYOFFICE to work on documents together with your portal
+        members, share documents and create common storage folders.
+    </string>
     <string name="on_boarding_third_party_header">Third-party storage</string>
     <string name="on_boarding_third_party_info">Connect third-party storage like Nextcloud, ownCloud, Dropbox and others which use WebDAV protocol.</string>
     <string name="media_image_share_chooser">Choose app for sharing</string>
     <string name="media_image_list_info">Media files: %1$s</string>
     <string name="media_video_error">Player unknown error: %1$s</string>
     <string name="auth_header_screen_1">Set up two-factor authentication</string>
-    <string name="auth_info_screen_1">Install an authenticator app to generate access codes (e.g. Google Authenticator, Authy) to continue working with your portal</string>
+    <string name="auth_info_screen_1">Install an authenticator app to generate access codes (e.g. Google Authenticator, Authy) to continue working with your
+        portal
+    </string>
     <string name="auth_header_screen_2">Launch an authenticator app</string>
     <string name="auth_info_screen_2">Run the app and tap the new account icon</string>
     <string name="auth_header_screen_3">Add a secret key</string>
@@ -507,7 +536,9 @@
     <string name="operation_move_file_existing">%1$s file already exists in the destination directory.</string>
     <string name="upload_to_portal">Upload to portal</string>
     <string name="this_device">This device</string>
-    <string name="dialog_clear_cache">Clear cache?\nThis operation will free up space on your device by deleting temporary files. Your offline files and personal data won\'t be removed.</string>
+    <string name="dialog_clear_cache">Clear cache?\nThis operation will free up space on your device by deleting temporary files. Your offline files and
+        personal data won\'t be removed.
+    </string>
     <string name="error_unsupported_path">Unsupported path</string>
     <string name="error_unsupported_format">Unsupported format</string>
     <string name="cloud_account_description">Collaborate in secure environment and connect third-party storages</string>
@@ -518,9 +549,13 @@
     <string name="cloud_accounts_title">Accounts</string>
     <string name="error_long_file_name">File name is too long</string>
     <string name="dialog_remove_account_title">Delete from device</string>
-    <string name="dialog_remove_account_description">User with %1$s from the %2$s portal will be logged out and removed from the account list. \n\nPlease, note: to log in, you\'ll need to enter portal address, email and password. All your files will be safe.</string>
+    <string name="dialog_remove_account_description">User with %1$s from the %2$s portal will be logged out and removed from the account list. \n\nPlease, note:
+        to log in, you\'ll need to enter portal address, email and password. All your files will be safe.
+    </string>
     <string name="dialog_logout_account_title">Are you sure to log out?</string>
-    <string name="dialog_logout_account_description">After you log out, you won\'t need to enter your portal address or email, only the password. Don\'t worry, all the files will be safe in the cloud.</string>
+    <string name="dialog_logout_account_description">After you log out, you won\'t need to enter your portal address or email, only the password. Don\'t worry,
+        all the files will be safe in the cloud.
+    </string>
     <string name="profile_username_title">Username</string>
     <string name="profile_portal_address">Portal address</string>
     <string name="profile_type_admin">Admin</string>
@@ -546,12 +581,19 @@
     <string name="app_settings_passcode_confirm_error">Passcodes do not match</string>
     <string name="app_settings_passcode_change_disable_title">Enter your current passcode</string>
     <string name="app_settings_passcode_change_disable_error">Incorrect passcode entered</string>
-    <string name="app_settings_passcode_description">- this is code which requested at application start.\n\nPay attention! If you forget passcode you have to remove or reinstall application. All documents on device will be lost.</string>
+    <string name="app_settings_passcode_description">- this is code which requested at application start.\n\nPay attention! If you forget passcode you have to
+        remove or reinstall application. All documents on device will be lost.
+    </string>
     <string name="app_settings_passcode_fingerprint_title">Access to Documents</string>
     <string name="app_internal_error">Internal error</string>
     <string name="app_fragment_crash_error">Please close this app and try again</string>
     <string name="item_owner_self">Me</string>
-    <string name="sign_in_terms_and_policy_text"><![CDATA[ By proceeding, you agree to the <a href="%1$s">Privacy Policy</a> and the <a href="%2$s">Terms of Service</a> ]]></string>
+    <string name="sign_in_terms_and_policy_text"><![CDATA[
+ By proceeding, you agree to the
+ <a href="%1$s">Privacy Policy</a>
+ and the
+ <a href="%2$s">Terms of Service</a>
+ ]]></string>
     <string name="app_settings_color_theme">Theme</string>
     <string name="app_settings_follow_the_system">Same as system</string>
     <string name="app_settings_light_theme">Light theme</string>
@@ -587,11 +629,15 @@
     <string name="rooms_add_collaboration">Collaboration room</string>
     <string name="rooms_add_collaboration_des">Collaborate on one or multiple documents with your team</string>
     <string name="rooms_add_public_room">Public room</string>
-    <string name="rooms_add_public_room_des">Invite users via shared links to view documents without registration. You can also embed this room into any web interface.</string>
+    <string name="rooms_add_public_room_des">Invite users via shared links to view documents without registration. You can also embed this room into any web
+        interface.
+    </string>
     <string name="rooms_add_custom">Custom room</string>
     <string name="rooms_add_custom_des">Apply your own settings to use this room for any custom purpose</string>
     <string name="rooms_add_fill_forms">Form filling room</string>
-    <string name="rooms_add_fill_forms_des">Upload PDF forms into the room. Invite users to fill out a PDF form. Review completed forms and analyze data automatically collected in a spreadsheet.</string>
+    <string name="rooms_add_fill_forms_des">Upload PDF forms into the room. Invite users to fill out a PDF form. Review completed forms and analyze data
+        automatically collected in a spreadsheet.
+    </string>
     <string name="rooms_choose_room">Choose room type</string>
     <string name="room_name_hint">Room name</string>
     <string name="room_add_tag_hint">Add tags</string>
@@ -619,7 +665,8 @@
     <string name="room_manage_room">Manage room</string>
     <string name="rooms_move_to_public_title">Move to Public room</string>
     <string name="rooms_move_to_public_title_desc">This room and all its contents are available to anyone with the link. Do you want to continue?</string>
-    <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.</string>
+    <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.
+    </string>
     <string name="rooms_info_general_link">General link</string>
     <string name="rooms_info_edit_link">Edit link</string>
     <string name="rooms_info_create_link_title">Create link</string>
@@ -630,9 +677,13 @@
     <string name="rooms_info_create_maximum_exceed">The maximum number of links has been exceeded</string>
     <string name="rooms_info_delete_link">Delete link</string>
     <string name="rooms_info_delete_link_complete">Link was deleted</string>
-    <string name="rooms_info_delete_link_desc">Links to all files in the room will be deleted. Previous links to room files and embedded documents will become unavailable.\n\nThis action cannot be undone. Are you sure you want to continue?</string>
+    <string name="rooms_info_delete_link_desc">Links to all files in the room will be deleted. Previous links to room files and embedded documents will become
+        unavailable.\n\nThis action cannot be undone. Are you sure you want to continue?
+    </string>
     <string name="rooms_info_revoke_link">Revoke link</string>
-    <string name="rooms_info_revoke_link_desc">Links to all files in the room will be re-generated. Previous links to room files and embedded documents will become unavailable.\n\nThis action cannot be undone. Are you sure you want to continue?</string>
+    <string name="rooms_info_revoke_link_desc">Links to all files in the room will be re-generated. Previous links to room files and embedded documents will
+        become unavailable.\n\nThis action cannot be undone. Are you sure you want to continue?
+    </string>
     <string name="rooms_info_revoke_link_complete">Link was revoked</string>
     <string name="rooms_info_revoke">Revoke</string>
     <string name="rooms_info_copy_link">Copy link</string>
@@ -719,7 +770,9 @@
     <string name="room_create_thirdparty_location">Location</string>
     <string name="room_create_thirdparty_location_root">Root</string>
     <string name="room_create_thirdparty_new_folder">Create new folder</string>
-    <string name="room_create_thirdparty_desc">Use third-party services as data storage for this room. A new folder for storing this room’s data will be created in the connected storage</string>
+    <string name="room_create_thirdparty_desc">Use third-party services as data storage for this room. A new folder for storing this room’s data will be created
+        in the connected storage
+    </string>
     <string name="room_storage_reconnect">Reconnect storage</string>
     <string name="room_storage_not_availabale">The content of third party folder are not available. Try to reconnect the account.</string>
     <string name="switch_account_title">Switch account?</string>
@@ -733,13 +786,17 @@
     <string name="settings_language_confirmation_accept">Good</string>
     <string name="settings_language_continue_using_app_language">Continue using %1$s</string>
     <string name="conversion_dialog_title">Convert and open document</string>
-    <string name="conversion_dialog_message">The document you open is not OOXML (Office Open XML) file. Convert it to OOXML format for faster viewing and editing.</string>
+    <string name="conversion_dialog_message">The document you open is not OOXML (Office Open XML) file. Convert it to OOXML format for faster viewing and
+        editing.
+    </string>
     <string name="conversion_dialog_open_in_view_mode">Open in view mode</string>
     <string name="conversion_dialog_convert_to">Convert to %1s</string>
     <string name="conversion_dialog_converting_to">Converting to %1s</string>
     <string name="personal_portal_end_button">Create a free account</string>
     <string name="personal_portal_end_title">ONLYOFFICE Personal is wrapping up</string>
-    <string name="personal_portal_end_text">ONLYOFFICE Personal will be discontinued on September 1st, 2024.\nWe recommend you move to the free ONLYOFFICE DocSpace Cloud.</string>
+    <string name="personal_portal_end_text">ONLYOFFICE Personal will be discontinued on September 1st, 2024.\nWe recommend you move to the free ONLYOFFICE
+        DocSpace Cloud.
+    </string>
     <string name="rooms_upload_pdf_from_docspace">Upload PDF Form from DocSpace</string>
     <string name="rooms_upload_pdf_from_device">Upload PDF Form from device</string>
     <string name="rooms_fill_in_as_title">Fill in as</string>
@@ -747,7 +804,9 @@
     <string name="rooms_fill_out_form_yourself_desc">Fill in the fields of the original form in the editor window.</string>
     <string name="rooms_share_and_collect">Share &amp; collect</string>
     <string name="rooms_share_and_collect_desc">Share your form and collect responses via a Form filling room.</string>
-    <string name="rooms_fill_form_complete_desc">The filled PDF form is saved and available to you in the Complete folder. To check the status, contact the form owner providing the assigned number.</string>
+    <string name="rooms_fill_form_complete_desc">The filled PDF form is saved and available to you in the Complete folder. To check the status, contact the form
+        owner providing the assigned number.
+    </string>
     <string name="rooms_fill_form_complete_number_title">Form number</string>
     <string name="rooms_fill_form_complete_owner_title">Form owner</string>
     <string name="rooms_fill_form_complete_toolbar_title">Form completed successfully</string>
@@ -757,12 +816,18 @@
     <string name="rooms_notifications_disabled">Room notifications disabled</string>
     <string name="rooms_notifications_enabled">Room notifications enabled</string>
     <string name="rooms_vdr">Virtual Data Room</string>
-    <string name="rooms_vdr_desc">Use VDR for advanced file security and transparency while filling and signing documents step-by-step. Set watermarks, automatically index and track all content, restrict downloading and copying.</string>
-    <string name="file_lifetime_desc">"Set file lifetime to automatically delete the files in this room after a defined period. Lifetime begins on the date of upload/creation of the file."</string>
+    <string name="rooms_vdr_desc">Use VDR for advanced file security and transparency while filling and signing documents step-by-step. Set watermarks,
+        automatically index and track all content, restrict downloading and copying.
+    </string>
+    <string name="file_lifetime_desc">"Set file lifetime to automatically delete the files in this room after a defined period. Lifetime begins on the date of
+        upload/creation of the file."
+    </string>
     <string name="file_lifetime_title">File lifetime</string>
     <string name="file_lifetime_hint">Files older than</string>
     <string name="file_lifetime_warning_title">Older files with exceeded lifetime will be deleted</string>
-    <string name="file_lifetime_warning_desc">Lifetime countdown begins at the file creation date. Some files in this room exceed the proposed lifetime and will be deleted once you enable the setting.</string>
+    <string name="file_lifetime_warning_desc">Lifetime countdown begins at the file creation date. Some files in this room exceed the proposed lifetime and will
+        be deleted once you enable the setting.
+    </string>
     <string name="file_lifetime_action">Action on files</string>
     <string name="file_lifetime_action_delete">Delete permanently</string>
     <string name="file_lifetime_action_move_to_trash">Move to trash</string>
@@ -770,11 +835,15 @@
     <string name="file_lifetime_period_days">Days</string>
     <string name="file_lifetime_period_months">Months</string>
     <string name="file_lifetime_period_years">Years</string>
-    <string name="rooms_vdr_file_restrict_desc">Enable this setting to disable downloads, printing, and content copying for users with the “Viewer” role</string>
+    <string name="rooms_vdr_file_restrict_desc">Enable this setting to disable downloads, printing, and content copying for users with the “Viewer” role
+    </string>
     <string name="rooms_vdr_watermark_title">Add watermarks to documents</string>
-    <string name="rooms_vdr_watermark_desc">Protect all documents in this room with watermarks. If a document already contains one, it will not be replaced.</string>
+    <string name="rooms_vdr_watermark_desc">Protect all documents in this room with watermarks. If a document already contains one, it will not be replaced.
+    </string>
     <string name="rooms_vdr_indexing_title">Automatic indexing</string>
-    <string name="rooms_vdr_indexing_desc">Enable automatic indexing to index files and folders by serial number. Sorting by number will be set as default for all users.</string>
+    <string name="rooms_vdr_indexing_desc">Enable automatic indexing to index files and folders by serial number. Sorting by number will be set as default for
+        all users.
+    </string>
     <string name="rooms_vdr_storage_quota_title">Storage quota</string>
     <string name="rooms_vdr_storage_quota_desc">Storage quota set per room. You can change this value or turn off storage limit.</string>
     <string name="rooms_vdr_size_quota">Size quota</string>
@@ -804,25 +873,23 @@
     <string name="rooms_index_title">Sorting index</string>
     <string name="rooms_index_reorder">Reorder</string>
     <string name="rooms_index_apply">Apply</string>
-    <string name="rooms_index_exit_no_saving">Exit without saving?\nYou have made changes in the index. If you proceed without saving, those changes will not be applied.</string>
-    <string name="rooms_index_reorder_desc">The Reorder action will remove spaces in the indexes. The files will be re-indexed in order with offset to fill in missing indexes.</string>
+    <string name="rooms_index_exit_no_saving">Exit without saving?\nYou have made changes in the index. If you proceed without saving, those changes will not be
+        applied.
+    </string>
+    <string name="rooms_index_reorder_desc">The Reorder action will remove spaces in the indexes. The files will be re-indexed in order with offset to fill in
+        missing indexes.
+    </string>
     <string name="rooms_index_reorder_complete_title">File exported</string>
     <string name="rooms_index_reorder_complete_desc">%s file exported to Documents</string>
     <string name="rooms_index_reorder_open_file">Open file</string>
     <string name="rooms_protected_room">Protected room</string>
     <string name="rooms_invalid_password">Invalid password</string>
-    <string name="rooms_invite_access_description">Guests, Users and Groups cannot be assigned as Room managers. Only Room and DocSpace admins are suitable for the specified role.</string>
+    <string name="rooms_invite_access_description">Guests, Users and Groups cannot be assigned as Room managers. Only Room and DocSpace admins are suitable for
+        the specified role.
+    </string>
     <string name="rooms_user_type_employees">Employees</string>
     <string name="whats_new_title">What\'s new</string>
     <string name="whats_new_next">Get started</string>
-    <string name="whats_new_1">Enhanced integration with DocSpace v3.0</string>
-    <string name="whats_new_1_desc">Collaborate on docs with the latest updates and improvements for ONLYOFFICE DocSpace v3.0.</string>
-    <string name="whats_new_2">Tabbed interface for tablets and desktops</string>
-    <string name="whats_new_2_desc">Simplify navigation and editing with the tabbed toolbar on tablets and desktop devices.</string>
-    <string name="whats_new_3">New chart types</string>
-    <string name="whats_new_3_desc">Add new chart types to visualize your data for detailed presentations and analysis.</string>
-    <string name="whats_new_4">View Apple Pages and HWP files</string>
-    <string name="whats_new_4_desc">Open and view documents in Apple Pages and Hangul Word formats.</string>
     <string name="version_history_title">Version History</string>
     <string name="version_edit_comment_title">Edit Comment</string>
     <string name="version_group_header">Version %s</string>
@@ -843,7 +910,9 @@
     <string name="version_restore_confirm">Restore</string>
     <string name="version_restore_loading">Restoring version</string>
     <string name="version_delete_title">Delete version</string>
-    <string name="version_delete_subtitle">You are about to delete a file version. It will be no possible to see or restore it anymore. Are you sure you want to continue?</string>
+    <string name="version_delete_subtitle">You are about to delete a file version. It will be no possible to see or restore it anymore. Are you sure you want to
+        continue?
+    </string>
     <string name="version_delete_confirm">Delete</string>
     <string name="version_delete_loading">Deleting</string>
     <string name="version_dialog_cancel">Cancel</string>
@@ -851,7 +920,9 @@
     <string name="title_edit_template">Edit template</string>
     <string name="title_create_from_template">From template</string>
     <string name="title_access_settings">Access settings</string>
-    <string name="desc_create_from_template">Create a room based on a template. All settings, users, folders and files will be taken from the selected room template.</string>
+    <string name="desc_create_from_template">Create a room based on a template. All settings, users, folders and files will be taken from the selected room
+        template.
+    </string>
     <string name="desc_info_template">Room template. Use this template to quickly create a new room.</string>
     <string name="access_members_me_and_title">Me and %s</string>
     <string name="access_members_me_users_groups_title">Me, %1$s and %2$s</string>
@@ -883,71 +954,95 @@
     <string name="filling_form_history_stopped">Filling was stopped by %s</string>
     <string name="filling_form_history_complete">Has completed and submitted their part of the form. The form is fully filled out.</string>
     <string name="filling_form_filling_status">Filling status</string>
-    <string name="filling_form_filling_status_desc">In this panel you can monitor the completion of the form in which you participate or in which you are the organizer of completion</string>
+    <string name="filling_form_filling_status_desc">In this panel you can monitor the completion of the form in which you participate or in which you are the
+        organizer of completion
+    </string>
     <string name="filling_form_filling_process_details">Process details</string>
     <string name="filling_form_stop_filling">Stop filling</string>
     <string name="filling_form_stop_filling_dialog_title">Stop filling?</string>
-    <string name="filling_form_stop_filling_dialog_desc">Are you sure you want to stop filling? It will be impossible to resume filling out this form after cancellation. Filling out the form will be stopped at the stage it is currently at. The file will be marked as "Stopped".</string>
+    <string name="filling_form_stop_filling_dialog_desc">Are you sure you want to stop filling? It will be impossible to resume filling out this form after
+        cancellation. Filling out the form will be stopped at the stage it is currently at. The file will be marked as "Stopped".
+    </string>
     <string name="filling_form_send_section_complete">Form Section Completed</string>
-    <string name="filling_form_send_section_complete_desc">The assigned portion of the PDF form has been successfully completed. The filling status of the form can be monitored in the room and via the Filling status panel. An email notification will be sent once the form is fully completed.</string>
+    <string name="filling_form_send_section_complete_desc">The assigned portion of the PDF form has been successfully completed. The filling status of the form
+        can be monitored in the room and via the Filling status panel. An email notification will be sent once the form is fully completed.
+    </string>
     <string name="filling_form_send_finalized">Form Section Completed</string>
-    <string name="filling_form_send_finalized_desc">The form has been fully completed by all roles and is now finalized. It is available in view-only mode.</string>
+    <string name="filling_form_send_finalized_desc">The form has been fully completed by all roles and is now finalized. It is available in view-only mode.
+    </string>
     <string name="filling_form_version_incompatible_desc">The client and server versions are incompatible. You can only open the document in view mode.</string>
+    <string name="dev_mode_system_logs">System logs</string>
+    <string name="dev_mode_network_requests">Network requests</string>
+    <string name="whats_new">What\'s new in v9.0</string>
+    <string name="whats_new_1">Text recognition with device camera</string>
+    <string name="whats_new_1_desc">Capture printed text with your camera and create editable documents.</string>
+    <string name="whats_new_2">Updated tabbed interface</string>
+    <string name="whats_new_2_desc">Enjoy a cleaner, more intuitive layout with the redesigned toolbar.</string>
+    <string name="whats_new_3">Support for ODG and Markdown formats</string>
+    <string name="whats_new_3_desc">Open and view .odg drawings and .md files right from your device.</string>
+    <string name="whats_new_4">Enhanced compatibility with DocSpace 3.1</string>
+    <string name="whats_new_4_desc">Access document versions, role-based form filling in VDR, room templates, and custom filters when connected to your
+        DocSpace.
+    </string>
     <plurals name="dialogs_question_message_delete">
         <item quantity="one">It will be irretrievably deleted.\nThis action is irreversible.</item>
-                <item quantity="other">They will be irretrievably deleted.\nThis action is irreversible.</item>
+        <item quantity="other">They will be irretrievably deleted.\nThis action is irreversible.</item>
     </plurals>
     <plurals name="dialogs_question_message_to_trash">
         <item quantity="one">It will be moved to the Trash.</item>
-                <item quantity="other">They will be moved to the Trash.</item>
+        <item quantity="other">They will be moved to the Trash.</item>
     </plurals>
     <plurals name="dialogs_question_message_template">
         <item quantity="one">Do you really want to delete template room «%s»? The template cannot be restored.</item>
-                <item quantity="other">Do you really want to delete selected room templates? They cannot be restored.</item>
+        <item quantity="other">Do you really want to delete selected room templates? They cannot be restored.</item>
     </plurals>
     <plurals name="dialogs_question_delete_title">
         <item quantity="one">Delete this item?</item>
-                <item quantity="other">Delete %1$d items?</item>
+        <item quantity="other">Delete %1$d items?</item>
     </plurals>
     <plurals name="dialogs_question_delete_template_title">
         <item quantity="one">Delete template</item>
-                <item quantity="other">Delete templates</item>
+        <item quantity="other">Delete templates</item>
     </plurals>
     <plurals name="operation_moved_to_trash">
         <item quantity="one">Item moved to the Trash</item>
-                <item quantity="other">Items moved to the Trash</item>
+        <item quantity="other">Items moved to the Trash</item>
     </plurals>
     <plurals name="operation_delete_irretrievably">
         <item quantity="one">Item irretrievably deleted</item>
-                <item quantity="other">Items irretrievably deleted</item>
+        <item quantity="other">Items irretrievably deleted</item>
     </plurals>
     <plurals name="app_settings_passcode_many_attempt_seconds">
         <item quantity="one">Too many attempts.\nTry again in %d second</item>
-                <item quantity="other">Too many attempts.\nTry again in %d seconds</item>
+        <item quantity="other">Too many attempts.\nTry again in %d seconds</item>
     </plurals>
     <plurals name="app_settings_passcode_many_attempt_minutes">
         <item quantity="one">Too many attempts.\nTry again in %d minute</item>
-                <item quantity="other">Too many attempts.\nTry again in %d minutes</item>
+        <item quantity="other">Too many attempts.\nTry again in %d minutes</item>
     </plurals>
     <plurals name="context_rooms_unarchive_message">
         <item quantity="one">Room successfully restored</item>
-                <item quantity="other">Rooms successfully restored</item>
+        <item quantity="other">Rooms successfully restored</item>
     </plurals>
     <plurals name="rooms_restore_title">
         <item quantity="one">Restore room?</item>
-                <item quantity="other">Restore rooms?</item>
+        <item quantity="other">Restore rooms?</item>
     </plurals>
     <plurals name="rooms_restore_desc">
-        <item quantity="one">All shared links in room will become active, and its contents will be available to everyone with the link. Do you want to restore room?</item>
-                <item quantity="other">All shared links in rooms will become active, and its contents will be available to everyone with the link. Do you want to restore rooms?</item>
+        <item quantity="one">All shared links in room will become active, and its contents will be available to everyone with the link. Do you want to restore
+            room?
+        </item>
+        <item quantity="other">All shared links in rooms will become active, and its contents will be available to everyone with the link. Do you want to
+            restore rooms?
+        </item>
     </plurals>
     <plurals name="access_members_users_title">
         <item quantity="one">%d user</item>
-                <item quantity="other">%d users</item>
+        <item quantity="other">%d users</item>
     </plurals>
     <plurals name="access_members_groups_title">
         <item quantity="one">%d group</item>
-                <item quantity="other">%d groups</item>
+        <item quantity="other">%d groups</item>
     </plurals>
 
     <!-- Module: libgcells - 198 strings -->
@@ -1027,7 +1122,9 @@
     <string name="cells_settings_format_custom_create_exists_error">The format already exists</string>
     <string name="cells_settings_format_custom_create">Create Custom format</string>
     <string name="cells_settings_format_custom_delete">Delete format</string>
-    <string name="cells_settings_format_custom_desc">Please enter the custom number format carefully. Spreadsheet Editor does not check custom formats for errors that may affect the xlsx file.</string>
+    <string name="cells_settings_format_custom_desc">Please enter the custom number format carefully. Spreadsheet Editor does not check custom formats for
+        errors that may affect the xlsx file.
+    </string>
     <string name="cells_format_dollar_title">Dollar</string>
     <string name="cells_format_euro_title">Euro</string>
     <string name="cells_format_pound_title">Pound</string>
@@ -1141,7 +1238,9 @@
     <string name="cells_choose_region">Choose region</string>
     <string name="cells_follow_system_info">If the option is not selected, the regional settings will correspond to the settings operating system</string>
     <string name="cells_choose_region_info">Select the region to apply the regional settings</string>
-    <string name="cells_separator_info">Use to set decimal and thousandths delimiters. If the option is disabled, the delimiters will be set according to the regional parameters</string>
+    <string name="cells_separator_info">Use to set decimal and thousandths delimiters. If the option is disabled, the delimiters will be set according to the
+        regional parameters
+    </string>
     <string name="cells_special_separator">Set special separators</string>
     <string name="cells_decimal_separator">Decimal separator</string>
     <string name="cells_group_separator">Group separator</string>
@@ -1150,7 +1249,7 @@
     <string name="cells_context_settings_main_info">Spreadsheet info</string>
     <string name="cells_formulas_description">Formula description</string>
 
-    <!-- Module: libgdocs - 173 strings -->
+    <!-- Module: libgdocs - 195 strings -->
     <string name="docs_title">Documents</string>
     <string name="docs_intent_title">ONLYOFFICE Documents</string>
     <string name="docs_open_format">DOCX format is needed</string>
@@ -1289,6 +1388,28 @@
     <string name="forms_clear_fields">Clear all fields</string>
     <string name="forms_choose_option">Choose an option</string>
     <string name="forms_choose_image">Choose an image</string>
+    <string name="forms_signature_title">Signatures</string>
+    <string name="forms_signatures_empty_placeholder">Please, add new signature</string>
+    <string name="forms_signatures_error_placeholder">Failed to load signatures</string>
+    <string name="forms_new_signature">New signature</string>
+    <string name="forms_signature_draw_title">Draw</string>
+    <string name="forms_signature_draw_mm">mm</string>
+    <string name="forms_signature_draw_placeholder">Draw Signature Here</string>
+    <string name="forms_signature_image_placeholder">Add Image</string>
+    <string name="forms_signature_image_library">Image from Library</string>
+    <string name="forms_signature_image_url">Image from URL</string>
+    <string name="forms_signature_image_storage">Image from Storage</string>
+    <string name="forms_signature_image_url_title">Paste an Image URL</string>
+    <string name="forms_signature_font_placeholder">Type Signature Here</string>
+    <string name="forms_signature_name_title">Name</string>
+    <string name="forms_signature_upload_title">Upload</string>
+    <string name="forms_signature_clear">Clear</string>
+    <string name="forms_signature_failed_save">Failed to save signature</string>
+    <string name="forms_signature_failed_delete">Failed to delete signature</string>
+    <string name="forms_signature_failed_image">Failed to load image</string>
+    <string name="forms_signature_failed_background">Failed to remove background</string>
+    <string name="forms_signature_remove_background">Removing background...</string>
+    <string name="forms_signature_cancel_operation">Cancelling operation...</string>
     <string name="docs_settings_footnotes">Footnotes</string>
     <string name="docs_footnote_location">Location</string>
     <string name="docs_footnote_bottom_page">Bottom of page</string>
@@ -1304,11 +1425,15 @@
     <string name="docs_footnote_conver">Convert footnote</string>
     <string name="docs_footnote_clear">Clear footnotes</string>
     <string name="docs_footnote_clear_endnote">Clear endnote</string>
-    <string name="docs_footnote_restart_descriptions">The parameter specifies whether the numbering will be sequential throughout the document. Or start over from a new page or in a new section.</string>
+    <string name="docs_footnote_restart_descriptions">The parameter specifies whether the numbering will be sequential throughout the document. Or start over
+        from a new page or in a new section.
+    </string>
     <string name="docs_footnote_convert_footnote">Convert to footnote</string>
     <string name="docs_footnote_convert_endnote">Convert to endnote</string>
     <string name="docs_footnote_swap">Swap footnotes</string>
-    <string name="docs_footnote_convert_descriprion">Turns one type of footnotes into another or swaps footnotes - ordinary footnotes become endnotes, and endnotes become ordinary.</string>
+    <string name="docs_footnote_convert_descriprion">Turns one type of footnotes into another or swaps footnotes - ordinary footnotes become endnotes, and
+        endnotes become ordinary.
+    </string>
     <string name="docs_context_settings_main_info">Document info</string>
     <string name="docs_protection_dialog_title">The document is protected</string>
     <string name="docs_protection_dialog_message_read_only">You may only view this document</string>
@@ -1323,9 +1448,10 @@
     <string name="docs_column_right">Right</string>
     <string name="docs_add_ribbon_page_break">Page</string>
     <string name="docs_add_ribbon_section_break">Section</string>
-    <string name="docs_mobile_view_notification">Part of the content of this document will be hidden in Mobile View. To see it, switch to Standard View.</string>
+    <string name="docs_mobile_view_notification">Part of the content of this document will be hidden in Mobile View. To see it, switch to Standard View.
+    </string>
 
-    <!-- Module: libgeditors - 477 strings -->
+    <!-- Module: libgeditors - 502 strings -->
     <string name="app_name_editors">Editors</string>
     <string name="error_internal_unknown">Unknown internal error :(</string>
     <string name="error_connection">Connection lost. The viewer mode is enabled</string>
@@ -1419,8 +1545,16 @@
     <string name="dialog_search_find_and_replace">Find and replace</string>
     <string name="dialog_search_replace">Replace</string>
     <string name="dialog_search_replace_all">Replace all</string>
-    <string name="dialog_search_replace_hint"><font size="22"> Replace text </font></string>
-    <string name="dialog_search_find_hint"><font size="22"> Search text </font></string>
+    <string name="dialog_search_replace_hint">
+        <font size="22">
+            Replace text
+        </font>
+    </string>
+    <string name="dialog_search_find_hint">
+        <font size="22">
+            Search text
+        </font>
+    </string>
     <string name="dialog_search_find_and_replace_all">Find and replace all</string>
     <string name="popup_cut">Cut</string>
     <string name="popup_delete">Delete</string>
@@ -1436,6 +1570,7 @@
     <string name="settings_color_schemes">Color schemes</string>
     <string name="settings_color_background">Background</string>
     <string name="settings_fonts_size_pt">pt</string>
+    <string name="settings_fonts_main">Main Text</string>
     <string name="settings_delay_second">s</string>
     <string name="settings_size_inch">inch</string>
     <string name="settings_text_size_title">Size</string>
@@ -1496,16 +1631,37 @@
     <string name="settings_remove_link">Remove link</string>
     <string name="settings_style">Style</string>
     <string name="settings_table_remove">Remove table</string>
-    <string name="settings_table_options">Table options</string>
+    <string name="settings_table_options">Table Options</string>
+    <string name="settings_table_style_option">Style Options</string>
     <string name="settings_table_wrap">Wrap</string>
+    <string name="settings_table_border">Borders</string>
+    <string name="settings_table_border_size">Size</string>
+    <string name="settings_table_border_size_pt">%s pt</string>
     <string name="settings_table_cell_margins">Cell margins</string>
-    <string name="settings_table_repeat_as_header_row">Repeat as header row</string>
-    <string name="settings_table_resize_to_fit_content">Resize to fit content</string>
-    <string name="settings_table_move_with_text">Move with text</string>
+    <string name="settings_table_repeat_as_header_row">Repeat as Header Row</string>
+    <string name="settings_table_resize_to_fit_content">Resize to Fit Contents</string>
+    <string name="settings_table_move_with_text">Move table with text</string>
     <string name="settings_table_inline">Inline</string>
     <string name="settings_table_flow">Flow</string>
-    <string name="settings_table_distance_from_text">Distance from text</string>
+    <string name="settings_table_distance_from_text">Distance from Text</string>
     <string name="settings_table_align">Align</string>
+    <string name="settings_table_style_row">Row</string>
+    <string name="settings_table_style_column">Column</string>
+    <string name="settings_table_style_header_row">Header Row</string>
+    <string name="settings_table_style_total_row">Total Row</string>
+    <string name="settings_table_style_banded_row">Banded Row</string>
+    <string name="settings_table_style_first_column">First Column</string>
+    <string name="settings_table_style_last_column">Last Column</string>
+    <string name="settings_table_style_banded_column">Banded Column</string>
+    <string name="settings_table_insert_row_above">Insert row above</string>
+    <string name="settings_table_insert_row_below">Insert row below</string>
+    <string name="settings_table_insert_column_left">Insert column left</string>
+    <string name="settings_table_insert_column_right">Insert column right</string>
+    <string name="settings_table_delete_row">Delete row</string>
+    <string name="settings_table_delete_column">Delete column</string>
+    <string name="settings_table_insert">Insert</string>
+    <string name="settings_table_delete">Delete</string>
+    <string name="settings_table_rows_and_columns">Rows and columns</string>
     <string name="settings_shape_title">Shape style</string>
     <string name="settings_shape_border_style">Border style</string>
     <string name="settings_shape_fill">Fill shape</string>
@@ -1547,6 +1703,8 @@
     <string name="settings_align_top">Align top</string>
     <string name="settings_align_middle">Align middle</string>
     <string name="settings_align_bottom">Align bottom</string>
+    <string name="settings_align_horizontally">Distribute horizontally</string>
+    <string name="settings_align_vertically">Distribute vertically</string>
     <string name="settings_text">Text</string>
     <string name="settings_info_appbar_title">Document info</string>
     <string name="settings_text_orientation_title">Text orientation</string>
@@ -1780,8 +1938,9 @@
     <string name="review_inch">"</string>
     <string name="review_inch_text">inch</string>
     <string name="settings_unit_of_measurement">Unit of measurement</string>
-    <string name="table_merge_cells">Merge cells</string>
-    <string name="table_split_cells">Split cells</string>
+    <string name="table_merge_cells">Merge</string>
+    <string name="table_split_cells">Split</string>
+    <string name="table_delete">Delete table</string>
     <string name="settings_document_language">Document language</string>
     <string name="style_normal">Normal</string>
     <string name="style_title">Title</string>
@@ -1921,18 +2080,18 @@
     <string name="settings_view">View</string>
     <plurals name="days">
         <item quantity="one">day</item>
-                <item quantity="other">days</item>
+        <item quantity="other">days</item>
     </plurals>
     <plurals name="hours">
         <item quantity="one">hour</item>
-                <item quantity="other">hours</item>
+        <item quantity="other">hours</item>
     </plurals>
     <plurals name="months">
         <item quantity="one">month</item>
-                <item quantity="other">months</item>
+        <item quantity="other">months</item>
     </plurals>
     <plurals name="years">
         <item quantity="one">year</item>
-                <item quantity="other">years</item>
+        <item quantity="other">years</item>
     </plurals>
 </resources>

@@ -25,15 +25,17 @@ import app.documents.core.network.room.RoomService
 import app.documents.core.network.room.models.CustomFilterRequest
 import app.documents.core.network.room.models.LockFileRequest
 import app.documents.core.network.room.models.RequestAddTags
-import app.documents.core.network.room.models.RequestCreateTemplate
 import app.documents.core.network.room.models.RequestArchive
 import app.documents.core.network.room.models.RequestCreateExternalLink
 import app.documents.core.network.room.models.RequestCreateRoom
 import app.documents.core.network.room.models.RequestCreateRoomFromTemplate
 import app.documents.core.network.room.models.RequestCreateTag
+import app.documents.core.network.room.models.RequestCreateTemplate
 import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestEditRoom
 import app.documents.core.network.room.models.RequestEditTemplate
+import app.documents.core.network.room.models.RequestFormRole
+import app.documents.core.network.room.models.RequestFormRoleMapping
 import app.documents.core.network.room.models.RequestOrder
 import app.documents.core.network.room.models.RequestRoomAuthViaLink
 import app.documents.core.network.room.models.RequestRoomOwner
@@ -64,6 +66,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
+import lib.toolkit.base.managers.utils.FormRole
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -386,8 +389,12 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return roomService.getGroupUsers(roomId, groupId).response
     }
 
-    suspend fun getExternalLink(roomId: String): String {
-        return roomService.getExternalLink(roomId).response.sharedTo.shareLink
+    suspend fun getExternalLink(id: String, isFile: Boolean = false): String {
+        return if (isFile) {
+            roomService.getPublicExternalLink(id).response.sharedTo.shareLink
+        } else {
+            roomService.getExternalLink(id).response.sharedTo.shareLink
+        }
     }
 
     suspend fun copyItems(roomId: String, folderIds: List<String>, fileIds: List<String>) {
@@ -710,6 +717,25 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 logo = logo
             )
         )
+    }
+
+    fun startFilling(
+        roomId: String,
+        formId: String,
+        rolesWithUsers: List<Pair<FormRole, User?>>
+    ): Flow<NetworkResult<Unit>> = handleUnitResponse {
+        val request = RequestFormRoleMapping(
+            formId = formId,
+            roles = rolesWithUsers.mapNotNull { (role, user) ->
+                RequestFormRole(
+                    roleColor = role.color.toString(),
+                    roleName = role.name,
+                    roomId = roomId,
+                    userId = user?.id ?: return@mapNotNull null
+                )
+            }
+        )
+        roomService.startFilling(formId, request)
     }
 
     private fun <T> handleUnitResponse(apiCall: suspend () -> Response<T>): Flow<NetworkResult<Unit>> = flow {

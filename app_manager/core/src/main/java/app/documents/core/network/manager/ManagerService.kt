@@ -19,6 +19,7 @@ import app.documents.core.network.manager.models.request.RequestRenameFile
 import app.documents.core.network.manager.models.request.RequestStopFilling
 import app.documents.core.network.manager.models.request.RequestStorage
 import app.documents.core.network.manager.models.request.RequestTitle
+import app.documents.core.network.manager.models.request.RequestUploadCheck
 import app.documents.core.network.manager.models.response.ResponseCloudTree
 import app.documents.core.network.manager.models.response.ResponseConversionStatus
 import app.documents.core.network.manager.models.response.ResponseCount
@@ -34,12 +35,14 @@ import app.documents.core.network.manager.models.response.ResponseFolder
 import app.documents.core.network.manager.models.response.ResponseOperation
 import app.documents.core.network.manager.models.response.ResponsePortal
 import app.documents.core.network.manager.models.response.ResponseThirdparty
+import app.documents.core.network.manager.models.response.ResponseUploadCheck
 import app.documents.core.network.manager.models.response.ResponseVersionHistory
 import app.documents.core.network.room.models.DeleteVersionRequest
 import app.documents.core.network.room.models.EditCommentRequest
 import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
@@ -360,7 +363,8 @@ interface ManagerService {
     @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/upload")
     fun uploadFile(
         @Path(value = "folder_id") folderId: String,
-        @Part part: MultipartBody.Part
+        @Part part: MultipartBody.Part,
+        @Part("createNewIfExist") createNewIfExist: RequestBody? = null
     ): Call<ResponseFile>
 
     @Multipart
@@ -372,7 +376,20 @@ interface ManagerService {
 
     @Multipart
     @POST("api/" + ApiContract.API_VERSION + "/files/@my/upload")
-    fun uploadFileToMy(@Part part: MultipartBody.Part): Call<ResponseFile>
+    fun uploadFileToMy(
+        @Part part: MultipartBody.Part,
+        @Part("createNewIfExist") createNewIfExist: RequestBody? = null
+    ): Call<ResponseFile>
+
+    @POST("api/" + ApiContract.API_VERSION + "/files/{folder_id}/upload/check")
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    suspend fun uploadCheck(
+        @Path(value = "folder_id") folderId: String,
+        @Body body: RequestUploadCheck
+    ): Response<ResponseUploadCheck>
 
     /*
      * Insert  file
@@ -422,7 +439,8 @@ interface ManagerService {
     @GET("api/" + ApiContract.API_VERSION + "/files/@root")
     suspend fun getRootFolder(
         @QueryMap filterMap: Map<String, Int>,
-        @QueryMap flagMap: Map<String, Boolean>
+        @QueryMap flagMap: Map<String, Boolean>,
+        @Query("count") count: Int = 1
     ): ResponseCloudTree
 
     @Headers(
