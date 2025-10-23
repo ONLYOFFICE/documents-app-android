@@ -332,6 +332,7 @@ dependencies {
     implementation(libs.glideCompose)
     implementation(libs.photoView)
     implementation(libs.androidWorkManager)
+    implementation(libs.androidCustomTabs)
 
     //TODO add to base module
     implementation(libs.lifecycle.viewmodel)
