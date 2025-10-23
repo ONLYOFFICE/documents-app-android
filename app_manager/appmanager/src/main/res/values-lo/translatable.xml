@@ -281,7 +281,6 @@
     <string name="list_context_delete">ລຶບ </string>
     <string name="list_context_delete_storage">ຕັດການເຊື່ອມຕໍ່ບ່ອນຈັດເກັບຂໍ້ມູນ </string>
     <string name="list_context_delete_success">ຖືກລຶບອອກສຳເລັດ</string>
-    <string name="list_context_remove_from_list" translatable="false">@string/toolbar_menu_main_remove_from_list</string>
     <string name="list_context_delete_recent">ເອົາອອກຈາກຫຼ້າສຸດ</string>
 
     <!-- List action menu -->
@@ -1095,4 +1094,17 @@
     <plurals name="access_members_groups_title">
         <item quantity="other">%d ກຸ່ມ</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-23) -->
+    <string name="list_context_remove_from_list">@string/toolbar_menu_main_remove_from_list</string>
+    <string name="dev_mode_system_logs">System logs</string>
+    <string name="dev_mode_network_requests">Network requests</string>
+    <string name="whats_new">What\'s new in v9.0</string>
+    <string name="start_filling_title">Start filling</string>
+    <string name="start_filling_start">Start</string>
+    <string name="start_filling_desc">In this panel you can monitor the completion of the form in which you participate or in which you are the organizer of completion</string>
+    <string name="start_filling_header">Roles from the form:</string>
+    <string name="start_filling_ready_for_filling">Form is ready for filling in room</string>
+    <string name="start_filling_ready_for_filling_desc">A notification has already been sent to the user in the first role, prompting them to fill out the form. You can navigate to the room or share the filling link with the participants.</string>
+    <string name="list_context_reset_filling">Reset and start filling</string>
 </resources>
