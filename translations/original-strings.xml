@@ -2,7 +2,7 @@
 <resources>
     <!-- Original strings for reference -->
 
-    <!-- Module: appmanager - 907 strings -->
+    <!-- Module: appmanager - 914 strings -->
     <string name="app_name">Documents</string>
     <string name="app_name_full">ONLYOFFICE Documents</string>
     <string name="app_versions_title">Version 3.0 released</string>
@@ -984,6 +984,17 @@
     <string name="whats_new_4_desc">Access document versions, role-based form filling in VDR, room templates, and custom filters when connected to your
         DocSpace.
     </string>
+    <string name="start_filling_title">Start filling</string>
+    <string name="start_filling_start">Start</string>
+    <string name="start_filling_desc">In this panel you can monitor the completion of the form in which you participate or in which you are the organizer of
+        completion
+    </string>
+    <string name="start_filling_header">Roles from the form:</string>
+    <string name="start_filling_ready_for_filling">Form is ready for filling in room</string>
+    <string name="start_filling_ready_for_filling_desc">A notification has already been sent to the user in the first role, prompting them to fill out the form.
+        You can navigate to the room or share the filling link with the participants.
+    </string>
+    <string name="list_context_reset_filling">Reset and start filling</string>
     <plurals name="dialogs_question_message_delete">
         <item quantity="one">It will be irretrievably deleted.\nThis action is irreversible.</item>
         <item quantity="other">They will be irretrievably deleted.\nThis action is irreversible.</item>
@@ -1091,7 +1102,7 @@
     <string name="cells_settings_fill_color">Fill color</string>
     <string name="cells_settings_text_format">Text format</string>
     <string name="cells_settings_border_style">Border style</string>
-    <string name="cells_settings_format">Format</string>
+    <string name="cells_settings_format">Number format</string>
     <string name="cells_settings_text_format_wrap">Wrap text</string>
     <string name="cells_settings_text_format_justified">Align justified</string>
     <string name="cells_setting_tab_color">Tab color</string>
@@ -1249,7 +1260,7 @@
     <string name="cells_context_settings_main_info">Spreadsheet info</string>
     <string name="cells_formulas_description">Formula description</string>
 
-    <!-- Module: libgdocs - 195 strings -->
+    <!-- Module: libgdocs - 236 strings -->
     <string name="docs_title">Documents</string>
     <string name="docs_intent_title">ONLYOFFICE Documents</string>
     <string name="docs_open_format">DOCX format is needed</string>
@@ -1450,13 +1461,58 @@
     <string name="docs_add_ribbon_section_break">Section</string>
     <string name="docs_mobile_view_notification">Part of the content of this document will be hidden in Mobile View. To see it, switch to Standard View.
     </string>
+    <string name="docs_toc_title">Table of contents</string>
+    <string name="docs_toc_title_with_page_numbers">With page numbers</string>
+    <string name="docs_toc_title_with_blue_links">With blue links</string>
+    <string name="docs_headings_title">Headings</string>
+    <string name="docs_navigation_title">Navigation</string>
+    <string name="docs_headings_empty">There are no headings in the document. Apply a headings style to the text so that it appears in the table of contents.
+    </string>
+    <string name="docs_headings_beginning_of_document">Beginning of document</string>
+    <string name="docs_toc_page_numbers">Page numbers</string>
+    <string name="docs_toc_right_align">Right align</string>
+    <string name="docs_toc_leader">Leader</string>
+    <string name="docs_toc_remove">Remove table of contents</string>
+    <string name="docs_toc_structure">Structure</string>
+    <string name="docs_toc_structure_levels_amount">Amount of levels</string>
+    <string name="docs_toc_structure_levels">Levels</string>
+    <string name="docs_toc_structure_styles">Styles</string>
+    <string name="style_emphasis">Emphasis</string>
+    <string name="style_book_title">Book Title</string>
+    <string name="style_intent_emphasis">Intense Emphasis</string>
+    <string name="style_intent_reference">Intense Reference</string>
+    <string name="style_subtle_reference">Subtle Reference</string>
+    <string name="style_subtle_emphasis">Subtle Emphasis</string>
+    <string name="style_strong">Strong</string>
+    <string name="docs_margins_normal">Normal</string>
+    <string name="docs_margins_us_normal">US Normal</string>
+    <string name="docs_margins_narrow">Narrow</string>
+    <string name="docs_margins_moderate">Moderate</string>
+    <string name="docs_margins_wide">Wide</string>
+    <string name="docs_margins_last_custom">Last Custom</string>
+    <string name="docs_margins_subtitle">Top: %1$.01f cm Bottom: %2$.01f cm\nLeft: %3$.01f cm Right: %4$.01f cm</string>
+    <string name="docs_margins_set_custom_margins">Set custom margins</string>
+    <string name="docs_margins_custom_margins_title">Custom margins</string>
+    <string name="docs_margins_top">Top</string>
+    <string name="docs_margins_bottom">Bottom</string>
+    <string name="docs_margins_left">Left</string>
+    <string name="docs_margins_right">Right</string>
+    <string name="docs_margins_gutter_position">Gutter Position</string>
+    <string name="docs_margins_gutter">Gutter</string>
+    <string name="docs_margins_position">Position</string>
+    <string name="docs_margins_multiple_pages">Multiple Pages</string>
+    <string name="docs_margins_mirror">Mirror margins</string>
+    <string name="docs_filling_is_not_available">Form filling is in progress. File editing is not currently available.</string>
 
-    <!-- Module: libgeditors - 502 strings -->
+    <!-- Module: libgeditors - 571 strings -->
     <string name="app_name_editors">Editors</string>
     <string name="error_internal_unknown">Unknown internal error :(</string>
     <string name="error_connection">Connection lost. The viewer mode is enabled</string>
     <string name="error_write_export">Error write to file (File not found), please select other place</string>
     <string name="error_protection_edit">You are not allowed to edit this selection because it is protected</string>
+    <string name="error_convertation_limit">The file size exceeds the limitation set for your server. Please contact your Document Server administrator for
+        details.
+    </string>
     <string name="about_version">Version %1$s</string>
     <string name="chooser_file">Choose file</string>
     <string name="chooser_folder">Choose folder</string>
@@ -1827,7 +1883,9 @@
     <string name="color_scheme_urban">Urban</string>
     <string name="color_scheme_verve">Verve</string>
     <string name="chart_insert_error_title">Chart insert error</string>
-    <string name="chart_insert_error_incorrect_row_order">Incorrect row order. To build a stock chart place the data on the sheet in the following order: opening price, max price, min price, closing price.</string>
+    <string name="chart_insert_error_incorrect_row_order">Incorrect row order. To build a stock chart place the data on the sheet in the following order:
+        opening price, max price, min price, closing price.
+    </string>
     <string name="chart_insert_error_max_number">The maximum number of data series per chart is 255</string>
     <string name="chart_insert_error">Error insert chart</string>
     <string name="collaboration_title">Collaboration</string>
@@ -1962,6 +2020,74 @@
     <string name="pdf_reader_error_password_version">This android version does not support password protected PDFs, use other application</string>
     <string name="recognize_error">Error during recognition</string>
     <string name="recognize_empty">No text detected on the image for recognition</string>
+    <string name="table_of_contents_title">Table of contents</string>
+    <string name="table_of_contents_style_current">Current</string>
+    <string name="table_of_contents_style_simple">Simple</string>
+    <string name="table_of_contents_style_standard">Standard</string>
+    <string name="table_of_contents_style_modern">Modern</string>
+    <string name="table_of_contents_style_classic">Classic</string>
+    <string name="table_of_contents_style_online">Online</string>
+    <string name="ribbon_tab_title_references">References</string>
+    <string name="table_of_contents_update">Update</string>
+    <string name="table_of_contents_error">Start creating a table of contents by applying a heading style from the Styles gallery to the selected text</string>
+    <string name="ai_tab_title">Ai</string>
+    <string name="ai_providers_settings">Ai settings</string>
+    <string name="ai_providers_title">AI Providers</string>
+    <string name="ai_add_provider">Add Provider</string>
+    <string name="ai_edit_profile">Edit Profile</string>
+    <string name="ai_add_model">Add AI Model</string>
+    <string name="ai_delete_all">Delete All</string>
+    <string name="ai_api_key_status">API Key: %1$s</string>
+    <string name="ai_set_as_default">Set as Default</string>
+    <string name="ai_provider_label">Provider: %1$s</string>
+    <string name="ai_api_key">API Key</string>
+    <string name="ai_load_models">Load Available Models</string>
+    <string name="ai_available_models">Available Models</string>
+    <string name="ai_selected_model">Selected Model: %1$s</string>
+    <string name="ai_none_selected">None Selected</string>
+    <string name="ai_select_provider">Select Provider</string>
+    <string name="ai_provider">Provider</string>
+    <string name="ai_test_model">Test model</string>
+    <string name="ai_test_result_title">Model Test Result</string>
+    <string name="ai_testing_model">Testing model…</string>
+    <string name="ai_test_error">Error: %1$s</string>
+    <string name="ai_models_title">AI Models</string>
+    <string name="ai_edit_model">Edit Model</string>
+    <string name="ai_delete_model">Delete Model</string>
+    <string name="ai_model_name">Model Name</string>
+    <string name="ai_model_name_required">Required</string>
+    <string name="ai_api_key_hint">Copy your API key from your AI provider\'s account (e.g. OpenAI) and paste it here.</string>
+    <string name="ai_no_providers_added">Add your first language model provider to get started</string>
+    <string name="ai_processing_request">AI is processing your request</string>
+    <string name="ai_input_placeholder">Ask me anything</string>
+    <string name="ai_error_no_active_profile">No active AI profile found. Please configure AI settings first.</string>
+    <string name="ai_error_api_key_not_configured">API key not configured. Please check AI settings.</string>
+    <string name="ai_error_provider_no_streaming">Provider does not support streaming</string>
+    <string name="ai_error_function_calling_load">Failed to load function calling data</string>
+    <string name="ai_error_function_call_execution">Error executing function call</string>
+    <string name="ai_chat_error_response_failed">Failed to get AI response: %1$s</string>
+    <string name="ai_chat_error_unexpected">Unexpected error: %1$s</string>
+    <string name="ai_chat_role_prompt">You are acting as: %1$s. Please respond according to this role.</string>
+    <string name="ai_error_api_key_empty">API key cannot be empty</string>
+    <string name="ai_error_model_api_key_not_selected">Model or API key not selected</string>
+    <string name="ai_error_model_testing_failed">Model testing error</string>
+    <string name="ai_error_unknown">Unknown error</string>
+    <string name="ai_error_loading_models">Failed to load models</string>
+    <string name="ai_prompt_error_select_profile">Please select an AI profile first</string>
+    <string name="ai_prompt_error_empty_prompt">Please enter a prompt</string>
+    <string name="ai_prompt_error_network">Network error. Please check your connection.</string>
+    <string name="ai_prompt_error_timeout">Request timeout. Please try again.</string>
+    <string name="ai_prompt_error_service">AI service error: %1$s</string>
+    <string name="ai_prompt_error_cancelled">Request was cancelled</string>
+    <string name="ai_prompt_error_unexpected">Unexpected error: %1$s</string>
+    <string name="ai_tooltip_title">Try the new AI mode</string>
+    <string name="ai_tooltip_message">Edit, analyze, and create content with ease. To get started — connect a model.</string>
+    <string name="ai_profile_default_name">%1$s Profile</string>
+    <string name="ai_profile_saved_successfully">Profile saved successfully</string>
+    <string name="ai_profile_deleted_successfully">Profile deleted successfully</string>
+    <string name="text_direction_title">Text direction</string>
+    <string name="text_direction_ltr">Left to right</string>
+    <string name="text_direction_rtl">Right to left</string>
 
     <!-- Module: libgslides - 88 strings -->
     <string name="slides_title">Presentations</string>
