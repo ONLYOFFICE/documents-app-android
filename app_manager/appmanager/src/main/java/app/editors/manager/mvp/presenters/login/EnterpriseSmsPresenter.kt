@@ -37,7 +37,7 @@ class EnterpriseSmsPresenter : BaseLoginPresenter<EnterpriseSmsView>() {
             loginRepository.sendSms(
                 userName = requestNumber.userName,
                 password = requestNumber.password,
-                accessToken = requestNumber.accessToken,
+                accessToken = requestNumber.accessToken.orEmpty(),
                 provider = requestNumber.provider
             ).collect { result ->
                 when (result) {
