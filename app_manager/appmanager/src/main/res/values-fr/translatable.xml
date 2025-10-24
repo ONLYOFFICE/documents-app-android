@@ -826,15 +826,15 @@ Nous vous recommandons de passer au service gratuit ONLYOFFICE DocSpace Cloud.</
     <string name="rooms_user_type_employees">Employés</string>
     <string name="whats_new_title">Quoi de neuf ?</string>
     <string name="whats_new_next">Commencer !</string>
-    <string name="whats_new">Nouveautés de la v9.0</string>
-    <string name="whats_new_1">Reconnaissance de texte avec la caméra</string>
-    <string name="whats_new_1_desc">Capturez du texte imprimé avec votre caméra et créez des documents modifiables.</string>
-    <string name="whats_new_2">Interface à onglets mise à jour</string>
-    <string name="whats_new_2_desc">Profitez d\'une navigation simplifiée et d\'un design moderne avec une barre d\'outils renouvelée.</string>
-    <string name="whats_new_3">Prise en charge des formats ODG et Markdown</string>
-    <string name="whats_new_3_desc">Ouvrez et affichez les dessins .odg et les fichiers .md directement depuis votre appareil.</string>
-    <string name="whats_new_4">Compatibilité améliorée avec DocSpace 3.1</string>
-    <string name="whats_new_4_desc">Accédez aux versions des documents, remplissez des formulaires selon les rôles dans la VDR, utilisez des modèles d\'espaces et appliquez des filtres personnalisés en vous connectant à votre DocSpace.</string>
+    <string name="whats_new">Nouveautés de la v9.1</string>
+    <string name="whats_new_1">Assistant IA dans les éditeurs</string>
+    <string name="whats_new_1_desc">Travaillez intelligemment dans vos documents et feuilles de calcul avec l\'IA intégrée. Connectez des modèles OpenAI, Anthropic, Google ou Ollama.</string>
+    <string name="whats_new_2">Options d\'orientation du texte</string>
+    <string name="whats_new_2_desc">Passez facilement du sens d\'écriture de droite à gauche à celui de gauche à droite dans tous les éditeurs.</string>
+    <string name="whats_new_3">Remplissage de formulaires basé sur les rôles dans DocSpace</string>
+    <string name="whats_new_3_desc">Attribuez des rôles spécifiques aux participants au démarrage du remplissage de formulaire depuis DocSpace connecté.</string>
+    <string name="whats_new_4">Table des matières dans les documents</string>
+    <string name="whats_new_4_desc">Créez et naviguez dans les sections du document grâce à une table des matières automatique.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Moi et %s</string>
