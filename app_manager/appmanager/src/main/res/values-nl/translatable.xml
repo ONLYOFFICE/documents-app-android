@@ -995,4 +995,16 @@
         <item quantity="one">%d Groep</item>
         <item quantity="other">%d Groepen</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="list_context_upload_to_cloud">Uploaden naar cloud</string>
+    <string name="share_clipboard_external_custom_filter_copied">De link naar het bestand met het ingeschakelde Aangepaste filter is met succes naar het klembord gekopieerd.</string>
+    <string name="cloud_create_account">Maak gratis account aan</string>
+    <string name="start_filling_title">Begin met invullen</string>
+    <string name="start_filling_start">Beginnen</string>
+    <string name="start_filling_desc">In dit paneel kunt u de voltooiing van het formulier volgen waaraan u deelneemt of waarvan u de organiserende of afrondende partij bent.</string>
+    <string name="start_filling_header">Rollen van het formulier:</string>
+    <string name="start_filling_ready_for_filling">Het formulier is klaar om in te vullen in de kamer</string>
+    <string name="start_filling_ready_for_filling_desc">Er is al een melding verzonden naar de gebruiker in de eerste rol, met het verzoek om het formulier in te vullen. U kunt naar de kamer navigeren of de link naar het vullen met de deelnemers delen.</string>
+    <string name="list_context_reset_filling">Opnieuw instellen en beginnen met invullen</string>
 </resources>

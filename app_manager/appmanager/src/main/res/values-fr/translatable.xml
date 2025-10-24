@@ -977,4 +977,15 @@ Nous vous recommandons de passer au service gratuit ONLYOFFICE DocSpace Cloud.</
         <item quantity="one">%d groupe</item>
         <item quantity="other">%d groupes</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Journaux système</string>
+    <string name="dev_mode_network_requests">Requêtes réseau</string>
+    <string name="start_filling_title">Commencer le remplissage</string>
+    <string name="start_filling_start">Commencer</string>
+    <string name="start_filling_desc">Dans ce panneau, vous pouvez suivre la progression du formulaire auquel vous participez ou dont vous êtes l\'organisateur</string>
+    <string name="start_filling_header">Rôles du formulaire :</string>
+    <string name="start_filling_ready_for_filling">Le formulaire est prêt à être rempli dans la salle</string>
+    <string name="start_filling_ready_for_filling_desc">Une notification a déjà été envoyée à l\'utilisateur ayant le premier rôle pour le remplir. Vous pouvez accéder à la salle ou partager le lien de remplissage avec les participants.</string>
+    <string name="list_context_reset_filling">Réinitialiser et commencer le remplissage</string>
 </resources>

@@ -970,4 +970,15 @@
         <item quantity="one">%d gruppo</item>
         <item quantity="other">%d gruppi</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Registri di sistema</string>
+    <string name="dev_mode_network_requests">Richieste di rete</string>
+    <string name="start_filling_title">Avvia compilazione</string>
+    <string name="start_filling_start">Avvia</string>
+    <string name="start_filling_desc">In questo pannello puoi monitorare la compilazione del modulo a cui partecipi o di cui sei l\'organizzatore.</string>
+    <string name="start_filling_header">Ruoli dal modulo:</string>
+    <string name="start_filling_ready_for_filling">Il modulo è pronto per la compilazione nella stanza.</string>
+    <string name="start_filling_ready_for_filling_desc">È già stata inviata una notifica all\'utente con il primo ruolo, invitandolo a compilare il modulo. Puoi accedere alla stanza o condividere il link di compilazione con i partecipanti.</string>
+    <string name="list_context_reset_filling">Reimposta e avvia la compilazione</string>
 </resources>

@@ -973,4 +973,15 @@
         <item quantity="one">%d grupo</item>
         <item quantity="other">%d grupos</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Registros de sistema</string>
+    <string name="dev_mode_network_requests">Solicitudes de red</string>
+    <string name="start_filling_title">Empezar a rellenar</string>
+    <string name="start_filling_start">Empezar</string>
+    <string name="start_filling_desc">En este panel puede supervisar el rellenado del formulario en el que participa o en el que es el organizador del rellenado</string>
+    <string name="start_filling_header">Roles del formulario:</string>
+    <string name="start_filling_ready_for_filling">El formulario está listo para rellenarse en la sala</string>
+    <string name="start_filling_ready_for_filling_desc">Ya se ha enviado una notificación al usuario del primer rol, invitándole a rellenar el formulario. Puede navegar a la sala o compartir el enlace de rellenado con los participantes.</string>
+    <string name="list_context_reset_filling">Reiniciar y empezar a rellenar</string>
 </resources>

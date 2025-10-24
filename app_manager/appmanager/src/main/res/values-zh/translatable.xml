@@ -1029,4 +1029,15 @@
         <item quantity="one">%d 群组</item>
         <item quantity="other">%d 群组</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">系统日志</string>
+    <string name="dev_mode_network_requests">网络请求</string>
+    <string name="start_filling_title">开始填写</string>
+    <string name="start_filling_start">开始</string>
+    <string name="start_filling_desc">在此面板中，您可以监控您参与或发起的表单的填写进度</string>
+    <string name="start_filling_header">来自此表单的角色：</string>
+    <string name="start_filling_ready_for_filling">表单已准备好，可在房间内进行填写</string>
+    <string name="start_filling_ready_for_filling_desc">已向第一个角色的用户发送通知，提示他们填写表单。您可以在房间或与用户分享填写链接。</string>
+    <string name="list_context_reset_filling">重置并开始填写</string>
 </resources>

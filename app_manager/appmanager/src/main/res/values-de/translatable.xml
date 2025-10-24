@@ -973,4 +973,15 @@ Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</
         <item quantity="one">%d Gruppe</item>
         <item quantity="other">%d Gruppen</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Systemprotokolle</string>
+    <string name="dev_mode_network_requests">Netzwerkanfragen</string>
+    <string name="start_filling_title">Ausfüllen starten</string>
+    <string name="start_filling_start">Starten</string>
+    <string name="start_filling_desc">In diesem Bereich können Sie das Ausfüllen des Formulars überwachen, an dem Sie teilnehmen oder bei dem Sie der Organisator des Ausfüllens sind.</string>
+    <string name="start_filling_header">Rollen aus dem Formular:</string>
+    <string name="start_filling_ready_for_filling">Formular liegt zum Ausfüllen im Raum bereit</string>
+    <string name="start_filling_ready_for_filling_desc">Dem Benutzer in der ersten Rolle wurde bereits eine Benachrichtigung gesendet, die ihn zum Ausfüllen des Formulars auffordert. Sie können zum Raum navigieren oder den Ausfülllink mit den Teilnehmern teilen.</string>
+    <string name="list_context_reset_filling">Zurücksetzen und Ausfüllen starten</string>
 </resources>

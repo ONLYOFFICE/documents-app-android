@@ -1125,4 +1125,15 @@
         <item quantity="one">%d խումբ</item>
         <item quantity="other">%d խմբեր</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Համակարգի մուտքեր</string>
+    <string name="dev_mode_network_requests">Ցանցային հարցումներ</string>
+    <string name="start_filling_title">Սկսել լրացնել</string>
+    <string name="start_filling_start">Սկսել</string>
+    <string name="start_filling_desc">Այս վահանակում կարող եք վերահսկել այն ձևի լրացումը, որին մասնակցում եք կամ որի լրացման կազմակերպիչն եք դուք։</string>
+    <string name="start_filling_header">Դերերը ձևից՝</string>
+    <string name="start_filling_ready_for_filling">Ձևը պատրաստ է լրացնելու սենյակում</string>
+    <string name="start_filling_ready_for_filling_desc">Առաջին դերի օգտատիրոջն արդեն ուղարկվել է ծանուցում, որը հորդորում է լրացնել ձևը։ Կարող եք անցնել սենյակ կամ կիսվել լրացման հղումով մասնակիցների հետ։</string>
+    <string name="list_context_reset_filling">Վերականգնել և սկսել լրացնելը</string>
 </resources>

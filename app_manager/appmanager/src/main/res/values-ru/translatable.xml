@@ -986,4 +986,15 @@
         <item quantity="one">%d группа</item>
         <item quantity="other">%d групп</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Системные журналы</string>
+    <string name="dev_mode_network_requests">Сетевые запросы</string>
+    <string name="start_filling_title">Начать заполнение</string>
+    <string name="start_filling_start">Начать</string>
+    <string name="start_filling_desc">На этой панели вы можете отслеживать заполнение формы, в заполнении которой вы участвуете или в которой вы являетесь организатором заполнения</string>
+    <string name="start_filling_header">Роли из формы:</string>
+    <string name="start_filling_ready_for_filling">Форма готова к заполнению в комнате</string>
+    <string name="start_filling_ready_for_filling_desc">Пользователю с первой ролью отправлено уведомление с предложением заполнить форму. Вы можете перейти в комнату или поделиться ссылкой для заполнения с участниками.</string>
+    <string name="list_context_reset_filling">Сбросить и начать заполнение</string>
 </resources>

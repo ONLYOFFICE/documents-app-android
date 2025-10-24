@@ -19,7 +19,7 @@
       شكرا للاختبار التجريبي! تم الآن إصدار ONLYOFFICE الملفات 3.0، ولم يعد الإصدار التجريبي مدعومًا. يرجى التبديل إلى التطبيق
     </string>
     <string name="app_versions_actual_release_accept">افتح التطبيق الرسمي</string>
-    <string name="app_versions_actual_release_info">
+    <string name="app_versions_actual_release_info">в
       شكرا للاختبار التجريبي! تم الآن إصدار ONLYOFFICE الملفات 3.0، ولم يعد الإصدار التجريبي مدعومًا. من فضلك قم بالتبديل إلى
     </string>
 
@@ -1150,4 +1150,16 @@
         <item quantity="many">%d مجموعة</item>
         <item quantity="other">%d مجموعات</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">سجلات النظام</string>
+    <string name="dev_mode_network_requests">طلبات الشبكة</string>
+    <string name="whats_new">ما الجديد في الإصدار v9.0</string>
+    <string name="start_filling_title">بدء التعبئة</string>
+    <string name="start_filling_start">ابدأ</string>
+    <string name="start_filling_desc">في هذه اللوحة يمكنكم مراقبة إتمام النموذج الذي تشاركون فيه أو الذي أنتم منظمون لإتمامه</string>
+    <string name="start_filling_header">الأدوار من النموذج:</string>
+    <string name="start_filling_ready_for_filling">النموذج جاهز للتعبئة في الغرفة</string>
+    <string name="start_filling_ready_for_filling_desc">تم بالفعل إرسال إشعار للمستخدم في الدور الأول، يطلب منه تعبئة النموذج. يمكنكم الانتقال إلى الغرفة أو مشاركة رابط التعبئة مع المشاركين.</string>
+    <string name="list_context_reset_filling">إعادة تعيين وبدء التعبئة</string>
 </resources>

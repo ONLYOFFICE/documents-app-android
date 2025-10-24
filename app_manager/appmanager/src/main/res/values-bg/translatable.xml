@@ -964,4 +964,15 @@
         <item quantity="one">%d група</item>
         <item quantity="other">%d групи</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Влизания в системата</string>
+    <string name="dev_mode_network_requests">Мрежови заявки</string>
+    <string name="start_filling_title">Започни попълване</string>
+    <string name="start_filling_start">Започни</string>
+    <string name="start_filling_desc">В този панел можете да следите завършването на формуляра, в който участвате или на чието завършване сте организатор</string>
+    <string name="start_filling_header">Роли от формуляра:</string>
+    <string name="start_filling_ready_for_filling">Формулярът е готов за попълване в стая</string>
+    <string name="start_filling_ready_for_filling_desc">На потребител в първата роля бе пратено известие, подканващо го да попълни формуляра. Можете да навигирате до стаята или да споделите линк за попълване до участниците.</string>
+    <string name="list_context_reset_filling">Нулирай и започни попълване</string>
 </resources>

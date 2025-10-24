@@ -1106,4 +1106,15 @@
         <item quantity="one">%d skupina</item>
         <item quantity="other">%d skupin</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Systémové protokoly</string>
+    <string name="dev_mode_network_requests">Síťové požadavky</string>
+    <string name="start_filling_title">Začít vyplňovat</string>
+    <string name="start_filling_start">Začít</string>
+    <string name="start_filling_desc">V tomto panelu můžete sledovat vyplňování formuláře, kterého se účastníte nebo jehož jste organizátorem vyplňování</string>
+    <string name="start_filling_header">Role z formuláře:</string>
+    <string name="start_filling_ready_for_filling">Formulář je připraven k vyplnění v místnosti</string>
+    <string name="start_filling_ready_for_filling_desc">Uživateli v první roli již bylo zasláno oznámení s výzvou k vyplnění formuláře. Můžete přejít do místnosti nebo sdílet odkaz na vyplnění s účastníky.</string>
+    <string name="list_context_reset_filling">Resetovat a začít vyplňovat</string>
 </resources>
