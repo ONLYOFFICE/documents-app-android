@@ -904,7 +904,12 @@
     <string name="dialogs_edit_feedback_rate_title">අපට ප්‍රතිපෝෂණ එවීමට ඔබට කමක් නැද්ද?</string>
     <string name="placeholder_no_users_found">පරිශීලකයින් කිසිවෙකු හමු නොවීය</string>
     <string name="app_settings_passcode_confirm_title">මුර කේතය තහවුරු කරන්න</string>
-    <string name="sign_in_terms_and_policy_text"><![CDATA[ By proceeding, you agree to the <a href="%1$s">Privacy Policy</a> and the <a href="%2$s">Terms of Service</a> ]]></string>
+    <string name="sign_in_terms_and_policy_text"><![CDATA[
+ By proceeding, you agree to the
+ <a href="%1$s">Privacy Policy</a>
+ and the
+ <a href="%2$s">Terms of Service</a>
+ ]]></string>
     <string name="file_lifetime_title">ගොනු ආයු කාලය</string>
     <string name="rooms_vdr_watermark_position">ස්ථානය</string>
     <string name="title_edit_template">අච්චුව සංස්කරණය කරන්න</string>
@@ -954,14 +959,14 @@
     </plurals>
 
     <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
-    <string name="dev_mode_system_logs">System logs</string>
-    <string name="dev_mode_network_requests">Network requests</string>
-    <string name="whats_new">What\'s new in v9.0</string>
-    <string name="start_filling_title">Start filling</string>
-    <string name="start_filling_start">Start</string>
-    <string name="start_filling_desc">In this panel you can monitor the completion of the form in which you participate or in which you are the organizer of completion</string>
-    <string name="start_filling_header">Roles from the form:</string>
-    <string name="start_filling_ready_for_filling">Form is ready for filling in room</string>
-    <string name="start_filling_ready_for_filling_desc">A notification has already been sent to the user in the first role, prompting them to fill out the form. You can navigate to the room or share the filling link with the participants.</string>
-    <string name="list_context_reset_filling">Reset and start filling</string>
+    <string name="dev_mode_system_logs">පද්ධති ලොග</string>
+    <string name="dev_mode_network_requests">ජාල ඉල්ලීම්</string>
+    <string name="whats_new">v9.0 හි අලුත් මොනවාද</string>
+    <string name="start_filling_title">පිරවීම ආරම්භ කරන්න</string>
+    <string name="start_filling_start">ආරම්භ කරන්න</string>
+    <string name="start_filling_desc">මෙම පැනලය තුළ ඔබ සහභාගී වන හෝ ඔබ සම්පූර්ණ කිරීමේ සංවිධායකයා වන පෝරමය සම්පූර්ණ කිරීම නිරීක්ෂණය කළ හැක</string>
+    <string name="start_filling_header">පෝරමයෙන් භූමිකාවන්:</string>
+    <string name="start_filling_ready_for_filling">කාමරය පිරවීම සඳහා පෝරමය සූදානම්</string>
+    <string name="start_filling_ready_for_filling_desc">පළමු භූමිකාවේ පරිශීලකයාට දැනටමත් දැනුම්දීමක් යවා ඇති අතර, එමඟින් පෝරමය පිරවීමට ඔවුන් පොළඹවනු ලැබේ. ඔබට කාමරයට සංචාලනය කිරීමට හෝ සහභාගිවන්නන් සමඟ පිරවුම් සබැඳිය බෙදා ගැනීමට හැකිය.</string>
+    <string name="list_context_reset_filling">නැවත සකසා පිරවීම ආරම්භ කරන්න</string>
 </resources>
