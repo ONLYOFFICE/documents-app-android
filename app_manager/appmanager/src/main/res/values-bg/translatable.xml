@@ -813,15 +813,15 @@
     <string name="rooms_user_type_employees">Служители</string>
     <string name="whats_new_title">Какво ново</string>
     <string name="whats_new_next">Първи стъпки</string>
-    <string name="whats_new">Нови във v9.0</string>
-    <string name="whats_new_1">Разпознаване на текст с камерата на устройството</string>
-    <string name="whats_new_1_desc">Заснемайте принтиран текст с камерата си и създавайте редактируеми документи.</string>
-    <string name="whats_new_2">Актуализиран интерфейс с подпрозорци</string>
-    <string name="whats_new_2_desc">Насладете се на по-изчистено и по-интуитивно оформление с модифицираната лента с инструменти.</string>
-    <string name="whats_new_3">Поддръжка на формати ODG и Markdown</string>
-    <string name="whats_new_3_desc">Отваряйте и преглеждайте .odg рисунки и .md файлове директно от устройството си.</string>
-    <string name="whats_new_4">Подсилена съвместимост с DocSpace 3.1</string>
-    <string name="whats_new_4_desc">Получавайте достъп до версии на документи, попълване на формуляри на базата на роли във VDR, шаблони на стаи и персонални филтри, когато сте свързани с вашия DocSpace.</string>
+    <string name="whats_new">Нови във v9.1</string>
+    <string name="whats_new_1">AI асистент в редактори</string>
+    <string name="whats_new_1_desc">Работете по-умно в документи и електронни таблици с вграден AI. Свържете модели като OpenAI, Anthropic, Google или Ollama.</string>
+    <string name="whats_new_2">Опции за текстово насочване</string>
+    <string name="whats_new_2_desc">Превключвайте лесно между текстова посока Отдясно-наляво и Отляво-надясно във всички редактори.</string>
+    <string name="whats_new_3">Попълване на формуляр на базата на роли в DocSpace</string>
+    <string name="whats_new_3_desc">Задайте специфични роли на участниците, когато започвате процес по попълване на формуляри, докато сте свързани с DocSpace.</string>
+    <string name="whats_new_4">Съдържание в документи</string>
+    <string name="whats_new_4_desc">Създавайте и навигирайте през раздели документи с автоматично съдържание.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Аз и %s</string>
