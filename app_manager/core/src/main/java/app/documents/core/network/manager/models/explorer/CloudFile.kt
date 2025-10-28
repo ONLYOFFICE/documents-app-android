@@ -60,6 +60,14 @@ open class CloudFile : Item() {
     @Expose
     var comment = ""
 
+    @SerializedName("thumbnailStatus")
+    @Expose
+    var thumbnailStatus = ApiContract.ThumbnailStatus.NOT_REQUIRED
+
+    @SerializedName("thumbnailUrl")
+    @Expose
+    var thumbnailUrl = ""
+
     @SerializedName("customFilterEnabled")
     @Expose
     var customFilterEnabled = false

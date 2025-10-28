@@ -3,7 +3,7 @@ package app.editors.manager.mvp.presenters.storages
 import android.net.Uri
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.OneDriveUtils
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -68,11 +68,12 @@ class DocsOneDrivePresenter: BaseStorageDocsPresenter<BaseStorageDocsView, OneDr
             App.getApp().loginComponent.onedriveLoginRepository.refreshToken()
                 .collect { result ->
                     when (result) {
-                        is Result.Error -> viewState.onAuthorization()
-                        is Result.Success -> {
+                        is NetworkResult.Error -> viewState.onAuthorization()
+                        is NetworkResult.Success -> {
                             App.getApp().refreshOneDriveInstance()
                             getItemsById("")
                         }
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }

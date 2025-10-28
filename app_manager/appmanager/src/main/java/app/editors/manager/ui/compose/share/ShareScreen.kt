@@ -216,11 +216,10 @@ fun ShareScreen(
             UserListScreen(
                 viewModel = userListViewModel,
                 title = R.string.share_invite_user,
-                onClick = userListViewModel::toggleSelect,
+                onClick = { userListViewModel.toggleSelect(it.id) },
                 closeable = false,
                 useTabletPaddings = useTabletPaddings,
                 onBack = navController::popBackStackWhenResumed,
-                onSnackBar = ::onSnackBar,
                 bottomContent = { count, access ->
                     UserListBottomContent(
                         nextButtonTitle = lib.toolkit.base.R.string.common_next,
@@ -269,7 +268,6 @@ fun ShareScreen(
                 accessList = accessListWithOutRestricted,
                 viewModel = inviteAccessViewModel,
                 onBack = navController::popBackStackWhenResumed,
-                onSnackBar = ::onSnackBar,
                 onSuccess = {
                     viewModel.fetchShareList()
                     onSnackBar(context.getString(R.string.invite_link_send_success))

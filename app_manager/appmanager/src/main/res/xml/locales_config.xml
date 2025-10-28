@@ -15,4 +15,5 @@
     <locale android:name="hy" />
     <locale android:name="si" />
     <locale android:name="ar" />
+    <locale android:name="nl" />
 </locale-config>

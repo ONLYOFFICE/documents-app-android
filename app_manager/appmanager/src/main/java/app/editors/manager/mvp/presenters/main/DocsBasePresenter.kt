@@ -19,7 +19,7 @@ import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.cloud.Recent
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
@@ -55,9 +55,11 @@ import app.editors.manager.mvp.models.list.Templates
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
 import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.mvp.models.ui.DuplicateFilesChoice
 import app.editors.manager.mvp.models.ui.StorageQuota
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.main.DocsBaseView
+import app.editors.manager.ui.fragments.main.ToolbarState
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import com.google.gson.Gson
 import io.reactivex.Observable
@@ -157,6 +159,8 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     private var placeholderViewType: PlaceholderViews.Type = PlaceholderViews.Type.NONE
     protected var operationStack: ExplorerStackMap? = null
     private var uploadUri: Uri? = null
+    protected var uploadFiles: List<UploadFile>? = null
+    protected var duplicateFiles: List<String>? = null
     private var sendingFile: File? = null
 
     protected var filters: Map<String, String> = mapOf()
@@ -276,10 +280,11 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         disposable.dispose()
     }
 
-    protected suspend fun onFileOpenCollect(result: Result<FileOpenResult>) {
+    protected suspend fun onFileOpenCollect(result: NetworkResult<FileOpenResult>) {
         when (result) {
-            is Result.Error -> fetchError(result.exception)
-            is Result.Success<FileOpenResult> -> onFileOpenCollect(result.result)
+            is NetworkResult.Error -> fetchError(result.exception)
+            is NetworkResult.Success<FileOpenResult> -> onFileOpenCollect(result.data)
+            is NetworkResult.Loading -> Unit
         }
     }
 
@@ -344,6 +349,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                         updateViewsState()
                         viewState.onDocsRefresh(explorer)
                         onRefresh()
+                        refreshFilesThumbnails()
                     }, this::fetchError)
             )
             viewState.onSwipeEnable(true)
@@ -393,6 +399,8 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         }
     }
 
+    open fun refreshFilesThumbnails() = Unit
+
     /**
      * Change docs
      * */
@@ -438,7 +446,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     private fun renameFile(id: Item, title: String, version: Int) {
         modelExplorerStack.currentId?.let { currentId ->
             disposable.add(
-                fileProvider.rename(id, title, version)
+                fileProvider.rename(id, title, null)
                     .flatMap { fileProvider.getFiles(currentId, getArgs(null)) }
                     .subscribe({ item ->
                         viewState.onDialogClose()
@@ -450,7 +458,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
 
-    protected fun loadSuccess(explorer: Explorer?) {
+    protected open fun loadSuccess(explorer: Explorer?) {
         modelExplorerStack.addStack(explorer)
         updateViewsState()
         setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
@@ -815,37 +823,65 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
     protected fun addUploadFiles(uriList: List<Uri>, id: String) {
-        val uploadFiles = mutableListOf<UploadFile>()
-        for (uri in uriList) {
-            if (ContentResolverUtils.getSize(context, uri) > FileUtils.STRICT_SIZE) {
-                viewState.onSnackBar(context.getString(R.string.upload_manager_error_file_size))
-                continue
-            }
-            uploadFiles.add(UploadFile().apply {
-                progress = 0
-                folderId = id
-                name = ContentResolverUtils.getName(context, uri)
-                size = setSize(uri)
-                this.uri = uri
-                this.id = uri.path
-            })
-        }
-
-        if (uploadFiles.isNotEmpty()) {
-            UploadWork.putNewUploadFiles(id, ArrayList(uploadFiles))
-            for (uri in uploadFiles) {
-                val workData = Data.Builder()
-                    .putString(UploadWork.TAG_UPLOAD_FILES, uri.uri.toString())
-                    .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD)
-                    .putString(UploadWork.TAG_FOLDER_ID, id)
-                    .build()
-                startUpload(workData)
-            }
-
-            if (modelExplorerStack.last()?.itemsCount == 0) {
-                refresh()
+        uploadFiles = buildList {
+            for (uri in uriList) {
+                if (ContentResolverUtils.getSize(context, uri) > FileUtils.STRICT_SIZE) {
+                    viewState.onSnackBar(context.getString(R.string.upload_manager_error_file_size))
+                    continue
+                }
+                add(UploadFile().apply {
+                    progress = 0
+                    folderId = id
+                    name = ContentResolverUtils.getName(context, uri)
+                    size = setSize(uri)
+                    this.uri = uri
+                    this.id = uri.path
+                })
             }
         }
+
+        if (!uploadFiles.isNullOrEmpty()) {
+            handleDuplicatesUpload(id)
+        }
+    }
+
+    fun startUpload(folderId: String, result: DuplicateFilesChoice?) {
+        val filesToUpload = if (result == DuplicateFilesChoice.SKIP) {
+            uploadFiles?.filterNot { duplicateFiles?.contains(it.name) ?: false }
+        } else {
+            uploadFiles
+        }
+
+        if (filesToUpload.isNullOrEmpty()) return
+
+        UploadWork.putNewUploadFiles(folderId, ArrayList(uploadFiles.orEmpty()))
+        for (uploadFile in filesToUpload) {
+            val duplicateAction =
+                if (result == null || duplicateFiles?.contains(uploadFile.name) == true) {
+                    result
+                } else {
+                    DuplicateFilesChoice.COPY
+                }
+
+            val workData = Data.Builder()
+                .putString(UploadWork.TAG_UPLOAD_FILES, uploadFile.uri.toString())
+                .putString(UploadWork.ACTION_UPLOAD_MY, UploadWork.ACTION_UPLOAD)
+                .putString(UploadWork.TAG_FOLDER_ID, folderId)
+                .putString(UploadWork.TAG_DUPLICATE_ACTION, duplicateAction?.name)
+                .build()
+
+            startUpload(workData)
+        }
+
+        if (modelExplorerStack.last()?.itemsCount == 0) {
+            refresh()
+            cleanUploadFiles()
+        }
+    }
+
+    fun cleanUploadFiles() {
+        duplicateFiles = null
+        uploadFiles = null
     }
 
     fun startUpload(data: Data) {
@@ -856,6 +892,10 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                 .build()
             downloadManager.enqueue(request)
         }
+    }
+
+    protected open fun handleDuplicatesUpload(folderId: String) {
+        startUpload(folderId, null)
     }
 
     private fun setSize(uri: Uri): String {
@@ -1129,7 +1169,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         modelExplorerStack.previous()?.let {
             val entities = getListWithHeaders(modelExplorerStack.last(), true)
             setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-            viewState.onDocsGet(entities)
+            viewState.onDocsRefresh(entities)
             viewState.onScrollToPosition(modelExplorerStack.listPosition)
         }
     }
@@ -1138,7 +1178,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         modelExplorerStack.popToRoot()?.let {
             val entities = getListWithHeaders(modelExplorerStack.last(), true)
             setPlaceholderType(if (modelExplorerStack.isListEmpty) PlaceholderViews.Type.EMPTY else PlaceholderViews.Type.NONE)
-            viewState.onDocsGet(entities)
+            viewState.onDocsRefresh(entities)
             viewState.onScrollToPosition(modelExplorerStack.listPosition)
             updateViewsState()
         }
@@ -1188,14 +1228,9 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         }
     }
 
-    fun setSelectionAll() {
-        setSelection(true)
-        selectAll()
-    }
-
     fun selectAll() {
         viewState.onItemsSelection(modelExplorerStack.setSelection(true).toString())
-        viewState.onStateUpdateSelection(true)
+        setSelection(true)
     }
 
     fun deselectAll() {
@@ -1267,6 +1302,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             this.roomType = it
         } }
         getItemsById(id)
+        viewState.onScrollToPosition(0)
     }
 
     /**
@@ -1374,6 +1410,8 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     val isTemplatesFolder: Boolean
         get() = ApiContract.SectionType.isTemplates(modelExplorerStack.rootFolderType)
                 && modelExplorerStack.last()?.pathParts.orEmpty().size < 2
+
+    var toolbarState: ToolbarState = ToolbarState.None
 
     val currentSelectedFolderTitle: String
         get() = modelExplorerStack.selectedFolders.firstOrNull()?.title ?: itemClickedTitle
@@ -1888,6 +1926,6 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
          * Requests values
          * */
 
-        private const val ITEMS_PER_PAGE = 25
+        const val ITEMS_PER_PAGE = 25
     }
 }

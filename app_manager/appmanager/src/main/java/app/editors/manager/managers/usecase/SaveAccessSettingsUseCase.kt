@@ -1,6 +1,6 @@
 package app.editors.manager.managers.usecase
 
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.viewModels.main.TemplateAccessSettings
 import kotlinx.coroutines.flow.first
@@ -16,7 +16,7 @@ class SaveAccessSettingsUseCase @Inject constructor(
         onSuccess: suspend () -> Unit,
     ) {
         val publicResult = roomProvider.updateTemplatePublic(templateId, settings.public).first()
-        if (publicResult is Result.Error) {
+        if (publicResult is NetworkResult.Error) {
             onError(publicResult.exception)
             return
         } else if (settings.public) {
@@ -29,8 +29,9 @@ class SaveAccessSettingsUseCase @Inject constructor(
             users = settings.selectedUsers + settings.selectedGroups
         ).collect { accessResult ->
             when (accessResult) {
-                is Result.Error -> onError(accessResult.exception)
-                is Result.Success -> onSuccess()
+                is NetworkResult.Error -> onError(accessResult.exception)
+                is NetworkResult.Success -> onSuccess()
+                is NetworkResult.Loading -> Unit
             }
         }
     }

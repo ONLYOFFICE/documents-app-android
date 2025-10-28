@@ -518,7 +518,7 @@
     <string name="storage_select_box">Box</string>
     <string name="storage_select_share_point">SharePoint</string>
     <string name="storage_select_own_cloud">ownCloud</string>
-    <string name="storage_select_kdrive" translatable="false">KDrive</string>
+    <string name="storage_select_kdrive" translatable="false">kDrive</string>
     <string name="krdive_password_helper_text">If you have activated double authentication, please generate a CDM application from the Infomaniak manager.</string>
     <string name="kdrive_info_title">You must have a paid version of the player to use this service.</string>
     <string name="storage_email_connection">Email connection</string>
@@ -617,6 +617,12 @@
     <string name="upload_manager_error_file_size">The file size cannot be more than 100 megabytes</string>
     <string name="upload_manager_notification_cancel_upload">Cancel upload</string>
     <string name="upload_manager_waiting_title">Waiting for upload</string>
+    <string name="upload_manager_duplicate_title">Action required</string>
+    <string name="upload_manager_duplicate_text">The destination already contains a file named «%s». Please select the action:</string>
+    <string name="upload_manager_duplicates_text">The destination already contains files with the same name. Please select the action:</string>
+    <string name="upload_manager_duplicate_overwrite">Overwrite with version update</string>
+    <string name="upload_manager_duplicate_copy">Create file copy</string>
+    <string name="upload_manager_duplicate_skip">Skip</string>
     <string name="upload_error_wifi">You can upload only when Wi-Fi is enabled</string>
 
     <string name="room_duplicate_progress_title">Duplicate in progress</string>
@@ -1166,13 +1172,26 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="filling_form_send_finalized">Form Section Completed</string>
     <string name="filling_form_send_finalized_desc">The form has been fully completed by all roles and is now finalized. It is available in view-only mode.</string>
     <string name="filling_form_version_incompatible_desc">The client and server versions are incompatible. You can only open the document in view mode.</string>
-    <string name="whats_new">What\'s new in v9.0</string>
-    <string name="whats_new_1">Text recognition with device camera</string>
-    <string name="whats_new_1_desc">Capture printed text with your camera and create editable documents.</string>
-    <string name="whats_new_2">Updated tabbed interface</string>
-    <string name="whats_new_2_desc">Enjoy a cleaner, more intuitive layout with the redesigned toolbar.</string>
-    <string name="whats_new_3">Support for ODG and Markdown formats</string>
-    <string name="whats_new_3_desc">Open and view .odg drawings and .md files right from your device.</string>
-    <string name="whats_new_4">Enhanced compatibility with DocSpace 3.1</string>
-    <string name="whats_new_4_desc">Access document versions, role-based form filling in VDR, room templates, and custom filters when connected to your DocSpace.</string>
+    <string name="dev_mode_system_logs">System logs</string>
+    <string name="dev_mode_network_requests">Network requests</string>
+<!--    Wats new-->
+    <string name="whats_new">What\'s new in v9.1</string>
+    <string name="whats_new_1">AI assistant in editors</string>
+    <string name="whats_new_1_desc">Work smarter in documents and spreadsheets with built-in AI. Connect models like OpenAI, Anthropic, Google, or Ollama.</string>
+    <string name="whats_new_2">Text direction options</string>
+    <string name="whats_new_2_desc">Easily switch between Right-to-left and Left-to-right text direction in all editors.</string>
+    <string name="whats_new_3">Role-based form filling in DocSpace</string>
+    <string name="whats_new_3_desc">Assign specific roles to participants when starting a form-filling process while connected to DocSpace.</string>
+    <string name="whats_new_4">Table of contents in documents</string>
+    <string name="whats_new_4_desc">Create and navigate through document sections with an automatic table of contents.</string>
+
+    <string name="start_filling_title">Start filling</string>
+    <string name="start_filling_start">Start</string>
+    <string name="start_filling_desc">In this panel you can monitor the completion of the form in which you participate or in which you are the organizer of completion</string>
+    <string name="start_filling_header">Roles from the form:</string>
+    <string name="start_filling_ready_for_filling">Form is ready for filling in room</string>
+    <string name="start_filling_ready_for_filling_desc">A notification has already been sent to the user in the first role, prompting them to fill out the form. You can navigate to the room or share the filling link with the participants.</string>
+
+    <string name="list_context_reset_filling">Reset and start filling</string>
+
 </resources>

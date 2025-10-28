@@ -7,7 +7,7 @@ val baseLocale = "values"
 val targetLocales = listOf(
     "values-ru", "values-fr", "values-es", "values-de", "values-it",
     "values-ar-rSA", "values-bg", "values-zh", "values-cs",
-    "values-pt-rBR", "values-lo", "values-pl", "values-hy", "values-si"
+    "values-pt-rBR", "values-lo", "values-pl", "values-hy", "values-si", "values-nl"
 )
 
 /**
@@ -55,6 +55,123 @@ val appVersion = try {
 } catch (e: Exception) {
     println("Error retrieving version: ${e.message}")
     "unknown"
+}
+
+/**
+ * Task: updateOriginalsFromSource
+ *
+ * Updates the base locale string resource files (strings.xml, translatable.xml)
+ * in each module using translations/original-strings.xml as the source of truth.
+ * If a string in original-strings.xml differs from the one in the module, the
+ * module's file is updated. New strings are added to translatable.xml if it
+ * exists, otherwise to strings.xml. This task only modifies changed or new strings,
+ * preserving file comments and formatting.
+ */
+tasks.register("updateOriginalsFromSource") {
+    group = "translations"
+    description = "Updates original string files in modules from original-strings.xml"
+
+    doLast {
+        val sourceFile = file("${project.buildDir}/../../translations/original-strings.xml")
+        if (!sourceFile.exists()) {
+            println("Source of truth file not found: ${sourceFile.path}")
+            println("Run './gradlew extractTranslations' first to generate it.")
+            return@doLast
+        }
+
+        println("Updating original strings using ${sourceFile.name} as the source of truth...")
+        val sourceModuleTranslations = parseModuleTranslations(sourceFile)
+
+        fun processFile(file: java.io.File, updates: Map<String, String>, additions: Map<String, String>) {
+            if (updates.isEmpty() && additions.isEmpty()) return
+
+            println("  - Updating ${file.name} (${updates.size} updates, ${additions.size} additions)")
+            var content = if (file.exists()) file.readText() else "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n</resources>"
+
+            // Apply updates
+            updates.forEach { (key, value) ->
+                val pattern = if (key.startsWith("plurals:")) {
+                    "(<plurals\\s+name=\"${key.removePrefix("plurals:")}\"[^>]*>)(.*?)(</plurals>)".toRegex(RegexOption.DOT_MATCHES_ALL)
+                } else {
+                    "(<string\\s+name=\"$key\"[^>]*>)(.*?)(</string>)".toRegex(RegexOption.DOT_MATCHES_ALL)
+                }
+                content = pattern.replace(content) { matchResult ->
+                    val openingTag = matchResult.groups[1]!!.value
+                    val closingTag = matchResult.groups[3]!!.value
+                    val newValue = if (key.startsWith("plurals:")) "\n$value\n    " else value
+                    "$openingTag$newValue$closingTag"
+                }
+            }
+
+            // Apply additions
+            if (additions.isNotEmpty()) {
+                val closingTagIndex = content.lastIndexOf("</resources>")
+                if (closingTagIndex != -1) {
+                    val stringWriter = java.io.StringWriter()
+                    val writer = PrintWriter(stringWriter)
+                    writer.println()
+                    writer.println("    <!-- Added/updated from original-strings.xml -->")
+                    addTranslationEntries(writer, additions.toSortedMap())
+
+                    val newEntries = stringWriter.toString().trimEnd()
+                    content = content.substring(0, closingTagIndex) + newEntries + "\n</resources>"
+                }
+            }
+            file.writeText(content)
+        }
+
+        sourceModuleTranslations.forEach { (moduleName, sourceStrings) ->
+            val moduleProject = project.subprojects.find { it.name == moduleName }
+            if (moduleProject == null) {
+                println("  - Module '$moduleName' not found, skipping.")
+                return@forEach
+            }
+
+            val resDir = file("${moduleProject.projectDir}/src/main/res/values")
+            if (!resDir.exists()) {
+                println("  - Resource directory not found for module '$moduleName', skipping.")
+                return@forEach
+            }
+
+            val stringsFile = file("$resDir/strings.xml")
+            val translatableFile = file("$resDir/translatable.xml")
+
+            val stringsMap = if (stringsFile.exists()) parseStringXml(stringsFile) else mapOf()
+            val translatableMap = if (translatableFile.exists()) parseStringXml(translatableFile) else mapOf()
+
+            val stringsToUpdate = mutableMapOf<String, String>()
+            val translatableToUpdate = mutableMapOf<String, String>()
+            val stringsToAdd = mutableMapOf<String, String>()
+            val translatableToAdd = mutableMapOf<String, String>()
+
+            sourceStrings.forEach { (key, sourceValue) ->
+                if (translatableMap.containsKey(key)) {
+                    if (translatableMap[key] != sourceValue) {
+                        translatableToUpdate[key] = sourceValue
+                    }
+                } else if (stringsMap.containsKey(key)) {
+                    if (stringsMap[key] != sourceValue) {
+                        stringsToUpdate[key] = sourceValue
+                    }
+                } else {
+                    if (translatableFile.exists()) {
+                        translatableToAdd[key] = sourceValue
+                    } else {
+                        stringsToAdd[key] = sourceValue
+                    }
+                }
+            }
+
+            processFile(stringsFile, stringsToUpdate, stringsToAdd)
+            processFile(translatableFile, translatableToUpdate, translatableToAdd)
+
+            if (stringsToUpdate.isEmpty() && stringsToAdd.isEmpty() && translatableToUpdate.isEmpty() && translatableToAdd.isEmpty()) {
+                println("  - Module '$moduleName' is up to date.")
+            }
+        }
+
+        println("\nFinished updating original strings.")
+    }
 }
 
 /**
@@ -238,6 +355,7 @@ tasks.register("extractTranslations") {
 tasks.register("importXmlTranslations") {
     group = "translations"
     description = "Imports translations from XML files back into project modules"
+//    dependsOn(tasks.named("updateOriginalsFromSource"))
 
     doLast {
         val inputDir = "${project.buildDir}/../../translations"
@@ -406,6 +524,32 @@ tasks.register("importXmlTranslations") {
 }
 
 /**
+ * Helper function: writeStringsToXml
+ *
+ * Writes a map of string key-value pairs to a specified XML resource file.
+ * The file is completely overwritten.
+ *
+ * @param file The target XML file to write to.
+ * @param strings The map of strings to write.
+ * @param comment An optional comment to include at the top of the resources block.
+ */
+fun writeStringsToXml(file: java.io.File, strings: Map<String, String>, comment: String = "") {
+    file.parentFile.mkdirs()
+    file.printWriter().use { writer ->
+        writer.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>")
+        writer.println("<resources>")
+        if (comment.isNotBlank()) {
+            writer.println("\n    <!-- $comment -->")
+        }
+
+        val sortedStrings = strings.toSortedMap()
+        addTranslationEntries(writer, sortedStrings)
+
+        writer.println("</resources>")
+    }
+}
+
+/**
  * Helper function: parseStringXml
  *
  * Parses a standard Android string resource XML file.
@@ -416,7 +560,7 @@ tasks.register("importXmlTranslations") {
  * @param file The Android string resource XML file to parse
  * @return A map of string resource names to their values
  */
-fun parseStringXml(file: File): Map<String, String> {
+fun parseStringXml(file: java.io.File): Map<String, String> {
     val result = mutableMapOf<String, String>()
     val content = file.readText()
 
@@ -463,7 +607,7 @@ fun parseStringXml(file: File): Map<String, String> {
  * @param file The XML file to parse
  * @return A map where keys are module names and values are maps of string key-value pairs
  */
-fun parseModuleTranslations(file: File): Map<String, Map<String, String>> {
+fun parseModuleTranslations(file: java.io.File): Map<String, Map<String, String>> {
     val result = mutableMapOf<String, MutableMap<String, String>>()
     var currentModule = ""
 

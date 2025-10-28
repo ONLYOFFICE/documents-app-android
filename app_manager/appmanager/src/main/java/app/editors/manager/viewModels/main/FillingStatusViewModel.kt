@@ -2,7 +2,7 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.FormRole
 import app.documents.core.providers.CloudFileProvider
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class FillingStatusState(
-    val formInfo: CloudFile,
+    val formInfo: CloudFile = CloudFile(),
     val loading: Boolean = false,
     val requestLoading: Boolean = false,
     val roles: List<FormRole> = emptyList(),
@@ -30,12 +30,12 @@ sealed class FillingStatusEffect {
 }
 
 class FillingStatusViewModel(
-    private val formInfo: CloudFile,
+    private val formId: String,
     private val cloudFileProvider: CloudFileProvider
 ) : ViewModel() {
 
     private val _state: MutableStateFlow<FillingStatusState> =
-        MutableStateFlow(FillingStatusState(formInfo))
+        MutableStateFlow(FillingStatusState())
     val state: StateFlow<FillingStatusState> = _state.asStateFlow()
 
     private val _effect: MutableSharedFlow<FillingStatusEffect> = MutableSharedFlow(1)
@@ -52,44 +52,47 @@ class FillingStatusViewModel(
     fun stopFilling() {
         viewModelScope.launch {
             _state.update { it.copy(requestLoading = true) }
-            cloudFileProvider.stopFilling(formInfo.id)
+            cloudFileProvider.stopFilling(formId)
                 .collect { result ->
                     _state.update { it.copy(requestLoading = false) }
                     when (result) {
-                        is Result.Error -> _effect.emit(FillingStatusEffect.Error)
-                        is Result.Success<*> -> {
+                        is NetworkResult.Error -> _effect.emit(FillingStatusEffect.Error)
+                        is NetworkResult.Success<*> -> {
                             fetchFormInfo()
                             fetchRoles()
                         }
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }
     }
 
     private suspend fun fetchFormInfo() {
-        cloudFileProvider.getFileInfo(formInfo.id)
+        cloudFileProvider.getFileInfo(formId)
             .collect { result ->
                 when (result) {
-                    is Result.Success<CloudFile> -> {
+                    is NetworkResult.Success<CloudFile> -> {
                         _state.update {
-                            it.copy(formInfo = result.result)
+                            it.copy(formInfo = result.data)
                         }
                     }
 
-                    is Result.Error -> {
+                    is NetworkResult.Error -> {
                         _effect.emit(FillingStatusEffect.Error)
                     }
+
+                    is NetworkResult.Loading -> Unit
                 }
             }
 
     }
 
     private suspend fun fetchRoles() {
-        cloudFileProvider.getFillingStatus(formInfo.id)
+        cloudFileProvider.getFillingStatus(formId)
             .collect { result ->
                 when (result) {
-                    is Result.Success<List<FormRole>> -> {
-                        val roles = result.result
+                    is NetworkResult.Success<List<FormRole>> -> {
+                        val roles = result.data
                         _state.update {
                             it.copy(
                                 loading = false,
@@ -99,9 +102,11 @@ class FillingStatusViewModel(
                         }
                     }
 
-                    is Result.Error -> {
+                    is NetworkResult.Error -> {
                         _effect.emit(FillingStatusEffect.Error)
                     }
+
+                    is NetworkResult.Loading -> Unit
                 }
             }
     }

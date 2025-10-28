@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import app.documents.core.model.cloud.Order
 import app.documents.core.model.cloud.Order.Companion.ENTRY_TYPE_FILE
 import app.documents.core.model.cloud.Order.Companion.ENTRY_TYPE_FOLDER
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Item
 import app.documents.core.providers.RoomProvider
@@ -87,8 +87,9 @@ class RoomOrderViewModel(
                 .collect { result ->
                     _loading.value = false
                     when (result) {
-                        is Result.Error -> _effect.emit(RoomOrderEffect.Error)
-                        is Result.Success<*> -> _effect.emit(RoomOrderEffect.Refresh)
+                        is NetworkResult.Error -> _effect.emit(RoomOrderEffect.Error)
+                        is NetworkResult.Success<*> -> _effect.emit(RoomOrderEffect.Refresh)
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }
@@ -101,8 +102,9 @@ class RoomOrderViewModel(
                 .collect { result ->
                     _loading.value = false
                     when (result) {
-                        is Result.Error -> _effect.emit(RoomOrderEffect.Error)
-                        is Result.Success<*> -> _effect.emit(RoomOrderEffect.Success)
+                        is NetworkResult.Error -> _effect.emit(RoomOrderEffect.Error)
+                        is NetworkResult.Success<*> -> _effect.emit(RoomOrderEffect.Success)
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }

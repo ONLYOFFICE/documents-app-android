@@ -83,7 +83,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
                     .doOnNext(::loadSuccess)
                     .doOnError(::fetchError)
                     .subscribe()
-                )
+            )
         }
     }
 
@@ -249,13 +249,19 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
     }
 
     fun import(uri: Uri) {
+        val currentId = modelExplorerStack.currentId
+
+        if (currentId == null) {
+            viewState.onError(context.getString(R.string.errors_import_local_file_desc))
+            return
+        }
+
         disposable.add(
             fileProvider.import(
-            context,
-            modelExplorerStack.currentId ?: throw RuntimeException(),
-            uri
-        )
-            .subscribe(
+                context,
+                currentId,
+                uri
+            ).subscribe(
                 {},
                 { throwable ->
                     if (throwable.message?.contains(ProviderError.FILE_EXIST) != true) {
@@ -414,10 +420,12 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
                     viewState.onShowPdf(uri, editType)
                 }
             }
+
             Extension.IMAGE,
             Extension.IMAGE_GIF,
             Extension.VIDEO_SUPPORT -> showMedia(uri)
-            else ->  viewState.onOpenLocalFile(uri, extension, editType)
+
+            else -> viewState.onOpenLocalFile(uri, extension, editType)
         }
     }
 

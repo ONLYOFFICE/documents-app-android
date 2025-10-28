@@ -6,7 +6,7 @@ import androidx.core.net.toUri
 import app.documents.core.account.AccountRepository
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Recent
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.asResult
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -42,13 +42,13 @@ class RecentFileProvider @Inject constructor(
         cloudFile: CloudFile,
         editType: EditType,
         canBeShared: Boolean
-    ): Flow<Result<FileOpenResult>> = flowOf()
+    ): Flow<NetworkResult<FileOpenResult>> = flowOf()
 
     override fun updateDocument(id: String, body: MultipartBody.Part): Single<Boolean> {
         return cloudFileProvider.updateDocument(id, body)
     }
 
-    fun openFile(recent: Recent, editType: EditType): Flow<Result<FileOpenResult>> {
+    fun openFile(recent: Recent, editType: EditType): Flow<NetworkResult<FileOpenResult>> {
         return flow {
             emit(FileOpenResult.Loading())
             if (recent.source == null) {
@@ -111,8 +111,9 @@ class RecentFileProvider @Inject constructor(
             canBeShared = false
         ).collect { result ->
             when (result) {
-                is Result.Error -> emit(FileOpenResult.RecentFileNotFound())
-                is Result.Success<FileOpenResult> -> emit(result.result)
+                is NetworkResult.Error -> emit(FileOpenResult.RecentFileNotFound())
+                is NetworkResult.Success<FileOpenResult> -> emit(result.data)
+                is NetworkResult.Loading -> Unit
             }
         }
     }
@@ -138,8 +139,9 @@ class RecentFileProvider @Inject constructor(
             canBeShared = false
         ).collect { result ->
             when (result) {
-                is Result.Error -> emit(FileOpenResult.RecentFileNotFound())
-                is Result.Success<FileOpenResult> -> emit(result.result)
+                is NetworkResult.Error -> emit(FileOpenResult.RecentFileNotFound())
+                is NetworkResult.Success<FileOpenResult> -> emit(result.data)
+                is NetworkResult.Loading -> Unit
             }
         }
     }
@@ -159,8 +161,9 @@ class RecentFileProvider @Inject constructor(
             canBeShared = false
         ).collect { result ->
             when (result) {
-                is Result.Error -> emit(FileOpenResult.RecentFileNotFound())
-                is Result.Success<FileOpenResult> -> emit(result.result)
+                is NetworkResult.Error -> emit(FileOpenResult.RecentFileNotFound())
+                is NetworkResult.Success<FileOpenResult> -> emit(result.data)
+                is NetworkResult.Loading -> Unit
             }
         }
     }

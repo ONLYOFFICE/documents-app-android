@@ -3,7 +3,6 @@ package app.editors.manager.ui.fragments.main
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -14,7 +13,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.widget.SearchView
 import androidx.core.net.toUri
@@ -38,7 +36,6 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.ActionMenuAdapter
 import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.managers.tools.ActionMenuItemsFactory
-import app.editors.manager.managers.utils.toEditAccess
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.PickerMode
@@ -47,6 +44,7 @@ import app.editors.manager.mvp.views.main.DocsBaseView
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity.Companion.show
 import app.editors.manager.ui.adapters.ExplorerAdapter
+import app.editors.manager.ui.adapters.ExplorerAdapter.ExplorerPayload
 import app.editors.manager.ui.adapters.diffutilscallback.EntityDiffUtilsCallback
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import app.editors.manager.ui.dialogs.ActionBottomDialog
@@ -61,22 +59,18 @@ import app.editors.manager.ui.fragments.storages.DocsOneDriveFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import lib.toolkit.base.managers.tools.LocalContentTools.Companion.HWPX_EXTENSION
-import lib.toolkit.base.managers.tools.LocalContentTools.Companion.HWP_EXTENSION
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.CameraPicker
 import lib.toolkit.base.managers.utils.CreateDocument
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.EditorsContract.EXTRA_IS_MODIFIED
-import lib.toolkit.base.managers.utils.EditorsType
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import lib.toolkit.base.managers.utils.PathUtils
 import lib.toolkit.base.managers.utils.PermissionUtils.requestReadPermission
 import lib.toolkit.base.managers.utils.RequestPermissions
 import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.StringUtils.getExtension
-import lib.toolkit.base.managers.utils.StringUtils.getHelpUrl
 import lib.toolkit.base.managers.utils.TimeUtils.fileTimeStamp
 import lib.toolkit.base.managers.utils.contains
 import lib.toolkit.base.managers.utils.getSendFileIntent
@@ -99,10 +93,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     companion object {
         private const val CLICK_TIME_INTERVAL: Long = 350
         const val REQUEST_OPEN_FILE = 10000
-        const val REQUEST_DOCS = 10001
-        const val REQUEST_PRESENTATION = 10002
-        const val REQUEST_SHEETS = 10003
-        const val REQUEST_PDF = 10004
         const val REQUEST_DOWNLOAD = 10005
         const val REQUEST_STORAGE_ACCESS = 10006
     }
@@ -140,16 +130,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         uri?.let { presenter.download(uri) }
     }
 
-    private val editorLaunchers = mutableMapOf<Int, ActivityResultLauncher<Intent>>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(lifecycleEventObserver)
         isGridView = presenter.preferenceTool.isGridView
         setHasOptionsMenu(true)
-        registerEditorLauncher(REQUEST_DOCS)
-        registerEditorLauncher(REQUEST_SHEETS)
-        registerEditorLauncher(REQUEST_PRESENTATION)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -163,19 +148,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         moveCopyDialog = null
     }
 
-    protected open fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    protected open fun onEditorActivityResult(resultCode: Int, data: Intent?) {
         when (resultCode) {
             Activity.RESULT_OK -> {
-                when (requestCode) {
-                    REQUEST_DOCS,
-                    REQUEST_SHEETS,
-                    REQUEST_PRESENTATION -> {
-                        removeCommonDialog()
-                        val uri = data?.data ?: return
-                        if (data.getBooleanExtra(EXTRA_IS_MODIFIED, false)) {
-                            presenter.updateDocument(uri = uri)
-                        }
-                    }
+                removeCommonDialog()
+                val uri = data?.data ?: return
+                if (data.getBooleanExtra(EXTRA_IS_MODIFIED, false)) {
+                    presenter.updateDocument(uri = uri)
                 }
             }
 
@@ -183,13 +162,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 showSnackBar(R.string.errors_open_document)
             }
         }
-    }
-
-    private fun registerEditorLauncher(requestCode: Int) {
-        val launcher = registerForActivityResult(StartActivityForResult()) { result ->
-            onEditorActivityResult(requestCode, result.resultCode, result.data)
-        }
-        editorLaunchers[requestCode] = launcher
     }
 
     @SuppressLint("MissingPermission")
@@ -351,18 +323,14 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     override fun onOpenDocumentServer(file: CloudFile, info: String, editType: EditType) {
-        showEditors(
-            uri = null,
-            type = when (getExtension(file.fileExst)) {
-                StringUtils.Extension.DOC, StringUtils.Extension.FORM -> EditorsType.DOCS
-                StringUtils.Extension.SHEET -> EditorsType.CELLS
-                StringUtils.Extension.PRESENTATION -> EditorsType.PRESENTATION
-                StringUtils.Extension.PDF -> EditorsType.PDF
-                else -> return
-            },
-            info = info,
+        (activity as? IMainActivity)?.showEditors(
+            extension = file.fileExst,
+            data = info,
             editType = editType,
-            access = file.access
+            access = file.access,
+            onResultListener = ::onEditorActivityResult,
+            roomId = presenter.roomClicked?.id,
+            fileId = presenter.itemClicked?.id
         )
     }
 
@@ -371,29 +339,17 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             StringUtils.Extension.DOC,
             StringUtils.Extension.EBOOK,
             StringUtils.Extension.HTML,
-            StringUtils.Extension.FORM -> {
-                showEditors(
-                    uri = uri,
-                    type = EditorsType.DOCS,
-                    editType = if (extension in arrayOf(HWP_EXTENSION, HWPX_EXTENSION)) {
-                        EditType.View()
-                    } else {
-                        editType
-                    },
-                    access = access
-                )
-            }
-
-            StringUtils.Extension.SHEET -> {
-                showEditors(uri, EditorsType.CELLS, editType = editType, access = access)
-            }
-
-            StringUtils.Extension.PRESENTATION -> {
-                showEditors(uri, EditorsType.PRESENTATION, editType = editType, access = access)
-            }
-
+            StringUtils.Extension.FORM,
+            StringUtils.Extension.SHEET,
+            StringUtils.Extension.PRESENTATION,
             StringUtils.Extension.PDF -> {
-                showEditors(uri, EditorsType.PDF, editType = editType, access = access)
+                (activity as? IMainActivity)?.showEditors(
+                    uri = uri,
+                    extension = extension,
+                    editType = editType,
+                    access = access,
+                    onResultListener = ::onEditorActivityResult
+                )
             }
 
             StringUtils.Extension.IMAGE,
@@ -632,26 +588,26 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         val isEmpty = list?.isEmpty() ?: false
         setViewState(isEmpty)
         onStateMenuEnabled(!isEmpty)
-        explorerAdapter?.setItems(list)
+        explorerAdapter?.updateItems(list, presenter.currentFolder?.id.orEmpty())
     }
 
     override fun onDocsRefresh(list: List<Entity>?) {
         val isEmpty = list?.isEmpty() ?: false
         setViewState(isEmpty)
         onStateMenuEnabled(!isEmpty)
-        explorerAdapter?.setItems(list)
+        explorerAdapter?.updateItems(list, presenter.currentFolder?.id.orEmpty())
         recyclerView?.scheduleLayoutAnimation()
     }
 
     override fun onDocsFilter(list: List<Entity>?) {
         val isEmpty = list != null && list.isEmpty()
         setViewState(isEmpty)
-        explorerAdapter?.setItems(list)
+        explorerAdapter?.updateItems(list)
     }
 
     override fun onDocsNext(list: List<Entity>?) {
         setViewState(false)
-        explorerAdapter?.setItems(list)
+        explorerAdapter?.updateItems(list)
     }
 
     override fun onFinishDownload(uri: Uri?) {
@@ -685,6 +641,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
                 searchView?.collapse()
             }
         }
+    }
+
+    override fun onStateUpdateThumbnail(id: String) {
+        explorerAdapter?.updateItemById(id, ExplorerPayload.THUMBNAIL)
     }
 
     override fun onStateUpdateSelection(isSelection: Boolean) {
@@ -810,12 +770,11 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     @SuppressLint("NotifyDataSetChanged")
     override fun onItemsSelection(countSelected: String) {
         onActionBarTitle(countSelected)
-        explorerAdapter?.notifyDataSetChanged()
     }
 
     override fun onItemSelected(position: Int, countSelected: String) {
         onActionBarTitle(countSelected)
-        explorerAdapter?.notifyItemChanged(position)
+        explorerAdapter?.notifyItemChanged(position, ExplorerPayload.SELECTION)
     }
 
     override fun onActionDialog(isThirdParty: Boolean, isDocs: Boolean, roomType: Int?) {
@@ -1147,7 +1106,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     open fun setToolbarState(isVisible: Boolean) {
         val fragment = parentFragment
         if (fragment is MainPagerFragment) {
-            fragment.setToolbarState(isVisible)
+            val hideToolbarInfo = presenter.toolbarState == ToolbarState.None
+            fragment.setToolbarState(isVisible, hideToolbarInfo)
         } else if (fragment is DocsOneDriveFragment) {
             fragment.setToolbarState(isVisible)
         }
@@ -1180,55 +1140,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         val fragment = parentFragment
         if (fragment is MainPagerFragment) {
             fragment.setAccountEnable(isEnable)
-        }
-    }
-
-    protected fun showEditors(
-        uri: Uri?,
-        type: EditorsType,
-        info: String? = null,
-        editType: EditType,
-        access: Access
-    ) {
-        try {
-            val intent = Intent().apply {
-                data = uri
-                info?.let { putExtra(EditorsContract.KEY_DOC_SERVER, info) }
-                putExtra(EditorsContract.KEY_HELP_URL, getHelpUrl(requireContext()))
-                putExtra(EditorsContract.KEY_EDIT_TYPE, editType)
-                putExtra(EditorsContract.KEY_EDIT_ACCESS, access.toEditAccess())
-                putExtra(EditorsContract.KEY_KEEP_SCREEN_ON, presenter.keepScreenOnSetting)
-                action = Intent.ACTION_VIEW
-                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            }
-            when (type) {
-                EditorsType.DOCS -> {
-                    intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
-                    editorLaunchers[REQUEST_DOCS]?.launch(intent)
-                }
-
-                EditorsType.CELLS -> {
-                    intent.setClassName(requireContext(), EditorsContract.EDITOR_CELLS)
-                    editorLaunchers[REQUEST_SHEETS]?.launch(intent)
-                }
-
-                EditorsType.PRESENTATION -> {
-                    intent.setClassName(requireContext(), EditorsContract.EDITOR_SLIDES)
-                    editorLaunchers[REQUEST_PRESENTATION]?.launch(intent)
-                }
-                EditorsType.PDF -> {
-                    if (editType is EditType.View) {
-                        intent.setClassName(requireContext(), EditorsContract.PDF)
-                        startActivity(intent)
-                    } else {
-                        intent.setClassName(requireContext(), EditorsContract.EDITOR_DOCUMENTS)
-                        editorLaunchers[REQUEST_DOCS]?.launch(intent)
-                    }
-                }
-            }
-        } catch (e: ActivityNotFoundException) {
-            e.printStackTrace()
-            showToast("Not found")
         }
     }
 
@@ -1310,7 +1221,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
             is ActionMenuItem.GridView -> presenter.setGridView(true)
             is ActionMenuItem.ListView -> presenter.setGridView(false)
             ActionMenuItem.Select -> presenter.setSelection(true)
-            ActionMenuItem.SelectAll -> presenter.setSelectionAll()
+            ActionMenuItem.SelectAll -> presenter.selectAll()
             ActionMenuItem.Deselect -> presenter.deselectAll()
             ActionMenuItem.Download -> presenter.createDownloadFile()
             ActionMenuItem.EmptyTrash -> {

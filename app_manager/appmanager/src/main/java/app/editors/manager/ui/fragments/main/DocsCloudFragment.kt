@@ -29,6 +29,7 @@ import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
+import app.editors.manager.mvp.models.ui.DuplicateFilesChoice
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter
 import app.editors.manager.mvp.views.main.DocsCloudView
@@ -68,6 +69,7 @@ import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.DialogUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.contains
@@ -106,28 +108,29 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     private var refreshListener: RefreshListener? = null
 
-    override fun onEditorActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onEditorActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_DOCS, REQUEST_SHEETS, REQUEST_PRESENTATION -> {
-                    if (data?.data != null) {
-                        val isSendForm = data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)
-                        val fillSession = data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION)
-                        if (isSendForm) {
-                            val clickedFile = presenter.itemClicked as? CloudFile
-                            if (clickedFile?.formFillingStatus != ApiContract.FormFillingStatus.None) {
-                                showFillingStatusFragment(true)
-                            } else if (fillSession != null) {
-                                showFillResultFragment(fillSession)
-                            }
+    override fun onEditorActivityResult(resultCode: Int, data: Intent?) {
+        super.onEditorActivityResult(resultCode, data)
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                if (data?.data != null) {
+                    val isSendForm = data.getBooleanExtra(EditorsContract.EXTRA_IS_SEND_FORM, false)
+                    val fillSession = data.getStringExtra(EditorsContract.EXTRA_FILL_SESSION)
+                    if (isSendForm) {
+                        val clickedFile = presenter.itemClicked as? CloudFile
+                        if (clickedFile?.formFillingStatus != ApiContract.FormFillingStatus.None) {
+                            showFillingStatusFragment(FillingStatusMode.SendForm)
+                        } else if (fillSession != null) {
+                            showFillResultFragment(fillSession)
                         }
                     }
-                    refreshAfterEditing()
                 }
+                refreshAfterEditing()
             }
-        } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
-            onRefresh()
+            EditorsContract.RESULT_START_FILLING_COMPLETE -> {
+                requireView().postDelayed({
+                    showFillingStatusFragment(FillingStatusMode.StartFilling)
+                }, 500)
+            }
         }
     }
 
@@ -149,8 +152,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     onRefresh()
                 }
             }
-        } else if (resultCode == BaseActivity.REQUEST_ACTIVITY_REFRESH) {
-            onRefresh()
         }
     }
 
@@ -259,12 +260,14 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 acceptErrorTint = true
             )
             is ExplorerContextItem.Fill -> presenter.openFillFormFile()
+            is ExplorerContextItem.StartFilling -> presenter.openStartFilling()
             is ExplorerContextItem.ExternalLink -> presenter.saveExternalLinkToClipboard()
             is ExplorerContextItem.Restore -> presenter.moveCopySelected(OperationType.RESTORE)
             is ExplorerContextItem.Favorites -> presenter.addToFavorite()
             is ExplorerContextItem.VersionHistory -> presenter.showVersionHistory()
-            is ExplorerContextItem.FillingStatus -> showFillingStatusFragment(false)
+            is ExplorerContextItem.FillingStatus -> showFillingStatusFragment(FillingStatusMode.None)
             is ExplorerContextItem.StopFilling -> showStopFillingQuestionDialog()
+            is ExplorerContextItem.ResetFilling -> presenter.resetFilling()
             else -> super.onContextButtonClick(contextItem)
         }
     }
@@ -283,11 +286,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    private fun showFillingStatusFragment(isSendForm: Boolean) {
+    private fun showFillingStatusFragment(fillingStatusMode: FillingStatusMode) {
         FillingStatusFragment.show(
             activity = requireActivity(),
-            file = presenter.itemClicked as? CloudFile ?: return,
-            isSendForm = isSendForm,
+            formId = presenter.itemClicked?.id ?: return,
+            fillingStatusMode = fillingStatusMode,
             onClose = { presenter.refresh() },
             onStartFill = { presenter.openFile(EditType.Fill(), false) }
         )
@@ -333,10 +336,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         }
     }
 
-    fun setFileData(fileData: String) {
-        presenter.openFile(fileData)
-    }
-
     /*
      * On pager scroll callback
      * */
@@ -367,7 +366,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         val newList = list.orEmpty().toMutableList()
         if (presenter.getSectionType() == ApiContract.SectionType.CLOUD_USER &&
             context?.accountOnline.isDocSpace &&
-            presenter.isRoot
+            presenter.isRoot &&
+            !context?.accountOnline?.portal?.version?.docSpaceVersion?.startsWith("3.5")!!
         ) {
             newList.add(0, RecentViaLink)
         }
@@ -379,7 +379,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         val newList = list.orEmpty().toMutableList()
         if (presenter.getSectionType() == ApiContract.SectionType.CLOUD_USER &&
             context?.accountOnline.isDocSpace &&
-            presenter.isRoot
+            presenter.isRoot &&
+            !context?.accountOnline?.portal?.version?.docSpaceVersion?.startsWith("3.5")!!
         ) {
             newList.add(0, RecentViaLink)
         }
@@ -391,7 +392,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         val newList = list.orEmpty().toMutableList()
         if (presenter.getSectionType() == ApiContract.SectionType.CLOUD_USER &&
             context?.accountOnline.isDocSpace &&
-            presenter.isRoot
+            presenter.isRoot &&
+            !context?.accountOnline?.portal?.version?.docSpaceVersion?.startsWith("3.5")!!
         ) {
             newList.add(0, RecentViaLink)
         }
@@ -633,7 +635,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     )
                 }
 
-                ToolbarState.None -> activity.setToolbarInfo(null)
+                ToolbarState.None -> Unit
             }
         }
     }
@@ -715,6 +717,26 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             description = getString(R.string.filling_form_version_incompatible_desc),
             acceptTitle = getString(R.string.conversion_dialog_open_in_view_mode),
             acceptListener = { presenter.openFile(EditType.View()) },
+        )
+    }
+
+    override fun showDuplicateFilesDialog(filename: String?) {
+        val folderId = presenter.folderId.orEmpty()
+        UiUtils.showQuestionDialog(
+            context = requireContext(),
+            title = getString(R.string.upload_manager_duplicate_title),
+            description = if (filename != null) {
+                getString(R.string.upload_manager_duplicate_text, filename)
+            } else {
+                getString(R.string.upload_manager_duplicates_text)
+            },
+            acceptTitle = getString(R.string.upload_manager_duplicate_overwrite),
+            acceptListener = { presenter.startUpload(folderId, DuplicateFilesChoice.OVERWRITE) },
+            neutralTitle = getString(R.string.upload_manager_duplicate_skip),
+            neutralListener = { presenter.startUpload(folderId, DuplicateFilesChoice.SKIP) },
+            cancelTitle = getString(R.string.upload_manager_duplicate_copy),
+            cancelListener = { presenter.startUpload(folderId, DuplicateFilesChoice.COPY) },
+            dismissListener = { presenter.cleanUploadFiles() }
         )
     }
 
@@ -800,6 +822,28 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 showSnackBar(R.string.room_created_successfully)
             }
         }
+    }
+
+    override fun showEditDialogCreate(
+        title: String,
+        value: String?,
+        hint: String?,
+        endHint: String?,
+        tag: String,
+        acceptButton: String?,
+        cancelButton: String?,
+        forbiddenSymbols: String
+    ) {
+        super.showEditDialogCreate(
+            title = title,
+            value = value,
+            hint = hint,
+            endHint = endHint,
+            tag = tag,
+            acceptButton = acceptButton,
+            cancelButton = cancelButton,
+            forbiddenSymbols = StringUtils.DIALOG_CLOUD_FORBIDDEN_SYMBOLS
+        )
     }
 
     val isRoot: Boolean

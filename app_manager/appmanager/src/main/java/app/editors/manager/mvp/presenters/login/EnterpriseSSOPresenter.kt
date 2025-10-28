@@ -1,7 +1,7 @@
 package app.editors.manager.mvp.presenters.login
 
 import app.documents.core.model.cloud.CloudAccount
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.login.EnterpriseSSOView
 import kotlinx.coroutines.launch
@@ -23,8 +23,9 @@ class EnterpriseSSOPresenter : BaseLoginPresenter<EnterpriseSSOView>() {
                 loginRepository.signInWithSSO(token)
                     .collect { result ->
                         when (result) {
-                            is Result.Success -> onAccountCreateSuccess(result.result)
-                            is Result.Error -> fetchError(result.exception)
+                            is NetworkResult.Success -> onAccountCreateSuccess(result.data)
+                            is NetworkResult.Error -> fetchError(result.exception)
+                            is NetworkResult.Loading -> Unit
                         }
                     }
             } catch (e: Exception) {

@@ -1,27 +1,28 @@
 [versions]
-compileSdk = "35"
+compileSdk = "36"
 minSdk = "26"
 targetSdk = "35"
-ndk = "21.3.6528147"
-gradle = "8.7.3"
+ndk = "28.2.13676358"
+gradle = "8.13.0"
 
 #kotlin
 kotlin = "1.9.24"
 kotlinKsp = "1.9.24-1.0.20"
 kotlinSerialization = "1.6.3"
+kotlinReflect = "1.9.0"
 coroutines = "1.8.1"
 
 #android
-androidx = "1.7.0"
+androidx = "1.7.1"
 cardView = "1.0.0"
 recyclerView = "1.4.0"
-recyclerViewSelection = "1.1.0"
+recyclerViewSelection = "1.2.0"
 constraint = "2.2.1"
-ktx = "1.15.0"
-fragmentKtx = "1.8.6"
+ktx = "1.17.0"
+fragmentKtx = "1.8.9"
 biometric = "1.1.0"
-androidWorkManager = "2.10.0"
-androidDocumentFile = "1.0.1"
+androidWorkManager = "2.10.3"
+androidDocumentFile = "1.1.0"
 
 #compose
 composeMaterial = "1.7.8"
@@ -35,7 +36,7 @@ compose = "1.7.8"
 composeConstrainLayout = "1.1.1"
 
 #dagger
-dagger = "2.56.1"
+dagger = "2.57.1"
 
 #room
 room = "2.6.1"
@@ -56,13 +57,14 @@ firebaseCrashlytics = "19.4.2"
 lifecycle = "2.8.7"
 
 #google
-playServieAuth = "21.3.0"
+playServieAuth = "21.4.0"
 playReview = "2.0.2"
 material = "1.12.0"
-gson = "2.12.1"
+gson = "2.13.1"
 safetynet = "18.1.0"
 app-update = "2.1.0"
 text-recognition = "16.0.1"
+object-detection = "17.0.2"
 
 jackson = "2.18.3"
 
@@ -71,8 +73,8 @@ rxjava = "2.1.1"
 retrofit = "2.11.0"
 retrofitKtSerialization = "1.0.0"
 
-firebaseCrashlyticsGradle = "3.0.3"
-googleServices = "4.4.2"
+firebaseCrashlyticsGradle = "3.0.6"
+googleServices = "4.4.3"
 
 #other
 phoneNumber = "8.13.52"
@@ -116,12 +118,14 @@ google-safetynet = { module = "com.google.android.gms:play-services-safetynet", 
 google-update = { module = "com.google.android.play:app-update-ktx", version.ref = "app-update" }
 google-ml-text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "text-recognition" }
 google-ml-text-recognitionchinese = { module = "com.google.mlkit:text-recognition-chinese", version.ref = "text-recognition" }
+google-ml-objects-detection = { module = "com.google.mlkit:object-detection", version.ref = "object-detection" }
 
 #kotlin
 kotlin-core = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinSerialization" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
 
 #dagger
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }

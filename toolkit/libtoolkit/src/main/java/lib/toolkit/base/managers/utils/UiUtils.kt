@@ -727,7 +727,8 @@ object UiUtils {
         acceptTitle: String? = context.getString(android.R.string.ok),
         acceptErrorTint: Boolean = false,
         neutralTitle: String? = null,
-        cancelTitle: String? = context.getString(android.R.string.cancel)
+        cancelTitle: String? = context.getString(android.R.string.cancel),
+        dismissListener: (() -> Unit)? = null
     ) {
         val errorColor = "<font color='${
             java.lang.String.format(
@@ -750,6 +751,7 @@ object UiUtils {
                         dialog.dismiss()
                     }
                 }
+                dismissListener?.let { lr -> setOnCancelListener { lr.invoke() } }
             }
             .setNegativeButton(cancelTitle?.capitalize()) { dialog, _ ->
                 cancelListener?.invoke()

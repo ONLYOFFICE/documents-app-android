@@ -2,7 +2,7 @@ package app.documents.core.login
 
 import app.documents.core.account.AccountRepository
 import app.documents.core.model.cloud.CloudAccount
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.asResult
 import app.documents.core.network.login.StorageLoginDataSource
 import kotlinx.coroutines.Dispatchers
@@ -12,9 +12,9 @@ import kotlinx.coroutines.flow.flowOn
 
 sealed interface StorageLoginRepository {
 
-    suspend fun signIn(code: String): Flow<Result<*>>
+    suspend fun signIn(code: String): Flow<NetworkResult<*>>
 
-    suspend fun refreshToken(): Flow<Result<*>>
+    suspend fun refreshToken(): Flow<NetworkResult<*>>
 }
 
 internal abstract class StorageLoginRepositoryImpl<U, D : StorageLoginDataSource<U>>(
@@ -24,7 +24,7 @@ internal abstract class StorageLoginRepositoryImpl<U, D : StorageLoginDataSource
 
     abstract fun mapToCloudAccount(user: U): CloudAccount
 
-    override suspend fun signIn(code: String): Flow<Result<*>> {
+    override suspend fun signIn(code: String): Flow<NetworkResult<*>> {
         return flow {
             val response = storageLoginDataSource.signIn(code)
             accountRepository.addAccount(
@@ -37,7 +37,7 @@ internal abstract class StorageLoginRepositoryImpl<U, D : StorageLoginDataSource
             .asResult()
     }
 
-    override suspend fun refreshToken(): Flow<Result<*>> {
+    override suspend fun refreshToken(): Flow<NetworkResult<*>> {
         return flow {
             val response = storageLoginDataSource.refreshToken(requireNotNull(accountRepository.getRefreshToken()))
             accountRepository.updateAccount(

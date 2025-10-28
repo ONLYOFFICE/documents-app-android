@@ -39,22 +39,37 @@ class RoomUserListViewModel(
     private suspend fun getMembers(): List<Member> {
         val portal = App.getApp().accountOnline?.portal?.urlWithScheme
 
-        val groups = roomProvider.getGroups(roomId, getOptions())
+        val groups = when (mode) {
+            UserListMode.ChangeOwner,
+            UserListMode.StartFilling -> emptyList()
+            else -> roomProvider.getGroups(roomId, getOptions())
+        }
 
         val users = roomProvider.getUsers(roomId, getOptions())
-            .map { user -> user.copy(avatarMedium = portal + user.avatarMedium) }
             .run {
-                if (mode == UserListMode.ChangeOwner) {
-                    filter { it.isAdmin && it.id != roomOwnerId }
-                } else {
-                    this
+                when (mode) {
+                    UserListMode.ChangeOwner -> filter { it.isAdmin && it.id != roomOwnerId }
+                    UserListMode.StartFilling -> filter { it.shared }
+                    else -> this
                 }
             }
+            .map { user -> user.copy(avatarMedium = portal + user.avatarMedium) }
 
         val guests = roomProvider.getGuests(roomId, getOptions())
+            .run {
+                when (mode) {
+                    UserListMode.StartFilling -> filter { it.shared }
+                    else -> this
+                }
+            }
+            .filter { it.status != 4 }
             .map { user -> user.copy(avatarMedium = portal + user.avatarMedium) }
 
         return groups + users + guests
+    }
+
+    fun refreshMembers() {
+
     }
 
     fun setOwner(userId: String, leave: Boolean) {

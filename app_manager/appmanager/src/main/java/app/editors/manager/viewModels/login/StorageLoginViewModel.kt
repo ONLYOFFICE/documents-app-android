@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import app.documents.core.login.StorageLoginRepository
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,8 +45,9 @@ class StorageLoginViewModel(private val repository: StorageLoginRepository) : Vi
             repository.signIn(code)
                 .collect { result ->
                     when (result) {
-                        is Result.Error -> _state.value = StorageLoginState.Error(result.exception)
-                        is Result.Success -> _state.value = StorageLoginState.Success
+                        is NetworkResult.Error -> _state.value = StorageLoginState.Error(result.exception)
+                        is NetworkResult.Success -> _state.value = StorageLoginState.Success
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }

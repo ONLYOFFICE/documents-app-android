@@ -6,14 +6,14 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.mapResult
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.app.App
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.tools.PreferenceTool
-import app.editors.manager.mvp.models.ui.ResultUi
-import app.editors.manager.mvp.models.ui.networkAsFlowResultUI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -29,8 +29,8 @@ class RoomFromTemplateViewModel(
     private val preferenceTool: PreferenceTool
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<ResultUi<TemplateListState>> =
-        MutableStateFlow(ResultUi.Loading)
+    private val _uiState: MutableStateFlow<NetworkResult<TemplateListState>> =
+        MutableStateFlow(NetworkResult.Loading)
     val uiState = _uiState.asStateFlow()
 
     init {
@@ -43,7 +43,7 @@ class RoomFromTemplateViewModel(
             put(ApiContract.Parameters.ARG_SORT_ORDER, preferenceTool.sortOrder ?: "")
         }
         viewModelScope.launch {
-            roomProvider.getRoomTemplates(filters).networkAsFlowResultUI { list ->
+            roomProvider.getRoomTemplates(filters).mapResult { list ->
                 TemplateListState(
                     templates = list,
                     sortBy = preferenceTool.sortBy

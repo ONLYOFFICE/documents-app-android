@@ -101,6 +101,8 @@ open class Item : ItemProperties(), Serializable {
         providerItem = item.providerItem
     }
 
+    override fun getEntityId() = id
+
     class SortCreateDate(isSortAsc: Boolean) : BaseResponse.AbstractSort<Item>(isSortAsc) {
         override fun compare(o1: Item, o2: Item): Int {
             return mSortOrder * o1.created.compareTo(o2.created)
