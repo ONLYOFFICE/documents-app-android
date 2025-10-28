@@ -1088,4 +1088,16 @@
     <plurals name="access_members_groups_title">
         <item quantity="other">%d ກຸ່ມ</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">ບັນທຶກລະບົບ</string>
+    <string name="dev_mode_network_requests">ການຮ້ອງຂໍເຄືອຂ່າຍ</string>
+    <string name="whats_new">ມີຫຍັງໃໝ່ໃນ v9.0</string>
+    <string name="start_filling_title">ເລີ່ມຕື່ມຂໍ້ມູນ</string>
+    <string name="start_filling_start">ເລີ່ມ</string>
+    <string name="start_filling_desc">ໃນແຜງນີ້ ທ່ານສາມາດຕິດຕາມການສຳເລັດຂອງແບບຟອມທີ່ທ່ານເຂົ້າຮ່ວມ ຫຼື ທີ່ທ່ານເປັນຜູ້ຈັດແຈງການສຳເລັດ</string>
+    <string name="start_filling_header">ບົດບາດຈາກແບບຟອມ:</string>
+    <string name="start_filling_ready_for_filling">ແບບຟອມພ້ອມແລ້ວສຳລັບການຕື່ມຂໍ້ມູນໃນຫ້ອງ</string>
+    <string name="start_filling_ready_for_filling_desc">ການແຈ້ງເຕືອນໄດ້ຖືກສົ່ງໄປຫາຜູ້ໃຊ້ໃນບົດບາດທຳອິດແລ້ວ, ເຊິ່ງກະຕຸ້ນໃຫ້ເຂົາເຈົ້າຕື່ມຂໍ້ມູນໃນແບບຟອມ. ທ່ານສາມາດນຳທາງໄປຫາຫ້ອງ ຫຼື ແບ່ງປັນລິ້ງການຕື່ມຂໍ້ມູນກັບຜູ້ເຂົ້າຮ່ວມ.</string>
+    <string name="list_context_reset_filling">ຕັ້ງຄ່າໃໝ່ ແລະ ເລີ່ມການຕື່ມຂໍ້ມູນ</string>
 </resources>

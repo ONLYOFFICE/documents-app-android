@@ -1202,15 +1202,15 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="dev_mode_system_logs">System logs</string>
     <string name="dev_mode_network_requests">Network requests</string>
 <!--    Wats new-->
-    <string name="whats_new">What\'s new in v9.0</string>
-    <string name="whats_new_1">Text recognition with device camera</string>
-    <string name="whats_new_1_desc">Capture printed text with your camera and create editable documents.</string>
-    <string name="whats_new_2">Updated tabbed interface</string>
-    <string name="whats_new_2_desc">Enjoy a cleaner, more intuitive layout with the redesigned toolbar.</string>
-    <string name="whats_new_3">Support for ODG and Markdown formats</string>
-    <string name="whats_new_3_desc">Open and view .odg drawings and .md files right from your device.</string>
-    <string name="whats_new_4">Enhanced compatibility with DocSpace 3.1</string>
-    <string name="whats_new_4_desc">Access document versions, role-based form filling in VDR, room templates, and custom filters when connected to your DocSpace.</string>
+    <string name="whats_new">What\'s new in v9.1</string>
+    <string name="whats_new_1">AI assistant in editors</string>
+    <string name="whats_new_1_desc">Work smarter in documents and spreadsheets with built-in AI. Connect models like OpenAI, Anthropic, Google, or Ollama.</string>
+    <string name="whats_new_2">Text direction options</string>
+    <string name="whats_new_2_desc">Easily switch between Right-to-left and Left-to-right text direction in all editors.</string>
+    <string name="whats_new_3">Role-based form filling in DocSpace</string>
+    <string name="whats_new_3_desc">Assign specific roles to participants when starting a form-filling process while connected to DocSpace.</string>
+    <string name="whats_new_4">Table of contents in documents</string>
+    <string name="whats_new_4_desc">Create and navigate through document sections with an automatic table of contents.</string>
 
     <string name="start_filling_title">Start filling</string>
     <string name="start_filling_start">Start</string>

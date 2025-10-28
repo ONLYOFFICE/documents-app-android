@@ -814,15 +814,15 @@
     <string name="rooms_user_type_employees">Funcionários</string>
     <string name="whats_new_title">O que há de novo?</string>
     <string name="whats_new_next">Começar</string>
-    <string name="whats_new">Novidades na v9.0</string>
-    <string name="whats_new_1">Reconhecimento de texto com a câmera do dispositivo</string>
-    <string name="whats_new_1_desc">Capture texto impresso com sua câmera e crie documentos editáveis.</string>
-    <string name="whats_new_2">Interface com abas atualizada</string>
-    <string name="whats_new_2_desc">Desfrute de um layout mais limpo e intuitivo com a barra de ferramentas redesenhada.</string>
-    <string name="whats_new_3">Suporte para formatos ODG e Markdown</string>
-    <string name="whats_new_3_desc">Abra e visualize desenhos .odg e arquivos .md diretamente do seu dispositivo.</string>
-    <string name="whats_new_4">Compatibilidade aprimorada com o DocSpace 3.1</string>
-    <string name="whats_new_4_desc">Acesse versões de documentos, preenchimento de formulários baseado em funções no VDR, modelos de sala e filtros personalizados quando conectado ao seu DocSpace.</string>
+    <string name="whats_new">Novidades na v9.1</string>
+    <string name="whats_new_1">Assistente de IA em editores</string>
+    <string name="whats_new_1_desc">Trabalhe de forma mais inteligente em documentos e planilhas com a IA integrada. Conecte modelos como OpenAI, Anthropic, Google ou Ollama.</string>
+    <string name="whats_new_2">Opções de direção de texto</string>
+    <string name="whats_new_2_desc">Alterne facilmente entre a direção de texto da direita para a esquerda e da esquerda para a direita em todos os editores.</string>
+    <string name="whats_new_3">Preenchimento de formulários baseado em funções no DocSpace</string>
+    <string name="whats_new_3_desc">Atribua funções específicas aos participantes ao iniciar um processo de preenchimento de formulário enquanto estiver conectado ao DocSpace.</string>
+    <string name="whats_new_4">Sumário em documentos</string>
+    <string name="whats_new_4_desc">Crie e navegue pelas seções do documento com um sumário automático.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Eu e %s</string>
@@ -964,4 +964,15 @@
         <item quantity="one">%d grupo</item>
         <item quantity="other">%d grupos</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Logs do sistema</string>
+    <string name="dev_mode_network_requests">Solicitações de rede</string>
+    <string name="start_filling_title">Iniciar preenchimento</string>
+    <string name="start_filling_start">Iniciar</string>
+    <string name="start_filling_desc">Neste painel você pode monitorar a conclusão do formulário em que você participa ou do qual você é o organizador do preenchimento</string>
+    <string name="start_filling_header">Funções do formulário:</string>
+    <string name="start_filling_ready_for_filling">Formulário está pronto para preenchimento na sala</string>
+    <string name="start_filling_ready_for_filling_desc">Uma notificação já foi enviada ao usuário na primeira função, solicitando que preencha o formulário. Você pode navegar até a sala ou compartilhar o link de preenchimento com os participantes.</string>
+    <string name="list_context_reset_filling">Redefinir e iniciar preenchimento</string>
 </resources>

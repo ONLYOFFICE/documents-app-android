@@ -816,15 +816,15 @@
     <string name="rooms_user_type_employees">Empleados</string>
     <string name="whats_new_title">¿Qué hay de nuevo?</string>
     <string name="whats_new_next">Empiece a usar</string>
-    <string name="whats_new">Novedades en la v9.0</string>
-    <string name="whats_new_1">Reconocimiento de texto con la cámara del dispositivo</string>
-    <string name="whats_new_1_desc">Captura el texto impreso con tu cámara y crea documentos editables.</string>
-    <string name="whats_new_2">Interfaz con pestañas actualizada</string>
-    <string name="whats_new_2_desc">Disfruta de un diseño más limpio e intuitivo con la barra de herramientas rediseñada.</string>
-    <string name="whats_new_3">Compatibilidad con los formatos ODG y Markdown</string>
-    <string name="whats_new_3_desc">Abre y visualiza dibujos .odg y archivos .md directamente en tu dispositivo.</string>
-    <string name="whats_new_4">Compatibilidad mejorada con DocSpace 3.1</string>
-    <string name="whats_new_4_desc">Accede a versiones de documentos, rellenado de formularios basado en roles en las salas VDR, plantillas de salas y filtros personalizados cuando estés conectado a tu DocSpace.</string>
+    <string name="whats_new">Novedades en la v9.1</string>
+    <string name="whats_new_1">Asistente de IA en los editores</string>
+    <string name="whats_new_1_desc">Trabaja de forma más inteligente en documentos y hojas de cálculo con la IA integrada. Conecta modelos como OpenAI, Anthropic, Google u Ollama.</string>
+    <string name="whats_new_2">Opciones de dirección del texto</string>
+    <string name="whats_new_2_desc">Cambia fácilmente entre la dirección del texto de derecha a izquierda y de izquierda a derecha en todos los editores.</string>
+    <string name="whats_new_3">Rellenado de formularios basado en roles en DocSpace</string>
+    <string name="whats_new_3_desc">Asigna roles específicos a los participantes al iniciar un proceso de rellenado de formularios mientras estás conectado a DocSpace.</string>
+    <string name="whats_new_4">Tabla de contenidos en los documentos</string>
+    <string name="whats_new_4_desc">Crea y navega por las secciones de un documento con una tabla de contenidos automática.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Yo y %s</string>
@@ -966,4 +966,15 @@
         <item quantity="one">%d grupo</item>
         <item quantity="other">%d grupos</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Registros de sistema</string>
+    <string name="dev_mode_network_requests">Solicitudes de red</string>
+    <string name="start_filling_title">Empezar a rellenar</string>
+    <string name="start_filling_start">Empezar</string>
+    <string name="start_filling_desc">En este panel puede supervisar el rellenado del formulario en el que participa o en el que es el organizador del rellenado</string>
+    <string name="start_filling_header">Roles del formulario:</string>
+    <string name="start_filling_ready_for_filling">El formulario está listo para rellenarse en la sala</string>
+    <string name="start_filling_ready_for_filling_desc">Ya se ha enviado una notificación al usuario del primer rol, invitándole a rellenar el formulario. Puede navegar a la sala o compartir el enlace de rellenado con los participantes.</string>
+    <string name="list_context_reset_filling">Reiniciar y empezar a rellenar</string>
 </resources>

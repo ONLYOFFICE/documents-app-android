@@ -816,15 +816,15 @@ Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</
     <string name="rooms_user_type_employees">Mitarbeiter</string>
     <string name="whats_new_title">Was gibt\'s Neues</string>
     <string name="whats_new_next">Erste Schritte</string>
-    <string name="whats_new">Neuigkeiten in v9.0</string>
-    <string name="whats_new_1">Texterkennung mit der Gerätekamera</string>
-    <string name="whats_new_1_desc">Erfassen Sie gedruckten Text mit Ihrer Kamera und erstellen Sie bearbeitbare Dokumente.</string>
-    <string name="whats_new_2">Aktualisierte Oberfläche mit Registerkarten</string>
-    <string name="whats_new_2_desc">Genießen Sie ein übersichtlicheres, intuitiveres Layout mit der neu gestalteten Symbolleiste.</string>
-    <string name="whats_new_3">Unterstützung für ODG- und Markdown-Formate</string>
-    <string name="whats_new_3_desc">Öffnen Sie .odg-Zeichnungen und .md-Textdateien direkt von Ihrem Gerät aus.</string>
-    <string name="whats_new_4">Verbesserte Kompatibilität mit DocSpace 3.1</string>
-    <string name="whats_new_4_desc">Zugriff auf Dokumentversionen, rollenbasiertes Ausfüllen von Formularen im VDR, Raumvorlagen und benutzerdefinierte Filter bei Verbindung mit Ihrem DocSpace.</string>
+    <string name="whats_new">Neuigkeiten in v9.1</string>
+    <string name="whats_new_1">KI-Assistent in Editoren</string>
+    <string name="whats_new_1_desc">Arbeiten Sie intelligenter in Dokumenten und Tabellenkalkulationen mit integrierter KI. Verbinden Sie Modelle wie OpenAI, Anthropic, Google oder Ollama.</string>
+    <string name="whats_new_2">Textrichtungsoptionen</string>
+    <string name="whats_new_2_desc">Wechseln Sie in allen Editoren einfach zwischen der Textrichtung von rechts nach links und von links nach rechts.</string>
+    <string name="whats_new_3">Rollenbasiertes Ausfüllen von Formularen in DocSpace</string>
+    <string name="whats_new_3_desc">Weisen Sie Teilnehmern bestimmte Rollen zu, wenn Sie einen Formularausfüllvorgang starten, während Sie mit DocSpace verbunden sind.</string>
+    <string name="whats_new_4">Inhaltsverzeichnis in Dokumenten</string>
+    <string name="whats_new_4_desc">Erstellen und navigieren Sie mit einem automatischen Inhaltsverzeichnis durch Dokumentabschnitte.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Ich und %s</string>
@@ -966,4 +966,15 @@ Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</
         <item quantity="one">%d Gruppe</item>
         <item quantity="other">%d Gruppen</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Systemprotokolle</string>
+    <string name="dev_mode_network_requests">Netzwerkanfragen</string>
+    <string name="start_filling_title">Ausfüllen starten</string>
+    <string name="start_filling_start">Starten</string>
+    <string name="start_filling_desc">In diesem Bereich können Sie das Ausfüllen des Formulars überwachen, an dem Sie teilnehmen oder bei dem Sie der Organisator des Ausfüllens sind.</string>
+    <string name="start_filling_header">Rollen aus dem Formular:</string>
+    <string name="start_filling_ready_for_filling">Formular liegt zum Ausfüllen im Raum bereit</string>
+    <string name="start_filling_ready_for_filling_desc">Dem Benutzer in der ersten Rolle wurde bereits eine Benachrichtigung gesendet, die ihn zum Ausfüllen des Formulars auffordert. Sie können zum Raum navigieren oder den Ausfülllink mit den Teilnehmern teilen.</string>
+    <string name="list_context_reset_filling">Zurücksetzen und Ausfüllen starten</string>
 </resources>
