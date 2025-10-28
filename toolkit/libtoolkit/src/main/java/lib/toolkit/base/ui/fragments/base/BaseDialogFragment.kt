@@ -1,17 +1,12 @@
-package app.editors.manager.ui.dialogs.fragments
+package lib.toolkit.base.ui.fragments.base
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.activity.compose.BackHandler
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.DialogFragment
-import app.editors.manager.R
+import lib.toolkit.base.R
 import lib.toolkit.base.managers.utils.UiUtils
 
-abstract class ComposeDialogFragment : DialogFragment() {
+
+abstract class BaseDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
@@ -30,21 +25,8 @@ abstract class ComposeDialogFragment : DialogFragment() {
         setStyle(STYLE_NORMAL, styleRes)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return ComposeView(requireContext())
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        (view as? ComposeView)?.setContent {
-            BackHandler {
-                dismiss()
-            }
-            Content()
-        }
-    }
-
     private fun setDialogSize() {
-        val width = resources.getDimension(lib.toolkit.base.R.dimen.accounts_dialog_fragment_width)
+        val width = resources.getDimension(R.dimen.accounts_dialog_fragment_width)
         val height = if (UiUtils.isLandscape(requireContext())) {
             resources.displayMetrics.heightPixels / 1.2
         } else {
@@ -56,7 +38,4 @@ abstract class ComposeDialogFragment : DialogFragment() {
     protected fun showSnackbar(message: String) {
         UiUtils.getSnackBar(requireView()).setText(message).show()
     }
-
-    @Composable
-    abstract fun Content()
 }

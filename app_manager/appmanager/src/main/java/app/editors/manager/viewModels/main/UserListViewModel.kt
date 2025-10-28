@@ -28,6 +28,7 @@ sealed class UserListMode {
     data object Invite : UserListMode()
     data object ChangeOwner : UserListMode()
     data object TemplateAccess : UserListMode()
+    data object StartFilling : UserListMode()
 }
 
 data class UserListState(

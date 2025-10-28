@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.GoogleDriveFolder
@@ -196,11 +196,12 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView, G
                 .refreshToken()
                 .collect { result ->
                     when (result) {
-                        is Result.Error -> viewState.onSignIn()
-                        is Result.Success -> {
+                        is NetworkResult.Error -> viewState.onSignIn()
+                        is NetworkResult.Success -> {
                             App.getApp().refreshGoogleDriveInstance()
                             getItemsById("root")
                         }
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }

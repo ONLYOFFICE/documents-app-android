@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.CloudFolderLogo
 import app.editors.manager.R
@@ -33,7 +34,6 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.StringUtils
-import app.editors.manager.mvp.models.ui.ResultUi
 import app.editors.manager.ui.fragments.template.rememberAccountContext
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.viewModels.main.RoomFromTemplateViewModel
@@ -78,20 +78,20 @@ fun RoomFromTemplateScreen(
 
 @Composable
 private fun RoomFromTemplateScreenContent(
-    loadingResult: ResultUi<TemplateListState>,
+    loadingResult: NetworkResult<TemplateListState>,
     onTemplateClick: (String) -> Unit
 ) {
     Crossfade(loadingResult) { state ->
         when (state) {
-            ResultUi.Loading -> LoadingPlaceholder()
-            is ResultUi.Success -> {
+            NetworkResult.Loading -> LoadingPlaceholder()
+            is NetworkResult.Success -> {
                 RoomFromTemplateScreenContent(
                     state = state.data,
                     onTemplateClick = onTemplateClick
                 )
             }
 
-            is ResultUi.Error -> {
+            is NetworkResult.Error -> {
                 PlaceholderView(
                     image = null,
                     title = stringResource(R.string.placeholder_connection),
@@ -209,7 +209,7 @@ private fun TemplateLogo(
 private fun RoomFromTemplateScreenContentPreview() {
     ManagerTheme {
         RoomFromTemplateScreenContent(
-            loadingResult = ResultUi.Success(
+            loadingResult = NetworkResult.Success(
                 TemplateListState(
                     templates = listOf(
                         CloudFolder().apply {

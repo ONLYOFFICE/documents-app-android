@@ -2,6 +2,7 @@ package app.editors.manager.managers.tools
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.states.PasscodeLockState
@@ -43,6 +44,7 @@ class PreferenceTool @Inject constructor(val context: Context) {
         private const val KEY_SYSTEM_LOCALE = "KEY_SYSTEM_LOCALE"
         private const val KEY_SKIP_LOCALE_CONFIRMATION = "KEY_SKIP_LOCALE_CONFIRMATION"
         internal const val KEY_IS_GRID_VIEW = "KEY_IS_GRID_VIEW"
+        private const val KEY_DEVELOPER_MODE = "developer_mode"
     }
 
     private val sharedPreferences: SharedPreferences = context.getSharedPreferences(TAG, Context.MODE_PRIVATE)
@@ -187,4 +189,11 @@ class PreferenceTool @Inject constructor(val context: Context) {
     fun unregisterChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)
     }
+
+    var developMode: Boolean
+        get() = sharedPreferences.getBoolean(KEY_DEVELOPER_MODE, false)
+        set(value) {
+            sharedPreferences.edit { putBoolean(KEY_DEVELOPER_MODE, value) }
+        }
+
 }

@@ -975,4 +975,16 @@ Aplikacja korzysta teraz z języka angielskiego, ponieważ zmieniono język syst
         <item quantity="one">%d grupa</item>
         <item quantity="other">%d grup</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Logi systemowe</string>
+    <string name="dev_mode_network_requests">Żądania sieciowe</string>
+    <string name="whats_new">Co nowego w v9.0</string>
+    <string name="start_filling_title">Rozpocznij wypełnianie</string>
+    <string name="start_filling_start">Rozpocznij</string>
+    <string name="start_filling_desc">W tym panelu możesz monitorować wypełnianie formularza, w którym uczestniczysz lub formularza za wypełnienie którego odpowiadasz jako organizator</string>
+    <string name="start_filling_header">Role z formularza:</string>
+    <string name="start_filling_ready_for_filling">Formularz jest gotowy do wypełnienia pokoju</string>
+    <string name="start_filling_ready_for_filling_desc">Powiadomienie z prośbą o wypełnienie formularza zostało już wysłane do użytkownika w pierwszej roli. Możesz przejść do pokoju lub udostępnić uczestnikom link umożliwiający wypełnienie formularza.</string>
+    <string name="list_context_reset_filling">Zresetuj i rozpocznij wypełnianie</string>
 </resources>

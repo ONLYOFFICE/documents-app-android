@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import app.documents.core.model.cloud.CloudPortal
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.contracts.ApiContract
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -89,8 +89,9 @@ class EnterpriseCreateValidateViewModel : BaseViewModel() {
             App.getApp().loginComponent.cloudLoginRepository.validatePortal(portalName)
                 .collect { result ->
                     when (result) {
-                        is Result.Error -> checkError(result.exception)
-                        is Result.Success -> onSuccessRequest(portalName, model)
+                        is NetworkResult.Error -> checkError(result.exception)
+                        is NetworkResult.Success -> onSuccessRequest(portalName, model)
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }

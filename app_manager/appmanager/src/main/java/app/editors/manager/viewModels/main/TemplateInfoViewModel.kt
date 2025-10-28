@@ -8,8 +8,9 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.getOrDefault
+import app.documents.core.network.common.mapResult
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.CloudFolderLogo
 import app.documents.core.providers.RoomProvider
@@ -18,9 +19,7 @@ import app.editors.manager.app.App
 import app.editors.manager.managers.tools.BaseEvent
 import app.editors.manager.managers.tools.BaseEventSender
 import app.editors.manager.managers.tools.EventSender
-import app.editors.manager.mvp.models.ui.ResultUi
 import app.editors.manager.mvp.models.ui.StorageQuota
-import app.editors.manager.mvp.models.ui.networkAsFlowResultUI
 import app.editors.manager.viewModels.base.BaseLogoViewModel
 import app.editors.manager.viewModels.base.RoomSettingsLogoState
 import app.editors.manager.viewModels.base.UploadedRoomLogo
@@ -70,7 +69,7 @@ open class TemplateInfoViewModel(
 ) : BaseLogoViewModel(contentResolver, roomProvider),
     EventSender by BaseEventSender(resourceProvider) {
 
-    private val _loadingStatus = MutableStateFlow<ResultUi<*>>(ResultUi.Loading)
+    private val _loadingStatus = MutableStateFlow<NetworkResult<*>>(NetworkResult.Loading)
     val loadingStatus = _loadingStatus.asStateFlow()
 
     private val _uiState = MutableStateFlow(TemplateInfoState())
@@ -86,9 +85,9 @@ open class TemplateInfoViewModel(
     private fun loadTemplateInfo() {
         viewModelScope.launch {
             roomProvider.getRoomInfo(templateId)
-                .networkAsFlowResultUI { it.asTemplateState() }
+                .mapResult { it.asTemplateState() }
                 .collect { result ->
-                    if (result is ResultUi.Success) {
+                    if (result is NetworkResult.Success) {
                         val settings = loadAccessSettings()
                         _uiState.update { result.data.copy(accessSettings = settings) }
                         updateLogoState {
@@ -172,7 +171,7 @@ open class TemplateInfoViewModel(
     protected suspend fun <T> performTemplateOperation(
         errorMessage: Int,
         successHandler: suspend (T) -> Unit,
-        operation: suspend (UploadedRoomLogo?, Boolean) -> Flow<Result<T>>
+        operation: suspend (UploadedRoomLogo?, Boolean) -> Flow<NetworkResult<T>>
     ) {
         val uploadedRoomLogo = withContext(Dispatchers.IO) {
             getUploadedRoomLogo { showMessage(R.string.error_upload_logo) }
@@ -181,12 +180,13 @@ open class TemplateInfoViewModel(
         uploadedRoomLogo.let { uploadedLogo ->
             operation(uploadedLogo, copyLogo).collect { result ->
                 when (result) {
-                    is Result.Error -> {
+                    is NetworkResult.Error -> {
                         _uiState.update { it.copy(isSaving = false, canApplyChanges = true) }
                         showMessage(errorMessage)
                     }
 
-                    is Result.Success -> successHandler(result.result)
+                    is NetworkResult.Success -> successHandler(result.data)
+                    is NetworkResult.Loading -> Unit
                 }
             }
         }

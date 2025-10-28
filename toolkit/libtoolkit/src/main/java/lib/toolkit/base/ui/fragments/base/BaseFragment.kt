@@ -21,6 +21,7 @@ import lib.toolkit.base.managers.utils.DocumentsPicker
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.PermissionUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
@@ -255,14 +256,15 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
         baseActivity?.showQuestionDialog(title, tag, acceptButton, cancelButton, string, acceptErrorTint)
     }
 
-    protected fun showEditDialogCreate(
+    protected open fun showEditDialogCreate(
         title: String,
         value: String?,
         hint: String?,
         endHint: String?,
         tag: String,
         acceptButton: String?,
-        cancelButton: String?
+        cancelButton: String?,
+        forbiddenSymbols: String = StringUtils.DIALOG_FORBIDDEN_SYMBOLS
     ) {
         baseActivity?.addDialogListener(this)
         baseActivity?.showEditDialog(
@@ -275,7 +277,8 @@ abstract class BaseFragment : MvpAppCompatFragment(), BaseActivity.OnBackPressFr
             isPassword = false,
             error = null,
             tag = tag,
-            suffix = endHint
+            suffix = endHint,
+            forbiddenSymbols = forbiddenSymbols
         )
     }
 

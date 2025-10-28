@@ -52,11 +52,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
+import app.documents.core.network.common.NetworkResult
 import app.editors.manager.R
 import lib.toolkit.base.R as R2
 import app.editors.manager.managers.tools.BaseEvent
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.mvp.models.ui.ResultUi
 import app.editors.manager.mvp.models.ui.SizeUnit
 import app.editors.manager.ui.dialogs.AddRoomItem
 import app.editors.manager.ui.fragments.template.rememberAccountContext
@@ -155,7 +155,7 @@ fun TemplateSettingsScreen(
 private fun TemplateSettingsScreenContent(
     state: TemplateInfoState,
     mode: TemplateSettingsMode,
-    loadingStatus: ResultUi<*>,
+    loadingStatus: NetworkResult<*>,
     logoState: RoomSettingsLogoState,
     onSetImage: (Uri?) -> Unit,
     onDeleteImage: () -> Unit,
@@ -220,7 +220,7 @@ private fun TemplateSettingsScreenContent(
 
 @Composable
 private fun TemplateSettingsScreenContent(
-    loadingStatus: ResultUi<*>,
+    loadingStatus: NetworkResult<*>,
     templateState: TemplateInfoState,
     mode: TemplateSettingsMode,
     logoState: RoomSettingsLogoState,
@@ -235,8 +235,8 @@ private fun TemplateSettingsScreenContent(
 ) {
     Crossfade(targetState = loadingStatus) { state ->
         when (state) {
-            ResultUi.Loading -> LoadingPlaceholder()
-            is ResultUi.Success -> TemplateSettingsScreenContent(
+            NetworkResult.Loading -> LoadingPlaceholder()
+            is NetworkResult.Success -> TemplateSettingsScreenContent(
                 state = templateState,
                 mode = mode,
                 logoState = logoState,
@@ -250,7 +250,7 @@ private fun TemplateSettingsScreenContent(
                 navigateToAccessSettings = navigateToAccessSettings
             )
 
-            is ResultUi.Error -> {
+            is NetworkResult.Error -> {
                 PlaceholderView(
                     image = null,
                     title = stringResource(R.string.placeholder_connection),
@@ -600,7 +600,7 @@ private fun AddTemplateScreenContentPreview() {
                     ),
                 )
             ),
-            loadingStatus = ResultUi.Success(Unit),
+            loadingStatus = NetworkResult.Success(Unit),
             logoState = RoomSettingsLogoState(),
             onSetImage = {},
             onDeleteImage = {},

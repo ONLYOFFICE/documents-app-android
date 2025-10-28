@@ -370,7 +370,7 @@
     <string name="operation_delete_impossible">Impossibile eliminare il file. Il file è aperto sul portale.</string>
     <string name="operation_delete_multiple">. Uno o più file non sono stati eliminati perché erano aperti sul portale</string>
     <string name="app_settings_analytic_title">Aiuta a migliorare il prodotto</string>
-    <string name="app_settings_analytic">Condividi le analisi dellapp</string>
+    <string name="app_settings_analytic">Condividi le analisi dell’app</string>
     <string name="app_manage_files_title">Accesso alla gestione dei file</string>
     <string name="app_manage_files_description">Per modificare e creare documenti in locale, è necessario consentire all\'applicazione di accedere ai file sul dispositivo.</string>
     <string name="app_internal_error">Errore interno</string>
@@ -819,15 +819,15 @@
     <string name="rooms_user_type_employees">Dipendenti</string>
     <string name="whats_new_title">Novità</string>
     <string name="whats_new_next">Primi passi</string>
-    <string name="whats_new">Novità nella v9.0</string>
-    <string name="whats_new_1">Riconoscimento del testo con la fotocamera del dispositivo</string>
-    <string name="whats_new_1_desc">Acquisisci testo stampato con la fotocamera e crea documenti modificabili.</string>
-    <string name="whats_new_2">Interfaccia a schede aggiornata</string>
-    <string name="whats_new_2_desc">Goditi un layout più pulito e intuitivo con la barra degli strumenti ridisegnata.</string>
-    <string name="whats_new_3">Supporto per i formati ODG e Markdown</string>
-    <string name="whats_new_3_desc">Apri e visualizza disegni .odg e file .md direttamente dal tuo dispositivo.</string>
-    <string name="whats_new_4">Compatibilità migliorata con DocSpace 3.1</string>
-    <string name="whats_new_4_desc">Accedi alle versioni dei documenti, compila moduli in base al ruolo nella VDR, utilizza modelli di stanza e filtri personalizzati quando sei connesso al tuo DocSpace.</string>
+    <string name="whats_new">Novità nella v9.1</string>
+    <string name="whats_new_1">Assistente AI negli editor</string>
+    <string name="whats_new_1_desc">Lavora in modo più intelligente su documenti e fogli di calcolo con l’AI integrata. Collega modelli come OpenAI, Anthropic, Google o Ollama.</string>
+    <string name="whats_new_2">Opzioni di direzione del testo</string>
+    <string name="whats_new_2_desc">Passa facilmente dalla direzione del testo da destra a sinistra a quella da sinistra a destra in tutti gli editor.</string>
+    <string name="whats_new_3">Compilazione modulare basata sui ruoli in DocSpace</string>
+    <string name="whats_new_3_desc">Assegna ruoli specifici ai partecipanti quando avvii un processo di compilazione di moduli collegato a DocSpace.</string>
+    <string name="whats_new_4">Sommario nei documenti</string>
+    <string name="whats_new_4_desc">Crea e naviga tra le sezioni del documento con un sommario automatico.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Me and %s</string>
@@ -970,4 +970,15 @@
         <item quantity="one">%d gruppo</item>
         <item quantity="other">%d gruppi</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Registri di sistema</string>
+    <string name="dev_mode_network_requests">Richieste di rete</string>
+    <string name="start_filling_title">Avvia compilazione</string>
+    <string name="start_filling_start">Avvia</string>
+    <string name="start_filling_desc">In questo pannello puoi monitorare la compilazione del modulo a cui partecipi o di cui sei l\'organizzatore.</string>
+    <string name="start_filling_header">Ruoli dal modulo:</string>
+    <string name="start_filling_ready_for_filling">Il modulo è pronto per la compilazione nella stanza.</string>
+    <string name="start_filling_ready_for_filling_desc">È già stata inviata una notifica all\'utente con il primo ruolo, invitandolo a compilare il modulo. Puoi accedere alla stanza o condividere il link di compilazione con i partecipanti.</string>
+    <string name="list_context_reset_filling">Reimposta e avvia la compilazione</string>
 </resources>

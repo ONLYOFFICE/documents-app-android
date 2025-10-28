@@ -6,7 +6,7 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import app.documents.core.model.login.request.RequestNumber
 import app.documents.core.model.login.request.RequestSignIn
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.editors.manager.app.App
 import app.editors.manager.managers.tools.CountriesCodesTool
 import app.editors.manager.managers.tools.PreferenceTool
@@ -51,15 +51,16 @@ class EnterprisePhoneViewModel : BaseViewModel() {
             App.getApp().loginComponent.cloudLoginRepository.changeNumber(requestNumber)
                 .collect { result ->
                     when (result) {
-                        is Result.Success -> {
+                        is NetworkResult.Success -> {
                             preferenceTool.phoneNoise = newPhone
                             _stateLiveData.value = EnterprisePhoneState.Success(Json.encodeToString(requestNumber))
                         }
-                        is Result.Error -> {
+                        is NetworkResult.Error -> {
                             errorHandler.fetchError(result.exception) { error ->
                                 _stateLiveData.value = EnterprisePhoneState.Error(error.message)
                             }
                         }
+                        is NetworkResult.Loading -> Unit
                     }
                 }
         }

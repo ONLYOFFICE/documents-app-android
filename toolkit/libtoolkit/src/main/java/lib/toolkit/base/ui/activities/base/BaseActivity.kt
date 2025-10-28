@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.RequiresPermission
@@ -30,6 +31,7 @@ import lib.toolkit.base.managers.utils.ActivitiesUtils
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.PermissionUtils
+import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.dialogs.common.CommonDialog
 import lib.toolkit.base.ui.dialogs.common.holders.CustomHolder
@@ -279,8 +281,32 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     }
 
     @JvmOverloads
-    protected fun showSnackBar(string: String, button: String? = null, action: View.OnClickListener? = null): Snackbar {
+    protected fun showSnackBar(
+        string: String,
+        button: String? = null,
+        action: View.OnClickListener? = null,
+    ): Snackbar {
         return UiUtils.getSnackBar(this).apply {
+            setText(string)
+            setAction(button, action)
+            show()
+            snackBar = this
+        }
+    }
+
+    @JvmOverloads
+    protected fun showTopSnackBar(
+        string: String,
+        button: String? = null,
+        topMargin: Int = 0,
+        action: View.OnClickListener? = null
+    ): Snackbar {
+        return UiUtils.getSnackBar(this).apply {
+            val params = view.layoutParams as? FrameLayout.LayoutParams
+            params?.gravity = Gravity.TOP
+            params?.topMargin = topMargin
+            view.layoutParams = params
+            duration = Snackbar.LENGTH_LONG
             setText(string)
             setAction(button, action)
             show()
@@ -472,12 +498,14 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         isPassword: Boolean = false,
         error: String?,
         tag: String?,
-        suffix: String? = null
+        suffix: String? = null,
+        forbiddenSymbols: String = StringUtils.DIALOG_FORBIDDEN_SYMBOLS
     ) {
         getEditDialog(title, bottomTitle, value, editHint, acceptTitle, cancelTitle, tag)?.run {
             setIsPassword(isPassword)
             setError(error)
             setSuffix(suffix)
+            setForbiddenSymbols(forbiddenSymbols)
             show(supportFragmentManager)
         }
     }

@@ -67,7 +67,7 @@ class RoomOrderDialogFragment : DialogFragment() {
         super.onCreate(savedInstanceState)
         setStyle(
             STYLE_NORMAL,
-            R.style.FullScreenDialog
+            lib.toolkit.base.R.style.FullScreenDialog
         )
     }
 

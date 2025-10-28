@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import app.documents.core.network.common.RequestsCollector
 import app.editors.manager.R
 import app.editors.manager.managers.tools.FontManager
 import app.editors.manager.managers.tools.PreferenceTool
@@ -33,7 +34,8 @@ data class AppSettingsState(
     val wifi: Boolean = false,
     val keepScreenOn: Boolean = false,
     val passcodeEnabled: Boolean = false,
-    val fonts: List<File> = emptyList()
+    val fonts: List<File> = emptyList(),
+    val developerMode: Boolean = false
 )
 
 sealed class AppSettingsEffect {
@@ -75,7 +77,8 @@ class AppSettingsViewModel(
                 keepScreenOn = preferenceTool.keepScreenOn,
                 passcodeEnabled = preferenceTool.passcodeLock.enabled,
                 themeMode = themePrefs.mode,
-                fonts = File(FileUtils.getFontsDir(resourcesProvider.context)).listFiles()?.toList().orEmpty()
+                fonts = File(FileUtils.getFontsDir(resourcesProvider.context)).listFiles()?.toList().orEmpty(),
+                developerMode = preferenceTool.developMode
             )
         )
     }.mutableStateIn(viewModelScope, AppSettingsState())
@@ -170,5 +173,15 @@ class AppSettingsViewModel(
 
     fun cancelJob() {
         addFontsJob?.cancel()
+    }
+
+    fun setDeveloperMode(enabled: Boolean) {
+        RequestsCollector.setDeveloperMode(enabled)
+        preferenceTool.developMode = enabled
+        _settingsState.value = _settingsState.value.copy(developerMode = enabled)
+    }
+
+    fun toggleDeveloperMode() {
+        setDeveloperMode(!_settingsState.value.developerMode)
     }
 }

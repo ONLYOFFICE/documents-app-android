@@ -1,7 +1,7 @@
 package app.documents.core.providers
 
 import app.documents.core.model.cloud.Access
-import app.documents.core.network.common.Result
+import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -48,7 +48,7 @@ interface BaseFileProvider : CacheFileHelper {
         cloudFile: CloudFile,
         editType: EditType,
         canBeShared: Boolean
-    ): Flow<Result<FileOpenResult>>
+    ): Flow<NetworkResult<FileOpenResult>>
 
     fun getFiles(id: String?, filter: Map<String, String>?): Observable<Explorer>
     fun createFile(folderId: String, title: String): Observable<CloudFile>

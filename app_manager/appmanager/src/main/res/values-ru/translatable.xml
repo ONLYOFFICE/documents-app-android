@@ -835,15 +835,15 @@
     <string name="rooms_user_type_employees">Сотрудники</string>
     <string name="whats_new_title">Новые возможности</string>
     <string name="whats_new_next">Начать</string>
-    <string name="whats_new">Что нового в v9.0</string>
-    <string name="whats_new_1">Распознавание текста с камеры устройства</string>
-    <string name="whats_new_1_desc">Сканируйте печатный текст с помощью камеры и создавайте редактируемые документы.</string>
-    <string name="whats_new_2">Обновлённый ленточный интерфейс</string>
-    <string name="whats_new_2_desc">Удобная навигация и современный дизайн с обновленным ленточным интерфейсом.</string>
-    <string name="whats_new_3">Поддержка форматов ODG и Markdown</string>
-    <string name="whats_new_3_desc">Просматривайте файлы в форматах .odg и .md прямо с вашего устройства.</string>
-    <string name="whats_new_4">Расширенная совместимость с DocSpace 3.1</string>
-    <string name="whats_new_4_desc">Получайте доступ к версиям документов, заполняйте формы по ролям в VDR, используйте шаблоны комнат и настраиваемые фильтры при подключении к вашему DocSpace.</string>
+    <string name="whats_new">Что нового в v9.1</string>
+    <string name="whats_new_1">ИИ-ассистент в редакторах</string>
+    <string name="whats_new_1_desc">Работайте с помощью встроенного ИИ в документах и таблицах. Подключайте модели от OpenAI, Anthropic, Google или Ollama.</string>
+    <string name="whats_new_2">Направление текста</string>
+    <string name="whats_new_2_desc">Легко переключайтесь между направлением текста справа налево и слева направо во всех редакторах.</string>
+    <string name="whats_new_3">Заполнение форм по ролям в DocSpace</string>
+    <string name="whats_new_3_desc">Назначайте роли участникам при запуске процесса заполнения формы, работая через DocSpace.</string>
+    <string name="whats_new_4">Оглавление в документах</string>
+    <string name="whats_new_4_desc">Создавайте и быстро переходите между разделами с помощью автоматического оглавления.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Я и %s</string>
@@ -986,4 +986,15 @@
         <item quantity="one">%d группа</item>
         <item quantity="other">%d групп</item>
     </plurals>
+
+    <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
+    <string name="dev_mode_system_logs">Системные журналы</string>
+    <string name="dev_mode_network_requests">Сетевые запросы</string>
+    <string name="start_filling_title">Начать заполнение</string>
+    <string name="start_filling_start">Начать</string>
+    <string name="start_filling_desc">На этой панели вы можете отслеживать заполнение формы, в заполнении которой вы участвуете или в которой вы являетесь организатором заполнения</string>
+    <string name="start_filling_header">Роли из формы:</string>
+    <string name="start_filling_ready_for_filling">Форма готова к заполнению в комнате</string>
+    <string name="start_filling_ready_for_filling_desc">Пользователю с первой ролью отправлено уведомление с предложением заполнить форму. Вы можете перейти в комнату или поделиться ссылкой для заполнения с участниками.</string>
+    <string name="list_context_reset_filling">Сбросить и начать заполнение</string>
 </resources>

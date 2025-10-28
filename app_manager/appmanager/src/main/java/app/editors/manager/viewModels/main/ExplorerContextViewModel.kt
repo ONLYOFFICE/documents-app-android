@@ -98,8 +98,10 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.Fill(),
                 ExplorerContextItem.Edit(state),
                 ExplorerContextItem.View,
+                ExplorerContextItem.StartFilling,
                 ExplorerContextItem.VersionHistory,
                 ExplorerContextItem.FillingStatus.takeIf { state.roomType == ApiContract.RoomType.VIRTUAL_ROOM },
+                ExplorerContextItem.ResetFilling,
                 ExplorerContextItem.Share.takeIf {
                     state.provider != PortalProvider.Cloud.DocSpace || state.section == ApiContract.Section.User && !((state.item is CloudFile) && state.item.isPdfForm)
                 },
