@@ -70,6 +70,10 @@ open class Item : ItemProperties(), Serializable {
     @Expose
     var order: String = ""
 
+    @SerializedName("isFavorite")
+    @Expose
+    var isFavorite = false
+
     var index: Int
         get() = order.split(".").lastOrNull()?.toInt() ?: 0
         set(value) {

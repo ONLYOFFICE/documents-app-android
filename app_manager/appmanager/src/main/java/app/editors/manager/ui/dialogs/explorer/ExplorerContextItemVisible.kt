@@ -245,7 +245,7 @@ interface ExplorerContextItemVisible {
         get() = section.isTemplates && item.security?.editAccess == true
 
     private fun ExplorerContextState.favorites(enabled: Boolean): Boolean =
-        enabled && !isFolder && !listOf(
+        enabled && !listOf(
             ApiContract.Section.Trash,
             ApiContract.Section.Webdav
         ).contains(section)

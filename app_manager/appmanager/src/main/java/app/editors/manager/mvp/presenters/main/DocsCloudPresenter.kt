@@ -590,17 +590,17 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun addToFavorite() {
         val requestFavorites = RequestFavorites()
-        requestFavorites.fileIds = listOf(itemClicked?.id!!)
         val item = itemClicked
-        if (item != null && item is CloudFile) {
+        if (item != null) {
+            if (item is CloudFolder) {
+                requestFavorites.folderIds = listOf(item.id)
+            } else if (item is CloudFile) {
+                requestFavorites.fileIds = listOf(item.id)
+            }
             val isAdd = !item.isFavorite
             disposable.add(fileProvider.addToFavorites(requestFavorites, isAdd)
                 .subscribe({
-                    if (isAdd) {
-                        item.fileStatus += ApiContract.FileStatus.FAVORITE
-                    } else {
-                        item.fileStatus -= ApiContract.FileStatus.FAVORITE
-                    }
+                    item.isFavorite = isAdd
                     viewState.onUpdateItemState()
                     viewState.onSnackBar(
                         if (isAdd) {

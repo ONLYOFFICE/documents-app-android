@@ -967,10 +967,15 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                 } else {
                     put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
                     if (filter.type != FilterType.None || isFilteringMode && filteringValue.isNotEmpty()) {
-                        put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
+                        if (currentSectionType != ApiContract.SectionType.CLOUD_FAVORITES) {
+                            put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
+                        }
                     }
                     if (App.getApp().accountOnline?.isPersonal() == false) {
                         put(ApiContract.Parameters.ARG_FILTER_BY_AUTHOR, filter.author.id)
+                    }
+                    if (currentSectionType == ApiContract.SectionType.CLOUD_FAVORITES && filter.location > 0) {
+                        put(ApiContract.Parameters.ARG_FILTER_LOCATION, filter.location.toString())
                     }
                 }
                 putAll(filters)
