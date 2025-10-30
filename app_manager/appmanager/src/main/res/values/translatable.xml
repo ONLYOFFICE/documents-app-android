@@ -1104,7 +1104,8 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="rooms_invalid_password">Invalid password</string>
 
     <string name="rooms_invite_access_description">Guests, Users and Groups cannot be assigned as Room managers. Only Room and DocSpace admins are suitable for the specified role.</string>
-    <string name="rooms_user_type_employees">Employees</string>
+    <string name="rooms_user_type_members">Members</string>
+    <string name="share_goal_everyone">Everyone</string>
 
     <string name="whats_new_title">What\'s new</string>
     <string name="whats_new_next">Get started</string>

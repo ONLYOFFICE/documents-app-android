@@ -979,7 +979,6 @@
     <string name="rooms_share_and_collect_desc">ແບ່ງປັນແບບຟອມຂອງເຈົ້າ ແລະເກັບກຳຄຳຕອບຜ່ານຫ້ອງຕື່ມແບບຟອມ.</string>
     <string name="rooms_upload_pdf_from_device">ອັບໂຫລດແບບຟອມ PDF ຈາກອຸປະກອນ</string>
     <string name="rooms_upload_pdf_from_docspace">ອັບໂຫລດແບບຟອມ PDF ຈາກ DocSpace</string>
-    <string name="rooms_user_type_employees">ພະນັກງານ</string>
     <string name="rooms_vdr">ຫ້ອງ​ຂໍ້​ມູນ​ສະ​ເໝືອນ</string>
     <string name="rooms_vdr_desc">ໃຊ້ VDR ເພື່ອຄວາມປອດໄພຂອງໄຟລ໌ຂັ້ນສູງ ແລະຄວາມໂປ່ງໃສໃນຂະນະທີ່ຕື່ມ ແລະເຊັນເອກະສານແບບເທື່ອລະຂັ້ນຕອນ. ຕັ້ງຄ່າລາຍນ້ຳ, ດັດສະນີອັດຕະໂນມັດ ແລະຕິດຕາມເນື້ອຫາທັງໝົດ, ຈຳກັດການດາວໂຫຼດ ແລະສຳເນົາ.</string>
     <string name="rooms_vdr_file_restrict_desc">ເປີດ​ໃຊ້​ງານ​ການ​ຕັ້ງ​ຄ່າ​ນີ້​ເພື່ອ​ປິດ​ການ​ດາວ​ໂຫຼດ, ການ​ພິມ, ແລະ​ການ​ຄັດ​ລອກ​ເນື້ອ​ຫາ​ສຳ​ລັບ​ຜູ້​ໃຊ້​ທີ່​ມີ​ບົດ​ບາດ “ຜູ້​ເບິ່ງ”</string>

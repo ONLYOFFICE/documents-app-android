@@ -27,6 +27,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -112,7 +113,7 @@ private data class Header(val title: Int) : Member {
 private sealed class PagerTab(title: Int): TabRowItem(title) {
     class Users(isDocSpace: Boolean) : PagerTab(
         if (isDocSpace) {
-            R.string.rooms_user_type_employees
+            R.string.rooms_user_type_members
         } else {
             R.string.share_goal_user
         }
@@ -505,16 +506,22 @@ private fun LazyItemScope.GroupItem(
     onClick: (Member) -> Unit
 ) {
     val shared = remember { if (mode == UserListMode.TemplateAccess) false else group.shared }
-    ListItem(
-        withLetter = false,
-        name = group.name,
-        shared = shared,
-        letter = null,
-        subtitle = null,
-        avatar = null,
-        selected = selected,
-        onClick = { onClick.invoke(group) }
-    )
+    val isEveryone = group.name == "Everyone"
+    Column {
+        ListItem(
+            withLetter = false,
+            name = if (isEveryone) stringResource(R.string.share_goal_everyone) else group.name,
+            shared = shared,
+            letter = null,
+            subtitle = null,
+            avatar = if (isEveryone) R.drawable.drawable_list_share_image_item_group_placeholder else null,
+            selected = selected,
+            onClick = { onClick.invoke(group) }
+        )
+        if (isEveryone) {
+            Divider()
+        }
+    }
 }
 
 @Composable

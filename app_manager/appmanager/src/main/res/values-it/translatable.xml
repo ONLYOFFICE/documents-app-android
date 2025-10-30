@@ -810,7 +810,6 @@
     <string name="rooms_protected_room">Stanza protetta</string>
     <string name="rooms_invalid_password">Password non valida</string>
     <string name="rooms_invite_access_description">Ospiti, Utenti e Gruppi non possono essere assegnati come gestori della stanza. Solo amministratori della stanza e di DocSpace sono adatti al ruolo specificato.</string>
-    <string name="rooms_user_type_employees">Dipendenti</string>
     <string name="whats_new_title">Novità</string>
     <string name="whats_new_next">Primi passi</string>
     <string name="whats_new">Novità nella v9.1</string>

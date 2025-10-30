@@ -817,7 +817,6 @@ Nous vous recommandons de passer au service gratuit ONLYOFFICE DocSpace Cloud.</
     <string name="rooms_protected_room">Salle protégée</string>
     <string name="rooms_invalid_password">Mot de passe incorrect</string>
     <string name="rooms_invite_access_description">Les invités, les utilisateurs et les groupes ne peuvent pas être assignés en tant que responsables de salle. Seuls les administrateurs de salle et de DocSpace peuvent jouer ce rôle.</string>
-    <string name="rooms_user_type_employees">Employés</string>
     <string name="whats_new_title">Quoi de neuf ?</string>
     <string name="whats_new_next">Commencer !</string>
     <string name="whats_new">Nouveautés de la v9.1</string>

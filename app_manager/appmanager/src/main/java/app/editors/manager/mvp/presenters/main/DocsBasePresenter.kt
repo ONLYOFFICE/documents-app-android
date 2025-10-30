@@ -172,6 +172,9 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     var destFolderId: String? = null
         protected set
 
+    var isPaginationFinished: Boolean = false
+        private set
+
     /**
      * SharedPreferences Settings
      * */
@@ -1785,6 +1788,10 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
 
     fun setGridView(isGrid: Boolean) {
         preferenceTool.isGridView = isGrid
+    }
+
+    fun setPaginationFinished(finished: Boolean) {
+        isPaginationFinished = finished
     }
 
     open fun openFile(editType: EditType, canBeShared: Boolean = false) {

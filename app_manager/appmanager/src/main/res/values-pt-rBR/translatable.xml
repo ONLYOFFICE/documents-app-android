@@ -811,7 +811,6 @@
     <string name="rooms_protected_room">Sala protegida</string>
     <string name="rooms_invalid_password">Senha inválida</string>
     <string name="rooms_invite_access_description">Convidados, usuários e grupos não podem ser designados como gerentes de sala. Somente os administradores da sala e do DocSpace são adequados para a função especificada.</string>
-    <string name="rooms_user_type_employees">Funcionários</string>
     <string name="whats_new_title">O que há de novo?</string>
     <string name="whats_new_next">Começar</string>
     <string name="whats_new">Novidades na v9.1</string>

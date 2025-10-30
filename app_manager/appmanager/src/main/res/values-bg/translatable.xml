@@ -804,7 +804,6 @@
     <string name="rooms_protected_room">Защитена стая</string>
     <string name="rooms_invalid_password">Невалидна парола</string>
     <string name="rooms_invite_access_description">Гости, Потребители и Групи не могат да бъдат назначени като Управител на стая. Само администраторите на Стаята и на DocSpace са подходящи за посочената роля.</string>
-    <string name="rooms_user_type_employees">Служители</string>
     <string name="whats_new_title">Какво ново</string>
     <string name="whats_new_next">Първи стъпки</string>
     <string name="whats_new">Нови във v9.1</string>
