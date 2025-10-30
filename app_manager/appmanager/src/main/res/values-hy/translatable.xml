@@ -971,7 +971,6 @@
     <string name="rooms_protected_room">Պաշտպանված սենյակ</string>
     <string name="rooms_invalid_password">Անվավեր գաղտնաբառ</string>
     <string name="rooms_invite_access_description">Հյուրերը, օգտատերերը և խմբերը չեն կարող նշանակվել որպես Սենյակի մենեջերներ: Միայն Սենյակի և DocSpace-ի ադմինները հարմար են նշված դերի համար:</string>
-    <string name="rooms_user_type_employees">Աշխատակիցներ</string>
     <string name="whats_new_title">Ինչ նորություն կա</string>
     <string name="whats_new_next">Սկսել!</string>
     <string name="whats_new">Նորություններ v9.1-ում</string>

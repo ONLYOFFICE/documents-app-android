@@ -695,7 +695,6 @@
     <string name="rooms_share_valid_unlimited">සබැඳිය අසීමිත සඳහා වලංගු වේ</string>
     <string name="rooms_upload_pdf_from_device">උපාංගයෙන් PDF පෝරමය උඩුගත කරන්න</string>
     <string name="rooms_upload_pdf_from_docspace">DocSpace වෙතින් PDF පෝරමය උඩුගත කරන්න</string>
-    <string name="rooms_user_type_employees">සේවකයින්</string>
     <string name="rooms_vdr">අතථ්‍ය දත්ත කාමරය</string>
     <string name="rooms_vdr_desc">ලේඛන පුරවන සහ අත්සන් කරන අතරතුර උසස් ගොනු ආරක්ෂාව සහ විනිවිදභාවය සඳහා VDR භාවිතා කරන්න. ජල සලකුණු සකසන්න, සියලුම අන්තර්ගතයන් ස්වයංක්‍රීයව සුචිගත කර නිරීක්ෂණය කරන්න, බාගත කිරීම සහ පිටපත් කිරීම සීමා කරන්න.</string>
     <string name="rooms_vdr_file_restrict_desc">“නරඹන්නා” භූමිකාව ඇති පරිශීලකයින් සඳහා බාගැනීම්, මුද්‍රණය සහ අන්තර්ගත පිටපත් කිරීම අක්‍රිය කිරීමට මෙම සැකසුම සක්‍රීය කරන්න.</string>

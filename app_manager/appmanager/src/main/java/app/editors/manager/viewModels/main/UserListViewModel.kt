@@ -94,6 +94,7 @@ abstract class UserListViewModel(
             val groups = cachedMembers
                 .filterIsInstance<Group>()
                 .filter { it.name.startsWith(searchValue, true) }
+                .sortedBy { it.name != "Everyone" }
 
             val users = cachedMembers
                 .filterIsInstance<User>()

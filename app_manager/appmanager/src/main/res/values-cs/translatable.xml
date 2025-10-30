@@ -952,7 +952,6 @@
     <string name="rooms_protected_room">Chráněná místnost</string>
     <string name="rooms_invalid_password">Neplatné heslo</string>
     <string name="rooms_invite_access_description">Hosté, uživatelé a skupiny nemohou být přiřazeni jako správci místností. Pro zadanou roli jsou vhodní pouze správci místnosti a prostoru DocSpace.</string>
-    <string name="rooms_user_type_employees">Zaměstnanci</string>
     <string name="whats_new_title">Co je nového</string>
     <string name="whats_new_next">Začít</string>
     <string name="whats_new">Novinky ve verzi 9.1</string>
