@@ -64,6 +64,7 @@ import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.FragmentUtils
 import lib.toolkit.base.managers.utils.LaunchActivityForResult
+import lib.toolkit.base.managers.utils.NetworkUtils
 import lib.toolkit.base.managers.utils.RequestPermission
 import lib.toolkit.base.managers.utils.TimeUtils
 import lib.toolkit.base.managers.utils.contains
@@ -121,6 +122,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         private const val ACCOUNT_KEY = "ACCOUNT_KEY"
         private const val FRAGMENT_KEY = "FRAGMENT_KEY"
         private const val URL_KEY = "url"
+        private const val STARTED_FROM_SHOW_KEY = "STARTED_FROM_SHOW"
 
         fun show(context: Context, deepLink: Uri? = null) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
@@ -128,6 +130,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
                     data = deepLink
                     action = Intent.ACTION_VIEW
                 }
+                putExtra(STARTED_FROM_SHOW_KEY, true)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             })
         }
@@ -244,6 +247,10 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         initViews()
         initToolbar()
         registerAppLocaleBroadcastReceiver()
+
+        val isRestart = intent.getBooleanExtra(STARTED_FROM_SHOW_KEY, false)
+                || savedInstanceState != null
+        if (!isRestart) presenter.setCheckVPN(false)
 
         if (isNotification()) {
             intent.extras?.getString(URL_KEY)?.let {
@@ -578,6 +585,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
                 OnlyOfficeCloudFragment.newInstance(false),
                 R.id.frame_container
             )
+            checkVPNConnection()
             return
         } else {
             val fragment = when (accountOnline?.portal?.provider) {
@@ -589,6 +597,7 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
                     showActionButton(false)
                     setAppBarStates(true)
                     showMainPagerFragment()
+                    checkVPNConnection()
                     return
                 }
 
@@ -720,6 +729,17 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
         }
 
         showEditors(intent, onResultListener)
+    }
+
+    private fun checkVPNConnection() {
+        if (presenter.isVPNChecked) return
+        if (NetworkUtils.isVPNConnected(this)) {
+            presenter.setCheckVPN(true)
+            showSnackBar(
+                resource = R.string.cloud_vpn_warning,
+                anchor = viewBinding.bottomNavigation
+            )
+        }
     }
 
     private fun isNotification(): Boolean =

@@ -65,6 +65,8 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     private var isAppColdStart = true
 
     var isDialogOpen: Boolean = false
+    val isVPNChecked: Boolean
+        get() = preferenceTool.isVpnChecked
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -325,4 +327,9 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
             else -> Unit
         }
     }
+
+    fun setCheckVPN(checked: Boolean) {
+        preferenceTool.isVpnChecked = checked
+    }
+
 }

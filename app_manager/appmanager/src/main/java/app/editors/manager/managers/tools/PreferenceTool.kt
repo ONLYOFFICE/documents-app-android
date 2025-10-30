@@ -44,6 +44,7 @@ class PreferenceTool @Inject constructor(val context: Context) {
         private const val KEY_SYSTEM_LOCALE = "KEY_SYSTEM_LOCALE"
         private const val KEY_SKIP_LOCALE_CONFIRMATION = "KEY_SKIP_LOCALE_CONFIRMATION"
         internal const val KEY_IS_GRID_VIEW = "KEY_IS_GRID_VIEW"
+        internal const val KEY_IS_VPN_CHECKED = "KEY_IS_VPN_CHECKED"
         private const val KEY_DEVELOPER_MODE = "developer_mode"
     }
 
@@ -180,6 +181,12 @@ class PreferenceTool @Inject constructor(val context: Context) {
         get() = sharedPreferences.getBoolean(KEY_IS_GRID_VIEW, false)
         set(value) {
             sharedPreferences.edit().putBoolean(KEY_IS_GRID_VIEW, value).apply()
+        }
+
+    var isVpnChecked: Boolean
+        get() = sharedPreferences.getBoolean(KEY_IS_VPN_CHECKED, false)
+        set(value) {
+            sharedPreferences.edit { putBoolean(KEY_IS_VPN_CHECKED, value) }
         }
 
     fun registerChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
