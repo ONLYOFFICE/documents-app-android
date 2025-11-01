@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.GroupShare
+import app.documents.core.network.share.models.ShareEntity
 import app.documents.core.network.share.models.ShareType
 import app.editors.manager.R
 import app.editors.manager.managers.utils.RoomUtils
@@ -31,7 +32,7 @@ fun RoomAccessScreen(
     isRemove: Boolean = false,
     users: List<GroupShare>? = null,
     onChangeAccess: (newAccess: Access) -> Unit,
-    onUserClick: (String, Int, Boolean) -> Unit = { _, _, _ -> },
+    onUserClick: (ShareEntity) -> Unit = { },
     onBack: () -> Unit
 ) {
     BackHandler(onBack = onBack)
@@ -109,7 +110,7 @@ private fun Preview() {
 //            ),
             ownerOrAdmin = true,
             onChangeAccess = {},
-            onUserClick = { _, _, _ -> }
+            onUserClick = { }
         ) {}
     }
 }

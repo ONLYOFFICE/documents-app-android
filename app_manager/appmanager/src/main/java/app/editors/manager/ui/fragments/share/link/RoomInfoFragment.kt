@@ -17,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
@@ -34,6 +33,7 @@ import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.network.share.models.Share
+import app.documents.core.network.share.models.ShareEntity
 import app.documents.core.network.share.models.ShareType
 import app.documents.core.network.share.models.SharedTo
 import app.editors.manager.R
@@ -79,7 +79,6 @@ class RoomInfoFragment : ComposeDialogFragment() {
     @Composable
     override fun Content() {
         ManagerTheme {
-            val keyboardController = LocalSoftwareKeyboardController.current
             val portal = remember { requireContext().accountOnline?.portal }
             val room = remember { checkNotNull(arguments?.getSerializableExt<CloudFolder>(KEY_ROOM)) }
             val canEditRoom = room.security?.editRoom == true
@@ -123,13 +122,13 @@ class RoomInfoFragment : ComposeDialogFragment() {
                             portal = portal?.url.orEmpty(),
                             onBackClick = ::dismiss,
                             onAddUsers = { navController.navigate(RoomInfoScreens.InviteUsers.name) },
-                            onSetUserAccess = { userId, access, ownerOrAdmin ->
+                            onSetUserAccess = { share ->
                                 navController.navigate(
                                     RoomInfoScreens.UserAccess.name +
-                                            "?userId=$userId" +
-                                            "&access=$access" +
+                                            "?userId=${share.sharedTo.id}" +
+                                            "&access=${share.access.code}" +
                                             "&removable=true" +
-                                            "&ownerOrAdmin=$ownerOrAdmin"
+                                            "&ownerOrAdmin=${share.isOwnerOrAdmin}"
                                 )
                             },
                             onSetGroupAccess = { groupId, access ->
@@ -257,13 +256,13 @@ class RoomInfoFragment : ComposeDialogFragment() {
                                     newAccess
                                 )
                             },
-                            onUserClick = { userId, access, ownerOrAdmin ->
+                            onUserClick = { share ->
                                 navController.navigate(
                                     RoomInfoScreens.UserAccess.name +
-                                            "?userId=$userId" +
-                                            "&access=$access" +
-                                            "&removable=false" +
-                                            "&ownerOrAdmin=$ownerOrAdmin"
+                                            "?userId=${share.sharedTo.id}" +
+                                            "&access=${share.access.code}" +
+                                            "&removable=true" +
+                                            "&ownerOrAdmin=${share.isOwnerOrAdmin}"
                                 )
                             }
                         )
@@ -298,7 +297,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
         roomType: Int?,
         roomTitle: String?,
         portal: String?,
-        onSetUserAccess: (userId: String, access: Int, ownerOrAdmin: Boolean) -> Unit,
+        onSetUserAccess: (ShareEntity) -> Unit,
         onSetGroupAccess: (groupId: String, access: Int) -> Unit,
         onAddUsers: () -> Unit,
         onBackClick: () -> Unit,
@@ -362,7 +361,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
                         portal = portal,
                         shareList = groupedShareList.getOrElse(ShareType.Group, ::emptyList),
                         type = ShareType.Group,
-                        onClick = { id, access, _ -> onSetGroupAccess.invoke(id, access) }
+                        onClick = { share -> onSetGroupAccess.invoke(share.sharedTo.id, share.access.code) }
                     )
                     ShareUsersList(
                         portal = portal,
@@ -440,7 +439,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
                 ),
                 onBackClick = {},
                 onAddUsers = {},
-                onSetUserAccess = { _, _, _ -> },
+                onSetUserAccess = { },
                 onSharedLinkCreate = {},
                 onLinkClick = {},
                 onSetGroupAccess = { _, _ -> }
