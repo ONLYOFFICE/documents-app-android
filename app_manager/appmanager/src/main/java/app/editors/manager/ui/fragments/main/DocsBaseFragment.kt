@@ -1217,7 +1217,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     protected open val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
             is ActionMenuItem.Sort -> presenter.sortBy(item.sortValue)
-            is ActionMenuItem.Operation -> presenter.moveCopySelected(item.value)
+            is ActionMenuItem.Operation -> {
+                if (item == ActionMenuItem.Delete) {
+                    presenter.delete()
+                } else {
+                    presenter.moveCopySelected(item.value)
+                }
+            }
             is ActionMenuItem.GridView -> presenter.setGridView(true)
             is ActionMenuItem.ListView -> presenter.setGridView(false)
             ActionMenuItem.Select -> presenter.setSelection(true)

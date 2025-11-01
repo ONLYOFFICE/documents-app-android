@@ -132,7 +132,6 @@ class DocsTrashFragment : DocsCloudFragment() {
                 }
             }
 
-            ActionMenuItem.Delete -> showDeleteDialog(tag = DocsBasePresenter.TAG_DIALOG_BATCH_DELETE_CONTEXT)
             else -> super.actionMenuClickListener(item)
         }
     }
