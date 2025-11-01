@@ -1199,4 +1199,5 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
 
     <string name="rooms_share_shared_folder_desc">Provide access to the folder and set the permission levels.</string>
 
+    <string name="share_popup_access_editing">Editing</string>
 </resources>

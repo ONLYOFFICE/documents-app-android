@@ -333,6 +333,20 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/share")
+    suspend fun getSharedFileUsers(@Path("fileId") fileId: String): app.documents.core.network.BaseResponse<List<Share>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/folder/{folderId}/share")
+    suspend fun getSharedFolderUsers(@Path("folderId") folderId: String): app.documents.core.network.BaseResponse<List<Share>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
     @PUT("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/links")
     suspend fun updateSharedFileLink(
         @Path("fileId") fileId: String,

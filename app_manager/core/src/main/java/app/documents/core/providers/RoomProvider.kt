@@ -293,6 +293,14 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return request.response
     }
 
+    suspend fun getSharedUsers(itemId: String, isFolder: Boolean): List<Share> {
+        val request = if (isFolder)
+            roomService.getSharedFolderUsers(itemId) else
+            roomService.getSharedFileUsers(itemId)
+
+        return request.response
+    }
+
     suspend fun updateSharedLink(
         itemId: String,
         sharedLink: ExternalLink,

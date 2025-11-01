@@ -3,20 +3,23 @@ package app.editors.manager.viewModels.link
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.network.share.models.ExternalLink
+import app.documents.core.network.share.models.Share
 import app.documents.core.providers.RoomProvider
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 sealed class ShareSettingsState {
 
     data object Loading : ShareSettingsState()
-    data class Success(val links: List<ExternalLink>) : ShareSettingsState()
+    data class Success(val links: List<ExternalLink>, val users: List<Share>) : ShareSettingsState()
 }
 
 sealed class ShareSettingsEffect {
@@ -49,7 +52,7 @@ class ShareSettingsViewModel(
 
                 val state = state.value
                 if (state is ShareSettingsState.Success) {
-                    _state.value = ShareSettingsState.Success(state.links + link)
+                    _state.update { state.copy(links = state.links + link) }
                 }
             } catch (e: HttpException) {
                 _effect.emit(ShareSettingsEffect.Error(e.code()))
@@ -61,11 +64,12 @@ class ShareSettingsViewModel(
         }
     }
 
-    fun fetchLinks() {
+    fun fetchData() {
         viewModelScope.launch {
             try {
-                val links = roomProvider.getSharedLinks(itemId, isFolder)
-                _state.value = ShareSettingsState.Success(links)
+                val links = async { roomProvider.getSharedLinks(itemId, isFolder) }
+                val users = async { roomProvider.getSharedUsers(itemId, isFolder) }
+                _state.value = ShareSettingsState.Success(links.await(), users.await())
             } catch (e: HttpException) {
                 _effect.emit(ShareSettingsEffect.Error(e.code()))
             } catch (_: Exception) {

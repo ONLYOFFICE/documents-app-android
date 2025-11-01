@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -37,9 +38,15 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
+import app.documents.core.network.share.models.Share
+import app.documents.core.network.share.models.ShareType
+import app.documents.core.network.share.models.SharedTo
 import app.editors.manager.R
+import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.utils.titleWithCount
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.fragments.share.link.Route
+import app.editors.manager.ui.fragments.share.link.ShareUsersList
 import app.editors.manager.ui.fragments.share.link.SharedLinkItem
 import app.editors.manager.ui.fragments.share.link.SharedLinkSettingsScreen
 import app.editors.manager.viewModels.link.ShareSettingsEffect
@@ -72,7 +79,7 @@ fun ShareDocSpaceScreen(
 
     navController.addOnDestinationChangedListener { _, destination, _ ->
         if (destination.route == Route.SettingsScreen.name) {
-            viewModel.fetchLinks()
+            viewModel.fetchData()
         }
     }
 
@@ -91,7 +98,8 @@ fun ShareDocSpaceScreen(
                 onShare = onSendLink,
                 onBack = onClose,
                 onLinkClick = { link ->
-                    val json = URLEncoder.encode(Json.encodeToString(link), Charsets.UTF_8.toString())
+                    val json =
+                        URLEncoder.encode(Json.encodeToString(link), Charsets.UTF_8.toString())
                     navController.navigate(
                         "${Route.LinkSettingsScreen.name}?" +
                                 "link=$json&" +
@@ -275,6 +283,24 @@ private fun ShareSettingsScreen(
                             }
                         )
                     }
+                    item {
+                        val groupedShareList = state.users.groupBy { it.itemAccessType }
+                        val context = LocalContext.current
+                        val view = LocalView.current
+                        val portal = remember {
+                            context.accountOnline?.portal?.url?.takeIf { !view.isInEditMode }
+                        }
+                        groupedShareList.forEach { (shareType, shareList) ->
+                            ShareUsersList(
+                                canBeCollapsed = shareType != ShareType.Owner,
+                                isRoom = false,
+                                title = shareType.titleWithCount,
+                                portal = portal.orEmpty(),
+                                shareList = shareList,
+                                onClick = {}
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -311,7 +337,35 @@ private fun ShareSettingsScreenPreview() {
                 listOf(
                     link.copy(access = 1),
                     link.copy(sharedTo = link.sharedTo.copy(expirationDate = null, id = "2")),
-                    link.copy(sharedTo = link.sharedTo.copy(isExpired = true, internal = false, id = "3"))
+                    link.copy(
+                        sharedTo = link.sharedTo.copy(
+                            isExpired = true,
+                            internal = false,
+                            id = "3"
+                        )
+                    )
+                ),
+                listOf(
+                    Share(
+                        _access = 1,
+                        isOwner = true,
+                        sharedTo = SharedTo(
+                            userName = "Username"
+                        )
+                    ),
+                    Share(
+                        _access = 10,
+                        sharedTo = SharedTo(
+                            userName = "Group name"
+                        ),
+                        subjectType = 2
+                    ),
+                    Share(
+                        _access = 5,
+                        sharedTo = SharedTo(
+                            userName = "Username"
+                        )
+                    ),
                 )
             ),
             isFolder = true,

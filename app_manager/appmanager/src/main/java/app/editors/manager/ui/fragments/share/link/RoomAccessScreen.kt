@@ -84,6 +84,7 @@ fun RoomAccessScreen(
                     text = R.string.share_access_room_group_desc
                 )
                 ShareUsersList(
+                    isRoom = true,
                     portal = portal,
                     shareList = users,
                     title = R.string.rooms_info_users_title,

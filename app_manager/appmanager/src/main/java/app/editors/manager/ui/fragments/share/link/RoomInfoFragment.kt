@@ -40,6 +40,7 @@ import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.managers.utils.titleWithCount
 import app.editors.manager.ui.fragments.share.InviteUsersScreen
 import app.editors.manager.viewModels.link.RoomAccessViewModel
 import app.editors.manager.viewModels.link.RoomInfoEffect
@@ -341,7 +342,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
                 LoadingPlaceholder()
             } else {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    val groupedShareList = Share.groupByAccess(state.shareList)
+                    val groupedShareList = state.shareList.groupBy(Share::roomAccessType)
                     if (ApiContract.RoomType.hasExternalLink(roomType)) {
                         ExternalLinkBlock(
                             sharedLinks = state.sharedLinks,
@@ -351,36 +352,21 @@ class RoomInfoFragment : ComposeDialogFragment() {
                             onSharedLinkCreate = onSharedLinkCreate
                         )
                     }
-                    ShareUsersList(
-                        portal = portal,
-                        shareList = groupedShareList.getOrElse(ShareType.Admin, ::emptyList),
-                        title = R.string.rooms_info_admin_title,
-                        onClick = onSetUserAccess
-                    )
-                    ShareUsersList(
-                        portal = portal,
-                        shareList = groupedShareList.getOrElse(ShareType.Group, ::emptyList),
-                        title = R.string.rooms_info_groups_title,
-                        onClick = { share -> onSetGroupAccess.invoke(share.sharedTo.id, share.access.code) }
-                    )
-                    ShareUsersList(
-                        portal = portal,
-                        shareList = groupedShareList.getOrElse(ShareType.User, ::emptyList),
-                        title = R.string.rooms_info_users_title,
-                        onClick = onSetUserAccess
-                    )
-                    ShareUsersList(
-                        portal = portal,
-                        shareList = groupedShareList.getOrElse(ShareType.Guests, ::emptyList),
-                        title = R.string.rooms_info_guests_title,
-                        onClick = onSetUserAccess
-                    )
-                    ShareUsersList(
-                        portal = portal,
-                        shareList = groupedShareList.getOrElse(ShareType.Expected, ::emptyList),
-                        title = R.string.rooms_info_expected_title,
-                        onClick = onSetUserAccess
-                    )
+                    groupedShareList.forEach { (shareType, shareList) ->
+                        ShareUsersList(
+                            isRoom = true,
+                            portal = portal,
+                            shareList = shareList,
+                            title = shareType.titleWithCount,
+                            onClick = { share ->
+                                if (shareType == ShareType.Group) {
+                                    onSetGroupAccess.invoke(share.sharedTo.id, share.access.code)
+                                } else {
+                                    onSetUserAccess.invoke(share)
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }

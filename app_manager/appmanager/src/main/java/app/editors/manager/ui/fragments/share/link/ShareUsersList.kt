@@ -48,7 +48,9 @@ import lib.toolkit.base.R
 internal fun ShareUsersList(
     title: Int,
     portal: String?,
+    isRoom: Boolean,
     shareList: List<ShareEntity>,
+    canBeCollapsed: Boolean = true,
     onClick: (ShareEntity) -> Unit
 ) {
     var visible by remember { mutableStateOf(true) }
@@ -56,6 +58,7 @@ internal fun ShareUsersList(
     if (shareList.isNotEmpty()) {
         Column {
             HeaderWithCollapseButton(
+                arrowVisible = canBeCollapsed,
                 title = title,
                 listSize = shareList.size,
                 visible = visible,
@@ -65,6 +68,7 @@ internal fun ShareUsersList(
                 Column {
                     shareList.forEach { share ->
                         ShareUserItem(
+                            isRoom = isRoom,
                             share = share,
                             portal = portal,
                             isGroup = share is GroupShare,
@@ -79,6 +83,7 @@ internal fun ShareUsersList(
 
 @Composable
 private fun HeaderWithCollapseButton(
+    arrowVisible: Boolean,
     title: Int,
     listSize: Int,
     visible: Boolean,
@@ -93,16 +98,18 @@ private fun HeaderWithCollapseButton(
             style = MaterialTheme.typography.subtitle2,
             color = MaterialTheme.colors.colorTextSecondary
         )
-        IconButton(
-            modifier = Modifier.size(24.dp),
-            onClick = onClick
-        ) {
-            Icon(
-                modifier = Modifier.rotate(if (visible) 0f else 180f),
-                imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_down),
-                contentDescription = null,
-                tint = MaterialTheme.colors.colorTextTertiary
-            )
+        if (arrowVisible) {
+            IconButton(
+                modifier = Modifier.size(24.dp),
+                onClick = onClick
+            ) {
+                Icon(
+                    modifier = Modifier.rotate(if (visible) 0f else 180f),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_down),
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.colorTextTertiary
+                )
+            }
         }
     }
 }
@@ -113,6 +120,7 @@ private fun ShareUserItem(
     share: ShareEntity,
     portal: String?,
     isGroup: Boolean,
+    isRoom: Boolean,
     onClick: () -> Unit
 ) {
     Column(modifier = Modifier.addIf(share.canEditAccess) { clickable(onClick = onClick) }) {
@@ -161,7 +169,8 @@ private fun ShareUserItem(
                 text = stringResource(
                     id = RoomUtils.getAccessTitleOrOwner(
                         share.isOwner,
-                        share.access.code
+                        share.access.code,
+                        isRoom
                     )
                 ),
                 style = MaterialTheme.typography.body2,

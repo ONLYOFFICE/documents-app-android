@@ -21,6 +21,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.share.models.ShareType
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import app.editors.manager.mvp.models.ui.AccessUI
@@ -296,59 +297,86 @@ fun Modifier.fillMaxWidth(isTablet: Boolean): Modifier {
     return if (isTablet) fillMaxWidth(0.3f) else fillMaxWidth()
 }
 
-fun Access.toUi(): AccessUI {
-    val (icon, title) = when (this) {
-        Access.Comment -> arrayOf(
-            R.drawable.ic_access_comment,
-            R.string.share_access_room_commentator
+fun Access.toUi(isFileOrFolder: Boolean = true): AccessUI {
+    return when (this) {
+        Access.Comment -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_comment,
+            title = if (!isFileOrFolder)
+                R.string.share_popup_access_comment else
+                R.string.share_access_room_commentator
         )
 
-        Access.CustomFilter -> arrayOf(
-            R.drawable.ic_access_custom_filter,
-            R.string.share_popup_access_custom_filter
+        Access.CustomFilter -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_custom_filter,
+            title = R.string.share_popup_access_custom_filter
         )
 
-        Access.ReadWrite, Access.Editor -> arrayOf(
-            R.drawable.ic_access_full,
-            R.string.share_access_room_editor
+        Access.ReadWrite -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_full,
+            title = if (!isFileOrFolder)
+                R.string.share_popup_access_full else
+                R.string.share_access_room_editor
         )
 
-        Access.FormFiller -> arrayOf(
-            R.drawable.ic_access_fill_form,
-            R.string.share_access_room_form_filler
+        Access.Editor -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_full,
+            title = if (!isFileOrFolder)
+                R.string.share_popup_access_editing else
+                R.string.share_access_room_editor
         )
 
-        Access.Read -> arrayOf(
-            R.drawable.ic_access_read,
-            R.string.share_access_room_viewer
+        Access.FormFiller -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_fill_form,
+            title = if (!isFileOrFolder)
+                R.string.share_popup_access_fill_forms else
+                R.string.share_access_room_form_filler
         )
 
-        Access.Review -> arrayOf(
-            R.drawable.ic_access_review,
-            R.string.share_access_room_reviewer
+        Access.Read -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_read,
+            title = if (!isFileOrFolder)
+                R.string.share_popup_access_read_only else
+                R.string.share_access_room_viewer
         )
 
-        Access.RoomManager -> arrayOf(
-            R.drawable.ic_room_manager,
-            R.string.share_access_room_manager
+        Access.Review -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_review,
+            title = if (!isFileOrFolder)
+                R.string.share_popup_access_review else
+                R.string.share_access_room_reviewer
         )
 
-        Access.ContentCreator -> arrayOf(
-            R.drawable.ic_room_power_user,
-            R.string.share_access_room_power_user
+        Access.RoomManager -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_room_manager,
+            title = R.string.share_access_room_manager
         )
 
-        Access.Restrict -> arrayOf(
-            R.drawable.ic_access_deny,
-            R.string.share_popup_access_deny_access
+        Access.ContentCreator -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_room_power_user,
+            title = R.string.share_access_room_power_user
         )
 
-        Access.None -> arrayOf(
-            R.drawable.ic_access_deny,
-            R.string.share_popup_access_deny_remove
+        Access.Restrict -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_deny,
+            title = R.string.share_popup_access_deny_access
+        )
+
+        Access.None -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_deny,
+            title = R.string.share_popup_access_deny_remove
         )
     }
-    return AccessUI(this, title, icon)
 }
 
 fun User.getTypeTitle(provider: PortalProvider?): Int {
@@ -367,3 +395,13 @@ fun User.getTypeTitle(provider: PortalProvider?): Int {
         UserType.Guest -> R.string.profile_type_visitor
     }
 }
+
+val ShareType.titleWithCount: Int
+    get() = when (this) {
+        ShareType.Admin -> R.string.rooms_info_admin_title
+        ShareType.User -> R.string.rooms_info_users_title
+        ShareType.Group -> R.string.rooms_info_groups_title
+        ShareType.Guests -> R.string.rooms_info_guests_title
+        ShareType.Expected -> R.string.rooms_info_expected_title
+        ShareType.Owner -> R.string.share_access_room_owner
+    }
