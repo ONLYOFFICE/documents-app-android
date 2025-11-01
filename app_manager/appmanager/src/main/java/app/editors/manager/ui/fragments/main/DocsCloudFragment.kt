@@ -453,6 +453,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 }
                 presenter.isTemplatesFolder -> PlaceholderViews.Type.EMPTY_TEMPLATES_FOLDER
                 presenter.isRecentViaLinkSection() -> PlaceholderViews.Type.EMPTY_RECENT_VIA_LINK
+                presenter.isSharedWithMeSection -> PlaceholderViews.Type.EMPTY_SHARED_WITH_ME
                 else -> type
             }
         } else type
