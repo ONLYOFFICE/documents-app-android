@@ -58,7 +58,8 @@ class ShareActivity : BaseAppActivity() {
                             viewModel = viewModel {
                                 ShareSettingsViewModel(
                                     roomProvider = roomProvider,
-                                    fileId = intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty(),
+                                    itemId = intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty(),
+                                    isFolder = intent.getBooleanExtra(KEY_SHARE_IS_FOLDER, false)
                                 )
                             },
                             fileExtension = intent.getStringExtra(KEY_SHARE_ITEM_EXTENSION).orEmpty(),

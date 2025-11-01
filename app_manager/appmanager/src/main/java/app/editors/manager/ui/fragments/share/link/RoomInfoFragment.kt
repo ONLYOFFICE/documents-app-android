@@ -354,31 +354,31 @@ class RoomInfoFragment : ComposeDialogFragment() {
                     ShareUsersList(
                         portal = portal,
                         shareList = groupedShareList.getOrElse(ShareType.Admin, ::emptyList),
-                        type = ShareType.Admin,
+                        title = R.string.rooms_info_admin_title,
                         onClick = onSetUserAccess
                     )
                     ShareUsersList(
                         portal = portal,
                         shareList = groupedShareList.getOrElse(ShareType.Group, ::emptyList),
-                        type = ShareType.Group,
+                        title = R.string.rooms_info_groups_title,
                         onClick = { share -> onSetGroupAccess.invoke(share.sharedTo.id, share.access.code) }
                     )
                     ShareUsersList(
                         portal = portal,
                         shareList = groupedShareList.getOrElse(ShareType.User, ::emptyList),
-                        type = ShareType.User,
+                        title = R.string.rooms_info_users_title,
                         onClick = onSetUserAccess
                     )
                     ShareUsersList(
                         portal = portal,
                         shareList = groupedShareList.getOrElse(ShareType.Guests, ::emptyList),
-                        type = ShareType.Guests,
+                        title = R.string.rooms_info_guests_title,
                         onClick = onSetUserAccess
                     )
                     ShareUsersList(
                         portal = portal,
                         shareList = groupedShareList.getOrElse(ShareType.Expected, ::emptyList),
-                        type = ShareType.Expected,
+                        title = R.string.rooms_info_expected_title,
                         onClick = onSetUserAccess
                     )
                 }

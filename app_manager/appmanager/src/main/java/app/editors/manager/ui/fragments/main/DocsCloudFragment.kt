@@ -308,8 +308,12 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     private fun showShareFragment() {
         presenter.itemClicked?.let { item ->
-            if (requireContext().accountOnline.isDocSpace && item is CloudFile) {
-                ShareSettingsFragment.show(requireActivity(), item.id, item.fileExst)
+            if (requireContext().accountOnline.isDocSpace) {
+                ShareSettingsFragment.show(
+                    activity = requireActivity(),
+                    fileId = item.id,
+                    extension = (item as? CloudFile)?.fileExst
+                )
             } else {
                 ShareFragment.show(
                     activity = requireActivity(),

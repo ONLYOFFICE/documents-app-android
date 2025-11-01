@@ -28,12 +28,16 @@ class ShareSettingsFragment : ComposeDialogFragment() {
 
         private fun newInstance(): ShareSettingsFragment = ShareSettingsFragment()
 
-        fun show(activity: FragmentActivity, fileId: String?, extension: String) {
+        fun show(activity: FragmentActivity, fileId: String?, extension: String?) {
             newInstance()
                 .putArgs(KEY_FILE_ID to fileId)
                 .putArgs(KEY_FILE_EXTENSION to extension)
                 .show(activity.supportFragmentManager, TAG)
         }
+    }
+
+    private val extension: String? by lazy {
+        arguments?.getString(KEY_FILE_EXTENSION)
     }
 
     @Composable
@@ -43,10 +47,11 @@ class ShareSettingsFragment : ComposeDialogFragment() {
                 viewModel = viewModel {
                     ShareSettingsViewModel(
                         roomProvider = requireContext().roomProvider,
-                        fileId = arguments?.getString(KEY_FILE_ID).orEmpty(),
+                        itemId = arguments?.getString(KEY_FILE_ID).orEmpty(),
+                        isFolder = extension == null
                     )
                 },
-                fileExtension = arguments?.getString(KEY_FILE_EXTENSION).orEmpty(),
+                fileExtension = extension,
                 onSendLink = { link ->
                     requireContext().openSendTextActivity(
                         getString(R.string.toolbar_menu_main_share),

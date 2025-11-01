@@ -299,9 +299,9 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{id}/links")
-    suspend fun createSharedLink(
-        @Path("id") id: String,
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/links")
+    suspend fun createSharedFileLink(
+        @Path("fileId") fileId: String,
         @Body body: RequestCreateSharedLink,
     ): app.documents.core.network.BaseResponse<ExternalLink>
 
@@ -309,16 +309,43 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/links")
-    suspend fun getSharedLinks(@Path("id") id: String): Response<ResponseExternalLink>
+    @PUT("api/" + ApiContract.API_VERSION + "/files/folder/{folderId}/links")
+    suspend fun createSharedFolderLink(
+        @Path("folderId") folderId: String,
+        @Body body: RequestCreateSharedLink,
+    ): app.documents.core.network.BaseResponse<ExternalLink>
 
     @Headers(
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{id}/links")
-    suspend fun updateSharedLink(
-        @Path("id") id: String,
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/links")
+    suspend fun getSharedFileLinks(@Path("fileId") fileId: String): Response<ResponseExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/folder/{folderId}/links")
+    suspend fun getSharedFolderLinks(@Path("folderId") folderId: String): Response<ResponseExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/links")
+    suspend fun updateSharedFileLink(
+        @Path("fileId") fileId: String,
+        @Body body: RequestUpdateSharedLink,
+    ): app.documents.core.network.BaseResponse<ExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/folder/{folderId}/links")
+    suspend fun updateSharedFolderLink(
+        @Path("folderId") folderId: String,
         @Body body: RequestUpdateSharedLink,
     ): app.documents.core.network.BaseResponse<ExternalLink>
 

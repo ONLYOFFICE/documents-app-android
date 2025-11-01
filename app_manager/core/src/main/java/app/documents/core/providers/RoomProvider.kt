@@ -273,23 +273,37 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         )
     }
 
-    suspend fun getSharedLinks(id: String): List<ExternalLink> {
-        val response = roomService.getSharedLinks(id)
+    suspend fun getSharedLinks(itemId: String, isFolder: Boolean): List<ExternalLink> {
+        val response = if (isFolder)
+            roomService.getSharedFolderLinks(itemId) else
+            roomService.getSharedFileLinks(itemId)
+
         val body = response.body()
-        return if (response.isSuccessful && body != null) body.response else throw HttpException(
-            response
-        )
+
+        return if (response.isSuccessful && body != null)
+            body.response else throw HttpException(response)
     }
 
-    suspend fun createSharedLink(fileId: String): ExternalLink {
-        return roomService.createSharedLink(fileId, RequestCreateSharedLink()).response
+    suspend fun createSharedLink(itemId: String, isFolder: Boolean): ExternalLink {
+        val requestBody = RequestCreateSharedLink()
+        val request = if (isFolder)
+            roomService.createSharedFolderLink(itemId, requestBody) else
+            roomService.createSharedFileLink(itemId, requestBody)
+
+        return request.response
     }
 
-    suspend fun updateSharedLink(fileId: String, sharedLink: ExternalLink): ExternalLink {
-        return roomService.updateSharedLink(
-            fileId,
-            RequestUpdateSharedLink.from(sharedLink)
-        ).response
+    suspend fun updateSharedLink(
+        itemId: String,
+        sharedLink: ExternalLink,
+        isFolder: Boolean
+    ): ExternalLink {
+        val requestBody = RequestUpdateSharedLink.from(sharedLink)
+        val request = if (isFolder)
+            roomService.updateSharedFolderLink(itemId, requestBody) else
+            roomService.updateSharedFileLink(itemId, requestBody)
+
+        return request.response
     }
 
     suspend fun getRoomUsers(id: String): List<Share> {

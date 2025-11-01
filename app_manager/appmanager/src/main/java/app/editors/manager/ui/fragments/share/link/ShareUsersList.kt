@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.ShareEntity
-import app.documents.core.network.share.models.ShareType
 import app.editors.manager.managers.utils.RoomUtils
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -47,9 +46,9 @@ import lib.toolkit.base.R
 
 @Composable
 internal fun ShareUsersList(
+    title: Int,
     portal: String?,
     shareList: List<ShareEntity>,
-    type: ShareType,
     onClick: (ShareEntity) -> Unit
 ) {
     var visible by remember { mutableStateOf(true) }
@@ -57,14 +56,8 @@ internal fun ShareUsersList(
     if (shareList.isNotEmpty()) {
         Column {
             HeaderWithCollapseButton(
+                title = title,
                 listSize = shareList.size,
-                title = when (type) {
-                    ShareType.Admin -> app.editors.manager.R.string.rooms_info_admin_title
-                    ShareType.User -> app.editors.manager.R.string.rooms_info_users_title
-                    ShareType.Guests -> app.editors.manager.R.string.rooms_info_guests_title
-                    ShareType.Group -> app.editors.manager.R.string.rooms_info_groups_title
-                    ShareType.Expected -> app.editors.manager.R.string.rooms_info_expected_title
-                },
                 visible = visible,
                 onClick = { visible = !visible }
             )

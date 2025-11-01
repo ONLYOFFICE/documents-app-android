@@ -1,6 +1,7 @@
 package app.editors.manager.ui.compose.share
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -47,28 +49,25 @@ import app.editors.manager.viewModels.link.SharedLinkSettingsViewModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.compose.ui.theme.ManagerTheme
-import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppCircularProgress
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
+import lib.compose.ui.views.TopAppBarAction
 import lib.toolkit.base.managers.utils.KeyboardUtils
-import lib.toolkit.base.managers.utils.UiUtils
 import java.net.URLDecoder
 import java.net.URLEncoder
 
 @Composable
 fun ShareDocSpaceScreen(
     viewModel: ShareSettingsViewModel,
-    fileExtension: String,
+    fileExtension: String?, // null for folders
     useTabletPadding: Boolean,
     onSendLink: (String) -> Unit,
     onClose: () -> Unit,
 ) {
-    val context = LocalContext.current
-    val snackBar = remember { UiUtils.getSnackBar(context as FragmentActivity) }
     val navController = rememberNavController()
 
     navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -79,12 +78,16 @@ fun ShareDocSpaceScreen(
 
     BackHandler(onBack = onClose)
 
-    NavHost(navController = navController, startDestination = Route.SettingsScreen.name) {
+    NavHost(
+        modifier = Modifier.background(MaterialTheme.colors.background),
+        navController = navController,
+        startDestination = Route.SettingsScreen.name
+    ) {
         composable(Route.SettingsScreen.name) {
             MainScreen(
                 viewModel = viewModel,
                 useTabletPaddings = useTabletPadding,
-                onSnackBar = { text -> snackBar.setText(text).show() },
+                isFolder = fileExtension == null,
                 onShare = onSendLink,
                 onBack = onClose,
                 onLinkClick = { link ->
@@ -116,13 +119,13 @@ fun ShareDocSpaceScreen(
                         externalLink = Json.decodeFromString<ExternalLink>(json),
                         expired = it.arguments?.getString("expired"),
                         roomProvider = viewModel.roomProvider,
-                        fileId = viewModel.fileId
+                        itemId = viewModel.itemId,
+                        isFolder = fileExtension == null
                     )
                 },
                 fileExtension = fileExtension,
                 useTabletPadding = useTabletPadding,
-                onBack = navController::popBackStackWhenResumed,
-                onSnackBar = { text -> snackBar.setText(text).show() }
+                onBack = navController::popBackStack,
             )
         }
     }
@@ -132,8 +135,8 @@ fun ShareDocSpaceScreen(
 @Composable
 private fun MainScreen(
     viewModel: ShareSettingsViewModel,
+    isFolder: Boolean,
     useTabletPaddings: Boolean,
-    onSnackBar: (String) -> Unit,
     onShare: (String) -> Unit,
     onLinkClick: (ExternalLink) -> Unit,
     onBack: () -> Unit,
@@ -141,17 +144,19 @@ private fun MainScreen(
     val context = LocalContext.current
     var isCreateLoading by remember { mutableStateOf(false) }
     val state by viewModel.state.collectAsState()
+    val scaffoldState = rememberScaffoldState()
 
     LaunchedEffect(viewModel) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is ShareSettingsEffect.Copy -> {
                     KeyboardUtils.setDataToClipboard(context, effect.link)
-                    onSnackBar(context.getString(R.string.rooms_info_create_link_complete))
+                    scaffoldState.snackbarHostState
+                        .showSnackbar(context.getString(R.string.rooms_info_create_link_complete))
                 }
 
                 is ShareSettingsEffect.Error -> {
-                    onSnackBar(
+                    scaffoldState.snackbarHostState.showSnackbar(
                         effect.code?.let { code ->
                             context.getString(R.string.errors_client_error) + code
                         } ?: context.getString(R.string.errors_unknown_error)
@@ -166,7 +171,9 @@ private fun MainScreen(
     }
 
     ShareSettingsScreen(
+        scaffoldState = scaffoldState,
         state = state,
+        isFolder = isFolder,
         onBack = onBack,
         useTabletPaddings = useTabletPaddings,
         isCreateLoading = isCreateLoading,
@@ -178,7 +185,9 @@ private fun MainScreen(
 
 @Composable
 private fun ShareSettingsScreen(
+    scaffoldState: ScaffoldState,
     isCreateLoading: Boolean,
+    isFolder: Boolean,
     state: ShareSettingsState,
     useTabletPaddings: Boolean,
     onCreate: () -> Unit,
@@ -187,9 +196,19 @@ private fun ShareSettingsScreen(
     onBack: () -> Unit,
 ) {
     AppScaffold(
+        scaffoldState = scaffoldState,
         useTablePaddings = useTabletPaddings,
         topBar = {
-            AppTopBar(title = R.string.share_title_main, backListener = onBack)
+            AppTopBar(
+                title = R.string.share_title_main,
+                backListener = onBack,
+                actions = {
+                    TopAppBarAction(
+                        icon = R.drawable.ic_add_users,
+                        onClick = {}
+                    )
+                }
+            )
         }
     ) {
         when (state) {
@@ -249,7 +268,11 @@ private fun ShareSettingsScreen(
                     item {
                         AppDescriptionItem(
                             modifier = Modifier.padding(top = 8.dp),
-                            text = R.string.rooms_share_shared_desc
+                            text = if (!isFolder) {
+                                R.string.rooms_share_shared_desc
+                            } else {
+                                R.string.rooms_share_shared_folder_desc
+                            }
                         )
                     }
                 }
@@ -283,6 +306,7 @@ private fun ShareSettingsScreenPreview() {
 
     ManagerTheme {
         ShareSettingsScreen(
+            scaffoldState = rememberScaffoldState(),
             state = ShareSettingsState.Success(
                 listOf(
                     link.copy(access = 1),
@@ -290,6 +314,7 @@ private fun ShareSettingsScreenPreview() {
                     link.copy(sharedTo = link.sharedTo.copy(isExpired = true, internal = false, id = "3"))
                 )
             ),
+            isFolder = true,
             useTabletPaddings = false,
             isCreateLoading = false,
             onBack = {},

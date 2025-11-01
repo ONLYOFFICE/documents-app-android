@@ -241,7 +241,7 @@ object ManagerUiUtils {
     }
 
     fun getAccessList(
-        extension: StringUtils.Extension,
+        extension: StringUtils.Extension?,
         removable: Boolean = false,
         isDocSpace: Boolean = false,
     ): List<Access> {

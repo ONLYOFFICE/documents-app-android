@@ -12,7 +12,6 @@ import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.ShareEntity
-import app.documents.core.network.share.models.ShareType
 import app.editors.manager.R
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.toUi
@@ -87,7 +86,7 @@ fun RoomAccessScreen(
                 ShareUsersList(
                     portal = portal,
                     shareList = users,
-                    type = ShareType.User,
+                    title = R.string.rooms_info_users_title,
                     onClick = onUserClick
                 )
             }

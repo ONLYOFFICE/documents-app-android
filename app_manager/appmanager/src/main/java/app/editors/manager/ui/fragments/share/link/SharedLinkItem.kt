@@ -141,7 +141,7 @@ fun SharedLinkItem(
                 Icon(
                     modifier = Modifier.padding(start = 8.dp),
                     imageVector = ImageVector.vectorResource(Access.get(access).toUi().icon),
-                    tint = MaterialTheme.colors.colorTextTertiary,
+                    tint = MaterialTheme.colors.colorTextSecondary,
                     contentDescription = null
                 )
                 Icon(

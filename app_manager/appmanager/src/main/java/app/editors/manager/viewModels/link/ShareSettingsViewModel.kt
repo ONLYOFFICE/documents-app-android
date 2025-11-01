@@ -26,9 +26,14 @@ sealed class ShareSettingsEffect {
     data class Error(val code: Int? = null) : ShareSettingsEffect()
 }
 
-class ShareSettingsViewModel(val roomProvider: RoomProvider, val fileId: String) : ViewModel() {
+class ShareSettingsViewModel(
+    val roomProvider: RoomProvider,
+    val itemId: String,
+    val isFolder: Boolean
+) : ViewModel() {
 
-    private val _state: MutableStateFlow<ShareSettingsState> = MutableStateFlow(ShareSettingsState.Loading)
+    private val _state: MutableStateFlow<ShareSettingsState> =
+        MutableStateFlow(ShareSettingsState.Loading)
     val state: StateFlow<ShareSettingsState> = _state.asStateFlow()
 
     private val _effect: MutableSharedFlow<ShareSettingsEffect> = MutableSharedFlow(1)
@@ -38,7 +43,7 @@ class ShareSettingsViewModel(val roomProvider: RoomProvider, val fileId: String)
         viewModelScope.launch {
             try {
                 _effect.emit(ShareSettingsEffect.OnCreate(true))
-                val link = roomProvider.createSharedLink(fileId)
+                val link = roomProvider.createSharedLink(itemId, isFolder)
                 _effect.emit(ShareSettingsEffect.OnCreate(false))
                 _effect.emit(ShareSettingsEffect.Copy(link.sharedTo.shareLink))
 
@@ -59,7 +64,8 @@ class ShareSettingsViewModel(val roomProvider: RoomProvider, val fileId: String)
     fun fetchLinks() {
         viewModelScope.launch {
             try {
-                _state.value = ShareSettingsState.Success(roomProvider.getSharedLinks(fileId))
+                val links = roomProvider.getSharedLinks(itemId, isFolder)
+                _state.value = ShareSettingsState.Success(links)
             } catch (e: HttpException) {
                 _effect.emit(ShareSettingsEffect.Error(e.code()))
             } catch (_: Exception) {
