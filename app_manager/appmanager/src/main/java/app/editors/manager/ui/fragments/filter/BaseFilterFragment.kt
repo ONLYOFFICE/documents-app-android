@@ -150,14 +150,14 @@ abstract class BaseFilterFragment : BaseAppFragment(), FilterView {
 
     protected fun showAuthorFragment(
         fragmentManager: FragmentManager,
-        isRoom: Boolean = false,
+        withSelf: Boolean = true,
         isGroups: Boolean = false,
         selectedId: String,
         onResultListener: (Bundle) -> Unit
     ) {
         FragmentUtils.showFragment(
             fragmentManager,
-            FilterAuthorFragment.newInstance(selectedId, isGroups, isRoom),
+            FilterAuthorFragment.newInstance(selectedId, isGroups, withSelf),
             R.id.frame_container,
             FilterAuthorFragment.TAG,
         )

@@ -60,7 +60,7 @@ class RoomFilterFragment : BaseFilterFragment() {
                 setChip(RoomFilterAuthor.OtherUsers, closeListener = presenter::clearAuthor, checked = false) { _, _ ->
                     showAuthorFragment(
                         fragmentManager = parentFragmentManager,
-                        isRoom = true,
+                        withSelf = false,
                         selectedId = presenter.filterAuthor.id
                     ) { bundle ->
                         presenter.filterAuthor =
