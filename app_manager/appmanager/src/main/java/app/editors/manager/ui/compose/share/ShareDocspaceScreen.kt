@@ -50,6 +50,7 @@ import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.titleWithCount
+import app.editors.manager.managers.utils.toUi
 import app.editors.manager.ui.fragments.share.InviteAccessScreen
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
@@ -73,8 +74,8 @@ import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.TopAppBarAction
+import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.KeyboardUtils
-import lib.toolkit.base.managers.utils.StringUtils
 import lib.toolkit.base.managers.utils.getJsonString
 import java.net.URLDecoder
 import java.net.URLEncoder
@@ -90,7 +91,7 @@ sealed class Route(val name: String) {
 fun ShareDocSpaceScreen(
     roomProvider: RoomProvider,
     itemId: String,
-    fileExtension: String?, // null for folders
+    fileExtension: FileExtensions?, // null for folders
     useTabletPadding: Boolean,
     onSendLink: (String) -> Unit,
     onClose: () -> Unit,
@@ -103,14 +104,6 @@ fun ShareDocSpaceScreen(
             roomProvider = roomProvider,
             itemId = itemId,
             isFolder = isFolder
-        )
-    }
-
-    val accessList = remember {
-        ManagerUiUtils.getAccessList(
-            extension = fileExtension?.let(StringUtils::getExtension),
-            removable = false,
-            isDocSpace = true
         )
     }
 
@@ -171,7 +164,10 @@ fun ShareDocSpaceScreen(
                         isFolder = isFolder
                     )
                 },
-                fileExtension = fileExtension,
+                accessList = ManagerUiUtils.getItemAccessList(
+                    extension = fileExtension,
+                    forLink = true
+                ),
                 useTabletPadding = useTabletPadding,
                 onBack = navController::popBackStack,
             )
@@ -182,7 +178,7 @@ fun ShareDocSpaceScreen(
                     roomProvider = roomProvider,
                     itemId = itemId,
                     isFolder = isFolder,
-                    accessList = accessList
+                    accessList = ManagerUiUtils.getItemAccessList(extension = fileExtension)
                 )
             }
             UserListScreen(
@@ -196,7 +192,10 @@ fun ShareDocSpaceScreen(
                     nextButtonTitle = lib.toolkit.base.R.string.common_next,
                     count = size,
                     access = access,
-                    accessList = accessList,
+                    accessList = remember {
+                        ManagerUiUtils.getItemAccessList(extension = fileExtension)
+                            .map { it.toUi(true) }
+                    },
                     onAccess = userListViewModel::setAccess,
                     onDelete = userListViewModel::onDelete
                 ) {
@@ -239,7 +238,10 @@ fun ShareDocSpaceScreen(
                 )
             }
             InviteAccessScreen(
-                accessList = accessList,
+                accessList = remember {
+                    ManagerUiUtils.getItemAccessList(extension = fileExtension)
+                        .map { access -> access.toUi(true) }
+                },
                 viewModel = shareAccessViewModel,
                 onBack = navController::popBackStack,
                 onSuccess = {

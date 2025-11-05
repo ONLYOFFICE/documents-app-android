@@ -21,6 +21,7 @@ import app.documents.core.model.cloud.Access
 import app.editors.manager.R
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.toUi
+import app.editors.manager.mvp.models.ui.AccessUI
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppDivider
@@ -29,7 +30,7 @@ import lib.compose.ui.views.AppDivider
 fun AccessDropdownMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    accessList: List<Access>,
+    accessList: List<AccessUI>,
     onClick: (Access) -> Unit,
 ) {
     DropdownMenu(
@@ -41,9 +42,9 @@ fun AccessDropdownMenu(
 
 @Suppress("UnusedReceiverParameter")
 @Composable
-private fun ColumnScope.Content(accessList: List<Access>, onClick: (Access) -> Unit) {
-    accessList.forEach { access ->
-        val accessUi = access.toUi()
+private fun ColumnScope.Content(accessList: List<AccessUI>, onClick: (Access) -> Unit) {
+    accessList.forEach { accessUi ->
+        val access = accessUi.access
         if (access == Access.None) {
             AppDivider()
         }
@@ -75,7 +76,7 @@ private fun Preview() {
     ManagerTheme {
         Surface {
             Column {
-                Content(accessList = RoomUtils.getAccessOptions(2, true)) {}
+                Content(accessList = RoomUtils.getAccessOptions(2, true).map { it.toUi() }) {}
             }
         }
     }

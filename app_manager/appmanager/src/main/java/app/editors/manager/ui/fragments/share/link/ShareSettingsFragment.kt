@@ -7,6 +7,7 @@ import app.editors.manager.app.roomProvider
 import app.editors.manager.ui.compose.share.ShareDocSpaceScreen
 import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
+import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.openSendTextActivity
 import lib.toolkit.base.managers.utils.putArgs
 
@@ -29,8 +30,10 @@ class ShareSettingsFragment : ComposeDialogFragment() {
         }
     }
 
-    private val extension: String? by lazy {
-        arguments?.getString(KEY_FILE_EXTENSION)
+    private val extension: FileExtensions? by lazy {
+        arguments?.getString(KEY_FILE_EXTENSION)?.let { extension ->
+            FileExtensions.fromExtension(extension)
+        }
     }
 
     @Composable

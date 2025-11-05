@@ -20,7 +20,7 @@ class ShareUserListViewModel(
     accessList: List<Access>,
 ) : UserListViewModel(
     mode = UserListMode.Share,
-    access = accessList.lastOrNull(),
+    access = accessList.last { access -> access !is Access.Restrict },
 ) {
 
     override val cachedMembersFlow: SharedFlow<List<Member>> = flow {

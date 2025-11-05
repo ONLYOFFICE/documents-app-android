@@ -20,6 +20,7 @@ import app.editors.manager.ui.compose.share.ShareDocSpaceScreen
 import app.editors.manager.ui.compose.share.ShareScreen
 import lib.compose.ui.theme.BaseAppTheme
 import lib.compose.ui.theme.LocalUseTabletPadding
+import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.openSendTextActivity
 
@@ -42,6 +43,16 @@ class ShareActivity : BaseAppActivity() {
         }
     }
 
+    private val fileExtension: FileExtensions? by lazy {
+        intent.getStringExtra(KEY_SHARE_ITEM_EXTENSION)?.let { extension ->
+            FileExtensions.fromExtension(extension)
+        }
+    }
+
+    private val itemId: String by lazy {
+        intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,8 +65,8 @@ class ShareActivity : BaseAppActivity() {
                     if (accountOnline.isDocSpace) {
                         ShareDocSpaceScreen(
                             roomProvider = roomProvider,
-                            itemId = intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty(),
-                            fileExtension = intent.getStringExtra(KEY_SHARE_ITEM_EXTENSION).orEmpty(),
+                            itemId = itemId,
+                            fileExtension = fileExtension,
                             onSendLink = { link ->
                                 openSendTextActivity(
                                     title = getString(R.string.toolbar_menu_main_share),

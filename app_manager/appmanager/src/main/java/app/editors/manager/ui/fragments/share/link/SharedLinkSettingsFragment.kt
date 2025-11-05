@@ -41,12 +41,11 @@ import lib.compose.ui.views.DropdownMenuButton
 import lib.compose.ui.views.DropdownMenuItem
 import lib.compose.ui.views.NestedColumn
 import lib.compose.ui.views.VerticalSpacer
-import lib.toolkit.base.managers.utils.StringUtils
 
 @Composable
 fun SharedLinkSettingsScreen(
     viewModel: SharedLinkSettingsViewModel,
-    fileExtension: String?, // null for folders
+    accessList: List<Access>,
     useTabletPadding: Boolean = false,
     onBack: () -> Unit,
 ) {
@@ -77,7 +76,7 @@ fun SharedLinkSettingsScreen(
 
     MainScreen(
         scaffoldState = scaffoldState,
-        fileExtension = fileExtension,
+        accessList = accessList,
         loading = loading,
         state = state,
         useTabletPadding = useTabletPadding,
@@ -93,7 +92,7 @@ fun SharedLinkSettingsScreen(
 @Composable
 private fun MainScreen(
     scaffoldState: ScaffoldState,
-    fileExtension: String?,
+    accessList: List<Access>,
     loading: State<Boolean>,
     state: State<ExternalLink>,
     useTabletPadding: Boolean = false,
@@ -134,10 +133,7 @@ private fun MainScreen(
                                     state = accessDropDownState,
                                     icon = ImageVector.vectorResource(Access.get(state.value.access).toUi().icon),
                                     items = {
-                                        ManagerUiUtils.getAccessList(
-                                            extension = fileExtension?.let(StringUtils::getExtension),
-                                            isDocSpace = true
-                                        ).forEach { access ->
+                                        accessList.forEach { access ->
                                             val accessUi = access.toUi()
                                             DropdownMenuItem(
                                                 title = stringResource(accessUi.title),
@@ -231,7 +227,7 @@ private fun ShareSettingsScreenPreview() {
     ManagerTheme {
         MainScreen(
             scaffoldState = rememberScaffoldState(),
-            fileExtension = "docx",
+            accessList = ManagerUiUtils.getFolderAccessList(withRemove = false, forLink = true),
             useTabletPadding = false,
             loading = remember { mutableStateOf(false) },
             state = remember { mutableStateOf(link) },

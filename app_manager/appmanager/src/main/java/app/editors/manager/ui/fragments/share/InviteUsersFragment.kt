@@ -185,7 +185,13 @@ fun InviteUsersScreen(
                         nextButtonTitle = lib.toolkit.base.R.string.common_next,
                         count = size,
                         access = access,
-                        accessList = RoomUtils.getAccessOptions(roomType, false, true),
+                        accessList = remember {
+                            RoomUtils.getAccessOptions(
+                                roomType = roomType,
+                                isRemove = false,
+                                isAdmin = false
+                            ).map { it.toUi() }
+                        },
                         onAccess = userListViewModel::setAccess,
                         onDelete = userListViewModel::onDelete
                     ) {
@@ -225,7 +231,13 @@ fun InviteUsersScreen(
                     )
                 }
                 InviteAccessScreen(
-                    accessList = remember { RoomUtils.getAccessOptions(roomType, true, true) },
+                    accessList = remember {
+                        RoomUtils.getAccessOptions(
+                            roomType = roomType,
+                            isRemove = false,
+                            isAdmin = false
+                        ).map { access -> access.toUi() }
+                    },
                     description = stringResource(R.string.rooms_invite_access_description),
                     viewModel = inviteAccessViewModel,
                     onBack = navController::popBackStackWhenResumed,

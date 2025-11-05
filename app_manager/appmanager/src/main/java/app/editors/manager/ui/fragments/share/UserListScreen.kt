@@ -75,6 +75,7 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.getTypeTitle
+import app.editors.manager.managers.utils.toUi
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.views.custom.SearchAppBar
 import app.editors.manager.ui.views.custom.UserListBottomContent
@@ -800,7 +801,8 @@ private fun PreviewMainWithBottom() {
                 nextButtonTitle = R.string.share_invite_title,
                 count = selected.size,
                 access = Access.Editor,
-                accessList = RoomUtils.getAccessOptions(ApiContract.RoomType.CUSTOM_ROOM, false),
+                accessList = RoomUtils.getAccessOptions(ApiContract.RoomType.CUSTOM_ROOM, false)
+                    .map { it.toUi() },
                 {}, {}) {}
         }
     }

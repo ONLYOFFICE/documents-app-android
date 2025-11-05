@@ -64,6 +64,7 @@ import app.documents.core.network.share.models.SharedTo
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.GlideUtils
+import app.editors.manager.managers.utils.toUi
 import app.editors.manager.ui.fragments.share.InviteAccessScreen
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.ui.views.custom.AccessIconButton
@@ -223,7 +224,8 @@ fun ShareScreen(
                         nextButtonTitle = lib.toolkit.base.R.string.common_next,
                         count = count,
                         access = access,
-                        accessList = accessListWithOutRestricted,
+                        accessList = accessListWithOutRestricted
+                            .map { it.toUi(true) },
                         onAccess = userListViewModel::setAccess,
                         onDelete = userListViewModel::onDelete
                     ) {
@@ -263,7 +265,7 @@ fun ShareScreen(
                 )
             }
             InviteAccessScreen(
-                accessList = accessListWithOutRestricted,
+                accessList = accessListWithOutRestricted.map { access -> access.toUi(true) },
                 viewModel = inviteAccessViewModel,
                 onBack = navController::popBackStackWhenResumed,
                 onSuccess = {
@@ -422,7 +424,7 @@ private fun ExternalLinkContent(
             AccessIconButton(
                 access = externalLink.access,
                 enabled = !externalLink.isLocked,
-                accessList = accessList,
+                accessList = accessList.map { it.toUi(true) },
                 onAccess = onAccess::invoke
             )
         }
@@ -562,7 +564,7 @@ private fun UserItem(
                 AccessIconButton(
                     access = share.access,
                     enabled = !share.isLocked,
-                    accessList = accessList,
+                    accessList = accessList.map { it.toUi(true) },
                     onAccess = { access -> onAccess.invoke(share.sharedTo.id, access) }
                 )
             }

@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.tools.FileExtensions
 import kotlin.time.Duration.Companion.milliseconds
 
 data class ShareState(
@@ -32,7 +32,7 @@ data class ShareState(
     val externalLink: Share = Share(),
     val webUrl: String? = null,
     val folder: Boolean = false,
-    val accessList: List<Access> = ManagerUiUtils.getAccessList(StringUtils.Extension.UNKNOWN, true)
+    val accessList: List<Access> = ManagerUiUtils.getItemAccessList(null, true)
 )
 
 sealed class ShareEffect {
@@ -78,7 +78,10 @@ class ShareViewModel(
                     _state.update {
                         it.copy(
                             webUrl = fileInfo.webUrl,
-                            accessList = ManagerUiUtils.getAccessList(StringUtils.getExtension(fileInfo.fileExst), true)
+                            accessList = ManagerUiUtils.getItemAccessList(
+                                extension = FileExtensions.fromExtension(fileInfo.fileExst),
+                                forLink = true
+                            )
                         )
                     }
                     shareApi.getShareFile(itemId).response

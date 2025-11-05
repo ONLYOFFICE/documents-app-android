@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import app.documents.core.model.cloud.Access
 import app.editors.manager.R
 import app.editors.manager.managers.utils.toUi
+import app.editors.manager.mvp.models.ui.AccessUI
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.visible
 
@@ -28,7 +29,7 @@ fun AccessIconButton(
     modifier: Modifier = Modifier,
     access: Access,
     enabled: Boolean,
-    accessList: List<Access>,
+    accessList: List<AccessUI>,
     onAccess: (Access) -> Unit
 ) {
     var dropdown by remember { mutableStateOf(false) }

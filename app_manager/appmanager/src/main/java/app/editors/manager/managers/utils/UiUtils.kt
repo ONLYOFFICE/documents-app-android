@@ -241,43 +241,67 @@ object ManagerUiUtils {
         }
     }
 
-    fun getAccessList(
-        extension: StringUtils.Extension?,
-        removable: Boolean = false,
-        isDocSpace: Boolean = false,
+    fun getItemAccessList(
+        extension: FileExtensions?,
+        forLink: Boolean = false,
+        withRemove: Boolean = false
+    ): List<Access> {
+        return if (extension != null) {
+            getFileAccessList(extension = extension, withRemove = withRemove, forLink = forLink)
+        } else {
+            getFolderAccessList(withRemove = withRemove, forLink = forLink)
+        }
+    }
+
+    fun getFolderAccessList(
+        withRemove: Boolean,
+        forLink: Boolean = false,
+    ): List<Access> {
+        return listOfNotNull(
+            Access.ReadWrite.takeIf { !forLink },
+            Access.Editor,
+            Access.Review,
+            Access.Comment,
+            Access.Read,
+            Access.Restrict.takeIf { !forLink },
+            Access.None.takeIf { withRemove && !forLink }
+        )
+    }
+
+    fun getFileAccessList(
+        extension: FileExtensions,
+        withRemove: Boolean = false,
+        forLink: Boolean = false,
     ): List<Access> {
         return buildList {
-            if (isDocSpace) {
-                add(Access.Editor)
-            } else {
-                add(Access.ReadWrite)
-            }
-            when (extension) {
-                StringUtils.Extension.DOC, StringUtils.Extension.DOCXF -> {
+            if (!forLink) add(Access.ReadWrite)
+            add(Access.Editor)
+            when (extension.group) {
+                FileGroup.DOCUMENT -> {
                     add(Access.Review)
                     add(Access.Comment)
+                    add(Access.Read)
                 }
 
-                StringUtils.Extension.PRESENTATION -> {
-                    add(Access.Comment)
-                }
-
-                StringUtils.Extension.SHEET -> {
+                FileGroup.SHEET -> {
                     add(Access.CustomFilter)
                     add(Access.Comment)
+                    add(Access.Read)
                 }
 
-                StringUtils.Extension.PDF, StringUtils.Extension.OFORM -> {
+                FileGroup.PRESENTATION -> {
+                    add(Access.Comment)
+                    add(Access.Read)
+                }
+
+                FileGroup.PDF -> {
                     add(Access.FormFiller)
                 }
 
                 else -> Unit
             }
-            add(Access.Read)
-            if (!isDocSpace) {
-                add(Access.Restrict)
-            }
-            if (removable) {
+            if (!forLink) add(Access.Restrict)
+            if (withRemove && !forLink) {
                 add(Access.None)
             }
         }
@@ -297,12 +321,12 @@ fun Modifier.fillMaxWidth(isTablet: Boolean): Modifier {
     return if (isTablet) fillMaxWidth(0.3f) else fillMaxWidth()
 }
 
-fun Access.toUi(isFileOrFolder: Boolean = true): AccessUI {
+fun Access.toUi(isFileOrFolder: Boolean = false): AccessUI {
     return when (this) {
         Access.Comment -> AccessUI(
             access = this,
             icon = R.drawable.ic_access_comment,
-            title = if (!isFileOrFolder)
+            title = if (isFileOrFolder)
                 R.string.share_popup_access_comment else
                 R.string.share_access_room_commentator
         )
@@ -316,7 +340,7 @@ fun Access.toUi(isFileOrFolder: Boolean = true): AccessUI {
         Access.ReadWrite -> AccessUI(
             access = this,
             icon = R.drawable.ic_access_full,
-            title = if (!isFileOrFolder)
+            title = if (isFileOrFolder)
                 R.string.share_popup_access_full else
                 R.string.share_access_room_editor
         )
@@ -324,7 +348,7 @@ fun Access.toUi(isFileOrFolder: Boolean = true): AccessUI {
         Access.Editor -> AccessUI(
             access = this,
             icon = R.drawable.ic_access_full,
-            title = if (!isFileOrFolder)
+            title = if (isFileOrFolder)
                 R.string.share_popup_access_editing else
                 R.string.share_access_room_editor
         )
@@ -332,7 +356,7 @@ fun Access.toUi(isFileOrFolder: Boolean = true): AccessUI {
         Access.FormFiller -> AccessUI(
             access = this,
             icon = R.drawable.ic_access_fill_form,
-            title = if (!isFileOrFolder)
+            title = if (isFileOrFolder)
                 R.string.share_popup_access_fill_forms else
                 R.string.share_access_room_form_filler
         )
@@ -340,7 +364,7 @@ fun Access.toUi(isFileOrFolder: Boolean = true): AccessUI {
         Access.Read -> AccessUI(
             access = this,
             icon = R.drawable.ic_access_read,
-            title = if (!isFileOrFolder)
+            title = if (isFileOrFolder)
                 R.string.share_popup_access_read_only else
                 R.string.share_access_room_viewer
         )
@@ -348,7 +372,7 @@ fun Access.toUi(isFileOrFolder: Boolean = true): AccessUI {
         Access.Review -> AccessUI(
             access = this,
             icon = R.drawable.ic_access_review,
-            title = if (!isFileOrFolder)
+            title = if (isFileOrFolder)
                 R.string.share_popup_access_review else
                 R.string.share_access_room_reviewer
         )
