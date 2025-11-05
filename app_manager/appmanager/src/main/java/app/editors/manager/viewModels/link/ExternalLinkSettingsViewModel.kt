@@ -7,6 +7,7 @@ import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
+import app.editors.manager.ui.fragments.share.link.ShareItemType
 import app.editors.manager.viewModels.base.BaseViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -37,8 +38,9 @@ sealed class ExternalLinkSettingsEffect {
 class ExternalLinkSettingsViewModel(
     access: Access,
     inputLink: ExternalLinkSharedTo,
-    private val roomId: String?,
+    private val itemId: String?,
     private val roomProvider: RoomProvider,
+    private val shareType: ShareItemType
 ) : BaseViewModel() {
 
     companion object {
@@ -85,7 +87,7 @@ class ExternalLinkSettingsViewModel(
             try {
                 with(state.value.link) {
                     roomProvider.createRoomSharedLink(
-                        roomId = roomId.orEmpty(),
+                        roomId = itemId.orEmpty(),
                         denyDownload = denyDownload,
                         expirationDate = expirationDate,
                         password = password,
@@ -115,16 +117,18 @@ class ExternalLinkSettingsViewModel(
         if (!validatePassword()) return null
         _state.update { it.copy(loading = true) }
         return try {
-            with(state.value.link) {
+            if (shareType is ShareItemType.Room) {
                 roomProvider.updateRoomSharedLink(
-                    roomId = roomId.orEmpty(),
-                    access = if (deleteOrRevoke) Access.None else state.value.access,
-                    linkId = id,
-                    linkType = linkType,
-                    denyDownload = denyDownload,
-                    expirationDate = expirationDate,
-                    password = password,
-                    title = title
+                    roomId = itemId.orEmpty(),
+                    access = if (deleteOrRevoke) Access.None.code else state.value.access.code,
+                    sharedLink = state.value.link
+                )
+            } else {
+                roomProvider.updateSharedLink(
+                    fileId = itemId.orEmpty(),
+                    sharedLink = state.value.link,
+                    access = if (deleteOrRevoke) Access.None.code else state.value.access.code,
+                    isFolder = shareType.isFolder
                 )
             }
         } catch (httpException: HttpException) {
