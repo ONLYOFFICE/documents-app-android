@@ -1,9 +1,12 @@
 package app.editors.manager.viewModels.link
 
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.ui.fragments.share.link.ShareItemType
+import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.StringUtils.Extension
 
 class SharingViewModel(
     private val roomProvider: RoomProvider,
@@ -33,13 +36,19 @@ class SharingViewModel(
 
     override suspend fun getUsers(): List<Share> {
         return if (shareType.shouldShowUsers) {
-            emptyList()
-        } else {
             roomProvider.getShareUsers(itemId, shareType.isFolder)
+        } else {
+            emptyList()
         }
     }
 
     override suspend fun createExternalLink(): ExternalLink? {
-        return roomProvider.createSharedLink(itemId, shareType.isFolder)
+        val extension = shareType.fileExt?.let { ext -> StringUtils.getExtension(ext) }
+        val access = if (extension == Extension.PDF || extension == Extension.FORM) {
+            Access.Editor.code
+        } else {
+            Access.Read.code
+        }
+        return roomProvider.createSharedLink(itemId, access = access, shareType.isFolder)
     }
 }

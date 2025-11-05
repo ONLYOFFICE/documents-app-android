@@ -26,6 +26,20 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
+data class SharingState(
+    val isLoading: Boolean = true,
+    val isCreateLoading: Boolean = false,
+    val requestLoading: Boolean = false,
+    val sharedLinks: List<ExternalLink> = emptyList(),
+    val shareList: List<Share> = emptyList(),
+    val canAddLinks: Boolean = true
+)
+
+sealed class SharingEffect {
+    data class Error(val message: Int) : SharingEffect()
+    data class Create(val url: String) : SharingEffect()
+}
+
 abstract class BaseSharingViewModel() : BaseViewModel() {
 
     private val _state: MutableStateFlow<SharingState> = MutableStateFlow(SharingState())
@@ -48,10 +62,12 @@ abstract class BaseSharingViewModel() : BaseViewModel() {
     fun fetchInfo() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                val links = getSharedLinks()
                 _state.value = SharingState(
                     isLoading = false,
-                    sharedLinks = getSharedLinks(),
-                    shareList = getUsers()
+                    sharedLinks = links,
+                    shareList = getUsers(),
+                    canAddLinks = links.size < 6
                 )
             } catch (httpException: HttpException) {
                 onError(httpException)
@@ -81,7 +97,12 @@ abstract class BaseSharingViewModel() : BaseViewModel() {
                 val link = createExternalLink()
                 link?.let {
                     _effect.emit(SharingEffect.Create(link.sharedTo.shareLink))
-                    _state.update { it.copy(sharedLinks = listOf(link) + it.sharedLinks) }
+                    _state.update {
+                        it.copy(
+                            sharedLinks = it.sharedLinks + link,
+                            canAddLinks = it.sharedLinks.size < 5
+                        )
+                    }
                 }
             } catch (e: HttpException) {
                 onError(e)

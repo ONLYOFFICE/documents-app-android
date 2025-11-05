@@ -4,20 +4,6 @@ import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
 import app.documents.core.providers.RoomProvider
 
-data class SharingState(
-    val isLoading: Boolean = true,
-    val isCreateLoading: Boolean = false,
-    val requestLoading: Boolean = false,
-    val sharedLinks: List<ExternalLink> = emptyList(),
-    val shareList: List<Share> = emptyList(),
-    val canAddLinks: Boolean = sharedLinks.size < 6
-)
-
-sealed class SharingEffect {
-    data class Error(val message: Int) : SharingEffect()
-    data class Create(val url: String) : SharingEffect()
-}
-
 class RoomInfoViewModel(
     private val roomProvider: RoomProvider,
     private val roomId: String
