@@ -4,6 +4,7 @@ import app.documents.core.model.login.Group
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.room.models.ResponseRoomShare
+import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.request.RequestDeleteShare
 import app.documents.core.network.share.models.request.RequestExternal
 import app.documents.core.network.share.models.request.RequestExternalAccess
@@ -43,6 +44,29 @@ interface ShareService {
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/share")
     suspend fun getShareFile(@Path(value = "file_id") fileId: String): ResponseShare
+
+    /*
+     * Get share group users
+     * */
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/folder/{id}/group/{groupId}/share")
+    suspend fun getFolderGroupUsers(
+        @Path("id") id: String,
+        @Path("groupId") groupId: String,
+    ): app.documents.core.network.BaseResponse<List<GroupShare>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/group/{groupId}/share")
+    suspend fun getFileGroupUsers(
+        @Path("fileId") fileId: String,
+        @Path("groupId") groupId: String,
+    ): app.documents.core.network.BaseResponse<List<GroupShare>>
 
     /*
      * Get external link

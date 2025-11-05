@@ -42,7 +42,9 @@ import app.documents.core.network.room.models.RequestRoomOwner
 import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.room.models.RequestUpdatePublic
+import app.documents.core.network.share.ShareService
 import app.documents.core.network.share.models.ExternalLink
+import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.EmailInvitation
@@ -52,6 +54,8 @@ import app.documents.core.network.share.models.request.RequestCreateSharedLink
 import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
 import app.documents.core.network.share.models.request.RequestRemoveInviteLink
 import app.documents.core.network.share.models.request.RequestRoomShare
+import app.documents.core.network.share.models.request.RequestShare
+import app.documents.core.network.share.models.request.RequestShareItem
 import app.documents.core.network.share.models.request.RequestUpdateSharedLink
 import app.documents.core.network.share.models.request.UserIdInvitation
 import io.reactivex.Observable
@@ -76,7 +80,10 @@ import java.util.UUID
 import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
-class RoomProvider @Inject constructor(private val roomService: RoomService) {
+class RoomProvider @Inject constructor(
+    private val roomService: RoomService,
+    private val shareService: ShareService
+) {
 
     suspend fun archiveRoom(id: String, isArchive: Boolean) {
         if (isArchive) {
@@ -228,23 +235,10 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
     suspend fun updateRoomSharedLink(
         roomId: String?,
-        access: Access?,
-        linkId: String?,
-        linkType: Int?,
-        denyDownload: Boolean?,
-        expirationDate: String?,
-        password: String?,
-        title: String?,
+        access: Int,
+        sharedLink: ExternalLinkSharedTo
     ): ExternalLink {
-        val request = RequestUpdateExternalLink(
-            access = access?.code ?: Access.None.code,
-            denyDownload = denyDownload == true,
-            expirationDate = expirationDate,
-            linkId = linkId,
-            linkType = linkType ?: 2,
-            password = password,
-            title = title
-        )
+        val request = RequestUpdateExternalLink.from(sharedLink, access)
         val response = roomService.updateRoomSharedLink(roomId.orEmpty(), request)
         val body = response.body()
         return if (response.isSuccessful && body != null)
@@ -273,23 +267,38 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         )
     }
 
-    suspend fun getSharedLinks(id: String): List<ExternalLink> {
-        val response = roomService.getSharedLinks(id)
+    suspend fun getSharedLinks(id: String, isFolder: Boolean): List<ExternalLink> {
+        val response = if (isFolder) {
+            roomService.getFolderSharedLinks(id)
+        } else {
+            roomService.getFileSharedLinks(id)
+        }
         val body = response.body()
         return if (response.isSuccessful && body != null) body.response else throw HttpException(
             response
         )
     }
 
-    suspend fun createSharedLink(fileId: String): ExternalLink {
-        return roomService.createSharedLink(fileId, RequestCreateSharedLink()).response
+    suspend fun createSharedLink(id: String, access: Int, isFolder: Boolean): ExternalLink {
+        return if (isFolder) {
+            roomService.createFolderSharedLink(id, RequestCreateSharedLink()).response
+        } else {
+            roomService.createFileSharedLink(id, RequestCreateSharedLink(access = access)).response
+        }
     }
 
-    suspend fun updateSharedLink(fileId: String, sharedLink: ExternalLink): ExternalLink {
-        return roomService.updateSharedLink(
-            fileId,
-            RequestUpdateSharedLink.from(sharedLink)
-        ).response
+    suspend fun updateSharedLink(
+        fileId: String,
+        sharedLink: ExternalLinkSharedTo,
+        access: Int,
+        isFolder: Boolean = false
+    ): ExternalLink {
+        val request = RequestUpdateExternalLink.from(sharedLink, access)
+        return if (isFolder) {
+            roomService.updateFolderSharedLink(fileId, request).response
+        } else {
+            roomService.updateSharedLink(fileId, request).response
+        }
     }
 
     suspend fun getRoomUsers(id: String): List<Share> {
@@ -298,6 +307,29 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return if (response.isSuccessful && body != null) body.response else throw HttpException(
             response
         )
+    }
+
+    suspend fun getShareUsers(id: String, isFolder: Boolean): List<Share> {
+        return if (isFolder) {
+            shareService.getShareFolder(id).response
+        } else {
+            shareService.getShareFile(id).response
+        }
+    }
+
+    suspend fun setShareUserAccess(
+        id: String,
+        userId: String,
+        access: String,
+        isFolder: Boolean
+    ): Share? {
+        val body = RequestShare(listOf(RequestShareItem(userId, access)))
+        val response = if (isFolder) {
+            shareService.setFolderAccess(id, body)
+        } else {
+            shareService.setFileAccess(id, body)
+        }
+        return response.response.firstOrNull()
     }
 
     suspend fun getUsers(roomId: String, args: Map<String, String>): List<User> {
@@ -385,8 +417,12 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         if (!response.isSuccessful) throw HttpException(response)
     }
 
-    suspend fun getGroupUsers(roomId: String, groupId: String): List<GroupShare> {
-        return roomService.getGroupUsers(roomId, groupId).response
+    suspend fun getGroupUsers(itemId: String, groupId: String, isFolder: Boolean): List<GroupShare> {
+        return if (isFolder){
+            shareService.getFolderGroupUsers(itemId, groupId).response
+        } else {
+            shareService.getFileGroupUsers(itemId, groupId).response
+        }
     }
 
     suspend fun getExternalLink(id: String, isFile: Boolean = false): String {
