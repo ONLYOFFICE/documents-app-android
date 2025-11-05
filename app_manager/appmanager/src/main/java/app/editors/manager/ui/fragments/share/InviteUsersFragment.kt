@@ -38,7 +38,6 @@ import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
-import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.toUi
@@ -167,7 +166,6 @@ fun InviteUsersScreen(
                         roomId = roomId,
                         roomType = roomType,
                         roomProvider = context.roomProvider,
-                        resourcesProvider = context.appComponent.resourcesProvider,
                     )
                 }
                 UserListScreen(

@@ -92,7 +92,6 @@ import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.PlaceholderView
 import lib.compose.ui.views.TopAppBarAction
 import lib.compose.ui.views.VerticalSpacer
-import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
@@ -208,7 +207,6 @@ fun ShareScreen(
                 CloudUserListViewModel(
                     mode = UserListMode.Invite,
                     access = accessListWithOutRestricted.last(),
-                    resourcesProvider = ResourcesProvider(context),
                     shareService = shareApi,
                     invitedIds = state.users.map { it.sharedTo.id } + state.groups.map { it.sharedTo.id },
                 )

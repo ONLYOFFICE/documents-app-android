@@ -162,7 +162,7 @@ class ShareViewModel(
 
     fun setMemberAccess(userId: String, access: Access, isGroup: Boolean) {
         request {
-            val request = RequestShare(listOf(RequestShareItem(userId, access.toString())))
+            val request = RequestShare(listOf(RequestShareItem(userId, access.code)))
             if (!folder) shareApi.setFileAccess(itemId, request) else shareApi.setFolderAccess(itemId, request)
             _state.update { state ->
                 if (access == Access.None) {

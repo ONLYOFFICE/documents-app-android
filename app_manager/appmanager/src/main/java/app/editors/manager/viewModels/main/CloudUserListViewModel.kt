@@ -12,18 +12,15 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
-import lib.toolkit.base.managers.tools.ResourcesProvider
 
 class CloudUserListViewModel(
     access: Access?,
     mode: UserListMode,
-    resourcesProvider: ResourcesProvider,
     private val invitedIds: List<String>,
     private val shareService: ShareService
 ) : UserListViewModel(
     access = access,
     mode = mode,
-    resourcesProvider = resourcesProvider
 ) {
 
     override val cachedMembersFlow: SharedFlow<List<Member>> = flow { emit(getMembers()) }

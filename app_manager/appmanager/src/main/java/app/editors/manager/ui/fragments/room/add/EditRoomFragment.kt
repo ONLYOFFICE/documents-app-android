@@ -26,7 +26,6 @@ import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppTextButton
-import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.putArgs
 
@@ -223,7 +222,6 @@ class EditRoomFragment : ComposeDialogFragment() {
                         roomOwnerId = state.value.owner.id,
                         mode = UserListMode.ChangeOwner,
                         roomProvider = requireContext().roomProvider,
-                        resourcesProvider = ResourcesProvider(requireContext()),
                     )
                     UserListScreen(
                         viewModel = userListViewModel,

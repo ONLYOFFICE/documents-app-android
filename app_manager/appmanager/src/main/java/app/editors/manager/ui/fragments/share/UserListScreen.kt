@@ -134,6 +134,7 @@ fun UserListScreen(
     topBarActions: @Composable () -> Unit = {},
     bottomContent: @Composable (Int, Access) -> Unit = { _, _ -> },
 ) {
+    val context = LocalContext.current
     val state by viewModel.viewState.collectAsState()
     val scaffoldState = rememberScaffoldState()
 
@@ -141,7 +142,10 @@ fun UserListScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is UserListEffect.Error -> {
-                    scaffoldState.snackbarHostState.showSnackbar(effect.message)
+                    val message = effect.errorCode?.let { code ->
+                        context.getString(R.string.errors_client_error) + code
+                    } ?: context.getString(R.string.errors_unknown_error)
+                    scaffoldState.snackbarHostState.showSnackbar(message)
                 }
                 is UserListEffect.Success -> onSuccess?.invoke(effect.user)
                 else -> Unit
@@ -197,11 +201,19 @@ private fun MainScreen(
         listOfNotNull(
             PagerTab.Users(portal.isDocSpace),
             PagerTab.Groups.takeIf {
-                state.mode in listOf(UserListMode.Invite, UserListMode.TemplateAccess)
+                state.mode in listOf(
+                    UserListMode.Invite,
+                    UserListMode.TemplateAccess,
+                    UserListMode.Share
+                )
             },
             PagerTab.Guests.takeIf {
                 portal.isDocSpace &&
-                    state.mode in listOf(UserListMode.Invite, UserListMode.StartFilling)
+                    state.mode in listOf(
+                    UserListMode.Invite,
+                    UserListMode.StartFilling,
+                    UserListMode.Share
+                )
             }
         )
     }

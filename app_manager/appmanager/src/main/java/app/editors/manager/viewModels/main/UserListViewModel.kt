@@ -8,7 +8,6 @@ import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.utils.displayNameFromHtml
-import app.editors.manager.R
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import lib.toolkit.base.managers.tools.ResourcesProvider
 import retrofit2.HttpException
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -29,6 +27,7 @@ sealed class UserListMode {
     data object ChangeOwner : UserListMode()
     data object TemplateAccess : UserListMode()
     data object StartFilling : UserListMode()
+    data object Share : UserListMode()
 }
 
 data class UserListState(
@@ -44,14 +43,13 @@ data class UserListState(
 
 sealed class UserListEffect {
     data class Success(val user: User) : UserListEffect()
-    data class Error(val message: String) : UserListEffect()
+    data class Error(val errorCode: Int? = null) : UserListEffect()
 }
 
 @OptIn(FlowPreview::class)
 abstract class UserListViewModel(
     access: Access?,
-    mode: UserListMode,
-    private val resourcesProvider: ResourcesProvider,
+    mode: UserListMode
 ) : ViewModel() {
 
     private val _viewState: MutableStateFlow<UserListState> =
@@ -70,11 +68,11 @@ abstract class UserListViewModel(
     }
 
     protected fun handleError(error: Throwable) {
-        val message = when (error) {
-            is HttpException -> resourcesProvider.getString(R.string.errors_client_error) + error.code()
-            else -> resourcesProvider.getString(R.string.errors_unknown_error)
+        val errorCode = when (error) {
+            is HttpException -> error.code()
+            else -> null
         }
-        _effect.tryEmit(UserListEffect.Error(message))
+        _effect.tryEmit(UserListEffect.Error(errorCode))
     }
 
     private fun collectSearchFlow() {

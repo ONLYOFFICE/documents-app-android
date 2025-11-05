@@ -47,6 +47,7 @@ import app.documents.core.network.share.models.request.RequestCreateSharedLink
 import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
 import app.documents.core.network.share.models.request.RequestRemoveInviteLink
 import app.documents.core.network.share.models.request.RequestRoomShare
+import app.documents.core.network.share.models.request.RequestShare
 import app.documents.core.network.share.models.request.RequestUpdateSharedLink
 import app.documents.core.network.share.models.response.ResponseExternalLink
 import app.documents.core.network.share.models.response.ResponseShare
@@ -545,4 +546,54 @@ interface RoomService {
         @Path(value = "fileId") fileId: String,
         @Body body: RequestFormRoleMapping
     ): Response<ResponseBody>
+
+    @GET("api/" + ApiContract.API_VERSION + "/people/file/{fileId}?employeestatus=1&area=people")
+    suspend fun getUsersByFileId(
+        @Path(value = "fileId") fileId: String
+    ): app.documents.core.network.BaseResponse<List<User>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/people/folder/{folderId}?employeestatus=1&area=people")
+    suspend fun getUsersByFolderId(
+        @Path(value = "folderId") folderId: String
+    ): app.documents.core.network.BaseResponse<List<User>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/group/file/{fileId}?employeestatus=1&area=guests")
+    suspend fun getGroupsByFileId(
+        @Path(value = "fileId") fileId: String
+    ): app.documents.core.network.BaseResponse<List<Group>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/group/folder/{folderId}?employeestatus=1&area=guests")
+    suspend fun getGroupsByFolderId(
+        @Path(value = "folderId") folderId: String
+    ): app.documents.core.network.BaseResponse<List<Group>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/people/file/{fileId}?employeestatus=1&area=guests")
+    suspend fun getGuestsByFileId(
+        @Path(value = "fileId") fileId: String
+    ): app.documents.core.network.BaseResponse<List<User>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/people/folder/{folderId}?employeestatus=1&area=guests")
+    suspend fun getGuestsByFolderId(
+        @Path(value = "folderId") folderId: String
+    ): app.documents.core.network.BaseResponse<List<User>>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/folder/{folderId}/share")
+    suspend fun setFolderShare(
+        @Path(value = "folderId") folderId: String,
+        @Body body: RequestShare
+    ): ResponseShare
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/folder/{fileId}/share")
+    suspend fun setFileShare(
+        @Path(value = "fileId") folderId: String,
+        @Body body: RequestShare
+    ): ResponseShare
 }

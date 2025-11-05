@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
-import lib.toolkit.base.managers.tools.ResourcesProvider
 
 class RoomUserListViewModel(
     private val roomId: String,
@@ -22,11 +21,9 @@ class RoomUserListViewModel(
     private val roomProvider: RoomProvider,
     private val roomOwnerId: String = "",
     roomType: Int? = null,
-    resourcesProvider: ResourcesProvider,
 ) : UserListViewModel(
     mode = mode,
     access = roomType?.let { RoomUtils.getAccessOptions(it, false).lastOrNull() },
-    resourcesProvider = resourcesProvider
 ) {
 
     override val cachedMembersFlow: SharedFlow<List<Member>> = flow {

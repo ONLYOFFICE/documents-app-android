@@ -128,7 +128,6 @@ class StartFillingActivity : ComponentActivity() {
                             roomId = roomId,
                             mode = UserListMode.StartFilling,
                             roomProvider = roomProvider,
-                            resourcesProvider = appComponent.resourcesProvider
                         )
                     }
                     val state = viewModel.state.collectAsState()

@@ -20,9 +20,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
@@ -53,7 +50,6 @@ fun SharedLinkSettingsScreen(
     useTabletPadding: Boolean = false,
     onBack: () -> Unit,
 ) {
-    val navController = rememberNavController()
     val context = LocalContext.current
     val state = viewModel.state.collectAsState()
     val loading = viewModel.loading.collectAsState()
@@ -79,23 +75,19 @@ fun SharedLinkSettingsScreen(
         }
     }
 
-    NavHost(navController = navController, startDestination = Route.LinkSettingsScreen.name) {
-        composable(Route.LinkSettingsScreen.name) {
-            MainScreen(
-                scaffoldState = scaffoldState,
-                fileExtension = fileExtension,
-                loading = loading,
-                state = state,
-                useTabletPadding = useTabletPadding,
-                onSetInternal = viewModel::setInternal,
-                onDeleteLink = viewModel::delete,
-                onRegenerateLink = viewModel::regenerate,
-                onBack = onBack,
-                onSetLifeTime = viewModel::setLifeTime,
-                onSetAccess = viewModel::setAccess
-            )
-        }
-    }
+    MainScreen(
+        scaffoldState = scaffoldState,
+        fileExtension = fileExtension,
+        loading = loading,
+        state = state,
+        useTabletPadding = useTabletPadding,
+        onSetInternal = viewModel::setInternal,
+        onDeleteLink = viewModel::delete,
+        onRegenerateLink = viewModel::regenerate,
+        onBack = onBack,
+        onSetLifeTime = viewModel::setLifeTime,
+        onSetAccess = viewModel::setAccess
+    )
 }
 
 @Composable

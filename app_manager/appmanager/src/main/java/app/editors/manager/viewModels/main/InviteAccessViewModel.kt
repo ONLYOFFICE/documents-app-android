@@ -156,7 +156,7 @@ open class InviteAccessViewModel(
                         .map { (member, access) ->
                             RequestShareItem(
                                 member.id,
-                                access.code.toString()
+                                access.code
                             )
                         },
                 )

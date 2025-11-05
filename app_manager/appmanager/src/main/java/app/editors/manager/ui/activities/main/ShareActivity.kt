@@ -9,7 +9,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.viewmodel.compose.viewModel
 import app.documents.core.model.cloud.isDocSpace
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
@@ -19,7 +18,6 @@ import app.editors.manager.app.shareApi
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.compose.share.ShareDocSpaceScreen
 import app.editors.manager.ui.compose.share.ShareScreen
-import app.editors.manager.viewModels.link.ShareSettingsViewModel
 import lib.compose.ui.theme.BaseAppTheme
 import lib.compose.ui.theme.LocalUseTabletPadding
 import lib.toolkit.base.managers.utils.EditorsContract
@@ -55,13 +53,8 @@ class ShareActivity : BaseAppActivity() {
                 BaseAppTheme(primaryColor = color) {
                     if (accountOnline.isDocSpace) {
                         ShareDocSpaceScreen(
-                            viewModel = viewModel {
-                                ShareSettingsViewModel(
-                                    roomProvider = roomProvider,
-                                    itemId = intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty(),
-                                    isFolder = intent.getBooleanExtra(KEY_SHARE_IS_FOLDER, false)
-                                )
-                            },
+                            roomProvider = roomProvider,
+                            itemId = intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty(),
                             fileExtension = intent.getStringExtra(KEY_SHARE_ITEM_EXTENSION).orEmpty(),
                             onSendLink = { link ->
                                 openSendTextActivity(

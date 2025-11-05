@@ -31,28 +31,38 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import app.documents.core.model.cloud.Access
+import app.documents.core.model.login.Group
+import app.documents.core.model.login.User
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.ShareType
 import app.documents.core.network.share.models.SharedTo
+import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.titleWithCount
+import app.editors.manager.ui.fragments.share.InviteAccessScreen
+import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
-import app.editors.manager.ui.fragments.share.link.Route
 import app.editors.manager.ui.fragments.share.link.ShareUsersList
 import app.editors.manager.ui.fragments.share.link.SharedLinkItem
 import app.editors.manager.ui.fragments.share.link.SharedLinkSettingsScreen
+import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.link.ShareSettingsEffect
 import app.editors.manager.viewModels.link.ShareSettingsState
 import app.editors.manager.viewModels.link.ShareSettingsViewModel
 import app.editors.manager.viewModels.link.SharedLinkSettingsViewModel
+import app.editors.manager.viewModels.main.ShareAccessViewModel
+import app.editors.manager.viewModels.main.ShareUserListViewModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.compose.ui.theme.ManagerTheme
@@ -64,18 +74,45 @@ import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.TopAppBarAction
 import lib.toolkit.base.managers.utils.KeyboardUtils
+import lib.toolkit.base.managers.utils.StringUtils
+import lib.toolkit.base.managers.utils.getJsonString
 import java.net.URLDecoder
 import java.net.URLEncoder
 
+sealed class Route(val name: String) {
+
+    data object SettingsScreen : Route("settings")
+    data object LinkSettingsScreen : Route("link_settings")
+    data object AddUserScreen : Route("add_user_screen")
+}
+
 @Composable
 fun ShareDocSpaceScreen(
-    viewModel: ShareSettingsViewModel,
+    roomProvider: RoomProvider,
+    itemId: String,
     fileExtension: String?, // null for folders
     useTabletPadding: Boolean,
     onSendLink: (String) -> Unit,
     onClose: () -> Unit,
 ) {
     val navController = rememberNavController()
+    val isFolder = fileExtension == null
+
+    val viewModel = viewModel {
+        ShareSettingsViewModel(
+            roomProvider = roomProvider,
+            itemId = itemId,
+            isFolder = isFolder
+        )
+    }
+
+    val accessList = remember {
+        ManagerUiUtils.getAccessList(
+            extension = fileExtension?.let(StringUtils::getExtension),
+            removable = false,
+            isDocSpace = true
+        )
+    }
 
     navController.addOnDestinationChangedListener { _, destination, _ ->
         if (destination.route == Route.SettingsScreen.name) {
@@ -94,9 +131,12 @@ fun ShareDocSpaceScreen(
             MainScreen(
                 viewModel = viewModel,
                 useTabletPaddings = useTabletPadding,
-                isFolder = fileExtension == null,
+                isFolder = isFolder,
                 onShare = onSendLink,
                 onBack = onClose,
+                onAddUsers = {
+                    navController.navigate(Route.AddUserScreen.name)
+                },
                 onLinkClick = { link ->
                     val json =
                         URLEncoder.encode(Json.encodeToString(link), Charsets.UTF_8.toString())
@@ -122,18 +162,93 @@ fun ShareDocSpaceScreen(
         ) {
             val json = URLDecoder.decode(it.arguments?.getString("link"), Charsets.UTF_8.toString())
             SharedLinkSettingsScreen(
-                viewModel = androidx.lifecycle.viewmodel.compose.viewModel {
+                viewModel = viewModel {
                     SharedLinkSettingsViewModel(
                         externalLink = Json.decodeFromString<ExternalLink>(json),
                         expired = it.arguments?.getString("expired"),
                         roomProvider = viewModel.roomProvider,
                         itemId = viewModel.itemId,
-                        isFolder = fileExtension == null
+                        isFolder = isFolder
                     )
                 },
                 fileExtension = fileExtension,
                 useTabletPadding = useTabletPadding,
                 onBack = navController::popBackStack,
+            )
+        }
+        composable(Route.AddUserScreen.name) {
+            val userListViewModel = viewModel {
+                ShareUserListViewModel(
+                    roomProvider = roomProvider,
+                    itemId = itemId,
+                    isFolder = isFolder,
+                    accessList = accessList
+                )
+            }
+            UserListScreen(
+                title = R.string.setting_select_members_title,
+                closeable = false,
+                viewModel = userListViewModel,
+                onClick = { userListViewModel.toggleSelect(it.id) },
+                onBack = navController::popBackStack,
+            ) { size, access ->
+                UserListBottomContent(
+                    nextButtonTitle = lib.toolkit.base.R.string.common_next,
+                    count = size,
+                    access = access,
+                    accessList = accessList,
+                    onAccess = userListViewModel::setAccess,
+                    onDelete = userListViewModel::onDelete
+                ) {
+                    val users =
+                        Json.encodeToString(userListViewModel.getSelectedUsers().ifEmpty { null })
+                    val groups =
+                        Json.encodeToString(userListViewModel.getSelectedGroups().ifEmpty { null })
+                    navController.navigate(
+                        Route.AddUserScreen.name +
+                                "?emails=null&" +
+                                "users=${URLEncoder.encode(users, Charsets.UTF_8.toString())}&" +
+                                "groups=${URLEncoder.encode(groups, Charsets.UTF_8.toString())}&" +
+                                "access=${access.code}"
+                    )
+                }
+            }
+        }
+        composable(
+            route = "${Route.AddUserScreen.name}?" +
+                    "emails={emails}&" +
+                    "users={users}&" +
+                    "groups={groups}&" +
+                    "access={access}",
+            arguments = listOf(
+                navArgument("emails") { type = NavType.StringType; nullable = true },
+                navArgument("users") { type = NavType.StringType; nullable = true },
+                navArgument("groups") { type = NavType.StringType; nullable = true },
+                navArgument("access") { type = NavType.IntType; defaultValue = 2 }
+            )
+        ) {
+            val shareAccessViewModel = viewModel {
+                ShareAccessViewModel(
+                    itemId = itemId,
+                    roomProvider = roomProvider,
+                    isFolder = isFolder,
+                    access = Access.get(it.arguments?.getInt("access")),
+                    users = it.arguments?.getJsonString<List<User>>("users", true).orEmpty(),
+                    groups = it.arguments?.getJsonString<List<Group>>("groups", true).orEmpty(),
+                    emails = it.arguments?.getJsonString<List<String>>("emails").orEmpty(),
+                )
+            }
+            InviteAccessScreen(
+                accessList = accessList,
+                viewModel = shareAccessViewModel,
+                onBack = navController::popBackStack,
+                onSuccess = {
+                    navController.navigate(Route.SettingsScreen.name) {
+                        popUpTo(Route.SettingsScreen.name) {
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
     }
@@ -147,6 +262,7 @@ private fun MainScreen(
     useTabletPaddings: Boolean,
     onShare: (String) -> Unit,
     onLinkClick: (ExternalLink) -> Unit,
+    onAddUsers: () -> Unit,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -187,7 +303,8 @@ private fun MainScreen(
         isCreateLoading = isCreateLoading,
         onCreate = viewModel::create,
         onShareClick = onShare,
-        onLinkClick = onLinkClick
+        onLinkClick = onLinkClick,
+        onAddUsers = onAddUsers
     )
 }
 
@@ -201,6 +318,7 @@ private fun ShareSettingsScreen(
     onCreate: () -> Unit,
     onShareClick: (String) -> Unit,
     onLinkClick: (ExternalLink) -> Unit,
+    onAddUsers: () -> Unit,
     onBack: () -> Unit,
 ) {
     AppScaffold(
@@ -213,7 +331,7 @@ private fun ShareSettingsScreen(
                 actions = {
                     TopAppBarAction(
                         icon = R.drawable.ic_add_users,
-                        onClick = {}
+                        onClick = onAddUsers
                     )
                 }
             )
@@ -374,6 +492,7 @@ private fun ShareSettingsScreenPreview() {
             onBack = {},
             onCreate = {},
             onShareClick = {},
+            onAddUsers = {},
             onLinkClick = {}
         )
     }

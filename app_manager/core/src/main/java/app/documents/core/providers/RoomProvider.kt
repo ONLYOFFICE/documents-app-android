@@ -52,6 +52,8 @@ import app.documents.core.network.share.models.request.RequestCreateSharedLink
 import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
 import app.documents.core.network.share.models.request.RequestRemoveInviteLink
 import app.documents.core.network.share.models.request.RequestRoomShare
+import app.documents.core.network.share.models.request.RequestShare
+import app.documents.core.network.share.models.request.RequestShareItem
 import app.documents.core.network.share.models.request.RequestUpdateSharedLink
 import app.documents.core.network.share.models.request.UserIdInvitation
 import io.reactivex.Observable
@@ -758,6 +760,55 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             }
         )
         roomService.startFilling(formId, request)
+    }
+
+    suspend fun getUsersByItemId(itemId: String, isFolder: Boolean): List<User> {
+        val response = if (isFolder) {
+            roomService.getUsersByFolderId(itemId)
+        } else {
+            roomService.getUsersByFileId(itemId)
+        }
+
+        return response.response
+    }
+
+    suspend fun getGroupsByItemId(itemId: String, isFolder: Boolean): List<Group> {
+        val response = if (isFolder) {
+            roomService.getGroupsByFolderId(itemId)
+        } else {
+            roomService.getGroupsByFileId(itemId)
+        }
+
+        return response.response
+    }
+
+    suspend fun getGuestsByItemId(itemId: String, isFolder: Boolean): List<User> {
+        val response = if (isFolder) {
+            roomService.getGuestsByFolderId(itemId)
+        } else {
+            roomService.getGuestsByFileId(itemId)
+        }
+
+        return response.response
+    }
+
+    suspend fun setItemShare(itemId: String, isFolder: Boolean, members: Map<Member, Access>): List<Share> {
+        val request = RequestShare(
+            isNotify = true,
+            share = members.map { (member, access) ->
+                RequestShareItem(
+                    shareTo = member.id,
+                    access = access.code
+                )
+            }
+        )
+        val response = if (isFolder) {
+            roomService.setFolderShare(itemId, request)
+        } else {
+            roomService.setFileShare(itemId, request)
+        }
+
+        return response.response
     }
 
     private fun <T> handleUnitResponse(apiCall: suspend () -> Response<T>): Flow<NetworkResult<Unit>> = flow {
