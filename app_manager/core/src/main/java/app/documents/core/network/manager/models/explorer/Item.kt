@@ -74,6 +74,14 @@ open class Item : ItemProperties(), Serializable {
     @Expose
     var isFavorite = false
 
+    @SerializedName("originTitle")
+    @Expose
+    var originTitle = ""
+
+    @SerializedName("originRoomTitle")
+    @Expose
+    var originRoomTitle = ""
+
     var index: Int
         get() = order.split(".").lastOrNull()?.toInt() ?: 0
         set(value) {
