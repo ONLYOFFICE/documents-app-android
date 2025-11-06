@@ -30,7 +30,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.share.models.GroupShare
+import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.ShareEntity
 import app.editors.manager.managers.utils.RoomUtils
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -71,7 +71,7 @@ internal fun ShareUsersList(
                             isRoom = isRoom,
                             share = share,
                             portal = portal,
-                            isGroup = share is GroupShare,
+                            isGroup = (share as? Share)?.isGroup == true,
                             onClick = { onClick.invoke(share) }
                         )
                     }

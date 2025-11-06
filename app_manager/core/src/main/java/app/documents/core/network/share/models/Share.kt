@@ -50,7 +50,7 @@ data class Share(
             else -> ShareType.User
         }
 
-    private val isGroup: Boolean
+    val isGroup: Boolean
         get() = subjectType == SUBJECT_TYPE_GROUP
 
     private val isGuest: Boolean

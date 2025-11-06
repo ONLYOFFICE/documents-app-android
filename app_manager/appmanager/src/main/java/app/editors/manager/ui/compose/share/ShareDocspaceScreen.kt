@@ -404,7 +404,7 @@ private fun ShareSettingsScreen(
                         )
                     }
                     item {
-                        val groupedShareList = state.users.groupBy { it.itemAccessType }
+                        val groupedShareList = state.members.groupBy { it.itemAccessType }
                         val context = LocalContext.current
                         val view = LocalView.current
                         val portal = remember {

@@ -19,7 +19,7 @@ import retrofit2.HttpException
 sealed class ShareSettingsState {
 
     data object Loading : ShareSettingsState()
-    data class Success(val links: List<ExternalLink>, val users: List<Share>) : ShareSettingsState()
+    data class Success(val links: List<ExternalLink>, val members: List<Share>) : ShareSettingsState()
 }
 
 sealed class ShareSettingsEffect {
