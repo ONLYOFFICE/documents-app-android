@@ -57,6 +57,7 @@ class GridFileViewHolder(view: View, adapter: ExplorerAdapter) :
                 itemView.context.getString(R.string.badge_doc_version, element.version)
         }
         binding.editing.isVisible = element.isEditing
+        binding.link.isVisible = element.isSharedByLink
         binding.badgeFormStatus.setFormStatus(UiFormFillingStatus.from(element.formFillingStatus))
         setFileExpiring(element, binding.title)
     }

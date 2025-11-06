@@ -346,6 +346,7 @@ object ApiContract {
         const val IS_ORIGINAL = 0x8
         const val BACKUP = 0x10
         const val FAVORITE = 0x20
+        const val SHARED_BY_LINK = 0x256
     }
 
     object Extension {

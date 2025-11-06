@@ -133,6 +133,9 @@ open class CloudFile : Item() {
     val isEditing: Boolean
         get() = (fileStatus and ApiContract.FileStatus.IS_EDITING) != 0
 
+    val isSharedByLink: Boolean
+        get() = (fileStatus and ApiContract.FileStatus.SHARED_BY_LINK) != 0
+
     val isExpiringSoon: Boolean
         get() {
             if (expired == null) return false

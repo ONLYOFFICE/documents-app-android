@@ -57,6 +57,7 @@ class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
         binding.locked.isVisible = element.isLocked
         binding.customFilter.isVisible = element.customFilterEnabled
         binding.badgeFormStatus.setFormStatus(UiFormFillingStatus.from(element.formFillingStatus))
+        binding.link.isVisible = element.isSharedByLink
         setFileExpiring(element, binding.title)
         if (adapter.pickerMode == PickerMode.Ordering) {
             initOrderingMode(binding.dragIcon, binding.contextButtonLayout)
