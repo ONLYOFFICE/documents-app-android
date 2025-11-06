@@ -13,6 +13,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.ShareEntity
 import app.editors.manager.R
+import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.toUi
 import lib.compose.ui.theme.ManagerTheme
@@ -21,14 +22,16 @@ import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppSelectItem
 import lib.compose.ui.views.AppTopBar
+import lib.toolkit.base.managers.tools.FileExtensions
 
 @Composable
-fun RoomAccessScreen(
-    roomType: Int,
+fun ChangeUserAccessScreen(
     currentAccess: Access,
-    ownerOrAdmin: Boolean,
-    portal: String,
+    isOwnerOrAdmin: Boolean,
+    portal: String = "",
     isRemove: Boolean = false,
+    roomType: Int? = null,
+    fileExtension: FileExtensions? = null,
     users: List<GroupShare>? = null,
     onChangeAccess: (newAccess: Access) -> Unit,
     onUserClick: (ShareEntity) -> Unit = { },
@@ -42,11 +45,16 @@ fun RoomAccessScreen(
             AppTopBar(title = R.string.share_choose_access_title, backListener = onBack)
         }
     ) {
-        val options = RoomUtils.getAccessOptions(roomType, isRemove, ownerOrAdmin)
+        val options = if (roomType != null) {
+            RoomUtils.getAccessOptions(roomType, isRemove, isOwnerOrAdmin)
+        } else {
+            ManagerUiUtils.getItemAccessList(fileExtension, withRemove = isRemove)
+        }
+
         if (users == null) {
             Column {
                 options.forEach { accessOption ->
-                    val accessUi = accessOption.toUi()
+                    val accessUi = accessOption.toUi(roomType == null)
                     AppSelectItem(
                         title = accessUi.title,
                         selected = currentAccess == accessOption,
@@ -99,7 +107,7 @@ fun RoomAccessScreen(
 @Composable
 private fun Preview() {
     ManagerTheme {
-        RoomAccessScreen(
+        ChangeUserAccessScreen(
             roomType = ApiContract.RoomType.COLLABORATION_ROOM,
             currentAccess = Access.Read,
             portal = "",
@@ -108,7 +116,7 @@ private fun Preview() {
 //                GroupShare(isOwner = true),
 //                GroupShare(),
 //            ),
-            ownerOrAdmin = true,
+            isOwnerOrAdmin = true,
             onChangeAccess = {},
             onUserClick = { }
         ) {}

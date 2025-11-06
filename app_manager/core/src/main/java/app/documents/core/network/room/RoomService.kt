@@ -591,7 +591,7 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @PUT("api/" + ApiContract.API_VERSION + "/files/folder/{fileId}/share")
+    @PUT("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/share")
     suspend fun setFileShare(
         @Path(value = "fileId") folderId: String,
         @Body body: RequestShare

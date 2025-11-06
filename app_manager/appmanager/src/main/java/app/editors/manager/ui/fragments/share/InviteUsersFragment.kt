@@ -184,7 +184,7 @@ fun InviteUsersScreen(
                     UserListBottomContent(
                         nextButtonTitle = lib.toolkit.base.R.string.common_next,
                         count = size,
-                        access = access,
+                        access = access.toUi(),
                         accessList = remember {
                             RoomUtils.getAccessOptions(
                                 roomType = roomType,

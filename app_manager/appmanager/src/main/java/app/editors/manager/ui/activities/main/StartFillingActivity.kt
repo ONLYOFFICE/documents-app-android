@@ -170,12 +170,6 @@ class StartFillingActivity : ComponentActivity() {
                         composable<Screen.UserList> { backStackEntry ->
                             val index = backStackEntry.toRoute<Screen.UserList>().index
 
-                            LaunchedEffect(Unit) {
-                                lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                                    userListViewModel.refreshMembers()
-                                }
-                            }
-
                             UserListScreen(
                                 viewModel = userListViewModel,
                                 title = R.string.setting_select_members_title,

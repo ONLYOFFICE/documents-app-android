@@ -789,15 +789,15 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             roomService.getGuestsByFileId(itemId)
         }
 
-        return response.response
+        return response.response.map { it.copy(isGuest = true) }
     }
 
-    suspend fun setItemShare(itemId: String, isFolder: Boolean, members: Map<Member, Access>): List<Share> {
+    suspend fun setItemShare(itemId: String, isFolder: Boolean, members: Map<String, Access>): List<Share> {
         val request = RequestShare(
             isNotify = true,
-            share = members.map { (member, access) ->
+            share = members.map { (id, access) ->
                 RequestShareItem(
-                    shareTo = member.id,
+                    shareTo = id,
                     access = access.code
                 )
             }

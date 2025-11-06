@@ -2,6 +2,7 @@ package app.editors.manager.viewModels.link
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.cloud.Access
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
 import app.documents.core.providers.RoomProvider
@@ -27,6 +28,7 @@ sealed class ShareSettingsEffect {
     data class OnCreate(val loading: Boolean) : ShareSettingsEffect()
     data class Copy(val link: String) : ShareSettingsEffect()
     data class Error(val code: Int? = null) : ShareSettingsEffect()
+    data object Access : ShareSettingsEffect()
 }
 
 class ShareSettingsViewModel(
@@ -70,6 +72,19 @@ class ShareSettingsViewModel(
                 val links = async { roomProvider.getSharedLinks(itemId, isFolder) }
                 val users = async { roomProvider.getSharedUsers(itemId, isFolder) }
                 _state.value = ShareSettingsState.Success(links.await(), users.await())
+            } catch (e: HttpException) {
+                _effect.emit(ShareSettingsEffect.Error(e.code()))
+            } catch (_: Exception) {
+                _effect.emit(ShareSettingsEffect.Error())
+            }
+        }
+    }
+
+    fun setUserAccess(userId: String, access: Access) {
+        viewModelScope.launch {
+            try {
+                roomProvider.setItemShare(itemId, isFolder, mapOf(userId to access))
+                _effect.emit(ShareSettingsEffect.Access)
             } catch (e: HttpException) {
                 _effect.emit(ShareSettingsEffect.Error(e.code()))
             } catch (_: Exception) {

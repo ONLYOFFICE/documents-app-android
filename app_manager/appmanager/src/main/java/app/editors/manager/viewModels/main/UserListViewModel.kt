@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.tools.FileExtensions
 import retrofit2.HttpException
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -27,7 +28,10 @@ sealed class UserListMode {
     data object ChangeOwner : UserListMode()
     data object TemplateAccess : UserListMode()
     data object StartFilling : UserListMode()
-    data object Share : UserListMode()
+    data class Share(
+        val itemId: String,
+        val fileExtensions: FileExtensions?
+    ) : UserListMode()
 }
 
 data class UserListState(

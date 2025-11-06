@@ -108,7 +108,15 @@ object RoomUtils {
     }
 
     fun getAccessTitleOrOwner(isOwner: Boolean, access: Int, isRoom: Boolean): Int =
-        if (isOwner) R.string.share_access_room_owner else Access.get(access).toUi(!isRoom).title
+        if (isOwner) {
+            if (isRoom) {
+                R.string.share_access_room_owner
+            } else {
+                R.string.share_popup_access_full
+            }
+        } else {
+            Access.get(access).toUi(!isRoom).title
+        }
 
     fun getRoomInitials(title: String): String? {
         return try {

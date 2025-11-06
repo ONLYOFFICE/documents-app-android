@@ -38,6 +38,7 @@ import app.documents.core.model.login.User
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.getTypeTitle
+import app.editors.manager.managers.utils.toUi
 import app.editors.manager.mvp.models.ui.AccessUI
 import app.editors.manager.ui.views.custom.AccessIconButton
 import app.editors.manager.ui.views.custom.UserListBottomContent
@@ -190,7 +191,7 @@ private fun MainScreen(
                 nextButtonTitle = R.string.share_invite_title,
                 accessList = accessList,
                 count = null,
-                access = state.commonAccess,
+                access = accessList.find { it.access.code == state.commonAccess.code },
                 onDelete = null,
                 onAccess = onSetAllAccess,
                 onNext = onNext
@@ -277,7 +278,7 @@ private fun <T> InviteItem(
                     }
                 }
                 AccessIconButton(
-                    access = access,
+                    access = accessList.find { it.access.code == access.code } ?: Access.Editor.toUi(),
                     enabled = true,
                     accessList = accessList,
                     onAccess = { access -> onSetAccess.invoke(value, access) }

@@ -223,7 +223,7 @@ fun ShareScreen(
                     UserListBottomContent(
                         nextButtonTitle = lib.toolkit.base.R.string.common_next,
                         count = count,
-                        access = access,
+                        access = access.toUi(true),
                         accessList = accessListWithOutRestricted
                             .map { it.toUi(true) },
                         onAccess = userListViewModel::setAccess,
@@ -422,7 +422,7 @@ private fun ExternalLinkContent(
                 )
             }
             AccessIconButton(
-                access = externalLink.access,
+                access = externalLink.access.toUi(),
                 enabled = !externalLink.isLocked,
                 accessList = accessList.map { it.toUi(true) },
                 onAccess = onAccess::invoke
@@ -562,7 +562,7 @@ private fun UserItem(
                     }
                 }
                 AccessIconButton(
-                    access = share.access,
+                    access = share.access.toUi(true),
                     enabled = !share.isLocked,
                     accessList = accessList.map { it.toUi(true) },
                     onAccess = { access -> onAccess.invoke(share.sharedTo.id, access) }

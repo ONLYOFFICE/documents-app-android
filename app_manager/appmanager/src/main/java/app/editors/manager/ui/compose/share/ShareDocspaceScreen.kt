@@ -32,17 +32,18 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.network.share.models.Share
+import app.documents.core.network.share.models.ShareEntity
 import app.documents.core.network.share.models.ShareType
 import app.documents.core.network.share.models.SharedTo
 import app.documents.core.providers.RoomProvider
@@ -53,6 +54,7 @@ import app.editors.manager.managers.utils.titleWithCount
 import app.editors.manager.managers.utils.toUi
 import app.editors.manager.ui.fragments.share.InviteAccessScreen
 import app.editors.manager.ui.fragments.share.UserListScreen
+import app.editors.manager.ui.fragments.share.link.ChangeUserAccessScreen
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.fragments.share.link.ShareUsersList
 import app.editors.manager.ui.fragments.share.link.SharedLinkItem
@@ -64,9 +66,11 @@ import app.editors.manager.viewModels.link.ShareSettingsViewModel
 import app.editors.manager.viewModels.link.SharedLinkSettingsViewModel
 import app.editors.manager.viewModels.main.ShareAccessViewModel
 import app.editors.manager.viewModels.main.ShareUserListViewModel
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppCircularProgress
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppHeaderItem
@@ -76,15 +80,37 @@ import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.TopAppBarAction
 import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.KeyboardUtils
-import lib.toolkit.base.managers.utils.getJsonString
 import java.net.URLDecoder
 import java.net.URLEncoder
 
-sealed class Route(val name: String) {
+sealed class Screen {
 
-    data object SettingsScreen : Route("settings")
-    data object LinkSettingsScreen : Route("link_settings")
-    data object AddUserScreen : Route("add_user_screen")
+    @Serializable
+    data object Main : Screen()
+
+    @Serializable
+    data class LinkSettings(
+        val link: String?,
+        val expirationDate: String?
+    ) : Screen()
+
+    @Serializable
+    data object AddUser : Screen()
+
+    @Serializable
+    data class AddUserAccess(
+        val users: String?,
+        val groups: String?,
+        val access: Int
+    ) : Screen()
+
+    @Serializable
+    data class ChangeAccess(
+        val id: String,
+        val access: Int,
+        val removable: Boolean,
+        val isOwnerOrAdmin: Boolean
+    ) : Screen()
 }
 
 @Composable
@@ -107,9 +133,26 @@ fun ShareDocSpaceScreen(
         )
     }
 
-    navController.addOnDestinationChangedListener { _, destination, _ ->
-        if (destination.route == Route.SettingsScreen.name) {
-            viewModel.fetchData()
+    LaunchedEffect(Unit) {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.hasRoute(Screen.Main::class)) {
+                viewModel.fetchData()
+            }
+        }
+    }
+
+    LaunchedEffect(viewModel) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                ShareSettingsEffect.Access -> {
+                    navController.navigate(Screen.Main) {
+                        popUpTo<Screen.Main> {
+                            inclusive = true
+                        }
+                    }
+                }
+                else -> Unit
+            }
         }
     }
 
@@ -118,47 +161,41 @@ fun ShareDocSpaceScreen(
     NavHost(
         modifier = Modifier.background(MaterialTheme.colors.background),
         navController = navController,
-        startDestination = Route.SettingsScreen.name
+        startDestination = Screen.Main
     ) {
-        composable(Route.SettingsScreen.name) {
+        composable<Screen.Main> {
             MainScreen(
                 viewModel = viewModel,
                 useTabletPaddings = useTabletPadding,
                 isFolder = isFolder,
-                onShare = onSendLink,
+                onShareLink = onSendLink,
                 onBack = onClose,
-                onAddUsers = {
-                    navController.navigate(Route.AddUserScreen.name)
-                },
+                onAddUsers = { navController.navigate(Screen.AddUser) },
                 onLinkClick = { link ->
                     val json =
                         URLEncoder.encode(Json.encodeToString(link), Charsets.UTF_8.toString())
+                    navController.navigate(Screen.LinkSettings(json, link.sharedTo.expirationDate))
+                },
+                onChangeAccess = { share ->
                     navController.navigate(
-                        "${Route.LinkSettingsScreen.name}?" +
-                                "link=$json&" +
-                                "expired=${link.sharedTo.expirationDate}"
+                        Screen.ChangeAccess(
+                            id = share.sharedTo.id,
+                            access = share.access.code,
+                            removable = true,
+                            isOwnerOrAdmin = share.isOwnerOrAdmin
+                        )
                     )
                 }
             )
         }
-        composable(
-            route = "${Route.LinkSettingsScreen.name}?link={link}&expired={expired}",
-            arguments = listOf(
-                navArgument("link") {
-                    type = NavType.StringType
-                },
-                navArgument("expired") {
-                    type = NavType.StringType
-                    nullable = true
-                }
-            )
-        ) {
-            val json = URLDecoder.decode(it.arguments?.getString("link"), Charsets.UTF_8.toString())
+        composable<Screen.LinkSettings> { backstackEntry ->
+            val data = backstackEntry.toRoute<Screen.LinkSettings>()
+            val json = URLDecoder.decode(data.link, Charsets.UTF_8.toString())
             SharedLinkSettingsScreen(
                 viewModel = viewModel {
                     SharedLinkSettingsViewModel(
                         externalLink = Json.decodeFromString<ExternalLink>(json),
-                        expired = it.arguments?.getString("expired"),
+                        expired = data.expirationDate,
                         roomProvider = viewModel.roomProvider,
                         itemId = viewModel.itemId,
                         isFolder = isFolder
@@ -172,7 +209,7 @@ fun ShareDocSpaceScreen(
                 onBack = navController::popBackStack,
             )
         }
-        composable(Route.AddUserScreen.name) {
+        composable<Screen.AddUser> {
             val userListViewModel = viewModel {
                 ShareUserListViewModel(
                     roomProvider = roomProvider,
@@ -191,7 +228,7 @@ fun ShareDocSpaceScreen(
                 UserListBottomContent(
                     nextButtonTitle = lib.toolkit.base.R.string.common_next,
                     count = size,
-                    access = access,
+                    access = access.toUi(true),
                     accessList = remember {
                         ManagerUiUtils.getItemAccessList(extension = fileExtension)
                             .map { it.toUi(true) }
@@ -199,42 +236,31 @@ fun ShareDocSpaceScreen(
                     onAccess = userListViewModel::setAccess,
                     onDelete = userListViewModel::onDelete
                 ) {
-                    val users =
-                        Json.encodeToString(userListViewModel.getSelectedUsers().ifEmpty { null })
-                    val groups =
-                        Json.encodeToString(userListViewModel.getSelectedGroups().ifEmpty { null })
+                    val users = userListViewModel.getSelectedUsers().takeIf { it.isNotEmpty() }?.let { Json.encodeToString(it) }
+                    val groups = userListViewModel.getSelectedGroups().takeIf { it.isNotEmpty() }?.let { Json.encodeToString(it) }
                     navController.navigate(
-                        Route.AddUserScreen.name +
-                                "?emails=null&" +
-                                "users=${URLEncoder.encode(users, Charsets.UTF_8.toString())}&" +
-                                "groups=${URLEncoder.encode(groups, Charsets.UTF_8.toString())}&" +
-                                "access=${access.code}"
+                        Screen.AddUserAccess(
+                            users?.let { URLEncoder.encode(it, Charsets.UTF_8.toString()) },
+                            groups?.let { URLEncoder.encode(it, Charsets.UTF_8.toString()) },
+                            access.code
+                        )
                     )
                 }
             }
         }
-        composable(
-            route = "${Route.AddUserScreen.name}?" +
-                    "emails={emails}&" +
-                    "users={users}&" +
-                    "groups={groups}&" +
-                    "access={access}",
-            arguments = listOf(
-                navArgument("emails") { type = NavType.StringType; nullable = true },
-                navArgument("users") { type = NavType.StringType; nullable = true },
-                navArgument("groups") { type = NavType.StringType; nullable = true },
-                navArgument("access") { type = NavType.IntType; defaultValue = 2 }
-            )
-        ) {
+        composable<Screen.AddUserAccess> { backstackEntry ->
+            val data = backstackEntry.toRoute<Screen.AddUserAccess>()
+            val decodedUsers = data.users?.let { URLDecoder.decode(it, Charsets.UTF_8.toString()) }
+            val decodedGroups = data.groups?.let { URLDecoder.decode(it, Charsets.UTF_8.toString()) }
             val shareAccessViewModel = viewModel {
                 ShareAccessViewModel(
                     itemId = itemId,
                     roomProvider = roomProvider,
                     isFolder = isFolder,
-                    access = Access.get(it.arguments?.getInt("access")),
-                    users = it.arguments?.getJsonString<List<User>>("users", true).orEmpty(),
-                    groups = it.arguments?.getJsonString<List<Group>>("groups", true).orEmpty(),
-                    emails = it.arguments?.getJsonString<List<String>>("emails").orEmpty(),
+                    access = Access.get(data.access),
+                    users = decodedUsers?.let { Json.decodeFromString<List<User>>(it) }.orEmpty(),
+                    groups = decodedGroups?.let { Json.decodeFromString<List<Group>>(it) }.orEmpty(),
+                    emails = emptyList(),
                 )
             }
             InviteAccessScreen(
@@ -245,26 +271,43 @@ fun ShareDocSpaceScreen(
                 viewModel = shareAccessViewModel,
                 onBack = navController::popBackStack,
                 onSuccess = {
-                    navController.navigate(Route.SettingsScreen.name) {
-                        popUpTo(Route.SettingsScreen.name) {
+                    navController.navigate(Screen.Main) {
+                        popUpTo(Screen.Main) {
                             inclusive = true
                         }
                     }
                 }
             )
         }
+        composable<Screen.ChangeAccess> { backStackEntry ->
+            val data = backStackEntry.toRoute<Screen.ChangeAccess>()
+
+            ChangeUserAccessScreen(
+                fileExtension = fileExtension,
+                onBack = navController::popBackStackWhenResumed,
+                currentAccess = Access.get(data.access),
+                isOwnerOrAdmin = data.isOwnerOrAdmin,
+                isRemove = data.removable,
+                onChangeAccess = { newAccess ->
+                    viewModel.setUserAccess(
+                        data.id,
+                        newAccess
+                    )
+                },
+            )
+        }
     }
 }
-
 
 @Composable
 private fun MainScreen(
     viewModel: ShareSettingsViewModel,
     isFolder: Boolean,
     useTabletPaddings: Boolean,
-    onShare: (String) -> Unit,
+    onShareLink: (String) -> Unit,
     onLinkClick: (ExternalLink) -> Unit,
     onAddUsers: () -> Unit,
+    onChangeAccess: (ShareEntity) -> Unit,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -292,6 +335,8 @@ private fun MainScreen(
                 is ShareSettingsEffect.OnCreate -> {
                     isCreateLoading = effect.loading
                 }
+
+                else -> Unit
             }
         }
     }
@@ -304,9 +349,10 @@ private fun MainScreen(
         useTabletPaddings = useTabletPaddings,
         isCreateLoading = isCreateLoading,
         onCreate = viewModel::create,
-        onShareClick = onShare,
+        onShareClick = onShareLink,
         onLinkClick = onLinkClick,
-        onAddUsers = onAddUsers
+        onAddUsers = onAddUsers,
+        onChangeAccess = onChangeAccess
     )
 }
 
@@ -321,7 +367,8 @@ private fun ShareSettingsScreen(
     onShareClick: (String) -> Unit,
     onLinkClick: (ExternalLink) -> Unit,
     onAddUsers: () -> Unit,
-    onBack: () -> Unit,
+    onChangeAccess: (ShareEntity) -> Unit,
+    onBack: () -> Unit
 ) {
     AppScaffold(
         scaffoldState = scaffoldState,
@@ -417,7 +464,7 @@ private fun ShareSettingsScreen(
                                 title = shareType.titleWithCount,
                                 portal = portal.orEmpty(),
                                 shareList = shareList,
-                                onClick = {}
+                                onClick = onChangeAccess
                             )
                         }
                     }
@@ -495,7 +542,8 @@ private fun ShareSettingsScreenPreview() {
             onCreate = {},
             onShareClick = {},
             onAddUsers = {},
-            onLinkClick = {}
+            onLinkClick = {},
+            onChangeAccess = {}
         )
     }
 }

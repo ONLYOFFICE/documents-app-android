@@ -24,7 +24,9 @@ class ShareAccessViewModel(
                 roomProvider.setItemShare(
                     itemId = itemId,
                     isFolder = isFolder,
-                    members = state.value.let { it.users + it.groups }
+                    members = state.value.let {
+                        (it.users + it.groups).mapKeys { (member, _) -> member.id }
+                    }
                 )
                 emitEffect(InviteAccessEffect.Success)
             } catch (e: Exception) {

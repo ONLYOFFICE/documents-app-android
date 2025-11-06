@@ -1,6 +1,7 @@
 package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.viewModelScope
+import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
 import app.documents.core.providers.RoomProvider
@@ -26,47 +27,70 @@ class RoomUserListViewModel(
     access = roomType?.let { RoomUtils.getAccessOptions(it, false).lastOrNull() },
 ) {
 
-    override val cachedMembersFlow: SharedFlow<List<Member>> = flow {
-        emit(getMembers())
-    }
+    override val cachedMembersFlow: SharedFlow<List<Member>> = flow { emit(getMembers()) }
         .onEach(::updateListState)
         .catch { error -> handleError(error) }
         .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
 
+    private val portal: String? by lazy { App.getApp().accountOnline?.portal?.urlWithScheme }
+
     private suspend fun getMembers(): List<Member> {
-        val portal = App.getApp().accountOnline?.portal?.urlWithScheme
-
-        val groups = when (mode) {
-            UserListMode.ChangeOwner,
-            UserListMode.StartFilling -> emptyList()
-            else -> roomProvider.getGroups(roomId, getOptions())
-        }
-
-        val users = roomProvider.getUsers(roomId, getOptions())
-            .run {
-                when (mode) {
-                    UserListMode.ChangeOwner -> filter { it.isAdmin && it.id != roomOwnerId }
-                    UserListMode.StartFilling -> filter { it.shared }
-                    else -> this
-                }
-            }
-            .map { user -> user.copy(avatarMedium = portal + user.avatarMedium) }
-
-        val guests = roomProvider.getGuests(roomId, getOptions())
-            .run {
-                when (mode) {
-                    UserListMode.StartFilling -> filter { it.shared }
-                    else -> this
-                }
-            }
-            .filter { it.status != 4 }
-            .map { user -> user.copy(avatarMedium = portal + user.avatarMedium) }
-
-        return groups + users + guests
+        return getGroups() + getUsers() + getGuests()
     }
 
-    fun refreshMembers() {
+    private suspend fun getUsers(): List<User> {
+        return when (mode) {
+            is UserListMode.Share -> {
+                roomProvider.getUsersByItemId(mode.itemId, mode.fileExtensions == null)
+            }
 
+            else -> {
+                roomProvider.getUsers(roomId, getOptions())
+                    .run {
+                        when (mode) {
+                            UserListMode.ChangeOwner -> filter { it.isAdmin && it.id != roomOwnerId }
+                            UserListMode.StartFilling -> filter { it.shared }
+                            else -> this
+                        }
+                    }
+
+            }
+        }.map { user -> user.copy(avatarMedium = portal + user.avatarMedium) }
+    }
+
+    private suspend fun getGroups(): List<Group> {
+        return when (mode) {
+            is UserListMode.Share -> {
+                roomProvider.getGroupsByItemId(mode.itemId, mode.fileExtensions == null)
+            }
+
+            UserListMode.ChangeOwner,
+            UserListMode.StartFilling -> {
+                roomProvider.getGroups(roomId, getOptions())
+            }
+
+            else -> emptyList()
+        }
+    }
+
+    private suspend fun getGuests(): List<User> {
+        return when (mode) {
+            is UserListMode.Share -> {
+                roomProvider.getGuestsByItemId(mode.itemId, mode.fileExtensions == null)
+            }
+
+            else -> {
+                roomProvider.getGuests(roomId, getOptions())
+                    .run {
+                        when (mode) {
+                            UserListMode.StartFilling -> filter { it.shared }
+                            else -> this
+                        }
+                    }
+            }
+        }
+            .filter { it.status != 4 }
+            .map { user -> user.copy(avatarMedium = portal + user.avatarMedium) }
     }
 
     fun setOwner(userId: String, leave: Boolean) {

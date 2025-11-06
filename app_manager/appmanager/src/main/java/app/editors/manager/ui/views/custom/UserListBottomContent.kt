@@ -31,7 +31,7 @@ import lib.toolkit.base.R
 fun UserListBottomContent(
     nextButtonTitle: Int,
     count: Int? = null,
-    access: Access? = null,
+    access: AccessUI? = null,
     accessList: List<AccessUI> = emptyList(),
     onAccess: (Access) -> Unit = {},
     onDelete: (() -> Unit)? = null,
@@ -82,7 +82,7 @@ private fun UserListBottomContentPreview() {
             UserListBottomContent(
                 nextButtonTitle = R.string.common_next,
                 count = 1,
-                access = Access.Read,
+                access = Access.Read.toUi(),
                 accessList = listOf(Access.None, Access.Restrict, Access.Read).map { it.toUi() },
                 onAccess = {},
                 onDelete = {},

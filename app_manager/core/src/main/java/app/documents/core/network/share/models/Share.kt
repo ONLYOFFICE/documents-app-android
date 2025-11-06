@@ -46,6 +46,7 @@ data class Share(
     val itemAccessType: ShareType
         get() = when {
             isOwner -> ShareType.Owner
+            isGuest -> ShareType.Guests
             isGroup -> ShareType.Group
             else -> ShareType.User
         }

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class RoomAccessViewModel(
+class ChangeUserAccessViewModel(
     private val roomProvider: RoomProvider,
     private val roomId: String,
     private val groupId: String

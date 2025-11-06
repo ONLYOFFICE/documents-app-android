@@ -202,19 +202,23 @@ private fun MainScreen(
         listOfNotNull(
             PagerTab.Users(portal.isDocSpace),
             PagerTab.Groups.takeIf {
-                state.mode in listOf(
-                    UserListMode.Invite,
-                    UserListMode.TemplateAccess,
-                    UserListMode.Share
-                )
+                when (state.mode) {
+                    is UserListMode.Invite,
+                    is UserListMode.TemplateAccess,
+                    is UserListMode.Share -> true
+
+                    else -> false
+                }
             },
             PagerTab.Guests.takeIf {
                 portal.isDocSpace &&
-                    state.mode in listOf(
-                    UserListMode.Invite,
-                    UserListMode.StartFilling,
-                    UserListMode.Share
-                )
+                        when (state.mode) {
+                            is UserListMode.Invite,
+                            is UserListMode.StartFilling,
+                            is UserListMode.Share -> true
+
+                            else -> false
+                        }
             }
         )
     }
@@ -800,7 +804,7 @@ private fun PreviewMainWithBottom() {
             UserListBottomContent(
                 nextButtonTitle = R.string.share_invite_title,
                 count = selected.size,
-                access = Access.Editor,
+                access = Access.Editor.toUi(),
                 accessList = RoomUtils.getAccessOptions(ApiContract.RoomType.CUSTOM_ROOM, false)
                     .map { it.toUi() },
                 {}, {}) {}

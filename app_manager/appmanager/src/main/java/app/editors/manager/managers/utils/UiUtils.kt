@@ -339,7 +339,9 @@ fun Access.toUi(isFileOrFolder: Boolean = false): AccessUI {
 
         Access.ReadWrite -> AccessUI(
             access = this,
-            icon = R.drawable.ic_access_full,
+            icon = if (isFileOrFolder)
+                R.drawable.ic_room_power_user else
+                R.drawable.ic_access_full,
             title = if (isFileOrFolder)
                 R.string.share_popup_access_full else
                 R.string.share_access_room_editor
@@ -397,8 +399,8 @@ fun Access.toUi(isFileOrFolder: Boolean = false): AccessUI {
 
         Access.None -> AccessUI(
             access = this,
-            icon = R.drawable.ic_access_deny,
-            title = R.string.share_popup_access_deny_remove
+            icon = R.drawable.ic_drawer_menu_trash,
+            title = R.string.share_popup_access_remove
         )
     }
 }

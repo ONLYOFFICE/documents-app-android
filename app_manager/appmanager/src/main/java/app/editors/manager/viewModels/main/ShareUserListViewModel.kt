@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
+import lib.toolkit.base.managers.tools.FileExtensions
 
 class ShareUserListViewModel(
     private val itemId: String,
@@ -19,13 +20,11 @@ class ShareUserListViewModel(
     private val roomProvider: RoomProvider,
     accessList: List<Access>,
 ) : UserListViewModel(
-    mode = UserListMode.Share,
+    mode = UserListMode.Share(itemId, FileExtensions.UNKNOWN),
     access = accessList.last { access -> access !is Access.Restrict },
 ) {
 
-    override val cachedMembersFlow: SharedFlow<List<Member>> = flow {
-        emit(getMembers())
-    }
+    override val cachedMembersFlow: SharedFlow<List<Member>> = flow { emit(getMembers()) }
         .onEach(::updateListState)
         .catch { error -> handleError(error) }
         .shareIn(viewModelScope, SharingStarted.Eagerly, 1)
