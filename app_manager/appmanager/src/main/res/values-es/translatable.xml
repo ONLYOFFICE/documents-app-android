@@ -819,7 +819,6 @@
     <string name="rooms_protected_room">Sala protegida</string>
     <string name="rooms_invalid_password">Contraseña no válida</string>
     <string name="rooms_invite_access_description">Los invitados, usuarios y grupos no pueden ser asignados como administradores de sala. Solo los administradores de sala y de DocSpace son adecuados para el rol especificado.</string>
-    <string name="rooms_user_type_employees">Empleados</string>
     <string name="whats_new_title">¿Qué hay de nuevo?</string>
     <string name="whats_new_next">Empiece a usar</string>
     <string name="whats_new">Novedades en la v9.1</string>

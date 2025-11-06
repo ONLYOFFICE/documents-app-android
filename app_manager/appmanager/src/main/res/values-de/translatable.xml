@@ -819,7 +819,6 @@ Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</
     <string name="rooms_protected_room">Geschützter Raum</string>
     <string name="rooms_invalid_password">Ungültiges Passwort</string>
     <string name="rooms_invite_access_description">Gäste, Benutzer und Gruppen können nicht als Raummanager zugewiesen werden. Nur Raum- und DocSpace-Admins sind für die angegebene Rolle geeignet.</string>
-    <string name="rooms_user_type_employees">Mitarbeiter</string>
     <string name="whats_new_title">Was gibt\'s Neues</string>
     <string name="whats_new_next">Erste Schritte</string>
     <string name="whats_new">Neuigkeiten in v9.1</string>
