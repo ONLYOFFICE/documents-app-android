@@ -399,7 +399,7 @@ fun Access.toUi(isFileOrFolder: Boolean = false): AccessUI {
 
         Access.None -> AccessUI(
             access = this,
-            icon = R.drawable.ic_drawer_menu_trash,
+            icon = R.drawable.ic_list_context_delete,
             title = R.string.share_popup_access_remove
         )
     }

@@ -41,7 +41,7 @@ class RoomUserListViewModel(
     private suspend fun getUsers(): List<User> {
         return when (mode) {
             is UserListMode.Share -> {
-                roomProvider.getUsersByItemId(mode.itemId, mode.fileExtensions == null)
+                roomProvider.getUsersByItemId(mode.shareData.itemId, mode.shareData.isFolder)
             }
 
             else -> {
@@ -61,22 +61,22 @@ class RoomUserListViewModel(
     private suspend fun getGroups(): List<Group> {
         return when (mode) {
             is UserListMode.Share -> {
-                roomProvider.getGroupsByItemId(mode.itemId, mode.fileExtensions == null)
+                roomProvider.getGroupsByItemId(mode.shareData.itemId, mode.shareData.isFolder)
             }
 
             UserListMode.ChangeOwner,
             UserListMode.StartFilling -> {
-                roomProvider.getGroups(roomId, getOptions())
+                emptyList()
             }
 
-            else -> emptyList()
+            else -> roomProvider.getGroups(roomId, getOptions())
         }
     }
 
     private suspend fun getGuests(): List<User> {
         return when (mode) {
             is UserListMode.Share -> {
-                roomProvider.getGuestsByItemId(mode.itemId, mode.fileExtensions == null)
+                roomProvider.getGuestsByItemId(mode.shareData.itemId, mode.shareData.isFolder)
             }
 
             else -> {

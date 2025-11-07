@@ -40,6 +40,7 @@ import androidx.navigation.toRoute
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
+import app.documents.core.network.manager.models.explorer.AccessTarget
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.network.share.models.Share
@@ -49,7 +50,7 @@ import app.documents.core.network.share.models.SharedTo
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
-import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.tools.ShareData
 import app.editors.manager.managers.utils.titleWithCount
 import app.editors.manager.managers.utils.toUi
 import app.editors.manager.ui.fragments.share.InviteAccessScreen
@@ -78,7 +79,6 @@ import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.TopAppBarAction
-import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import java.net.URLDecoder
 import java.net.URLEncoder
@@ -116,20 +116,17 @@ sealed class Screen {
 @Composable
 fun ShareDocSpaceScreen(
     roomProvider: RoomProvider,
-    itemId: String,
-    fileExtension: FileExtensions?, // null for folders
+    shareData: ShareData,
     useTabletPadding: Boolean,
     onSendLink: (String) -> Unit,
     onClose: () -> Unit,
 ) {
     val navController = rememberNavController()
-    val isFolder = fileExtension == null
 
     val viewModel = viewModel {
         ShareSettingsViewModel(
             roomProvider = roomProvider,
-            itemId = itemId,
-            isFolder = isFolder
+            shareData = shareData
         )
     }
 
@@ -167,10 +164,14 @@ fun ShareDocSpaceScreen(
             MainScreen(
                 viewModel = viewModel,
                 useTabletPaddings = useTabletPadding,
-                isFolder = isFolder,
                 onShareLink = onSendLink,
                 onBack = onClose,
                 onAddUsers = { navController.navigate(Screen.AddUser) },
+                descriptionText = if (!shareData.isFolder) {
+                    stringResource(R.string.rooms_share_shared_desc)
+                } else {
+                    stringResource(R.string.rooms_share_shared_folder_desc)
+                },
                 onLinkClick = { link ->
                     val json =
                         URLEncoder.encode(Json.encodeToString(link), Charsets.UTF_8.toString())
@@ -196,15 +197,11 @@ fun ShareDocSpaceScreen(
                     SharedLinkSettingsViewModel(
                         externalLink = Json.decodeFromString<ExternalLink>(json),
                         expired = data.expirationDate,
-                        roomProvider = viewModel.roomProvider,
-                        itemId = viewModel.itemId,
-                        isFolder = isFolder
+                        roomProvider = roomProvider,
+                        shareData = shareData
                     )
                 },
-                accessList = ManagerUiUtils.getItemAccessList(
-                    extension = fileExtension,
-                    forLink = true
-                ),
+                accessList = shareData.getAccessList(AccessTarget.ExternalLink),
                 useTabletPadding = useTabletPadding,
                 onBack = navController::popBackStack,
             )
@@ -213,9 +210,11 @@ fun ShareDocSpaceScreen(
             val userListViewModel = viewModel {
                 ShareUserListViewModel(
                     roomProvider = roomProvider,
-                    itemId = itemId,
-                    isFolder = isFolder,
-                    accessList = ManagerUiUtils.getItemAccessList(extension = fileExtension)
+                    shareData = shareData,
+                    currentAccess = shareData
+                        .getAccessList(AccessTarget.User)
+                        .last { access -> access.access !is Access.Restrict }
+                        .access
                 )
             }
             UserListScreen(
@@ -229,10 +228,7 @@ fun ShareDocSpaceScreen(
                     nextButtonTitle = lib.toolkit.base.R.string.common_next,
                     count = size,
                     access = access.toUi(true),
-                    accessList = remember {
-                        ManagerUiUtils.getItemAccessList(extension = fileExtension)
-                            .map { it.toUi(true) }
-                    },
+                    accessList = shareData.getAccessList(AccessTarget.User),
                     onAccess = userListViewModel::setAccess,
                     onDelete = userListViewModel::onDelete
                 ) {
@@ -254,9 +250,8 @@ fun ShareDocSpaceScreen(
             val decodedGroups = data.groups?.let { URLDecoder.decode(it, Charsets.UTF_8.toString()) }
             val shareAccessViewModel = viewModel {
                 ShareAccessViewModel(
-                    itemId = itemId,
                     roomProvider = roomProvider,
-                    isFolder = isFolder,
+                    shareData = shareData,
                     access = Access.get(data.access),
                     users = decodedUsers?.let { Json.decodeFromString<List<User>>(it) }.orEmpty(),
                     groups = decodedGroups?.let { Json.decodeFromString<List<Group>>(it) }.orEmpty(),
@@ -264,10 +259,7 @@ fun ShareDocSpaceScreen(
                 )
             }
             InviteAccessScreen(
-                accessList = remember {
-                    ManagerUiUtils.getItemAccessList(extension = fileExtension)
-                        .map { access -> access.toUi(true) }
-                },
+                accessList = shareData.getAccessList(AccessTarget.User),
                 viewModel = shareAccessViewModel,
                 onBack = navController::popBackStack,
                 onSuccess = {
@@ -283,11 +275,9 @@ fun ShareDocSpaceScreen(
             val data = backStackEntry.toRoute<Screen.ChangeAccess>()
 
             ChangeUserAccessScreen(
-                fileExtension = fileExtension,
+                accessList = shareData.getAccessList(AccessTarget.User, true),
                 onBack = navController::popBackStackWhenResumed,
                 currentAccess = Access.get(data.access),
-                isOwnerOrAdmin = data.isOwnerOrAdmin,
-                isRemove = data.removable,
                 onChangeAccess = { newAccess ->
                     viewModel.setUserAccess(
                         data.id,
@@ -302,7 +292,7 @@ fun ShareDocSpaceScreen(
 @Composable
 private fun MainScreen(
     viewModel: ShareSettingsViewModel,
-    isFolder: Boolean,
+    descriptionText: String,
     useTabletPaddings: Boolean,
     onShareLink: (String) -> Unit,
     onLinkClick: (ExternalLink) -> Unit,
@@ -344,7 +334,7 @@ private fun MainScreen(
     ShareSettingsScreen(
         scaffoldState = scaffoldState,
         state = state,
-        isFolder = isFolder,
+        descriptionText = descriptionText,
         onBack = onBack,
         useTabletPaddings = useTabletPaddings,
         isCreateLoading = isCreateLoading,
@@ -359,10 +349,10 @@ private fun MainScreen(
 @Composable
 private fun ShareSettingsScreen(
     scaffoldState: ScaffoldState,
-    isCreateLoading: Boolean,
-    isFolder: Boolean,
     state: ShareSettingsState,
+    isCreateLoading: Boolean,
     useTabletPaddings: Boolean,
+    descriptionText: String,
     onCreate: () -> Unit,
     onShareClick: (String) -> Unit,
     onLinkClick: (ExternalLink) -> Unit,
@@ -443,11 +433,7 @@ private fun ShareSettingsScreen(
                     item {
                         AppDescriptionItem(
                             modifier = Modifier.padding(top = 8.dp),
-                            text = if (!isFolder) {
-                                R.string.rooms_share_shared_desc
-                            } else {
-                                R.string.rooms_share_shared_folder_desc
-                            }
+                            text = descriptionText
                         )
                     }
                     item {
@@ -535,7 +521,7 @@ private fun ShareSettingsScreenPreview() {
                     ),
                 )
             ),
-            isFolder = true,
+            descriptionText = stringResource(R.string.rooms_share_shared_folder_desc),
             useTabletPaddings = false,
             isCreateLoading = false,
             onBack = {},

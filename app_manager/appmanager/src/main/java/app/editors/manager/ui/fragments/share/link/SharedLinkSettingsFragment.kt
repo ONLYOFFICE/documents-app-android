@@ -26,6 +26,7 @@ import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.editors.manager.R
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.toUi
+import app.editors.manager.mvp.models.ui.AccessUI
 import app.editors.manager.viewModels.link.SharedLinkSettingsEffect
 import app.editors.manager.viewModels.link.SharedLinkSettingsViewModel
 import lib.compose.ui.TouchDisable
@@ -45,7 +46,7 @@ import lib.compose.ui.views.VerticalSpacer
 @Composable
 fun SharedLinkSettingsScreen(
     viewModel: SharedLinkSettingsViewModel,
-    accessList: List<Access>,
+    accessList: List<AccessUI>,
     useTabletPadding: Boolean = false,
     onBack: () -> Unit,
 ) {
@@ -92,7 +93,7 @@ fun SharedLinkSettingsScreen(
 @Composable
 private fun MainScreen(
     scaffoldState: ScaffoldState,
-    accessList: List<Access>,
+    accessList: List<AccessUI>,
     loading: State<Boolean>,
     state: State<ExternalLink>,
     useTabletPadding: Boolean = false,
@@ -133,14 +134,14 @@ private fun MainScreen(
                                     state = accessDropDownState,
                                     icon = ImageVector.vectorResource(Access.get(state.value.access).toUi().icon),
                                     items = {
-                                        accessList.forEach { access ->
-                                            val accessUi = access.toUi()
+                                        accessList.forEach { accessUi ->
+                                            val accessCode = accessUi.access.code
                                             DropdownMenuItem(
                                                 title = stringResource(accessUi.title),
-                                                selected = access.code == state.value.access,
+                                                selected = accessCode == state.value.access,
                                                 startIcon = accessUi.icon,
                                                 onClick = {
-                                                    onSetAccess(access.code)
+                                                    onSetAccess(accessCode)
                                                     accessDropDownState.value = false
                                                 }
                                             )
@@ -227,7 +228,9 @@ private fun ShareSettingsScreenPreview() {
     ManagerTheme {
         MainScreen(
             scaffoldState = rememberScaffoldState(),
-            accessList = ManagerUiUtils.getFolderAccessList(withRemove = false, forLink = true),
+            accessList = ManagerUiUtils
+                .getFolderAccessList(withRemove = false, forLink = true)
+                .map { it.toUi() },
             useTabletPadding = false,
             loading = remember { mutableStateOf(false) },
             state = remember { mutableStateOf(link) },

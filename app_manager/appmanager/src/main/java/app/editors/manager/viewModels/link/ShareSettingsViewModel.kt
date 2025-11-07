@@ -6,6 +6,7 @@ import app.documents.core.model.cloud.Access
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
 import app.documents.core.providers.RoomProvider
+import app.editors.manager.managers.tools.ShareData
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,8 +34,7 @@ sealed class ShareSettingsEffect {
 
 class ShareSettingsViewModel(
     val roomProvider: RoomProvider,
-    val itemId: String,
-    val isFolder: Boolean
+    val shareData: ShareData,
 ) : ViewModel() {
 
     private val _state: MutableStateFlow<ShareSettingsState> =
@@ -48,7 +48,7 @@ class ShareSettingsViewModel(
         viewModelScope.launch {
             try {
                 _effect.emit(ShareSettingsEffect.OnCreate(true))
-                val link = roomProvider.createSharedLink(itemId, isFolder)
+                val link = roomProvider.createSharedLink(shareData.itemId, shareData.isFolder)
                 _effect.emit(ShareSettingsEffect.OnCreate(false))
                 _effect.emit(ShareSettingsEffect.Copy(link.sharedTo.shareLink))
 
@@ -69,8 +69,8 @@ class ShareSettingsViewModel(
     fun fetchData() {
         viewModelScope.launch {
             try {
-                val links = async { roomProvider.getSharedLinks(itemId, isFolder) }
-                val users = async { roomProvider.getSharedUsers(itemId, isFolder) }
+                val links = async { roomProvider.getSharedLinks(shareData.itemId, shareData.isFolder) }
+                val users = async { roomProvider.getSharedUsers(shareData.itemId, shareData.isFolder) }
                 _state.value = ShareSettingsState.Success(links.await(), users.await())
             } catch (e: HttpException) {
                 _effect.emit(ShareSettingsEffect.Error(e.code()))
@@ -83,7 +83,7 @@ class ShareSettingsViewModel(
     fun setUserAccess(userId: String, access: Access) {
         viewModelScope.launch {
             try {
-                roomProvider.setItemShare(itemId, isFolder, mapOf(userId to access))
+                roomProvider.setItemShare(shareData.itemId, shareData.isFolder, mapOf(userId to access))
                 _effect.emit(ShareSettingsEffect.Access)
             } catch (e: HttpException) {
                 _effect.emit(ShareSettingsEffect.Error(e.code()))

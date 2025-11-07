@@ -311,8 +311,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             if (requireContext().accountOnline.isDocSpace) {
                 ShareSettingsFragment.show(
                     activity = requireActivity(),
-                    fileId = item.id,
-                    extension = (item as? CloudFile)?.fileExst
+                    item = item
                 )
             } else {
                 ShareFragment.show(

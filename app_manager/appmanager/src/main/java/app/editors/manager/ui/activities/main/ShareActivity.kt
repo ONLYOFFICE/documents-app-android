@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.fragment.app.Fragment
 import app.documents.core.model.cloud.isDocSpace
@@ -15,42 +14,37 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.app.api
 import app.editors.manager.app.roomProvider
 import app.editors.manager.app.shareApi
+import app.editors.manager.managers.tools.ShareData
 import app.editors.manager.ui.activities.base.BaseAppActivity
 import app.editors.manager.ui.compose.share.ShareDocSpaceScreen
 import app.editors.manager.ui.compose.share.ShareScreen
 import lib.compose.ui.theme.BaseAppTheme
 import lib.compose.ui.theme.LocalUseTabletPadding
-import lib.toolkit.base.managers.tools.FileExtensions
 import lib.toolkit.base.managers.utils.EditorsContract
+import lib.toolkit.base.managers.utils.getSerializableExt
 import lib.toolkit.base.managers.utils.openSendTextActivity
 
 class ShareActivity : BaseAppActivity() {
 
     companion object {
-        private const val KEY_SHARE_ITEM_EXTENSION: String = "KEY_SHARE_ITEM_EXTENSION"
-        private const val KEY_SHARE_IS_FOLDER: String = "KEY_SHARE_IS_FOLDER"
+        private const val KEY_SHARE_DATA = "key_share_data"
 
         @JvmStatic
-        fun show(fragment: Fragment, itemId: String, isFolder: Boolean, extension: String) {
+        fun show(fragment: Fragment, shareData: ShareData) {
             fragment.startActivityForResult(
                 Intent(fragment.context, ShareActivity::class.java).apply {
-                    putExtra(EditorsContract.EXTRA_ITEM_ID, itemId)
-                    putExtra(KEY_SHARE_IS_FOLDER, isFolder)
-                    putExtra(KEY_SHARE_ITEM_EXTENSION, extension)
+                    putExtra(EditorsContract.EXTRA_ITEM_ID, shareData.itemId) // check editors
+                    putExtra(KEY_SHARE_DATA, shareData)
                 },
                 REQUEST_ACTIVITY_SHARE
             )
         }
     }
 
-    private val fileExtension: FileExtensions? by lazy {
-        intent.getStringExtra(KEY_SHARE_ITEM_EXTENSION)?.let { extension ->
-            FileExtensions.fromExtension(extension)
-        }
-    }
-
-    private val itemId: String by lazy {
-        intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty()
+    private val shareData: ShareData by lazy {
+        intent.getSerializableExt<ShareData>(KEY_SHARE_DATA) ?: ShareData(
+            itemId = intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty()
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,21 +59,20 @@ class ShareActivity : BaseAppActivity() {
                     if (accountOnline.isDocSpace) {
                         ShareDocSpaceScreen(
                             roomProvider = roomProvider,
-                            itemId = itemId,
-                            fileExtension = fileExtension,
+                            shareData = shareData,
+                            useTabletPadding = true,
+                            onClose = ::finish,
                             onSendLink = { link ->
                                 openSendTextActivity(
                                     title = getString(R.string.toolbar_menu_main_share),
                                     text = link
                                 )
-                            },
-                            useTabletPadding = true,
-                            onClose = ::finish
+                            }
                         )
                     } else {
                         ShareScreen(
-                            isFolder = remember { intent.getBooleanExtra(KEY_SHARE_IS_FOLDER, false) },
-                            itemId = remember { intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty() },
+                            isFolder = shareData.isFolder,
+                            itemId = shareData.itemId,
                             useTabletPaddings = true,
                             shareApi = shareApi,
                             managerService = api,

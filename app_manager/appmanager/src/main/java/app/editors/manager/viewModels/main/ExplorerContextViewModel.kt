@@ -102,9 +102,7 @@ class ExplorerContextViewModel : ViewModel() {
                 ExplorerContextItem.VersionHistory,
                 ExplorerContextItem.FillingStatus.takeIf { state.roomType == ApiContract.RoomType.VIRTUAL_ROOM },
                 ExplorerContextItem.ResetFilling,
-                ExplorerContextItem.Share.takeIf {
-                    state.provider != PortalProvider.Cloud.DocSpace || state.section == ApiContract.Section.User && !((state.item is CloudFile) && state.item.isPdfForm)
-                },
+                ExplorerContextItem.Share,
                 ExplorerContextItem.CreateRoom.takeIf { state.provider == PortalProvider.Cloud.DocSpace },
                 ExplorerContextItem.ExternalLink(state),
                 ExplorerContextItem.Favorites(preferenceTool.isFavoritesEnabled, state.item.isFavorite),

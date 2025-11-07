@@ -305,6 +305,22 @@ object ApiContract {
 
         fun hasExternalLink(roomType: Int?): Boolean =
             roomType in arrayOf(PUBLIC_ROOM, FILL_FORMS_ROOM, CUSTOM_ROOM)
+
+        fun toObj(type: Int): RoomTypeObj {
+            return when (type) {
+                FILL_FORMS_ROOM -> RoomTypeObj.FillingForms
+                COLLABORATION_ROOM -> RoomTypeObj.Collaboration
+                CUSTOM_ROOM -> RoomTypeObj.Custom
+                PUBLIC_ROOM -> RoomTypeObj.Public
+                VIRTUAL_ROOM -> RoomTypeObj.VDR
+                else -> error("invalid room type")
+            }
+        }
+    }
+
+    // rename to RoomType after refactoring
+    enum class RoomTypeObj {
+        Public, VDR, FillingForms, Collaboration, Custom
     }
 
     object SectionPath {

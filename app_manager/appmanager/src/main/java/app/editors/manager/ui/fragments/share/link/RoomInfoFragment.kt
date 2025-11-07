@@ -29,6 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.AccessTarget
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
@@ -38,6 +39,7 @@ import app.documents.core.network.share.models.SharedTo
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.app.roomProvider
+import app.editors.manager.managers.tools.ShareData
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.titleWithCount
 import app.editors.manager.ui.fragments.share.InviteUsersScreen
@@ -100,13 +102,18 @@ class RoomInfoFragment : ComposeDialogFragment() {
         data object InviteUsers : Screens
     }
 
+    private val room: CloudFolder by lazy {
+        arguments?.getSerializableExt(KEY_ROOM) ?: CloudFolder()
+    }
+
+    private val shareData: ShareData by lazy {
+        ShareData.from(room)
+    }
+
     @Composable
     override fun Content() {
         ManagerTheme {
             val portal = remember { requireContext().accountOnline?.portal }
-            val room = remember {
-                checkNotNull(arguments?.getSerializableExt<CloudFolder>(KEY_ROOM))
-            }
             val canEditRoom = room.security?.editRoom == true
             val viewModel = viewModel { RoomInfoViewModel(requireContext().roomProvider, room.id) }
             val navController = rememberNavController().also {
@@ -192,7 +199,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
                     composable<Screens.ChangeUserAccess> { backStackEntry ->
                         val data = backStackEntry.toRoute<Screens.ChangeUserAccess>()
                         ChangeUserAccessScreen(
-                            roomType = room.roomType,
+                            accessList = shareData.getAccessList(AccessTarget.User, data.removable),
                             portal = remember { requireContext().accountOnline?.portalUrl.orEmpty() },
                             onBack = navController::popBackStackWhenResumed,
                             onChangeAccess = { newAccess ->
@@ -202,9 +209,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
                                     newAccess
                                 )
                             },
-                            currentAccess = Access.get(data.access),
-                            isOwnerOrAdmin = data.isOwnerOrAdmin,
-                            isRemove = data.removable,
+                            currentAccess = Access.get(data.access)
                         )
                     }
                     composable<Screens.ChangeGroupAccess> { backStackEntry ->
@@ -229,19 +234,13 @@ class RoomInfoFragment : ComposeDialogFragment() {
 
                         ChangeUserAccessScreen(
                             users = groupUsers.value,
-                            roomType = room.roomType,
                             portal = remember { requireContext().accountOnline?.portalUrl.orEmpty() },
                             onBack = navController::popBackStackWhenResumed,
-                            onChangeAccess = { newAccess ->
-                                viewModel.setUserAccess(
-                                    room.id,
-                                    data.id,
-                                    newAccess
-                                )
-                            },
                             currentAccess = Access.get(data.access),
-                            isRemove = true,
-                            isOwnerOrAdmin = false,
+                            accessList = shareData.getAccessList(AccessTarget.Group, true),
+                            onChangeAccess = { newAccess ->
+                                viewModel.setUserAccess(room.id, data.id, newAccess)
+                            },
                             onUserClick = { share ->
                                 navController.navigate(
                                     Screens.ChangeUserAccess(
