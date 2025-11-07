@@ -38,7 +38,8 @@ internal object StringUtils {
 
 
         val date = TimeUtils.getWeekDate(folder.updated)
-        val owner = getItemOwner(context, folder, state.accountId).takeUnless { state.isSectionMy }
+        val originTitle = folder.originTitle.ifEmpty { folder.originRoomTitle }.ifEmpty { null }
+        val owner = originTitle ?: getItemOwner(context, folder, state.accountId).takeUnless { state.isSectionMy }
 
         return when {
             state.isIndexing -> {
@@ -69,7 +70,7 @@ internal object StringUtils {
         owner: String?,
         isGridView: Boolean,
         sortBy: String?
-    ) : List<String> {
+    ): List<String> {
         val roomTypeTitle = context.getString(RoomUtils.getRoomInfo(roomType).title)
         if (isGridView) {
             return listOfNotNull(roomTypeTitle)
@@ -96,16 +97,8 @@ internal object StringUtils {
         }
 
         val date = TimeUtils.getWeekDate(file.updated)
-        val owner = getItemOwner(context, file, state.accountId).takeUnless { state.isSectionMy }
-
-        if (state.isIndexing) {
-            return listOfNotNull(
-                context.getString(R.string.rooms_index_subtitle, file.order),
-                date,
-                owner
-            )
-        }
-
+        val originTitle = file.originTitle.ifEmpty { file.originRoomTitle }.ifEmpty { null }
+        val owner = originTitle ?: getItemOwner(context, file, state.accountId).takeUnless { state.isSectionMy }
         val size = StringUtils.getFormattedSize(context, file.pureContentLength)
         return when (state.sortBy) {
             ActionMenuItem.Date.sortValue -> listOfNotNull(date, owner, size)
@@ -117,11 +110,7 @@ internal object StringUtils {
 
     fun getItemOwner(context: Context, item: Item, userId: String?): String? {
         return when {
-            userId.equals(
-                item.createdBy.id,
-                ignoreCase = true
-            ) -> context.getString(R.string.item_owner_self)
-
+            userId.equals(item.createdBy.id, ignoreCase = true) -> context.getString(R.string.item_owner_self)
             item.createdBy.displayName.isNotEmpty() -> item.createdBy.displayNameFromHtml
             else -> null
         }

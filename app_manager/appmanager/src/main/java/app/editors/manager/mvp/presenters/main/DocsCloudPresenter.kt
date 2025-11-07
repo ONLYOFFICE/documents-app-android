@@ -731,7 +731,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         resetFilters()
         if (folderId != itemFolderId) {
             setFiltering(false)
-            modelExplorerStack.previous()?.let(modelExplorerStack::refreshStack)
+            if (currentSectionType != ApiContract.SectionType.CLOUD_FAVORITES) {
+                modelExplorerStack.previous()?.let(modelExplorerStack::refreshStack)
+            }
             getItemsById(itemFolderId)
         } else if (isRoot) {
             getBackStack()
