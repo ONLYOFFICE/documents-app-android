@@ -17,11 +17,15 @@ data class ShareData(
     val itemId: String = "",
     val fileExt: String? = null,
     val roomType: Int? = null,
+    val isRoom: Boolean = false,
     val availableShareRights: AvailableShareRights? = null
 ) : Serializable {
 
     val isFolder: Boolean
         get() = fileExt == null
+
+    val shouldShowUsers: Boolean
+        get() =  isRoom || roomType == null
 
     fun getAccessList(target: AccessTarget, withRemove: Boolean = false): List<AccessUI> {
         return ShareAccessManager.getAccessList(shareData = this, target = target)
@@ -32,15 +36,17 @@ data class ShareData(
 
     companion object {
 
-        fun from(item: Item): ShareData {
+        fun from(item: Item, roomType: Int): ShareData {
             val shareData = ShareData(
                 itemId = item.id,
                 availableShareRights = item.availableShareRights
             )
 
             return when {
+                item is CloudFile && roomType > -1 -> shareData.copy(fileExt = item.fileExst, roomType = roomType)
                 item is CloudFile -> shareData.copy(fileExt = item.fileExst)
-                item is CloudFolder && item.isRoom -> shareData.copy(roomType = item.roomType)
+                item is CloudFolder && item.isRoom -> shareData.copy(isRoom = true, roomType = roomType)
+                item is CloudFolder && roomType > -1 -> shareData.copy(roomType = roomType)
                 item is CloudFolder -> shareData
                 else -> error("cannot get share data from this item")
             }

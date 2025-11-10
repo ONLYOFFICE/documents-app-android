@@ -23,9 +23,9 @@ class ShareSettingsFragment : ComposeDialogFragment() {
 
         private fun newInstance(): ShareSettingsFragment = ShareSettingsFragment()
 
-        fun show(activity: FragmentActivity, item: Item) {
+        fun show(activity: FragmentActivity, item: Item, roomType: Int) {
             newInstance()
-                .putArgs(KEY_SHARE_DATA to ShareData.from(item))
+                .putArgs(KEY_SHARE_DATA to ShareData.from(item, roomType))
                 .show(activity.supportFragmentManager, TAG)
         }
     }

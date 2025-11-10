@@ -307,16 +307,19 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     private fun showShareFragment() {
+        val roomType = presenter.currentFolder?.roomType ?: -1
         presenter.itemClicked?.let { item ->
             if (requireContext().accountOnline.isDocSpace) {
                 ShareSettingsFragment.show(
                     activity = requireActivity(),
-                    item = item
+                    item = item,
+                    roomType = roomType
                 )
             } else {
                 ShareFragment.show(
                     activity = requireActivity(),
-                    item = item
+                    item = item,
+                    roomType = roomType
                 )
             }
         }
