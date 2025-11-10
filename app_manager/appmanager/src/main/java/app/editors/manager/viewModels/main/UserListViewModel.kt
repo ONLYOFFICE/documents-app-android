@@ -2,12 +2,14 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.documents.core.account.AccountPreferences
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.utils.displayNameFromHtml
+import app.editors.manager.app.App
 import app.editors.manager.managers.tools.ShareData
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,13 +23,14 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
-sealed class UserListMode {
+sealed class UserListMode(val withSelf: Boolean = false) {
     data object Invite : UserListMode()
     data object ChangeOwner : UserListMode()
     data object TemplateAccess : UserListMode()
-    data object StartFilling : UserListMode()
+    data object StartFilling : UserListMode(withSelf = true)
     data class Share(val shareData: ShareData) : UserListMode()
 }
 
@@ -49,8 +52,8 @@ sealed class UserListEffect {
 
 @OptIn(FlowPreview::class)
 abstract class UserListViewModel(
-    access: Access?,
-    mode: UserListMode
+    private val mode: UserListMode,
+    access: Access?
 ) : ViewModel() {
 
     private val _viewState: MutableStateFlow<UserListState> =
@@ -64,7 +67,13 @@ abstract class UserListViewModel(
 
     protected abstract val cachedMembersFlow: SharedFlow<List<Member>>
 
+    @Inject
+    lateinit var accountPreferences: AccountPreferences
+
+    private val onlineAccountId: String by lazy { accountPreferences.onlineAccountId.orEmpty() }
+
     init {
+        App.getApp().appComponent.inject(this)
         collectSearchFlow()
     }
 
@@ -98,6 +107,7 @@ abstract class UserListViewModel(
             val users = cachedMembers
                 .filterIsInstance<User>()
                 .filter { !it.isGuest && it.displayNameFromHtml.startsWith(searchValue, true) }
+                .filter { if (!mode.withSelf) it.id != onlineAccountId else true }
 
             val guests = cachedMembers
                 .filterIsInstance<User>()
