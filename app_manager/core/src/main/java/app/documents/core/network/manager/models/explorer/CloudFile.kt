@@ -124,8 +124,6 @@ open class CloudFile : Item() {
     val isPdfForm: Boolean
         get() = FileExtensions.fromExtension(fileExst) is FileExtensions.PDF && isForm
 
-    val isFavorite: Boolean
-        get() = (fileStatus and ApiContract.FileStatus.FAVORITE) != 0
 
     val isNew: Boolean
         get() = (fileStatus and ApiContract.FileStatus.IS_NEW) != 0

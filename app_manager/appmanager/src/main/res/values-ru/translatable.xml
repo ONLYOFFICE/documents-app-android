@@ -832,7 +832,6 @@
     <string name="rooms_protected_room">Защищенная комната</string>
     <string name="rooms_invalid_password">Неверный пароль</string>
     <string name="rooms_invite_access_description">Гости, Пользователи и Группы не могут быть назначены менеджерами комнат. Для указанной роли подходят только администраторы комнат и DocSpace.</string>
-    <string name="rooms_user_type_employees">Сотрудники</string>
     <string name="whats_new_title">Новые возможности</string>
     <string name="whats_new_next">Начать</string>
     <string name="whats_new">Что нового в v9.1</string>

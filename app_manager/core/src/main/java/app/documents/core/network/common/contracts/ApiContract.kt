@@ -131,6 +131,7 @@ object ApiContract {
         const val ARG_FILTER_BY_SUBJECT_ID = "subjectId"
         const val ARG_FILTER_BY_AUTHOR = "userIdOrGroupId"
         const val ARG_FILTER_SUBFOLDERS = "withSubfolders"
+        const val ARG_FILTER_LOCATION = "location"
         const val ARG_UPDATED_SINCE = "updatedSince"
         const val VAL_ACTION_VIEW = "view"
         const val VAL_SORT_ORDER_ASC = "ascending"

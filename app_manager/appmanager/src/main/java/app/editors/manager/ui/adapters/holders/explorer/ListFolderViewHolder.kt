@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
@@ -43,6 +44,7 @@ class ListFolderViewHolder(view: View, adapter: ExplorerAdapter) :
         super.bind(element)
         bindFolderType(element)
         bindFolderStorageImage(element, binding.storageImage)
+        binding.favorite.isVisible = element.isFavorite
         if (adapter.pickerMode == PickerMode.Ordering) {
             initOrderingMode(binding.dragIcon, binding.contextButtonLayout)
         }

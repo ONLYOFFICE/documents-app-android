@@ -19,7 +19,6 @@ import moxy.presenter.ProvidePresenter
 class CloudFilterFragment : BaseFilterFragment() {
 
     companion object {
-        val TAG = CloudFilterFragment::class.simpleName
         private const val KEY_SECTION: String = "key_section"
 
         fun newInstance(folderId: String?, section: Int): CloudFilterFragment {
@@ -32,12 +31,21 @@ class CloudFilterFragment : BaseFilterFragment() {
         }
     }
 
+    private val section: Int? by lazy { arguments?.getInt(KEY_SECTION) }
+
+    private val isSectionShareWithMe: Boolean by lazy {
+        section == ApiContract.SectionType.CLOUD_SHARE && requireContext().accountOnline.isDocSpace
+    }
+
     @InjectPresenter
     lateinit var presenter: CloudFilterPresenter
 
     @ProvidePresenter
     fun providePresenter(): CloudFilterPresenter {
-        return CloudFilterPresenter(arguments?.getString(KEY_FOLDER_ID), section)
+        return CloudFilterPresenter(
+            arguments?.getString(KEY_FOLDER_ID),
+            section
+        )
     }
 
     override val filterPresenter: BaseFilterPresenter
@@ -46,31 +54,24 @@ class CloudFilterFragment : BaseFilterFragment() {
     private var typeChipGroup: SingleChoiceChipGroupView? = null
     private var authorChipGroup: SingleChoiceChipGroupView? = null
     private var excludeChipGroup: SingleChoiceChipGroupView? = null
+    private var locationChipGroup: SingleChoiceChipGroupView? = null
 
-    private val usersChipItem by lazy {
-        object : ChipItem {
-            override val chipTitle: Int = if (isSectionShareWithMe)
-                R.string.invite_choose_from_list else
-                R.string.share_add_common_header_users
+    private data class SimpleChipItem(
+        override val chipTitle: Int,
+        override val withOption: Boolean = false,
+        override var option: String? = null
+    ) : ChipItem
 
-            override val withOption: Boolean = true
-            override var option: String? = null
-        }
-    }
+    private val usersChipItem = SimpleChipItem(
+        chipTitle = if (isSectionShareWithMe)
+            R.string.invite_choose_from_list else
+            R.string.share_add_common_header_users,
+        withOption = true
+    )
 
-    private val groupsChipItem by lazy {
-        object : ChipItem {
-            override val chipTitle: Int = R.string.share_add_common_header_groups
-            override val withOption: Boolean = true
-            override var option: String? = null
-        }
-    }
-
-    private val section: Int? by lazy { arguments?.getInt(KEY_SECTION) }
-
-    private val isSectionShareWithMe: Boolean by lazy {
-        section == ApiContract.SectionType.CLOUD_SHARE && requireContext().accountOnline.isDocSpace
-    }
+    private val groupsChipItem = SimpleChipItem(R.string.share_add_common_header_groups, true)
+    private val documentsChipItem = SimpleChipItem(R.string.actionbar_title_main)
+    private val roomsChipItem = SimpleChipItem(R.string.main_pager_docs_virtual_room)
 
     override fun initViews() {
         initChipGroups()
@@ -100,6 +101,15 @@ class CloudFilterFragment : BaseFilterFragment() {
     }
 
     private fun initChipGroups() {
+        addChipGroups(
+            createTypeChipGroup(),
+            createAuthorChipGroup(),
+            createExcludeChipGroup(),
+            createLocationChipGroup()
+        )
+    }
+
+    private fun createTypeChipGroup(): SingleChoiceChipGroupView? {
         typeChipGroup =
             SingleChoiceChipGroupView(requireContext(), R.string.filter_title_type).apply {
                 setChips(
@@ -110,52 +120,88 @@ class CloudFilterFragment : BaseFilterFragment() {
                     presenter.update()
                 }
             }
+        return typeChipGroup
+    }
 
-        authorChipGroup = requireContext().accountOnline?.let { account ->
-            return@let if (!account.isPersonal()) {
-                updateAuthorChipGroup(account)
-                SingleChoiceChipGroupView(
-                    context = requireContext(),
-                    title = R.string.filter_title_author
-                ).apply {
-                    setChips(
-                        chips = listOfNotNull(
-                            usersChipItem,
-                            groupsChipItem.takeIf { !isSectionShareWithMe }
-                        ),
-                        checkedChip = null,
-                        closeListener = presenter::clearAuthor
-                    ) { item, _ ->
-                        showAuthorFragment(
-                            fragmentManager = parentFragmentManager,
-                            isGroups = item == groupsChipItem,
-                            selectedId = presenter.filterAuthor.id,
-                            withSelf = !isSectionShareWithMe
-                        ) { bundle ->
-                            presenter.filterAuthor =
-                                FilterAuthor.toObject(bundle.getString(FilterAuthorFragment.BUNDLE_KEY_AUTHOR))
-                            presenter.update()
-                        }
+    private fun createAuthorChipGroup(): SingleChoiceChipGroupView? {
+        authorChipGroup = App.getApp().accountOnline?.let { account ->
+            if (account.isPersonal()) return@let null
+            updateAuthorChipGroup(account)
+            SingleChoiceChipGroupView(
+                context = requireContext(),
+                title = R.string.filter_title_author
+            ).apply {
+                setChips(
+                    chips = listOfNotNull(
+                        usersChipItem,
+                        groupsChipItem.takeIf { !isSectionShareWithMe }
+                    ),
+                    checkedChip = null,
+                    closeListener = presenter::clearAuthor
+                ) { item, _ ->
+                    showAuthorFragment(
+                        fragmentManager = parentFragmentManager,
+                        isGroups = item == groupsChipItem,
+                        selectedId = presenter.filterAuthor.id,
+                        withSelf = !isSectionShareWithMe
+                    ) { bundle ->
+                        presenter.filterAuthor =
+                            FilterAuthor.toObject(bundle.getString(FilterAuthorFragment.BUNDLE_KEY_AUTHOR))
+                        presenter.update()
                     }
                 }
-            } else null
+            }
         }
+        return authorChipGroup
+    }
 
-        excludeChipGroup =
-            SingleChoiceChipGroupView(requireContext(), R.string.filter_exclude_subfolders).apply {
-                val excludeSubfolderChipItem = object : ChipItem {
-                    override val chipTitle: Int = R.string.filter_exclude_subfolders
-                    override val withOption: Boolean = false
-                    override var option: String? = null
+    private fun createExcludeChipGroup(): SingleChoiceChipGroupView? {
+        if (section != ApiContract.SectionType.CLOUD_FAVORITES && !isSectionShareWithMe) {
+            excludeChipGroup =
+                SingleChoiceChipGroupView(
+                    requireContext(),
+                    R.string.filter_exclude_subfolders
+                ).apply {
+                    val excludeSubfolderChipItem =
+                        SimpleChipItem(R.string.filter_exclude_subfolders)
+                    setChip(
+                        chip = excludeSubfolderChipItem,
+                        checked = presenter.excludeSubfolder,
+                        checkedListener = { _, checked -> presenter.excludeSubfolder = checked }
+                    )
                 }
+        }
+        return excludeChipGroup
+    }
 
-                setChip(
-                    chip = excludeSubfolderChipItem,
-                    checked = presenter.excludeSubfolder,
-                    checkedListener = { _, checked -> presenter.excludeSubfolder = checked }
-                )
-            }.takeIf { !isSectionShareWithMe }
-
-        addChipGroups(typeChipGroup, authorChipGroup, excludeChipGroup)
+    private fun createLocationChipGroup(): SingleChoiceChipGroupView? {
+        val section = arguments?.getInt(KEY_SECTION)
+        if (section == ApiContract.SectionType.CLOUD_FAVORITES) {
+            locationChipGroup =
+                SingleChoiceChipGroupView(
+                    requireContext(),
+                    R.string.room_create_thirdparty_location
+                ).apply {
+                    val chips = listOf(documentsChipItem, roomsChipItem)
+                    val checkedChip = when (presenter.location) {
+                        1 -> roomsChipItem
+                        2 -> documentsChipItem
+                        else -> null
+                    }
+                    setChips(
+                        chips = chips,
+                        checkedChip = checkedChip
+                    ) { item, checked ->
+                        presenter.location = when {
+                            !checked -> 0
+                            item == roomsChipItem -> 1
+                            item == documentsChipItem -> 2
+                            else -> 0
+                        }
+                        presenter.update()
+                    }
+                }
+        }
+        return locationChipGroup
     }
 }

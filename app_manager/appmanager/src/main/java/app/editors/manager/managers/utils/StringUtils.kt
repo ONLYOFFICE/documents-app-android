@@ -39,7 +39,8 @@ internal object StringUtils {
 
 
         val date = TimeUtils.getWeekDate(folder.updated)
-        val owner = getItemOwner(context, folder, state.accountId)
+        val originTitle = folder.originTitle.ifEmpty { folder.originRoomTitle }.ifEmpty { null }
+        val owner = originTitle ?: getItemOwner(context, folder, state.accountId)
             .takeUnless { state.sectionType == ApiContract.SectionType.CLOUD_USER }
 
         val access = context.getString(folder.access.toUi(true).title)
@@ -74,7 +75,7 @@ internal object StringUtils {
         owner: String?,
         isGridView: Boolean,
         sortBy: String?
-    ) : List<String> {
+    ): List<String> {
         val roomTypeTitle = context.getString(RoomUtils.getRoomInfo(roomType).title)
         if (isGridView) {
             return listOfNotNull(roomTypeTitle)
@@ -101,7 +102,8 @@ internal object StringUtils {
         }
 
         val date = TimeUtils.getWeekDate(file.updated)
-        val owner = getItemOwner(context, file, state.accountId)
+        val originTitle = file.originTitle.ifEmpty { file.originRoomTitle }.ifEmpty { null }
+        val owner = originTitle ?: getItemOwner(context, file, state.accountId)
             .takeUnless { state.sectionType == ApiContract.SectionType.CLOUD_USER }
 
         val access = context.getString(file.access.toUi(true).title)
@@ -126,11 +128,7 @@ internal object StringUtils {
 
     fun getItemOwner(context: Context, item: Item, userId: String?): String? {
         return when {
-            userId.equals(
-                item.createdBy.id,
-                ignoreCase = true
-            ) -> context.getString(R.string.item_owner_self)
-
+            userId.equals(item.createdBy.id, ignoreCase = true) -> context.getString(R.string.item_owner_self)
             item.createdBy.displayName.isNotEmpty() -> item.createdBy.displayNameFromHtml
             else -> null
         }

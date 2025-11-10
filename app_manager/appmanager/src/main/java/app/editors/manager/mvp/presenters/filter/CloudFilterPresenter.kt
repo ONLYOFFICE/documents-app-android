@@ -13,6 +13,7 @@ class CloudFilterPresenter(private val folderId: String?, private val section: I
     var filterType: FilterType = FilterType.None
     var filterAuthor: FilterAuthor = FilterAuthor()
     var resultCount = -1
+    var location = 0
 
     var excludeSubfolder: Boolean = false
         set(value) {
@@ -28,10 +29,13 @@ class CloudFilterPresenter(private val folderId: String?, private val section: I
             if (filterType != FilterType.None) {
                 put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!excludeSubfolder).toString())
             }
+            if (location > 0) {
+                put(ApiContract.Parameters.ARG_FILTER_LOCATION, location.toString())
+            }
         }
 
     override val hasFilter: Boolean
-        get() = filterAuthor.id.isNotEmpty() || excludeSubfolder || filterType != FilterType.None
+        get() = filterAuthor.id.isNotEmpty() || excludeSubfolder || filterType != FilterType.None || location > 0
 
     init {
         App.getApp().appComponent.inject(this)
@@ -43,13 +47,15 @@ class CloudFilterPresenter(private val folderId: String?, private val section: I
         filterType = filter.type
         excludeSubfolder = filter.excludeSubfolder
         filterAuthor = filter.author
+        location = filter.location
     }
 
     override fun saveFilter() {
         preferenceTool.filter = preferenceTool.filter.copy(
             type = filterType,
             author = filterAuthor,
-            excludeSubfolder = excludeSubfolder
+            excludeSubfolder = excludeSubfolder,
+            location = location
         )
     }
 
@@ -79,6 +85,7 @@ class CloudFilterPresenter(private val folderId: String?, private val section: I
         filterType = FilterType.None
         filterAuthor = FilterAuthor()
         excludeSubfolder = false
+        location = 0
         viewState.onFilterReset()
         update()
     }

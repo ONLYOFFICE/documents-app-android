@@ -229,7 +229,10 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onListEnd() {
         super.onListEnd()
-        if (!presenter.isFilteringMode) {
+        if (explorerAdapter?.isFooter == false
+            && !presenter.isPaginationFinished
+            && !presenter.isFilteringMode
+        ) {
             explorerAdapter?.isLoading(true)
             presenter.getNextList()
         }
@@ -589,6 +592,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         setViewState(isEmpty)
         onStateMenuEnabled(!isEmpty)
         explorerAdapter?.updateItems(list, presenter.currentFolder?.id.orEmpty())
+        presenter.setPaginationFinished(false)
     }
 
     override fun onDocsRefresh(list: List<Entity>?) {
@@ -596,6 +600,7 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
         setViewState(isEmpty)
         onStateMenuEnabled(!isEmpty)
         explorerAdapter?.updateItems(list, presenter.currentFolder?.id.orEmpty())
+        presenter.setPaginationFinished(false)
         recyclerView?.scheduleLayoutAnimation()
     }
 
@@ -607,7 +612,9 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
 
     override fun onDocsNext(list: List<Entity>?) {
         setViewState(false)
+        val itemsCountBeforeLoad = explorerAdapter?.itemCount
         explorerAdapter?.updateItems(list)
+        presenter.setPaginationFinished(itemsCountBeforeLoad == explorerAdapter?.itemCount)
     }
 
     override fun onFinishDownload(uri: Uri?) {

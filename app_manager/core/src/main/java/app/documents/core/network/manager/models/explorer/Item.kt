@@ -70,6 +70,18 @@ open class Item : ItemProperties(), Serializable {
     @Expose
     var order: String = ""
 
+    @SerializedName("isFavorite")
+    @Expose
+    var isFavorite = false
+
+    @SerializedName("originTitle")
+    @Expose
+    var originTitle = ""
+
+    @SerializedName("originRoomTitle")
+    @Expose
+    var originRoomTitle = ""
+
     @SerializedName("availableShareRights")
     @Expose
     val availableShareRights: AvailableShareRights? = null
