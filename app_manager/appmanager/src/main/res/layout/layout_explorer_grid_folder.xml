@@ -94,7 +94,8 @@
             app:layout_constraintEnd_toStartOf="@id/imageLayout"
             app:layout_constraintTop_toBottomOf="@id/badgeNewCard"
             app:layout_goneMarginBottom="4dp"
-            app:tint="@color/colorPrimary" />
+            app:tint="@color/colorPrimary"
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/selectIcon"

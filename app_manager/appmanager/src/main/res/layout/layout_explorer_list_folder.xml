@@ -69,12 +69,40 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="8dp"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/subtitle"
-        app:layout_constraintEnd_toStartOf="@+id/contextButtonLayout"
+        app:layout_constraintEnd_toStartOf="@+id/statusLayout"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/imageLayout"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="Folder name" />
+
+    <LinearLayout
+        android:id="@+id/statusLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin_small"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="@+id/title"
+        app:layout_constraintEnd_toStartOf="@+id/contextButtonLayout"
+        app:layout_constraintStart_toEndOf="@id/title"
+        app:layout_constraintTop_toTopOf="@+id/title"
+        app:layout_constraintHorizontal_bias="1.0">
+
+        <ImageView
+            android:id="@+id/favorite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/default_margin_medium"
+            android:src="@drawable/ic_favorites_fill"
+            android:visibility="gone"
+            app:tint="@color/colorPrimary"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible"/>
+
+    </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/subtitle"
@@ -82,8 +110,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/title"
+        app:layout_constraintEnd_toStartOf="@+id/contextButtonLayout"
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@+id/title"
         tools:text="Folder date" />

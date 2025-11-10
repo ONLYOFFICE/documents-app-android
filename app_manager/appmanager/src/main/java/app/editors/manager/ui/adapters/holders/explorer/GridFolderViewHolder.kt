@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.view.isVisible
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
@@ -40,6 +41,7 @@ class GridFolderViewHolder(view: View, adapter: ExplorerAdapter) :
         super.bind(element)
         bindFolderType(element)
         bindFolderStorageImage(element, binding.storageImage)
+        binding.favorite.isVisible = element.isFavorite
     }
 
     override fun getCachedIcon(): View {

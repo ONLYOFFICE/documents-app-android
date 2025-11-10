@@ -218,7 +218,7 @@ interface ExplorerContextItemVisible {
 
 
     private val ExplorerContextState.location: Boolean
-        get() = isSearching
+        get() = isSearching || sectionType == ApiContract.SectionType.CLOUD_FAVORITES
 
     private val ExplorerContextState.lock: Boolean
         get() = (item is CloudFile) && item.security?.lock == true
@@ -245,7 +245,7 @@ interface ExplorerContextItemVisible {
         get() = section.isTemplates && item.security?.editAccess == true
 
     private fun ExplorerContextState.favorites(enabled: Boolean): Boolean =
-        enabled && !isFolder && !listOf(
+        enabled && !listOf(
             ApiContract.Section.Trash,
             ApiContract.Section.Webdav
         ).contains(section)
