@@ -1,6 +1,7 @@
 package app.editors.manager.managers.utils
 
 import android.content.Context
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
@@ -38,7 +39,11 @@ internal object StringUtils {
 
 
         val date = TimeUtils.getWeekDate(folder.updated)
-        val owner = getItemOwner(context, folder, state.accountId).takeUnless { state.isSectionMy }
+        val owner = getItemOwner(context, folder, state.accountId)
+            .takeUnless { state.sectionType == ApiContract.SectionType.CLOUD_USER }
+
+        val access = context.getString(folder.access.toUi(true).title)
+            .takeIf { state.sectionType == ApiContract.SectionType.CLOUD_SHARE }
 
         return when {
             state.isIndexing -> {
@@ -58,7 +63,7 @@ internal object StringUtils {
                     sortBy = state.sortBy
                 )
             }
-            else -> listOfNotNull(owner, date)
+            else -> listOfNotNull(owner, date, access)
         }
     }
 
@@ -96,7 +101,11 @@ internal object StringUtils {
         }
 
         val date = TimeUtils.getWeekDate(file.updated)
-        val owner = getItemOwner(context, file, state.accountId).takeUnless { state.isSectionMy }
+        val owner = getItemOwner(context, file, state.accountId)
+            .takeUnless { state.sectionType == ApiContract.SectionType.CLOUD_USER }
+
+        val access = context.getString(file.access.toUi(true).title)
+            .takeIf { state.sectionType == ApiContract.SectionType.CLOUD_SHARE }
 
         if (state.isIndexing) {
             return listOfNotNull(
@@ -108,10 +117,10 @@ internal object StringUtils {
 
         val size = StringUtils.getFormattedSize(context, file.pureContentLength)
         return when (state.sortBy) {
-            ActionMenuItem.Date.sortValue -> listOfNotNull(date, owner, size)
-            ActionMenuItem.Author.sortValue -> listOfNotNull(owner, date, size)
-            ActionMenuItem.Size.sortValue -> listOfNotNull(size, owner, date)
-            else -> listOfNotNull(owner, date, size)
+            ActionMenuItem.Date.sortValue -> listOfNotNull(date, owner, access, size)
+            ActionMenuItem.Author.sortValue -> listOfNotNull(owner, date, access, size)
+            ActionMenuItem.Size.sortValue -> listOfNotNull(size, owner, access, date)
+            else -> listOfNotNull(owner, date, access, size)
         }
     }
 

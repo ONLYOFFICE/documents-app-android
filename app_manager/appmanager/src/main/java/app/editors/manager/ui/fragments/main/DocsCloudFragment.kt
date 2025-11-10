@@ -516,7 +516,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     private fun init() {
-        explorerAdapter?.isSectionMy = section == ApiContract.SectionType.CLOUD_USER
+        explorerAdapter?.sectionType = section
         presenter.checkBackStack()
     }
 
