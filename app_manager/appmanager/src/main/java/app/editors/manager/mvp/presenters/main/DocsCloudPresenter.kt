@@ -356,8 +356,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             // TODO check security...
-            if (isRoom) {
-                viewState.onStateActionButton(modelExplorerStack.last()?.current?.security?.create == true)
+            if (account.isDocSpace) {
+                viewState.onStateActionButton(currentFolder?.security?.create == true)
             } else {
                 viewState.onStateActionButton(isContextEditable && !isRecentViaLinkSection())
             }
