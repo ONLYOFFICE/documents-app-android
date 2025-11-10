@@ -18,9 +18,9 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.documents.core.model.cloud.Access
+import app.documents.core.network.manager.models.explorer.AccessTarget
 import app.editors.manager.R
-import app.editors.manager.managers.utils.RoomUtils
-import app.editors.manager.managers.utils.toUi
+import app.editors.manager.managers.tools.ShareData
 import app.editors.manager.mvp.models.ui.AccessUI
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
@@ -76,7 +76,7 @@ private fun Preview() {
     ManagerTheme {
         Surface {
             Column {
-                Content(accessList = RoomUtils.getAccessOptions(2, true).map { it.toUi() }) {}
+                Content(accessList = ShareData().getAccessList(AccessTarget.User)) {}
             }
         }
     }

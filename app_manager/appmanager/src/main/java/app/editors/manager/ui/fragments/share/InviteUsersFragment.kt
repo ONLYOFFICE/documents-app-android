@@ -34,12 +34,13 @@ import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.AccessTarget
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
-import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.managers.tools.ShareData
 import app.editors.manager.managers.utils.toUi
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.views.custom.UserListBottomContent
@@ -154,7 +155,7 @@ fun InviteUsersScreen(
                                     "?emails=${Json.encodeToString<List<String>>(it)}&" +
                                     "users=null&" +
                                     "groups=null&" +
-                                    "access=${RoomUtils.getAccessOptions(roomType, false).last().code}"
+                                    "access=${ShareData(roomType = roomType).getAccessList(AccessTarget.User)}"
                         )
                     }
                 )
@@ -185,13 +186,7 @@ fun InviteUsersScreen(
                         nextButtonTitle = lib.toolkit.base.R.string.common_next,
                         count = size,
                         access = access.toUi(),
-                        accessList = remember {
-                            RoomUtils.getAccessOptions(
-                                roomType = roomType,
-                                isRemove = false,
-                                isAdmin = false
-                            ).map { it.toUi() }
-                        },
+                        accessList = ShareData(roomType = roomType).getAccessList(AccessTarget.User),
                         onAccess = userListViewModel::setAccess,
                         onDelete = userListViewModel::onDelete
                     ) {
@@ -231,13 +226,7 @@ fun InviteUsersScreen(
                     )
                 }
                 InviteAccessScreen(
-                    accessList = remember {
-                        RoomUtils.getAccessOptions(
-                            roomType = roomType,
-                            isRemove = false,
-                            isAdmin = false
-                        ).map { access -> access.toUi() }
-                    },
+                    accessList = ShareData(roomType = roomType).getAccessList(AccessTarget.User),
                     description = stringResource(R.string.rooms_invite_access_description),
                     viewModel = inviteAccessViewModel,
                     onBack = navController::popBackStackWhenResumed,
@@ -299,18 +288,18 @@ private fun MainScreen(
                                 state = accessDropDownState,
                                 icon = ImageVector.vectorResource(Access.get(state.externalLink.access).toUi().icon),
                                 items = {
-                                    RoomUtils.getAccessOptions(roomType, false).forEach { access ->
-                                        val accessUi = access.toUi()
-                                        DropdownMenuItem(
-                                            title = stringResource(accessUi.title),
-                                            selected = access.code == state.externalLink.access,
-                                            startIcon = accessUi.icon,
-                                            onClick = {
-                                                onSetAccess(access)
-                                                accessDropDownState.value = false
-                                            }
-                                        )
-                                    }
+                                    ShareData(roomType = roomType).getAccessList(AccessTarget.ExternalLink)
+                                        .forEach { access ->
+                                            DropdownMenuItem(
+                                                title = stringResource(access.title),
+                                                selected = access.access.code == state.externalLink.access,
+                                                startIcon = access.icon,
+                                                onClick = {
+                                                    onSetAccess(access.access)
+                                                    accessDropDownState.value = false
+                                                }
+                                            )
+                                        }
                                 },
                                 onDismiss = { accessDropDownState.value = false }
                             ) {

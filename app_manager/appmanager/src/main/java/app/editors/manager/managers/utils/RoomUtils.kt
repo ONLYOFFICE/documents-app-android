@@ -72,41 +72,6 @@ object RoomUtils {
         )
     }
 
-    fun getLinkAccessOptions(): List<Access> = listOf(
-        Access.Editor,
-        Access.Review,
-        Access.Comment,
-        Access.Read
-    )
-
-    fun getAccessOptions(roomType: Int, isRemove: Boolean, isAdmin: Boolean = false): List<Access> {
-        return buildList {
-            if (isAdmin) add(Access.RoomManager)
-            add(Access.ContentCreator)
-            when (roomType) {
-                ApiContract.RoomType.COLLABORATION_ROOM -> {
-                    add(Access.Editor)
-                    add(Access.Read)
-                }
-                ApiContract.RoomType.CUSTOM_ROOM -> {
-                    add(Access.Editor)
-                    add(Access.Review)
-                    add(Access.Comment)
-                    add(Access.Read)
-                }
-                ApiContract.RoomType.FILL_FORMS_ROOM -> {
-                    add(Access.FormFiller)
-                }
-                ApiContract.RoomType.VIRTUAL_ROOM -> {
-                    add(Access.Editor)
-                    add(Access.Read)
-                    add(Access.FormFiller)
-                }
-            }
-            if (isRemove) add(Access.None)
-        }
-    }
-
     fun getAccessTitleOrOwner(isOwner: Boolean, access: Int, isRoom: Boolean): Int =
         if (isOwner) {
             if (isRoom) {

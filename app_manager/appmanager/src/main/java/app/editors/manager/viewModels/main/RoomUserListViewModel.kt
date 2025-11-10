@@ -4,10 +4,11 @@ import androidx.lifecycle.viewModelScope
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
+import app.documents.core.network.manager.models.explorer.AccessTarget
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
-import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.managers.tools.ShareData
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -24,7 +25,7 @@ class RoomUserListViewModel(
     roomType: Int? = null,
 ) : UserListViewModel(
     mode = mode,
-    access = roomType?.let { RoomUtils.getAccessOptions(it, false).lastOrNull() },
+    access = ShareData(roomType = roomType).getAccessList(AccessTarget.User).lastOrNull()?.access,
 ) {
 
     override val cachedMembersFlow: SharedFlow<List<Member>> = flow { emit(getMembers()) }
