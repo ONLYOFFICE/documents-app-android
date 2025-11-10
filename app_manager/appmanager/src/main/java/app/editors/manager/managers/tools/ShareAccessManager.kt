@@ -48,7 +48,7 @@ data class ShareData(
     }
 }
 
-object ShareAccessManager {
+private object ShareAccessManager {
 
     fun getAccessList(
         shareData: ShareData,
@@ -70,39 +70,6 @@ object ShareAccessManager {
             getFolderAccessList(target)
         }
     }
-
-//    fun getItemAccessBundle(item: Item): AccessBundle {
-//        var bundle = item.availableShareRights?.toBundle() ?: return AccessBundle()
-//
-//        if (bundle.user.isEmpty()) {
-//            bundle = bundle.copy(user = getItemAccessList(item, AccessTarget.User))
-//        }
-//
-//        if (bundle.group.isEmpty()) {
-//            bundle = bundle.copy(group = getItemAccessList(item, AccessTarget.Group))
-//        }
-//
-//        if (bundle.externalLink.isEmpty()) {
-//            bundle = bundle.copy(externalLink = getItemAccessList(item, AccessTarget.ExternalLink))
-//        }
-//
-//        if (bundle.primaryLink.isEmpty()) {
-//            bundle = bundle.copy(primaryLink = getItemAccessList(item, AccessTarget.PrimaryLink))
-//        }
-//
-//        return bundle
-//    }
-
-//    fun getItemAccessList(
-//        fileExtensions: FileExtensions?, // null for folder
-//        target: AccessTarget
-//    ) {
-//        if (fileExtensions != null) {
-//            getFileAccessList(fileExtensions, target)
-//        } else {
-//            getFolderAccessList(target)
-//        }
-//    }
 
     fun getRoomAccessList(
         roomType: ApiContract.RoomTypeObj,

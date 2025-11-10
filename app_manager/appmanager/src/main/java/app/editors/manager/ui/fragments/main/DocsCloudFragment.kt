@@ -316,8 +316,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             } else {
                 ShareFragment.show(
                     activity = requireActivity(),
-                    itemId = item.id,
-                    isFolder = item is CloudFolder
+                    item = item
                 )
             }
         }

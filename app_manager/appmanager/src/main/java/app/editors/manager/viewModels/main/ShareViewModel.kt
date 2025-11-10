@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.manager.ManagerService
+import app.documents.core.network.manager.models.explorer.AccessTarget
 import app.documents.core.network.share.ShareService
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.RequestExternal
 import app.documents.core.network.share.models.request.RequestShare
 import app.documents.core.network.share.models.request.RequestShareItem
-import app.editors.manager.managers.utils.ManagerUiUtils
+import app.editors.manager.managers.tools.ShareData
+import app.editors.manager.mvp.models.ui.AccessUI
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +23,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import lib.toolkit.base.managers.tools.FileExtensions
 import kotlin.time.Duration.Companion.milliseconds
 
 data class ShareState(
@@ -32,7 +33,7 @@ data class ShareState(
     val externalLink: Share = Share(),
     val webUrl: String? = null,
     val folder: Boolean = false,
-    val accessList: List<Access> = ManagerUiUtils.getItemAccessList(null, true)
+    val accessList: List<AccessUI> = emptyList()
 )
 
 sealed class ShareEffect {
@@ -42,8 +43,7 @@ sealed class ShareEffect {
 
 @OptIn(FlowPreview::class)
 class ShareViewModel(
-    private val itemId: String,
-    private val folder: Boolean,
+    private val shareData: ShareData,
     private val shareApi: ShareService,
     private val managerApi: ManagerService
 ) : ViewModel() {
@@ -55,7 +55,13 @@ class ShareViewModel(
 
     private var cachedShareList: List<Share> = emptyList()
 
-    private val _state: MutableStateFlow<ShareState> = MutableStateFlow(ShareState(loading = true, folder = folder))
+    private val _state: MutableStateFlow<ShareState> = MutableStateFlow(
+        ShareState(
+            loading = true,
+            folder = shareData.isFolder,
+            accessList = shareData.getAccessList(AccessTarget.User)
+        )
+    )
     val state: StateFlow<ShareState> = _state.asStateFlow()
 
     private val _effect: MutableSharedFlow<ShareEffect> = MutableSharedFlow(1)
@@ -71,20 +77,12 @@ class ShareViewModel(
     fun fetchShareList() {
         viewModelScope.launch {
             try {
-                val shareList = if (folder) {
-                    shareApi.getShareFolder(itemId).response
+                val shareList = if (shareData.isFolder) {
+                    shareApi.getShareFolder(shareData.itemId).response
                 } else {
-                    val fileInfo = managerApi.getCloudFileInfo(itemId).response
-                    _state.update {
-                        it.copy(
-                            webUrl = fileInfo.webUrl,
-                            accessList = ManagerUiUtils.getItemAccessList(
-                                extension = FileExtensions.fromExtension(fileInfo.fileExst),
-                                forLink = true
-                            )
-                        )
-                    }
-                    shareApi.getShareFile(itemId).response
+                    val fileInfo = managerApi.getCloudFileInfo(shareData.itemId).response
+                    _state.update { it.copy(webUrl = fileInfo.webUrl) }
+                    shareApi.getShareFile(shareData.itemId).response
                 }
 
                 cachedShareList = shareList
@@ -139,8 +137,8 @@ class ShareViewModel(
 
     fun copyInternalLink() {
         viewModelScope.launch {
-            if (folder) {
-                _effect.tryEmit(ShareEffect.InternalLink("$TAG_FOLDER_PATH$itemId", false))
+            if (shareData.isFolder) {
+                _effect.tryEmit(ShareEffect.InternalLink("$TAG_FOLDER_PATH${shareData.itemId}", false))
                 return@launch
             }
 
@@ -158,7 +156,7 @@ class ShareViewModel(
 
     fun setExternalLinkAccess(access: Access) {
         request {
-            shareApi.getExternalLink(itemId, RequestExternal(share = access.code))
+            shareApi.getExternalLink(shareData.itemId, RequestExternal(share = access.code))
             _state.update { it.copy(externalLink = it.externalLink.copy(_access = access.code)) }
         }
     }
@@ -166,7 +164,7 @@ class ShareViewModel(
     fun setMemberAccess(userId: String, access: Access, isGroup: Boolean) {
         request {
             val request = RequestShare(listOf(RequestShareItem(userId, access.code)))
-            if (!folder) shareApi.setFileAccess(itemId, request) else shareApi.setFolderAccess(itemId, request)
+            if (!shareData.isFolder) shareApi.setFileAccess(shareData.itemId, request) else shareApi.setFolderAccess(shareData.itemId, request)
             _state.update { state ->
                 if (access == Access.None) {
                     if (isGroup) {

@@ -71,8 +71,7 @@ class ShareActivity : BaseAppActivity() {
                         )
                     } else {
                         ShareScreen(
-                            isFolder = shareData.isFolder,
-                            itemId = shareData.itemId,
+                            shareData = shareData,
                             useTabletPaddings = true,
                             shareApi = shareApi,
                             managerService = api,

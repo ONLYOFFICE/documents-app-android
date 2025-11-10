@@ -10,6 +10,7 @@ import app.documents.core.model.login.User
 import app.documents.core.network.share.ShareService
 import app.documents.core.network.share.models.request.RequestShare
 import app.documents.core.network.share.models.request.RequestShareItem
+import app.editors.manager.managers.tools.ShareData
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -37,8 +38,6 @@ data class InviteAccessState(
     val groups: Map<Group, Access> =
         membersWithAccess
             .filter { (member, _) -> member is Group } as Map<Group, Access>
-
-    val canRemoveUser: Boolean = membersWithAccess.size > 1
 }
 
 sealed class InviteAccessEffect {
@@ -53,8 +52,7 @@ open class InviteAccessViewModel(
     groups: List<Group>,
     emails: List<String> = emptyList(),
     private val shareService: ShareService? = null,
-    private val itemId: String? = null,
-    private val isFolder: Boolean = false,
+    private val shareData: ShareData? = null
 ) : ViewModel() {
 
     companion object {
@@ -74,7 +72,7 @@ open class InviteAccessViewModel(
                 commonAccess = access,
                 membersWithAccess = buildMap {
                     putAll(emails.associate { email -> Email(email) to correctAccess(false) })
-                    putAll(groups.associateWith { group -> correctAccess(false) })
+                    putAll(groups.associateWith { correctAccess(false) })
                     putAll(users.associateWith { user -> correctAccess(user.isAdmin || user.isRoomAdmin) })
                 }
             )
@@ -148,7 +146,7 @@ open class InviteAccessViewModel(
             try {
                 _state.update { it.copy(loading = true) }
                 val api = checkNotNull(shareService) { "api can't be null" }
-                val itemId = checkNotNull(itemId) { "item id can't be null" }
+                val shareData = checkNotNull(shareData) { "item id can't be null" }
 
                 val request = RequestShare(
                     share = state.value
@@ -160,10 +158,10 @@ open class InviteAccessViewModel(
                             )
                         },
                 )
-                if (isFolder) {
-                    api.setFolderAccess(itemId, request)
+                if (shareData.isFolder) {
+                    api.setFolderAccess(shareData.itemId, request)
                 } else {
-                    api.setFileAccess(itemId, request)
+                    api.setFileAccess(shareData.itemId, request)
                 }
                 emitEffect(InviteAccessEffect.Success)
             } catch (e: Exception) {
