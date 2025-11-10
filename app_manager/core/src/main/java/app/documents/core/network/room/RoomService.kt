@@ -351,7 +351,7 @@ interface RoomService {
     @PUT("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/links")
     suspend fun updateSharedFileLink(
         @Path("fileId") fileId: String,
-        @Body body: RequestUpdateSharedLink,
+        @Body body: RequestUpdateExternalLink,
     ): app.documents.core.network.BaseResponse<ExternalLink>
 
     @Headers(
@@ -361,7 +361,7 @@ interface RoomService {
     @PUT("api/" + ApiContract.API_VERSION + "/files/folder/{folderId}/links")
     suspend fun updateSharedFolderLink(
         @Path("folderId") folderId: String,
-        @Body body: RequestUpdateSharedLink,
+        @Body body: RequestUpdateExternalLink,
     ): app.documents.core.network.BaseResponse<ExternalLink>
 
     @Headers(

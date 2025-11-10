@@ -16,10 +16,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -191,8 +191,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
                         val json = backStackEntry.toRoute<Screens.LinkSettings>().link
                         ExternalLinkSettingsScreen(
                             link = json?.let { Json.decodeFromString<ExternalLink>(it) },
-                            roomId = room.id,
-                            roomType = room.roomType,
+                            shareData = shareData,
                             onBackListener = navController::popBackStackWhenResumed
                         )
                     }

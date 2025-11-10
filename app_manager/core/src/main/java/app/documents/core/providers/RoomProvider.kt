@@ -43,6 +43,7 @@ import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.room.models.RequestUpdatePublic
 import app.documents.core.network.share.models.ExternalLink
+import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.EmailInvitation
@@ -230,23 +231,10 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
     suspend fun updateRoomSharedLink(
         roomId: String?,
-        access: Access?,
-        linkId: String?,
-        linkType: Int?,
-        denyDownload: Boolean?,
-        expirationDate: String?,
-        password: String?,
-        title: String?,
+        access: Int,
+        sharedLink: ExternalLinkSharedTo
     ): ExternalLink {
-        val request = RequestUpdateExternalLink(
-            access = access?.code ?: Access.None.code,
-            denyDownload = denyDownload == true,
-            expirationDate = expirationDate,
-            linkId = linkId,
-            linkType = linkType ?: 2,
-            password = password,
-            title = title
-        )
+        val request = RequestUpdateExternalLink.from(sharedLink, access)
         val response = roomService.updateRoomSharedLink(roomId.orEmpty(), request)
         val body = response.body()
         return if (response.isSuccessful && body != null)
@@ -259,10 +247,12 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         expirationDate: String?,
         password: String?,
         title: String,
+        internal: Boolean,
         access: Access
     ): ExternalLink {
         val request = RequestCreateExternalLink(
             denyDownload = denyDownload,
+            internal = internal,
             expirationDate = expirationDate,
             password = password,
             title = title,
@@ -305,14 +295,16 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
     suspend fun updateSharedLink(
         itemId: String,
-        sharedLink: ExternalLink,
-        isFolder: Boolean
+        sharedLink: ExternalLinkSharedTo,
+        isFolder: Boolean,
+        access: Int
     ): ExternalLink {
-        val requestBody = RequestUpdateSharedLink.from(sharedLink)
-        val request = if (isFolder)
-            roomService.updateSharedFolderLink(itemId, requestBody) else
+        val requestBody = RequestUpdateExternalLink.from(sharedLink, access)
+        val request = if (isFolder) {
+            roomService.updateSharedFolderLink(itemId, requestBody)
+        } else {
             roomService.updateSharedFileLink(itemId, requestBody)
-
+        }
         return request.response
     }
 
