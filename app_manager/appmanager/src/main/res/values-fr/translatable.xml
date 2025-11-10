@@ -593,7 +593,6 @@
     <string name="rooms_add_public_room_des">Invitez les utilisateurs par via des liens partagés à consulter les documents sans inscription. Vous pouvez également intégrer cette salle dans n\'importe quelle interface web.</string>
     <string name="rooms_move_to_public_title">Déplacer dans la salle publique</string>
     <string name="rooms_move_to_public_title_desc">Cette salle et tout son contenu sont accessibles à toute personne disposant du lien. Voulez-vous continuer ?</string>
-    <string name="rooms_info_access_desc">Cette salle est accessible à toute personne possédant le lien. Les utilisateurs externes auront le droit de consulter uniquement tous les fichiers.</string>
     <string name="rooms_info_general_link">Lien général</string>
     <string name="rooms_info_additional_link">Lien supplémentaire</string>
     <string name="rooms_info_additional_links">"Liens supplémentaires (%1$d/%2$d)"</string>

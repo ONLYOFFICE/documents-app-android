@@ -82,7 +82,6 @@
     <string name="rooms_add_public_room_des">ලියාපදිංචියකින් තොරව ලේඛන පෙන්වීමට සබැඳි මගින් පරිශ්‍රීලකයින්ට ආරාධනා කරන්න. ඔබට මෙම කාමරය ඕනෑම අඩවියක අතුරු මුහුණතකට කාවැද්දීමට ද හැකිය.</string>
     <string name="rooms_move_to_public_title">ප්‍රසිද්ධ කාමරයකට ගෙනයන්න</string>
     <string name="rooms_move_to_public_title_desc">මෙම කාමරය සහ සියලුම අන්තර්ගත වෙත සබැඳිය සතු ඕනෑම අයෙකුට ප්‍රවේශ වීමට හැකිය. ඔබට ඉදිරියට යාමට වුවමනාද?</string>
-    <string name="rooms_info_access_desc">මෙම කාමරයේ සබැඳිය සතු ඕනෑම අයෙකුට විවෘතයි. බාහිර පරිශ්‍රීලකයින්ට සියලුම ගොනු දැකීමට පමණක් අවසර ඇත.</string>
     <string name="rooms_info_general_link">සාමාන්‍ය සබැඳිය</string>
     <string name="rooms_info_additional_link">අතිරේක සබැඳිය</string>
     <string name="rooms_info_additional_links">"අතිරේක සබැඳි (%1$d/%2$d)"</string>

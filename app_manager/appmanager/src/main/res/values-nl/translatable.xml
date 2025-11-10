@@ -639,7 +639,6 @@
     <string name="room_manage_room">Beheer ruimte</string>
     <string name="rooms_move_to_public_title">Verplaats naar publieke ruimte</string>
     <string name="rooms_move_to_public_title_desc">Deze ruimte en alle inhoud ervan zijn beschikbaar voor iedereen met de link. Wilt u doorgaan?</string>
-    <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.</string>
     <string name="rooms_info_general_link">Algemene link</string>
     <string name="rooms_info_edit_link">Bewerk link</string>
     <string name="rooms_info_create_link_title">Maak link</string>

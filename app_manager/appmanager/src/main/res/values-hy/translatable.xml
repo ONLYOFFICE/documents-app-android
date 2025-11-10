@@ -711,7 +711,6 @@
     <string name="rooms_move_to_public_title">Տեղափոխել հանրային սենյակ</string>
     <string name="rooms_move_to_public_title_desc">Այս սենյակը և դրա ողջ բովանդակությունը հասանելի են բոլորին, ովքեր ունեն հղումը: Ցանկանու՞մ եք շարունակել։</string>
 
-    <string name="rooms_info_access_desc">Այս սենյակը հասանելի է բոլորին, ովքեր ունեն հղումը: Արտաքին օգտատերերը բոլոր ֆայլերի համար միայն դիտելու թույլտվություն կունենան:</string>
     <string name="rooms_info_general_link">Ընդհանուր հղում</string>
     <string name="rooms_info_additional_link">Հավելյալ հղում</string>
     <string name="rooms_info_additional_links">"Հավելյալ հղումներ (%1$d/%2$d)"</string>

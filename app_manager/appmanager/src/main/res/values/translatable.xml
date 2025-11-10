@@ -861,7 +861,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="rooms_move_to_public_title">Move to Public room</string>
     <string name="rooms_move_to_public_title_desc">This room and all its contents are available to anyone with the link. Do you want to continue?</string>
 
-    <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.</string>
+    <string name="rooms_info_access_desc">This room is available to anyone with the link. Access for external users is provided depending on the selected type of access rights.</string>
     <string name="rooms_info_general_link">General link</string>
     <string name="rooms_info_edit_link">Edit link</string>
     <string name="rooms_info_create_link_title">Create link</string>
@@ -902,6 +902,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="rooms_info_dont_save_button">Don\'t save</string>
 
     <string name="rooms_share_shared_links">Shared links</string>
+    <string name="rooms_share_shared_links_count">Shared links (%d/6)</string>
     <string name="rooms_share_shared_link_title">Shared link</string>
     <string name="rooms_share_shared_desc">Provide access to the document and set the permission levels.</string>
     <string name="rooms_share_lifetime_hours_12">12 hours</string>
@@ -917,6 +918,8 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="rooms_share_regenerate_link">Regenerate link</string>
     <string name="rooms_share_general_header">General</string>
     <string name="rooms_share_link_life_time">Link life time</string>
+    <string name="share_link_folder_restrict_desc">Enable this setting to disable downloading of files and folders from this folder shared via a link</string>
+    <string name="share_link_file_restrict_desc">Enable this setting to disable downloading of this file shared via a link</string>
 
     <string name="rooms_filter_type_filling_forms">Filling form</string>
     <string name="rooms_filter_type_virtual_room">Virtual data room</string>
@@ -1199,6 +1202,9 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="placeholder_no_shared_items_desc">Here you\'ll find files and folders that other DocSpace members shared with you. Your own files and room content are not shown here.</string>
 
     <string name="rooms_share_shared_folder_desc">Provide access to the folder and set the permission levels.</string>
+    <string name="rooms_info_folder_desc">This folder is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
+    <string name="rooms_info_file_desc">This file is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
+    <string name="rooms_info_fill_form_desc">This room is available to anyone with the link. External users will have Form Filler permission for all the files.</string>
 
     <string name="share_popup_access_editing">Editing</string>
     <string name="share_popup_access_remove">Remove</string>

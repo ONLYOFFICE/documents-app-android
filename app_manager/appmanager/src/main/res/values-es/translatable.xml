@@ -590,7 +590,6 @@
     <string name="rooms_add_public_room_des">Invite a los usuarios mediante enlaces compartidos para que vean los documentos sin necesidad de registrarse. También puede incrustar esta sala en cualquier interfaz web.</string>
     <string name="rooms_move_to_public_title">Mover a Sala pública</string>
     <string name="rooms_move_to_public_title_desc">Esta sala y todo su contenido están a disposición de cualquier persona con el enlace. ¿Desea continuar?</string>
-    <string name="rooms_info_access_desc">Esta sala está disponible para cualquier persona con el enlace. Los usuarios externos tendrán permiso Solo Ver para todos los archivos.</string>
     <string name="rooms_info_general_link">Enlace general</string>
     <string name="rooms_info_additional_link">Enlace adicional</string>
     <string name="rooms_info_additional_links">"Enlaces adicionales (%1$d/%2$d)"</string>

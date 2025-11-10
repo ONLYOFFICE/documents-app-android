@@ -702,7 +702,6 @@
     <string name="rooms_move_to_public_title">انتقل إلى الغرفة العامة</string>
     <string name="rooms_move_to_public_title_desc">هذه الغرفة وجميع محتوياتها متاحة لأي شخص لديه الرابط. هل تريد </string>
 
-    <string name="rooms_info_access_desc">هذه الغرفة متاحة لأي شخص لديه الرابط. سيكون لدى المستخدمين الخارجيين إذن العرض فقط لجميع</string>
     <string name="rooms_info_general_link">الرابط العام</string>
     <string name="rooms_info_additional_link">رابط إضافي</string>
     <string name="rooms_info_additional_links">"الارتباطات الإضافية (%1$d/%2$d)"</string>
