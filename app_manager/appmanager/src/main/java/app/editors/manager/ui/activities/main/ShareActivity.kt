@@ -43,17 +43,20 @@ class ShareActivity : BaseAppActivity() {
 
     private val shareData: ShareData by lazy {
         intent.getSerializableExt<ShareData>(KEY_SHARE_DATA) ?: ShareData(
-            itemId = intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty()
+            itemId = intent.getStringExtra(EditorsContract.EXTRA_ITEM_ID).orEmpty(),
+            fileExt = intent.getStringExtra(EditorsContract.EXTRA_FILE_EXTENSION).orEmpty()
         )
+    }
+
+    private val themeColor: Color? by lazy {
+        intent?.getIntExtra(EditorsContract.EXTRA_THEME_COLOR, -1)?.let { Color(it) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val color = intent?.getIntExtra(EditorsContract.EXTRA_THEME_COLOR, -1)?.let { Color(it) }
-                ?: Color(getColor(lib.toolkit.base.R.color.colorPrimary))
-
+            val color = themeColor ?: Color(getColor(lib.toolkit.base.R.color.colorPrimary))
             CompositionLocalProvider(LocalUseTabletPadding provides true) {
                 BaseAppTheme(primaryColor = color) {
                     if (accountOnline.isDocSpace) {

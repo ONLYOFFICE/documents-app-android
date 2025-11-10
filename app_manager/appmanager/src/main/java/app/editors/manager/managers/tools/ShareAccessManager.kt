@@ -129,7 +129,6 @@ private object ShareAccessManager {
             Access.Comment,
             Access.Read,
             Access.Restrict,
-            Access.None
         ).map { it.toUi(true) }
     }
 
@@ -169,7 +168,6 @@ private object ShareAccessManager {
             }
             if (!target.isLink) {
                 add(Access.Restrict)
-                add(Access.None)
             }
         }.map { it.toUi(true) }
     }
