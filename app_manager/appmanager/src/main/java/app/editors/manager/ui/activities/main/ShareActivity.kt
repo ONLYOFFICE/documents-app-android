@@ -70,7 +70,8 @@ class ShareActivity : BaseAppActivity() {
                                     title = getString(R.string.toolbar_menu_main_share),
                                     text = link
                                 )
-                            }
+                            },
+                            onShowSnackbar = ::showSnackBar
                         )
                     } else {
                         ShareScreen(

@@ -47,7 +47,8 @@ class ShareSettingsFragment : ComposeDialogFragment() {
                         getString(R.string.toolbar_menu_main_share),
                         link
                     )
-                }
+                },
+                onShowSnackbar = ::showSnackbar
             )
         }
     }

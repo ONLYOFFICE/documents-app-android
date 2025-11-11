@@ -13,8 +13,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -122,6 +120,7 @@ fun ShareDocSpaceScreen(
     useTabletPadding: Boolean,
     onSendLink: (String) -> Unit,
     onClose: () -> Unit,
+    onShowSnackbar: (String) -> Unit,
 ) {
     val navController = rememberNavController()
 
@@ -184,7 +183,8 @@ fun ShareDocSpaceScreen(
                             isOwnerOrAdmin = share.isOwnerOrAdmin
                         )
                     )
-                }
+                },
+                onShowSnackbar = onShowSnackbar
             )
         }
         composable<Screen.LinkSettings> { backstackEntry ->
@@ -294,23 +294,22 @@ private fun MainScreen(
     onAddUsers: () -> Unit,
     onChangeAccess: (ShareEntity) -> Unit,
     onBack: () -> Unit,
+    onShowSnackbar: (String) -> Unit,
 ) {
     val context = LocalContext.current
     var isCreateLoading by remember { mutableStateOf(false) }
     val state by viewModel.state.collectAsState()
-    val scaffoldState = rememberScaffoldState()
 
     LaunchedEffect(viewModel) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is ShareSettingsEffect.Copy -> {
                     KeyboardUtils.setDataToClipboard(context, effect.link)
-                    scaffoldState.snackbarHostState
-                        .showSnackbar(context.getString(R.string.rooms_info_create_link_complete))
+                    onShowSnackbar(context.getString(R.string.rooms_info_create_link_complete))
                 }
 
                 is ShareSettingsEffect.Error -> {
-                    scaffoldState.snackbarHostState.showSnackbar(
+                    onShowSnackbar(
                         effect.code?.let { code ->
                             context.getString(R.string.errors_client_error) + code
                         } ?: context.getString(R.string.errors_unknown_error)
@@ -327,7 +326,6 @@ private fun MainScreen(
     }
 
     ShareSettingsScreen(
-        scaffoldState = scaffoldState,
         state = state,
         shareData = shareData,
         onBack = onBack,
@@ -343,7 +341,6 @@ private fun MainScreen(
 
 @Composable
 private fun ShareSettingsScreen(
-    scaffoldState: ScaffoldState,
     state: ShareSettingsState,
     shareData: ShareData,
     isCreateLoading: Boolean,
@@ -379,7 +376,6 @@ private fun ShareSettingsScreen(
     }
 
     AppScaffold(
-        scaffoldState = scaffoldState,
         useTablePaddings = useTabletPaddings,
         topBar = {
             AppTopBar(
@@ -551,7 +547,6 @@ private fun ShareSettingsScreenPreview() {
 
     ManagerTheme {
         ShareSettingsScreen(
-            scaffoldState = rememberScaffoldState(),
             state = ShareSettingsState.Success(
                 listOf(
                     link.copy(access = 1),
