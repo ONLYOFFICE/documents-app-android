@@ -55,7 +55,6 @@ import app.documents.core.network.share.models.request.RequestRemoveInviteLink
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.RequestShare
 import app.documents.core.network.share.models.request.RequestShareItem
-import app.documents.core.network.share.models.request.RequestUpdateSharedLink
 import app.documents.core.network.share.models.request.UserIdInvitation
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -135,7 +134,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return checkNotNull(response.body()?.response?.id)
     }
 
-    suspend fun getTags(): kotlin.Result<Array<String>> {
+    suspend fun getTags(): Result<Array<String>> {
         return runCatching {
             val response = roomService.getTags()
             if (!response.isSuccessful) throw HttpException(response)
@@ -276,8 +275,8 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             body.response else throw HttpException(response)
     }
 
-    suspend fun createSharedLink(itemId: String, isFolder: Boolean): ExternalLink {
-        val requestBody = RequestCreateSharedLink()
+    suspend fun createSharedLink(itemId: String, isFolder: Boolean, access: Int): ExternalLink {
+        val requestBody = RequestCreateSharedLink(access = access)
         val request = if (isFolder)
             roomService.createSharedFolderLink(itemId, requestBody) else
             roomService.createSharedFileLink(itemId, requestBody)

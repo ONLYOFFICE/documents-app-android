@@ -321,12 +321,12 @@ fun Modifier.fillMaxWidth(isTablet: Boolean): Modifier {
     return if (isTablet) fillMaxWidth(0.3f) else fillMaxWidth()
 }
 
-fun Access.toUi(isFileOrFolder: Boolean = false): AccessUI {
+fun Access.toUi(useActionNames: Boolean = false): AccessUI {
     return when (this) {
         Access.Comment -> AccessUI(
             access = this,
             icon = R.drawable.ic_access_comment,
-            title = if (isFileOrFolder)
+            title = if (useActionNames)
                 R.string.share_popup_access_comment else
                 R.string.share_access_room_commentator
         )
@@ -339,10 +339,10 @@ fun Access.toUi(isFileOrFolder: Boolean = false): AccessUI {
 
         Access.ReadWrite -> AccessUI(
             access = this,
-            icon = if (isFileOrFolder)
+            icon = if (useActionNames)
                 R.drawable.ic_room_power_user else
                 R.drawable.ic_access_full,
-            title = if (isFileOrFolder)
+            title = if (useActionNames)
                 R.string.share_popup_access_full else
                 R.string.share_access_room_editor
         )
@@ -350,7 +350,7 @@ fun Access.toUi(isFileOrFolder: Boolean = false): AccessUI {
         Access.Editor -> AccessUI(
             access = this,
             icon = R.drawable.ic_access_full,
-            title = if (isFileOrFolder)
+            title = if (useActionNames)
                 R.string.share_popup_access_editing else
                 R.string.share_access_room_editor
         )
@@ -358,7 +358,7 @@ fun Access.toUi(isFileOrFolder: Boolean = false): AccessUI {
         Access.FormFiller -> AccessUI(
             access = this,
             icon = R.drawable.ic_access_fill_form,
-            title = if (isFileOrFolder)
+            title = if (useActionNames)
                 R.string.share_popup_access_fill_forms else
                 R.string.share_access_room_form_filler
         )
@@ -366,7 +366,7 @@ fun Access.toUi(isFileOrFolder: Boolean = false): AccessUI {
         Access.Read -> AccessUI(
             access = this,
             icon = R.drawable.ic_access_read,
-            title = if (isFileOrFolder)
+            title = if (useActionNames)
                 R.string.share_popup_access_read_only else
                 R.string.share_access_room_viewer
         )
@@ -374,7 +374,7 @@ fun Access.toUi(isFileOrFolder: Boolean = false): AccessUI {
         Access.Review -> AccessUI(
             access = this,
             icon = R.drawable.ic_access_review,
-            title = if (isFileOrFolder)
+            title = if (useActionNames)
                 R.string.share_popup_access_review else
                 R.string.share_access_room_reviewer
         )

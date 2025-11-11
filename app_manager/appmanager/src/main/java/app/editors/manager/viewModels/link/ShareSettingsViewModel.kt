@@ -48,7 +48,12 @@ class ShareSettingsViewModel(
         viewModelScope.launch {
             try {
                 _effect.emit(ShareSettingsEffect.OnCreate(true))
-                val link = roomProvider.createSharedLink(shareData.itemId, shareData.isFolder)
+                val access = if (shareData.isForm) Access.Editor else Access.Read
+                val link = roomProvider.createSharedLink(
+                    itemId = shareData.itemId,
+                    isFolder = shareData.isFolder,
+                    access = access.code
+                )
                 _effect.emit(ShareSettingsEffect.OnCreate(false))
                 _effect.emit(ShareSettingsEffect.Copy(link.sharedTo.shareLink))
 

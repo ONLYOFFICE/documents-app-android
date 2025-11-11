@@ -18,6 +18,7 @@ data class ShareData(
     val fileExt: String? = null,
     val roomType: Int? = null,
     val isRoom: Boolean = false,
+    val isForm: Boolean = false,
     val availableShareRights: AvailableShareRights? = null
 ) : Serializable {
 
@@ -43,8 +44,8 @@ data class ShareData(
             )
 
             return when {
-                item is CloudFile && roomType > -1 -> shareData.copy(fileExt = item.fileExst, roomType = roomType)
-                item is CloudFile -> shareData.copy(fileExt = item.fileExst)
+                item is CloudFile && roomType > -1 -> shareData.copy(fileExt = item.fileExst, roomType = roomType, isForm = item.isForm)
+                item is CloudFile -> shareData.copy(fileExt = item.fileExst, isForm = item.isForm)
                 item is CloudFolder && item.isRoom -> shareData.copy(isRoom = true, roomType = roomType)
                 item is CloudFolder && roomType > -1 -> shareData.copy(roomType = roomType)
                 item is CloudFolder -> shareData
@@ -64,7 +65,7 @@ private object ShareAccessManager {
         if (availableShareRights != null) {
             val accessList = availableShareRights.toBundle().fromTarget(target)
             if (accessList.isNotEmpty()) {
-                return accessList.map { it.toUi(shareData.roomType == null) }
+                return accessList.map { it.toUi(!(target.isLink && shareData.isFolder)) }
             }
         }
 
