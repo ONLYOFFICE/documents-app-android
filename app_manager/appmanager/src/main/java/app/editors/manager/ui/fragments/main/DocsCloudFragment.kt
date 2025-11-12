@@ -308,18 +308,22 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     private fun showShareFragment() {
         val roomType = presenter.currentFolder?.roomType ?: -1
+        val denyDownload = presenter.roomClicked?.denyDownload == true
+
         presenter.itemClicked?.let { item ->
             if (requireContext().accountOnline.isDocSpace) {
                 ShareSettingsFragment.show(
                     activity = requireActivity(),
                     item = item,
-                    roomType = roomType
+                    roomType = roomType,
+                    denyDownload = denyDownload
                 )
             } else {
                 ShareFragment.show(
                     activity = requireActivity(),
                     item = item,
-                    roomType = roomType
+                    roomType = roomType,
+                    denyDownload = denyDownload
                 )
             }
         }

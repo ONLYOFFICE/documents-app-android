@@ -107,7 +107,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
     }
 
     private val shareData: ShareData by lazy {
-        ShareData.from(room, room.roomType)
+        ShareData.from(room, room.roomType, room.denyDownload)
     }
 
     @Composable

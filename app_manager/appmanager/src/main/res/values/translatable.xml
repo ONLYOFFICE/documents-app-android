@@ -920,6 +920,8 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="rooms_share_link_life_time">Link life time</string>
     <string name="share_link_folder_restrict_desc">Enable this setting to disable downloading of files and folders from this folder shared via a link</string>
     <string name="share_link_file_restrict_desc">Enable this setting to disable downloading of this file shared via a link</string>
+    <string name="share_link_file_restrict_warning">You cannot disable the restriction on downloading and copying data because this setting is enforced at the room level for all files.</string>
+    <string name="share_link_file_restrict_warning_ok">OK</string>
 
     <string name="rooms_filter_type_filling_forms">Filling form</string>
     <string name="rooms_filter_type_virtual_room">Virtual data room</string>
