@@ -44,6 +44,9 @@ class ShareSettingsViewModel(
     private val _effect: MutableSharedFlow<ShareSettingsEffect> = MutableSharedFlow(1)
     val effect: SharedFlow<ShareSettingsEffect> = _effect.asSharedFlow()
 
+    val hasLinks: Boolean?
+        get() = (state.value as? ShareSettingsState.Success)?.links?.isNotEmpty()
+
     fun create() {
         viewModelScope.launch {
             try {

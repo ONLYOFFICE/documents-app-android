@@ -313,11 +313,17 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
         presenter.itemClicked?.let { item ->
             if (requireContext().accountOnline.isDocSpace) {
                 ShareSettingsFragment.show(
-                    activity = requireActivity(),
+                    fragmentManager = parentFragmentManager,
+                    lifecycleOwner = viewLifecycleOwner,
                     item = item,
                     roomType = roomType,
                     denyDownload = denyDownload
-                )
+                ) { bundle ->
+                    if (bundle.contains(ShareSettingsFragment.KEY_RESULT_SHARED)) {
+                        val shared = bundle.getBoolean(ShareSettingsFragment.KEY_RESULT_SHARED)
+                        presenter.updateShareBadge(shared)
+                    }
+                }
             } else {
                 ShareFragment.show(
                     activity = requireActivity(),

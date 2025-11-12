@@ -64,7 +64,7 @@ class ShareActivity : BaseAppActivity() {
                             roomProvider = roomProvider,
                             shareData = shareData,
                             useTabletPadding = true,
-                            onClose = ::finish,
+                            onClose = { finish() },
                             onSendLink = { link ->
                                 openSendTextActivity(
                                     title = getString(R.string.toolbar_menu_main_share),

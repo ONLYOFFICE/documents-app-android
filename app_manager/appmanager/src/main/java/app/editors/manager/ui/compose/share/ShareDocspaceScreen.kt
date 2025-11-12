@@ -119,7 +119,7 @@ fun ShareDocSpaceScreen(
     shareData: ShareData,
     useTabletPadding: Boolean,
     onSendLink: (String) -> Unit,
-    onClose: () -> Unit,
+    onClose: (Boolean?) -> Unit,
     onShowSnackbar: (String) -> Unit,
 ) {
     val navController = rememberNavController()
@@ -154,7 +154,7 @@ fun ShareDocSpaceScreen(
         }
     }
 
-    BackHandler(onBack = onClose)
+    BackHandler(onBack = { onClose(viewModel.hasLinks) })
 
     NavHost(
         modifier = Modifier.background(MaterialTheme.colors.background),
@@ -167,7 +167,7 @@ fun ShareDocSpaceScreen(
                 shareData = shareData,
                 useTabletPaddings = useTabletPadding,
                 onShareLink = onSendLink,
-                onBack = onClose,
+                onBack = { onClose(viewModel.hasLinks) },
                 onAddUsers = { navController.navigate(Screen.AddUser) },
                 onLinkClick = { link ->
                     val json =
