@@ -85,6 +85,7 @@ glideOkHttpIntegration = "4.16.0"
 glideCompose = "1.0.0-beta01"
 photoView = "2.3.0"
 colorPicker = "2.3.0"
+customTabs = "1.9.0"
 
 [libraries]
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx" }
@@ -98,6 +99,7 @@ fragmentKtx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragme
 biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 androidWorkManager = { module = "androidx.work:work-runtime-ktx", version.ref = "androidWorkManager" }
 androidDocumentFile = { module = "androidx.documentfile:documentfile", version.ref = "androidDocumentFile" }
+androidCustomTabs = { module = "androidx.browser:browser", version.ref = "customTabs" }
 
 #compose
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "composeUi" }
