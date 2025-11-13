@@ -193,7 +193,7 @@ fun ShareDocSpaceScreen(
             ExternalLinkSettingsScreen(
                 link = Json.decodeFromString<ExternalLink>(json),
                 shareData = shareData,
-                onBackListener = navController::popBackStack
+                onBackListener = navController::popBackStackWhenResumed
             )
         }
         composable<Screen.AddUser> {
@@ -212,7 +212,7 @@ fun ShareDocSpaceScreen(
                 closeable = false,
                 viewModel = userListViewModel,
                 onClick = { userListViewModel.toggleSelect(it.id) },
-                onBack = navController::popBackStack,
+                onBack = navController::popBackStackWhenResumed,
             ) { size, access ->
                 UserListBottomContent(
                     nextButtonTitle = lib.toolkit.base.R.string.common_next,
@@ -256,7 +256,7 @@ fun ShareDocSpaceScreen(
             InviteAccessScreen(
                 accessList = shareData.getAccessList(AccessTarget.User),
                 viewModel = shareAccessViewModel,
-                onBack = navController::popBackStack,
+                onBack = navController::popBackStackWhenResumed,
                 onSuccess = {
                     navController.navigate(Screen.Main) {
                         popUpTo(Screen.Main) {
@@ -311,7 +311,11 @@ private fun MainScreen(
                 is ShareSettingsEffect.Error -> {
                     onShowSnackbar(
                         effect.code?.let { code ->
-                            context.getString(R.string.errors_client_error) + code
+                            if (code == R.string.rooms_info_create_maximum_exceed) {
+                                context.getString(R.string.rooms_info_create_maximum_exceed)
+                            } else {
+                                context.getString(R.string.errors_client_error) + code
+                            }
                         } ?: context.getString(R.string.errors_unknown_error)
                     )
                 }
@@ -400,7 +404,7 @@ private fun ShareSettingsScreen(
                         descriptionText = linksDescription,
                         bottomDescription = bottomDescription,
                         roomType = shareData.roomType ?: -1,
-                        canAddLinks = state.links.size < 6,
+                        canAddLinks = (state.links.size < ShareData.MAX_SHARED_LINKS) && !isCreateLoading,
                         isCreateLoading = isCreateLoading,
                         links = state.links,
                         onCreate = onCreate,

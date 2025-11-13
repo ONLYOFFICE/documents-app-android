@@ -211,7 +211,7 @@ private fun MainScreen(
                         backListener = onBackListener,
                         actions = {
                             AppTextButton(
-                                enabled = link.title.isNotEmpty(),
+                                enabled = link.title.isNotEmpty() && !loading,
                                 title = lib.toolkit.base.R.string.common_done,
                                 onClick = onDoneClick
                             )
@@ -226,11 +226,6 @@ private fun MainScreen(
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 val title = remember { mutableStateOf(link.title) }
 
-                LaunchedEffect(title.value) {
-                    delay(500)
-                    updateViewState { copy(title = title.value) }
-                }
-
                 TouchDisable(disableTouch = link.isExpired) {
                     Column {
                         AppHeaderItem(title = R.string.rooms_info_link_name)
@@ -238,7 +233,8 @@ private fun MainScreen(
                             modifier = Modifier.padding(horizontal = 16.dp),
                             state = title,
                             hint = stringResource(id = lib.toolkit.base.R.string.text_hint_required),
-                            fillMaxWidth = true
+                            fillMaxWidth = true,
+                            onValueChange = { updateViewState { copy(title = title.value) } }
                         )
 
                         AppHeaderItem(title = R.string.rooms_share_general_header)
@@ -320,7 +316,8 @@ private fun MainScreen(
                             R.string.rooms_info_revoke_link else
                             R.string.rooms_info_delete_link,
                         textColor = MaterialTheme.colors.error,
-                        onClick = onDeleteOrRevokeLink
+                        onClick = onDeleteOrRevokeLink,
+                        enabled = !loading
                     )
                 }
             }

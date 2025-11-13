@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.ExternalLink
 import app.editors.manager.R
+import app.editors.manager.managers.tools.ShareData
 import lib.compose.ui.theme.colorTextTertiary
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppHeaderItem
@@ -30,7 +31,7 @@ internal fun ExternalLinkBlock(
     onSharedLinkCreate: () -> Unit
 ) {
     val context = LocalContext.current
-    val canAddLinks = sharedLinks.size < 6
+    val canAddLinks = sharedLinks.size < ShareData.MAX_SHARED_LINKS
 
     if (sharedLinks.isNotEmpty()) {
         AppDescriptionItem(

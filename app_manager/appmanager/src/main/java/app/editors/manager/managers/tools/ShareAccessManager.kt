@@ -37,6 +37,7 @@ data class ShareData(
     }
 
     companion object {
+        const val MAX_SHARED_LINKS = 6
 
         fun from(item: Item, roomType: Int, denyDownload: Boolean): ShareData {
             val shareData = ShareData(

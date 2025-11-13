@@ -44,7 +44,7 @@ class ExternalLinkSettingsViewModel(
 
     companion object {
 
-        private const val MAXIMUM_LINKS_ERROR = "The maximum number of links"
+        const val MAXIMUM_LINKS_ERROR = "The maximum number of links"
     }
 
     private val _state = MutableStateFlow(ExternalLinkSettingsState(false, inputLink, access))
@@ -56,6 +56,7 @@ class ExternalLinkSettingsViewModel(
     private var operationJob: Job? = null
 
     fun deleteOrRevoke() {
+        if (state.value.loading) return
         operationJob = viewModelScope.launch {
             updateLink(deleteOrRevoke = true)
             _effect.tryEmit(ExternalLinkSettingsEffect.Delete)
@@ -63,6 +64,7 @@ class ExternalLinkSettingsViewModel(
     }
 
     fun save() {
+        if (state.value.loading) return
         operationJob = viewModelScope.launch {
             updateLink()
             _effect.tryEmit(ExternalLinkSettingsEffect.Save)
@@ -80,7 +82,7 @@ class ExternalLinkSettingsViewModel(
     }
 
     fun createRoomLink() {
-        if (!validatePassword()) return
+        if (state.value.loading || !validatePassword()) return
         _state.update { it.copy(loading = true) }
         operationJob = viewModelScope.launch {
             try {
@@ -114,7 +116,7 @@ class ExternalLinkSettingsViewModel(
     }
 
     private suspend fun updateLink(deleteOrRevoke: Boolean = false): ExternalLink? {
-        if (!validatePassword()) return null
+        if (state.value.loading || !validatePassword()) return null
         _state.update { it.copy(loading = true) }
         return try {
             val access = if (deleteOrRevoke) Access.None.code else state.value.access.code
