@@ -1,6 +1,5 @@
 package app.editors.manager.ui.fragments.filter
 
-import android.os.Bundle
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
@@ -13,6 +12,7 @@ import app.editors.manager.mvp.presenters.filter.BaseFilterPresenter
 import app.editors.manager.mvp.presenters.filter.CloudFilterPresenter
 import app.editors.manager.ui.views.custom.ChipItem
 import app.editors.manager.ui.views.custom.SingleChoiceChipGroupView
+import lib.toolkit.base.managers.utils.putArgs
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
@@ -22,12 +22,10 @@ class CloudFilterFragment : BaseFilterFragment() {
         private const val KEY_SECTION: String = "key_section"
 
         fun newInstance(folderId: String?, section: Int): CloudFilterFragment {
-            return CloudFilterFragment().apply {
-                arguments = Bundle(1).apply {
-                    putString(KEY_FOLDER_ID, folderId)
-                    putInt(KEY_SECTION, section)
-                }
-            }
+            return CloudFilterFragment().putArgs(
+                KEY_FOLDER_ID to folderId,
+                KEY_SECTION to section
+            )
         }
     }
 
@@ -62,12 +60,14 @@ class CloudFilterFragment : BaseFilterFragment() {
         override var option: String? = null
     ) : ChipItem
 
-    private val usersChipItem = SimpleChipItem(
-        chipTitle = if (isSectionShareWithMe)
-            R.string.invite_choose_from_list else
-            R.string.share_add_common_header_users,
-        withOption = true
-    )
+    private val usersChipItem by lazy {
+        SimpleChipItem(
+            chipTitle = if (isSectionShareWithMe)
+                R.string.invite_choose_from_list else
+                R.string.share_add_common_header_users,
+            withOption = true
+        )
+    }
 
     private val groupsChipItem = SimpleChipItem(R.string.share_add_common_header_groups, true)
     private val documentsChipItem = SimpleChipItem(R.string.actionbar_title_main)
@@ -175,7 +175,6 @@ class CloudFilterFragment : BaseFilterFragment() {
     }
 
     private fun createLocationChipGroup(): SingleChoiceChipGroupView? {
-        val section = arguments?.getInt(KEY_SECTION)
         if (section == ApiContract.SectionType.CLOUD_FAVORITES) {
             locationChipGroup =
                 SingleChoiceChipGroupView(
