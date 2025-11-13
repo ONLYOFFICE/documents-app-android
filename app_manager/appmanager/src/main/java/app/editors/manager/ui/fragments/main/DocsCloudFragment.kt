@@ -268,6 +268,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.FillingStatus -> showFillingStatusFragment(FillingStatusMode.None)
             is ExplorerContextItem.StopFilling -> showStopFillingQuestionDialog()
             is ExplorerContextItem.ResetFilling -> presenter.resetFilling()
+            is ExplorerContextItem.CustomFilter -> presenter.setCustomFilter()
             else -> super.onContextButtonClick(contextItem)
         }
     }

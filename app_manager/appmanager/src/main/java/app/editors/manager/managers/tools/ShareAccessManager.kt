@@ -166,7 +166,6 @@ private object ShareAccessManager {
                 }
 
                 FileGroup.SHEET -> {
-                    add(Access.CustomFilter)
                     add(Access.Comment)
                     add(Access.Read)
                 }

@@ -242,6 +242,7 @@ object ApiContract {
         val isLocalRecent: Boolean get() = this == LocalRecent
         val isDevice: Boolean get() = this == Device
         val isTrash: Boolean get() = this == Trash
+        val isShare: Boolean get() = this == Share
         val isStorage: Boolean get() = this is Storage
         val isWebdav: Boolean get() = this == Webdav
 

@@ -72,6 +72,10 @@ open class CloudFile : Item() {
     @Expose
     var customFilterEnabled = false
 
+    @SerializedName("customFilterEnabledBy")
+    @Expose
+    var customFilterEnabledBy = ""
+
     @SerializedName("locked")
     @Expose
     var isLocked = false
