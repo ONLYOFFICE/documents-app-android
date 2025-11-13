@@ -341,7 +341,7 @@ fun Access.toUi(useActionNames: Boolean = false): AccessUI {
             access = this,
             icon = if (useActionNames)
                 R.drawable.ic_room_power_user else
-                R.drawable.ic_access_full,
+                R.drawable.ic_access_editing,
             title = if (useActionNames)
                 R.string.share_popup_access_full else
                 R.string.share_access_room_editor
@@ -349,7 +349,7 @@ fun Access.toUi(useActionNames: Boolean = false): AccessUI {
 
         Access.Editor -> AccessUI(
             access = this,
-            icon = R.drawable.ic_access_full,
+            icon = R.drawable.ic_access_editing,
             title = if (useActionNames)
                 R.string.share_popup_access_editing else
                 R.string.share_access_room_editor
