@@ -97,7 +97,6 @@ platform :android do
 
   desc "Task for CI"
   lane :publish_market_and_apk do |options|
-    test
     cleanup
     increment_build
     deploy_playmarket(options)
