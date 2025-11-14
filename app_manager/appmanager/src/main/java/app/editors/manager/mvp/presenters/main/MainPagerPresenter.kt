@@ -95,7 +95,7 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
             sortedList.add(it)
         }
         response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_RECENT }?.let {
-            sortedList.add(it)
+//            sortedList.add(it)
         }
         response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_COMMON }?.let {
             sortedList.add(it)
