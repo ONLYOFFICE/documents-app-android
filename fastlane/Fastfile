@@ -23,11 +23,6 @@ platform :android do
     sh "../.github/secrets/decrypt_secret.sh"
   end
 
-  desc "Runs all the tests"
-  lane :test do
-    gradle(task: "test")
-  end
-
   desc "Composit task (clean, incriment, build, deploy, commit) fo deploy a new internal testing build to Google Play Store"
   lane :bundleRelease do |options|
     versionCode = android_get_version_code(
