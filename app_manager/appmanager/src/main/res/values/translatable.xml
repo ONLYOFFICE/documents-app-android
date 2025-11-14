@@ -1196,4 +1196,11 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
 
     <string name="list_context_reset_filling">Reset and start filling</string>
 
+    <string name="placeholder_no_shared_items">There are no shared items yet</string>
+    <string name="placeholder_no_shared_items_desc">Here you\'ll find files and folders that other DocSpace members shared with you. Your own files and room content are not shown here.</string>
+
+    <string name="rooms_share_shared_folder_desc">Provide access to the folder and set the permission levels.</string>
+
+    <string name="share_popup_access_editing">Editing</string>
+    <string name="share_popup_access_remove">Remove</string>
 </resources>

@@ -30,14 +30,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.documents.core.model.cloud.Access
-import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.contracts.ApiContract.RoomType.FILL_FORMS_ROOM
 import app.documents.core.network.common.contracts.ApiContract.RoomType.PUBLIC_ROOM
+import app.documents.core.network.manager.models.explorer.AccessTarget
+import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
-import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.managers.tools.ShareData
 import app.editors.manager.managers.utils.toUi
+import app.editors.manager.mvp.models.ui.AccessUI
 import app.editors.manager.viewModels.link.ExternalLinkSettingsEffect
 import app.editors.manager.viewModels.link.ExternalLinkSettingsViewModel
 import kotlinx.coroutines.delay
@@ -59,26 +61,37 @@ import lib.toolkit.base.managers.utils.UiUtils
 
 @Composable
 fun ExternalLinkSettingsScreen(
-    link: ExternalLinkSharedTo?,
-    access: Access,
-    isCreate: Boolean,
+    link: ExternalLink?,
     roomType: Int?,
     roomId: String?,
     onBackListener: () -> Unit,
 ) {
-    if (link == null) return
+    val linkSharedTo = link?.sharedTo
+        ?: ExternalLinkSharedTo(
+            id = "",
+            title = "",
+            shareLink = "",
+            linkType = 1,
+            password = null,
+            denyDownload = false,
+            isExpired = false,
+            primary = false,
+            requestToken = "",
+            expirationDate = null
+        )
+    val accessList = ShareData(roomType = roomType).getAccessList(AccessTarget.ExternalLink)
     val context = LocalContext.current
     val localView = LocalView.current
     val viewModel = viewModel {
         ExternalLinkSettingsViewModel(
-            access = access,
-            inputLink = link,
+            access = link?.access?.let(Access::get)?.toUi() ?: accessList.last(),
+            inputLink = linkSharedTo,
             roomId = roomId,
             roomProvider = context.roomProvider
         )
     }
     val state by viewModel.state.collectAsState()
-    val isRevoke = link.primary && roomType in arrayOf(PUBLIC_ROOM, FILL_FORMS_ROOM)
+    val isRevoke = linkSharedTo.primary && roomType in arrayOf(PUBLIC_ROOM, FILL_FORMS_ROOM)
     val passwordErrorState = remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
@@ -118,15 +131,16 @@ fun ExternalLinkSettingsScreen(
 
     MainScreen(
         link = state.link,
-        access = state.access,
+        currentAccess = state.access,
         loading = state.loading,
         roomType = roomType,
+        accessList = accessList,
         passwordErrorState = passwordErrorState,
-        isCreate = isCreate,
+        isCreate = link == null,
         isRevoke = isRevoke,
         onSetAccess = viewModel::setAccess,
         onBackListener = onBackListener,
-        onDoneClick = if (isCreate) viewModel::createLink else viewModel::save,
+        onDoneClick = if (link == null) viewModel::createLink else viewModel::save,
         onDeleteOrRevokeLink = {
             UiUtils.showQuestionDialog(
                 context = context,
@@ -158,11 +172,12 @@ private fun MainScreen(
     link: ExternalLinkSharedTo,
     loading: Boolean,
     roomType: Int?,
-    access: Access,
+    currentAccess: AccessUI,
+    accessList: List<AccessUI>,
     passwordErrorState: MutableState<String?>,
     isCreate: Boolean,
     isRevoke: Boolean,
-    onSetAccess: (Access) -> Unit,
+    onSetAccess: (AccessUI) -> Unit,
     onBackListener: () -> Unit,
     onDoneClick: () -> Unit,
     onDeleteOrRevokeLink: () -> Unit,
@@ -234,18 +249,17 @@ private fun MainScreen(
                                     val dropdownMenuShow = remember { mutableStateOf(false) }
                                     DropdownMenuButton(
                                         state = dropdownMenuShow,
-                                        icon = ImageVector.vectorResource(access.toUi().icon),
+                                        icon = ImageVector.vectorResource(currentAccess.icon),
                                         onDismiss = { dropdownMenuShow.value = false },
                                         items = {
-                                            RoomUtils.getLinkAccessOptions().forEach { accessOption ->
-                                                val accessUi = accessOption.toUi()
+                                            accessList.forEach { access ->
                                                 DropdownMenuItem(
-                                                    title = stringResource(accessUi.title),
-                                                    selected = access == accessOption,
-                                                    startIcon = accessUi.icon,
+                                                    title = stringResource(access.title),
+                                                    selected = access == currentAccess,
+                                                    startIcon = access.icon,
                                                     onClick = {
                                                         dropdownMenuShow.value = false
-                                                        onSetAccess(accessOption)
+                                                        onSetAccess(access)
                                                     }
                                                 )
                                             }
@@ -342,10 +356,11 @@ private fun Preview() {
 
     MainScreen(
         link = link,
-        roomType = ApiContract.RoomType.PUBLIC_ROOM,
+        roomType = PUBLIC_ROOM,
+        accessList = listOf(Access.Editor.toUi()),
         loading = true,
         passwordErrorState = remember { mutableStateOf(null) },
-        access = Access.Editor,
+        currentAccess = Access.Editor.toUi(),
         isCreate = false,
         isRevoke = false,
         onBackListener = {},

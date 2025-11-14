@@ -82,6 +82,10 @@ open class Item : ItemProperties(), Serializable {
     @Expose
     var originRoomTitle = ""
 
+    @SerializedName("availableShareRights")
+    @Expose
+    val availableShareRights: AvailableShareRights? = null
+
     var index: Int
         get() = order.split(".").lastOrNull()?.toInt() ?: 0
         set(value) {

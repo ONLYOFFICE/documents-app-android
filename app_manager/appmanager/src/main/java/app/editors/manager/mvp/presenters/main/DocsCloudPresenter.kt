@@ -356,8 +356,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             // TODO check security...
-            if (isRoom) {
-                viewState.onStateActionButton(modelExplorerStack.last()?.current?.security?.create == true)
+            if (account.isDocSpace) {
+                viewState.onStateActionButton(currentFolder?.security?.create == true)
             } else {
                 viewState.onStateActionButton(isContextEditable && !isRecentViaLinkSection())
             }
@@ -774,6 +774,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     val isUserSection: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_USER
+
+    val isSharedWithMeSection: Boolean
+        get() = isShareSection && account.isDocSpace
 
     private val isShareSection: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_SHARE

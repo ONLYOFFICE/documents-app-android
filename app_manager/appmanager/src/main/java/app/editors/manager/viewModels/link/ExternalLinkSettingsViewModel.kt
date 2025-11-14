@@ -7,6 +7,7 @@ import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
+import app.editors.manager.mvp.models.ui.AccessUI
 import app.editors.manager.viewModels.base.BaseViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,7 +24,7 @@ import retrofit2.HttpException
 data class ExternalLinkSettingsState(
     val loading: Boolean,
     val link: ExternalLinkSharedTo,
-    val access: Access
+    val access: AccessUI
 )
 
 sealed class ExternalLinkSettingsEffect {
@@ -35,7 +36,7 @@ sealed class ExternalLinkSettingsEffect {
 }
 
 class ExternalLinkSettingsViewModel(
-    access: Access,
+    access: AccessUI,
     inputLink: ExternalLinkSharedTo,
     private val roomId: String?,
     private val roomProvider: RoomProvider,
@@ -90,7 +91,7 @@ class ExternalLinkSettingsViewModel(
                         expirationDate = expirationDate,
                         password = password,
                         title = title,
-                        access = state.value.access
+                        access = state.value.access.access
                     )
                     _effect.tryEmit(ExternalLinkSettingsEffect.Save)
                 }
@@ -107,7 +108,7 @@ class ExternalLinkSettingsViewModel(
         }
     }
 
-    fun setAccess(access: Access) {
+    fun setAccess(access: AccessUI) {
         _state.update { it.copy(access = access) }
     }
 
@@ -118,7 +119,7 @@ class ExternalLinkSettingsViewModel(
             with(state.value.link) {
                 roomProvider.updateRoomSharedLink(
                     roomId = roomId.orEmpty(),
-                    access = if (deleteOrRevoke) Access.None else state.value.access,
+                    access = if (deleteOrRevoke) Access.None else state.value.access.access,
                     linkId = id,
                     linkType = linkType,
                     denyDownload = denyDownload,

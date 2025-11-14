@@ -30,10 +30,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.ShareEntity
-import app.documents.core.network.share.models.ShareType
 import app.editors.manager.managers.utils.RoomUtils
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -48,66 +46,34 @@ import lib.toolkit.base.R
 
 @Composable
 internal fun ShareUsersList(
+    title: Int,
     portal: String?,
+    isRoom: Boolean,
     shareList: List<ShareEntity>,
-    type: ShareType,
-    onClick: (String, Int, Boolean) -> Unit
+    canBeCollapsed: Boolean = true,
+    onClick: (ShareEntity) -> Unit
 ) {
     var visible by remember { mutableStateOf(true) }
-    val title = when (type) {
-        ShareType.Admin -> app.editors.manager.R.string.rooms_info_admin_title
-        ShareType.User -> app.editors.manager.R.string.rooms_info_users_title
-        ShareType.Guests -> app.editors.manager.R.string.rooms_info_guests_title
-        ShareType.Group -> app.editors.manager.R.string.rooms_info_groups_title
-        ShareType.Expected -> app.editors.manager.R.string.rooms_info_expected_title
-    }
 
     if (shareList.isNotEmpty()) {
         Column {
-            Row(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)) {
-                Text(
-                    modifier = Modifier
-                        .weight(1f)
-                        .align(Alignment.Bottom),
-                    text = stringResource(id = title, shareList.size),
-                    style = MaterialTheme.typography.subtitle2,
-                    color = MaterialTheme.colors.colorTextSecondary
-                )
-                IconButton(
-                    modifier = Modifier.size(24.dp),
-                    onClick = { visible = !visible }
-                ) {
-                    Icon(
-                        modifier = Modifier.rotate(if (visible) 0f else 180f),
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_down),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.colorTextTertiary
-                    )
-                }
-            }
+            HeaderWithCollapseButton(
+                arrowVisible = canBeCollapsed,
+                title = title,
+                listSize = shareList.size,
+                visible = visible,
+                onClick = { visible = !visible }
+            )
             AnimatedVisibilityVerticalFade(visible = visible) {
                 Column {
                     shareList.forEach { share ->
-                        when (share) {
-                            is Share -> {
-                                ShareUserItem(share = share, portal = portal, key = type) {
-                                    onClick.invoke(
-                                        share.sharedTo.id,
-                                        share.access.code,
-                                        share.sharedTo.isOwner || share.sharedTo.isAdmin || share.sharedTo.isRoomAdmin
-                                    )
-                                }
-                            }
-                            is GroupShare -> {
-                                ShareUserItem(share = share, portal = portal, key = type) {
-                                    onClick.invoke(
-                                        share.sharedTo.id,
-                                        share.access.code,
-                                        share.sharedTo.isOwner || share.sharedTo.isAdmin || share.sharedTo.isRoomAdmin
-                                    )
-                                }
-                            }
-                        }
+                        ShareUserItem(
+                            isRoom = isRoom,
+                            share = share,
+                            portal = portal,
+                            isGroup = (share as? Share)?.isGroup == true,
+                            onClick = { onClick.invoke(share) }
+                        )
                     }
                 }
             }
@@ -115,9 +81,48 @@ internal fun ShareUsersList(
     }
 }
 
+@Composable
+private fun HeaderWithCollapseButton(
+    arrowVisible: Boolean,
+    title: Int,
+    listSize: Int,
+    visible: Boolean,
+    onClick: () -> Unit
+) {
+    Row(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)) {
+        Text(
+            modifier = Modifier
+                .weight(1f)
+                .align(Alignment.Bottom),
+            text = stringResource(id = title, listSize),
+            style = MaterialTheme.typography.subtitle2,
+            color = MaterialTheme.colors.colorTextSecondary
+        )
+        if (arrowVisible) {
+            IconButton(
+                modifier = Modifier.size(24.dp),
+                onClick = onClick
+            ) {
+                Icon(
+                    modifier = Modifier.rotate(if (visible) 0f else 180f),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_down),
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.colorTextTertiary
+                )
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-private fun ShareUserItem(share: ShareEntity, portal: String?, key: ShareType, onClick: () -> Unit) {
+private fun ShareUserItem(
+    share: ShareEntity,
+    portal: String?,
+    isGroup: Boolean,
+    isRoom: Boolean,
+    onClick: () -> Unit
+) {
     Column(modifier = Modifier.addIf(share.canEditAccess) { clickable(onClick = onClick) }) {
         Row(
             modifier = Modifier
@@ -126,7 +131,7 @@ private fun ShareUserItem(share: ShareEntity, portal: String?, key: ShareType, o
                 .height(56.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (key != ShareType.Group) {
+            if (!isGroup) {
                 GlideImage(
                     modifier = Modifier
                         .padding(end = 16.dp)
@@ -156,12 +161,18 @@ private fun ShareUserItem(share: ShareEntity, portal: String?, key: ShareType, o
             Text(
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.body1,
-                text = if (key != ShareType.Group) share.sharedTo.displayNameHtml else share.sharedTo.nameHtml,
+                text = if (!isGroup) share.sharedTo.displayNameHtml else share.sharedTo.nameHtml,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = stringResource(id = RoomUtils.getAccessTitleOrOwner(share.isOwner, share.access.code)),
+                text = stringResource(
+                    id = RoomUtils.getAccessTitleOrOwner(
+                        share.isOwner,
+                        share.access.code,
+                        isRoom
+                    )
+                ),
                 style = MaterialTheme.typography.body2,
                 color = if (share.canEditAccess)
                     MaterialTheme.colors.colorTextSecondary else

@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import lib.toolkit.base.managers.tools.ResourcesProvider
 
 data class TemplateAccessSettings(
     val public: Boolean = false,
@@ -48,7 +47,6 @@ sealed class TemplateUserListEffect : UserListEffect() {
 }
 
 class TemplateUserListViewModel(
-    resourcesProvider: ResourcesProvider,
     private val roomProvider: RoomProvider,
     private val saveAccessSettings: SaveAccessSettingsUseCase,
     private val cloudAccount: CloudAccount?,
@@ -57,7 +55,6 @@ class TemplateUserListViewModel(
 ) : UserListViewModel(
     mode = UserListMode.TemplateAccess,
     access = null,
-    resourcesProvider = resourcesProvider
 ) {
 
     override val cachedMembersFlow: SharedFlow<List<Member>> = flow {
@@ -200,7 +197,6 @@ class TemplateUserListViewModel(
                     roomProvider = app.roomProvider,
                     saveAccessSettings = app.appComponent.saveAccessSettingsUseCase,
                     cloudAccount = app.accountOnline,
-                    resourcesProvider = app.appComponent.resourcesProvider,
                     initSettings = initSettings,
                     mode = TemplateSettingsMode.fromModeId(modeId, currentUser, templateId)
                 )

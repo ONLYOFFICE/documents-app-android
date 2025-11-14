@@ -2,10 +2,12 @@ package app.editors.manager.ui.fragments.template.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import app.editors.manager.R
 import app.editors.manager.viewModels.main.TemplateAccessSettings
 import app.editors.manager.viewModels.main.TemplateUserListEffect
 import app.editors.manager.viewModels.main.TemplateUserListViewModel
@@ -35,6 +37,7 @@ fun AccessSettingsDestination(
     onSaveClick: ((TemplateAccessSettings) -> Unit)? = null,
     onSavedSuccessfully: (() -> Unit)? = null
 ) {
+    val context = LocalContext.current
     val navController = rememberNavController()
     val accessViewModel = viewModel<TemplateUserListViewModel>(
         factory = TemplateUserListViewModel.factory(
@@ -47,7 +50,12 @@ fun AccessSettingsDestination(
     LaunchedEffect(accessViewModel) {
         accessViewModel.effect.collect { effect ->
             when (effect) {
-                is UserListEffect.Error -> showSnackbar(effect.message)
+                is UserListEffect.Error -> {
+                    val message = effect.errorCode?.let { code ->
+                        context.getString(R.string.errors_client_error) + code
+                    } ?: context.getString(R.string.errors_unknown_error)
+                    showSnackbar(message)
+                }
                 is TemplateUserListEffect.SavedSuccessfully -> onSavedSuccessfully?.invoke()
                 else -> Unit
             }

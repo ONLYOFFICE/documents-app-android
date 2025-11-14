@@ -196,17 +196,15 @@ interface ExplorerContextItemVisible {
         get() = item.security?.pin == true
 
     private val ExplorerContextState.delete: Boolean
-        get() = when (section) {
-            ApiContract.Section.Share,
-            ApiContract.Section.Favorites,
-            ApiContract.Section.Projects -> false
-            ApiContract.Section.Device -> true
-            is ApiContract.Section.Room.Archive -> item.security?.delete == true
-            is ApiContract.Section.Room -> isRoot || item.security?.delete == true
-
-            else -> if (provider == PortalProvider.Cloud.DocSpace)
-                        item.security?.delete == true
-                    else true
+        get() = if (provider == PortalProvider.Cloud.DocSpace) {
+                item.security?.delete == true
+            } else {
+                when (section) {
+                    ApiContract.Section.Share,
+                    ApiContract.Section.Favorites,
+                    ApiContract.Section.Projects -> false
+                    else -> true
+            }
         }
 
     private val ExplorerContextState.createRoom: Boolean

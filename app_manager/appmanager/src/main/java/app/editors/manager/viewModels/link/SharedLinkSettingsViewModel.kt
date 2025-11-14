@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.providers.RoomProvider
+import app.editors.manager.managers.tools.ShareData
 import app.editors.manager.ui.fragments.share.link.SharedLinkLifeTime
 import app.editors.manager.ui.fragments.share.link.SharedLinkLifeTimeWithAmount
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,7 +30,7 @@ class SharedLinkSettingsViewModel(
     externalLink: ExternalLink,
     expired: String?,
     private val roomProvider: RoomProvider,
-    private val fileId: String
+    private val shareData: ShareData
 ) : ViewModel() {
 
     private val _state: MutableStateFlow<ExternalLink> = MutableStateFlow(
@@ -47,7 +48,7 @@ class SharedLinkSettingsViewModel(
         tryRequest {
             if (state.value.sharedTo.internal != internal) {
                 val link = state.value.copy(sharedTo = state.value.sharedTo.copy(internal = internal))
-                roomProvider.updateSharedLink(fileId, link)
+                roomProvider.updateSharedLink(shareData.itemId, link, shareData.isFolder)
                 _state.value = link
             }
         }
@@ -60,7 +61,7 @@ class SharedLinkSettingsViewModel(
     fun delete() {
         tryRequest {
             val link = state.value.copy(access = 0)
-            roomProvider.updateSharedLink(fileId, link)
+            roomProvider.updateSharedLink(shareData.itemId, link, shareData.isFolder)
             _effect.tryEmit(SharedLinkSettingsEffect.Delete)
         }
     }
@@ -68,7 +69,7 @@ class SharedLinkSettingsViewModel(
     fun setAccess(access: Int) {
         tryRequest {
             val link = state.value.copy(access = access)
-            roomProvider.updateSharedLink(fileId, link)
+            roomProvider.updateSharedLink(shareData.itemId, link, shareData.isFolder)
             _state.value = link
         }
     }
@@ -90,7 +91,7 @@ class SharedLinkSettingsViewModel(
                 )
             )
 
-            _state.value = roomProvider.updateSharedLink(fileId, link)
+            _state.value = roomProvider.updateSharedLink(shareData.itemId, link, shareData.isFolder)
         }
     }
 
