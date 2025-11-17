@@ -28,9 +28,9 @@ class ShareSettingsFragment : ComposeDialogFragment() {
 
         private fun newInstance(): ShareSettingsFragment = ShareSettingsFragment()
 
-        fun show(fragmentManager: FragmentManager, item: Item, roomType: Int, denyDownload: Boolean) {
+        fun show(fragmentManager: FragmentManager, item: Item, roomType: Int) {
             newInstance()
-                .putArgs(KEY_SHARE_DATA to ShareData.from(item, roomType, denyDownload))
+                .putArgs(KEY_SHARE_DATA to ShareData.from(item, roomType))
                 .show(fragmentManager, TAG)
         }
 
@@ -39,14 +39,13 @@ class ShareSettingsFragment : ComposeDialogFragment() {
             lifecycleOwner: LifecycleOwner,
             item: Item,
             roomType: Int,
-            denyDownload: Boolean,
             onResult: (Bundle) -> Unit
         ) {
             fragmentManager.setFragmentResultListener(
                 TAG_FRAGMENT_RESULT, lifecycleOwner
             ) { _, bundle -> onResult(bundle) }
 
-            show(fragmentManager,item, roomType, denyDownload)
+            show(fragmentManager,item, roomType)
         }
     }
 

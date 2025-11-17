@@ -23,7 +23,7 @@ import retrofit2.HttpException
 
 data class ExternalLinkSettingsState(
     val loading: Boolean,
-    val link: ExternalLinkSharedTo,
+    val link: ExternalLink,
     val access: Access
 )
 
@@ -37,7 +37,7 @@ sealed class ExternalLinkSettingsEffect {
 
 class ExternalLinkSettingsViewModel(
     access: Access,
-    inputLink: ExternalLinkSharedTo,
+    inputLink: ExternalLink,
     private val shareData: ShareData,
     private val roomProvider: RoomProvider,
 ) : BaseViewModel() {
@@ -76,8 +76,8 @@ class ExternalLinkSettingsViewModel(
     }
 
     fun updateViewState(body: ExternalLinkSharedTo.() -> ExternalLinkSharedTo) {
-        _state.update {
-            it.copy(link = body(it.link))
+        _state.update { state ->
+            state.copy(link = state.link.copy(sharedTo = body(state.link.sharedTo)))
         }
     }
 
@@ -86,7 +86,7 @@ class ExternalLinkSettingsViewModel(
         _state.update { it.copy(loading = true) }
         operationJob = viewModelScope.launch {
             try {
-                with(state.value.link) {
+                with(state.value.link.sharedTo) {
                     roomProvider.createRoomSharedLink(
                         roomId = shareData.itemId,
                         denyDownload = denyDownload,
@@ -123,13 +123,13 @@ class ExternalLinkSettingsViewModel(
             if (shareData.isRoom) {
                 roomProvider.updateRoomSharedLink(
                     roomId = shareData.itemId,
-                    sharedLink = state.value.link,
+                    sharedLink = state.value.link.sharedTo,
                     access = access,
                 )
             } else {
                 roomProvider.updateSharedLink(
                     itemId = shareData.itemId,
-                    sharedLink = state.value.link,
+                    sharedLink = state.value.link.sharedTo,
                     isFolder = shareData.isFolder,
                     access = access
                 )
@@ -143,7 +143,7 @@ class ExternalLinkSettingsViewModel(
     }
 
     private fun validatePassword(): Boolean {
-        val password = state.value.link.password ?: return true
+        val password = state.value.link.sharedTo.password ?: return true
 
         if (password.length < 8) {
             _effect.tryEmit(ExternalLinkSettingsEffect.PasswordLength)

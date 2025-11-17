@@ -309,7 +309,6 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     private fun showShareFragment() {
         val roomType = presenter.currentFolder?.roomType ?: -1
-        val denyDownload = presenter.roomClicked?.denyDownload == true
 
         presenter.itemClicked?.let { item ->
             if (requireContext().accountOnline.isDocSpace) {
@@ -317,8 +316,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     fragmentManager = parentFragmentManager,
                     lifecycleOwner = viewLifecycleOwner,
                     item = item,
-                    roomType = roomType,
-                    denyDownload = denyDownload
+                    roomType = roomType
                 ) { bundle ->
                     if (bundle.contains(ShareSettingsFragment.KEY_RESULT_SHARED)) {
                         val shared = bundle.getBoolean(ShareSettingsFragment.KEY_RESULT_SHARED)
@@ -329,8 +327,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                 ShareFragment.show(
                     activity = requireActivity(),
                     item = item,
-                    roomType = roomType,
-                    denyDownload = denyDownload
+                    roomType = roomType
                 )
             }
         }

@@ -67,39 +67,26 @@ import lib.toolkit.base.managers.utils.UiUtils
 
 @Composable
 fun ExternalLinkSettingsScreen(
-    link: ExternalLink?,
+    link: ExternalLink,
     shareData: ShareData,
     onBackListener: () -> Unit,
 ) {
-    val linkSharedTo = link?.sharedTo?.copy(
-        denyDownload = shareData.denyDownload || link.sharedTo.denyDownload
-    ) ?: ExternalLinkSharedTo(
-        id = "",
-        title = "",
-        shareLink = "",
-        linkType = 1,
-        password = null,
-        denyDownload = shareData.denyDownload,
-        isExpired = false,
-        primary = false,
-        internal = false,
-        requestToken = "",
-        expirationDate = null
-    )
     val accessOptions = remember { shareData.getAccessList(AccessTarget.ExternalLink) }
     val context = LocalContext.current
     val localView = LocalView.current
     val viewModel = viewModel {
         ExternalLinkSettingsViewModel(
-            access = link?.access?.let(Access::get) ?: accessOptions.last().access,
-            inputLink = linkSharedTo,
+            access = Access.get(link.access),
+            inputLink = link.copy(sharedTo = link.sharedTo.copy(
+                denyDownload = link.canEditDenyDownload == false || link.sharedTo.denyDownload)
+            ),
             shareData = shareData,
             roomProvider = context.roomProvider
         )
     }
     val state by viewModel.state.collectAsState()
-    val isRevoke =
-        linkSharedTo.primary && shareData.roomType in arrayOf(PUBLIC_ROOM, FILL_FORMS_ROOM)
+    val isRevoke = link.canRevoke
+            ?: link.sharedTo.primary && shareData.roomType in arrayOf(PUBLIC_ROOM, FILL_FORMS_ROOM)
     val passwordErrorState = remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
@@ -144,11 +131,11 @@ fun ExternalLinkSettingsScreen(
         loading = state.loading,
         shareData = shareData,
         passwordErrorState = passwordErrorState,
-        isCreate = link == null,
+        isCreate = link.sharedTo.id.isEmpty(),
         isRevoke = isRevoke,
         onSetAccess = viewModel::setAccess,
         onBackListener = onBackListener,
-        onDoneClick = if (link == null) viewModel::createRoomLink else viewModel::save,
+        onDoneClick = if (link.sharedTo.id.isEmpty()) viewModel::createRoomLink else viewModel::save,
         onDeleteOrRevokeLink = {
             if (shareData.isRoom) {
                 UiUtils.showQuestionDialog(
@@ -182,7 +169,7 @@ fun ExternalLinkSettingsScreen(
 
 @Composable
 private fun MainScreen(
-    link: ExternalLinkSharedTo,
+    link: ExternalLink,
     loading: Boolean,
     shareData: ShareData,
     accessOptions: List<AccessUI>,
@@ -197,7 +184,6 @@ private fun MainScreen(
     updateViewState: (ExternalLinkSharedTo.() -> ExternalLinkSharedTo) -> Unit,
 ) {
     ManagerTheme {
-
         BackHandler(onBack = onBackListener)
 
         AppScaffold(
@@ -211,7 +197,7 @@ private fun MainScreen(
                         backListener = onBackListener,
                         actions = {
                             AppTextButton(
-                                enabled = link.title.isNotEmpty() && !loading,
+                                enabled = link.sharedTo.title.isNotEmpty() && !loading,
                                 title = lib.toolkit.base.R.string.common_done,
                                 onClick = onDoneClick
                             )
@@ -224,9 +210,9 @@ private fun MainScreen(
             }
         ) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                val title = remember { mutableStateOf(link.title) }
+                val title = remember { mutableStateOf(link.sharedTo.title) }
 
-                TouchDisable(disableTouch = link.isExpired) {
+                TouchDisable(disableTouch = link.sharedTo.isExpired) {
                     Column {
                         AppHeaderItem(title = R.string.rooms_info_link_name)
                         AppTextFieldListItem(
@@ -239,9 +225,8 @@ private fun MainScreen(
 
                         AppHeaderItem(title = R.string.rooms_share_general_header)
                         AppListItem(
-                            title = stringResource(R.string.share_access_room_type),
+                            title = stringResource(R.string.rooms_share_access_rights),
                             endContent = {
-
                                 if (shareData.roomType == FILL_FORMS_ROOM) {
                                     Icon(
                                         imageVector = ImageVector.vectorResource(Access.FormFiller.toUi().icon),
@@ -273,35 +258,36 @@ private fun MainScreen(
                             }
                         )
 
-                        if (!link.primary || shareData.roomType !in listOf(
+                        if (link.canEditExpirationDate ?: !link.sharedTo.primary || shareData.roomType !in listOf(
                                 FILL_FORMS_ROOM,
                                 PUBLIC_ROOM
                             )
                         ) {
                             LinkLifeTimeListItem(
-                                expirationDate = link.expirationDate,
+                                expirationDate = link.sharedTo.expirationDate,
                                 onSetLifeTime = {
                                     updateViewState { copy(expirationDate = it.getFormattedDateTime()) }
                                 }
                             )
                         }
 
-                        if (shareData.roomType !in listOf(VIRTUAL_ROOM, PUBLIC_ROOM)) {
+                        if (link.canEditInternal ?: (shareData.roomType !in listOf(VIRTUAL_ROOM, PUBLIC_ROOM))) {
                             AppHeaderItem(title = R.string.filter_title_type)
                             AppSelectItem(
                                 title = R.string.rooms_share_shared_to_anyone,
-                                selected = link.internal == false,
+                                selected = link.sharedTo.internal == false,
                                 onClick = { updateViewState { copy(internal = false) } }
                             )
                             AppSelectItem(
                                 title = R.string.rooms_share_shared_to_docsspace_users,
-                                selected = link.internal == true,
+                                selected = link.sharedTo.internal == true,
                                 onClick = { updateViewState { copy(internal = true) } }
                             )
                         }
 
                         ProtectionSection(
-                            link = link,
+                            link = link.sharedTo,
+                            canEditDenyDownload = link.canEditDenyDownload ?: false,
                             shareData = shareData,
                             passwordErrorState = passwordErrorState,
                             updateViewState = updateViewState
@@ -328,6 +314,7 @@ private fun MainScreen(
 @Composable
 private fun ProtectionSection(
     link: ExternalLinkSharedTo,
+    canEditDenyDownload: Boolean,
     shareData: ShareData,
     passwordErrorState: MutableState<String?>,
     updateViewState: (ExternalLinkSharedTo.() -> ExternalLinkSharedTo) -> Unit,
@@ -376,10 +363,10 @@ private fun ProtectionSection(
             checked = link.denyDownload,
             singleLine = false,
             onCheck = {
-                if (shareData.denyDownload) {
-                    showWarningDialog = true
-                } else {
+                if (canEditDenyDownload) {
                     updateViewState { copy(denyDownload = it) }
+                } else {
+                    showWarningDialog = true
                 }
             }
         )
@@ -444,7 +431,12 @@ private fun Preview() {
 
     MainScreen(
         accessOptions = shareTypeRoom.getAccessList(AccessTarget.ExternalLink),
-        link = link,
+        link = ExternalLink(
+            sharedTo = link,
+            access = 10,
+            canEditInternal = true,
+            canEditExpirationDate = true
+        ),
         shareData = shareTypeRoom,
         loading = true,
         passwordErrorState = remember { mutableStateOf(null) },

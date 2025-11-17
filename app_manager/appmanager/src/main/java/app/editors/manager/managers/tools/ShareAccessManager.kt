@@ -19,7 +19,6 @@ data class ShareData(
     val roomType: Int? = null,
     val isRoom: Boolean = false,
     val isForm: Boolean = false,
-    val denyDownload: Boolean = false,
     val availableShareRights: AvailableShareRights? = null
 ) : Serializable {
 
@@ -27,7 +26,9 @@ data class ShareData(
         get() = fileExt == null
 
     val shouldShowUsers: Boolean
-        get() =  isRoom || roomType == null
+        get() = isRoom || availableShareRights?.let {
+            it.user.isNotEmpty() || it.group.isNotEmpty()
+        } ?: (roomType == null)
 
     fun getAccessList(target: AccessTarget, withRemove: Boolean = false): List<AccessUI> {
         return ShareAccessManager.getAccessList(shareData = this, target = target)
@@ -39,7 +40,7 @@ data class ShareData(
     companion object {
         const val MAX_SHARED_LINKS = 6
 
-        fun from(item: Item, roomType: Int, denyDownload: Boolean): ShareData {
+        fun from(item: Item, roomType: Int): ShareData {
             val shareData = ShareData(
                 itemId = item.id,
                 availableShareRights = item.availableShareRights
@@ -50,14 +51,10 @@ data class ShareData(
                     fileExt = item.fileExst,
                     roomType = roomType,
                     isForm = item.isForm,
-                    denyDownload = denyDownload
                 )
                 item is CloudFile -> shareData.copy(fileExt = item.fileExst, isForm = item.isForm)
                 item is CloudFolder && item.isRoom -> shareData.copy(isRoom = true, roomType = roomType)
-                item is CloudFolder && roomType > -1 -> shareData.copy(
-                    roomType = roomType,
-                    denyDownload = denyDownload
-                )
+                item is CloudFolder && roomType > -1 -> shareData.copy(roomType = roomType)
                 item is CloudFolder -> shareData
                 else -> error("cannot get share data from this item")
             }
