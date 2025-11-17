@@ -7,6 +7,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.utils.GoogleDriveUtils
 import app.editors.manager.BuildConfig
 import app.editors.manager.databinding.IncludeSocialNetworksLayoutBinding
@@ -45,6 +46,7 @@ class SocialViews(
         fun onGoogleSuccess(account: Account)
         fun onGoogleFailed()
         fun onGoogleCancelled()
+        fun onSocialClick(social: String)
     }
 
     private var onSocialNetworkCallbacks: OnSocialNetworkCallbacks? = null
@@ -61,16 +63,15 @@ class SocialViews(
 
     fun setProviders(providers: List<String>?) {
         if (providers == null) return
-        showGoogleLogin(providers.contains("google") && GoogleUtils.isGooglePlayServicesAvailable(activity))
-        showFacebookLogin(providers.contains("facebook"))
-    }
-
-    fun showGoogleLogin(isShow: Boolean) {
-        viewBinding?.loginSocialGoogleButton?.isVisible = isShow
-    }
-
-    fun showFacebookLogin(isShow: Boolean) {
-        viewBinding?.loginSocialFacebookButton?.isVisible = isShow
+        viewBinding?.let {
+            it.loginSocialGoogleButton.isVisible = providers.contains(ApiContract.Social.GOOGLE)
+                    && GoogleUtils.isGooglePlayServicesAvailable(activity)
+            it.loginSocialFacebookButton.isVisible = providers.contains(ApiContract.Social.FACEBOOK)
+            it.loginSocialAppleidButton.isVisible = false
+            it.loginSocialZoomButton.isVisible = providers.contains(ApiContract.Social.ZOOM)
+            it.loginSocialLinkedinButton.isVisible = providers.contains(ApiContract.Social.LINKEDIN)
+            it.loginSocialTwitterButton.isVisible = false
+        }
     }
 
     /*
@@ -94,6 +95,15 @@ class SocialViews(
         viewBinding?.let {
             it.loginSocialFacebookButton.setOnClickListener { onFacebookClick() }
             it.loginSocialGoogleButton.setOnClickListener { onGoogleClick() }
+            it.loginSocialAppleidButton.setOnClickListener {
+                onSocialNetworkCallbacks?.onSocialClick(ApiContract.Social.APPLE_ID)
+            }
+            it.loginSocialZoomButton.setOnClickListener {
+                onSocialNetworkCallbacks?.onSocialClick(ApiContract.Social.ZOOM)
+            }
+            it.loginSocialLinkedinButton.setOnClickListener {
+                onSocialNetworkCallbacks?.onSocialClick(ApiContract.Social.LINKEDIN)
+            }
         }
     }
 

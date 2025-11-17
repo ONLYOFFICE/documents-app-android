@@ -69,12 +69,12 @@ import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
-import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.AccessTarget
 import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.tools.ShareData
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.getTypeTitle
 import app.editors.manager.managers.utils.toUi
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
@@ -812,8 +812,7 @@ private fun PreviewMainWithBottom() {
                 nextButtonTitle = R.string.share_invite_title,
                 count = selected.size,
                 access = Access.Editor.toUi(),
-                accessList = RoomUtils.getAccessOptions(ApiContract.RoomType.CUSTOM_ROOM, false)
-                    .map { it.toUi() },
+                accessList = ShareData().getAccessList(AccessTarget.User),
                 {}, {}) {}
         }
     }

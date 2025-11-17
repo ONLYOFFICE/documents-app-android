@@ -1,5 +1,6 @@
 package app.editors.manager.mvp.presenters.main
 
+import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -60,12 +61,13 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
     private suspend fun getPortalModules(): Result<List<Explorer>> {
         return runCatching {
             val response = api.getRootFolder(
-                mapOf(ApiContract.Modules.FILTER_TYPE_HEADER to ApiContract.Modules.FILTER_TYPE_VALUE),
-                mapOf(
+                filterMap = mapOf(ApiContract.Modules.FILTER_TYPE_HEADER to ApiContract.Modules.FILTER_TYPE_VALUE),
+                flagMap = mapOf(
                     ApiContract.Modules.FLAG_SUBFOLDERS to false,
                     ApiContract.Modules.FLAG_TRASH to false,
                     ApiContract.Modules.FLAG_ADDFOLDERS to false
-                )
+                ),
+                count = if (context.accountOnline.isDocSpace) 1 else null
             )
             withContext(Dispatchers.Default) {
                 val folderTypes = response.response.map { explorer -> explorer.current.rootFolderType }
@@ -93,7 +95,7 @@ class MainPagerPresenter : BasePresenter<MainPagerView>() {
             sortedList.add(it)
         }
         response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_RECENT }?.let {
-            sortedList.add(it)
+//            sortedList.add(it)
         }
         response.firstOrNull { it.current.rootFolderType == ApiContract.SectionType.CLOUD_COMMON }?.let {
             sortedList.add(it)

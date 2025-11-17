@@ -637,6 +637,7 @@
     <string name="socials_facebook_failed_auth">Failed login with Facebook</string>
     <string name="socials_google_failed_auth">Failed login with Google</string>
     <string name="socials_google_cancel_auth">Cancel login with Google</string>
+    <string name="socials_failed_auth">Failed login</string>
 
     <!-- ======================================================================================= -->
     <!-- On boarding -->

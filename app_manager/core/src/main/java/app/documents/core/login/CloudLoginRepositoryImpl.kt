@@ -90,13 +90,20 @@ internal class CloudLoginRepositoryImpl(
         )
     }
 
-    override suspend fun signInWithProvider(accessToken: String?, provider: String, code: String?): Flow<LoginResult> {
+    override suspend fun signInWithProvider(
+        accessToken: String?,
+        provider: String,
+        code: String?,
+        codeOauth: String?
+    ): Flow<LoginResult> {
         if (provider == ApiContract.Social.GOOGLE) savedAccessToken = accessToken
         return signIn(
             request = RequestSignIn(
-                accessToken = checkNotNull(accessToken ?: savedAccessToken),
+                accessToken = accessToken ?: savedAccessToken,
                 provider = provider,
-                code = code.orEmpty()
+                code = code.orEmpty(),
+                portal = cloudPortal?.urlWithScheme.orEmpty(),
+                codeOauth = codeOauth
             )
         )
     }
