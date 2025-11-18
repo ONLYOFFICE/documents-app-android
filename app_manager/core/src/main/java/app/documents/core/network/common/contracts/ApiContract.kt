@@ -184,6 +184,7 @@ object ApiContract {
         const val CLOUD_RECENT = 11
         const val CLOUD_PRIVATE_ROOM = 13
         const val CLOUD_VIRTUAL_ROOM = 14
+        const val FILLING_ROOM = 15
         const val CLOUD_ARCHIVE_ROOM = 20
         const val EDITING_ROOM = 16
         const val CUSTOM_ROOM = 19
@@ -209,6 +210,17 @@ object ApiContract {
 
         fun shouldShowShareBadge(type: Int): Boolean {
             return type == EDITING_ROOM || type == CUSTOM_ROOM || type == VIRTUAL_DATA_ROOM
+        }
+
+        fun getRoomType(parentRoomType: Int): Int {
+            return when(parentRoomType) {
+                CUSTOM_ROOM -> RoomType.CUSTOM_ROOM
+                FILLING_ROOM -> RoomType.FILL_FORMS_ROOM
+                VIRTUAL_DATA_ROOM -> RoomType.VIRTUAL_ROOM
+                PUBLIC_ROOM -> RoomType.PUBLIC_ROOM
+                EDITING_ROOM -> RoomType.COLLABORATION_ROOM
+                else -> -1
+            }
         }
     }
 
