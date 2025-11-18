@@ -182,7 +182,13 @@ interface ExplorerContextItemVisible {
         get() = when {
             section.isWebdav -> false
             provider is PortalProvider.Cloud.DocSpace -> item.isCanShare
-            item is CloudFile && access in arrayOf(Access.ReadWrite, Access.None) && !item.isDenySharing -> true
+                    && (!section.isShare || access == Access.ReadWrite)
+
+            item is CloudFile && access in arrayOf(
+                Access.ReadWrite,
+                Access.None
+            ) && !item.isDenySharing -> true
+
             else -> isShareVisible(access, section)
         }
 
