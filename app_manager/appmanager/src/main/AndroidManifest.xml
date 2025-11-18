@@ -277,6 +277,10 @@
             android:windowSoftInputMode="adjustResize|stateHidden" />
 
         <service
+            android:name="app.documents.shared.MessengerService"
+            android:exported="false"/>
+
+        <service
             android:name="app.editors.manager.managers.services.AuthenticatorService"
             android:exported="false">
             <intent-filter>

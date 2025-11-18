@@ -13,7 +13,8 @@ include(
     ":libcompose",
     ":libtoolkit",
     ":core:model",
-    ":core:database"
+    ":core:database",
+    ":libshared"
 )
 
 //  Check the existence of editor modules before connecting
