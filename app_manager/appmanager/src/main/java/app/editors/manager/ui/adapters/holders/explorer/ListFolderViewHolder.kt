@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.contracts.ApiContract.SectionType.shouldShowShareBadge
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerListFolderBinding
@@ -48,6 +49,7 @@ class ListFolderViewHolder(view: View, adapter: ExplorerAdapter) :
         if (adapter.pickerMode == PickerMode.Ordering) {
             initOrderingMode(binding.dragIcon, binding.contextButtonLayout)
         }
+        binding.link.isVisible = element.shared && shouldShowShareBadge(element.parentRoomType)
     }
 
     override fun getCachedIcon(): View {

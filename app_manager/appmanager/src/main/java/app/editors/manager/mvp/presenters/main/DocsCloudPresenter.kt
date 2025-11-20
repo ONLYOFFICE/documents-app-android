@@ -613,6 +613,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
+    fun updateShareBadge(shared: Boolean) {
+        itemClicked?.let { item ->
+            if (item.shared != shared) {
+                item.shared = shared
+                viewState.onUpdateItemState()
+            }
+        }
+    }
+
     fun removeShareContext() {
         if (itemClicked != null) {
             val deleteShare = RequestDeleteShare()

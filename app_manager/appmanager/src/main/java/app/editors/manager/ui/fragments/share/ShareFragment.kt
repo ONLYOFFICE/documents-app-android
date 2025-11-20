@@ -17,14 +17,14 @@ class ShareFragment : ComposeDialogFragment() {
     companion object {
         private const val KEY_SHARE_DATA: String = "KEY_SHARE_DATA"
 
-        private fun newInstance(item: Item): ShareFragment {
+        private fun newInstance(item: Item, roomType: Int): ShareFragment {
             return ShareFragment().putArgs(
-                KEY_SHARE_DATA to ShareData.from(item),
+                KEY_SHARE_DATA to ShareData.from(item, roomType),
             )
         }
 
-        fun show(activity: FragmentActivity, item: Item) {
-            newInstance(item).show(activity.supportFragmentManager, null)
+        fun show(activity: FragmentActivity, item: Item, roomType: Int) {
+            newInstance(item, roomType).show(activity.supportFragmentManager, null)
         }
     }
 

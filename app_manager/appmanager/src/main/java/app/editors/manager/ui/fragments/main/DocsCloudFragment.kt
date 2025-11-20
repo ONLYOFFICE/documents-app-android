@@ -268,6 +268,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
             is ExplorerContextItem.FillingStatus -> showFillingStatusFragment(FillingStatusMode.None)
             is ExplorerContextItem.StopFilling -> showStopFillingQuestionDialog()
             is ExplorerContextItem.ResetFilling -> presenter.resetFilling()
+            is ExplorerContextItem.CustomFilter -> presenter.setCustomFilter()
             else -> super.onContextButtonClick(contextItem)
         }
     }
@@ -307,16 +308,26 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     private fun showShareFragment() {
+        val roomType = presenter.currentFolder?.roomType ?: -1
+
         presenter.itemClicked?.let { item ->
             if (requireContext().accountOnline.isDocSpace) {
                 ShareSettingsFragment.show(
-                    activity = requireActivity(),
-                    item = item
-                )
+                    fragmentManager = parentFragmentManager,
+                    lifecycleOwner = viewLifecycleOwner,
+                    item = item,
+                    roomType = roomType
+                ) { bundle ->
+                    if (bundle.contains(ShareSettingsFragment.KEY_RESULT_SHARED)) {
+                        val shared = bundle.getBoolean(ShareSettingsFragment.KEY_RESULT_SHARED)
+                        presenter.updateShareBadge(shared)
+                    }
+                }
             } else {
                 ShareFragment.show(
                     activity = requireActivity(),
-                    item = item
+                    item = item,
+                    roomType = roomType
                 )
             }
         }

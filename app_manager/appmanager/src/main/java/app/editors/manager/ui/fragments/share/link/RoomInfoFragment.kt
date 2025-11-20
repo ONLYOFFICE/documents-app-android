@@ -16,10 +16,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -107,7 +107,7 @@ class RoomInfoFragment : ComposeDialogFragment() {
     }
 
     private val shareData: ShareData by lazy {
-        ShareData.from(room)
+        ShareData.from(room, room.roomType)
     }
 
     @Composable
@@ -190,9 +190,8 @@ class RoomInfoFragment : ComposeDialogFragment() {
                     composable<Screens.LinkSettings> { backStackEntry ->
                         val json = backStackEntry.toRoute<Screens.LinkSettings>().link
                         ExternalLinkSettingsScreen(
-                            link = json?.let { Json.decodeFromString<ExternalLink>(it) },
-                            roomId = room.id,
-                            roomType = room.roomType,
+                            link = getExternalLink(json),
+                            shareData = shareData,
                             onBackListener = navController::popBackStackWhenResumed
                         )
                     }
@@ -276,81 +275,28 @@ class RoomInfoFragment : ComposeDialogFragment() {
         }
     }
 
-    @Composable
-    private fun RoomInfoScreen(
-        state: RoomInfoState,
-        canEditRoom: Boolean,
-        roomType: Int?,
-        roomTitle: String?,
-        portal: String?,
-        onChangeMemberAccess: (ShareEntity) -> Unit,
-        onAddUsers: () -> Unit,
-        onBackClick: () -> Unit,
-        onLinkClick: (ExternalLink) -> Unit,
-        onSharedLinkCreate: () -> Unit
-    ) {
-        BackHandler(onBack = onBackClick)
-
-        AppScaffold(
-            useTablePaddings = false,
-            topBar = {
-                Column {
-                    AppTopBar(
-                        title = {
-                            Column {
-                                Text(
-                                    text = roomTitle
-                                        ?: stringResource(id = R.string.list_context_info)
-                                )
-                                roomType?.let { type ->
-                                    Text(
-                                        text = stringResource(id = RoomUtils.getRoomInfo(type).title),
-                                        style = MaterialTheme.typography.caption
-                                    )
-                                }
-                            }
-                        },
-                        actions = {
-                            TopAppBarAction(
-                                icon = R.drawable.ic_add_users,
-                                onClick = onAddUsers,
-                                enabled = canEditRoom
-                            )
-                        },
-                        backListener = onBackClick
-                    )
-                    AnimatedVisibilityVerticalFade(visible = state.requestLoading) {
-                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                    }
-                }
-            }
-        ) {
-            if (state.isLoading) {
-                LoadingPlaceholder()
-            } else {
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    val groupedShareList = state.shareList.groupBy(Share::roomAccessType)
-                    if (ApiContract.RoomType.hasExternalLink(roomType)) {
-                        ExternalLinkBlock(
-                            sharedLinks = state.sharedLinks,
-                            roomType = roomType,
-                            canEditRoom = canEditRoom,
-                            onLinkClick = onLinkClick,
-                            onSharedLinkCreate = onSharedLinkCreate
-                        )
-                    }
-                    groupedShareList.forEach { (shareType, shareList) ->
-                        ShareUsersList(
-                            isRoom = true,
-                            portal = portal,
-                            shareList = shareList,
-                            title = shareType.titleWithCount,
-                            onClick = { share -> onChangeMemberAccess(share) }
-                        )
-                    }
-                }
-            }
-        }
+    private fun getExternalLink(json: String?): ExternalLink {
+        return json?.let { Json.decodeFromString<ExternalLink>(it) }
+            ?: ExternalLink(
+                sharedTo = ExternalLinkSharedTo(
+                    id = "",
+                    title = "",
+                    shareLink = "",
+                    linkType = 1,
+                    password = null,
+                    denyDownload = false,
+                    isExpired = false,
+                    primary = false,
+                    internal = false,
+                    requestToken = "",
+                    expirationDate = null
+                ),
+                access = Access.Read.code,
+                canEditInternal = shareData.roomType != ApiContract.RoomType.PUBLIC_ROOM,
+                canEditDenyDownload = true,
+                canEditExpirationDate = true,
+                canRevoke = false
+            )
     }
 
     private fun copyLinkToClipboard(rootView: View, url: String) {
@@ -359,92 +305,169 @@ class RoomInfoFragment : ComposeDialogFragment() {
             .setText(R.string.rooms_info_create_link_complete)
             .show()
     }
+}
 
-    @Preview
-    @Composable
-    private fun RoomInfoScreenPreview() {
-        val link = ExternalLink(
-            access = 2,
-            isLocked = false,
-            isOwner = false,
-            canEditAccess = false,
-            sharedTo = ExternalLinkSharedTo(
-                id = "",
-                title = "Shared link",
-                shareLink = "",
-                linkType = 2,
-                denyDownload = false,
-                isExpired = false,
-                primary = true,
-                requestToken = "",
-                password = "",
-                expirationDate = ""
-            )
-        )
+@Composable
+private fun RoomInfoScreen(
+    state: RoomInfoState,
+    canEditRoom: Boolean,
+    roomType: Int?,
+    roomTitle: String?,
+    portal: String?,
+    onChangeMemberAccess: (ShareEntity) -> Unit,
+    onAddUsers: () -> Unit,
+    onBackClick: () -> Unit,
+    onLinkClick: (ExternalLink) -> Unit,
+    onSharedLinkCreate: () -> Unit
+) {
+    BackHandler(onBack = onBackClick)
 
-        ManagerTheme {
-            RoomInfoScreen(
-                roomTitle = "Room title",
-                roomType = ApiContract.RoomType.FILL_FORMS_ROOM,
-                canEditRoom = true,
-                portal = "",
-                state = RoomInfoState(
-                    isLoading = false,
-                    sharedLinks = listOf(
-                        link.copy(
-                            sharedTo = link.sharedTo.copy(
-                                title = "Shared link 1",
-                                expirationDate = "123"
+    AppScaffold(
+        useTablePaddings = false,
+        topBar = {
+            Column {
+                AppTopBar(
+                    title = {
+                        Column {
+                            Text(
+                                text = roomTitle
+                                    ?: stringResource(id = R.string.list_context_info)
                             )
-                        ),
-                        link.copy(
-                            sharedTo = link.sharedTo.copy(
-                                title = "Shared link 2",
-                                password = "123"
-                            )
-                        ),
-                        link.copy(
-                            sharedTo = link.sharedTo.copy(
-                                title = "Shared link 3",
-                                isExpired = true
-                            )
-                        ),
-                    ),
-                    shareList = listOf(
-                        Share(
-                            _access = Access.Comment.code,
-                            sharedTo = SharedTo(displayName = "User 1"),
-                            isOwner = true
-                        ),
-                        Share(
-                            _access = Access.Read.code,
-                            sharedTo = SharedTo(name = "Group 2"),
-                            subjectType = 2
-                        ),
-                        Share(
-                            _access = Access.Read.code,
-                            sharedTo = SharedTo(displayName = "User 2")
-                        ),
-                        Share(
-                            _access = Access.Editor.code,
-                            sharedTo = SharedTo(displayName = "User 3")
-                        ),
-                        Share(
-                            _access = Access.Editor.code,
-                            sharedTo = SharedTo(displayName = "User 4")
-                        ),
-                        Share(
-                            _access = Access.Editor.code,
-                            sharedTo = SharedTo(displayName = "User 4", activationStatus = 2)
-                        ),
-                    )
-                ),
-                onBackClick = {},
-                onAddUsers = {},
-                onChangeMemberAccess = { },
-                onSharedLinkCreate = {},
-                onLinkClick = {},
-            )
+                            roomType?.let { type ->
+                                Text(
+                                    text = stringResource(id = RoomUtils.getRoomInfo(type).title),
+                                    style = MaterialTheme.typography.caption
+                                )
+                            }
+                        }
+                    },
+                    actions = {
+                        TopAppBarAction(
+                            icon = R.drawable.ic_add_users,
+                            onClick = onAddUsers,
+                            enabled = canEditRoom
+                        )
+                    },
+                    backListener = onBackClick
+                )
+                AnimatedVisibilityVerticalFade(visible = state.requestLoading) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
+            }
         }
+    ) {
+        if (state.isLoading) {
+            LoadingPlaceholder()
+        } else {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                val groupedShareList = state.shareList.groupBy(Share::roomAccessType)
+                if (ApiContract.RoomType.hasExternalLink(roomType)) {
+                    ExternalLinkBlock(
+                        sharedLinks = state.sharedLinks,
+                        roomType = roomType,
+                        canEditRoom = canEditRoom,
+                        onLinkClick = onLinkClick,
+                        onSharedLinkCreate = onSharedLinkCreate
+                    )
+                }
+                groupedShareList.forEach { (shareType, shareList) ->
+                    ShareUsersList(
+                        isRoom = true,
+                        portal = portal,
+                        shareList = shareList,
+                        title = shareType.titleWithCount,
+                        onClick = { share -> onChangeMemberAccess(share) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun RoomInfoScreenPreview() {
+    val link = ExternalLink(
+        access = 2,
+        isLocked = false,
+        isOwner = false,
+        canEditAccess = false,
+        sharedTo = ExternalLinkSharedTo(
+            id = "",
+            title = "Shared link",
+            shareLink = "",
+            linkType = 2,
+            denyDownload = false,
+            isExpired = false,
+            primary = true,
+            requestToken = "",
+            password = "",
+            expirationDate = ""
+        )
+    )
+
+    ManagerTheme {
+        RoomInfoScreen(
+            roomTitle = "Room title",
+            roomType = ApiContract.RoomType.FILL_FORMS_ROOM,
+            canEditRoom = true,
+            portal = "",
+            state = RoomInfoState(
+                isLoading = false,
+                sharedLinks = listOf(
+                    link.copy(
+                        sharedTo = link.sharedTo.copy(
+                            title = "Shared link 1",
+                            expirationDate = "123"
+                        )
+                    ),
+                    link.copy(
+                        sharedTo = link.sharedTo.copy(
+                            title = "Shared link 2",
+                            password = "123"
+                        )
+                    ),
+                    link.copy(
+                        sharedTo = link.sharedTo.copy(
+                            title = "Shared link 3",
+                            isExpired = true
+                        )
+                    ),
+                ),
+                shareList = listOf(
+                    Share(
+                        _access = Access.Comment.code,
+                        sharedTo = SharedTo(displayName = "User 1"),
+                        isOwner = true
+                    ),
+                    Share(
+                        _access = Access.Read.code,
+                        sharedTo = SharedTo(name = "Group 2"),
+                        subjectType = 2
+                    ),
+                    Share(
+                        _access = Access.Read.code,
+                        sharedTo = SharedTo(displayName = "User 2")
+                    ),
+                    Share(
+                        _access = Access.Editor.code,
+                        sharedTo = SharedTo(displayName = "User 3")
+                    ),
+                    Share(
+                        _access = Access.Editor.code,
+                        sharedTo = SharedTo(displayName = "User 4")
+                    ),
+                    Share(
+                        _access = Access.Editor.code,
+                        sharedTo = SharedTo(displayName = "User 4", activationStatus = 2)
+                    ),
+                )
+            ),
+            onBackClick = {},
+            onAddUsers = {},
+            onChangeMemberAccess = { },
+            onSharedLinkCreate = {},
+            onLinkClick = {},
+        )
     }
 }

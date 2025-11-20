@@ -25,6 +25,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.documents.core.model.cloud.Access
@@ -40,16 +41,16 @@ import lib.toolkit.base.R
 fun ExternalLinkItem(
     linkTitle: String,
     access: Int,
-    showAccess: Boolean,
     hasPassword: Boolean,
     expiring: Boolean,
     isExpired: Boolean,
-    canEdit: Boolean,
+    internal: Boolean,
     onShareClick: () -> Unit,
+    modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .height(dimensionResource(id = R.dimen.item_onehalf_line_height))
             .fillMaxWidth()
             .addIfNotNull(onClick) { clickable(onClick = it) }
@@ -83,9 +84,27 @@ fun ExternalLinkItem(
                     color = MaterialTheme.colors.error
                 )
             } else {
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    AttributeIcon(icon = app.editors.manager.R.drawable.ic_small_lock, activate = hasPassword)
-                    AttributeIcon(icon = app.editors.manager.R.drawable.ic_small_clock, activate = expiring)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (hasPassword) {
+                        AttributeIcon(app.editors.manager.R.drawable.ic_small_lock)
+                    }
+                    if (expiring) {
+                        AttributeIcon(app.editors.manager.R.drawable.ic_small_clock)
+                    }
+                    Text(
+                        text = if (internal) {
+                            stringResource(id = app.editors.manager.R.string.rooms_share_shared_to_docsspace_users)
+                        } else {
+                            stringResource(id = app.editors.manager.R.string.rooms_share_shared_to_anyone)
+                        },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.body2,
+                        color = MaterialTheme.colors.colorTextSecondary
+                    )
                 }
             }
         }
@@ -96,15 +115,13 @@ fun ExternalLinkItem(
                 contentDescription = null
             )
         }
-        if (showAccess) {
-            Icon(
-                modifier = Modifier.padding(start = 8.dp),
-                imageVector = ImageVector.vectorResource(Access.get(access).toUi().icon),
-                tint = MaterialTheme.colors.colorTextSecondary,
-                contentDescription = null
-            )
-        }
-        if (canEdit) {
+        Icon(
+            modifier = Modifier.padding(start = 8.dp),
+            imageVector = ImageVector.vectorResource(Access.get(access).toUi().icon),
+            tint = MaterialTheme.colors.colorTextSecondary,
+            contentDescription = null
+        )
+        if (onClick != null) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_right),
                 tint = MaterialTheme.colors.colorTextTertiary,
@@ -115,28 +132,18 @@ fun ExternalLinkItem(
 }
 
 @Composable
-private fun AttributeIcon(icon: Int, activate: Boolean = true) {
+private fun AttributeIcon(icon: Int) {
     Box(
         modifier = Modifier
             .clip(CircleShape)
             .size(20.dp)
-            .background(
-                if (!activate) {
-                    colorResource(id = R.color.colorIconBackground)
-                } else {
-                    MaterialTheme.colors.primary
-                }
-            ),
+            .background(MaterialTheme.colors.primary),
         contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(icon),
             contentDescription = null,
-            tint = if (!activate) {
-                MaterialTheme.colors.colorTextTertiary
-            } else {
-                MaterialTheme.colors.onPrimary
-            }
+            tint = MaterialTheme.colors.onPrimary
         )
     }
 }
@@ -153,19 +160,17 @@ private fun Preview() {
                     hasPassword = true,
                     expiring = false,
                     isExpired = false,
-                    canEdit = true,
-                    showAccess = true,
+                    internal = true,
                     onClick = {},
                     onShareClick = {}
                 )
                 ExternalLinkItem(
-                    showAccess = false,
                     linkTitle = "Shared link",
                     access = 2,
                     hasPassword = true,
                     expiring = false,
                     isExpired = true,
-                    canEdit = true,
+                    internal = false,
                     onClick = {},
                     onShareClick = {}
                 )

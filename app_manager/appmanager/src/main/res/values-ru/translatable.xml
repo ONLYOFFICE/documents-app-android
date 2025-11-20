@@ -603,7 +603,6 @@
     <string name="rooms_add_public_room_des">Приглашайте пользователей с помощью ссылок, к которым предоставлен доступ, для просмотра документов без регистрации. Вы также можете встроить эту комнату в любой веб-интерфейс.</string>
     <string name="rooms_move_to_public_title">Переместить в Публичную комнату</string>
     <string name="rooms_move_to_public_title_desc">Эта комната и все ее содержимое доступны всем, у кого есть ссылка. Продолжить?</string>
-    <string name="rooms_info_access_desc">Эта комната доступна всем, у кого есть ссылка. Сторонние пользователи получат разрешение только на просмотр для всех файлов.</string>
     <string name="rooms_info_general_link">Общая ссылка</string>
     <string name="rooms_info_additional_link">Дополнительная ссылка</string>
     <string name="rooms_info_additional_links">"Дополнительные ссылки (%1$d/%2$d)"</string>

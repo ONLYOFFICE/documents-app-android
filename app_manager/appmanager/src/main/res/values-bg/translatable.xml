@@ -583,7 +583,6 @@
     <string name="rooms_add_public_room_des">Поканете потребители чрез споделени линкове, за да преглеждат документи без регистрация. Също можете да вградите тази стая във всеки уеб интерфейс.</string>
     <string name="rooms_move_to_public_title">Преминете към Обществена стая</string>
     <string name="rooms_move_to_public_title_desc">Тази стая и цялото ѝ съдържание са налични за всеки с линк. Желаете ли да продължите?</string>
-    <string name="rooms_info_access_desc">Тази стая е налична за всеки с линк. Външните потребители ще имат позволение Само за Четене за всички файлове.</string>
     <string name="rooms_info_general_link">Главен линк</string>
     <string name="rooms_info_additional_link">Допълнителен линк</string>
     <string name="rooms_info_additional_links">"Допълнителни линкове (%1$d/%2$d)"</string>

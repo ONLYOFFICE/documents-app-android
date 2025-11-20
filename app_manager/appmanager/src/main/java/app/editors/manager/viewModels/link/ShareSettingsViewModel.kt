@@ -6,6 +6,7 @@ import app.documents.core.model.cloud.Access
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
 import app.documents.core.providers.RoomProvider
+import app.editors.manager.R
 import app.editors.manager.managers.tools.ShareData
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -44,11 +45,19 @@ class ShareSettingsViewModel(
     private val _effect: MutableSharedFlow<ShareSettingsEffect> = MutableSharedFlow(1)
     val effect: SharedFlow<ShareSettingsEffect> = _effect.asSharedFlow()
 
+    val hasLinks: Boolean?
+        get() = (state.value as? ShareSettingsState.Success)?.links?.isNotEmpty()
+
     fun create() {
         viewModelScope.launch {
             try {
                 _effect.emit(ShareSettingsEffect.OnCreate(true))
-                val link = roomProvider.createSharedLink(shareData.itemId, shareData.isFolder)
+                val access = if (shareData.isForm) Access.Editor else Access.Read
+                val link = roomProvider.createSharedLink(
+                    itemId = shareData.itemId,
+                    isFolder = shareData.isFolder,
+                    access = access.code
+                )
                 _effect.emit(ShareSettingsEffect.OnCreate(false))
                 _effect.emit(ShareSettingsEffect.Copy(link.sharedTo.shareLink))
 
@@ -57,7 +66,12 @@ class ShareSettingsViewModel(
                     _state.update { state.copy(links = state.links + link) }
                 }
             } catch (e: HttpException) {
-                _effect.emit(ShareSettingsEffect.Error(e.code()))
+                val errorMessage = e.response()?.errorBody()?.string().orEmpty()
+                if (ExternalLinkSettingsViewModel.MAXIMUM_LINKS_ERROR in errorMessage) {
+                    _effect.emit(ShareSettingsEffect.Error(R.string.rooms_info_create_maximum_exceed))
+                } else {
+                    _effect.emit(ShareSettingsEffect.Error(e.code()))
+                }
             } catch (_: Exception) {
                 _effect.emit(ShareSettingsEffect.Error())
             } finally {

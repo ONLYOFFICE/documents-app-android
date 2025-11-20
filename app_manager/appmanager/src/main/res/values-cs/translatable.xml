@@ -725,7 +725,6 @@
     <string name="rooms_add_public_room_des">Pozvěte uživatele prostřednictvím sdílených odkazů k prohlížení dokumentů bez registrace. Tuto místnost můžete také vložit do libovolného webového rozhraní.</string>
     <string name="rooms_move_to_public_title">Přesun do veřejné místnosti</string>
     <string name="rooms_move_to_public_title_desc">Tato místnost a veškerý její obsah jsou k dispozici komukoli, kdo na ni zadá odkaz. Chcete pokračovat?</string>
-    <string name="rooms_info_access_desc">Tato místnost je dostupná komukoli s odkazem. Externí uživatelé budou mít pro všechny soubory oprávnění pouze k prohlížení.</string>
     <string name="rooms_info_general_link">Obecný odkaz</string>
     <string name="rooms_info_additional_link">Doplňkový odkaz</string>
     <string name="rooms_info_additional_links">"Další odkazy (%1$d/%2$d)"</string>

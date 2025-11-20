@@ -648,7 +648,6 @@
     <string name="rooms_add_public_room_des">通过共享链接邀请用户，无需注册即可查看文档。您还可以将此房间嵌入任何网络界面。</string>
     <string name="rooms_move_to_public_title">移至公共房间</string>
     <string name="rooms_move_to_public_title_desc">所有拥有链接的人都能访问该房间及其内容。您要继续吗?</string>
-    <string name="rooms_info_access_desc">所有拥有链接的人都能访问该房间。外部用户对所有文件只有查看权限。</string>
     <string name="rooms_info_general_link">通用链接</string>
     <string name="rooms_info_additional_link">附加链接</string>
     <string name="rooms_info_additional_links">"附加链接 (%1$d/%2$d)"</string>

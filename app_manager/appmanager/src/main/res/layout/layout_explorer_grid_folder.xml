@@ -98,6 +98,18 @@
             tools:visibility="visible" />
 
         <ImageView
+            android:id="@+id/link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/default_margin_small"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_link_badge"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@id/imageLayout"
+            app:layout_constraintTop_toBottomOf="@id/favorite"
+            tools:visibility="visible" />
+
+        <ImageView
             android:id="@+id/selectIcon"
             style="@style/ExplorerItemLayout.SelectIcon"
             app:layout_constraintBottom_toBottomOf="@id/badgeNewCard"

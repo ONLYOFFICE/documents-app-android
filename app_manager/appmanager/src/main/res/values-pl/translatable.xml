@@ -589,7 +589,6 @@
     <string name="rooms_add_public_room_des">Zaproś użytkowników do przeglądania dokumentów za pośrednictwem udostępnionych przez Ciebie linków bez konieczności rejestracji. Możesz również osadzić ten pokój w dowolnym interfejsie internetowym.</string>
     <string name="rooms_move_to_public_title">Przenieś do pokoju publicznego</string>
     <string name="rooms_move_to_public_title_desc">Ten pokój i cała jego zawartość są dostępne dla każdego, kto ma link. Czy chcesz kontynuować?</string>
-    <string name="rooms_info_access_desc">Ten pokój jest dostępny dla każdego, kto ma link. Użytkownicy zewnętrzni będą mieli uprawnienie tylko do odczytu dla wszystkich plików.</string>
     <string name="rooms_info_general_link">Link główny</string>
     <string name="rooms_info_additional_link">Link dodatkowy</string>
     <string name="rooms_info_additional_links">"Linki dodatkowe (%1$d/%2$d)"</string>

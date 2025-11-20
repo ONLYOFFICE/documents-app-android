@@ -83,6 +83,7 @@
         android:id="@+id/statusLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:layout_marginStart="@dimen/default_margin_small"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@+id/title"
@@ -101,6 +102,17 @@
             app:tint="@color/colorPrimary"
             tools:ignore="ContentDescription"
             tools:visibility="visible"/>
+
+        <ImageView
+            android:id="@+id/link"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="@dimen/default_margin_medium"
+            android:src="@drawable/ic_room_link"
+            android:visibility="gone"
+            app:tint="@color/colorPrimary"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible" />
 
     </LinearLayout>
 
