@@ -39,7 +39,7 @@ internal object StringUtils {
 
 
         val date = TimeUtils.getWeekDate(folder.updated)
-        val originTitle = folder.originTitle.ifEmpty { folder.originRoomTitle }.ifEmpty { null }
+        val originTitle = folder.originRoomTitle.ifEmpty { folder.originTitle }.ifEmpty { null }
         val owner = originTitle ?: getItemOwner(context, folder, state.accountId)
             .takeUnless { state.sectionType == ApiContract.SectionType.CLOUD_USER }
 
@@ -102,7 +102,7 @@ internal object StringUtils {
         }
 
         val date = TimeUtils.getWeekDate(file.updated)
-        val originTitle = file.originTitle.ifEmpty { file.originRoomTitle }.ifEmpty { null }
+        val originTitle = file.originRoomTitle.ifEmpty { file.originTitle }.ifEmpty { null }
         val owner = originTitle ?: getItemOwner(context, file, state.accountId)
             .takeUnless { state.sectionType == ApiContract.SectionType.CLOUD_USER }
 
