@@ -738,6 +738,18 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         roomService.startFilling(formId, request)
     }
 
+    suspend fun getUsersByItemId(itemId: String, isFolder: Boolean): List<User> {
+//        uncomment when merging
+//        val response = if (isFolder) {
+//            roomService.getUsersByFolderId(itemId)
+//        } else {
+//            roomService.getUsersByFileId(itemId)
+//        }
+
+        val response = roomService.getUsersByFileId(itemId)
+        return response.response
+    }
+
     private fun <T> handleUnitResponse(apiCall: suspend () -> Response<T>): Flow<NetworkResult<Unit>> = flow {
         val response = apiCall()
         if (!response.isSuccessful) throw HttpException(response)

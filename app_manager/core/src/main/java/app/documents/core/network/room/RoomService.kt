@@ -504,4 +504,10 @@ interface RoomService {
         @Path(value = "fileId") fileId: String,
         @Body body: RequestFormRoleMapping
     ): Response<ResponseBody>
+
+    // check "activationstatus" query when merging
+    @GET("api/" + ApiContract.API_VERSION + "/people/file/{fileId}?activationstatus=1")
+    suspend fun getUsersByFileId(
+        @Path(value = "fileId") fileId: String
+    ): app.documents.core.network.BaseResponse<List<User>>
 }

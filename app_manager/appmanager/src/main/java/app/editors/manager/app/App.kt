@@ -24,6 +24,8 @@ import app.documents.core.providers.CloudFileProvider
 import app.documents.core.providers.LocalFileProvider
 import app.documents.core.providers.RoomProvider
 import app.documents.core.providers.WebDavFileProvider
+import app.documents.shared.di.MessengerServiceApp
+import app.documents.shared.di.MessengerServiceComponent
 import app.editors.manager.BuildConfig
 import app.editors.manager.di.component.AppComponent
 import app.editors.manager.di.component.DaggerAppComponent
@@ -40,7 +42,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import lib.toolkit.base.managers.utils.ActivitiesUtils
 import java.util.Locale
 
-class App : Application() {
+class App : Application(), MessengerServiceApp {
 
     companion object {
 
@@ -102,6 +104,8 @@ class App : Application() {
             "LoginComponent component can't be null"
         }
 
+    private var _messengerServiceComponent: MessengerServiceComponent? = null
+
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
         sApp = this
@@ -125,6 +129,15 @@ class App : Application() {
         if (isDesktop != currentDesktopMode) {
             isDesktop = currentDesktopMode
         }
+    }
+
+    override fun createMessengerServiceComponent(): MessengerServiceComponent {
+        _messengerServiceComponent = appComponent.serviceComponent().create()
+        return checkNotNull(_messengerServiceComponent)
+    }
+
+    override fun destroyMessengerServiceComponent() {
+        _messengerServiceComponent = null
     }
 
     fun refreshDropboxInstance() {

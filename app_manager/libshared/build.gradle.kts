@@ -30,6 +30,7 @@ android {
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":core:model"))
 
     // Dagger
     implementation(libs.dagger)

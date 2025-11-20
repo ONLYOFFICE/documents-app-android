@@ -20,7 +20,10 @@ import app.documents.core.providers.OneDriveFileProvider
 import app.documents.core.providers.RecentFileProvider
 import app.documents.core.providers.RoomProvider
 import app.documents.core.providers.WebDavFileProvider
+import app.documents.shared.di.MessengerServiceComponent
+import app.documents.shared.di.MessengerServiceDependencies
 import app.editors.manager.di.module.AppModule
+import app.editors.manager.di.module.MessengerServiceModule
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.tools.AppLocaleHelper
 import app.editors.manager.managers.tools.CacheTool
@@ -95,9 +98,9 @@ import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.tools.ThemePreferencesTools
 import javax.inject.Singleton
 
-@Component(modules = [CoreModule::class, AppModule::class])
+@Component(modules = [CoreModule::class, AppModule::class, MessengerServiceModule::class])
 @Singleton
-interface AppComponent {
+interface AppComponent : MessengerServiceDependencies {
 
     @Component.Builder
     interface Builder {
@@ -110,6 +113,8 @@ interface AppComponent {
     }
 
     fun loginComponent(): LoginComponent.Factory
+
+    fun serviceComponent(): MessengerServiceComponent.Factory
 
     /*
     * TODO scopes!

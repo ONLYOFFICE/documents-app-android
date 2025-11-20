@@ -9,10 +9,11 @@ import android.os.IBinder
 import android.os.Looper
 import android.os.Message
 import android.os.Messenger
+import androidx.core.os.bundleOf
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import app.documents.shared.models.CommentUser
-import app.documents.shared.models.MessengerMessage
+import app.documents.shared.models.CommentMention
+import app.documents.shared.models.MessengerMessage.GetCommentMentions
 import app.documents.shared.utils.decodeFromString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,13 +29,11 @@ class MessengerClient(
     private val responseHandler = object : Handler(Looper.getMainLooper()) {
 
         override fun handleMessage(msg: Message) {
-            if (msg.what == MessengerMessage.GetCommentUsers.responseId) {
-                val json = msg.data.getString(MessengerMessage.GetCommentUsers.responseKey)
-                val users = json?.let {
-                    Json.decodeFromString<List<CommentUser>>(string = it, decodeUrl = true)
-                }.orEmpty()
+            if (msg.what == GetCommentMentions.responseId) {
+                val json = msg.data.getString(GetCommentMentions.responseKey)
+                val users = Json.decodeFromString<List<CommentMention>>(json.orEmpty(), true)
 
-                _eventFlows[MessengerMessage.GetCommentUsers.responseId]?.tryEmit(users)
+                _eventFlows[GetCommentMentions.responseId]?.tryEmit(users.orEmpty())
             }
         }
     }
@@ -67,12 +66,13 @@ class MessengerClient(
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getCommentUsers(): Flow<List<CommentUser>> {
-        val message = Message.obtain(null, MessengerMessage.GetCommentUsers.requestId)
-        val flow = MutableSharedFlow<List<CommentUser>>(replay = 0, extraBufferCapacity = 1)
+    fun getCommentMentions(fileId: String): Flow<List<CommentMention>> {
+        val flow = MutableSharedFlow<List<CommentMention>>(replay = 0, extraBufferCapacity = 1)
+        val message = Message.obtain(null, GetCommentMentions.requestId)
+        message.data = bundleOf(GetCommentMentions.responseKey to fileId)
         message.replyTo = replyMessenger
         serviceMessenger?.send(message)
-        _eventFlows[MessengerMessage.GetCommentUsers.responseId] = flow as MutableSharedFlow<Any>
+        _eventFlows[GetCommentMentions.responseId] = flow as MutableSharedFlow<Any>
         return flow
     }
 }
