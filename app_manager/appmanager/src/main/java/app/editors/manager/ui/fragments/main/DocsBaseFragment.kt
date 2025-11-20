@@ -106,6 +106,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     protected var deleteItem: MenuItem? = null
     protected var filterItem: MenuItem? = null
     protected var explorerAdapter: ExplorerAdapter? = null
+    override val isGridView: Boolean
+        get() = presenter.preferenceTool.isGridView
 
     protected var searchView: CommonSearchView? = null
 
@@ -133,7 +135,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(lifecycleEventObserver)
-        isGridView = presenter.preferenceTool.isGridView
         setHasOptionsMenu(true)
     }
 
