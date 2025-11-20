@@ -31,7 +31,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.editors.manager.R
-import app.editors.manager.managers.tools.BaseEvent
+import lib.toolkit.base.managers.tools.BaseEvent
 import app.editors.manager.viewModels.main.EditCommentEvent
 import app.editors.manager.viewModels.main.VersionEditCommentViewModel
 import lib.compose.ui.views.AppScaffold

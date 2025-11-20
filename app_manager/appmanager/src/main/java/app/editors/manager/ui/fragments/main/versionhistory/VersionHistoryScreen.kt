@@ -48,7 +48,7 @@ import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.mvp.models.ui.FileVersionUi
 import app.editors.manager.ui.dialogs.explorer.ExplorerContextItem
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
-import app.editors.manager.managers.tools.BaseEvent
+import lib.toolkit.base.managers.tools.BaseEvent
 import app.editors.manager.viewModels.main.DialogState
 import app.editors.manager.viewModels.main.VersionHistoryEvent
 import app.editors.manager.viewModels.main.VersionHistoryState
