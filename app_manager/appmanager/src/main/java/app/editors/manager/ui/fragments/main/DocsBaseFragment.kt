@@ -550,22 +550,24 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onError(message: String?) {
         resetIndicators()
         hideDialog()
-        message?.let {
-            //            TODO add webdav exception
-            if (it == "HTTP 503 Service Unavailable") {
+        val errorMessage = message ?: return
+        // TODO add webdav exception
+        when {
+            errorMessage == "HTTP 503 Service Unavailable" -> {
                 setAccessDenied()
                 presenter.clearStack()
-                return
-            } else if (it == getString(R.string.errors_client_host_not_found) || it == getString(
-                    R.string.errors_client_unauthorized
-                )
-            ) {
+            }
+            errorMessage == getString(R.string.errors_client_host_not_found) ||
+                    errorMessage == getString(R.string.errors_client_unauthorized) -> {
                 if (requireActivity() is BaseViewExt) {
-                    (requireActivity() as BaseViewExt).onUnauthorized(it)
-                    return
+                    (requireActivity() as BaseViewExt).onUnauthorized(errorMessage)
                 }
             }
-            showSnackBar(it)
+            errorMessage.contains("Access denied") -> {
+                onPlaceholder(PlaceholderViews.Type.ACCESS)
+                showSnackBar(errorMessage)
+            }
+            else -> showSnackBar(errorMessage)
         }
     }
 
