@@ -64,6 +64,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 import retrofit2.http.QueryMap
 
 interface RoomService {
@@ -508,6 +509,7 @@ interface RoomService {
     // check "activationstatus" query when merging
     @GET("api/" + ApiContract.API_VERSION + "/people/file/{fileId}?activationstatus=1")
     suspend fun getUsersByFileId(
-        @Path(value = "fileId") fileId: String
+        @Path(value = "fileId") fileId: String,
+        @Query("filterValue") filterValue: String = ""
     ): app.documents.core.network.BaseResponse<List<User>>
 }

@@ -738,7 +738,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         roomService.startFilling(formId, request)
     }
 
-    suspend fun getUsersByItemId(itemId: String, isFolder: Boolean): List<User> {
+    suspend fun getUsersByItemId(itemId: String, isFolder: Boolean, filterValue: String = ""): List<User> {
 //        uncomment when merging
 //        val response = if (isFolder) {
 //            roomService.getUsersByFolderId(itemId)
@@ -746,7 +746,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
 //            roomService.getUsersByFileId(itemId)
 //        }
 
-        val response = roomService.getUsersByFileId(itemId)
+        val response = roomService.getUsersByFileId(itemId, filterValue)
         return response.response
     }
 

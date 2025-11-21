@@ -30,7 +30,7 @@ class MessengerClient(
 
         override fun handleMessage(msg: Message) {
             if (msg.what == GetCommentMentions.responseId) {
-                val json = msg.data.getString(GetCommentMentions.responseKey)
+                val json = msg.data.getString(GetCommentMentions.COMMENT_MENTIONS_KEY)
                 val users = Json.decodeFromString<List<CommentMention>>(json.orEmpty(), true)
 
                 _eventFlows[GetCommentMentions.responseId]?.tryEmit(users.orEmpty())
@@ -66,10 +66,13 @@ class MessengerClient(
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getCommentMentions(fileId: String): Flow<List<CommentMention>> {
+    fun getCommentMentions(fileId: String, filterValue: String): Flow<List<CommentMention>> {
         val flow = MutableSharedFlow<List<CommentMention>>(replay = 0, extraBufferCapacity = 1)
         val message = Message.obtain(null, GetCommentMentions.requestId)
-        message.data = bundleOf(GetCommentMentions.responseKey to fileId)
+        message.data = bundleOf(
+            GetCommentMentions.FILE_ID_KEY to fileId,
+            GetCommentMentions.FILTER_VALUE_KEY to filterValue
+        )
         message.replyTo = replyMessenger
         serviceMessenger?.send(message)
         _eventFlows[GetCommentMentions.responseId] = flow as MutableSharedFlow<Any>

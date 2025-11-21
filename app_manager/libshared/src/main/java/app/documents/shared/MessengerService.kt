@@ -55,19 +55,24 @@ class MessengerService : Service() {
     }
 
     private fun replyCommentMentions(message: Message) {
-        val fileId = message.data.getString(GetCommentMentions.responseKey)
+        val fileId = message.data.getString(GetCommentMentions.FILE_ID_KEY)
+        val filterValue = message.data.getString(GetCommentMentions.FILTER_VALUE_KEY)
         val replyTo = message.replyTo
         coroutineScope.launch {
             try {
                 val users = roomProvider
-                    .getUsersByItemId(requireNotNull(fileId) { "fileId is null" }, false)
+                    .getUsersByItemId(
+                        requireNotNull(value = fileId) { "fileId is null" },
+                        isFolder = false,
+                        filterValue = filterValue.orEmpty()
+                    )
                     .map(CommentMention::from)
 
                 val replyMsg = Message
                     .obtain(null, GetCommentMentions.responseId)
                     .apply {
                         data = bundleOf(
-                            GetCommentMentions.responseKey to
+                            GetCommentMentions.COMMENT_MENTIONS_KEY to
                                     Json.encodeToString(users, true)
                         )
                     }
