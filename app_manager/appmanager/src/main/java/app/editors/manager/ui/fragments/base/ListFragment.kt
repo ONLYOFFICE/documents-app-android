@@ -26,7 +26,7 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
     protected var recyclerView: RecyclerView? = null
     protected var swipeRefreshLayout: SwipeRefreshLayout? = null
     protected var fragmentListBinding: FragmentListBinding? = null
-    protected var isGridView: Boolean = false
+    protected open val isGridView: Boolean get() = false
     protected var layoutManager: LayoutManager? = null
 
     private val layoutAnimation by lazy {
