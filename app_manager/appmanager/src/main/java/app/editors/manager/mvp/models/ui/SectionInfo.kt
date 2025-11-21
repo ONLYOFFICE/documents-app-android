@@ -4,18 +4,15 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class SectionInfo(
-    val title: String,
     val type: Int,
     val id: String
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
-        title = parcel.readString().orEmpty(),
         type = parcel.readInt(),
         id = parcel.readString().orEmpty()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(title)
         parcel.writeInt(type)
         parcel.writeString(id)
     }

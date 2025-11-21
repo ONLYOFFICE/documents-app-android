@@ -190,7 +190,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 fragments.add(
                     MainPagerContainer(
                         fragment = getSectionFragment(section.type, section.id),
-                        title = section.title,
+                        title = getTabTitle(section.type),
                         sectionType = section.type
                     )
                 )
@@ -254,17 +254,15 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 when (val folderType = section.current.rootFolderType) {
                     ApiContract.SectionType.CLOUD_PRIVATE_ROOM -> null
                     else -> {
-                        val title = getTabTitle(folderType)
                         sectionsInfo?.add(
                             SectionInfo(
-                                title = title,
                                 type = folderType,
                                 id = section.current.id
                             )
                         )
                         MainPagerContainer(
                             fragment = getSectionFragment(folderType, section.current.id),
-                            title = title,
+                            title = getTabTitle(folderType),
                             sectionType = folderType
                         )
                     }
