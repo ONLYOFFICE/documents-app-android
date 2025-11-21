@@ -1,128 +1,37 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <!-- Missing translations for language: nl -->
-  <!-- Module: appmanager - 10 strings -->
-  <string name="list_context_upload_to_cloud">Uploaden naar cloud</string>
-  <string name="share_clipboard_external_custom_filter_copied">De link naar het bestand met het ingeschakelde Aangepaste filter is met succes naar het klembord gekopieerd.</string>
-  <string name="cloud_create_account">Maak gratis account aan</string>
-  <string name="start_filling_title">Begin met invullen</string>
-  <string name="start_filling_start">Beginnen</string>
-  <string name="start_filling_desc">In dit paneel kunt u de voltooiing van het formulier volgen waaraan u deelneemt of waarvan u de organiserende of afrondende partij bent.</string>
-  <string name="start_filling_header">Rollen van het formulier:</string>
-  <string name="start_filling_ready_for_filling">Het formulier is klaar om in te vullen in de kamer</string>
-  <string name="start_filling_ready_for_filling_desc">Er is al een melding verzonden naar de gebruiker in de eerste rol, met het verzoek om het formulier in te vullen. U kunt naar de kamer navigeren of de link naar het vullen met de deelnemers delen.</string>
-  <string name="list_context_reset_filling">Opnieuw instellen en beginnen met invullen</string>
-  <!-- Module: libgdocs - 41 strings -->
-  <string name="docs_toc_title">Inhoudsopgave</string>
-  <string name="docs_toc_title_with_page_numbers">Met paginanummers</string>
-  <string name="docs_toc_title_with_blue_links">Met blauwe links</string>
-  <string name="docs_headings_title">Kopteksten</string>
-  <string name="docs_navigation_title">Navigatie</string>
-  <string name="docs_headings_empty">Het document bevat geen kopteksten. Pas een koptekststijl toe op de tekst zodat deze in de inhoudsopgave verschijnt.</string>
-  <string name="docs_headings_beginning_of_document">Begin van het document</string>
-  <string name="docs_toc_page_numbers">Paginanummers</string>
-  <string name="docs_toc_right_align">Rechts uitlijnen</string>
-  <string name="docs_toc_leader">Leider</string>
-  <string name="docs_toc_remove">Verwijder de inhoudsopgave</string>
-  <string name="docs_toc_structure">Structuur</string>
-  <string name="docs_toc_structure_levels_amount">Aantal niveaus</string>
-  <string name="docs_toc_structure_levels">Niveaus</string>
-  <string name="docs_toc_structure_styles">Stijlen</string>
-  <string name="style_emphasis">Nadruk</string>
-  <string name="style_book_title">Boektitel</string>
-  <string name="style_intent_emphasis">Intense Nadruk</string>
-  <string name="style_intent_reference">Intensieve Referentie</string>
-  <string name="style_subtle_reference">Subtiele Referentie</string>
-  <string name="style_subtle_emphasis">Subtiele Nadruk</string>
-  <string name="style_strong">Vet</string>
-  <string name="docs_margins_normal">Normaal</string>
-  <string name="docs_margins_us_normal">US Vet</string>
-  <string name="docs_margins_narrow">Smal</string>
-  <string name="docs_margins_moderate">Gemiddeld</string>
-  <string name="docs_margins_wide">Breed</string>
-  <string name="docs_margins_last_custom">Laatste Maatwerk</string>
-  <string name="docs_margins_subtitle">Boven: %1$.01f cm Onder: %2$.01f cm\Links: %3$.01f cm Rechts: %4$.01f cm</string>
-  <string name="docs_margins_set_custom_margins">Aangepaste marges instellen</string>
-  <string name="docs_margins_custom_margins_title">Aangepaste marges</string>
-  <string name="docs_margins_top">Boven</string>
-  <string name="docs_margins_bottom">Onder</string>
-  <string name="docs_margins_left">Links</string>
-  <string name="docs_margins_right">Rechts</string>
-  <string name="docs_margins_gutter_position">Positie Rugmarge</string>
-  <string name="docs_margins_gutter">Rugmarge</string>
-  <string name="docs_margins_position">Positie</string>
-  <string name="docs_margins_multiple_pages">Meerdere Pagina's</string>
-  <string name="docs_margins_mirror">Spiegelmarges</string>
-  <string name="docs_filling_is_not_available">Invullen van formulier is bezig. Bewerken van bestanden is momenteel niet beschikbaar.</string>
-  <!-- Module: libgeditors - 70 strings -->
-  <string name="error_convertation_limit">De bestandsgrootte overschrijdt de limiet die voor uw server is ingesteld. Neem voor meer informatie contact op met uw Document Server beheerder.</string>
-  <string name="settings_chart_title">Titel van de grafiek</string>
-  <string name="table_of_contents_title">Inhoudsopgave</string>
-  <string name="table_of_contents_style_current">Huidig</string>
-  <string name="table_of_contents_style_simple">Simpel</string>
-  <string name="table_of_contents_style_standard">Standaard</string>
-  <string name="table_of_contents_style_modern">Modern</string>
-  <string name="table_of_contents_style_classic">Klassiek</string>
-  <string name="table_of_contents_style_online">Online</string>
-  <string name="ribbon_tab_title_references">Referenties</string>
-  <string name="table_of_contents_update">Bijwerken</string>
-  <string name="table_of_contents_error">Begin met het maken van een inhoudsopgave door een kopstijl uit de stijlenbibliotheek toe te passen op de geselecteerde tekst.</string>
-  <string name="ai_tab_title">Ai</string>
-  <string name="ai_providers_settings">AI-instellingen</string>
-  <string name="ai_providers_title">AI Providers</string>
-  <string name="ai_add_provider">Provider toevoegen</string>
-  <string name="ai_edit_profile">Bewerk profiel</string>
-  <string name="ai_add_model">Voeg AI-model toe</string>
-  <string name="ai_delete_all">Alles Verwijderen</string>
-  <string name="ai_api_key_status">API Key: %1$s</string>
-  <string name="ai_set_as_default">Als standaard instellen</string>
-  <string name="ai_provider_label">Provider: %1$s</string>
-  <string name="ai_api_key">API Key</string>
-  <string name="ai_load_models">Laad Beschikbare Modellen</string>
-  <string name="ai_available_models">Beschikbare Modellen</string>
-  <string name="ai_selected_model">Geselecteerd Model: %1$s</string>
-  <string name="ai_none_selected">Geen Geselecteerd</string>
-  <string name="ai_select_provider">Selecteer Provider</string>
-  <string name="ai_provider">Provider</string>
-  <string name="ai_test_model">Test model</string>
-  <string name="ai_test_result_title">Model Testresultaat</string>
-  <string name="ai_testing_model">Model aan het testen...</string>
-  <string name="ai_test_error">Fout: %1$s</string>
-  <string name="ai_models_title">AI-Modellen</string>
-  <string name="ai_edit_model">Bewerk Model</string>
-  <string name="ai_delete_model">Verwijder Model</string>
-  <string name="ai_model_name">Modelnaam</string>
-  <string name="ai_model_name_required">Verplicht</string>
-  <string name="ai_api_key_hint">Kopieer uw API-key uit het account van uw AI-provider (bijvoorbeeld OpenAI) en plak deze hier.</string>
-  <string name="ai_no_providers_added">Voeg uw eerste language model provider toe om aan de slag te gaan.</string>
-  <string name="ai_processing_request">AI is uw verzoek aan het verwerken.</string>
-  <string name="ai_input_placeholder">Stel mij al uw vragen</string>
-  <string name="ai_error_no_active_profile">Geen actief AI-profiel gevonden. Configureer eerst de AI-instellingen.</string>
-  <string name="ai_error_api_key_not_configured">API-key is niet geconfigureerd. Controleer uw AI-instellingen.</string>
-  <string name="ai_error_provider_no_streaming">De provider ondersteunt streaming niet</string>
-  <string name="ai_error_function_calling_load">Het laden van de functieaanroepgegevens is mislukt</string>
-  <string name="ai_error_function_call_execution">Fout bij het uitvoeren van de functieaanroep</string>
-  <string name="ai_chat_error_response_failed">Het is niet gelukt om een AI-reactie te verkrijgen: %1$s</string>
-  <string name="ai_chat_error_unexpected">Onverwachte fout: %1$s</string>
-  <string name="ai_chat_role_prompt">U treedt op als: %1$s. Reageer in overeenstemming met deze rol.</string>
-  <string name="ai_error_api_key_empty">De API-key mag niet leeg zijn.</string>
-  <string name="ai_error_model_api_key_not_selected">Model of API-key niet geselecteerd</string>
-  <string name="ai_error_model_testing_failed">Model-testfout</string>
-  <string name="ai_error_unknown">Onbekende fout</string>
-  <string name="ai_error_loading_models">Laden van modellen is mislukt</string>
-  <string name="ai_prompt_error_select_profile">Selecteer eerst een AI-profiel</string>
-  <string name="ai_prompt_error_empty_prompt">Voer een prompt in.</string>
-  <string name="ai_prompt_error_network">Netwerkfout. Controleer uw verbinding.</string>
-  <string name="ai_prompt_error_timeout">Time-out bij verzoek. Probeer het opnieuw.</string>
-  <string name="ai_prompt_error_service">AI-servicefout: %1$s</string>
-  <string name="ai_prompt_error_cancelled">Verzoek is geannuleerd</string>
-  <string name="ai_prompt_error_unexpected">Onverwachte fout: %1$s</string>
-  <string name="ai_tooltip_title">Probeer de nieuwe AI-modus</string>
-  <string name="ai_tooltip_message">Bewerk, analyseer en creëer eenvoudig content. Om te beginnen, sluit een model aan.</string>
-  <string name="ai_profile_default_name">%1$s Profiel</string>
-  <string name="ai_profile_saved_successfully">Profiel succesvol opgeslagen</string>
-  <string name="ai_profile_deleted_successfully">Profiel succesvol verwijderd</string>
-  <string name="text_direction_title">Tekstrichting</string>
-  <string name="text_direction_ltr">Links naar rechts</string>
-  <string name="text_direction_rtl">Rechts naar links</string>
+    <!-- Missing translations for language: nl -->
+
+    <!-- Module: appmanager - 23 strings -->
+    <string name="upload_manager_duplicate_title">Action required</string>
+    <string name="upload_manager_duplicate_text">The destination already contains a file named «%s». Please select the action:</string>
+    <string name="upload_manager_duplicates_text">The destination already contains files with the same name. Please select the action:</string>
+    <string name="upload_manager_duplicate_overwrite">Overwrite with version update</string>
+    <string name="upload_manager_duplicate_copy">Create file copy</string>
+    <string name="upload_manager_duplicate_skip">Skip</string>
+    <string name="socials_failed_auth">Failed login</string>
+    <string name="rooms_info_access_desc">This room is available to anyone with the link. Access for external users is provided depending on the selected type of access rights.</string>
+    <string name="rooms_share_shared_links_count">Shared links (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Enable this setting to disable downloading of files and folders from this folder shared via a link</string>
+    <string name="share_link_file_restrict_desc">Enable this setting to disable downloading of this file shared via a link</string>
+    <string name="share_link_file_restrict_warning">You cannot disable the restriction on downloading and copying data because this setting is enforced at the room level for all files.</string>
+    <string name="share_link_file_restrict_warning_ok">OK</string>
+    <string name="rooms_user_type_members">Members</string>
+    <string name="share_goal_everyone">Everyone</string>
+    <string name="placeholder_no_shared_items">There are no shared items yet</string>
+    <string name="placeholder_no_shared_items_desc">Here you\'ll find files and folders that other DocSpace members shared with you. Your own files and room content are not shown here.</string>
+    <string name="rooms_share_shared_folder_desc">Provide access to the folder and set the permission levels.</string>
+    <string name="rooms_info_folder_desc">This folder is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
+    <string name="rooms_info_file_desc">This file is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
+    <string name="rooms_info_fill_form_desc">This room is available to anyone with the link. External users will have Form Filler permission for all the files.</string>
+    <string name="share_popup_access_editing">Editing</string>
+    <string name="share_popup_access_remove">Remove</string>
+
+    <!-- Module: libgcells - 1 strings -->
+    <string name="cells_sheet_right_to_left">Sheet Right to left</string>
+
+    <!-- Module: libgeditors - 3 strings -->
+    <string name="collaboration_comment_resolve_all">Resolve all</string>
+    <string name="ai_tooltip_input_message">Use quick prompts or enter your own request. AI will generate results directly in your document.</string>
+    <string name="text_direction_context">Context</string>
 </resources>
