@@ -61,7 +61,8 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     private val disposable = CompositeDisposable()
 
     private var reviewInfo: ReviewInfo? = null
-    private var isAppColdStart = true
+    var isAppColdStart = true
+        private set
 
     var isDialogOpen: Boolean = false
 
