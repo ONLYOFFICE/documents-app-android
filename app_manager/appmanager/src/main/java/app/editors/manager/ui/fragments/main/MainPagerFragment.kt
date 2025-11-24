@@ -9,7 +9,8 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
@@ -27,8 +28,7 @@ import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
 import app.editors.manager.ui.views.custom.PlaceholderViews
-import app.editors.manager.ui.views.pager.ViewPagerAdapter
-import app.editors.manager.ui.views.pager.ViewPagerAdapter.Container
+import com.google.android.material.tabs.TabLayoutMediator
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.clearIntent
 import lib.toolkit.base.managers.utils.getParcelableArrayListExt
@@ -54,7 +54,6 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         private const val TAG_PERSONAL_END = "TAG_PERSONAL_END"
         private const val TAG_PAYMENT_REQUIRED = "TAG_PAYMENT_REQUIRED"
         private const val TAG_CONNECTION = "TAG_CONNECTION"
-        private const val OFFSCREEN_COUNT = 2
 
         fun newInstance(): MainPagerFragment {
             return MainPagerFragment()
@@ -207,7 +206,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     fun setScrollViewPager(isScroll: Boolean) {
         this.isScroll = isScroll
-        viewBinding?.mainViewPager?.isPaging = this.isScroll
+        viewBinding?.mainViewPager?.isUserInputEnabled = this.isScroll
     }
 
     fun setToolbarState(isRoot: Boolean, hideToolbarInfo: Boolean) {
@@ -298,16 +297,20 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun onError(message: String?) {
-        if (message == getString(R.string.errors_client_payment_required)) {
-            activity?.showActionButton(false)
-            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.PAYMENT_REQUIRED) {
-                context?.accountOnline?.portal?.urlWithScheme?.let(::showUrlInBrowser)
+        when (message) {
+            getString(R.string.errors_client_payment_required) -> {
+                activity?.showActionButton(false)
+                placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.PAYMENT_REQUIRED) {
+                    context?.accountOnline?.portal?.urlWithScheme?.let(::showUrlInBrowser)
+                }
             }
-        } else if (message == getString(R.string.errors_connection_error)) {
-            placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.CONNECTION, ::onRetryClick)
-        } else {
-            message?.let { showSnackBar(it) }
-            (requireActivity() as? MainActivity)?.onUnauthorized(message)
+            getString(R.string.errors_connection_error) -> {
+                placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.CONNECTION, ::onRetryClick)
+            }
+            else -> {
+                message?.let { showSnackBar(it) }
+                (requireActivity() as? MainActivity)?.onUnauthorized(message)
+            }
         }
     }
 
@@ -327,13 +330,21 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             return
         }
 
-        adapter = AdapterForPages(childFragmentManager, fragments)
-        viewBinding?.mainViewPager?.offscreenPageLimit = OFFSCREEN_COUNT
+        adapter = AdapterForPages(this, fragments)
         viewBinding?.mainViewPager?.adapter = adapter
-        adapter?.let {
-            viewBinding?.mainViewPager?.addOnPageChangeListener(it)
+        viewBinding?.mainViewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                activity?.showActionButton(false)
+                this@MainPagerFragment.selectedPage = position
+                (activeFragment as? DocsCloudFragment)?.onScrollPage()
+            }
+        })
+        viewBinding?.let {
+            TabLayoutMediator(it.appBarTabs, it.mainViewPager) { tab, position ->
+                tab.text = fragments[position].title
+            }.attach()
         }
-        viewBinding?.appBarTabs?.setupWithViewPager(viewBinding?.mainViewPager, true)
         setToolbarState(isRoot = true, hideToolbarInfo = true)
         if (isRestore) {
             viewBinding?.mainViewPager?.currentItem = selectedPage
@@ -379,10 +390,17 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     val position: Int?
-        get() = adapter?.selectedPage
+        get() = viewBinding?.mainViewPager?.currentItem
 
     private val activeFragment: Fragment?
-        get() = runCatching { adapter?.getActiveFragment(viewBinding?.mainViewPager) }.getOrNull()
+        get() = runCatching {
+            val currentPosition = viewBinding?.mainViewPager?.currentItem ?: -1
+            if (currentPosition != -1) {
+                childFragmentManager.findFragmentByTag("f$currentPosition")
+            } else {
+                null
+            }
+        }.getOrNull()
 
     override fun setToolbarInfo(title: String?, drawable: Int?) {
         viewBinding?.infoLayout?.root?.isVisible = title != null
@@ -430,18 +448,25 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         val fragment: Fragment,
         val title: String,
         val sectionType: Int
-    ) : Container(fragment, title)
+    )
 
     private inner class AdapterForPages(
-        manager: FragmentManager,
+        fragment: Fragment,
         val fragmentList: List<MainPagerContainer>
-    ) : ViewPagerAdapter(manager, fragmentList) {
+    ) : FragmentStateAdapter(fragment) {
 
-        override fun onPageSelected(position: Int) {
-            super.onPageSelected(position)
-            activity?.showActionButton(false)
-            this@MainPagerFragment.selectedPage = selectedPage
-            (getActiveFragment(viewBinding?.mainViewPager) as DocsCloudFragment).onScrollPage()
+        override fun getItemCount(): Int = fragmentList.size
+
+        override fun createFragment(position: Int): Fragment {
+            return fragmentList[position].fragment
+        }
+
+        fun isActiveFragment(fragment: Fragment?): Boolean {
+            val currentPosition = viewBinding?.mainViewPager?.currentItem ?: -1
+            if (fragment == null || currentPosition < 0 || currentPosition >= fragmentList.size) {
+                return false
+            }
+            return fragment == fragmentList[currentPosition].fragment
         }
     }
 }
