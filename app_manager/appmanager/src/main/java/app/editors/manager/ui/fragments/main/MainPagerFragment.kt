@@ -1,5 +1,6 @@
 package app.editors.manager.ui.fragments.main
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -54,6 +55,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         private const val TAG_PERSONAL_END = "TAG_PERSONAL_END"
         private const val TAG_PAYMENT_REQUIRED = "TAG_PAYMENT_REQUIRED"
         private const val TAG_CONNECTION = "TAG_CONNECTION"
+        private const val OFFSCREEN_COUNT = 2
 
         fun newInstance(): MainPagerFragment {
             return MainPagerFragment()
@@ -324,6 +326,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         requireActivity().intent.data = null
     }
 
+    @SuppressLint("WrongConstant")
     private fun setAdapter(fragments: List<MainPagerContainer>, isRestore: Boolean = false) {
         if (fragments.isEmpty()) {
             viewBinding?.appBarTabs?.isVisible = false
@@ -332,6 +335,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
         adapter = AdapterForPages(this, fragments)
         viewBinding?.mainViewPager?.adapter = adapter
+        viewBinding?.mainViewPager?.offscreenPageLimit = OFFSCREEN_COUNT
         viewBinding?.mainViewPager?.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
