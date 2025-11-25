@@ -3,35 +3,35 @@
     <!-- Missing translations for language: de -->
 
     <!-- Module: appmanager - 23 strings -->
-    <string name="upload_manager_duplicate_title">Action required</string>
-    <string name="upload_manager_duplicate_text">The destination already contains a file named «%s». Please select the action:</string>
-    <string name="upload_manager_duplicates_text">The destination already contains files with the same name. Please select the action:</string>
-    <string name="upload_manager_duplicate_overwrite">Overwrite with version update</string>
-    <string name="upload_manager_duplicate_copy">Create file copy</string>
-    <string name="upload_manager_duplicate_skip">Skip</string>
-    <string name="socials_failed_auth">Failed login</string>
-    <string name="rooms_info_access_desc">This room is available to anyone with the link. Access for external users is provided depending on the selected type of access rights.</string>
-    <string name="rooms_share_shared_links_count">Shared links (%d/6)</string>
-    <string name="share_link_folder_restrict_desc">Enable this setting to disable downloading of files and folders from this folder shared via a link</string>
-    <string name="share_link_file_restrict_desc">Enable this setting to disable downloading of this file shared via a link</string>
-    <string name="share_link_file_restrict_warning">You cannot disable the restriction on downloading and copying data because this setting is enforced at the room level for all files.</string>
+    <string name="upload_manager_duplicate_title">Aktion erforderlich</string>
+    <string name="upload_manager_duplicate_text">Im Zielverzeichnis befindet sich bereits eine Datei mit dem Namen «%s». Bitte wählen Sie die Aktion aus:</string>
+    <string name="upload_manager_duplicates_text">Im Zielverzeichnis befinden sich bereits Dateien mit demselben Namen. Bitte wählen Sie die gewünschte Aktion aus:</string>
+    <string name="upload_manager_duplicate_overwrite">OMit Versionsaktualisierung überschreiben</string>
+    <string name="upload_manager_duplicate_copy">Dateikopie erstellen</string>
+    <string name="upload_manager_duplicate_skip">Überspringen</string>
+    <string name="socials_failed_auth">Anmeldung fehlgeschlagen</string>
+    <string name="rooms_info_access_desc">Dieser Raum ist für alle mit dem Link zugänglich. Der Zugriff für externe Nutzer richtet sich nach den gewählten Zugriffsrechten.</string>
+    <string name="rooms_share_shared_links_count">Geteilte Links (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Aktivieren Sie diese Einstellung, um das Herunterladen von Dateien und Ordnern aus diesem über einen Link freigegebenen Ordner zu deaktivieren.</string>
+    <string name="share_link_file_restrict_desc">Aktivieren Sie diese Einstellung, um das Herunterladen dieser über einen Link freigegebenen Datei zu deaktivieren.</string>
+    <string name="share_link_file_restrict_warning">Die Beschränkung für das Herunterladen und Kopieren von Daten kann nicht deaktiviert werden, da diese Einstellung auf Raumebene für alle Dateien gilt.</string>
     <string name="share_link_file_restrict_warning_ok">OK</string>
-    <string name="rooms_user_type_members">Members</string>
-    <string name="share_goal_everyone">Everyone</string>
-    <string name="placeholder_no_shared_items">There are no shared items yet</string>
-    <string name="placeholder_no_shared_items_desc">Here you\'ll find files and folders that other DocSpace members shared with you. Your own files and room content are not shown here.</string>
-    <string name="rooms_share_shared_folder_desc">Provide access to the folder and set the permission levels.</string>
-    <string name="rooms_info_folder_desc">This folder is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
-    <string name="rooms_info_file_desc">This file is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
-    <string name="rooms_info_fill_form_desc">This room is available to anyone with the link. External users will have Form Filler permission for all the files.</string>
-    <string name="share_popup_access_editing">Editing</string>
-    <string name="share_popup_access_remove">Remove</string>
+    <string name="rooms_user_type_members">Mitglieder</string>
+    <string name="share_goal_everyone">Alle</string>
+    <string name="placeholder_no_shared_items">Es gibt noch keine geteilten Elemente</string>
+    <string name="placeholder_no_shared_items_desc">Hier finden Sie Dateien und Ordner, die andere DocSpace-Mitglieder mit Ihnen geteilt haben. Ihre eigenen Dateien und Rauminhalte werden hier nicht angezeigt.</string>
+    <string name="rooms_share_shared_folder_desc">Gewähren Sie Zugriff auf den Ordner und legen Sie die Berechtigungsstufen fest.</string>
+    <string name="rooms_info_folder_desc">Dieser Ordner ist über einen freigegebenen Link von seinem übergeordneten Ordner aus zugänglich, Sie können aber auch einen benutzerdefinierten externen Link mit spezifischen Berechtigungen erstellen.</string>
+    <string name="rooms_info_file_desc">Diese Datei ist über einen freigegebenen Link aus ihrem übergeordneten Ordner zugänglich, Sie können aber auch einen benutzerdefinierten externen Link mit spezifischen Berechtigungen erstellen.</string>
+    <string name="rooms_info_fill_form_desc">Dieser Raum ist für alle mit dem Link zugänglich. Externe Benutzer haben die Berechtigung, Formulare auszufüllen, für alle Dateien.</string>
+    <string name="share_popup_access_editing">Bearbeiten</string>
+    <string name="share_popup_access_remove">Entfernen</string>
 
     <!-- Module: libgcells - 1 strings -->
-    <string name="cells_sheet_right_to_left">Sheet Right to left</string>
+    <string name="cells_sheet_right_to_left">Blatt von rechts nach links</string>
 
     <!-- Module: libgeditors - 3 strings -->
-    <string name="collaboration_comment_resolve_all">Resolve all</string>
-    <string name="ai_tooltip_input_message">Use quick prompts or enter your own request. AI will generate results directly in your document.</string>
-    <string name="text_direction_context">Context</string>
+    <string name="collaboration_comment_resolve_all">Alle lösen</string>
+    <string name="ai_tooltip_input_message">Nutzen Sie die Schnellvorschläge oder geben Sie Ihre eigene Anfrage ein. Die KI generiert die Ergebnisse direkt in Ihrem Dokument.</string>
+    <string name="text_direction_context">Kontext</string>
 </resources>

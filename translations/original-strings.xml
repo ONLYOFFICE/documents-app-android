@@ -3,10 +3,10 @@
     <!-- Original strings for reference -->
 
     <!-- Module: appmanager - 935 strings -->
-    <string name="app_name">Documents</string>
-    <string name="app_name_full">ONLYOFFICE Documents</string>
-    <string name="app_versions_title">Version 3.0 released</string>
-    <string name="app_versions_cancel">Later</string>
+  <string name="app_name">Documents</string>
+  <string name="app_name_full">ONLYOFFICE Documents</string>
+  <string name="app_versions_title">Version 3.0 released</string>
+  <string name="app_versions_cancel">Later</string>
     <string name="app_versions_without_release_accept">Install official app</string>
     <string name="app_versions_without_release_info">Thanks for beta testing! ONLYOFFICE Documents 3.0 is now released, and beta version is no longer supported. Switch to the official app to receive further updates.</string>
     <string name="app_versions_update_accept">Update official app</string>
@@ -558,7 +558,12 @@
     <string name="app_internal_error">Internal error</string>
     <string name="app_fragment_crash_error">Please close this app and try again</string>
     <string name="item_owner_self">Me</string>
-    <string name="sign_in_terms_and_policy_text"><![CDATA[ By proceeding, you agree to the <a href="%1$s">Privacy Policy</a> and the <a href="%2$s">Terms of Service</a> ]]></string>
+    <string name="sign_in_terms_and_policy_text"><![CDATA[
+ By proceeding, you agree to the
+ <a href="%1$s">Privacy Policy</a>
+ and the
+ <a href="%2$s">Terms of Service</a>
+ ]]></string>
     <string name="app_settings_color_theme">Theme</string>
     <string name="app_settings_follow_the_system">Same as system</string>
     <string name="app_settings_light_theme">Light theme</string>
@@ -919,8 +924,8 @@
     <string name="placeholder_no_shared_items">There are no shared items yet</string>
     <string name="placeholder_no_shared_items_desc">Here you\'ll find files and folders that other DocSpace members shared with you. Your own files and room content are not shown here.</string>
     <string name="rooms_share_shared_folder_desc">Provide access to the folder and set the permission levels.</string>
-    <string name="rooms_info_folder_desc">This folder is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
-    <string name="rooms_info_file_desc">This file is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
+    <string name="rooms_info_folder_desc">This folder is accessible via a shared link from its parent folder, but you can create a custom external link with specific permissions.</string>
+    <string name="rooms_info_file_desc">This file is accessible via a shared link from its parent folder, but you can create a custom external link with specific permissions.</string>
     <string name="rooms_info_fill_form_desc">This room is available to anyone with the link. External users will have Form Filler permission for all the files.</string>
     <string name="share_popup_access_editing">Editing</string>
     <string name="share_popup_access_remove">Remove</string>
@@ -1588,7 +1593,7 @@
     <string name="settings_link_internal_data_range">Internal data range</string>
     <string name="settings_link_internal">Internal link</string>
     <string name="settings_link_external">External link</string>
-    <string name="settings_hyperlink">Hyperlink</string>
+    <string name="settings_hyperlink">Link</string>
     <string name="settings_edit_link">Save link</string>
     <string name="settings_remove_link">Remove link</string>
     <string name="settings_style">Style</string>
