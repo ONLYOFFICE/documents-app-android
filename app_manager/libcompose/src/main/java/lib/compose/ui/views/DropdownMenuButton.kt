@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -21,6 +23,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import lib.compose.ui.theme.colorTextSecondary
+import lib.toolkit.base.R
 
 @Composable
 private fun DropdownMenuButton(
@@ -40,7 +43,7 @@ private fun DropdownMenuButton(
     ) {
         title()
         Icon(
-            imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_dropdown),
+            imageVector = ImageVector.vectorResource(R.drawable.ic_dropdown),
             contentDescription = null,
             tint = MaterialTheme.colors.colorTextSecondary
         )
@@ -104,19 +107,21 @@ fun DropdownMenuButton(
 
 @Composable
 fun DropdownMenuItem(
-    title: String,
+    title: @Composable () -> Unit,
     selected: Boolean,
     startIcon: Int? = null,
     onClick: () -> Unit,
 ) {
-    androidx.compose.material.DropdownMenuItem(onClick = onClick) {
+    DropdownMenuItem(onClick = onClick) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
-                modifier = Modifier.weight(1f).padding(end = 16.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 startIcon?.let {
@@ -126,11 +131,11 @@ fun DropdownMenuItem(
                         tint = MaterialTheme.colors.colorTextSecondary
                     )
                 }
-                Text(title, maxLines = 1)
+                title()
             }
             if (selected) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_done),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_done),
                     tint = MaterialTheme.colors.primary,
                     contentDescription = null
                 )
@@ -140,13 +145,28 @@ fun DropdownMenuItem(
 }
 
 @Composable
+fun DropdownMenuItem(
+    title: String,
+    selected: Boolean,
+    startIcon: Int? = null,
+    onClick: () -> Unit,
+) {
+    DropdownMenuItem(
+        title = { Text(title, maxLines = 1) },
+        selected = selected,
+        startIcon = startIcon,
+        onClick = onClick
+    )
+}
+
+@Composable
 private fun DropdownMenu(
     modifier: Modifier = Modifier,
     state: State<Boolean>,
     onDismiss: () -> Unit,
     items: @Composable ColumnScope.() -> Unit,
 ) {
-    androidx.compose.material.DropdownMenu(
+    DropdownMenu(
         modifier = modifier.widthIn(230.dp),
         offset = DpOffset(0.dp, 16.dp),
         expanded = state.value,
