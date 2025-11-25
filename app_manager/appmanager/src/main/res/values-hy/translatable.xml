@@ -1134,4 +1134,29 @@
     <string name="start_filling_ready_for_filling">Ձևը պատրաստ է լրացնելու սենյակում</string>
     <string name="start_filling_ready_for_filling_desc">Առաջին դերի օգտատիրոջն արդեն ուղարկվել է ծանուցում, որը հորդորում է լրացնել ձևը։ Կարող եք անցնել սենյակ կամ կիսվել լրացման հղումով մասնակիցների հետ։</string>
     <string name="list_context_reset_filling">Վերականգնել և սկսել լրացնելը</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-25) -->
+    <string name="upload_manager_duplicate_title">Պահանջվող գործողություն</string>
+    <string name="upload_manager_duplicate_text">Նպատակակետն արդեն պարունակում է «%s» անունով ֆայլ։ Խնդրում ենք ընտրել գործողությունը՝</string>
+    <string name="upload_manager_duplicates_text">Նպատակակետն արդեն պարունակում է նույն անունով ֆայլեր։ Խնդրում ենք ընտրել գործողությունը՝</string>
+    <string name="upload_manager_duplicate_overwrite">Վերագրել տարբերակի թարմացմամբ</string>
+    <string name="upload_manager_duplicate_copy">Ստեղծեք ֆայլի պատճեն</string>
+    <string name="upload_manager_duplicate_skip">Բաց թողնել</string>
+    <string name="socials_failed_auth">Մուտքը ձախողվեց</string>
+    <string name="rooms_info_access_desc">Այս սենյակը հասանելի է հղում ունեցող յուրաքանչյուրի համար: Արտաքին օգտատերերի մուտքը տրամադրվում է ընտրված մուտքի իրավունքների տեսակից կախված:</string>
+    <string name="rooms_share_shared_links_count">Կիսված հղումներ (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Միացրեք այս կարգավորումը՝ հղման միջոցով համօգտագործվող այս պանակից ֆայլերի և թղթապանակների ներբեռնումն անջատելու համար</string>
+    <string name="share_link_file_restrict_desc">Միացրեք այս կարգավորումը՝ հղման միջոցով համօգտագործվող այս ֆայլի ներբեռնումն անջատելու համար</string>
+    <string name="share_link_file_restrict_warning">Դուք չեք կարող անջատել տվյալների ներբեռնման և պատճենման սահմանափակումը, քանի որ այս կարգավորումը պարտադրված է սենյակի մակարդակում բոլոր ֆայլերի համար։</string>
+    <string name="share_link_file_restrict_warning_ok">ԼԱՎ</string>
+    <string name="rooms_user_type_members">Անդամներ</string>
+    <string name="share_goal_everyone">Բոլորը</string>
+    <string name="placeholder_no_shared_items">Դեռևս համօգտագործվող տարրեր չկան</string>
+    <string name="placeholder_no_shared_items_desc">Այստեղ դուք կգտնեք ֆայլեր և թղթապանակներ, որոնք DocSpace-ի մյուս անդամները կիսվել են ձեզ հետ: Ձեր սեփական ֆայլերը և սենյակի պարունակությունը այստեղ չեն ցուցադրվում:</string>
+    <string name="rooms_share_shared_folder_desc">Տրամադրեք թղթապանակին մուտք գործելու իրավունք և սահմանեք թույլտվության մակարդակները։</string>
+    <string name="rooms_info_folder_desc">Այս թղթապանակին հասանելի է մայր թղթապանակից համօգտագործվող հղման միջոցով, բայց դուք կարող եք ստեղծել հատուկ թույլտվություններով հատուկ արտաքին հղում։</string>
+    <string name="rooms_info_file_desc">Այս ֆայլը հասանելի է մայր պանակից համօգտագործվող հղման միջոցով, բայց դուք կարող եք ստեղծել հատուկ թույլտվություններով հատուկ արտաքին հղում։</string>
+    <string name="rooms_info_fill_form_desc">Այս սենյակը հասանելի է հղում ունեցող յուրաքանչյուրի համար: Արտաքին օգտատերերը կունենան ձևաթղթերի լրացման թույլտվություն բոլոր ֆայլերի համար:</string>
+    <string name="share_popup_access_editing">Խմբագրում</string>
+    <string name="share_popup_access_remove">Հեռացնել</string>
 </resources>

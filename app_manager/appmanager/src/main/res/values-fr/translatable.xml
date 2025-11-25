@@ -986,4 +986,29 @@ Nous vous recommandons de passer au service gratuit ONLYOFFICE DocSpace Cloud.</
     <string name="start_filling_ready_for_filling">Le formulaire est prêt à être rempli dans la salle</string>
     <string name="start_filling_ready_for_filling_desc">Une notification a déjà été envoyée à l\'utilisateur ayant le premier rôle pour le remplir. Vous pouvez accéder à la salle ou partager le lien de remplissage avec les participants.</string>
     <string name="list_context_reset_filling">Réinitialiser et commencer le remplissage</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-25) -->
+    <string name="upload_manager_duplicate_title">Action requise</string>
+    <string name="upload_manager_duplicate_text">La destination contient déjà un fichier nommé « %s ». Veuillez sélectionner l\'action :</string>
+    <string name="upload_manager_duplicates_text">La destination contient déjà des fichiers portant le même nom. Veuillez sélectionner l\'action :</string>
+    <string name="upload_manager_duplicate_overwrite">Écraser avec mise à jour de version</string>
+    <string name="upload_manager_duplicate_copy">Créer une copie du fichier</string>
+    <string name="upload_manager_duplicate_skip">Ignorer</string>
+    <string name="socials_failed_auth">Échec de la connexion</string>
+    <string name="rooms_info_access_desc">Cette salle est accessible à toute personne disposant du lien. L\'accès pour les utilisateurs externes est fourni en fonction du type de droits d\'accès sélectionné.</string>
+    <string name="rooms_share_shared_links_count">Liens partagés (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Activez ce paramètre pour désactiver le téléchargement des fichiers et dossiers de ce dossier partagé via un lien</string>
+    <string name="share_link_file_restrict_desc">Activez ce paramètre pour désactiver le téléchargement de ce fichier partagé via un lien</string>
+    <string name="share_link_file_restrict_warning">Vous ne pouvez pas désactiver la restriction de téléchargement et de copie des données, car ce paramètre est appliqué au niveau de la salle pour tous les fichiers.</string>
+    <string name="share_link_file_restrict_warning_ok">OK</string>
+    <string name="rooms_user_type_members">Membres</string>
+    <string name="share_goal_everyone">Tout le monde</string>
+    <string name="placeholder_no_shared_items">Aucun élément partagé pour le moment</string>
+    <string name="placeholder_no_shared_items_desc">Vous trouverez ici les fichiers et dossiers que d\'autres membres de DocSpace ont partagés avec vous. Vos propres fichiers et le contenu des salles ne sont pas affichés ici.</string>
+    <string name="rooms_share_shared_folder_desc">Donnez accès au dossier et définissez les niveaux de permission.</string>
+    <string name="rooms_info_folder_desc">Ce dossier est accessible via un lien partagé depuis son dossier parent, mais vous pouvez créer un lien externe personnalisé avec des permissions spécifiques.</string>
+    <string name="rooms_info_file_desc">Ce fichier est accessible via un lien partagé depuis son dossier parent, mais vous pouvez créer un lien externe personnalisé avec des permissions spécifiques.</string>
+    <string name="rooms_info_fill_form_desc">Cette salle est accessible à toute personne disposant du lien. Les utilisateurs externes auront la permission de remplir les formulaires pour tous les fichiers.</string>
+    <string name="share_popup_access_editing">Modification</string>
+    <string name="share_popup_access_remove">Supprimer</string>
 </resources>

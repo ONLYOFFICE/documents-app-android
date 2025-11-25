@@ -980,4 +980,29 @@
     <string name="start_filling_ready_for_filling">Formulário está pronto para preenchimento na sala</string>
     <string name="start_filling_ready_for_filling_desc">Uma notificação já foi enviada ao usuário na primeira função, solicitando que preencha o formulário. Você pode navegar até a sala ou compartilhar o link de preenchimento com os participantes.</string>
     <string name="list_context_reset_filling">Redefinir e iniciar preenchimento</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-25) -->
+    <string name="upload_manager_duplicate_title">Ação necessária</string>
+    <string name="upload_manager_duplicate_text">O destino já contém um arquivo chamado «%s». Selecione a ação:</string>
+    <string name="upload_manager_duplicates_text">O destino já contém arquivos com o mesmo nome. Selecione a ação:</string>
+    <string name="upload_manager_duplicate_overwrite">Substituir com atualização da versão</string>
+    <string name="upload_manager_duplicate_copy">Criar cópia do arquivo</string>
+    <string name="upload_manager_duplicate_skip">Pular</string>
+    <string name="socials_failed_auth">Falha no login</string>
+    <string name="rooms_info_access_desc">Esta sala está disponível para qualquer pessoa com o link. O acesso para usuários externos é fornecido dependendo do tipo de direitos de acesso selecionado.</string>
+    <string name="rooms_share_shared_links_count">Links compartilhados (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Habilite esta configuração para desativar o download de arquivos e pastas desta pasta compartilhada por meio de um link.</string>
+    <string name="share_link_file_restrict_desc">Habilite esta configuração para desativar o download deste arquivo compartilhado por meio de um link.</string>
+    <string name="share_link_file_restrict_warning">Não é possível desativar a restrição ao download e à cópia de dados, pois essa configuração é aplicada em nível de sala para todos os arquivos.</string>
+    <string name="share_link_file_restrict_warning_ok">OK</string>
+    <string name="rooms_user_type_members">Membros</string>
+    <string name="share_goal_everyone">Todos</string>
+    <string name="placeholder_no_shared_items">There are no shared items yet</string>
+    <string name="placeholder_no_shared_items_desc">Aqui você encontrará arquivos e pastas que outros membros do DocSpace compartilharam com você. Seus próprios arquivos e o conteúdo da sala não são exibidos aqui.</string>
+    <string name="rooms_share_shared_folder_desc">Forneça acesso à pasta e defina os níveis de permissão.</string>
+    <string name="rooms_info_folder_desc">Esta pasta pode ser acessada por meio de um link compartilhado da pasta pai, mas você pode criar um link externo personalizado com permissões específicas.</string>
+    <string name="rooms_info_file_desc">Este arquivo pode ser acessado por meio de um link compartilhado da pasta pai, mas você pode criar um link externo personalizado com permissões específicas..</string>
+    <string name="rooms_info_fill_form_desc">Esta sala está disponível para qualquer pessoa com o link. Os usuários externos terão permissão para preencher formulários em todos os arquivos..</string>
+    <string name="share_popup_access_editing">Edição</string>
+    <string name="share_popup_access_remove">Remover</string>
 </resources>
