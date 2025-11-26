@@ -1,37 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Missing translations for language: nl -->
-
-    <!-- Module: appmanager - 23 strings -->
-    <string name="upload_manager_duplicate_title">Action required</string>
-    <string name="upload_manager_duplicate_text">The destination already contains a file named «%s». Please select the action:</string>
-    <string name="upload_manager_duplicates_text">The destination already contains files with the same name. Please select the action:</string>
-    <string name="upload_manager_duplicate_overwrite">Overwrite with version update</string>
-    <string name="upload_manager_duplicate_copy">Create file copy</string>
-    <string name="upload_manager_duplicate_skip">Skip</string>
-    <string name="socials_failed_auth">Failed login</string>
-    <string name="rooms_info_access_desc">This room is available to anyone with the link. Access for external users is provided depending on the selected type of access rights.</string>
-    <string name="rooms_share_shared_links_count">Shared links (%d/6)</string>
-    <string name="share_link_folder_restrict_desc">Enable this setting to disable downloading of files and folders from this folder shared via a link</string>
-    <string name="share_link_file_restrict_desc">Enable this setting to disable downloading of this file shared via a link</string>
-    <string name="share_link_file_restrict_warning">You cannot disable the restriction on downloading and copying data because this setting is enforced at the room level for all files.</string>
-    <string name="share_link_file_restrict_warning_ok">OK</string>
-    <string name="rooms_user_type_members">Members</string>
-    <string name="share_goal_everyone">Everyone</string>
-    <string name="placeholder_no_shared_items">There are no shared items yet</string>
-    <string name="placeholder_no_shared_items_desc">Here you\'ll find files and folders that other DocSpace members shared with you. Your own files and room content are not shown here.</string>
-    <string name="rooms_share_shared_folder_desc">Provide access to the folder and set the permission levels.</string>
-    <string name="rooms_info_folder_desc">This folder is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
-    <string name="rooms_info_file_desc">This file is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
-    <string name="rooms_info_fill_form_desc">This room is available to anyone with the link. External users will have Form Filler permission for all the files.</string>
-    <string name="share_popup_access_editing">Editing</string>
-    <string name="share_popup_access_remove">Remove</string>
-
-    <!-- Module: libgcells - 1 strings -->
-    <string name="cells_sheet_right_to_left">Sheet Right to left</string>
-
-    <!-- Module: libgeditors - 3 strings -->
-    <string name="collaboration_comment_resolve_all">Resolve all</string>
-    <string name="ai_tooltip_input_message">Use quick prompts or enter your own request. AI will generate results directly in your document.</string>
-    <string name="text_direction_context">Context</string>
+  <!-- Missing translations for language: nl -->
+  <!-- Module: appmanager - 23 strings -->
+  <string name="upload_manager_duplicate_title">Actie vereist</string>
+  <string name="upload_manager_duplicate_text">De bestemming bevat al een bestand met de naam «%s». Kies de gewenste actie:</string>
+  <string name="upload_manager_duplicates_text">De bestemming bevat al bestanden met dezelfde naam. Kies de gewenste actie:</string>
+  <string name="upload_manager_duplicate_overwrite">Overschrijven met versie update</string>
+  <string name="upload_manager_duplicate_copy">Maak een kopie van het bestand</string>
+  <string name="upload_manager_duplicate_skip">Overslaan</string>
+  <string name="socials_failed_auth">Inloggen is mislukt</string>
+  <string name="rooms_info_access_desc">Deze kamer is voor iedereen met de link beschikbaar. Toegang voor externe gebruikers is afhankelijk van het geselecteerde type toegangsrechten.</string>
+  <string name="rooms_share_shared_links_count">Gedeelde links (%d/6)</string>
+  <string name="share_link_folder_restrict_desc">Schakel deze instelling in om het downloaden van bestanden en mappen uit deze map die via een link wordt gedeeld, uit te schakelen.</string>
+  <string name="share_link_file_restrict_desc">Schakel deze instelling in om het downloaden van dit bestand dat via een link wordt gedeeld, uit te schakelen.</string>
+  <string name="share_link_file_restrict_warning">Het is niet mogelijk om de beperking op het downloaden en kopiëren van gegevens uit te schakelen, aangezien deze instelling op kamerniveau voor alle bestanden wordt toegepast.</string>
+  <string name="share_link_file_restrict_warning_ok">OK</string>
+  <string name="rooms_user_type_members">Leden</string>
+  <string name="share_goal_everyone">Iedereen</string>
+  <string name="placeholder_no_shared_items">Er zijn nog geen gedeelde items.</string>
+  <string name="placeholder_no_shared_items_desc">Hier vindt u bestanden en mappen die andere DocSpace leden met u hebben gedeeld. Uw eigen bestanden en kamerinhoud worden hier niet weergegeven.</string>
+  <string name="rooms_share_shared_folder_desc">Geef toegang tot de map en stel de machtigingsniveaus in.</string>
+  <string name="rooms_info_folder_desc">Deze map is toegankelijk via een gedeelde link vanuit de bovenliggende map, maar u kunt ook een aangepaste externe link met specifieke rechten aanmaken.</string>
+  <string name="rooms_info_file_desc">Dit bestand is toegankelijk via een gedeelde link vanuit de bovenliggende map, maar u kunt ook een aangepaste externe link met specifieke rechten aanmaken.</string>
+  <string name="rooms_info_fill_form_desc">Deze kamer is voor iedereen met de link beschikbaar. Externe gebruikers hebben rechten voor het invullen van formulieren voor alle bestanden.</string>
+  <string name="share_popup_access_editing">Bewerken</string>
+  <string name="share_popup_access_remove">Verwijder</string>
+  <!-- Module: libgcells - 1 strings -->
+  <string name="cells_sheet_right_to_left">Blad van Rechts naar links</string>
+  <!-- Module: libgeditors - 3 strings -->
+  <string name="collaboration_comment_resolve_all">Alles oplossen</string>
+  <string name="ai_tooltip_input_message">Gebruik de korte prompts of voer uw eigen verzoek in. AI genereert resultaten rechtstreeks in uw document.</string>
+  <string name="text_direction_context">Context</string>
 </resources>
