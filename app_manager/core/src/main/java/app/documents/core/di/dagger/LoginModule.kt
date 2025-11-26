@@ -88,4 +88,16 @@ class LoginModule {
             webdavLoginDataSource
         )
     }
+
+    @Provides
+    @LoginScope
+    fun provideOwnCloudLoginRepository(
+        ownCloudLoginDataSource: OwnCloudLoginDataSource,
+        accountRepository: AccountRepository
+    ): OwnCloudLoginRepository {
+        return OwnCloudLoginRepositoryImpl(
+            accountRepository,
+            ownCloudLoginDataSource
+        )
+    }
 }
