@@ -821,14 +821,14 @@ Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</
     <string name="whats_new_title">Was gibt\'s Neues</string>
     <string name="whats_new_next">Erste Schritte</string>
     <string name="whats_new">Neuigkeiten in v9.1</string>
-    <string name="whats_new_1">KI-Assistent in Editoren</string>
-    <string name="whats_new_1_desc">Arbeiten Sie intelligenter in Dokumenten und Tabellenkalkulationen mit integrierter KI. Verbinden Sie Modelle wie OpenAI, Anthropic, Google oder Ollama.</string>
-    <string name="whats_new_2">Textrichtungsoptionen</string>
-    <string name="whats_new_2_desc">Wechseln Sie in allen Editoren einfach zwischen der Textrichtung von rechts nach links und von links nach rechts.</string>
-    <string name="whats_new_3">Rollenbasiertes Ausfüllen von Formularen in DocSpace</string>
-    <string name="whats_new_3_desc">Weisen Sie Teilnehmern bestimmte Rollen zu, wenn Sie einen Formularausfüllvorgang starten, während Sie mit DocSpace verbunden sind.</string>
-    <string name="whats_new_4">Inhaltsverzeichnis in Dokumenten</string>
-    <string name="whats_new_4_desc">Erstellen und navigieren Sie mit einem automatischen Inhaltsverzeichnis durch Dokumentabschnitte.</string>
+    <string name="whats_new_1">Neue DocSpace-Bereiche</string>
+    <string name="whats_new_1_desc">Greifen Sie schneller auf Ihre Dateien zu mit speziellen DocSpace-Bereichen: Für mich freigegeben, Favoriten und Zuletzt verwendet.</string>
+    <string name="whats_new_2">Verbesserte Dateifreigabe in DocSpace</string>
+    <string name="whats_new_2_desc">Dateien lassen sich mit den optimierten Freigabe-Workflows in DocSpace 3.5 einfacher freigeben und der Zugriff verwalten.</string>
+    <string name="whats_new_3">Mehr Anmeldeoptionen</string>
+    <string name="whats_new_3_desc">Melden Sie sich mit LinkedIn, Ihrer Apple-ID oder Zoom an, um Ihr DocSpace-Konto einfacher zu erstellen und darauf zuzugreifen.</string>
+    <string name="whats_new_4">Absatz- und Zellenrichtung (RTL)</string>
+    <string name="whats_new_4_desc">Wechseln Sie die Absatz- und Tabellenzellenrichtung in allen Editoren zwischen Rechts nach links und Links nach rechts.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Ich und %s</string>

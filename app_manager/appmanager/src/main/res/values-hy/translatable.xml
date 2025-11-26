@@ -973,14 +973,14 @@
     <string name="whats_new_title">Ինչ նորություն կա</string>
     <string name="whats_new_next">Սկսել!</string>
     <string name="whats_new">Նորություններ v9.1-ում</string>
-    <string name="whats_new_1">ԱԲ օգնական խմբագիրներում</string>
-    <string name="whats_new_1_desc">Աշխատեք փաստաթղթերում և աղյուսակներում ավելի արդյունավետ՝ օգտվելով ներկառուցված ԱԲ-ից։ Կարող եք միացնել մոդելներ, օրինակ՝ OpenAI, Anthropic, Google կամ Ollama։</string>
-    <string name="whats_new_2">Տեքստի ուղղության տարբերակներ</string>
-    <string name="whats_new_2_desc"> Հեշտությամբ փոխարկեք տեքստի ուղղությունը՝ Աջից ձախ կամ Ձախից աջ՝ բոլոր խմբագիրներում։</string>
-    <string name="whats_new_3">Դերային ձևաթղթի լրացում DocSpace-ում</string>
-    <string name="whats_new_3_desc">Նշանակեք մասնակիցներին որոշակի դերեր ձևաթղթի լրացման գործընթացը սկսելու ժամանակ՝ միացված լինելով DocSpace-ին։</string>
-    <string name="whats_new_4">Բովանդակության ցանկ փաստաթղթերում</string>
-    <string name="whats_new_4_desc">Ստեղծեք և անցեք փաստաթղթի բաժիններով՝ օգտագործելով ավտոմատ բովանդակության ցանկը։</string>
+    <string name="whats_new_1">Նոր DocSpace բաժիններ</string>
+    <string name="whats_new_1_desc">Ավելի արագ մուտք գործեք ձեր ֆայլեր՝ օգտագործելով DocSpace-ի համար նախատեսված բաժինները՝ Ինձ հետ համաօգտագործված, Նախընտրելիներ և Վերջերս դիտված։</string>
+    <string name="whats_new_2">Բարելավված ֆայլերի համաօգտագործում DocSpace-ում</string>
+    <string name="whats_new_2_desc">Հեշտությամբ կիսվեք ֆայլերով և կառավարեք մուտքը՝ DocSpace 3.5-ում բարելավված համաօգտագոործման աշխատանքային հոսքերի միջոցով:</string>
+    <string name="whats_new_3">Սոցիալական մուտքի տարբերակներ</string>
+    <string name="whats_new_3_desc">Մուտք գործեք LinkedIn-ով, Apple ID-ով կամ Zoom-ով՝ ձեր DocSpace հաշիվն հեշտությամբ ստեղծելու և մուտք գործելու համար։</string>
+    <string name="whats_new_4">Պարբերության և վանդակների ուղղություն (Աջից-Ձախ)</string>
+    <string name="whats_new_4_desc">Փոխեք պարբերությունների և աղյուսակի վանդակների ուղղությունն աջից ձախ և ձախից աջ բոլոր խմբագիրներում։</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Ես և %s-ը</string>
@@ -1055,7 +1055,7 @@
     <string name="on_boarding_third_party_header">Երրորդ կողմի պահեստ</string>
     <string name="on_boarding_third_party_info">Միացրեք երրորդ կողմի պահեստային համակարգեր, ինչպիսիք են Nextcloud-ը, ownCloud-ը, Dropbox-ը և այլն, որոնք օգտագործում են WebDAV պրոտոկոլը:</string>
     <string name="on_boarding_welcome_header">Սկսում ենք</string>
-    <string name="on_boarding_welcome_info">Բարի գալուստ ONLYOFFICE բջջային խմբագրման փաթեթ: Սեղմեք՝ հավելվածի մասին ավելին իմանալու համար:</string>
+    <string name="on_boarding_welcome_info">Բարի գալուստ ONLYOFFICE բջջային խմբագրման փաթեթ! Սեղմեք՝ հավելվածի մասին ավելին իմանալու համար:</string>
     <string name="operation_disable_custom_filter">Հատուկ ֆիլտրը ընտրված ֆայլի համար անջատված է</string>
     <string name="operation_enable_custom_filter">Հատուկ ֆիլտրը ընտրված ֆայլի համար  միացված է</string>
     <string name="placeholder_connection_button">Վերաբեռնել</string>

@@ -818,14 +818,14 @@
     <string name="whats_new_title">Novità</string>
     <string name="whats_new_next">Primi passi</string>
     <string name="whats_new">Novità nella v9.1</string>
-    <string name="whats_new_1">Assistente AI negli editor</string>
-    <string name="whats_new_1_desc">Lavora in modo più intelligente su documenti e fogli di calcolo con l’AI integrata. Collega modelli come OpenAI, Anthropic, Google o Ollama.</string>
-    <string name="whats_new_2">Opzioni di direzione del testo</string>
-    <string name="whats_new_2_desc">Passa facilmente dalla direzione del testo da destra a sinistra a quella da sinistra a destra in tutti gli editor.</string>
-    <string name="whats_new_3">Compilazione modulare basata sui ruoli in DocSpace</string>
-    <string name="whats_new_3_desc">Assegna ruoli specifici ai partecipanti quando avvii un processo di compilazione di moduli collegato a DocSpace.</string>
-    <string name="whats_new_4">Sommario nei documenti</string>
-    <string name="whats_new_4_desc">Crea e naviga tra le sezioni del documento con un sommario automatico.</string>
+    <string name="whats_new_1">Nuove sezioni in DocSpace</string>
+    <string name="whats_new_1_desc">Accedi ai tuoi file più rapidamente con aree dedicate di DocSpace: Condivisi con me, Preferiti e Recenti.</string>
+    <string name="whats_new_2">Condivisione file migliorata in DocSpace</string>
+    <string name="whats_new_2_desc">Condividi i file più facilmente e gestisci gli accessi grazie a workflow di condivisione potenziati in DocSpace 3.5.</string>
+    <string name="whats_new_3">Opzioni di accesso social</string>
+    <string name="whats_new_3_desc">Accedi con LinkedIn, Apple ID o Zoom per creare e usare il tuo account DocSpace più facilmente.</string>
+    <string name="whats_new_4">Direzione di paragrafi e celle (RTL)</string>
+    <string name="whats_new_4_desc">Cambia la direzione di paragrafi e celle delle tabelle tra da destra a sinistra e da sinistra a destra in tutti gli editor.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Me and %s</string>

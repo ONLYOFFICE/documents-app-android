@@ -834,14 +834,14 @@
     <string name="whats_new_title">Новые возможности</string>
     <string name="whats_new_next">Начать</string>
     <string name="whats_new">Что нового в v9.1</string>
-    <string name="whats_new_1">ИИ-ассистент в редакторах</string>
-    <string name="whats_new_1_desc">Работайте с помощью встроенного ИИ в документах и таблицах. Подключайте модели от OpenAI, Anthropic, Google или Ollama.</string>
-    <string name="whats_new_2">Направление текста</string>
-    <string name="whats_new_2_desc">Легко переключайтесь между направлением текста справа налево и слева направо во всех редакторах.</string>
-    <string name="whats_new_3">Заполнение форм по ролям в DocSpace</string>
-    <string name="whats_new_3_desc">Назначайте роли участникам при запуске процесса заполнения формы, работая через DocSpace.</string>
-    <string name="whats_new_4">Оглавление в документах</string>
-    <string name="whats_new_4_desc">Создавайте и быстро переходите между разделами с помощью автоматического оглавления.</string>
+    <string name="whats_new_1">Новые разделы DocSpace</string>
+    <string name="whats_new_1_desc">Быстро получайте доступ к файлам с помощью специальных разделов DocSpace: Shared with me, Favorites и Recent.</string>
+    <string name="whats_new_2">Улучшенный шаринг файлов в DocSpace</string>
+    <string name="whats_new_2_desc">Делитесь файлами проще и управляйте доступом с помощью обновлённых рабочих процессов в DocSpace 3.5.</string>
+    <string name="whats_new_3">Новые опции входа</string>
+    <string name="whats_new_3_desc">Входите с помощью LinkedIn, Apple ID или Zoom, чтобы быстрее создавать и использовать аккаунт DocSpace.</string>
+    <string name="whats_new_4">Настройка направления текста (RTL)</string>
+    <string name="whats_new_4_desc">Переключайте направление текста в абзацах и ячеек таблиц между справа налево и слева направо во всех редакторах.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Я и %s</string>

@@ -812,14 +812,14 @@
     <string name="whats_new_title">Какво ново</string>
     <string name="whats_new_next">Първи стъпки</string>
     <string name="whats_new">Нови във v9.1</string>
-    <string name="whats_new_1">AI асистент в редактори</string>
-    <string name="whats_new_1_desc">Работете по-умно в документи и електронни таблици с вграден AI. Свържете модели като OpenAI, Anthropic, Google или Ollama.</string>
-    <string name="whats_new_2">Опции за текстово насочване</string>
-    <string name="whats_new_2_desc">Превключвайте лесно между текстова посока Отдясно-наляво и Отляво-надясно във всички редактори.</string>
-    <string name="whats_new_3">Попълване на формуляр на базата на роли в DocSpace</string>
-    <string name="whats_new_3_desc">Задайте специфични роли на участниците, когато започвате процес по попълване на формуляри, докато сте свързани с DocSpace.</string>
-    <string name="whats_new_4">Съдържание в документи</string>
-    <string name="whats_new_4_desc">Създавайте и навигирайте през раздели документи с автоматично съдържание.</string>
+    <string name="whats_new_1">Нови DocSpace раздели</string>
+    <string name="whats_new_1_desc">Получавайте по-бърз достъп до файловете си със специализираните DocSpace зони: Споделени с мен, Любими и Скорошни.</string>
+    <string name="whats_new_2">Разширено търсене на файлове в DocSpace</string>
+    <string name="whats_new_2_desc">Споделяйте по-лесно файлове и управлявайте достъпа с подобрените работни процеси за споделяне в DocSpace 3.5.</string>
+    <string name="whats_new_3">Социални опции за вход</string>
+    <string name="whats_new_3_desc">Влизайте с LinkedIn, Apple ID или Zoom за по-лесно създаване или достъп до вашия DocSpace профил.</string>
+    <string name="whats_new_4">Посока на абзаци и клетки (RTL)</string>
+    <string name="whats_new_4_desc">Сменяйте посоката на абзаците и на клетките в таблиците между Отдясно-наляво и Отляво-надясно във всички редактори.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Аз и %s</string>
@@ -948,7 +948,7 @@
     <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
     <plurals name="dialogs_question_message_template">
         <item quantity="one">Наистина ли искате да изтриете шаблона за стая „%s“? Шаблонът не може да бъде възстановен.</item>
-        <item quantity="other">Наистина ли искате да изтриете избраните шаблони за стаи? Те не могат да бъдат възстановени.</item>
+        <item quantity="other">Наистина ли искате да изтриете избраните шаблони за стаи? Те не могат да бъде възстановени.</item>
     </plurals>
     <plurals name="dialogs_question_delete_template_title">
         <item quantity="one">Изтриване на шаблон</item>

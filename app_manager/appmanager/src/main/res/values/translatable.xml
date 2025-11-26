@@ -1183,14 +1183,14 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="dev_mode_network_requests">Network requests</string>
 <!--    Wats new-->
     <string name="whats_new">What\'s new in v9.1</string>
-    <string name="whats_new_1">AI assistant in editors</string>
-    <string name="whats_new_1_desc">Work smarter in documents and spreadsheets with built-in AI. Connect models like OpenAI, Anthropic, Google, or Ollama.</string>
-    <string name="whats_new_2">Text direction options</string>
-    <string name="whats_new_2_desc">Easily switch between Right-to-left and Left-to-right text direction in all editors.</string>
-    <string name="whats_new_3">Role-based form filling in DocSpace</string>
-    <string name="whats_new_3_desc">Assign specific roles to participants when starting a form-filling process while connected to DocSpace.</string>
-    <string name="whats_new_4">Table of contents in documents</string>
-    <string name="whats_new_4_desc">Create and navigate through document sections with an automatic table of contents.</string>
+    <string name="whats_new_1">New DocSpace sections</string>
+    <string name="whats_new_1_desc">Access your files faster with dedicated DocSpace areas: Shared with me, Favorites, and Recent.</string>
+    <string name="whats_new_2">Enhanced file sharing in DocSpace</string>
+    <string name="whats_new_2_desc">Share files more easily and manage access with improved sharing workflows in DocSpace 3.5.</string>
+    <string name="whats_new_3">Social sign-in options</string>
+    <string name="whats_new_3_desc">Sign in with LinkedIn, Apple ID, or Zoom to create and access your DocSpace account more easily.</string>
+    <string name="whats_new_4">Paragraph and cell direction (RTL)</string>
+    <string name="whats_new_4_desc">Switch paragraph and table cell direction between Right-to-left and Left-to-right across all editors.</string>
 
     <string name="start_filling_title">Start filling</string>
     <string name="start_filling_start">Start</string>

@@ -821,14 +821,14 @@
     <string name="whats_new_title">¿Qué hay de nuevo?</string>
     <string name="whats_new_next">Empiece a usar</string>
     <string name="whats_new">Novedades en la v9.1</string>
-    <string name="whats_new_1">Asistente de IA en los editores</string>
-    <string name="whats_new_1_desc">Trabaja de forma más inteligente en documentos y hojas de cálculo con la IA integrada. Conecta modelos como OpenAI, Anthropic, Google u Ollama.</string>
-    <string name="whats_new_2">Opciones de dirección del texto</string>
-    <string name="whats_new_2_desc">Cambia fácilmente entre la dirección del texto de derecha a izquierda y de izquierda a derecha en todos los editores.</string>
-    <string name="whats_new_3">Rellenado de formularios basado en roles en DocSpace</string>
-    <string name="whats_new_3_desc">Asigna roles específicos a los participantes al iniciar un proceso de rellenado de formularios mientras estás conectado a DocSpace.</string>
-    <string name="whats_new_4">Tabla de contenidos en los documentos</string>
-    <string name="whats_new_4_desc">Crea y navega por las secciones de un documento con una tabla de contenidos automática.</string>
+    <string name="whats_new_1">Nuevas secciones de DocSpace</string>
+    <string name="whats_new_1_desc">Accede a tus archivos más rápidamente con las áreas específicas de DocSpace: Compartido conmigo, Favoritos y Recientes.</string>
+    <string name="whats_new_2">Uso compartido de archivos mejorado en DocSpace</string>
+    <string name="whats_new_2_desc">Comparte archivos más fácilmente y gestiona el acceso con flujos de trabajo compartidos mejorados en DocSpace 3.5.</string>
+    <string name="whats_new_3">Opciones de inicio de sesión con redes sociales</string>
+    <string name="whats_new_3_desc">Inicia sesión con LinkedIn, Apple ID o Zoom para crear y acceder a tu cuenta de DocSpace más fácilmente.</string>
+    <string name="whats_new_4">Dirección de párrafos y celdas (RTL)</string>
+    <string name="whats_new_4_desc">Cambia la dirección de los párrafos y las celdas de las tablas entre derecha a izquierda e izquierda a derecha en todos los editores.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Yo y %s</string>
