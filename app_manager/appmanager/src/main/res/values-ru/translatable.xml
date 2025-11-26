@@ -839,7 +839,7 @@
     <string name="whats_new_2">Улучшенный шаринг файлов в DocSpace</string>
     <string name="whats_new_2_desc">Делитесь файлами проще и управляйте доступом с помощью обновлённых рабочих процессов в DocSpace 3.5.</string>
     <string name="whats_new_3">Новые опции входа</string>
-    <string name="whats_new_3_desc">Входите с помощью LinkedIn, Apple ID или Zoom, чтобы быстрее создавать и использовать аккаунт DocSpace.</string>
+    <string name="whats_new_3_desc">Входите с помощью LinkedIn или Zoom, чтобы быстрее создавать и использовать аккаунт DocSpace.</string>
     <string name="whats_new_4">Настройка направления текста (RTL)</string>
     <string name="whats_new_4_desc">Переключайте направление текста в абзацах и ячеек таблиц между справа налево и слева направо во всех редакторах.</string>
 

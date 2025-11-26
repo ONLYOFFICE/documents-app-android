@@ -1188,7 +1188,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="whats_new_2">Enhanced file sharing in DocSpace</string>
     <string name="whats_new_2_desc">Share files more easily and manage access with improved sharing workflows in DocSpace 3.5.</string>
     <string name="whats_new_3">Social sign-in options</string>
-    <string name="whats_new_3_desc">Sign in with LinkedIn, Apple ID, or Zoom to create and access your DocSpace account more easily.</string>
+    <string name="whats_new_3_desc">Sign in with LinkedIn, or Zoom to create and access your DocSpace account more easily.</string>
     <string name="whats_new_4">Paragraph and cell direction (RTL)</string>
     <string name="whats_new_4_desc">Switch paragraph and table cell direction between Right-to-left and Left-to-right across all editors.</string>
 
