@@ -52,4 +52,12 @@ object LoginNetworkModule {
     ): WebdavLoginDataSource {
         return WebdavLoginDataSourceImpl(okHttpClient)
     }
+
+    @Provides
+    fun provideOwnCloudLoginDataSource(
+        json: Json,
+        @LoginOkHttpClient okHttpClient: OkHttpClient
+    ): OwnCloudLoginDataSource {
+        return OwnCloudLoginDataSourceImpl(json, okHttpClient)
+    }
 }
