@@ -1,40 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Missing translations for language: bg -->
-
-    <!-- Module: appmanager - 23 strings -->
-    <string name="upload_manager_duplicate_title">Action required</string>
-    <string name="upload_manager_duplicate_text">The destination already contains a file named «%s». Please select the action:</string>
-    <string name="upload_manager_duplicates_text">The destination already contains files with the same name. Please select the action:</string>
-    <string name="upload_manager_duplicate_overwrite">Overwrite with version update</string>
-    <string name="upload_manager_duplicate_copy">Create file copy</string>
-    <string name="upload_manager_duplicate_skip">Skip</string>
-    <string name="socials_failed_auth">Failed login</string>
-    <string name="rooms_info_access_desc">This room is available to anyone with the link. Access for external users is provided depending on the selected type of access rights.</string>
-    <string name="rooms_share_shared_links_count">Shared links (%d/6)</string>
-    <string name="share_link_folder_restrict_desc">Enable this setting to disable downloading of files and folders from this folder shared via a link</string>
-    <string name="share_link_file_restrict_desc">Enable this setting to disable downloading of this file shared via a link</string>
-    <string name="share_link_file_restrict_warning">You cannot disable the restriction on downloading and copying data because this setting is enforced at the room level for all files.</string>
-    <string name="share_link_file_restrict_warning_ok">OK</string>
-    <string name="rooms_user_type_members">Members</string>
-    <string name="share_goal_everyone">Everyone</string>
-    <string name="placeholder_no_shared_items">There are no shared items yet</string>
-    <string name="placeholder_no_shared_items_desc">Here you\'ll find files and folders that other DocSpace members shared with you. Your own files and room content are not shown here.</string>
-    <string name="rooms_share_shared_folder_desc">Provide access to the folder and set the permission levels.</string>
-    <string name="rooms_info_folder_desc">This folder is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
-    <string name="rooms_info_file_desc">This file is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
-    <string name="rooms_info_fill_form_desc">This room is available to anyone with the link. External users will have Form Filler permission for all the files.</string>
-    <string name="share_popup_access_editing">Editing</string>
-    <string name="share_popup_access_remove">Remove</string>
-
-    <!-- Module: libgcells - 1 strings -->
-    <string name="cells_sheet_right_to_left">Sheet Right to left</string>
-
-    <!-- Module: libgdocs - 1 strings -->
-    <string name="docs_headings_beginning_of_document">Beginning of document</string>
-
-    <!-- Module: libgeditors - 3 strings -->
-    <string name="collaboration_comment_resolve_all">Resolve all</string>
-    <string name="ai_tooltip_input_message">Use quick prompts or enter your own request. AI will generate results directly in your document.</string>
-    <string name="text_direction_context">Context</string>
+<!--  Missing translations for language: bg  -->
+<!--  Module: appmanager - 23 strings  -->
+<string name="upload_manager_duplicate_title">Задължително действие</string>
+<string name="upload_manager_duplicate_text">Целта вече съдържа файл с име «%s». Моля, изберете действието:</string>
+<string name="upload_manager_duplicates_text">Целта веч съдържа файлове със същото име. Моля, изберете действието:</string>
+<string name="upload_manager_duplicate_overwrite">Презапиши с актуализация на версията</string>
+<string name="upload_manager_duplicate_copy">Създай копие на файла</string>
+<string name="upload_manager_duplicate_skip">Пропусни</string>
+<string name="socials_failed_auth">Неуспешно влизане</string>
+<string name="rooms_info_access_desc">Тази стая  е достъпна за всеки с линка. Достъпът за външни потребители се осигурява в зависимост от избрания вид права на достъп.</string>
+<string name="rooms_share_shared_links_count">Споделени линкове (%d/6)</string>
+<string name="share_link_folder_restrict_desc">Активирайте тази настройка, за да деактивирате изтеглянето на файлове и папки от тази папка, споделени чрез линк</string>
+<string name="share_link_file_restrict_desc">Активирайте тази настройка, за да деактивирате изтеглянето на този файл, споделен чрез линк</string>
+<string name="share_link_file_restrict_warning">Не можете да деактивирате ограничението за изтегляне и копиране а данни, защото тази настройка е наложена в нивото на стаята за всички файлове.</string>
+<string name="share_link_file_restrict_warning_ok">OK</string>
+<string name="rooms_user_type_members">Членове</string>
+<string name="share_goal_everyone">Всички</string>
+<string name="placeholder_no_shared_items">Все ще няма споделени файлове</string>
+<string name="placeholder_no_shared_items_desc">Тук е откриете файлове и папки, които другите членове на DocSpace са споделили с Вас. Вашите собствени файлове и съдържание на стаята не са показни тук.</string>
+<string name="rooms_share_shared_folder_desc">Осигурете достъп до папката и задайте нивата на разрешение.</string>
+<string name="rooms_info_folder_desc">Тази папка е достъпна чрез споделения линк от родителската ѝ папка, но можете да създадете персонализиран външен линк с конкретни разрешения.</string>
+<string name="rooms_info_file_desc">Този файл е достъпен чрез споделен линк от родителската му папка, но можете да създадете персонализиран външен линк с конкретни разрешения.</string>
+<string name="rooms_info_fill_form_desc">Тази стая е достъпна за всеки с линка. Външните потребители ще имат разрешение за Попълване на формуляр за всичките файлове.</string>
+<string name="share_popup_access_editing">Редактиране</string>
+<string name="share_popup_access_remove">Премахни</string>
+<!--  Module: libgcells - 1 strings  -->
+<string name="cells_sheet_right_to_left">Лист Отдясно наляво</string>
+<!--  Module: libgdocs - 1 strings  -->
+<string name="docs_headings_beginning_of_document">Начало а документ</string>
+<!--  Module: libgeditors - 3 strings  -->
+<string name="collaboration_comment_resolve_all">Разреши всички</string>
+<string name="ai_tooltip_input_message">Използвайте бързи подканвания, за да влизате в собствената си заявка. AI ще генерира резултати директно в документа ви.</string>
+<string name="text_direction_context">Контекст</string>
 </resources>
