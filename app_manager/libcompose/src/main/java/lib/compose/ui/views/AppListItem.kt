@@ -51,7 +51,7 @@ fun AppListItem(
     subtitle: String? = null,
     background: Color? = null,
     @DrawableRes startIcon: Int? = null,
-    startIconTint: Color? = MaterialTheme.colors.primary,
+    startIconTint: Color? = null,
     endContent: @Composable () -> Unit = {},
     paddingEnd: Dp = 16.dp,
     dividerVisible: Boolean = true,

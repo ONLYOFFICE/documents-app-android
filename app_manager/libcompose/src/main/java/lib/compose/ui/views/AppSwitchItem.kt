@@ -23,7 +23,7 @@ fun AppSwitchItem(
     subtitle: String? = null,
     enabled: Boolean = true,
     @DrawableRes startIcon: Int? = null,
-    startIconTint: Color = MaterialTheme.colors.primary,
+    startIconTint: Color? = null,
     dividerVisible: Boolean = true,
     singleLine: Boolean = true,
     onCheck: (Boolean) -> Unit
@@ -58,7 +58,7 @@ fun AppSwitchItem(
     @StringRes subtitle: Int? = null,
     enabled: Boolean = true,
     @DrawableRes startIcon: Int? = null,
-    startIconTint: Color = MaterialTheme.colors.primary,
+    startIconTint: Color? = null,
     dividerVisible: Boolean = true,
     singleLine: Boolean = true,
     onCheck: (Boolean) -> Unit

@@ -30,13 +30,13 @@ fun includeEditorModule(path: String, projectPath: String) {
 if (shouldIncludeEditors() == true) {
     includeEditorModule("../../core/X2tConverter/build/Android/libx2t", ":libx2t")
     includeEditorModule("../../core-ext/native_base/android_base/libeditors", ":libeditors")
-    includeEditorModule("../../core-ext/cell_android/libcells", ":libcells")
+//    includeEditorModule("../../core-ext/cell_android/libcells", ":libcells")
     includeEditorModule("../../core-ext/word_android/libdocs", ":libdocs")
-    includeEditorModule("../../core-ext/slide_android/libslides", ":libslides")
+//    includeEditorModule("../../core-ext/slide_android/libslides", ":libslides")
     includeEditorModule("../../document-android-editors/editors_base/libgeditors", ":libgeditors")
-    includeEditorModule("../../document-android-editors/editors_cells/libgcells", ":libgcells")
+//    includeEditorModule("../../document-android-editors/editors_cells/libgcells", ":libgcells")
     includeEditorModule("../../document-android-editors/editors_docs/libgdocs", ":libgdocs")
-    includeEditorModule("../../document-android-editors/editors_slides/libgslides", ":libgslides")
+//    includeEditorModule("../../document-android-editors/editors_slides/libgslides", ":libgslides")
 }
 
 project(":libtoolkit").projectDir = File(settingsDir, "../toolkit/libtoolkit")
