@@ -45,6 +45,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import app.documents.core.model.login.User
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
@@ -193,7 +194,7 @@ class StartFillingActivity : ComponentActivity() {
                         }
                         composable<Screen.InviteToRoom> {
                             InviteUsersScreen(
-                                roomType = -1,
+                                roomType = ApiContract.RoomType.VIRTUAL_ROOM,
                                 roomId = roomId,
                                 roomProvider = roomProvider,
                                 fromList = true,
