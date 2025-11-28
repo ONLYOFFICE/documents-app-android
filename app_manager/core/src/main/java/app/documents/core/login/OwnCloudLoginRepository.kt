@@ -2,7 +2,6 @@ package app.documents.core.login
 
 import app.documents.core.account.AccountRepository
 import app.documents.core.model.login.OidcConfiguration
-import app.documents.core.model.login.response.TokenResponse
 import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.login.OwnCloudLoginDataSource
 import kotlinx.coroutines.Dispatchers
@@ -13,8 +12,9 @@ import kotlinx.coroutines.flow.flowOn
 import java.net.URL
 
 interface OwnCloudLoginRepository {
-    suspend fun signIn(code: String, configuration: OidcConfiguration): Flow<NetworkResult<Unit>>
-    suspend fun refreshToken(url: String, issuer: String): Flow<NetworkResult<TokenResponse>>
+    fun signIn(code: String, configuration: OidcConfiguration): Flow<NetworkResult<Unit>>
+    fun refreshToken(configuration: OidcConfiguration): Flow<NetworkResult<Unit>>
+    fun getOpenidConfig(issuer: String): Flow<NetworkResult<OidcConfiguration>>
 }
 
 internal class OwnCloudLoginRepositoryImpl(
@@ -22,11 +22,11 @@ internal class OwnCloudLoginRepositoryImpl(
     private val ownCloudLoginDataSource: OwnCloudLoginDataSource
 ) : OwnCloudLoginRepository {
 
-    override suspend fun signIn(
+    override fun signIn(
         code: String,
         configuration: OidcConfiguration
     ): Flow<NetworkResult<Unit>> {
-        return flow<NetworkResult<Unit>> {
+        return apiCall {
             val response = ownCloudLoginDataSource.signIn(
                 url = configuration.tokenEndpoint,
                 issuer = configuration.issuer,
@@ -41,16 +41,35 @@ internal class OwnCloudLoginRepositoryImpl(
                 accessToken = response.accessToken,
                 refreshToken = response.refreshToken
             )
-            emit(NetworkResult.Success(Unit))
+        }
+    }
+
+    override fun refreshToken(configuration: OidcConfiguration): Flow<NetworkResult<Unit>> {
+        return apiCall {
+            val response = ownCloudLoginDataSource.refreshToken(
+                url = configuration.tokenEndpoint,
+                issuer = configuration.issuer,
+                refreshToken = requireNotNull(accountRepository.getRefreshToken())
+            )
+            accountRepository.updateAccount(
+                token = response.accessToken,
+                refreshToken = response.refreshToken
+            )
+        }
+    }
+
+    override fun getOpenidConfig(issuer: String): Flow<NetworkResult<OidcConfiguration>> {
+        return apiCall {
+            requireNotNull(ownCloudLoginDataSource.openidConfiguration(issuer))
+        }
+    }
+
+    private fun <T> apiCall(block: suspend () -> T): Flow<NetworkResult<T>> {
+        return flow<NetworkResult<T>> {
+            val data = block()
+            emit(NetworkResult.Success(data))
         }
             .flowOn(Dispatchers.IO)
             .catch { cause -> emit(NetworkResult.Error(cause)) }
-    }
-
-    override suspend fun refreshToken(
-        url: String,
-        issuer: String
-    ): Flow<NetworkResult<TokenResponse>> {
-        TODO("Not yet implemented")
     }
 }

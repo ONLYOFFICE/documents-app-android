@@ -126,7 +126,7 @@ internal class AccountRepositoryImpl(
 
         when (account.portal.provider) {
             is PortalProvider.Webdav -> {
-                if (accountManager.getPassword(account.accountName).isNullOrEmpty())
+                if (accessToken.isEmpty() && accountManager.getPassword(account.accountName).isNullOrEmpty())
                     return CheckLoginResult.NeedLogin
             }
             else -> if (accessToken.isEmpty()) return CheckLoginResult.NeedLogin

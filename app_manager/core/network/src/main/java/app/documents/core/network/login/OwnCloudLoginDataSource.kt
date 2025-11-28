@@ -13,6 +13,7 @@ import app.documents.core.network.HEADER_AUTHORIZATION
 import app.documents.core.network.HTTP_METHOD_POST
 import app.documents.core.network.OWNCLOUD_CLIENT_ID
 import app.documents.core.network.OWNCLOUD_CLIENT_SECRET
+import app.documents.core.network.OWNCLOUD_OCIS_CONFIG_URL
 import app.documents.core.network.VALUE_CONTENT_TYPE
 import app.documents.core.network.VALUE_GRANT_TYPE_AUTH
 import app.documents.core.network.VALUE_GRANT_TYPE_REFRESH
@@ -34,21 +35,17 @@ import retrofit2.http.Url
 
 private interface OwnCloudApi {
     @GET
+    suspend fun getOpenidConfiguration(@Url url: String): Response<ResponseBody>
+
+    @GET
     suspend fun getUserInfo(
         @Url url: String,
         @Header(HEADER_AUTHORIZATION) accessToken: String
     ): OwnCloudUserResponse
 
-
     @FormUrlEncoded
     @HTTP(method = HTTP_METHOD_POST, hasBody = true)
-    suspend fun getToken(
-        @Url url: String,
-        @FieldMap fields: Map<String, String>
-    ): TokenResponse
-
-    @GET
-    suspend fun getOpenidConfiguration(@Url url: String): Response<ResponseBody>
+    suspend fun getToken(@Url url: String, @FieldMap fields: Map<String, String>): TokenResponse
 }
 
 interface OwnCloudLoginDataSource {
@@ -90,7 +87,7 @@ internal class OwnCloudLoginDataSourceImpl(json: Json, okHttpClient: OkHttpClien
 
 
     override suspend fun openidConfiguration(serverUrl: String): OidcConfiguration? {
-        val wellKnownUrl = serverUrl.removeSuffix("/") + "/.well-known/openid-configuration"
+        val wellKnownUrl = serverUrl.removeSuffix("/") + OWNCLOUD_OCIS_CONFIG_URL
         val response = api.getOpenidConfiguration(wellKnownUrl)
         if (!response.isSuccessful) throw HttpException(response)
 
@@ -106,7 +103,7 @@ internal class OwnCloudLoginDataSourceImpl(json: Json, okHttpClient: OkHttpClien
         return mapOf(
             dataKey to data,
             ARG_GRANT_TYPE to if (isRefresh) VALUE_GRANT_TYPE_REFRESH else VALUE_GRANT_TYPE_AUTH,
-            ARG_REDIRECT_URI to issuer + OWNCLOUD_REDIRECT_SUFFIX,
+            ARG_REDIRECT_URI to issuer.removeSuffix("/") + OWNCLOUD_REDIRECT_SUFFIX,
             ARG_CLIENT_ID to OWNCLOUD_CLIENT_ID,
             ARG_CLIENT_SECRET to OWNCLOUD_CLIENT_SECRET
         )
