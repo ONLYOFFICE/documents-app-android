@@ -750,6 +750,10 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return response.response
     }
 
+    suspend fun getUserProfile(userId: String): User {
+        return roomService.getUserProfile(userId).response
+    }
+
     private fun <T> handleUnitResponse(apiCall: suspend () -> Response<T>): Flow<NetworkResult<Unit>> = flow {
         val response = apiCall()
         if (!response.isSuccessful) throw HttpException(response)

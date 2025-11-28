@@ -512,4 +512,10 @@ interface RoomService {
         @Path(value = "fileId") fileId: String,
         @Query("filterValue") filterValue: String = ""
     ): app.documents.core.network.BaseResponse<List<User>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/people/{userId}")
+    suspend fun getUserProfile(
+        @Path(value = "userId") userId: String,
+    ): app.documents.core.network.BaseResponse<User>
+
 }
