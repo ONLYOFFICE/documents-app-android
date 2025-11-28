@@ -535,7 +535,7 @@
     <string name="storage_web_dav_settings_login">Login</string>
     <string name="storage_web_dav_settings_password">Password</string>
     <string name="storage_web_dav_settings_title">Input title for service</string>
-    <string name="storage_web_dav_settings_hint" tools:ignore="MissingTranslation" translatable="false">https://cloud.yourdomain.com</string>
+    <string name="storage_web_dav_settings_hint" translatable="false" tools:ignore="MissingTranslation">https://cloud.yourdomain.com</string>
     <string name="storage_web_dav_settings_server">Server</string>
     <string name="storage_web_dav_settings_required">Required</string>
 
@@ -1077,7 +1077,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="rooms_index_reorder_complete_title">File exported</string>
     <string name="rooms_index_reorder_complete_desc">%s file exported to Documents</string>
     <string name="rooms_index_reorder_open_file">Open file</string>
-    
+
     <string name="rooms_protected_room">Protected room</string>
     <string name="rooms_invalid_password">Invalid password</string>
 
@@ -1181,7 +1181,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="filling_form_version_incompatible_desc">The client and server versions are incompatible. You can only open the document in view mode.</string>
     <string name="dev_mode_system_logs">System logs</string>
     <string name="dev_mode_network_requests">Network requests</string>
-<!--    Wats new-->
+    <!--    Wats new-->
     <string name="whats_new">What\'s new in v9.1</string>
     <string name="whats_new_1">New DocSpace sections</string>
     <string name="whats_new_1_desc">Access your files faster with dedicated DocSpace areas: Shared with me, Favorites, and Recent.</string>
@@ -1205,8 +1205,8 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="placeholder_no_shared_items_desc">Here you\'ll find files and folders that other DocSpace members shared with you. Your own files and room content are not shown here.</string>
 
     <string name="rooms_share_shared_folder_desc">Provide access to the folder and set the permission levels.</string>
-    <string name="rooms_info_folder_desc">This folder is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
-    <string name="rooms_info_file_desc">This file is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
+    <string name="rooms_info_folder_desc">This folder is accessible via a shared link from its parent folder, but you can create a custom external link with specific permissions.</string>
+    <string name="rooms_info_file_desc">This file is accessible via a shared link from its parent folder, but you can create a custom external link with specific permissions.</string>
     <string name="rooms_info_fill_form_desc">This room is available to anyone with the link. External users will have Form Filler permission for all the files.</string>
 
     <string name="share_popup_access_editing">Editing</string>
