@@ -71,8 +71,9 @@ class ManagerModule {
         val okHttpClient = NetworkClient.getOkHttpBuilder(
             portalSettings = cloudAccount?.portal?.settings ?: PortalSettings(),
             WebDavInterceptor(
-                cloudAccount?.login.orEmpty(),
-                cloudAccount?.accountName?.let { accountManager.getPassword(it) }
+                login = cloudAccount?.login.orEmpty(),
+                password = cloudAccount?.accountName?.let { accountManager.getPassword(it) },
+                accessTokenProvider = { accountManager.getToken(cloudAccount?.accountName.orEmpty()) }
             )
         ).build()
 
