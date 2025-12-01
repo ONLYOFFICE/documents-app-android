@@ -9,9 +9,14 @@ import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.migration.MigrationHelper
 import app.documents.core.migration.MigrationHelperImpl
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.network.login.LoginOkHttpClient
+import app.documents.core.network.login.owncloud.OwnCloudTokenDataSource
+import app.documents.core.network.login.owncloud.OwnCloudTokenDataSourceImpl
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import okhttp3.OkHttpClient
 import javax.inject.Singleton
 
 @Module
@@ -71,5 +76,14 @@ object AccountModule {
         accountPreferences: AccountPreferences
     ): AccountRepository {
         return AccountRepositoryImpl(cloudDataSource, accountManager, accountPreferences)
+    }
+
+    @Provides
+    @Singleton
+    fun provideOwnCloudTokenDataSource(
+        json: Json,
+        @LoginOkHttpClient okHttpClient: OkHttpClient
+    ): OwnCloudTokenDataSource {
+        return OwnCloudTokenDataSourceImpl(json, okHttpClient)
     }
 }

@@ -8,8 +8,8 @@ import app.documents.core.model.cloud.Scheme
 import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.model.login.OidcConfiguration
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.login.OwnCloudLoginDataSource
 import app.documents.core.network.login.WebdavLoginDataSource
+import app.documents.core.network.login.owncloud.OwnCloudLoginDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

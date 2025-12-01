@@ -3,7 +3,7 @@ package app.documents.core.login
 import app.documents.core.account.AccountRepository
 import app.documents.core.model.login.OidcConfiguration
 import app.documents.core.network.common.NetworkResult
-import app.documents.core.network.login.OwnCloudLoginDataSource
+import app.documents.core.network.login.owncloud.OwnCloudLoginDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -13,20 +13,18 @@ import java.net.URL
 
 interface OwnCloudLoginRepository {
     fun signIn(code: String, configuration: OidcConfiguration): Flow<NetworkResult<Unit>>
-    fun refreshToken(configuration: OidcConfiguration): Flow<NetworkResult<Unit>>
-    fun getOpenidConfig(issuer: String): Flow<NetworkResult<OidcConfiguration>>
 }
 
 internal class OwnCloudLoginRepositoryImpl(
     private val accountRepository: AccountRepository,
-    private val ownCloudLoginDataSource: OwnCloudLoginDataSource
+    private val ownCloudLoginDataSource: OwnCloudLoginDataSource,
 ) : OwnCloudLoginRepository {
 
     override fun signIn(
         code: String,
         configuration: OidcConfiguration
     ): Flow<NetworkResult<Unit>> {
-        return apiCall {
+        return flow<NetworkResult<Unit>> {
             val response = ownCloudLoginDataSource.signIn(
                 url = configuration.tokenEndpoint,
                 issuer = configuration.issuer,
@@ -41,33 +39,7 @@ internal class OwnCloudLoginRepositoryImpl(
                 accessToken = response.accessToken,
                 refreshToken = response.refreshToken
             )
-        }
-    }
-
-    override fun refreshToken(configuration: OidcConfiguration): Flow<NetworkResult<Unit>> {
-        return apiCall {
-            val response = ownCloudLoginDataSource.refreshToken(
-                url = configuration.tokenEndpoint,
-                issuer = configuration.issuer,
-                refreshToken = requireNotNull(accountRepository.getRefreshToken())
-            )
-            accountRepository.updateAccount(
-                token = response.accessToken,
-                refreshToken = response.refreshToken
-            )
-        }
-    }
-
-    override fun getOpenidConfig(issuer: String): Flow<NetworkResult<OidcConfiguration>> {
-        return apiCall {
-            requireNotNull(ownCloudLoginDataSource.openidConfiguration(issuer))
-        }
-    }
-
-    private fun <T> apiCall(block: suspend () -> T): Flow<NetworkResult<T>> {
-        return flow<NetworkResult<T>> {
-            val data = block()
-            emit(NetworkResult.Success(data))
+            emit(NetworkResult.Success(Unit))
         }
             .flowOn(Dispatchers.IO)
             .catch { cause -> emit(NetworkResult.Error(cause)) }

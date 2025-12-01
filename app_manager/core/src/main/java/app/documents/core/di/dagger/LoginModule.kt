@@ -20,8 +20,8 @@ import app.documents.core.network.login.DropboxLoginDataSource
 import app.documents.core.network.login.GoogleLoginDataSource
 import app.documents.core.network.login.LoginNetworkModule
 import app.documents.core.network.login.OnedriveLoginDataSource
-import app.documents.core.network.login.OwnCloudLoginDataSource
 import app.documents.core.network.login.WebdavLoginDataSource
+import app.documents.core.network.login.owncloud.OwnCloudLoginDataSource
 import dagger.Module
 import dagger.Provides
 

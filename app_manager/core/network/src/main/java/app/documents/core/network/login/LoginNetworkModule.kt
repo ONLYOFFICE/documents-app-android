@@ -1,6 +1,8 @@
 package app.documents.core.network.login
 
 import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.network.login.owncloud.OwnCloudLoginDataSource
+import app.documents.core.network.login.owncloud.OwnCloudLoginDataSourceImpl
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.json.Json
