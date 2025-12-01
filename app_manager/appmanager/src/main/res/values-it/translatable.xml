@@ -980,28 +980,28 @@
     <string name="start_filling_ready_for_filling_desc">È già stata inviata una notifica all\'utente con il primo ruolo, invitandolo a compilare il modulo. Puoi accedere alla stanza o condividere il link di compilazione con i partecipanti.</string>
     <string name="list_context_reset_filling">Reimposta e avvia la compilazione</string>
 
-    <!-- Newly added translations (v9.2.0 - 2025-11-25) -->
-    <string name="upload_manager_duplicate_title">Action required</string>
-    <string name="upload_manager_duplicate_text">The destination already contains a file named «%s». Please select the action:</string>
-    <string name="upload_manager_duplicates_text">The destination already contains files with the same name. Please select the action:</string>
-    <string name="upload_manager_duplicate_overwrite">Overwrite with version update</string>
-    <string name="upload_manager_duplicate_copy">Create file copy</string>
-    <string name="upload_manager_duplicate_skip">Skip</string>
-    <string name="socials_failed_auth">Failed login</string>
-    <string name="rooms_info_access_desc">This room is available to anyone with the link. Access for external users is provided depending on the selected type of access rights.</string>
-    <string name="rooms_share_shared_links_count">Shared links (%d/6)</string>
-    <string name="share_link_folder_restrict_desc">Enable this setting to disable downloading of files and folders from this folder shared via a link</string>
-    <string name="share_link_file_restrict_desc">Enable this setting to disable downloading of this file shared via a link</string>
-    <string name="share_link_file_restrict_warning">You cannot disable the restriction on downloading and copying data because this setting is enforced at the room level for all files.</string>
+    <!-- Newly added translations (v9.2.0 - 2025-12-01) -->
+    <string name="upload_manager_duplicate_title">Azione richiesta</string>
+    <string name="upload_manager_duplicate_text">La destinazione contiene già un file chiamato «%s». Seleziona l'azione:</string>
+    <string name="upload_manager_duplicates_text">La destinazione contiene già file con lo stesso nome. Seleziona l'azione:</string>
+    <string name="upload_manager_duplicate_overwrite">Sovrascrivi con aggiornamento della versione</string>
+    <string name="upload_manager_duplicate_copy">Crea una copia del file</string>
+    <string name="upload_manager_duplicate_skip">Salta</string>
+    <string name="socials_failed_auth">Accesso non riuscito</string>
+    <string name="rooms_info_access_desc">Questa stanza è accessibile a chiunque abbia il link. L’accesso per gli utenti esterni dipende dal tipo di permessi selezionato.</string>
+    <string name="rooms_share_shared_links_count">Link condivisi (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Attiva questa impostazione per impedire il download di file e cartelle da questa cartella condivisa tramite link</string>
+    <string name="share_link_file_restrict_desc">Attiva questa impostazione per impedire il download di questo file condiviso tramite link</string>
+    <string name="share_link_file_restrict_warning">Non puoi disattivare la restrizione su download e copia dei dati perché questa impostazione è applicata a livello di stanza per tutti i file.</string>
     <string name="share_link_file_restrict_warning_ok">OK</string>
-    <string name="rooms_user_type_members">Members</string>
-    <string name="share_goal_everyone">Everyone</string>
-    <string name="placeholder_no_shared_items">There are no shared items yet</string>
-    <string name="placeholder_no_shared_items_desc">Here you\'ll find files and folders that other DocSpace members shared with you. Your own files and room content are not shown here.</string>
-    <string name="rooms_share_shared_folder_desc">Provide access to the folder and set the permission levels.</string>
-    <string name="rooms_info_folder_desc">This folder is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
-    <string name="rooms_info_file_desc">This file is accessible via a shared link from its parent folder, but  you can create a custom external link with specific permissions.</string>
-    <string name="rooms_info_fill_form_desc">This room is available to anyone with the link. External users will have Form Filler permission for all the files.</string>
-    <string name="share_popup_access_editing">Editing</string>
-    <string name="share_popup_access_remove">Remove</string>
+    <string name="rooms_user_type_members">Membri</string>
+    <string name="share_goal_everyone">Tutti</string>
+    <string name="placeholder_no_shared_items">Non ci sono ancora elementi condivisi</string>
+    <string name="placeholder_no_shared_items_desc">Qui troverai i file e le cartelle che altri membri di DocSpace hanno condiviso con te. I tuoi file e il contenuto delle tue stanze non vengono mostrati qui.</string>
+    <string name="rooms_share_shared_folder_desc">Permetti l’accesso alla cartella e imposta i livelli di permesso.</string>
+    <string name="rooms_info_folder_desc">Questa cartella è accessibile tramite un link condiviso dalla cartella superiore, ma puoi creare un link esterno personalizzato con permessi specifici.</string>
+    <string name="rooms_info_file_desc">Questo file è accessibile tramite un link condiviso dalla cartella superiore, ma puoi creare un link esterno personalizzato con permessi specifici.</string>
+    <string name="rooms_info_fill_form_desc">Questa stanza è disponibile a chiunque abbia il link. Gli utenti esterni avranno il permesso di Compilazione Moduli per tutti i file.</string>
+    <string name="share_popup_access_editing">Modifica</string>
+    <string name="share_popup_access_remove">Rimuovi</string>
 </resources>
