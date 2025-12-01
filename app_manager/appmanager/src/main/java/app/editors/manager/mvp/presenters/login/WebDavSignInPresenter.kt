@@ -3,7 +3,6 @@ package app.editors.manager.mvp.presenters.login
 import app.documents.core.login.WebdavLoginResult
 import app.documents.core.model.cloud.Scheme
 import app.documents.core.model.cloud.WebdavProvider
-import app.documents.core.model.login.OidcConfiguration
 import app.editors.manager.app.App
 import app.editors.manager.mvp.presenters.base.BasePresenter
 import app.editors.manager.mvp.views.login.WebDavSignInView
@@ -18,7 +17,6 @@ import java.net.MalformedURLException
 class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
 
     private var signInJob: Job? = null
-    private var ownCloudOcisConfig: OidcConfiguration? = null
 
     init {
         App.getApp().appComponent.inject(this)
@@ -32,7 +30,6 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
     fun checkPortal(provider: WebdavProvider, url: String, login: String, password: String) {
         signInJob = presenterScope.launch {
             viewState.onDialogWaiting()
-            ownCloudOcisConfig = null
             App.getApp().loginComponent.webdavLoginRepository
                 .signIn(
                     provider = provider,
@@ -42,13 +39,17 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
                 )
                 .collect { result ->
                     when (result) {
-                        WebdavLoginResult.Success -> viewState.onLogin()
-                        is WebdavLoginResult.NextCloudLogin -> viewState.onNextCloudLogin(result.url)
+                        WebdavLoginResult.Success -> {
+                            viewState.onLogin()
+                        }
+                        is WebdavLoginResult.NextCloudLogin -> {
+                            viewState.onNextCloudLogin(result.url)
+                        }
                         is WebdavLoginResult.OwnCloudLogin -> {
-                            ownCloudOcisConfig = result.config
                             viewState.onOwnCloudLogin(url, result.config)
                         }
                         is WebdavLoginResult.Error -> {
+                            viewState.onDialogClose()
                             if (result.exception is MalformedURLException) {
                                 viewState.onUrlError()
                             } else {
@@ -56,7 +57,6 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
                             }
                         }
                     }
-                    viewState.onDialogClose()
                 }
         }
     }

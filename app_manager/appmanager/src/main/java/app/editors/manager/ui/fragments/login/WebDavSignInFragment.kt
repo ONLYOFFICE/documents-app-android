@@ -72,6 +72,7 @@ class WebDavSignInFragment : WebDavBaseSignInFragment() {
             } catch (_: Throwable) {
                 null
             }
+            onDialogClose()
             showFragment(
                 fragment = OwnCloudBasicSignInFragment.newInstance(url, account),
                 tag = OwnCloudBasicSignInFragment::class.java.simpleName,
