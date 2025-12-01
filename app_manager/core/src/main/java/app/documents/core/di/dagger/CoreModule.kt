@@ -63,7 +63,8 @@ object CoreModule {
     ): OkHttpClient {
         return NetworkClient
             .getOkHttpBuilder(
-                cloudAccount?.portal?.settings ?: PortalSettings(),
+                portalSettings = cloudAccount?.portal?.settings ?: PortalSettings(),
+                authenticator = null,
                 baseInterceptor,
                 cookieInterceptor
             )
@@ -74,7 +75,8 @@ object CoreModule {
     @LoginOkHttpClient
     fun provideLoginOkHttpClient(context: Context, cloudAccount: CloudAccount?): OkHttpClient {
         return NetworkClient.getOkHttpBuilder(
-            cloudAccount?.portal?.settings,
+            portalSettings = cloudAccount?.portal?.settings,
+            authenticator = null,
             LoginInterceptor(context)
         ).build()
     }

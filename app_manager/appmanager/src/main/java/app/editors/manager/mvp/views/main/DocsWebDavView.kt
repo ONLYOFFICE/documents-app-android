@@ -1,10 +1,11 @@
-package app.editors.manager.mvp.views.main;
+package app.editors.manager.mvp.views.main
 
-import moxy.viewstate.strategy.SkipStrategy;
-import moxy.viewstate.strategy.StateStrategyType;
+import app.documents.core.model.login.OidcConfiguration
+import moxy.viewstate.strategy.OneExecutionStateStrategy
+import moxy.viewstate.strategy.StateStrategyType
 
-public interface DocsWebDavView extends DocsBaseView {
-
-    @StateStrategyType(SkipStrategy.class)
-    void onActionDialog();
+@StateStrategyType(OneExecutionStateStrategy::class)
+interface DocsWebDavView : DocsBaseView {
+    fun onActionDialog()
+    fun onOwnCloudAuthorization(config: OidcConfiguration)
 }

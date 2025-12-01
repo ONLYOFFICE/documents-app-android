@@ -1,6 +1,7 @@
 package app.editors.manager.ui.fragments.operations
 
 import android.view.View
+import app.documents.core.model.login.OidcConfiguration
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.documents.core.network.manager.models.explorer.Item
@@ -60,6 +61,8 @@ class DocsWebDavOperationFragment : DocsCloudOperationFragment(), DocsWebDavView
             else -> super.onActionClick()
         }
     }
+
+    override fun onOwnCloudAuthorization(config: OidcConfiguration) { }
 
     override fun onActionDialog() {}
 }
