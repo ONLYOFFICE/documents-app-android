@@ -982,8 +982,8 @@
 
     <!-- Newly added translations (v9.2.0 - 2025-12-01) -->
     <string name="upload_manager_duplicate_title">Azione richiesta</string>
-    <string name="upload_manager_duplicate_text">La destinazione contiene già un file chiamato «%s». Seleziona l'azione:</string>
-    <string name="upload_manager_duplicates_text">La destinazione contiene già file con lo stesso nome. Seleziona l'azione:</string>
+    <string name="upload_manager_duplicate_text">La destinazione contiene già un file chiamato «%s». Seleziona l\'azione:</string>
+    <string name="upload_manager_duplicates_text">La destinazione contiene già file con lo stesso nome. Seleziona l\'azione:</string>
     <string name="upload_manager_duplicate_overwrite">Sovrascrivi con aggiornamento della versione</string>
     <string name="upload_manager_duplicate_copy">Crea una copia del file</string>
     <string name="upload_manager_duplicate_skip">Salta</string>
