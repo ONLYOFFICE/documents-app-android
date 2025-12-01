@@ -403,6 +403,14 @@ inline fun <reified T : Serializable> Bundle.getSerializableExt(key: String): T?
         getSerializable(key) as? T
 }
 
+@Suppress("DEPRECATION")
+inline fun <reified T : Parcelable> Bundle.getParcelableArrayListExt(key: String): ArrayList<T>? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        getParcelableArrayList(key, T::class.java)
+    else
+        getParcelableArrayList(key)
+}
+
 
 fun Bundle.getIntExt(key: String): Int? {
     val value = getInt(key, Int.MIN_VALUE)

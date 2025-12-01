@@ -48,7 +48,12 @@ class SharedLinkSettingsViewModel(
         tryRequest {
             if (state.value.sharedTo.internal != internal) {
                 val link = state.value.copy(sharedTo = state.value.sharedTo.copy(internal = internal))
-                roomProvider.updateSharedLink(shareData.itemId, link, shareData.isFolder)
+                roomProvider.updateSharedLink(
+                    itemId = shareData.itemId,
+                    sharedLink = link.sharedTo,
+                    isFolder = shareData.isFolder,
+                    access = link.access
+                )
                 _state.value = link
             }
         }
@@ -61,7 +66,12 @@ class SharedLinkSettingsViewModel(
     fun delete() {
         tryRequest {
             val link = state.value.copy(access = 0)
-            roomProvider.updateSharedLink(shareData.itemId, link, shareData.isFolder)
+            roomProvider.updateSharedLink(
+                itemId = shareData.itemId,
+                sharedLink = link.sharedTo,
+                isFolder = shareData.isFolder,
+                access = link.access
+            )
             _effect.tryEmit(SharedLinkSettingsEffect.Delete)
         }
     }
@@ -69,7 +79,12 @@ class SharedLinkSettingsViewModel(
     fun setAccess(access: Int) {
         tryRequest {
             val link = state.value.copy(access = access)
-            roomProvider.updateSharedLink(shareData.itemId, link, shareData.isFolder)
+            roomProvider.updateSharedLink(
+                itemId = shareData.itemId,
+                sharedLink = link.sharedTo,
+                isFolder = shareData.isFolder,
+                access = link.access
+            )
             _state.value = link
         }
     }
@@ -91,7 +106,12 @@ class SharedLinkSettingsViewModel(
                 )
             )
 
-            _state.value = roomProvider.updateSharedLink(shareData.itemId, link, shareData.isFolder)
+            _state.value = roomProvider.updateSharedLink(
+                itemId = shareData.itemId,
+                sharedLink = link.sharedTo,
+                isFolder = shareData.isFolder,
+                access = link.access
+            )
         }
     }
 
@@ -102,7 +122,7 @@ class SharedLinkSettingsViewModel(
                 block.invoke()
             } catch (e: HttpException) {
                 _effect.tryEmit(SharedLinkSettingsEffect.Error(e.code()))
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _effect.tryEmit(SharedLinkSettingsEffect.Error())
             } finally {
                 _loading.value = false

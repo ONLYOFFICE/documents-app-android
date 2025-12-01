@@ -711,7 +711,6 @@
     <string name="rooms_move_to_public_title">Տեղափոխել հանրային սենյակ</string>
     <string name="rooms_move_to_public_title_desc">Այս սենյակը և դրա ողջ բովանդակությունը հասանելի են բոլորին, ովքեր ունեն հղումը: Ցանկանու՞մ եք շարունակել։</string>
 
-    <string name="rooms_info_access_desc">Այս սենյակը հասանելի է բոլորին, ովքեր ունեն հղումը: Արտաքին օգտատերերը բոլոր ֆայլերի համար միայն դիտելու թույլտվություն կունենան:</string>
     <string name="rooms_info_general_link">Ընդհանուր հղում</string>
     <string name="rooms_info_additional_link">Հավելյալ հղում</string>
     <string name="rooms_info_additional_links">"Հավելյալ հղումներ (%1$d/%2$d)"</string>
@@ -974,14 +973,14 @@
     <string name="whats_new_title">Ինչ նորություն կա</string>
     <string name="whats_new_next">Սկսել!</string>
     <string name="whats_new">Նորություններ v9.1-ում</string>
-    <string name="whats_new_1">ԱԲ օգնական խմբագիրներում</string>
-    <string name="whats_new_1_desc">Աշխատեք փաստաթղթերում և աղյուսակներում ավելի արդյունավետ՝ օգտվելով ներկառուցված ԱԲ-ից։ Կարող եք միացնել մոդելներ, օրինակ՝ OpenAI, Anthropic, Google կամ Ollama։</string>
-    <string name="whats_new_2">Տեքստի ուղղության տարբերակներ</string>
-    <string name="whats_new_2_desc"> Հեշտությամբ փոխարկեք տեքստի ուղղությունը՝ Աջից ձախ կամ Ձախից աջ՝ բոլոր խմբագիրներում։</string>
-    <string name="whats_new_3">Դերային ձևաթղթի լրացում DocSpace-ում</string>
-    <string name="whats_new_3_desc">Նշանակեք մասնակիցներին որոշակի դերեր ձևաթղթի լրացման գործընթացը սկսելու ժամանակ՝ միացված լինելով DocSpace-ին։</string>
-    <string name="whats_new_4">Բովանդակության ցանկ փաստաթղթերում</string>
-    <string name="whats_new_4_desc">Ստեղծեք և անցեք փաստաթղթի բաժիններով՝ օգտագործելով ավտոմատ բովանդակության ցանկը։</string>
+    <string name="whats_new_1">Նոր DocSpace բաժիններ</string>
+    <string name="whats_new_1_desc">Ավելի արագ մուտք գործեք ձեր ֆայլեր՝ օգտագործելով DocSpace-ի համար նախատեսված բաժինները՝ Ինձ հետ համաօգտագործված, Նախընտրելիներ և Վերջերս դիտված։</string>
+    <string name="whats_new_2">Բարելավված ֆայլերի համաօգտագործում DocSpace-ում</string>
+    <string name="whats_new_2_desc">Հեշտությամբ կիսվեք ֆայլերով և կառավարեք մուտքը՝ DocSpace 3.5-ում բարելավված համաօգտագոործման աշխատանքային հոսքերի միջոցով:</string>
+    <string name="whats_new_3">Սոցիալական մուտքի տարբերակներ</string>
+    <string name="whats_new_3_desc">Մուտք գործեք LinkedIn-ով-ով կամ Zoom-ով՝ ձեր DocSpace հաշիվն հեշտությամբ ստեղծելու և մուտք գործելու համար։</string>
+    <string name="whats_new_4">Պարբերության և վանդակների ուղղություն (Աջից-Ձախ)</string>
+    <string name="whats_new_4_desc">Փոխեք պարբերությունների և աղյուսակի վանդակների ուղղությունն աջից ձախ և ձախից աջ բոլոր խմբագիրներում։</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Ես և %s-ը</string>
@@ -1056,7 +1055,7 @@
     <string name="on_boarding_third_party_header">Երրորդ կողմի պահեստ</string>
     <string name="on_boarding_third_party_info">Միացրեք երրորդ կողմի պահեստային համակարգեր, ինչպիսիք են Nextcloud-ը, ownCloud-ը, Dropbox-ը և այլն, որոնք օգտագործում են WebDAV պրոտոկոլը:</string>
     <string name="on_boarding_welcome_header">Սկսում ենք</string>
-    <string name="on_boarding_welcome_info">Բարի գալուստ ONLYOFFICE բջջային խմբագրման փաթեթ: Սեղմեք՝ հավելվածի մասին ավելին իմանալու համար:</string>
+    <string name="on_boarding_welcome_info">Բարի գալուստ ONLYOFFICE բջջային խմբագրման փաթեթ! Սեղմեք՝ հավելվածի մասին ավելին իմանալու համար:</string>
     <string name="operation_disable_custom_filter">Հատուկ ֆիլտրը ընտրված ֆայլի համար անջատված է</string>
     <string name="operation_enable_custom_filter">Հատուկ ֆիլտրը ընտրված ֆայլի համար  միացված է</string>
     <string name="placeholder_connection_button">Վերաբեռնել</string>
@@ -1135,4 +1134,29 @@
     <string name="start_filling_ready_for_filling">Ձևը պատրաստ է լրացնելու սենյակում</string>
     <string name="start_filling_ready_for_filling_desc">Առաջին դերի օգտատիրոջն արդեն ուղարկվել է ծանուցում, որը հորդորում է լրացնել ձևը։ Կարող եք անցնել սենյակ կամ կիսվել լրացման հղումով մասնակիցների հետ։</string>
     <string name="list_context_reset_filling">Վերականգնել և սկսել լրացնելը</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-25) -->
+    <string name="upload_manager_duplicate_title">Պահանջվող գործողություն</string>
+    <string name="upload_manager_duplicate_text">Նպատակակետն արդեն պարունակում է «%s» անունով ֆայլ։ Խնդրում ենք ընտրել գործողությունը՝</string>
+    <string name="upload_manager_duplicates_text">Նպատակակետն արդեն պարունակում է նույն անունով ֆայլեր։ Խնդրում ենք ընտրել գործողությունը՝</string>
+    <string name="upload_manager_duplicate_overwrite">Վերագրել տարբերակի թարմացմամբ</string>
+    <string name="upload_manager_duplicate_copy">Ստեղծեք ֆայլի պատճեն</string>
+    <string name="upload_manager_duplicate_skip">Բաց թողնել</string>
+    <string name="socials_failed_auth">Մուտքը ձախողվեց</string>
+    <string name="rooms_info_access_desc">Այս սենյակը հասանելի է հղում ունեցող յուրաքանչյուրի համար: Արտաքին օգտատերերի մուտքը տրամադրվում է ընտրված մուտքի իրավունքների տեսակից կախված:</string>
+    <string name="rooms_share_shared_links_count">Կիսված հղումներ (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Միացրեք այս կարգավորումը՝ հղման միջոցով համօգտագործվող այս պանակից ֆայլերի և թղթապանակների ներբեռնումն անջատելու համար</string>
+    <string name="share_link_file_restrict_desc">Միացրեք այս կարգավորումը՝ հղման միջոցով համօգտագործվող այս ֆայլի ներբեռնումն անջատելու համար</string>
+    <string name="share_link_file_restrict_warning">Դուք չեք կարող անջատել տվյալների ներբեռնման և պատճենման սահմանափակումը, քանի որ այս կարգավորումը պարտադրված է սենյակի մակարդակում բոլոր ֆայլերի համար։</string>
+    <string name="share_link_file_restrict_warning_ok">ԼԱՎ</string>
+    <string name="rooms_user_type_members">Անդամներ</string>
+    <string name="share_goal_everyone">Բոլորը</string>
+    <string name="placeholder_no_shared_items">Դեռևս համօգտագործվող տարրեր չկան</string>
+    <string name="placeholder_no_shared_items_desc">Այստեղ դուք կգտնեք ֆայլեր և թղթապանակներ, որոնք DocSpace-ի մյուս անդամները կիսվել են ձեզ հետ: Ձեր սեփական ֆայլերը և սենյակի պարունակությունը այստեղ չեն ցուցադրվում:</string>
+    <string name="rooms_share_shared_folder_desc">Տրամադրեք թղթապանակին մուտք գործելու իրավունք և սահմանեք թույլտվության մակարդակները։</string>
+    <string name="rooms_info_folder_desc">Այս թղթապանակին հասանելի է մայր թղթապանակից համօգտագործվող հղման միջոցով, բայց դուք կարող եք ստեղծել հատուկ թույլտվություններով հատուկ արտաքին հղում։</string>
+    <string name="rooms_info_file_desc">Այս ֆայլը հասանելի է մայր պանակից համօգտագործվող հղման միջոցով, բայց դուք կարող եք ստեղծել հատուկ թույլտվություններով հատուկ արտաքին հղում։</string>
+    <string name="rooms_info_fill_form_desc">Այս սենյակը հասանելի է հղում ունեցող յուրաքանչյուրի համար: Արտաքին օգտատերերը կունենան ձևաթղթերի լրացման թույլտվություն բոլոր ֆայլերի համար:</string>
+    <string name="share_popup_access_editing">Խմբագրում</string>
+    <string name="share_popup_access_remove">Հեռացնել</string>
 </resources>

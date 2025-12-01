@@ -8,12 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -40,6 +39,7 @@ import androidx.navigation.toRoute
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.AccessTarget
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
@@ -56,21 +56,21 @@ import app.editors.manager.managers.utils.toUi
 import app.editors.manager.ui.fragments.share.InviteAccessScreen
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.ui.fragments.share.link.ChangeUserAccessScreen
+import app.editors.manager.ui.fragments.share.link.ExternalLinkItem
+import app.editors.manager.ui.fragments.share.link.ExternalLinkSettingsScreen
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.fragments.share.link.ShareUsersList
-import app.editors.manager.ui.fragments.share.link.SharedLinkItem
-import app.editors.manager.ui.fragments.share.link.SharedLinkSettingsScreen
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.link.ShareSettingsEffect
 import app.editors.manager.viewModels.link.ShareSettingsState
 import app.editors.manager.viewModels.link.ShareSettingsViewModel
-import app.editors.manager.viewModels.link.SharedLinkSettingsViewModel
 import app.editors.manager.viewModels.main.ShareAccessViewModel
 import app.editors.manager.viewModels.main.ShareUserListViewModel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import lib.compose.ui.theme.ManagerTheme
+import lib.compose.ui.theme.colorTextTertiary
 import lib.compose.ui.utils.popBackStackWhenResumed
 import lib.compose.ui.views.AppCircularProgress
 import lib.compose.ui.views.AppDescriptionItem
@@ -119,7 +119,8 @@ fun ShareDocSpaceScreen(
     shareData: ShareData,
     useTabletPadding: Boolean,
     onSendLink: (String) -> Unit,
-    onClose: () -> Unit,
+    onClose: (Boolean?) -> Unit,
+    onShowSnackbar: (String) -> Unit,
 ) {
     val navController = rememberNavController()
 
@@ -153,7 +154,7 @@ fun ShareDocSpaceScreen(
         }
     }
 
-    BackHandler(onBack = onClose)
+    BackHandler(onBack = { onClose(viewModel.hasLinks) })
 
     NavHost(
         modifier = Modifier.background(MaterialTheme.colors.background),
@@ -163,15 +164,11 @@ fun ShareDocSpaceScreen(
         composable<Screen.Main> {
             MainScreen(
                 viewModel = viewModel,
+                shareData = shareData,
                 useTabletPaddings = useTabletPadding,
                 onShareLink = onSendLink,
-                onBack = onClose,
+                onBack = { onClose(viewModel.hasLinks) },
                 onAddUsers = { navController.navigate(Screen.AddUser) },
-                descriptionText = if (!shareData.isFolder) {
-                    stringResource(R.string.rooms_share_shared_desc)
-                } else {
-                    stringResource(R.string.rooms_share_shared_folder_desc)
-                },
                 onLinkClick = { link ->
                     val json =
                         URLEncoder.encode(Json.encodeToString(link), Charsets.UTF_8.toString())
@@ -186,24 +183,17 @@ fun ShareDocSpaceScreen(
                             isOwnerOrAdmin = share.isOwnerOrAdmin
                         )
                     )
-                }
+                },
+                onShowSnackbar = onShowSnackbar
             )
         }
         composable<Screen.LinkSettings> { backstackEntry ->
             val data = backstackEntry.toRoute<Screen.LinkSettings>()
             val json = URLDecoder.decode(data.link, Charsets.UTF_8.toString())
-            SharedLinkSettingsScreen(
-                viewModel = viewModel {
-                    SharedLinkSettingsViewModel(
-                        externalLink = Json.decodeFromString<ExternalLink>(json),
-                        expired = data.expirationDate,
-                        roomProvider = roomProvider,
-                        shareData = shareData
-                    )
-                },
-                accessList = shareData.getAccessList(AccessTarget.ExternalLink),
-                useTabletPadding = useTabletPadding,
-                onBack = navController::popBackStack,
+            ExternalLinkSettingsScreen(
+                link = Json.decodeFromString<ExternalLink>(json),
+                shareData = shareData,
+                onBackListener = navController::popBackStackWhenResumed
             )
         }
         composable<Screen.AddUser> {
@@ -222,7 +212,7 @@ fun ShareDocSpaceScreen(
                 closeable = false,
                 viewModel = userListViewModel,
                 onClick = { userListViewModel.toggleSelect(it.id) },
-                onBack = navController::popBackStack,
+                onBack = navController::popBackStackWhenResumed,
             ) { size, access ->
                 UserListBottomContent(
                     nextButtonTitle = lib.toolkit.base.R.string.common_next,
@@ -232,8 +222,10 @@ fun ShareDocSpaceScreen(
                     onAccess = userListViewModel::setAccess,
                     onDelete = userListViewModel::onDelete
                 ) {
-                    val users = userListViewModel.getSelectedUsers().takeIf { it.isNotEmpty() }?.let { Json.encodeToString(it) }
-                    val groups = userListViewModel.getSelectedGroups().takeIf { it.isNotEmpty() }?.let { Json.encodeToString(it) }
+                    val users = userListViewModel.getSelectedUsers().takeIf { it.isNotEmpty() }
+                        ?.let { Json.encodeToString(it) }
+                    val groups = userListViewModel.getSelectedGroups().takeIf { it.isNotEmpty() }
+                        ?.let { Json.encodeToString(it) }
                     navController.navigate(
                         Screen.AddUserAccess(
                             users?.let { URLEncoder.encode(it, Charsets.UTF_8.toString()) },
@@ -247,21 +239,24 @@ fun ShareDocSpaceScreen(
         composable<Screen.AddUserAccess> { backstackEntry ->
             val data = backstackEntry.toRoute<Screen.AddUserAccess>()
             val decodedUsers = data.users?.let { URLDecoder.decode(it, Charsets.UTF_8.toString()) }
-            val decodedGroups = data.groups?.let { URLDecoder.decode(it, Charsets.UTF_8.toString()) }
+            val decodedGroups =
+                data.groups?.let { URLDecoder.decode(it, Charsets.UTF_8.toString()) }
             val shareAccessViewModel = viewModel {
                 ShareAccessViewModel(
                     roomProvider = roomProvider,
                     shareData = shareData,
                     access = Access.get(data.access),
                     users = decodedUsers?.let { Json.decodeFromString<List<User>>(it) }.orEmpty(),
-                    groups = decodedGroups?.let { Json.decodeFromString<List<Group>>(it) }.orEmpty(),
+                    groups = decodedGroups?.let {
+                        Json.decodeFromString<List<Group>>(it)
+                    }.orEmpty(),
                     emails = emptyList(),
                 )
             }
             InviteAccessScreen(
                 accessList = shareData.getAccessList(AccessTarget.User),
                 viewModel = shareAccessViewModel,
-                onBack = navController::popBackStack,
+                onBack = navController::popBackStackWhenResumed,
                 onSuccess = {
                     navController.navigate(Screen.Main) {
                         popUpTo(Screen.Main) {
@@ -292,32 +287,35 @@ fun ShareDocSpaceScreen(
 @Composable
 private fun MainScreen(
     viewModel: ShareSettingsViewModel,
-    descriptionText: String,
+    shareData: ShareData,
     useTabletPaddings: Boolean,
     onShareLink: (String) -> Unit,
     onLinkClick: (ExternalLink) -> Unit,
     onAddUsers: () -> Unit,
     onChangeAccess: (ShareEntity) -> Unit,
     onBack: () -> Unit,
+    onShowSnackbar: (String) -> Unit,
 ) {
     val context = LocalContext.current
     var isCreateLoading by remember { mutableStateOf(false) }
     val state by viewModel.state.collectAsState()
-    val scaffoldState = rememberScaffoldState()
 
     LaunchedEffect(viewModel) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is ShareSettingsEffect.Copy -> {
                     KeyboardUtils.setDataToClipboard(context, effect.link)
-                    scaffoldState.snackbarHostState
-                        .showSnackbar(context.getString(R.string.rooms_info_create_link_complete))
+                    onShowSnackbar(context.getString(R.string.rooms_info_create_link_complete))
                 }
 
                 is ShareSettingsEffect.Error -> {
-                    scaffoldState.snackbarHostState.showSnackbar(
+                    onShowSnackbar(
                         effect.code?.let { code ->
-                            context.getString(R.string.errors_client_error) + code
+                            if (code == R.string.rooms_info_create_maximum_exceed) {
+                                context.getString(R.string.rooms_info_create_maximum_exceed)
+                            } else {
+                                context.getString(R.string.errors_client_error) + code
+                            }
                         } ?: context.getString(R.string.errors_unknown_error)
                     )
                 }
@@ -332,9 +330,8 @@ private fun MainScreen(
     }
 
     ShareSettingsScreen(
-        scaffoldState = scaffoldState,
         state = state,
-        descriptionText = descriptionText,
+        shareData = shareData,
         onBack = onBack,
         useTabletPaddings = useTabletPaddings,
         isCreateLoading = isCreateLoading,
@@ -348,11 +345,10 @@ private fun MainScreen(
 
 @Composable
 private fun ShareSettingsScreen(
-    scaffoldState: ScaffoldState,
     state: ShareSettingsState,
+    shareData: ShareData,
     isCreateLoading: Boolean,
     useTabletPaddings: Boolean,
-    descriptionText: String,
     onCreate: () -> Unit,
     onShareClick: (String) -> Unit,
     onLinkClick: (ExternalLink) -> Unit,
@@ -360,18 +356,42 @@ private fun ShareSettingsScreen(
     onChangeAccess: (ShareEntity) -> Unit,
     onBack: () -> Unit
 ) {
+    val linksDescription = remember {
+        when {
+            shareData.roomType in listOf(
+                ApiContract.RoomType.COLLABORATION_ROOM,
+                ApiContract.RoomType.VIRTUAL_ROOM
+            ) -> null
+
+            shareData.isRoom && shareData.roomType == ApiContract.RoomType.FILL_FORMS_ROOM -> R.string.rooms_info_fill_form_desc
+            shareData.isRoom -> R.string.rooms_info_access_desc
+            shareData.roomType == null -> null
+            shareData.fileExt.isNullOrEmpty() -> R.string.rooms_info_folder_desc
+            else -> R.string.rooms_info_file_desc
+        }
+    }
+
+    val bottomDescription = remember {
+        if (!shareData.isFolder) {
+            R.string.rooms_share_shared_desc
+        } else {
+            R.string.rooms_share_shared_folder_desc
+        }
+    }
+
     AppScaffold(
-        scaffoldState = scaffoldState,
         useTablePaddings = useTabletPaddings,
         topBar = {
             AppTopBar(
                 title = R.string.share_title_main,
                 backListener = onBack,
                 actions = {
-                    TopAppBarAction(
-                        icon = R.drawable.ic_add_users,
-                        onClick = onAddUsers
-                    )
+                    if (shareData.shouldShowUsers) {
+                        TopAppBarAction(
+                            icon = R.drawable.ic_add_users,
+                            onClick = onAddUsers
+                        )
+                    }
                 }
             )
         }
@@ -380,82 +400,128 @@ private fun ShareSettingsScreen(
             is ShareSettingsState.Loading -> LoadingPlaceholder()
             is ShareSettingsState.Success -> {
                 LazyColumn {
-                    item {
-                        Row {
-                            AppHeaderItem(
-                                modifier = Modifier.weight(1f),
-                                title = stringResource(id = R.string.rooms_share_shared_links)
-                            )
-                            if (state.links.isNotEmpty()) {
-                                IconButton(onClick = onCreate) {
-                                    Icon(
-                                        imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_default_add),
-                                        tint = MaterialTheme.colors.primary,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    if (state.links.isNotEmpty()) {
-                        items(state.links, key = { it.sharedTo.id }) { link ->
-                            SharedLinkItem(
-                                modifier = Modifier.animateItem(),
-                                access = link.access,
-                                internal = link.sharedTo.internal == true,
-                                expirationDate = link.sharedTo.expirationDate,
-                                isExpired = link.sharedTo.isExpired,
-                                onShareClick = { onShareClick.invoke(link.sharedTo.shareLink) },
-                                onClick = { onLinkClick(link) }
-                            )
-                        }
-                    } else if (!isCreateLoading) {
+                    linksBlock(
+                        descriptionText = linksDescription,
+                        bottomDescription = bottomDescription,
+                        roomType = shareData.roomType ?: -1,
+                        canAddLinks = (state.links.size < ShareData.MAX_SHARED_LINKS) && !isCreateLoading,
+                        isCreateLoading = isCreateLoading,
+                        links = state.links,
+                        onCreate = onCreate,
+                        onShareClick = onShareClick,
+                        onLinkClick = onLinkClick
+                    )
+
+                    if (shareData.shouldShowUsers) {
                         item {
-                            AppTextButton(
-                                modifier = Modifier.padding(start = 8.dp),
-                                title = R.string.rooms_info_create_link,
-                                onClick = onCreate
-                            )
-                        }
-                    }
-                    if (isCreateLoading) {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .height(dimensionResource(id = lib.toolkit.base.R.dimen.item_onehalf_line_height))
-                                    .fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                AppCircularProgress()
+                            val groupedShareList = state.members.groupBy { it.itemAccessType }
+                            val context = LocalContext.current
+                            val view = LocalView.current
+                            val portal = remember {
+                                context.accountOnline?.portal?.url?.takeIf { !view.isInEditMode }
                             }
-                        }
-                    }
-                    item {
-                        AppDescriptionItem(
-                            modifier = Modifier.padding(top = 8.dp),
-                            text = descriptionText
-                        )
-                    }
-                    item {
-                        val groupedShareList = state.members.groupBy { it.itemAccessType }
-                        val context = LocalContext.current
-                        val view = LocalView.current
-                        val portal = remember {
-                            context.accountOnline?.portal?.url?.takeIf { !view.isInEditMode }
-                        }
-                        groupedShareList.forEach { (shareType, shareList) ->
-                            ShareUsersList(
-                                canBeCollapsed = shareType != ShareType.Owner,
-                                isRoom = false,
-                                title = shareType.titleWithCount,
-                                portal = portal.orEmpty(),
-                                shareList = shareList,
-                                onClick = onChangeAccess
-                            )
+                            groupedShareList.forEach { (shareType, shareList) ->
+                                ShareUsersList(
+                                    canBeCollapsed = shareType != ShareType.Owner,
+                                    isRoom = false,
+                                    title = shareType.titleWithCount,
+                                    portal = portal.orEmpty(),
+                                    shareList = shareList,
+                                    onClick = onChangeAccess
+                                )
+                            }
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+private fun LazyListScope.linksBlock(
+    descriptionText: Int?,
+    bottomDescription: Int,
+    roomType: Int,
+    isCreateLoading: Boolean,
+    canAddLinks: Boolean,
+    links: List<ExternalLink>,
+    onCreate: () -> Unit,
+    onShareClick: (String) -> Unit,
+    onLinkClick: (ExternalLink) -> Unit,
+) {
+    descriptionText?.let { desc ->
+        item {
+            AppDescriptionItem(
+                modifier = Modifier.padding(top = 8.dp),
+                text = desc
+            )
+        }
+    }
+
+    item {
+        Row {
+            if (roomType != ApiContract.RoomType.FILL_FORMS_ROOM && links.isNotEmpty()) {
+                AppHeaderItem(
+                    modifier = Modifier.weight(1f),
+                    title = stringResource(id = R.string.rooms_share_shared_links_count, links.size)
+                )
+                IconButton(onClick = onCreate, enabled = canAddLinks) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(lib.toolkit.base.R.drawable.ic_default_add),
+                        tint = if (canAddLinks) MaterialTheme.colors.primary else MaterialTheme.colors.colorTextTertiary,
+                        contentDescription = null
+                    )
+                }
+            } else {
+                AppHeaderItem(title = R.string.rooms_share_shared_links)
+            }
+        }
+    }
+
+    if (links.isNotEmpty()) {
+        items(links, key = { it.sharedTo.id }) { link ->
+            ExternalLinkItem(
+                linkTitle = link.sharedTo.title,
+                access = link.access,
+                hasPassword = !link.sharedTo.password.isNullOrEmpty(),
+                expiring = !link.sharedTo.expirationDate.isNullOrEmpty(),
+                internal = link.sharedTo.internal == true,
+                isExpired = link.sharedTo.isExpired,
+                onShareClick = { onShareClick.invoke(link.sharedTo.shareLink) },
+                onClick = { onLinkClick(link) },
+                modifier = Modifier.animateItem()
+            )
+        }
+    } else if (!isCreateLoading) {
+        item {
+            AppTextButton(
+                modifier = Modifier.padding(start = 8.dp),
+                title = R.string.rooms_info_create_link,
+                onClick = onCreate
+            )
+        }
+    }
+
+    if (isCreateLoading) {
+        item {
+            Box(
+                modifier = Modifier
+                    .animateItem()
+                    .height(dimensionResource(id = lib.toolkit.base.R.dimen.item_onehalf_line_height))
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                AppCircularProgress()
+            }
+        }
+    }
+
+    if (descriptionText == null) {
+        item {
+            AppDescriptionItem(
+                modifier = Modifier.padding(top = 8.dp),
+                text = bottomDescription
+            )
         }
     }
 }
@@ -470,7 +536,7 @@ private fun ShareSettingsScreenPreview() {
         canEditAccess = false,
         sharedTo = ExternalLinkSharedTo(
             id = "1",
-            title = "",
+            title = "Shared link",
             shareLink = "",
             linkType = 2,
             internal = true,
@@ -485,7 +551,6 @@ private fun ShareSettingsScreenPreview() {
 
     ManagerTheme {
         ShareSettingsScreen(
-            scaffoldState = rememberScaffoldState(),
             state = ShareSettingsState.Success(
                 listOf(
                     link.copy(access = 1),
@@ -521,7 +586,7 @@ private fun ShareSettingsScreenPreview() {
                     ),
                 )
             ),
-            descriptionText = stringResource(R.string.rooms_share_shared_folder_desc),
+            shareData = ShareData(roomType = ApiContract.RoomType.FILL_FORMS_ROOM, fileExt = "docx"),
             useTabletPaddings = false,
             isCreateLoading = false,
             onBack = {},

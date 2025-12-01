@@ -17,11 +17,18 @@ data class ShareData(
     val itemId: String = "",
     val fileExt: String? = null,
     val roomType: Int? = null,
+    val isRoom: Boolean = false,
+    val isForm: Boolean = false,
     val availableShareRights: AvailableShareRights? = null
 ) : Serializable {
 
     val isFolder: Boolean
         get() = fileExt == null
+
+    val shouldShowUsers: Boolean
+        get() = isRoom || availableShareRights?.let {
+            it.user.isNotEmpty() || it.group.isNotEmpty()
+        } ?: (roomType == null)
 
     fun getAccessList(target: AccessTarget, withRemove: Boolean = false): List<AccessUI> {
         return ShareAccessManager.getAccessList(shareData = this, target = target)
@@ -31,16 +38,23 @@ data class ShareData(
     }
 
     companion object {
+        const val MAX_SHARED_LINKS = 6
 
-        fun from(item: Item): ShareData {
+        fun from(item: Item, roomType: Int): ShareData {
             val shareData = ShareData(
                 itemId = item.id,
                 availableShareRights = item.availableShareRights
             )
 
             return when {
-                item is CloudFile -> shareData.copy(fileExt = item.fileExst)
-                item is CloudFolder && item.isRoom -> shareData.copy(roomType = item.roomType)
+                item is CloudFile && roomType > -1 -> shareData.copy(
+                    fileExt = item.fileExst,
+                    roomType = roomType,
+                    isForm = item.isForm,
+                )
+                item is CloudFile -> shareData.copy(fileExt = item.fileExst, isForm = item.isForm)
+                item is CloudFolder && item.isRoom -> shareData.copy(isRoom = true, roomType = roomType)
+                item is CloudFolder && roomType > -1 -> shareData.copy(roomType = roomType)
                 item is CloudFolder -> shareData
                 else -> error("cannot get share data from this item")
             }
@@ -58,7 +72,7 @@ private object ShareAccessManager {
         if (availableShareRights != null) {
             val accessList = availableShareRights.toBundle().fromTarget(target)
             if (accessList.isNotEmpty()) {
-                return accessList.map { it.toUi(shareData.roomType == null) }
+                return accessList.map { it.toUi(!(target.isLink && shareData.isFolder)) }
             }
         }
 
@@ -150,7 +164,6 @@ private object ShareAccessManager {
                 }
 
                 FileGroup.SHEET -> {
-                    add(Access.CustomFilter)
                     add(Access.Comment)
                     add(Access.Read)
                 }

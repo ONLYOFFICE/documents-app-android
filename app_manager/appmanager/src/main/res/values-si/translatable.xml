@@ -82,7 +82,6 @@
     <string name="rooms_add_public_room_des">ලියාපදිංචියකින් තොරව ලේඛන පෙන්වීමට සබැඳි මගින් පරිශ්‍රීලකයින්ට ආරාධනා කරන්න. ඔබට මෙම කාමරය ඕනෑම අඩවියක අතුරු මුහුණතකට කාවැද්දීමට ද හැකිය.</string>
     <string name="rooms_move_to_public_title">ප්‍රසිද්ධ කාමරයකට ගෙනයන්න</string>
     <string name="rooms_move_to_public_title_desc">මෙම කාමරය සහ සියලුම අන්තර්ගත වෙත සබැඳිය සතු ඕනෑම අයෙකුට ප්‍රවේශ වීමට හැකිය. ඔබට ඉදිරියට යාමට වුවමනාද?</string>
-    <string name="rooms_info_access_desc">මෙම කාමරයේ සබැඳිය සතු ඕනෑම අයෙකුට විවෘතයි. බාහිර පරිශ්‍රීලකයින්ට සියලුම ගොනු දැකීමට පමණක් අවසර ඇත.</string>
     <string name="rooms_info_general_link">සාමාන්‍ය සබැඳිය</string>
     <string name="rooms_info_additional_link">අතිරේක සබැඳිය</string>
     <string name="rooms_info_additional_links">"අතිරේක සබැඳි (%1$d/%2$d)"</string>
@@ -968,4 +967,29 @@
     <string name="start_filling_ready_for_filling">කාමරය පිරවීම සඳහා පෝරමය සූදානම්</string>
     <string name="start_filling_ready_for_filling_desc">පළමු භූමිකාවේ පරිශීලකයාට දැනටමත් දැනුම්දීමක් යවා ඇති අතර, එමඟින් පෝරමය පිරවීමට ඔවුන් පොළඹවනු ලැබේ. ඔබට කාමරයට සංචාලනය කිරීමට හෝ සහභාගිවන්නන් සමඟ පිරවුම් සබැඳිය බෙදා ගැනීමට හැකිය.</string>
     <string name="list_context_reset_filling">නැවත සකසා පිරවීම ආරම්භ කරන්න</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-25) -->
+    <string name="upload_manager_duplicate_title">රියාමාර්ගයක් අවශ්‍යයි</string>
+    <string name="upload_manager_duplicate_text">ගමනාන්තයේ දැනටමත් «%s» නමින් ගොනුවක් අඩංගු වේ. කරුණාකර ක්‍රියාව තෝරන්න:</string>
+    <string name="upload_manager_duplicates_text">ගමනාන්තයේ දැනටමත් එකම නම සහිත ගොනු අඩංගු වේ. කරුණාකර ක්‍රියාව තෝරන්න:</string>
+    <string name="upload_manager_duplicate_overwrite">අනුවාද යාවත්කාලීන කිරීම සමඟ උඩින් ලියන්න</string>
+    <string name="upload_manager_duplicate_copy">ගොනු පිටපතක් සාදන්න</string>
+    <string name="upload_manager_duplicate_skip">මඟ හරින්න</string>
+    <string name="socials_failed_auth">පුරනය වීම අසාර්ථක විය</string>
+    <string name="rooms_info_access_desc">මෙම කාමරය සබැඳිය ඇති ඕනෑම කෙනෙකුට ලබා ගත හැකිය. තෝරාගත් ප්‍රවේශ අයිතිවාසිකම් වර්ගය අනුව බාහිර පරිශීලකයින් සඳහා ප්‍රවේශය සපයනු ලැබේ.</string>
+    <string name="rooms_share_shared_links_count">බෙදාගත් සබැඳි (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">සබැඳියක් හරහා බෙදාගත් මෙම ෆෝල්ඩරයෙන් ගොනු සහ ෆෝල්ඩර බාගැනීම අක්‍රිය කිරීමට මෙම සැකසුම සක්‍රීය කරන්න</string>
+    <string name="share_link_file_restrict_desc">සබැඳියක් හරහා බෙදාගත් මෙම ගොනුව බාගැනීම අක්‍රිය කිරීමට මෙම සැකසුම සක්‍රීය කරන්න</string>
+    <string name="share_link_file_restrict_warning">මෙම සැකසුම සියලුම ගොනු සඳහා කාමර මට්ටමින් ක්‍රියාත්මක වන බැවින්, දත්ත බාගැනීම සහ පිටපත් කිරීම සීමා කිරීම ඔබට අක්‍රිය කළ නොහැක.</string>
+    <string name="share_link_file_restrict_warning_ok">හරි</string>
+    <string name="rooms_user_type_members">සාමාජිකයින්</string>
+    <string name="share_goal_everyone">හැමෝම</string>
+    <string name="placeholder_no_shared_items">බෙදාගත් අයිතම තවමත් නොමැත</string>
+    <string name="placeholder_no_shared_items_desc">මෙහිදී ඔබට අනෙකුත් DocSpace සාමාජිකයින් ඔබ සමඟ බෙදා ගත් ගොනු සහ ෆෝල්ඩර සොයාගත හැකිය. ඔබේම ගොනු සහ කාමර අන්තර්ගතය මෙහි නොපෙන්වයි.</string>
+    <string name="rooms_share_shared_folder_desc">ෆෝල්ඩරයට ප්‍රවේශය ලබා දී අවසර මට්ටම් සකසන්න.</string>
+    <string name="rooms_info_folder_desc">මෙම ෆෝල්ඩරයට එහි මව් ෆෝල්ඩරයෙන් බෙදාගත් සබැඳියක් හරහා ප්‍රවේශ විය හැකි නමුත්, ඔබට නිශ්චිත අවසරයන් සහිත අභිරුචි බාහිර සබැඳියක් නිර්මාණය කළ හැකිය.</string>
+    <string name="rooms_info_file_desc">මෙම ගොනුවට එහි මව් ෆෝල්ඩරයෙන් බෙදාගත් සබැඳියක් හරහා ප්‍රවේශ විය හැකි නමුත්, ඔබට නිශ්චිත අවසරයන් සහිත අභිරුචි බාහිර සබැඳියක් නිර්මාණය කළ හැකිය.</string>
+    <string name="rooms_info_fill_form_desc">මෙම කාමරය සබැඳිය ඇති ඕනෑම කෙනෙකුට ලබා ගත හැකිය. බාහිර පරිශීලකයින්ට සියලුම ගොනු සඳහා පෝරම පිරවුම් අවසරය ඇත.</string>
+    <string name="share_popup_access_editing">සංස්කරණය කිරීම</string>
+    <string name="share_popup_access_remove">ඉවත් කරන්න</string>
 </resources>

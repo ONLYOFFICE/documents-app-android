@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.contracts.ApiContract.SectionType.shouldShowShareBadge
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerGridFolderBinding
@@ -42,6 +43,7 @@ class GridFolderViewHolder(view: View, adapter: ExplorerAdapter) :
         bindFolderType(element)
         bindFolderStorageImage(element, binding.storageImage)
         binding.favorite.isVisible = element.isFavorite
+        binding.link.isVisible = element.shared && shouldShowShareBadge(element.parentRoomType)
     }
 
     override fun getCachedIcon(): View {

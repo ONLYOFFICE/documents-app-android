@@ -591,7 +591,6 @@
     <string name="rooms_add_public_room_des">Laden Sie Benutzer über freigegebene Links ein, Dokumente ohne Registrierung einzusehen. Sie können diesen Raum auch in eine beliebige Weboberfläche einbetten.</string>
     <string name="rooms_move_to_public_title">In den öffentlichen Raum verschieben</string>
     <string name="rooms_move_to_public_title_desc">Dieser Raum und alle seine Inhalte sind für jeden zugänglich, der den Link hat. Möchten Sie fortfahren?</string>
-    <string name="rooms_info_access_desc">Dieser Raum ist für jeden zugänglich, der den Link hat. Externe Benutzer haben die Berechtigung "Schreibgeschützt" für alle Dateien.</string>
     <string name="rooms_info_general_link">Allgemeiner Link</string>
     <string name="rooms_info_additional_link">Zusätzlicher Link</string>
     <string name="rooms_info_additional_links">"Zusätzliche Links (%1$d/%2$d)"</string>
@@ -822,14 +821,14 @@ Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</
     <string name="whats_new_title">Was gibt\'s Neues</string>
     <string name="whats_new_next">Erste Schritte</string>
     <string name="whats_new">Neuigkeiten in v9.1</string>
-    <string name="whats_new_1">KI-Assistent in Editoren</string>
-    <string name="whats_new_1_desc">Arbeiten Sie intelligenter in Dokumenten und Tabellenkalkulationen mit integrierter KI. Verbinden Sie Modelle wie OpenAI, Anthropic, Google oder Ollama.</string>
-    <string name="whats_new_2">Textrichtungsoptionen</string>
-    <string name="whats_new_2_desc">Wechseln Sie in allen Editoren einfach zwischen der Textrichtung von rechts nach links und von links nach rechts.</string>
-    <string name="whats_new_3">Rollenbasiertes Ausfüllen von Formularen in DocSpace</string>
-    <string name="whats_new_3_desc">Weisen Sie Teilnehmern bestimmte Rollen zu, wenn Sie einen Formularausfüllvorgang starten, während Sie mit DocSpace verbunden sind.</string>
-    <string name="whats_new_4">Inhaltsverzeichnis in Dokumenten</string>
-    <string name="whats_new_4_desc">Erstellen und navigieren Sie mit einem automatischen Inhaltsverzeichnis durch Dokumentabschnitte.</string>
+    <string name="whats_new_1">Neue DocSpace-Bereiche</string>
+    <string name="whats_new_1_desc">Greifen Sie schneller auf Ihre Dateien zu mit speziellen DocSpace-Bereichen: Für mich freigegeben, Favoriten und Zuletzt verwendet.</string>
+    <string name="whats_new_2">Verbesserte Dateifreigabe in DocSpace</string>
+    <string name="whats_new_2_desc">Dateien lassen sich mit den optimierten Freigabe-Workflows in DocSpace 3.5 einfacher freigeben und der Zugriff verwalten.</string>
+    <string name="whats_new_3">Mehr Anmeldeoptionen</string>
+    <string name="whats_new_3_desc">Melden Sie sich mit LinkedIn, Ihrer Apple-ID oder Zoom an, um Ihr DocSpace-Konto einfacher zu erstellen und darauf zuzugreifen.</string>
+    <string name="whats_new_4">Absatz- und Zellenrichtung (RTL)</string>
+    <string name="whats_new_4_desc">Wechseln Sie die Absatz- und Tabellenzellenrichtung in allen Editoren zwischen Rechts nach links und Links nach rechts.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Ich und %s</string>
@@ -983,4 +982,29 @@ Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</
     <string name="start_filling_ready_for_filling">Formular liegt zum Ausfüllen im Raum bereit</string>
     <string name="start_filling_ready_for_filling_desc">Dem Benutzer in der ersten Rolle wurde bereits eine Benachrichtigung gesendet, die ihn zum Ausfüllen des Formulars auffordert. Sie können zum Raum navigieren oder den Ausfülllink mit den Teilnehmern teilen.</string>
     <string name="list_context_reset_filling">Zurücksetzen und Ausfüllen starten</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-25) -->
+    <string name="upload_manager_duplicate_title">Aktion erforderlich</string>
+    <string name="upload_manager_duplicate_text">Im Zielverzeichnis befindet sich bereits eine Datei mit dem Namen «%s». Bitte wählen Sie die Aktion aus:</string>
+    <string name="upload_manager_duplicates_text">Im Zielverzeichnis befinden sich bereits Dateien mit demselben Namen. Bitte wählen Sie die gewünschte Aktion aus:</string>
+    <string name="upload_manager_duplicate_overwrite">OMit Versionsaktualisierung überschreiben</string>
+    <string name="upload_manager_duplicate_copy">Dateikopie erstellen</string>
+    <string name="upload_manager_duplicate_skip">Überspringen</string>
+    <string name="socials_failed_auth">Anmeldung fehlgeschlagen</string>
+    <string name="rooms_info_access_desc">Dieser Raum ist für alle mit dem Link zugänglich. Der Zugriff für externe Nutzer richtet sich nach den gewählten Zugriffsrechten.</string>
+    <string name="rooms_share_shared_links_count">Geteilte Links (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Aktivieren Sie diese Einstellung, um das Herunterladen von Dateien und Ordnern aus diesem über einen Link freigegebenen Ordner zu deaktivieren.</string>
+    <string name="share_link_file_restrict_desc">Aktivieren Sie diese Einstellung, um das Herunterladen dieser über einen Link freigegebenen Datei zu deaktivieren.</string>
+    <string name="share_link_file_restrict_warning">Die Beschränkung für das Herunterladen und Kopieren von Daten kann nicht deaktiviert werden, da diese Einstellung auf Raumebene für alle Dateien gilt.</string>
+    <string name="share_link_file_restrict_warning_ok">OK</string>
+    <string name="rooms_user_type_members">Mitglieder</string>
+    <string name="share_goal_everyone">Alle</string>
+    <string name="placeholder_no_shared_items">Es gibt noch keine geteilten Elemente</string>
+    <string name="placeholder_no_shared_items_desc">Hier finden Sie Dateien und Ordner, die andere DocSpace-Mitglieder mit Ihnen geteilt haben. Ihre eigenen Dateien und Rauminhalte werden hier nicht angezeigt.</string>
+    <string name="rooms_share_shared_folder_desc">Gewähren Sie Zugriff auf den Ordner und legen Sie die Berechtigungsstufen fest.</string>
+    <string name="rooms_info_folder_desc">Dieser Ordner ist über einen freigegebenen Link von seinem übergeordneten Ordner aus zugänglich, Sie können aber auch einen benutzerdefinierten externen Link mit spezifischen Berechtigungen erstellen.</string>
+    <string name="rooms_info_file_desc">Diese Datei ist über einen freigegebenen Link aus ihrem übergeordneten Ordner zugänglich, Sie können aber auch einen benutzerdefinierten externen Link mit spezifischen Berechtigungen erstellen.</string>
+    <string name="rooms_info_fill_form_desc">Dieser Raum ist für alle mit dem Link zugänglich. Externe Benutzer haben die Berechtigung, Formulare auszufüllen, für alle Dateien.</string>
+    <string name="share_popup_access_editing">Bearbeiten</string>
+    <string name="share_popup_access_remove">Entfernen</string>
 </resources>

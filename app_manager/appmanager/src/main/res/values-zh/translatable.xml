@@ -648,7 +648,6 @@
     <string name="rooms_add_public_room_des">通过共享链接邀请用户，无需注册即可查看文档。您还可以将此房间嵌入任何网络界面。</string>
     <string name="rooms_move_to_public_title">移至公共房间</string>
     <string name="rooms_move_to_public_title_desc">所有拥有链接的人都能访问该房间及其内容。您要继续吗?</string>
-    <string name="rooms_info_access_desc">所有拥有链接的人都能访问该房间。外部用户对所有文件只有查看权限。</string>
     <string name="rooms_info_general_link">通用链接</string>
     <string name="rooms_info_additional_link">附加链接</string>
     <string name="rooms_info_additional_links">"附加链接 (%1$d/%2$d)"</string>
@@ -878,14 +877,14 @@
     <string name="whats_new_title">新增功能</string>
     <string name="whats_new_next">开始</string>
     <string name="whats_new">v9.1 新功能</string>
-    <string name="whats_new_1">在编辑器中使用 AI 助手</string>
-    <string name="whats_new_1_desc">内置 AI 技术，助您在文档和电子表格中实现更智能化的工作流程，并支持 OpenAI、Anthropic、Google 或 Ollama 等多种模型。</string>
-    <string name="whats_new_2">设置文本方向</string>
-    <string name="whats_new_2_desc">可在所有编辑器中轻松设置从左到右或从右到左的文本方向。</string>
-    <string name="whats_new_3">在协作空间中分配角色填写表单</string>
-    <string name="whats_new_3_desc">当连接到协作空间并启动表单填写流程时，可以为不同用户设置相应的角色。</string>
-    <string name="whats_new_4">自动生成文档目录</string>
-    <string name="whats_new_4_desc">支持自动生成目录，方便快速浏览文档的各个部分。</string>
+    <string name="whats_new_1">全新协作空间板块</string>
+    <string name="whats_new_1_desc">使用协作空间专属板块（包括“共享”、“收藏”和“最近”），更便捷访问文件。</string>
+    <string name="whats_new_2">增强的协作空间文件共享功能</string>
+    <string name="whats_new_2_desc">协作空间 3.5 改进了共享工作流程，让您更轻松地共享文件并管理访问权限。</string>
+    <string name="whats_new_3">社交媒体登录选项</string>
+    <string name="whats_new_3_desc">使用 LinkedIn、Apple ID 或 Zoom 登录，更轻松地创建和访问您的协作空间帐户。</string>
+    <string name="whats_new_4">段落和单元格方向（从右到左）</string>
+    <string name="whats_new_4_desc">在所有编辑器中切换段落和表格单元格的从右到左和从左到右方向。</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">我和%s</string>
@@ -1039,4 +1038,29 @@
     <string name="start_filling_ready_for_filling">表单已准备好，可在房间内进行填写</string>
     <string name="start_filling_ready_for_filling_desc">已向第一个角色的用户发送通知，提示他们填写表单。您可以在房间或与用户分享填写链接。</string>
     <string name="list_context_reset_filling">重置并开始填写</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-25) -->
+    <string name="upload_manager_duplicate_title">需要操作</string>
+    <string name="upload_manager_duplicate_text">目标位置已存在名为«%s»的文件。请选择操作：</string>
+    <string name="upload_manager_duplicates_text">目标位置已存在同名文件。请选择操作：</string>
+    <string name="upload_manager_duplicate_overwrite">使用版本更新覆盖</string>
+    <string name="upload_manager_duplicate_copy">创建文件副本</string>
+    <string name="upload_manager_duplicate_skip">跳过</string>
+    <string name="socials_failed_auth">登录失败</string>
+    <string name="rooms_info_access_desc">拥有链接的人均可访问此房间。外部用户的访问权限取决于所选的访问权限类型。</string>
+    <string name="rooms_share_shared_links_count">共享链接 (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">启用此设置可禁止通过链接下载此共享文件夹中的文件和文件夹</string>
+    <string name="share_link_file_restrict_desc">启用此设置可禁止通过链接下载此共享文件</string>
+    <string name="share_link_file_restrict_warning">您无法禁用下载和复制数据的限制，因为此设置在房间级别对所有文件强制执行。</string>
+    <string name="share_link_file_restrict_warning_ok">确定</string>
+    <string name="rooms_user_type_members">成员</string>
+    <string name="share_goal_everyone">所有人</string>
+    <string name="placeholder_no_shared_items">尚无共享项</string>
+    <string name="placeholder_no_shared_items_desc">此处将显示其他协作空间成员与您共享的文件和文件夹。您自己的文件和房间内容不会显示在此处。</string>
+    <string name="rooms_share_shared_folder_desc">授予文件夹访问权限并设置权限级别。</string>
+    <string name="rooms_info_folder_desc">此文件夹可通过其父文件夹的共享链接访问，但您可以创建具有特定权限的自定义外部链接。</string>
+    <string name="rooms_info_file_desc">此文件可通过其父文件夹的共享链接访问，但您可以创建具有特定权限的自定义外部链接。</string>
+    <string name="rooms_info_fill_form_desc">任何拥有链接的人都可以访问此房间。外部用户将对所有文件拥有"可填写表单"权限。</string>
+    <string name="share_popup_access_editing">编辑</string>
+    <string name="share_popup_access_remove">移除</string>
 </resources>

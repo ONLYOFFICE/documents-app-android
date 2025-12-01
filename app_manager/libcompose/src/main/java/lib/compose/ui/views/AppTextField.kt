@@ -322,6 +322,7 @@ fun AppTextFieldListItem(
     onValueChange: ((String) -> Unit) = {},
     hint: String = "",
     isPassword: Boolean = false,
+    fillMaxWidth: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
     keyboardOptions: KeyboardOptions? = null,
     focusManager: FocusManager? = null,
@@ -336,6 +337,7 @@ fun AppTextFieldListItem(
         keyboardType = keyboardType,
         keyboardOptions = keyboardOptions,
         focusManager = focusManager,
+        fillMaxWidth = fillMaxWidth,
         onDone = onDone,
     )
 }

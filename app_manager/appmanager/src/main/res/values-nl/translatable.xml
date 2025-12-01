@@ -639,7 +639,6 @@
     <string name="room_manage_room">Beheer ruimte</string>
     <string name="rooms_move_to_public_title">Verplaats naar publieke ruimte</string>
     <string name="rooms_move_to_public_title_desc">Deze ruimte en alle inhoud ervan zijn beschikbaar voor iedereen met de link. Wilt u doorgaan?</string>
-    <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.</string>
     <string name="rooms_info_general_link">Algemene link</string>
     <string name="rooms_info_edit_link">Bewerk link</string>
     <string name="rooms_info_create_link_title">Maak link</string>
@@ -1006,4 +1005,29 @@
     <string name="start_filling_ready_for_filling">Het formulier is klaar om in te vullen in de kamer</string>
     <string name="start_filling_ready_for_filling_desc">Er is al een melding verzonden naar de gebruiker in de eerste rol, met het verzoek om het formulier in te vullen. U kunt naar de kamer navigeren of de link naar het vullen met de deelnemers delen.</string>
     <string name="list_context_reset_filling">Opnieuw instellen en beginnen met invullen</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-26) -->
+    <string name="upload_manager_duplicate_title">Actie vereist</string>
+    <string name="upload_manager_duplicate_text">De bestemming bevat al een bestand met de naam «%s». Kies de gewenste actie:</string>
+    <string name="upload_manager_duplicates_text">De bestemming bevat al bestanden met dezelfde naam. Kies de gewenste actie:</string>
+    <string name="upload_manager_duplicate_overwrite">Overschrijven met versie update</string>
+    <string name="upload_manager_duplicate_copy">Maak een kopie van het bestand</string>
+    <string name="upload_manager_duplicate_skip">Overslaan</string>
+    <string name="socials_failed_auth">Inloggen is mislukt</string>
+    <string name="rooms_info_access_desc">Deze kamer is voor iedereen met de link beschikbaar. Toegang voor externe gebruikers is afhankelijk van het geselecteerde type toegangsrechten.</string>
+    <string name="rooms_share_shared_links_count">Gedeelde links (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Schakel deze instelling in om het downloaden van bestanden en mappen uit deze map die via een link wordt gedeeld, uit te schakelen.</string>
+    <string name="share_link_file_restrict_desc">Schakel deze instelling in om het downloaden van dit bestand dat via een link wordt gedeeld, uit te schakelen.</string>
+    <string name="share_link_file_restrict_warning">Het is niet mogelijk om de beperking op het downloaden en kopiëren van gegevens uit te schakelen, aangezien deze instelling op kamerniveau voor alle bestanden wordt toegepast.</string>
+    <string name="share_link_file_restrict_warning_ok">OK</string>
+    <string name="rooms_user_type_members">Leden</string>
+    <string name="share_goal_everyone">Iedereen</string>
+    <string name="placeholder_no_shared_items">Er zijn nog geen gedeelde items.</string>
+    <string name="placeholder_no_shared_items_desc">Hier vindt u bestanden en mappen die andere DocSpace leden met u hebben gedeeld. Uw eigen bestanden en kamerinhoud worden hier niet weergegeven.</string>
+    <string name="rooms_share_shared_folder_desc">Geef toegang tot de map en stel de machtigingsniveaus in.</string>
+    <string name="rooms_info_folder_desc">Deze map is toegankelijk via een gedeelde link vanuit de bovenliggende map, maar u kunt ook een aangepaste externe link met specifieke rechten aanmaken.</string>
+    <string name="rooms_info_file_desc">Dit bestand is toegankelijk via een gedeelde link vanuit de bovenliggende map, maar u kunt ook een aangepaste externe link met specifieke rechten aanmaken.</string>
+    <string name="rooms_info_fill_form_desc">Deze kamer is voor iedereen met de link beschikbaar. Externe gebruikers hebben rechten voor het invullen van formulieren voor alle bestanden.</string>
+    <string name="share_popup_access_editing">Bewerken</string>
+    <string name="share_popup_access_remove">Verwijder</string>
 </resources>

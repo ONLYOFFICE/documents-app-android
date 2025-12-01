@@ -30,6 +30,10 @@ open class Item : ItemProperties(), Serializable {
     @Expose
     var rootFolderType = "-1"
 
+    @SerializedName("parentRoomType")
+    @Expose
+    var parentRoomType: Int = -1
+
     @SerializedName("updatedBy")
     @Expose
     var updatedBy = UpdatedBy()

@@ -184,6 +184,7 @@ object ApiContract {
         const val CLOUD_RECENT = 11
         const val CLOUD_PRIVATE_ROOM = 13
         const val CLOUD_VIRTUAL_ROOM = 14
+        const val FILLING_ROOM = 15
         const val CLOUD_ARCHIVE_ROOM = 20
         const val EDITING_ROOM = 16
         const val CUSTOM_ROOM = 19
@@ -206,6 +207,21 @@ object ApiContract {
         fun isRoom(type: Int): Boolean = type == 14
         fun isArchive(type: Int): Boolean = type == CLOUD_ARCHIVE_ROOM
         fun isTemplates(type: Int?): Boolean = type == ROOM_TEMPLATES_FOLDER
+
+        fun shouldShowShareBadge(type: Int): Boolean {
+            return type == EDITING_ROOM || type == CUSTOM_ROOM || type == VIRTUAL_DATA_ROOM
+        }
+
+        fun getRoomType(parentRoomType: Int): Int {
+            return when(parentRoomType) {
+                CUSTOM_ROOM -> RoomType.CUSTOM_ROOM
+                FILLING_ROOM -> RoomType.FILL_FORMS_ROOM
+                VIRTUAL_DATA_ROOM -> RoomType.VIRTUAL_ROOM
+                PUBLIC_ROOM -> RoomType.PUBLIC_ROOM
+                EDITING_ROOM -> RoomType.COLLABORATION_ROOM
+                else -> -1
+            }
+        }
     }
 
     sealed class Section(val type: Int) {
@@ -241,6 +257,7 @@ object ApiContract {
         val isLocalRecent: Boolean get() = this == LocalRecent
         val isDevice: Boolean get() = this == Device
         val isTrash: Boolean get() = this == Trash
+        val isShare: Boolean get() = this == Share
         val isStorage: Boolean get() = this is Storage
         val isWebdav: Boolean get() = this == Webdav
 
@@ -366,7 +383,6 @@ object ApiContract {
         const val IS_ORIGINAL = 0x8
         const val BACKUP = 0x10
         const val FAVORITE = 0x20
-        const val SHARED_BY_LINK = 0x256
     }
 
     object Extension {
