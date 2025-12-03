@@ -12,14 +12,17 @@ import android.os.Messenger
 import androidx.core.os.bundleOf
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import app.documents.shared.models.CommentMention
-import app.documents.shared.models.MessengerMessage.GetAvatarUrls
-import app.documents.shared.models.MessengerMessage.GetCommentMentions
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.shared.models.MessengerMessage.GetAccessToken
+import app.documents.shared.models.MessengerMessage.GetSharedUsers
+import app.documents.shared.models.SharedUser
 import app.documents.shared.utils.decodeFromString
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.LazyHeaders
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.serialization.json.Json
 
 class MessengerClient(private val context: Context) {
@@ -29,37 +32,20 @@ class MessengerClient(private val context: Context) {
         private const val CONNECTION_TIMEOUT = 5000
     }
 
-    private val _eventFlows = mutableMapOf<Int, MutableSharedFlow<Any>>()
+    private val callbacks = mutableMapOf<Int, (Message) -> Unit>()
 
     private val responseHandler = object : Handler(Looper.getMainLooper()) {
 
-        override fun handleMessage(msg: Message) {
-            when (msg.what) {
-                GetCommentMentions.responseId -> {
-                    val json = msg.data.getString(GetCommentMentions.COMMENT_MENTIONS_KEY)
-                    val users = Json.decodeFromString<List<CommentMention>>(json.orEmpty(), true)
-
-                    _eventFlows[GetCommentMentions.responseId]?.tryEmit(users.orEmpty())
-                }
-
-                GetAvatarUrls.responseId -> {
-                    val json = msg.data.getString(GetAvatarUrls.RESPONSE_KEY)
-                    val avatarUrls = Json.decodeFromString<Map<String, String>>(json.orEmpty(), true)
-
-                    if (!avatarUrls.isNullOrEmpty()) {
-                        avatarsCache.putAll(avatarUrls)
-                        _eventFlows[GetAvatarUrls.responseId]?.tryEmit(avatarUrls)
-                    }
-                }
-            }
+        override fun handleMessage(message: Message) {
+            callbacks[message.what]?.invoke(message)
         }
     }
 
     private val replyMessenger = Messenger(responseHandler)
 
     private var serviceMessenger: Messenger? = null
-
-    private val avatarsCache: MutableMap<String, String> = mutableMapOf()
+    private var sharedUsersCache: List<SharedUser>? = null
+    private var accessToken: String? = null
 
     private val connection = object : ServiceConnection {
 
@@ -85,32 +71,70 @@ class MessengerClient(private val context: Context) {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getCommentMentions(fileId: String, filterValue: String): Flow<List<CommentMention>> {
-        val flow = MutableSharedFlow<List<CommentMention>>(replay = 0, extraBufferCapacity = 1)
-        val message = Message.obtain(null, GetCommentMentions.requestId)
-        message.data = bundleOf(
-            GetCommentMentions.FILE_ID_KEY to fileId,
-            GetCommentMentions.FILTER_VALUE_KEY to filterValue
+    fun getSharedUsers(fileId: String, filterValue: String = ""): Flow<List<SharedUser>> =
+        callbackFlow {
+            sharedUsersCache?.let { cache ->
+                trySend(cache.filter { it.filterByNameOrEmail(filterValue) })
+                close()
+            }
+
+            waitForConnect()
+            checkAccessToken { accessToken ->
+                val message = Message.obtain(null, GetSharedUsers.requestId)
+                message.data = bundleOf(GetSharedUsers.FILE_ID_KEY to fileId)
+                message.replyTo = replyMessenger
+
+                callbacks[GetSharedUsers.responseId] = { message ->
+                    val json = message.data.getString(GetSharedUsers.RESPONSE_KEY)
+                    val users = Json.decodeFromString<List<SharedUser>>(json.orEmpty(), true)
+
+                    if (!users.isNullOrEmpty()) {
+                        val userWithAvatars = users
+                            .filter { it.filterByNameOrEmail(filterValue) }
+                            .map {
+                                it.copy(avatarGlideUrl = getGlideUrl(it.avatarUrl, accessToken))
+                            }
+
+                        sharedUsersCache = userWithAvatars
+                        trySend(userWithAvatars)
+                        close()
+                    }
+                }
+
+                serviceMessenger?.send(message)
+            }
+
+            awaitClose {
+                callbacks.remove(GetSharedUsers.responseId)
+            }
+        }
+
+    private fun getGlideUrl(avatarUrl: String?, accessToken: String): GlideUrl {
+        return GlideUrl(
+            avatarUrl,
+            LazyHeaders.Builder()
+                .addHeader(ApiContract.HEADER_AUTHORIZATION, accessToken)
+                .build()
         )
-        message.replyTo = replyMessenger
-        serviceMessenger?.send(message)
-        _eventFlows[GetCommentMentions.responseId] = flow as MutableSharedFlow<Any>
-        return flow
     }
 
-    @Suppress("UNCHECKED_CAST")
-    suspend fun getAvatarUrls(userIds: List<String>): Flow<Map<String, String>> {
-        val filteredIds = userIds.filterNot { it in avatarsCache.keys }
-        if (filteredIds.isEmpty()) return flowOf(avatarsCache)
+    private fun checkAccessToken(block: (String) -> Unit) {
+        accessToken?.let { token ->
+            block(token)
+            return
+        }
 
-        waitForConnect()
-        val flow = MutableSharedFlow<Map<String, String>>(replay = 0, extraBufferCapacity = 1)
-        val message = Message.obtain(null, GetAvatarUrls.requestId)
-        message.data = bundleOf(GetAvatarUrls.USER_IDS_KEY to filteredIds)
+        val message = Message.obtain(null, GetAccessToken.requestId)
         message.replyTo = replyMessenger
+
+        callbacks[GetAccessToken.responseId] = { message ->
+            val token = message.data.getString(GetAccessToken.RESPONSE_KEY).orEmpty()
+            accessToken = token
+            block(token)
+            callbacks.remove(GetAccessToken.responseId)
+        }
+
         serviceMessenger?.send(message)
-        _eventFlows[GetAvatarUrls.responseId] = flow as MutableSharedFlow<Any>
-        return flow
     }
 
     private suspend fun waitForConnect() {

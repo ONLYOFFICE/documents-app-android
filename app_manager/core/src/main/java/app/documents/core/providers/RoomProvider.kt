@@ -750,8 +750,13 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return response.response
     }
 
-    suspend fun getUserProfile(userId: String): User {
-        return roomService.getUserProfile(userId).response
+    suspend fun getSharedUsers(fileId: String): List<User> {
+        return roomService.getSharedUsers(fileId)
+            .response
+            .map { response ->
+                response.user
+                    .copy(avatar = roomService.getUserPhoto(response.user.id).response.max)
+            }
     }
 
     private fun <T> handleUnitResponse(apiCall: suspend () -> Response<T>): Flow<NetworkResult<Unit>> = flow {

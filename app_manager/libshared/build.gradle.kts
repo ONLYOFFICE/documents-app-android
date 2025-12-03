@@ -36,6 +36,8 @@ dependencies {
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
 
+    implementation(libs.glide)
+
     implementation(libs.kotlin.serialization.json)
 
     implementation(libs.ktx)

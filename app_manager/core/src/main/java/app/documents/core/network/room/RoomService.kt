@@ -2,6 +2,8 @@ package app.documents.core.network.room
 
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
+import app.documents.core.model.login.UserPhoto
+import app.documents.core.model.login.response.SharedUserResponse
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -518,4 +520,13 @@ interface RoomService {
         @Path(value = "userId") userId: String,
     ): app.documents.core.network.BaseResponse<User>
 
+    @GET("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/sharedusers")
+    suspend fun getSharedUsers(
+        @Path(value = "fileId") fileId: String,
+    ): app.documents.core.network.BaseResponse<List<SharedUserResponse>>
+
+    @GET("api/" + ApiContract.API_VERSION + "/people/{userId}/photo")
+    suspend fun getUserPhoto(
+        @Path(value = "userId") userId: String,
+    ): app.documents.core.network.BaseResponse<UserPhoto>
 }

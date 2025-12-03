@@ -10,11 +10,12 @@ import android.os.Messenger
 import android.util.Log
 import androidx.core.os.bundleOf
 import app.documents.core.account.AccountRepository
+import app.documents.core.di.dagger.Token
 import app.documents.core.providers.RoomProvider
 import app.documents.shared.di.MessengerServiceApp
-import app.documents.shared.models.CommentMention
-import app.documents.shared.models.MessengerMessage.GetAvatarUrls
-import app.documents.shared.models.MessengerMessage.GetCommentMentions
+import app.documents.shared.models.MessengerMessage.GetAccessToken
+import app.documents.shared.models.MessengerMessage.GetSharedUsers
+import app.documents.shared.models.SharedUser
 import app.documents.shared.utils.encodeToString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,10 @@ class MessengerService : Service() {
     lateinit var roomProvider: RoomProvider
 
     @Inject
+    @Token
+    lateinit var accessToken: String
+
+    @Inject
     lateinit var accountRepository: AccountRepository
 
     private val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -38,8 +43,8 @@ class MessengerService : Service() {
 
         override fun handleMessage(message: Message) {
             when (message.what) {
-                GetCommentMentions.requestId -> replyCommentMentions(message)
-                GetAvatarUrls.requestId -> replyAvatarUrls(message)
+                GetSharedUsers.requestId -> replySharedUsers(message)
+                GetAccessToken.requestId -> replyAccessToken(message)
             }
         }
     }
@@ -65,50 +70,42 @@ class MessengerService : Service() {
         app?.destroyMessengerServiceComponent()
     }
 
-    private fun replyAvatarUrls(message: Message) {
-        val users = message.data.getStringArrayList(GetAvatarUrls.USER_IDS_KEY)?.toList() ?: return
-        val replyTo = message.replyTo
-
-        coroutineScope.launch {
-            try {
-                requireNotNull(portalUrl)
-                val avatars = users.map { "$portalUrl${roomProvider.getUserProfile(it).avatarUrl}" }
-                val userAvatarsMap = users.zip(avatars).toMap()
-                val replyMsg = Message
-                    .obtain(null, GetAvatarUrls.responseId)
-                    .apply {
-                        data = bundleOf(
-                            GetAvatarUrls.RESPONSE_KEY to Json.encodeToString(userAvatarsMap, true)
-                        )
-                    }
-
-                replyTo.send(replyMsg)
-            } catch (e: Exception) {
-                Log.e("MessengerService", e.message.toString())
+    private fun replyAccessToken(message: Message) {
+        val replyMsg = Message
+            .obtain(null, GetAccessToken.responseId)
+            .apply {
+                data = bundleOf(
+                    GetAccessToken.RESPONSE_KEY to accessToken
+                )
             }
-        }
+        message.replyTo.send(replyMsg)
     }
 
-    private fun replyCommentMentions(message: Message) {
-        val fileId = message.data.getString(GetCommentMentions.FILE_ID_KEY)
-        val filterValue = message.data.getString(GetCommentMentions.FILTER_VALUE_KEY)
+    private fun replySharedUsers(message: Message) {
+        val fileId = message.data.getString(GetSharedUsers.FILE_ID_KEY)
         val replyTo = message.replyTo
+
         coroutineScope.launch {
             try {
-                val users = roomProvider
-                    .getUsersByItemId(
-                        requireNotNull(value = fileId) { "fileId is null" },
-                        isFolder = false,
-                        filterValue = filterValue.orEmpty()
+                val user = accountRepository.getOnlineAccount()?.let {
+                    SharedUser(
+                        id = it.id,
+                        displayName = it.name,
+                        email = "",
+                        avatarUrl = "$portalUrl${it.avatarUrl}"
                     )
-                    .map(CommentMention::from)
+                }
+
+                val sharedUsers = roomProvider
+                    .getSharedUsers(requireNotNull(value = fileId) { "fileId is null" })
+                    .map { user -> SharedUser.from(user, portalUrl) }
 
                 val replyMsg = Message
-                    .obtain(null, GetCommentMentions.responseId)
+                    .obtain(null, GetSharedUsers.responseId)
                     .apply {
                         data = bundleOf(
-                            GetCommentMentions.COMMENT_MENTIONS_KEY to
-                                    Json.encodeToString(users, true)
+                            GetSharedUsers.RESPONSE_KEY to
+                                    Json.encodeToString(sharedUsers + user, true)
                         )
                     }
 
