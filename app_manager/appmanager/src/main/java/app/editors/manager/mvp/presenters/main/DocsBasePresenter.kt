@@ -1237,12 +1237,12 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
     fun selectAll() {
-        viewState.onItemsSelection(modelExplorerStack.setSelection(true).toString())
+        viewState.onItemsSelection(modelExplorerStack.setSelection(true))
         setSelection(true)
     }
 
     fun deselectAll() {
-        viewState.onItemsSelection(modelExplorerStack.setSelection(false).toString())
+        viewState.onItemsSelection(modelExplorerStack.setSelection(false))
         viewState.onStateUpdateSelection(false)
         getBackStack()
     }

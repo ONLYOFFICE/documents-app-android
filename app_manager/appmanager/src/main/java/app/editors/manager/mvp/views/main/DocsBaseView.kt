@@ -105,7 +105,7 @@ interface DocsBaseView : BaseViewExt {
     fun onActionBarTitle(title: String = "")
 
     @StateStrategyType(OneExecutionStateStrategy::class)
-    fun onItemsSelection(countSelected: String)
+    fun onItemsSelection(countSelected: Int)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onItemSelected(position: Int, countSelected: String)

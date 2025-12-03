@@ -778,8 +778,17 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    override fun onItemsSelection(countSelected: String) {
-        onActionBarTitle(countSelected)
+    override fun onItemsSelection(countSelected: Int) {
+        onActionBarTitle(countSelected.toString())
+        if (presenter.isSelectionMode && countSelected > 0) {
+            explorerAdapter?.let { adapter ->
+                adapter.notifyItemRangeChanged(
+                    0,
+                    adapter.itemCount - 1,
+                    ExplorerPayload.SELECTION
+                )
+            }
+        }
     }
 
     override fun onItemSelected(position: Int, countSelected: String) {
