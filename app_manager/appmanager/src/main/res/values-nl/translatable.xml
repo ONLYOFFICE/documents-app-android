@@ -630,7 +630,6 @@
     <string name="room_placeholder_created_room_title">Ruimte aangemaakt!</string>
     <string name="room_placeholder_created_template_title">Template created!</string>
     <string name="room_placeholder_created_room_subtitle">Maak nieuwe mappen om uw bestanden te ordenen.</string>
-    <string name="room_placeholder_created_filling_form_room_title">Welkom in de formulieren invul-ruimte</string>
     <string name="room_placeholder_created_filling_form_room_subtitle">Upload een kant-en-klaar PDF-formulier of maak nieuwe mappen om uw bestanden te ordenen</string>
     <string name="room_placeholder_created_virtual_room_title">Welkom bij de virtuele data-ruimte</string>
     <string name="room_placeholder_created_virtual_room_subtitle">Aan de slag met snelle acties:\nMaak een nieuw bestand</string>
