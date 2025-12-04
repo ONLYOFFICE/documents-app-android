@@ -19,6 +19,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.documents.core.model.cloud.Access
+import app.editors.manager.managers.utils.toUi
+import app.editors.manager.mvp.models.ui.AccessUI
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.views.AppDivider
@@ -29,8 +31,8 @@ import lib.toolkit.base.R
 fun UserListBottomContent(
     nextButtonTitle: Int,
     count: Int? = null,
-    access: Access? = null,
-    accessList: List<Access> = emptyList(),
+    access: AccessUI? = null,
+    accessList: List<AccessUI> = emptyList(),
     onAccess: (Access) -> Unit = {},
     onDelete: (() -> Unit)? = null,
     onNext: () -> Unit
@@ -80,8 +82,8 @@ private fun UserListBottomContentPreview() {
             UserListBottomContent(
                 nextButtonTitle = R.string.common_next,
                 count = 1,
-                access = Access.Read,
-                accessList = listOf(Access.None, Access.Restrict, Access.Read),
+                access = Access.Read.toUi(),
+                accessList = listOf(Access.None, Access.Restrict, Access.Read).map { it.toUi() },
                 onAccess = {},
                 onDelete = {},
                 onNext = {}

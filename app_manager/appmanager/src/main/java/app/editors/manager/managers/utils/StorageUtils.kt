@@ -228,7 +228,7 @@ object StorageUtils {
         return getUrl(StorageContract.OneDrive.AUTH_URL, uriMap)
     }
 
-    private fun getUrl(
+    fun getUrl(
         requestUrl: String,
         requestArgs: TreeMap<String, String>
     ): String {

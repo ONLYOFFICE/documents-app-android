@@ -118,7 +118,6 @@ class DocsRoomFragment : DocsCloudFragment() {
                 }
             }
             is ExplorerContextItem.Lock -> presenter.lockFile()
-            is ExplorerContextItem.CustomFilter -> presenter.setCustomFilter()
             is ExplorerContextItem.SaveAsTemplate -> presenter.createTemplate()
             is ExplorerContextItem.AccessSettings -> presenter.editTemplateAccessSettings()
             else -> super.onContextButtonClick(contextItem)

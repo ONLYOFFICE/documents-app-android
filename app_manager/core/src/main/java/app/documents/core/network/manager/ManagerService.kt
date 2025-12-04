@@ -440,7 +440,7 @@ interface ManagerService {
     suspend fun getRootFolder(
         @QueryMap filterMap: Map<String, Int>,
         @QueryMap flagMap: Map<String, Boolean>,
-        @Query("count") count: Int = 1
+        @Query("count") count: Int? = 1
     ): ResponseCloudTree
 
     @Headers(
@@ -544,7 +544,7 @@ interface ManagerService {
         ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/restoreversion")
+    @POST("api/" + ApiContract.API_VERSION + "/files/file/{file_id}/restoreversion")
     suspend fun restoreVersion(
         @Path(value = "file_id") fileId: String,
         @Query(value = "version") version: Int

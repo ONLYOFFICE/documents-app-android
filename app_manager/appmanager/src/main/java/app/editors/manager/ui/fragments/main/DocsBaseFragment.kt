@@ -106,6 +106,8 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     protected var deleteItem: MenuItem? = null
     protected var filterItem: MenuItem? = null
     protected var explorerAdapter: ExplorerAdapter? = null
+    override val isGridView: Boolean
+        get() = presenter.preferenceTool.isGridView
 
     protected var searchView: CommonSearchView? = null
 
@@ -133,7 +135,6 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycle.addObserver(lifecycleEventObserver)
-        isGridView = presenter.preferenceTool.isGridView
         setHasOptionsMenu(true)
     }
 
@@ -549,22 +550,24 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     override fun onError(message: String?) {
         resetIndicators()
         hideDialog()
-        message?.let {
-            //            TODO add webdav exception
-            if (it == "HTTP 503 Service Unavailable") {
+        val errorMessage = message ?: return
+        // TODO add webdav exception
+        when {
+            errorMessage == "HTTP 503 Service Unavailable" -> {
                 setAccessDenied()
                 presenter.clearStack()
-                return
-            } else if (it == getString(R.string.errors_client_host_not_found) || it == getString(
-                    R.string.errors_client_unauthorized
-                )
-            ) {
+            }
+            errorMessage == getString(R.string.errors_client_host_not_found) ||
+                    errorMessage == getString(R.string.errors_client_unauthorized) -> {
                 if (requireActivity() is BaseViewExt) {
-                    (requireActivity() as BaseViewExt).onUnauthorized(it)
-                    return
+                    (requireActivity() as BaseViewExt).onUnauthorized(errorMessage)
                 }
             }
-            showSnackBar(it)
+            errorMessage.contains("Access denied") -> {
+                onPlaceholder(PlaceholderViews.Type.ACCESS)
+                showSnackBar(errorMessage)
+            }
+            else -> showSnackBar(errorMessage)
         }
     }
 
@@ -1224,7 +1227,13 @@ abstract class DocsBaseFragment : ListFragment(), DocsBaseView, BaseAdapter.OnIt
     protected open val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
             is ActionMenuItem.Sort -> presenter.sortBy(item.sortValue)
-            is ActionMenuItem.Operation -> presenter.moveCopySelected(item.value)
+            is ActionMenuItem.Operation -> {
+                if (item == ActionMenuItem.Delete) {
+                    presenter.delete()
+                } else {
+                    presenter.moveCopySelected(item.value)
+                }
+            }
             is ActionMenuItem.GridView -> presenter.setGridView(true)
             is ActionMenuItem.ListView -> presenter.setGridView(false)
             ActionMenuItem.Select -> presenter.setSelection(true)

@@ -583,7 +583,6 @@
     <string name="rooms_add_public_room_des">Поканете потребители чрез споделени линкове, за да преглеждат документи без регистрация. Също можете да вградите тази стая във всеки уеб интерфейс.</string>
     <string name="rooms_move_to_public_title">Преминете към Обществена стая</string>
     <string name="rooms_move_to_public_title_desc">Тази стая и цялото ѝ съдържание са налични за всеки с линк. Желаете ли да продължите?</string>
-    <string name="rooms_info_access_desc">Тази стая е налична за всеки с линк. Външните потребители ще имат позволение Само за Четене за всички файлове.</string>
     <string name="rooms_info_general_link">Главен линк</string>
     <string name="rooms_info_additional_link">Допълнителен линк</string>
     <string name="rooms_info_additional_links">"Допълнителни линкове (%1$d/%2$d)"</string>
@@ -807,14 +806,14 @@
     <string name="whats_new_title">Какво ново</string>
     <string name="whats_new_next">Първи стъпки</string>
     <string name="whats_new">Нови във v9.1</string>
-    <string name="whats_new_1">AI асистент в редактори</string>
-    <string name="whats_new_1_desc">Работете по-умно в документи и електронни таблици с вграден AI. Свържете модели като OpenAI, Anthropic, Google или Ollama.</string>
-    <string name="whats_new_2">Опции за текстово насочване</string>
-    <string name="whats_new_2_desc">Превключвайте лесно между текстова посока Отдясно-наляво и Отляво-надясно във всички редактори.</string>
-    <string name="whats_new_3">Попълване на формуляр на базата на роли в DocSpace</string>
-    <string name="whats_new_3_desc">Задайте специфични роли на участниците, когато започвате процес по попълване на формуляри, докато сте свързани с DocSpace.</string>
-    <string name="whats_new_4">Съдържание в документи</string>
-    <string name="whats_new_4_desc">Създавайте и навигирайте през раздели документи с автоматично съдържание.</string>
+    <string name="whats_new_1">Нови DocSpace раздели</string>
+    <string name="whats_new_1_desc">Получавайте по-бърз достъп до файловете си със специализираните DocSpace зони: Споделени с мен, Любими и Скорошни.</string>
+    <string name="whats_new_2">Разширено търсене на файлове в DocSpace</string>
+    <string name="whats_new_2_desc">Споделяйте по-лесно файлове и управлявайте достъпа с подобрените работни процеси за споделяне в DocSpace 3.5.</string>
+    <string name="whats_new_3">Социални опции за вход</string>
+    <string name="whats_new_3_desc">Влизайте с LinkedIn или Zoom за по-лесно създаване или достъп до вашия DocSpace профил.</string>
+    <string name="whats_new_4">Посока на абзаци и клетки (RTL)</string>
+    <string name="whats_new_4_desc">Сменяйте посоката на абзаците и на клетките в таблиците между Отдясно-наляво и Отляво-надясно във всички редактори.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Аз и %s</string>
@@ -942,7 +941,7 @@
     <!-- Newly added translations (v9.0.2 - 2025-06-25) -->
     <plurals name="dialogs_question_message_template">
         <item quantity="one">Наистина ли искате да изтриете шаблона за стая „%s“? Шаблонът не може да бъде възстановен.</item>
-        <item quantity="other">Наистина ли искате да изтриете избраните шаблони за стаи? Те не могат да бъдат възстановени.</item>
+        <item quantity="other">Наистина ли искате да изтриете избраните шаблони за стаи? Те не могат да бъде възстановени.</item>
     </plurals>
     <plurals name="dialogs_question_delete_template_title">
         <item quantity="one">Изтриване на шаблон</item>
@@ -967,4 +966,29 @@
     <string name="start_filling_ready_for_filling">Формулярът е готов за попълване в стая</string>
     <string name="start_filling_ready_for_filling_desc">На потребител в първата роля бе пратено известие, подканващо го да попълни формуляра. Можете да навигирате до стаята или да споделите линк за попълване до участниците.</string>
     <string name="list_context_reset_filling">Нулирай и започни попълване</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-25) -->
+    <string name="upload_manager_duplicate_title">Задължително действие</string>
+    <string name="upload_manager_duplicate_text">Целта вече съдържа файл с име «%s». Моля, изберете действието:</string>
+    <string name="upload_manager_duplicates_text">Целта веч съдържа файлове със същото име. Моля, изберете действието:</string>
+    <string name="upload_manager_duplicate_overwrite">Презапиши с актуализация на версията</string>
+    <string name="upload_manager_duplicate_copy">Създай копие на файла</string>
+    <string name="upload_manager_duplicate_skip">Пропусни</string>
+    <string name="socials_failed_auth">Неуспешно влизане</string>
+    <string name="rooms_info_access_desc">Тази стая  е достъпна за всеки с линка. Достъпът за външни потребители се осигурява в зависимост от избрания вид права на достъп.</string>
+    <string name="rooms_share_shared_links_count">Споделени линкове (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Активирайте тази настройка, за да деактивирате изтеглянето на файлове и папки от тази папка, споделени чрез линк</string>
+    <string name="share_link_file_restrict_desc">Активирайте тази настройка, за да деактивирате изтеглянето на този файл, споделен чрез линк</string>
+    <string name="share_link_file_restrict_warning">Не можете да деактивирате ограничението за изтегляне и копиране а данни, защото тази настройка е наложена в нивото на стаята за всички файлове.</string>
+    <string name="share_link_file_restrict_warning_ok">OK</string>
+    <string name="rooms_user_type_members">Членове</string>
+    <string name="share_goal_everyone">Всички</string>
+    <string name="placeholder_no_shared_items">Все ще няма споделени файлове</string>
+    <string name="placeholder_no_shared_items_desc">Тук е откриете файлове и папки, които другите членове на DocSpace са споделили с Вас. Вашите собствени файлове и съдържание на стаята не са показни тук.</string>
+    <string name="rooms_share_shared_folder_desc">Осигурете достъп до папката и задайте нивата на разрешение.</string>
+    <string name="rooms_info_folder_desc">Тази папка е достъпна чрез споделения линк от родителската ѝ папка, но можете да създадете персонализиран външен линк с конкретни разрешения.</string>
+    <string name="rooms_info_file_desc">Този файл е достъпен чрез споделен линк от родителската му папка, но можете да създадете персонализиран външен линк с конкретни разрешения.</string>
+    <string name="rooms_info_fill_form_desc">Тази стая е достъпна за всеки с линка. Външните потребители ще имат разрешение за Попълване на формуляр за всичките файлове.</string>
+    <string name="share_popup_access_editing">Редактиране</string>
+    <string name="share_popup_access_remove">Премахни</string>
 </resources>

@@ -190,4 +190,10 @@ class SignInActivity : BaseAppActivity() {
         mSocialFragment = fragment
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        val data = intent.data ?: return
+        val oauthCode = data.getQueryParameter("code")
+        (mSocialFragment as? EnterpriseSignInFragment)?.handleSocialOAuthCode(oauthCode)
+    }
 }

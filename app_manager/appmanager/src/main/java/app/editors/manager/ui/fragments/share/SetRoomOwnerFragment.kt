@@ -6,7 +6,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.R
-import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
 import app.editors.manager.viewModels.main.RoomUserListViewModel
 import app.editors.manager.viewModels.main.UserListMode
@@ -48,7 +47,6 @@ class SetRoomOwnerFragment : ComposeDialogFragment() {
                     roomId = checkNotNull(arguments?.getSerializableExt<String>(ROOM_ID_KEY)),
                     roomOwnerId = checkNotNull(arguments?.getSerializableExt<String>(ROOM_CREATED_BY_ID_KEY)),
                     roomProvider = requireContext().roomProvider,
-                    resourcesProvider = requireContext().appComponent.resourcesProvider,
                 )
             }
 
