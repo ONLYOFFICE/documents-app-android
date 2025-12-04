@@ -157,10 +157,6 @@ internal class CloudLoginRepositoryImpl(
                     }
 
                     try {
-                        val oldAccount = accountRepository.getAccount(result.oldAccountId)
-                        if (oldAccount != null) {
-                            unsubscribePush(oldAccount.apply { unsubToken = accountRepository.getToken(oldAccount.accountName).orEmpty() })
-                        }
 
                         val newAccount = accountRepository.getOnlineAccount()
                         val token = accountRepository.getToken(newAccount?.accountName.orEmpty())
