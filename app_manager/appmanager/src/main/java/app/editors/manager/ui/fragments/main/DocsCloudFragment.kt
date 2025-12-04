@@ -453,7 +453,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {
         val roomType = presenter.currentFolder?.roomType
-        val isCloudForms = presenter.currentFolder?.parentRoomType == ApiContract.SectionType.CLOUD_FILLING_FORMS_ROOM
+        val isCloudForms = presenter.currentFolder?.parentRoomType == ApiContract.SectionType.FILLING_ROOM
         val isCreator = presenter.roomContentCreator
         val isFolderInRoom = presenter.currentFolder?.rootFolderType == ApiContract.SectionType.CLOUD_VIRTUAL_ROOM
 

@@ -50,7 +50,6 @@ import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
-import app.editors.manager.managers.tools.BaseEvent
 import app.editors.manager.managers.utils.GlideAvatarImage
 import app.editors.manager.ui.fragments.share.InviteUsersScreen
 import app.editors.manager.ui.fragments.share.UserListScreen
@@ -72,6 +71,7 @@ import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.NestedColumn
 import lib.compose.ui.views.TopAppBarAction
+import lib.toolkit.base.managers.tools.BaseEvent
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.FormRole
 import lib.toolkit.base.managers.utils.FormRoleList
