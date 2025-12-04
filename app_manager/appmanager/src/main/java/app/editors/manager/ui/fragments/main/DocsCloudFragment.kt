@@ -82,6 +82,7 @@ import moxy.presenter.ProvidePresenter
 sealed interface ToolbarState {
     data class RoomLifetime(val lifetime: Lifetime) : ToolbarState
     data object RoomTemplate : ToolbarState
+    data object Trash : ToolbarState
     data object None : ToolbarState
 }
 
@@ -661,7 +662,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     )
                 }
 
-                ToolbarState.None -> Unit
+                else -> Unit
             }
         }
     }
