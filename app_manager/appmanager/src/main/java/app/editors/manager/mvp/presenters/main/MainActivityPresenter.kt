@@ -5,9 +5,11 @@ import android.os.Build
 import androidx.core.net.toUri
 import app.documents.core.account.AccountPreferences
 import app.documents.core.account.AccountRepository
+import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.login.CheckLoginResult
 import app.documents.core.login.PortalResult
 import app.documents.core.model.cloud.CloudPortal
+import app.documents.core.model.cloud.Recent
 import app.documents.core.model.cloud.Scheme
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.NetworkResult
@@ -58,6 +60,9 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     @Inject
     lateinit var accountRepository: AccountRepository
+
+    @Inject
+    lateinit var recentDataSource: RecentDataSource
 
     private val disposable = CompositeDisposable()
 
@@ -281,6 +286,17 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
     }
 
     private suspend fun openFile(data: OpenDataModel) {
+        presenterScope.launch {
+//            if (data.folder != null) return@launch
+
+            recentDataSource.insertOrUpdate(Recent(
+                fileId = data.file?.id.orEmpty(),
+                name = data.file?.title.orEmpty(),
+                source = data.portal,
+                token = data.share
+            ))
+        }
+
         context.cloudFileProvider
             .openDeeplink(
                 portal = data.portal.orEmpty(),

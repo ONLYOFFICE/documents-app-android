@@ -11,7 +11,8 @@ data class Recent(
     val size: Long = 0,
     val ownerId: String? = null, // null if local
     val source: String? = null, // null if local
-    val isWebdav: Boolean = false
+    val isWebdav: Boolean = false,
+    val token: String? = null
 ) {
 
     val isLocal: Boolean
