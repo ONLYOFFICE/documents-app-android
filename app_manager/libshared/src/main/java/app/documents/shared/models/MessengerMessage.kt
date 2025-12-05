@@ -13,4 +13,10 @@ internal sealed class MessengerMessage(
     object GetAccessToken : MessengerMessage(1, 2) {
         const val RESPONSE_KEY = "get_access_token_key"
     }
+
+    object SendMentionNotifications : MessengerMessage(3, 4) {
+        const val FILE_ID_KEY = "file_id_key"
+        const val EMAILS_KEY = "emails_key"
+        const val COMMENT_KEY = "message_key"
+    }
 }

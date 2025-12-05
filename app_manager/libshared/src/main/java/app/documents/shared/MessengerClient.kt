@@ -15,6 +15,7 @@ import androidx.lifecycle.LifecycleOwner
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.shared.models.MessengerMessage.GetAccessToken
 import app.documents.shared.models.MessengerMessage.GetSharedUsers
+import app.documents.shared.models.MessengerMessage.SendMentionNotifications
 import app.documents.shared.models.SharedUser
 import app.documents.shared.utils.decodeFromString
 import com.bumptech.glide.load.model.GlideUrl
@@ -108,6 +109,18 @@ class MessengerClient(private val context: Context) {
                 callbacks.remove(GetSharedUsers.responseId)
             }
         }
+
+    fun sendMentionNotifications(fileId: String, emails: Set<String>, comment: String) {
+        val message = Message.obtain(null, SendMentionNotifications.requestId)
+
+        message.data = bundleOf(
+            SendMentionNotifications.FILE_ID_KEY to fileId,
+            SendMentionNotifications.EMAILS_KEY to ArrayList(emails),
+            SendMentionNotifications.COMMENT_KEY to comment,
+        )
+
+        serviceMessenger?.send(message)
+    }
 
     private fun getGlideUrl(avatarUrl: String?, accessToken: String): GlideUrl {
         return GlideUrl(

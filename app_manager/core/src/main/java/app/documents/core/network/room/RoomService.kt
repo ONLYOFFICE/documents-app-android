@@ -28,6 +28,7 @@ import app.documents.core.network.room.models.RequestDeleteRoom
 import app.documents.core.network.room.models.RequestEditRoom
 import app.documents.core.network.room.models.RequestEditTemplate
 import app.documents.core.network.room.models.RequestFormRoleMapping
+import app.documents.core.network.room.models.RequestMentionNotification
 import app.documents.core.network.room.models.RequestOrder
 import app.documents.core.network.room.models.RequestRoomAuthViaLink
 import app.documents.core.network.room.models.RequestRoomOwner
@@ -529,4 +530,10 @@ interface RoomService {
     suspend fun getUserPhoto(
         @Path(value = "userId") userId: String,
     ): app.documents.core.network.BaseResponse<UserPhoto>
+
+    @POST("api/" + ApiContract.API_VERSION + "/files/file/{fileId}/sendeditornotify")
+    suspend fun sendMentionNotification(
+        @Path(value = "fileId") fileId: String,
+        @Body request: RequestMentionNotification,
+    ): BaseResponse
 }

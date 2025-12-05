@@ -15,6 +15,7 @@ import app.documents.core.providers.RoomProvider
 import app.documents.shared.di.MessengerServiceApp
 import app.documents.shared.models.MessengerMessage.GetAccessToken
 import app.documents.shared.models.MessengerMessage.GetSharedUsers
+import app.documents.shared.models.MessengerMessage.SendMentionNotifications
 import app.documents.shared.models.SharedUser
 import app.documents.shared.utils.encodeToString
 import kotlinx.coroutines.CoroutineScope
@@ -45,6 +46,7 @@ class MessengerService : Service() {
             when (message.what) {
                 GetSharedUsers.requestId -> replySharedUsers(message)
                 GetAccessToken.requestId -> replyAccessToken(message)
+                SendMentionNotifications.requestId -> sendMentionNotification(message)
             }
         }
     }
@@ -68,6 +70,18 @@ class MessengerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         app?.destroyMessengerServiceComponent()
+    }
+
+    private fun sendMentionNotification(message: Message) {
+        val emails = message.data.getStringArrayList(SendMentionNotifications.EMAILS_KEY)
+        val comment = message.data.getString(SendMentionNotifications.COMMENT_KEY)
+        val fileId = message.data.getString(SendMentionNotifications.FILE_ID_KEY)
+
+        if (!emails.isNullOrEmpty() && !comment.isNullOrEmpty() && !fileId.isNullOrEmpty()) {
+            coroutineScope.launch {
+                roomProvider.sendMentionNotification(fileId, emails, comment)
+            }
+        }
     }
 
     private fun replyAccessToken(message: Message) {

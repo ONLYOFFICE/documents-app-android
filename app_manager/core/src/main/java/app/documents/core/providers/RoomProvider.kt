@@ -36,6 +36,7 @@ import app.documents.core.network.room.models.RequestEditRoom
 import app.documents.core.network.room.models.RequestEditTemplate
 import app.documents.core.network.room.models.RequestFormRole
 import app.documents.core.network.room.models.RequestFormRoleMapping
+import app.documents.core.network.room.models.RequestMentionNotification
 import app.documents.core.network.room.models.RequestOrder
 import app.documents.core.network.room.models.RequestRoomAuthViaLink
 import app.documents.core.network.room.models.RequestRoomOwner
@@ -757,6 +758,11 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
                 response.user
                     .copy(avatar = roomService.getUserPhoto(response.user.id).response.max)
             }
+    }
+
+    suspend fun sendMentionNotification(fileId: String, emails: List<String>, message: String) {
+        val request = RequestMentionNotification(emails, message)
+        roomService.sendMentionNotification(fileId, request)
     }
 
     private fun <T> handleUnitResponse(apiCall: suspend () -> Response<T>): Flow<NetworkResult<Unit>> = flow {
