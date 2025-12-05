@@ -20,7 +20,8 @@ data class RecentEntity(
     val size: Long = 0,
     val ownerId: String? = null, // null if local
     val source: String? = null, // null if local
-    val isWebdav: Boolean = false
+    val isWebdav: Boolean = false,
+    val token: String? = null
 )
 
 fun RecentEntity.toRecent(): Recent {
@@ -33,7 +34,8 @@ fun RecentEntity.toRecent(): Recent {
         size = size,
         ownerId = ownerId,
         source = source,
-        isWebdav = isWebdav
+        isWebdav = isWebdav,
+        token = token
     )
 }
 
@@ -47,6 +49,7 @@ fun Recent.toEntity(): RecentEntity {
         size = size,
         ownerId = ownerId,
         source = source,
-        isWebdav = isWebdav
+        isWebdav = isWebdav,
+        token = token
     )
 }

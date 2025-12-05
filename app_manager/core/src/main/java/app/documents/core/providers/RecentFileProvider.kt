@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import lib.toolkit.base.managers.tools.FileExtensionUtils
 import lib.toolkit.base.managers.utils.EditType
 import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.MultipartBody
@@ -54,30 +55,34 @@ class RecentFileProvider @Inject constructor(
             if (recent.source == null) {
                 openLocalFile(recent.path, editType)
             } else {
-                val owner = recent.ownerId ?: throw RuntimeException()
-                val recentAccount = accountRepository.getAccount(owner)
+                if (recent.token != null) {
+                    openCloudFile(recent, editType)
+                } else {
+                    val owner = recent.ownerId ?: throw RuntimeException()
+                    val recentAccount = accountRepository.getAccount(owner)
 
-                if (accountRepository.getOnlineAccount() == null) {
-                    emit(FileOpenResult.RecentNoAccount())
-                    return@flow
-                }
-
-                if (recentAccount == null || recentAccount.id != accountRepository.getOnlineAccount()?.id) {
-                    emit(FileOpenResult.RecentFileNotFound())
-                    return@flow
-                }
-
-                when (val provider = recentAccount.portal.provider) {
-                    is PortalProvider.Storage -> {
-                        openStorageFile(recent, provider, editType)
+                    if (accountRepository.getOnlineAccount() == null) {
+                        emit(FileOpenResult.RecentNoAccount())
+                        return@flow
                     }
 
-                    is PortalProvider.Webdav -> {
-                        openWebDavFile(recent, editType)
+                    if (recentAccount == null || recentAccount.id != accountRepository.getOnlineAccount()?.id) {
+                        emit(FileOpenResult.RecentFileNotFound())
+                        return@flow
                     }
 
-                    else -> {
-                        openCloudFile(recent, editType)
+                    when (val provider = recentAccount.portal.provider) {
+                        is PortalProvider.Storage -> {
+                            openStorageFile(recent, provider, editType)
+                        }
+
+                        is PortalProvider.Webdav -> {
+                            openWebDavFile(recent, editType)
+                        }
+
+                        else -> {
+                            openCloudFile(recent, editType)
+                        }
                     }
                 }
             }
@@ -105,15 +110,32 @@ class RecentFileProvider @Inject constructor(
         recent: Recent,
         editType: EditType
     ) {
-        cloudFileProvider.openFile(
-            id = recent.fileId,
-            editType = editType,
-            canBeShared = false
-        ).collect { result ->
-            when (result) {
-                is NetworkResult.Error -> emit(FileOpenResult.RecentFileNotFound())
-                is NetworkResult.Success<FileOpenResult> -> emit(result.data)
-                is NetworkResult.Loading -> Unit
+        if (recent.token != null) {
+            cloudFileProvider.openDeeplink(
+                portal = recent.source ?: "",
+                token = recent.token ?: "",
+                login = recent.ownerId ?: "",
+                id = recent.fileId,
+                title = recent.name,
+                extension = FileExtensionUtils.getFileExtension(recent.name).extension
+            ).collect { result ->
+                when (result) {
+                    is NetworkResult.Error -> emit(FileOpenResult.RecentFileNotFound())
+                    is NetworkResult.Success<FileOpenResult> -> emit(result.data)
+                    is NetworkResult.Loading -> Unit
+                }
+            }
+        } else {
+            cloudFileProvider.openFile(
+                id = recent.fileId,
+                editType = editType,
+                canBeShared = false
+            ).collect { result ->
+                when (result) {
+                    is NetworkResult.Error -> emit(FileOpenResult.RecentFileNotFound())
+                    is NetworkResult.Success<FileOpenResult> -> emit(result.data)
+                    is NetworkResult.Loading -> Unit
+                }
             }
         }
     }

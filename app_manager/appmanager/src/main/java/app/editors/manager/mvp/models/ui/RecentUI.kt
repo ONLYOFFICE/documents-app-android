@@ -12,7 +12,8 @@ data class RecentUI(
     val date: Long = 0,
     val size: Long = 0,
     val ownerId: String? = null,
-    val source: String? = null
+    val source: String? = null,
+    val token: String? = null
 ) : ViewType {
 
     override val viewType: Int
@@ -28,7 +29,8 @@ fun RecentUI.toRecent(): Recent {
         date = date,
         size = size,
         ownerId = ownerId,
-        source = source
+        source = source,
+        token = token
     )
 }
 
@@ -41,6 +43,7 @@ fun Recent.toRecentUI(): RecentUI {
         date = date,
         size = size,
         ownerId = ownerId,
-        source = source
+        source = source,
+        token = token
     )
 }
