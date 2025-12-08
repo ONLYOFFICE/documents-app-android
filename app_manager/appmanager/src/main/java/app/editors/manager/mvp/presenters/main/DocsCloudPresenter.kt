@@ -1102,28 +1102,46 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     fun deleteTemplate() {
         showDialogProgress(true, TAG_DIALOG_CANCEL_BATCH_OPERATIONS)
         fun onSuccess(msgId: Int) {
-            viewState.onDialogProgress(100, 100)
             viewState.onDialogClose()
             viewState.onSnackBar(context.getString(msgId))
             if (currentFolder?.isTemplate == true) getBackStack()
             refresh()
         }
 
-        if (isSelectionMode && modelExplorerStack.countSelectedItems > 0) {
-            disposable.add(
-                fileProvider.delete(modelExplorerStack.selectedFolders, null)
-                    .subscribe({
-                        deselectAll()
-                        onSuccess(R.string.templates_delete_success)
-                    }, ::fetchError)
+        val currentFolder = CloudFolder().apply {
+            id = modelExplorerStack.currentId.orEmpty()
+            rootFolderType = modelExplorerStack.rootFolderType.toString()
+            roomType = currentFolder?.roomType ?: -1
+        }
+
+        val deleteDisposable = if (isSelectionMode && modelExplorerStack.countSelectedItems > 0) {
+            fileProvider.delete(
+                items = modelExplorerStack.selectedFolders,
+                from = currentFolder
             )
         } else {
             roomClicked?.let { template ->
-                disposable.add(
-                    fileProvider.delete(listOf(template), null)
-                        .subscribe({ onSuccess(R.string.template_delete_success) }, ::fetchError)
-                )
+                fileProvider.delete(listOf(template), currentFolder)
             }
+        }
+
+        deleteDisposable?.let {
+            batchDisposable = deleteDisposable.switchMap { status }
+                .subscribe(
+                    { progress: Int? ->
+                        viewState.onDialogProgress(
+                            FileUtils.LOAD_MAX_PROGRESS,
+                            progress ?: 0
+                        )
+                    }, ::fetchError
+                ) {
+                    if (isSelectionMode) {
+                        deselectAll()
+                        onSuccess(R.string.templates_delete_success)
+                    } else {
+                        onSuccess(R.string.template_delete_success)
+                    }
+                }
         }
     }
 

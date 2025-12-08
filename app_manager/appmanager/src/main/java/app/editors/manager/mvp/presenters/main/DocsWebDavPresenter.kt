@@ -220,6 +220,7 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView, WebDavFileProvider
 
     override fun terminate() {
         super.terminate()
+        refresh()
         if (downloadDisposable != null) {
             downloadDisposable!!.dispose()
         }
