@@ -10,7 +10,6 @@ import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.NetworkResult
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.extensions.request
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
@@ -33,7 +32,6 @@ import app.editors.manager.app.api
 import app.editors.manager.app.cloudFileProvider
 import app.editors.manager.app.roomApi
 import app.editors.manager.app.roomProvider
-import app.editors.manager.app.shareApi
 import app.editors.manager.managers.receivers.DownloadReceiver
 import app.editors.manager.managers.receivers.DownloadReceiver.OnDownloadListener
 import app.editors.manager.managers.receivers.RoomDuplicateReceiver
@@ -574,21 +572,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun saveExternalLinkToClipboard() {
         itemClicked?.let { item ->
-            presenterScope.launch {
-                request(
-                    func = { context.shareApi.getShareFile(item.id) },
-                    map = { response ->
-                        response.response.find { it.sharedTo.shareLink.isNotEmpty() }?.sharedTo?.shareLink ?: ""
-                    },
-                    onSuccess = { externalLink ->
-                        if (externalLink.isNotEmpty()) {
-                            setDataToClipboard(externalLink, (item as? CloudFile)?.customFilterEnabled)
-                        } else {
-                            viewState.onSnackBar(context.getString(R.string.share_access_denied))
-                        }
-                    }, onError = ::fetchError
-                )
-            }
+            handleExternalLink(
+                id = item.id,
+                isRoom = false,
+                isFolder = item is CloudFolder
+            )
         }
     }
 
@@ -913,7 +901,6 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         when {
             item is CloudFile && currentFolder?.roomType == ApiContract.RoomType.PUBLIC_ROOM -> copyRoomLink(item.id)
             (item as? CloudFolder)?.isRoom == true -> copyRoomLink()
-            item is CloudFolder -> saveLink(getInternalLink(item))
             else -> saveExternalLinkToClipboard()
         }
     }
@@ -1275,7 +1262,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     private fun copyRoomLink(itemId: String? = null) {
         if (itemId != null) {
-            handleExternalLink(id = itemId, isFile = true)
+            handleExternalLink(id = itemId, isRoom = false)
         } else {
             roomClicked?.let { room ->
                 if (isTemplatesFolder || room.roomType == ApiContract.RoomType.COLLABORATION_ROOM
@@ -1289,10 +1276,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    private fun handleExternalLink(id: String, isFile: Boolean = false) {
+    private fun handleExternalLink(id: String, isRoom: Boolean = true, isFolder: Boolean = false) {
         presenterScope.launch {
             try {
-                val externalLink = roomProvider?.getExternalLink(id = id, isFile = isFile)
+                val externalLink = roomProvider?.getExternalLink(id, isRoom, isFolder)
                 withContext(Dispatchers.Main) {
                     if (externalLink.isNullOrEmpty()) {
                         viewState.onError(context.getString(R.string.errors_unknown_error))
