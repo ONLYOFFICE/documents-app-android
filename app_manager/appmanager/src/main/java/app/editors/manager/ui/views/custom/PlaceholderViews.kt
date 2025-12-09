@@ -30,6 +30,7 @@ class PlaceholderViews(val view: View?) {
 
         // Compose-based placeholders
         EMPTY, LOAD, EMPTY_TEMPLATE, EMPTY_TEMPLATES_FOLDER,
+        EMPTY_FROM_TEMPLATE,
         EMPTY_FOLDER_CREATOR, EMPTY_FOLDER_VIEWER,
         EMPTY_FORM_FOLDER_CREATOR, EMPTY_FORM_FOLDER_VIEWER,
         EMPTY_FORM_DONE,EMPTY_FORM_DONE_FOLDER,
@@ -164,221 +165,227 @@ class PlaceholderViews(val view: View?) {
         }
     }
 
-    private fun getPlaceholderConfig(type: Type): PlaceholderConfig = when (type) {
-        Type.EMPTY -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
-            titleRes = R.string.placeholder_empty_folder
-        )
-
-        Type.EMPTY_FOLDER_CREATOR -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_folder_creator,
-            titleRes = R.string.placeholder_empty_folder_common,
-            subtitleRes = R.string.placeholder_empty_folder_desc_creator
-        )
-
-        Type.EMPTY_FOLDER_VIEWER -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_folder_viewer,
-            titleRes = R.string.placeholder_empty_folder_common,
-            subtitleRes = R.string.room_placeholder_empty_viewer_subtitle
-        )
-
-        Type.EMPTY_FORM_FOLDER_CREATOR -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
-            titleRes = R.string.placeholder_empty_form_folder,
-            subtitleRes = R.string.placeholder_empty_form_folder_desc
-        )
-
-        Type.EMPTY_FORM_FOLDER_VIEWER -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
-            titleRes = R.string.placeholder_empty_form_folder_viewer,
-            subtitleRes = R.string.placeholder_empty_form_folder_viewer_desc
-        )
-
-        Type.EMPTY_FORM_DONE -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
-            titleRes = R.string.placeholder_empty_form_done,
-            subtitleRes = R.string.placeholder_empty_form_done_desc
-        )
-
-        Type.EMPTY_FORM_DONE_FOLDER -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
-            titleRes = R.string.placeholder_empty_form_subfolder,
-            subtitleRes = R.string.placeholder_empty_form_done_folder_desc
-        )
-
-        Type.EMPTY_FORM_IN_PROGRESS -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
-            titleRes = R.string.placeholder_empty_form_in_progress,
-            subtitleRes = R.string.placeholder_empty_form_in_progress_desc
-        )
-
-        Type.EMPTY_FORM_IN_PROGRESS_FOLDER -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
-            titleRes = R.string.placeholder_empty_form_subfolder,
-            subtitleRes = R.string.placeholder_empty_form_in_progress_folder_desc
-        )
-
-        Type.EMPTY_TEMPLATES_FOLDER -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_no_rooms_visitor,
-            titleRes = R.string.placeholder_empty_templates_folder,
-            subtitleRes = R.string.placeholder_empty_templates_folder_desc
-        )
-
-        Type.EMPTY_TEMPLATE -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
-            titleRes = R.string.room_placeholder_created_template_title,
-            subtitleRes = R.string.room_placeholder_created_room_subtitle
-        )
-
-        Type.EMPTY_ROOM -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
-            titleRes = R.string.room_placeholder_created_room_title,
-            subtitleRes = R.string.room_placeholder_created_room_subtitle
-        )
-
-        Type.EMPTY_ROOM_VIEWER -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
-            titleRes = R.string.placeholder_empty_folder,
-            subtitleRes = R.string.placeholder_empty_room_visitor_desc
-        )
-
-        Type.EMPTY_PUBLIC_ROOM_CREATOR -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_public_room_creator,
-            titleRes = R.string.room_placeholder_public_room_creator_title,
-            subtitleRes = R.string.room_placeholder_public_room_creator_subtitle
-        )
-
-        Type.EMPTY_PUBLIC_ROOM_VIEWER -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_public_room_viewer,
-            titleRes = R.string.room_placeholder_empty_viewer_title,
-            subtitleRes = R.string.room_placeholder_empty_viewer_subtitle
-        )
-
-        Type.EMPTY_FILL_FORM_ROOM_CREATOR -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_form_room_creator,
-            titleRes = R.string.room_placeholder_form_room_creator_title,
-            subtitleRes = R.string.room_placeholder_form_room_creator_subtitle
-        )
-
-        Type.EMPTY_FILL_FORM_ROOM_VIEWER -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_form_room_viewer,
-            titleRes = R.string.room_placeholder_empty_viewer_title,
-            subtitleRes = R.string.room_placeholder_form_room_viewer_subtitle
-        )
-
-        Type.EMPTY_VDR_ROOM_CREATOR -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_vdr_room_creator,
-            titleRes = R.string.room_placeholder_vdr_room_creator_title,
-            subtitleRes = R.string.room_placeholder_creator_subtitle
-        )
-
-        Type.EMPTY_VDR_ROOM_VIEWER -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_vdr_room_viewer,
-            titleRes = R.string.room_placeholder_empty_viewer_title,
-            subtitleRes = R.string.room_placeholder_empty_viewer_subtitle
-        )
-
-        Type.EMPTY_COLLABORATION_ROOM_CREATOR -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_collab_room_creator,
-            titleRes = R.string.room_placeholder_collab_room_creator_title,
-            subtitleRes = R.string.room_placeholder_creator_subtitle
-        )
-
-        Type.EMPTY_COLLABORATION_ROOM_VIEWER -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_collab_room_viewer,
-            titleRes = R.string.room_placeholder_empty_viewer_title,
-            subtitleRes = R.string.room_placeholder_empty_viewer_subtitle
-        )
-
-        Type.EMPTY_CUSTOM_ROOM_CREATOR -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_custom_room_creator,
-            titleRes = R.string.room_placeholder_custom_room_creator_title,
-            subtitleRes = R.string.room_placeholder_creator_subtitle
-        )
-
-        Type.EMPTY_CUSTOM_ROOM_VIEWER -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_custom_room_viewer,
-            titleRes = R.string.room_placeholder_empty_viewer_title,
-            subtitleRes = R.string.room_placeholder_empty_viewer_subtitle
-        )
-
-        Type.SEARCH -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_no_search_result,
-            titleRes = R.string.placeholder_no_search_result,
-            subtitleRes = R.string.placeholder_no_search_result_desc
-        )
-
-        Type.EMPTY_TRASH -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_trash,
-            titleRes = R.string.placeholder_empty_trash,
-            subtitleRes = R.string.placeholder_empty_trash_desc
-        )
-
-        Type.EMPTY_ARCHIVE -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_archieve,
-            titleRes = R.string.placeholder_empty_archive,
-            subtitleRes = R.string.placeholder_empty_archive_desc
-        )
-
-        Type.EMPTY_ARCHIVE_VIEWER -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_archieve_visitor,
-            titleRes = R.string.placeholder_empty_archive,
-            subtitleRes = R.string.placeholder_empty_archive_visitor_desc
-        )
-
-        Type.NO_ROOMS -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_no_rooms,
-            titleRes = R.string.placeholder_no_rooms,
-            subtitleRes = R.string.placeholder_no_rooms_desc
-        )
-
-        Type.NO_ROOMS_VIEWER -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_no_rooms_visitor,
-            titleRes = R.string.placeholder_no_rooms_visitor,
-            subtitleRes = R.string.placeholder_no_rooms_visitor_desc
-        )
-
-        Type.EMPTY_RECENT_VIA_LINK -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_empty_recently,
-            titleRes = R.string.placeholder_empty_folder,
-            subtitleRes = R.string.placeholder_empty_recent_via_link_desc
-        )
-
-        Type.PAYMENT_REQUIRED -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_payment_required,
-            titleRes = R.string.placeholder_payment_required,
-            subtitleRes = R.string.placeholder_payment_required_desc,
-            buttonTitleRes = R.string.placeholder_payment_required_button
-        )
-
-        Type.EXTERNAL_STORAGE -> PlaceholderConfig(
-            image = null,
-            titleRes = R.string.app_manage_files_title,
-            subtitleRes = R.string.app_manage_files_description,
-            buttonTitleRes = R.string.settings_item_title
-        )
-
-        Type.CONNECTION -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_no_connection,
-            titleRes = R.string.placeholder_connection,
-            subtitleRes = R.string.placeholder_connection_desc,
-            buttonTitleRes = R.string.placeholder_connection_button
-        )
-        Type.EMPTY_SHARED_WITH_ME -> PlaceholderConfig(
-            image = lib.toolkit.base.R.drawable.placeholder_no_shared_items,
-            titleRes = R.string.placeholder_no_shared_items,
-            subtitleRes = R.string.placeholder_no_shared_items_desc,)
-        else -> PlaceholderConfig(
-            image = null,
-            titleRes = R.string.placeholder_empty_folder
-        )
-    }
-
     private fun setTitle(@StringRes resId: Int) {
         binding.placeholderText.setText(resId)
     }
 
     companion object {
+
+        fun getPlaceholderConfig(type: Type): PlaceholderConfig = when (type) {
+            Type.EMPTY -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
+                titleRes = R.string.placeholder_empty_folder
+            )
+
+            Type.EMPTY_FOLDER_CREATOR -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_folder_creator,
+                titleRes = R.string.placeholder_empty_folder_common,
+                subtitleRes = R.string.placeholder_empty_folder_desc_creator
+            )
+
+            Type.EMPTY_FOLDER_VIEWER -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_folder_viewer,
+                titleRes = R.string.placeholder_empty_folder_common,
+                subtitleRes = R.string.room_placeholder_empty_viewer_subtitle
+            )
+
+            Type.EMPTY_FORM_FOLDER_CREATOR -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
+                titleRes = R.string.placeholder_empty_form_folder,
+                subtitleRes = R.string.placeholder_empty_form_folder_desc
+            )
+
+            Type.EMPTY_FORM_FOLDER_VIEWER -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
+                titleRes = R.string.placeholder_empty_form_folder_viewer,
+                subtitleRes = R.string.placeholder_empty_form_folder_viewer_desc
+            )
+
+            Type.EMPTY_FORM_DONE -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
+                titleRes = R.string.placeholder_empty_form_done,
+                subtitleRes = R.string.placeholder_empty_form_done_desc
+            )
+
+            Type.EMPTY_FORM_DONE_FOLDER -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
+                titleRes = R.string.placeholder_empty_form_subfolder,
+                subtitleRes = R.string.placeholder_empty_form_done_folder_desc
+            )
+
+            Type.EMPTY_FORM_IN_PROGRESS -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
+                titleRes = R.string.placeholder_empty_form_in_progress,
+                subtitleRes = R.string.placeholder_empty_form_in_progress_desc
+            )
+
+            Type.EMPTY_FORM_IN_PROGRESS_FOLDER -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_form_folder,
+                titleRes = R.string.placeholder_empty_form_subfolder,
+                subtitleRes = R.string.placeholder_empty_form_in_progress_folder_desc
+            )
+
+            Type.EMPTY_TEMPLATES_FOLDER -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_no_rooms_visitor,
+                titleRes = R.string.placeholder_empty_templates_folder,
+                subtitleRes = R.string.placeholder_empty_templates_folder_desc
+            )
+
+            Type.EMPTY_FROM_TEMPLATE -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_no_rooms_visitor,
+                titleRes = R.string.placeholder_empty_from_template,
+                subtitleRes = R.string.placeholder_empty_from_template_desc
+            )
+
+            Type.EMPTY_TEMPLATE -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
+                titleRes = R.string.room_placeholder_created_template_title,
+                subtitleRes = R.string.room_placeholder_created_room_subtitle
+            )
+
+            Type.EMPTY_ROOM -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
+                titleRes = R.string.room_placeholder_created_room_title,
+                subtitleRes = R.string.room_placeholder_created_room_subtitle
+            )
+
+            Type.EMPTY_ROOM_VIEWER -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_folder,
+                titleRes = R.string.placeholder_empty_folder,
+                subtitleRes = R.string.placeholder_empty_room_visitor_desc
+            )
+
+            Type.EMPTY_PUBLIC_ROOM_CREATOR -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_public_room_creator,
+                titleRes = R.string.room_placeholder_public_room_creator_title,
+                subtitleRes = R.string.room_placeholder_public_room_creator_subtitle
+            )
+
+            Type.EMPTY_PUBLIC_ROOM_VIEWER -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_public_room_viewer,
+                titleRes = R.string.room_placeholder_empty_viewer_title,
+                subtitleRes = R.string.room_placeholder_empty_viewer_subtitle
+            )
+
+            Type.EMPTY_FILL_FORM_ROOM_CREATOR -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_form_room_creator,
+                titleRes = R.string.room_placeholder_form_room_creator_title,
+                subtitleRes = R.string.room_placeholder_form_room_creator_subtitle
+            )
+
+            Type.EMPTY_FILL_FORM_ROOM_VIEWER -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_form_room_viewer,
+                titleRes = R.string.room_placeholder_empty_viewer_title,
+                subtitleRes = R.string.room_placeholder_form_room_viewer_subtitle
+            )
+
+            Type.EMPTY_VDR_ROOM_CREATOR -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_vdr_room_creator,
+                titleRes = R.string.room_placeholder_vdr_room_creator_title,
+                subtitleRes = R.string.room_placeholder_creator_subtitle
+            )
+
+            Type.EMPTY_VDR_ROOM_VIEWER -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_vdr_room_viewer,
+                titleRes = R.string.room_placeholder_empty_viewer_title,
+                subtitleRes = R.string.room_placeholder_empty_viewer_subtitle
+            )
+
+            Type.EMPTY_COLLABORATION_ROOM_CREATOR -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_collab_room_creator,
+                titleRes = R.string.room_placeholder_collab_room_creator_title,
+                subtitleRes = R.string.room_placeholder_creator_subtitle
+            )
+
+            Type.EMPTY_COLLABORATION_ROOM_VIEWER -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_collab_room_viewer,
+                titleRes = R.string.room_placeholder_empty_viewer_title,
+                subtitleRes = R.string.room_placeholder_empty_viewer_subtitle
+            )
+
+            Type.EMPTY_CUSTOM_ROOM_CREATOR -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_custom_room_creator,
+                titleRes = R.string.room_placeholder_custom_room_creator_title,
+                subtitleRes = R.string.room_placeholder_creator_subtitle
+            )
+
+            Type.EMPTY_CUSTOM_ROOM_VIEWER -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_custom_room_viewer,
+                titleRes = R.string.room_placeholder_empty_viewer_title,
+                subtitleRes = R.string.room_placeholder_empty_viewer_subtitle
+            )
+
+            Type.SEARCH -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_no_search_result,
+                titleRes = R.string.placeholder_no_search_result,
+                subtitleRes = R.string.placeholder_no_search_result_desc
+            )
+
+            Type.EMPTY_TRASH -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_trash,
+                titleRes = R.string.placeholder_empty_trash,
+                subtitleRes = R.string.placeholder_empty_trash_desc
+            )
+
+            Type.EMPTY_ARCHIVE -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_archieve,
+                titleRes = R.string.placeholder_empty_archive,
+                subtitleRes = R.string.placeholder_empty_archive_desc
+            )
+
+            Type.EMPTY_ARCHIVE_VIEWER -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_archieve_visitor,
+                titleRes = R.string.placeholder_empty_archive,
+                subtitleRes = R.string.placeholder_empty_archive_visitor_desc
+            )
+
+            Type.NO_ROOMS -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_no_rooms,
+                titleRes = R.string.placeholder_no_rooms,
+                subtitleRes = R.string.placeholder_no_rooms_desc
+            )
+
+            Type.NO_ROOMS_VIEWER -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_no_rooms_visitor,
+                titleRes = R.string.placeholder_no_rooms_visitor,
+                subtitleRes = R.string.placeholder_no_rooms_visitor_desc
+            )
+
+            Type.EMPTY_RECENT_VIA_LINK -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_empty_recently,
+                titleRes = R.string.placeholder_empty_folder,
+                subtitleRes = R.string.placeholder_empty_recent_via_link_desc
+            )
+
+            Type.PAYMENT_REQUIRED -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_payment_required,
+                titleRes = R.string.placeholder_payment_required,
+                subtitleRes = R.string.placeholder_payment_required_desc,
+                buttonTitleRes = R.string.placeholder_payment_required_button
+            )
+
+            Type.EXTERNAL_STORAGE -> PlaceholderConfig(
+                image = null,
+                titleRes = R.string.app_manage_files_title,
+                subtitleRes = R.string.app_manage_files_description,
+                buttonTitleRes = R.string.settings_item_title
+            )
+
+            Type.CONNECTION -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_no_connection,
+                titleRes = R.string.placeholder_connection,
+                subtitleRes = R.string.placeholder_connection_desc,
+                buttonTitleRes = R.string.placeholder_connection_button
+            )
+            Type.EMPTY_SHARED_WITH_ME -> PlaceholderConfig(
+                image = lib.toolkit.base.R.drawable.placeholder_no_shared_items,
+                titleRes = R.string.placeholder_no_shared_items,
+                subtitleRes = R.string.placeholder_no_shared_items_desc,)
+            else -> PlaceholderConfig(
+                image = null,
+                titleRes = R.string.placeholder_empty_folder
+            )
+        }
 
         fun getPlaceholderTypeForRoom(roomType: Int, roomContentCreator: Boolean): Type {
             return when {
