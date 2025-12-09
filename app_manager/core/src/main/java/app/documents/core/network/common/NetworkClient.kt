@@ -6,6 +6,7 @@ import app.documents.core.model.cloud.PortalSettings
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.interceptors.BaseInterceptor
 import app.documents.core.network.common.interceptors.HeaderType
+import okhttp3.Authenticator
 import okhttp3.CipherSuite
 import okhttp3.ConnectionSpec
 import okhttp3.Interceptor
@@ -46,7 +47,13 @@ object NetworkClient {
             .baseUrl(modifiedUrl)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
-            .client(getOkHttpBuilder(PortalSettings(), BaseInterceptor(token, context, headerType)).build())
+            .client(
+                getOkHttpBuilder(
+                    portalSettings = PortalSettings(),
+                    authenticator =  null,
+                    BaseInterceptor(token, context, headerType)
+                ).build()
+            )
             .build()
             .create(V::class.java)
     }
@@ -87,7 +94,11 @@ object NetworkClient {
         return builder
     }
 
-    fun getOkHttpBuilder(portalSettings: PortalSettings?, vararg interceptors: Interceptor): OkHttpClient.Builder {
+    fun getOkHttpBuilder(
+        portalSettings: PortalSettings?,
+        authenticator: Authenticator?,
+        vararg interceptors: Interceptor,
+    ): OkHttpClient.Builder {
         val builder = portalSettings?.let {
             getOkHttpBuilder(
                 portalSettings.isSslState,
@@ -99,7 +110,10 @@ object NetworkClient {
             .readTimeout(ClientSettings.READ_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(ClientSettings.WRITE_TIMEOUT, TimeUnit.SECONDS)
             .connectTimeout(ClientSettings.CONNECT_TIMEOUT, TimeUnit.SECONDS)
-            .apply { interceptors.forEach(::addInterceptor) }
+            .apply {
+                interceptors.forEach(::addInterceptor)
+                if (authenticator != null) authenticator(authenticator)
+            }
     }
 
     private fun getOkHttpSpecs(okHttpClient: OkHttpClient.Builder): OkHttpClient.Builder {

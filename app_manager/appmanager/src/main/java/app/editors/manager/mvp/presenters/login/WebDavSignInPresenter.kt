@@ -30,27 +30,34 @@ class WebDavSignInPresenter : BasePresenter<WebDavSignInView>() {
     fun checkPortal(provider: WebdavProvider, url: String, login: String, password: String) {
         signInJob = presenterScope.launch {
             viewState.onDialogWaiting()
-                App.getApp().loginComponent.webdavLoginRepository
-                    .signIn(
-                        provider = provider,
-                        url = url.takeIf(StringUtils::hasScheme) ?: (Scheme.Https.value + url),
-                        login = login,
-                        password = password
-                    )
-                    .collect { result ->
-                        viewState.onDialogClose()
-                        when (result) {
-                            WebdavLoginResult.Success -> viewState.onLogin()
-                            is WebdavLoginResult.NextCloudLogin -> viewState.onNextCloudLogin(result.url)
-                            is WebdavLoginResult.Error -> {
-                                if (result.exception is MalformedURLException) {
-                                    viewState.onUrlError()
-                                } else {
-                                    fetchError(result.exception)
-                                }
+            App.getApp().loginComponent.webdavLoginRepository
+                .signIn(
+                    provider = provider,
+                    url = url.takeIf(StringUtils::hasScheme) ?: (Scheme.Https.value + url),
+                    login = login,
+                    password = password
+                )
+                .collect { result ->
+                    when (result) {
+                        WebdavLoginResult.Success -> {
+                            viewState.onLogin()
+                        }
+                        is WebdavLoginResult.NextCloudLogin -> {
+                            viewState.onNextCloudLogin(result.url)
+                        }
+                        is WebdavLoginResult.OwnCloudLogin -> {
+                            viewState.onOwnCloudLogin(url, result.config)
+                        }
+                        is WebdavLoginResult.Error -> {
+                            viewState.onDialogClose()
+                            if (result.exception is MalformedURLException) {
+                                viewState.onUrlError()
+                            } else {
+                                fetchError(result.exception)
                             }
                         }
                     }
+                }
         }
     }
 }

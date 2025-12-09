@@ -149,7 +149,7 @@ sealed class Storage(
 
 object StorageUtils {
 
-    fun getStorageUrl(providerKey: String?, clientId: String?, redirectUrl: String?): String? {
+    fun getStorageUrl(providerKey: String?, clientId: String?, redirectUrl: String?, authUrl: String? = null): String? {
         if (clientId == null || redirectUrl == null) {
             return null
         }
@@ -159,6 +159,7 @@ object StorageUtils {
             ApiContract.Storage.DROPBOX -> getDropboxUrl(clientId, redirectUrl)
             ApiContract.Storage.GOOGLEDRIVE -> getGoogleDriveUrl(clientId, redirectUrl)
             ApiContract.Storage.ONEDRIVE -> getOneDriveUrl(clientId, redirectUrl)
+            ApiContract.Storage.OWNCLOUD -> getOwnCloudUrl(authUrl.orEmpty(), clientId, redirectUrl)
             else -> null
         }
     }
@@ -226,6 +227,18 @@ object StorageUtils {
         uriMap[StorageContract.ARG_RESPONSE_TYPE] = StorageContract.OneDrive.VALUE_RESPONSE_TYPE
         uriMap[StorageContract.ARG_SCOPE] = StorageContract.OneDrive.VALUE_SCOPE
         return getUrl(StorageContract.OneDrive.AUTH_URL, uriMap)
+    }
+
+    /*
+     * Get OwnCloud oCIS instance for request code
+     * */
+    private fun getOwnCloudUrl(authUrl: String, clientId: String, redirectUrl: String): String {
+        val uriMap = TreeMap<String, String>()
+        uriMap[StorageContract.ARG_CLIENT_ID] = clientId
+        uriMap[StorageContract.ARG_REDIRECT_URI] = redirectUrl
+        uriMap[StorageContract.ARG_RESPONSE_TYPE] = StorageContract.OwnCloud.VALUE_RESPONSE_TYPE
+        uriMap[StorageContract.ARG_SCOPE] = StorageContract.OwnCloud.VALUE_SCOPE
+        return getUrl(authUrl, uriMap)
     }
 
     fun getUrl(

@@ -211,7 +211,7 @@
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
         </activity>
         <activity
-            android:name="app.editors.manager.ui.activities.login.NextCloudLoginActivity"
+            android:name="app.editors.manager.ui.activities.login.WebViewCloudLoginActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|uiMode|keyboard|keyboardHidden|navigation|locale|layoutDirection"
             android:exported="false"

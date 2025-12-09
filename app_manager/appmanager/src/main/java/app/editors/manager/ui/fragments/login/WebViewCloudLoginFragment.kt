@@ -16,34 +16,20 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import app.editors.manager.R
 import app.editors.manager.app.App
-import app.editors.manager.databinding.NextCloudLoginLayoutBinding
+import app.editors.manager.databinding.WebViewCloudLoginLayoutBinding
 import app.editors.manager.ui.activities.main.MainActivity
 import app.editors.manager.ui.fragments.base.BaseAppFragment
-import app.editors.manager.viewModels.login.NextCloudLogin
-import app.editors.manager.viewModels.login.NextCloudLoginViewModel
+import app.editors.manager.viewModels.login.WebViewCloudLogin
+import app.editors.manager.viewModels.login.WebViewCloudLoginViewModel
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.NetworkUtils.clearCookies
-import lib.toolkit.base.managers.utils.putArgs
 
-class NextCloudLoginFragment : BaseAppFragment() {
-
+abstract class WebViewCloudLoginFragment : BaseAppFragment() {
     companion object {
-        @JvmField
-        val TAG: String = NextCloudLoginFragment::class.java.simpleName
-
-        private const val KEY_PORTAL = "KEY_PORTAL"
-        private const val LOGIN_SUFFIX = "/index.php/login/flow"
         private const val LOGIN_HEADER = "OCS-APIREQUEST"
-        private const val BACK_PATTERN_1 = "apps"
-        private const val BACK_PATTERN_2 = "files"
-
-        @JvmStatic
-        fun newInstance(portal: String?): NextCloudLoginFragment {
-            return NextCloudLoginFragment().putArgs(KEY_PORTAL to portal)
-        }
     }
 
-    private val headers: Map<String, String> by lazy {
+    protected val headers: Map<String, String> by lazy {
         hashMapOf(
             LOGIN_HEADER to "true",
             "USER_AGENT" to getString(R.string.app_name),
@@ -51,15 +37,18 @@ class NextCloudLoginFragment : BaseAppFragment() {
         )
     }
 
-    private val viewModel: NextCloudLoginViewModel by viewModels()
+    protected val viewModel: WebViewCloudLoginViewModel by viewModels { WebViewCloudLoginViewModel.Factory }
+    protected var viewBinding: WebViewCloudLoginLayoutBinding? = null
 
-    private var viewBinding: NextCloudLoginLayoutBinding? = null
+    protected var isClear = false
+    protected abstract val loginUrl: String
 
-    private val portal: String? by lazy { arguments?.getString(KEY_PORTAL) }
-    private var isClear = false
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        viewBinding = NextCloudLoginLayoutBinding.inflate(inflater, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        viewBinding = WebViewCloudLoginLayoutBinding.inflate(inflater, container, false)
         return viewBinding?.root
     }
 
@@ -71,10 +60,12 @@ class NextCloudLoginFragment : BaseAppFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        viewBinding = null
+        viewBinding?.apply {
+            webView.clearCache(true)
+            webView.webChromeClient = null
+        }
         clearCookies()
-        viewBinding?.webView?.clearCache(true)
-        viewBinding?.webView?.webChromeClient = null
+        viewBinding = null
     }
 
     override fun onBackPressed(): Boolean {
@@ -92,14 +83,15 @@ class NextCloudLoginFragment : BaseAppFragment() {
         lifecycleScope.launch {
             viewModel.state.collect { state ->
                 when (state) {
-                    NextCloudLogin.Error -> showSnackBar(R.string.errors_unknown_error)
-                    NextCloudLogin.Success -> {
+                    WebViewCloudLogin.Error -> showSnackBar(R.string.errors_unknown_error)
+                    WebViewCloudLogin.Success -> {
                         with(requireActivity()) {
                             setResult(Activity.RESULT_OK)
                             finish()
                             MainActivity.show(this)
                         }
                     }
+
                     else -> Unit
                 }
             }
@@ -115,39 +107,24 @@ class NextCloudLoginFragment : BaseAppFragment() {
             webChromeClient = WebViewChromeClient()
             clearHistory()
             clearCache(true)
-            loadUrl(portal + LOGIN_SUFFIX, headers)
+            loadUrl(loginUrl, headers)
         }
     }
 
+    protected abstract fun handleShouldOverrideUrlLoading(request: WebResourceRequest): Boolean
+    protected abstract fun handlePageStarted(url: String)
+
     private inner class WebViewCallbacks : WebViewClient() {
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-            val uri = request.url
-            if (uri != null) {
-                if (uri.scheme != null && uri.scheme == "nc" && uri.host != null && uri.host == "login") {
-                    val path = uri.path
-                    if (path != null) {
-                        viewModel.saveUser(path)
-                        return true
-                    }
-                }
-                if (uri.toString().contains(BACK_PATTERN_1) || uri.path?.contains(BACK_PATTERN_2) == true) {
-                    isClear = true
-                    clearCookies()
-                    viewBinding?.webView?.clearHistory()
-                    viewBinding?.webView?.clearCache(true)
-                    viewBinding?.webView?.loadUrl(portal + LOGIN_SUFFIX, headers)
-                    return true
-                }
+            return if (handleShouldOverrideUrlLoading(request)) {
+                true
+            } else {
+                super.shouldOverrideUrlLoading(view, request)
             }
-            return super.shouldOverrideUrlLoading(view, request)
         }
 
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
-            if (url.contains("nc") && url.contains("password")) {
-                viewModel.saveUser(url.substring(url.indexOf(":") + 1))
-            } else {
-                viewBinding?.swipeRefresh?.isRefreshing = true
-            }
+            handlePageStarted(url)
         }
 
         override fun onPageFinished(view: WebView, url: String) {
@@ -164,7 +141,12 @@ class NextCloudLoginFragment : BaseAppFragment() {
             setActionBarTitle(title)
         }
 
-        override fun onJsAlert(view: WebView, url: String, message: String, result: JsResult): Boolean {
+        override fun onJsAlert(
+            view: WebView,
+            url: String,
+            message: String,
+            result: JsResult
+        ): Boolean {
             showToast(message)
             return super.onJsAlert(view, url, message, result)
         }

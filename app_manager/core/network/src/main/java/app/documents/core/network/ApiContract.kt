@@ -13,6 +13,7 @@ const val HEADER_DEPTH = "Depth"
 
 const val HTTP_METHOD_GET = "GET"
 const val HTTP_METHOD_PROPFIND = "PROPFIND"
+const val HTTP_METHOD_POST = "POST"
 
 const val VALUE_CONTENT_TYPE = "application/json"
 const val VALUE_ACCEPT = "application/json"
@@ -44,3 +45,8 @@ const val ONEDRIVE_AUTH_URL = "https://login.microsoftonline.com/"
 const val ONEDRIVE_PORTAL_URL = "graph.microsoft.com"
 const val ONEDRIVE_API_VERSION = "v1.0"
 const val ONEDRIVE_VALUE_SCOPE = "User.Read files.readwrite.all offline_access"
+
+const val OWNCLOUD_CLIENT_ID = "web"
+const val OWNCLOUD_CLIENT_SECRET = ""
+const val OWNCLOUD_REDIRECT_SUFFIX = "/oidc-callback.html"
+const val OWNCLOUD_OCIS_CONFIG_URL = "/.well-known/openid-configuration"
