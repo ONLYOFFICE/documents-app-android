@@ -7,10 +7,8 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -28,6 +26,7 @@ import androidx.fragment.app.setFragmentResult
 import app.editors.manager.managers.utils.RoomUtils
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.AppMultilineArrowItem
+import lib.compose.ui.views.NestedColumn
 import lib.toolkit.base.ui.dialogs.base.BaseBottomDialog
 
 class AddRoomBottomDialog : BaseBottomDialog() {
@@ -75,10 +74,9 @@ class AddRoomBottomDialog : BaseBottomDialog() {
 
 @Composable
 private fun AddRoomBottomDialogContent(onClick: (type: Int) -> Unit) {
-    Column(
+    NestedColumn(
         modifier = Modifier
             .background(color = MaterialTheme.colors.surface)
-            .wrapContentHeight()
             .padding(bottom = 8.dp)
     ) {
         Image(
