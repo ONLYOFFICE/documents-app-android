@@ -5,7 +5,6 @@ plugins {
     id("com.android.library")
     id("kotlinx-serialization")
     kotlin("android")
-    kotlin("kapt")
     alias(libs.plugins.kotlin.ksp)
 }
 

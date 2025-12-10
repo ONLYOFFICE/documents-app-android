@@ -15,6 +15,7 @@ plugins {
     kotlin("android")
     kotlin("kapt")
     alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.kotlin.compose)
 //    id("org.owasp.dependencycheck")
 }
 
