@@ -84,6 +84,8 @@ dependencies {
     implementation(libs.ktx)
     implementation(libs.appcompat)
     implementation(libs.lifecycle.runtime)
+    implementation(libs.androidDocumentFile)
+
 
     // Firebase
     implementation(libs.firebase.messaging)

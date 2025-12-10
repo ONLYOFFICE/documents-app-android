@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okio.BufferedSink
 import java.io.IOException
@@ -20,7 +21,7 @@ class ProgressRequestBody(context: Context, val uri: Uri) : RequestBody() {
     private var onUploadCallbacks: ((total: Long, progress: Long) -> Unit)?  = null
 
     override fun contentType(): MediaType? {
-        return MediaType.parse(contentType)
+        return contentType.toMediaTypeOrNull()
     }
 
     override fun contentLength(): Long {

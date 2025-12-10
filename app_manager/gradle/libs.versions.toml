@@ -49,18 +49,18 @@ koin = "4.0.4"
 
 #firebase
 firebaseCore = "21.1.1"
-firebaseConfig = "22.1.0"
-firebaseMessaging = "24.1.1"
-firebaseCrashlytics = "19.4.2"
+firebaseConfig = "23.0.1"
+firebaseMessaging = "25.0.1"
+firebaseCrashlytics = "20.0.3"
 
 #livedata
-lifecycle = "2.8.7"
+lifecycle = "2.10.0"
 
 #google
 playServieAuth = "21.4.0"
 playReview = "2.0.2"
-material = "1.12.0"
-gson = "2.13.1"
+material = "1.13.0"
+gson = "2.13.2"
 safetynet = "18.1.0"
 app-update = "2.1.0"
 text-recognition = "16.0.1"
@@ -70,11 +70,11 @@ jackson = "2.18.3"
 
 rxjava = "2.1.1"
 
-retrofit = "2.11.0"
+retrofit = "3.0.0"
 retrofitKtSerialization = "1.0.0"
 
 firebaseCrashlyticsGradle = "3.0.6"
-googleServices = "4.4.3"
+googleServices = "4.4.4"
 
 #other
 phoneNumber = "8.13.52"

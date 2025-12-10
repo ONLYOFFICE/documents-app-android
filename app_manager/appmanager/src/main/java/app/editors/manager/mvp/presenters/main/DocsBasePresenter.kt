@@ -83,9 +83,9 @@ import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import moxy.presenterScope
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.ResponseBody
 import org.json.JSONException
 import retrofit2.HttpException
@@ -1875,10 +1875,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             val body = MultipartBody.Part.createFormData(
                 file.name,
                 file.name,
-                RequestBody.create(
-                    MediaType.parse(ContentResolverUtils.getMimeType(context, uri)),
-                    file
-                )
+                file.asRequestBody(ContentResolverUtils.getMimeType(context, uri).toMediaType())
             )
             disposable.add(
                 provider.updateDocument(id, body)

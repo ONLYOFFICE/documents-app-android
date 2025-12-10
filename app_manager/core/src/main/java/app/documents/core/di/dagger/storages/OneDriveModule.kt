@@ -15,7 +15,7 @@ import dagger.Provides
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import lib.toolkit.base.managers.utils.AccountUtils
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import retrofit2.Retrofit
@@ -40,7 +40,7 @@ class OneDriveModule {
     fun provideOneDriveService(okHttpClient: OkHttpClient): OneDriveService = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(OneDriveUtils.ONEDRIVE_BASE_URL)
-        .addConverterFactory(json.asConverterFactory(MediaType.get(OneDriveUtils.REQUEST_MEDIA_TYPE)))
+        .addConverterFactory(json.asConverterFactory(OneDriveUtils.REQUEST_MEDIA_TYPE.toMediaType()))
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build()
         .create(OneDriveService::class.java)

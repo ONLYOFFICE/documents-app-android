@@ -17,14 +17,14 @@ class OwnCloudTokenAuthenticator(
 
     override fun authenticate(route: Route?, response: okhttp3.Response): Request? {
         synchronized(this) {
-            val authHeader = response.request().header("Authorization")
+            val authHeader = response.request.header("Authorization")
             if (authHeader != null && authHeader.startsWith("Basic", ignoreCase = true)) {
                 return null
             }
 
             val newTokens = refreshToken(ownCloudTokenDataSource.config)
             if (newTokens == null) return null
-            return response.request().newBuilder()
+            return response.request.newBuilder()
                 .header("Authorization", "Bearer ${newTokens.accessToken}")
                 .build()
         }

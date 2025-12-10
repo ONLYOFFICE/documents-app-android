@@ -16,7 +16,7 @@ import dagger.Provides
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import lib.toolkit.base.managers.utils.AccountUtils
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import retrofit2.Retrofit
@@ -43,7 +43,7 @@ class GoogleDriveModule {
     fun provideGoogleDriveService(okHttpClient: OkHttpClient): GoogleDriveService = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(GoogleDriveUtils.GOOGLE_DRIVE_BASE_URL)
-        .addConverterFactory(json.asConverterFactory(MediaType.get(ApiContract.VALUE_CONTENT_TYPE)))
+        .addConverterFactory(json.asConverterFactory(ApiContract.VALUE_CONTENT_TYPE.toMediaType()))
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build()
         .create(GoogleDriveService::class.java)
