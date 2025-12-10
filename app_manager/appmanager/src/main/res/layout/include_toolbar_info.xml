@@ -14,15 +14,16 @@
 
     <TextView
         android:id="@+id/infoText"
-        style="@style/Widget.Common.TextView.Small"
+        style="@style/Widget.Common.TextView.Micro"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="start"
         android:layout_weight="1"
         android:drawablePadding="@dimen/default_margin_small"
-        android:gravity="center"
+        android:gravity="start|center_vertical"
         android:paddingHorizontal="@dimen/default_margin_medium"
         android:layout_marginStart="@dimen/screen_margin_start_toolbar"
+        android:maxLines="2"
         tools:drawableStartCompat="@drawable/ic_expiring"
         tools:text="The file lifetime is set to 12 days in this room" />
 

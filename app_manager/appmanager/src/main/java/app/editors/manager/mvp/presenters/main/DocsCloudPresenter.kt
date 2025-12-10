@@ -338,6 +338,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         val lifetime = currentFolder?.lifetime
         toolbarState = when {
             currentFolder?.isTemplate == true -> ToolbarState.RoomTemplate
+            currentSectionType == ApiContract.SectionType.CLOUD_TRASH
+                    && !modelExplorerStack.isListEmpty -> ToolbarState.Trash
             lifetime != null -> ToolbarState.RoomLifetime(lifetime)
             else -> ToolbarState.None
         }
