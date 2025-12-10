@@ -27,6 +27,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -68,13 +69,14 @@ import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
-import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.AccessTarget
 import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.tools.ShareData
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.getTypeTitle
+import app.editors.manager.managers.utils.toUi
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.views.custom.SearchAppBar
 import app.editors.manager.ui.views.custom.UserListBottomContent
@@ -112,7 +114,7 @@ private data class Header(val title: Int) : Member {
 private sealed class PagerTab(title: Int): TabRowItem(title) {
     class Users(isDocSpace: Boolean) : PagerTab(
         if (isDocSpace) {
-            R.string.rooms_user_type_employees
+            R.string.rooms_user_type_members
         } else {
             R.string.share_goal_user
         }
@@ -134,6 +136,7 @@ fun UserListScreen(
     topBarActions: @Composable () -> Unit = {},
     bottomContent: @Composable (Int, Access) -> Unit = { _, _ -> },
 ) {
+    val context = LocalContext.current
     val state by viewModel.viewState.collectAsState()
     val scaffoldState = rememberScaffoldState()
 
@@ -141,7 +144,10 @@ fun UserListScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is UserListEffect.Error -> {
-                    scaffoldState.snackbarHostState.showSnackbar(effect.message)
+                    val message = effect.errorCode?.let { code ->
+                        context.getString(R.string.errors_client_error) + code
+                    } ?: context.getString(R.string.errors_unknown_error)
+                    scaffoldState.snackbarHostState.showSnackbar(message)
                 }
                 is UserListEffect.Success -> onSuccess?.invoke(effect.user)
                 else -> Unit
@@ -197,11 +203,23 @@ private fun MainScreen(
         listOfNotNull(
             PagerTab.Users(portal.isDocSpace),
             PagerTab.Groups.takeIf {
-                state.mode in listOf(UserListMode.Invite, UserListMode.TemplateAccess)
+                when (state.mode) {
+                    is UserListMode.Invite,
+                    is UserListMode.TemplateAccess,
+                    is UserListMode.Share -> true
+
+                    else -> false
+                }
             },
             PagerTab.Guests.takeIf {
                 portal.isDocSpace &&
-                    state.mode in listOf(UserListMode.Invite, UserListMode.StartFilling)
+                        when (state.mode) {
+                            is UserListMode.Invite,
+                            is UserListMode.StartFilling,
+                            is UserListMode.Share -> true
+
+                            else -> false
+                        }
             }
         )
     }
@@ -505,16 +523,22 @@ private fun LazyItemScope.GroupItem(
     onClick: (Member) -> Unit
 ) {
     val shared = remember { if (mode == UserListMode.TemplateAccess) false else group.shared }
-    ListItem(
-        withLetter = false,
-        name = group.name,
-        shared = shared,
-        letter = null,
-        subtitle = null,
-        avatar = null,
-        selected = selected,
-        onClick = { onClick.invoke(group) }
-    )
+    val isEveryone = group.name == "Everyone"
+    Column {
+        ListItem(
+            withLetter = false,
+            name = if (isEveryone) stringResource(R.string.share_goal_everyone) else group.name,
+            shared = shared,
+            letter = null,
+            subtitle = null,
+            avatar = if (isEveryone) R.drawable.drawable_list_share_image_item_group_placeholder else null,
+            selected = selected,
+            onClick = { onClick.invoke(group) }
+        )
+        if (isEveryone) {
+            Divider()
+        }
+    }
 }
 
 @Composable
@@ -787,8 +811,8 @@ private fun PreviewMainWithBottom() {
             UserListBottomContent(
                 nextButtonTitle = R.string.share_invite_title,
                 count = selected.size,
-                access = Access.Editor,
-                accessList = RoomUtils.getAccessOptions(ApiContract.RoomType.CUSTOM_ROOM, false),
+                access = Access.Editor.toUi(),
+                accessList = ShareData().getAccessList(AccessTarget.User),
                 {}, {}) {}
         }
     }

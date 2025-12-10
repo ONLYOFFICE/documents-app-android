@@ -134,18 +134,14 @@ sealed class ExplorerContextItem(
     ), ExplorerContextBlockOrder.Common
 
     class Favorites(val enabled: Boolean, val favorite: Boolean) : ExplorerContextItem(
-        icon = getIcon(favorite),
-        title = getTitle(favorite)
-    ), ExplorerContextBlockOrder.Common {
+        icon = if (favorite) R.drawable.ic_favorites_fill else R.drawable.ic_favorites_outline,
+        title = if (favorite) R.string.list_context_delete_from_favorite else R.string.list_context_add_to_favorite
+    ), ExplorerContextBlockOrder {
 
-        companion object {
-            private fun getIcon(favorite: Boolean) = if (!favorite)
-                R.drawable.ic_favorites_outline else
-                R.drawable.ic_favorites_fill
-
-            private fun getTitle(favorite: Boolean) = if (!favorite)
-                R.string.list_context_add_to_favorite else
-                R.string.list_context_delete_from_favorite
+        override val order: Int = if (favorite) {
+            4
+        } else {
+            2
         }
     }
 

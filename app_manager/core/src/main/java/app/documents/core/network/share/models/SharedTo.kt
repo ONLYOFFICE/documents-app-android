@@ -42,4 +42,6 @@ data class SharedTo(
     val displayNameHtml: String
         get() = StringUtils.getHtmlString(displayName)
 
+    val isOwnerOrAdmin: Boolean
+        get() = isOwner || isAdmin || isRoomAdmin
 }

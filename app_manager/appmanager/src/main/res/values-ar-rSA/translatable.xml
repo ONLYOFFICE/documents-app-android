@@ -702,7 +702,6 @@
     <string name="rooms_move_to_public_title">انتقل إلى الغرفة العامة</string>
     <string name="rooms_move_to_public_title_desc">هذه الغرفة وجميع محتوياتها متاحة لأي شخص لديه الرابط. هل تريد </string>
 
-    <string name="rooms_info_access_desc">هذه الغرفة متاحة لأي شخص لديه الرابط. سيكون لدى المستخدمين الخارجيين إذن العرض فقط لجميع</string>
     <string name="rooms_info_general_link">الرابط العام</string>
     <string name="rooms_info_additional_link">رابط إضافي</string>
     <string name="rooms_info_additional_links">"الارتباطات الإضافية (%1$d/%2$d)"</string>
@@ -1017,7 +1016,6 @@
     <string name="rooms_notifications_disabled">تم تعطيل إشعارات الغرفة</string>
     <string name="rooms_notifications_enabled">تم تفعيل إشعارات الغرفة</string>
     <string name="rooms_protected_room">غرفة محمية</string>
-    <string name="rooms_user_type_employees">الموظفون</string>
     <string name="rooms_vdr">غرفة البيانات الافتراضية</string>
     <string name="rooms_vdr_desc">استخدموا غرفة البيانات الافتراضية ("VDR") لتعزيز أمان الملفات والشفافية أثناء تعبئة المستندات وتوقيعها خطوة بخطوة. يمكنكم تعيين علامات مائية، وفهرسة المحتوى وتتبع جميع العناصر تلقائيًا، بالإضافة إلى تقييد التنزيل والنسخ.</string>
     <string name="rooms_vdr_file_restrict_desc">فعّلوا هذا الخيار لتعطيل التنزيل والطباعة ونسخ المحتوى للمستخدمين الذين لديهم دور "مشاهد".</string>
@@ -1162,4 +1160,29 @@
     <string name="start_filling_ready_for_filling">النموذج جاهز للتعبئة في الغرفة</string>
     <string name="start_filling_ready_for_filling_desc">تم بالفعل إرسال إشعار للمستخدم في الدور الأول، يطلب منه تعبئة النموذج. يمكنكم الانتقال إلى الغرفة أو مشاركة رابط التعبئة مع المشاركين.</string>
     <string name="list_context_reset_filling">إعادة تعيين وبدء التعبئة</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-25) -->
+    <string name="upload_manager_duplicate_title">إجراء مطلوب</string>
+    <string name="upload_manager_duplicate_text">الوجهة تحتوي بالفعل على ملف باسم «%s». يرجى تحديد الإجراء:</string>
+    <string name="upload_manager_duplicates_text">الوجهة تحتوي بالفعل على ملفات تحمل نفس الاسم. يرجى تحديد الإجراء:</string>
+    <string name="upload_manager_duplicate_overwrite">استبدال الملف مع تحديث الإصدار</string>
+    <string name="upload_manager_duplicate_copy">إنشاء نسخة من الملف</string>
+    <string name="upload_manager_duplicate_skip">تخطي</string>
+    <string name="socials_failed_auth">فشل تسجيل الدخول</string>
+    <string name="rooms_info_access_desc">هذه الغرفة متاحة لأي شخص لديه الرابط. يتم توفير الوصول للمستخدمين الخارجيين حسب نوع صلاحيات الوصول المحددة.</string>
+    <string name="rooms_share_shared_links_count">الروابط المشتركة (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">فعّلوا هذا الإعداد لتعطيل تنزيل الملفات والمجلدات من هذا المجلد الذي تمت مشاركته عبر رابط</string>
+    <string name="share_link_file_restrict_desc">فعّلوا هذا الإعداد لتعطيل تنزيل هذا الملف الذي تمت مشاركته عبر رابط</string>
+    <string name="share_link_file_restrict_warning">لا يمكنكم تعطيل القيد المفروض على تنزيل البيانات ونسخها لأن هذا الإعداد مفروض على مستوى الغرفة لجميع الملفات.</string>
+    <string name="share_link_file_restrict_warning_ok">موافق</string>
+    <string name="rooms_user_type_members">الأعضاء</string>
+    <string name="share_goal_everyone">الجميع</string>
+    <string name="placeholder_no_shared_items">لا توجد عناصر مشتركة بعد</string>
+    <string name="placeholder_no_shared_items_desc">ستجدون هنا الملفات والمجلدات التي شاركها معكم أعضاء DocSpace الآخرون. لا يتم عرض ملفاتكم الخاصة ومحتوى الغرفة هنا.</string>
+    <string name="rooms_share_shared_folder_desc">امنحوا حق الوصول إلى المجلد وحددوا مستويات الصلاحية.</string>
+    <string name="rooms_info_folder_desc">يمكن الوصول إلى هذا المجلد عبر رابط مشترك من المجلد الأصلي، ولكن يمكنكم إنشاء رابط خارجي مخصص بصلاحيات محددة.</string>
+    <string name="rooms_info_file_desc">يمكن الوصول إلى هذا الملف عبر رابط مشترك من المجلد الأصلي، ولكن يمكنكم إنشاء رابط خارجي مخصص بصلاحيات محددة.</string>
+    <string name="rooms_info_fill_form_desc">هذه الغرفة متاحة لأي شخص لديه الرابط. سيحصل المستخدمون الخارجيون على صلاحية تعبئة النماذج لجميع الملفات.</string>
+    <string name="share_popup_access_editing">التعديل</string>
+    <string name="share_popup_access_remove">إزالة</string>
 </resources>

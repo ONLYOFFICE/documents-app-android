@@ -6,6 +6,7 @@ object StorageContract {
     const val ARG_CLIENT_ID = "client_id"
     const val ARG_CLIENT_SECRET = "client_secret"
     const val ARG_REDIRECT_URI = "redirect_uri"
+    const val ARG_STATE = "state"
     const val ARG_RESPONSE_TYPE = "response_type"
     const val ARG_REFRESH_TOKEN = "refresh_token"
     const val ARG_TOKEN_ACCESS = "token_access_type"

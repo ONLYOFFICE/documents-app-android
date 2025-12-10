@@ -12,7 +12,8 @@ data class Filter(
     var excludeSubfolder: Boolean = false,
     var roomType: RoomFilterType = RoomFilterType.None,
     var tags: List<RoomFilterTag> = listOf(),
-    var provider: Storage? = null
+    var provider: Storage? = null,
+    var location: Int = 0
 ) {
 
 

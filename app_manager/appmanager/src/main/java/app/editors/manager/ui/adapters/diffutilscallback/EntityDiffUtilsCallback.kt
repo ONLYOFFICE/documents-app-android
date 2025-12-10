@@ -44,13 +44,18 @@ class EntityDiffUtilsCallback(
                         && newEntity.thumbnailUrl == oldEntity.thumbnailUrl
                         && newEntity.customFilterEnabled == oldEntity.customFilterEnabled
                         && newEntity.isEditing == oldEntity.isEditing
+                        && newEntity.isNew == oldEntity.isNew
                         && newEntity.thumbnailStatus == oldEntity.thumbnailStatus
                         && newEntity.formFillingStatusType == oldEntity.formFillingStatusType
+                        && newEntity.isLocked == oldEntity.isLocked
+                        && newEntity.shared == oldEntity.shared
+                        && newEntity.isSharedByLink == oldEntity.isSharedByLink
 
             oldEntity is CloudFolder && newEntity is CloudFolder ->
                 newEntity.title == oldEntity.title
                         && newEntity.filesCount == oldEntity.filesCount
                         && newEntity.updated == oldEntity.updated
+                        && newEntity.shared == oldEntity.shared
 
             oldEntity is Footer && newEntity is Footer -> true
 

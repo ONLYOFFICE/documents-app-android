@@ -38,6 +38,8 @@ import app.documents.core.model.login.User
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.getTypeTitle
+import app.editors.manager.managers.utils.toUi
+import app.editors.manager.mvp.models.ui.AccessUI
 import app.editors.manager.ui.views.custom.AccessIconButton
 import app.editors.manager.ui.views.custom.UserListBottomContent
 import app.editors.manager.viewModels.main.InviteAccessEffect
@@ -59,7 +61,7 @@ import retrofit2.HttpException
 
 @Composable
 fun InviteAccessScreen(
-    accessList: List<Access>,
+    accessList: List<AccessUI>,
     viewModel: InviteAccessViewModel,
     description: String? = null,
     onBack: () -> Unit,
@@ -102,7 +104,7 @@ private fun MainScreen(
     state: InviteAccessState,
     description: String? = null,
     provider: PortalProvider?,
-    accessList: List<Access>,
+    accessList: List<AccessUI>,
     onSetAccess: (String, Access) -> Unit,
     onSetAllAccess: (Access) -> Unit,
     onNext: () -> Unit,
@@ -146,13 +148,7 @@ private fun MainScreen(
                             access = email.second,
                             onSetAccess = onSetAccess,
                             value = email.first.id,
-                            accessList = buildList {
-                                addAll(accessList)
-                                remove(Access.RoomManager)
-                                if (!state.canRemoveUser) {
-                                    remove(Access.None)
-                                }
-                            }
+                            accessList = accessList
                         )
                     }
                 } else {
@@ -168,15 +164,7 @@ private fun MainScreen(
                                 access = access,
                                 onSetAccess = onSetAccess,
                                 value = user.id,
-                                accessList = buildList {
-                                    addAll(accessList)
-                                    if (!(user.isAdmin || user.isRoomAdmin)) {
-                                        remove(Access.RoomManager)
-                                    }
-                                    if (!state.canRemoveUser) {
-                                        remove(Access.None)
-                                    }
-                                }
+                                accessList = accessList
                             )
                         }
                     }
@@ -191,13 +179,7 @@ private fun MainScreen(
                                 subtitle = null,
                                 avatar = "",
                                 access = access,
-                                accessList = buildList {
-                                    addAll(accessList)
-                                    remove(Access.RoomManager)
-                                    if (!state.canRemoveUser) {
-                                        remove(Access.None)
-                                    }
-                                },
+                                accessList = accessList,
                                 onSetAccess = onSetAccess,
                                 value = group.id
                             )
@@ -207,15 +189,9 @@ private fun MainScreen(
             }
             UserListBottomContent(
                 nextButtonTitle = R.string.share_invite_title,
-                accessList = buildList {
-                    addAll(accessList)
-                    remove(Access.None)
-                    if (state.emails.isNotEmpty()) {
-                        remove(Access.RoomManager)
-                    }
-                },
+                accessList = accessList,
                 count = null,
-                access = state.commonAccess,
+                access = accessList.find { it.access.code == state.commonAccess.code },
                 onDelete = null,
                 onAccess = onSetAllAccess,
                 onNext = onNext
@@ -231,7 +207,7 @@ private fun <T> InviteItem(
     subtitle: String?,
     avatar: String?,
     access: Access,
-    accessList: List<Access>,
+    accessList: List<AccessUI>,
     value: T,
     onSetAccess: (T, Access) -> Unit,
 ) {
@@ -302,7 +278,7 @@ private fun <T> InviteItem(
                     }
                 }
                 AccessIconButton(
-                    access = access,
+                    access = accessList.find { it.access.code == access.code } ?: Access.Editor.toUi(),
                     enabled = true,
                     accessList = accessList,
                     onAccess = { access -> onSetAccess.invoke(value, access) }

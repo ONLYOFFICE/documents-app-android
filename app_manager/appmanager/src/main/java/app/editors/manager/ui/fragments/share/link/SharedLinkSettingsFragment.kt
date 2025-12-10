@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -18,15 +20,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.editors.manager.R
 import app.editors.manager.managers.utils.ManagerUiUtils
 import app.editors.manager.managers.utils.toUi
+import app.editors.manager.mvp.models.ui.AccessUI
 import app.editors.manager.viewModels.link.SharedLinkSettingsEffect
 import app.editors.manager.viewModels.link.SharedLinkSettingsViewModel
 import lib.compose.ui.TouchDisable
@@ -42,60 +42,58 @@ import lib.compose.ui.views.DropdownMenuButton
 import lib.compose.ui.views.DropdownMenuItem
 import lib.compose.ui.views.NestedColumn
 import lib.compose.ui.views.VerticalSpacer
-import lib.toolkit.base.managers.utils.StringUtils
 
 @Composable
 fun SharedLinkSettingsScreen(
     viewModel: SharedLinkSettingsViewModel,
-    fileExtension: String,
+    accessList: List<AccessUI>,
     useTabletPadding: Boolean = false,
-    onSnackBar: (String) -> Unit,
     onBack: () -> Unit,
 ) {
-    val navController = rememberNavController()
     val context = LocalContext.current
     val state = viewModel.state.collectAsState()
     val loading = viewModel.loading.collectAsState()
+    val scaffoldState = rememberScaffoldState()
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 SharedLinkSettingsEffect.Close -> onBack()
                 SharedLinkSettingsEffect.Delete -> {
-                    onSnackBar.invoke(context.getString(R.string.rooms_info_delete_link_complete))
+                    scaffoldState.snackbarHostState
+                        .showSnackbar(context.getString(R.string.rooms_info_delete_link_complete))
                     onBack.invoke()
                 }
 
-                is SharedLinkSettingsEffect.Error -> onSnackBar(
-                    effect.code?.let { code ->
-                        context.getString(R.string.errors_client_error) + code
-                    } ?: context.getString(R.string.errors_unknown_error)
-                )
+                is SharedLinkSettingsEffect.Error -> scaffoldState.snackbarHostState
+                    .showSnackbar(
+                        effect.code?.let { code ->
+                            context.getString(R.string.errors_client_error) + code
+                        } ?: context.getString(R.string.errors_unknown_error)
+                    )
             }
         }
     }
 
-    NavHost(navController = navController, startDestination = Route.LinkSettingsScreen.name) {
-        composable(Route.LinkSettingsScreen.name) {
-            MainScreen(
-                fileExtension = fileExtension,
-                loading = loading,
-                state = state,
-                useTabletPadding = useTabletPadding,
-                onSetInternal = viewModel::setInternal,
-                onDeleteLink = viewModel::delete,
-                onRegenerateLink = viewModel::regenerate,
-                onBack = onBack,
-                onSetLifeTime = viewModel::setLifeTime,
-                onSetAccess = viewModel::setAccess
-            )
-        }
-    }
+    MainScreen(
+        scaffoldState = scaffoldState,
+        accessList = accessList,
+        loading = loading,
+        state = state,
+        useTabletPadding = useTabletPadding,
+        onSetInternal = viewModel::setInternal,
+        onDeleteLink = viewModel::delete,
+        onRegenerateLink = viewModel::regenerate,
+        onBack = onBack,
+        onSetLifeTime = viewModel::setLifeTime,
+        onSetAccess = viewModel::setAccess
+    )
 }
 
 @Composable
 private fun MainScreen(
-    fileExtension: String,
+    scaffoldState: ScaffoldState,
+    accessList: List<AccessUI>,
     loading: State<Boolean>,
     state: State<ExternalLink>,
     useTabletPadding: Boolean = false,
@@ -107,6 +105,7 @@ private fun MainScreen(
     onBack: () -> Unit,
 ) {
     AppScaffold(
+        scaffoldState = scaffoldState,
         useTablePaddings = useTabletPadding,
         topBar = {
             AppTopBar(
@@ -117,7 +116,6 @@ private fun MainScreen(
     ) {
         TouchDisable(disableTouch = loading.value) {
             NestedColumn {
-                val context = LocalContext.current
                 val accessDropDownState = remember { mutableStateOf(false) }
 
                 if (loading.value) {
@@ -136,17 +134,14 @@ private fun MainScreen(
                                     state = accessDropDownState,
                                     icon = ImageVector.vectorResource(Access.get(state.value.access).toUi().icon),
                                     items = {
-                                        ManagerUiUtils.getAccessList(
-                                            extension = StringUtils.getExtension(fileExtension),
-                                            isDocSpace = true
-                                        ).forEach { access ->
-                                            val accessUi = access.toUi()
+                                        accessList.forEach { accessUi ->
+                                            val accessCode = accessUi.access.code
                                             DropdownMenuItem(
                                                 title = stringResource(accessUi.title),
-                                                selected = access.code == state.value.access,
+                                                selected = accessCode == state.value.access,
                                                 startIcon = accessUi.icon,
                                                 onClick = {
-                                                    onSetAccess(access.code)
+                                                    onSetAccess(accessCode)
                                                     accessDropDownState.value = false
                                                 }
                                             )
@@ -207,7 +202,7 @@ private fun MainScreen(
 }
 
 @Preview(locale = "ru")
-@Preview()
+@Preview
 @Composable
 private fun ShareSettingsScreenPreview() {
     val link = ExternalLink(
@@ -232,7 +227,10 @@ private fun ShareSettingsScreenPreview() {
 
     ManagerTheme {
         MainScreen(
-            fileExtension = "docx",
+            scaffoldState = rememberScaffoldState(),
+            accessList = ManagerUiUtils
+                .getFolderAccessList(withRemove = false, forLink = true)
+                .map { it.toUi() },
             useTabletPadding = false,
             loading = remember { mutableStateOf(false) },
             state = remember { mutableStateOf(link) },

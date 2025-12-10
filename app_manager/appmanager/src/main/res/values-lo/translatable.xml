@@ -721,7 +721,6 @@
     <string name="rooms_add_public_room_des">ເຊີນຜູ້ໃຊ້ຜ່ານລິ້ງທີ່ແບ່ງປັນເພື່ອເບິ່ງເອກະສານໂດຍບໍ່ຕ້ອງລົງທະບຽນ. ນອກນັ້ນທ່ານຍັງສາມາດຝັງຫ້ອງນີ້ເຂົ້າໄປໃນສ່ວນຕິດຕໍ່ເວັບໃດໆ.</string>
     <string name="rooms_move_to_public_title">ຍ້າຍໄປຫ້ອງສາທາລະນະ</string>
     <string name="rooms_move_to_public_title_desc">ຫ້ອງນີ້ ແລະເນື້ອຫາທັງໝົດຂອງມັນ ແມ່ນທຸກຄົນທີ່ມີລິ້ງ ສາມາດໃຊ້ໄດ້. ທ່ານຕ້ອງການສືບຕໍ່ບໍ?</string>
-    <string name="rooms_info_access_desc">ທຸກຄົນທີ່ມີລິ້ງສາມາດໃຊ້ຫ້ອງນີ້ໄດ້. ຜູ້ໃຊ້ພາຍນອກຈະມີສິດເບິ່ງໄຟລ໌ທັງຫມົດເທົ່ານັ້ນ.</string>
     <string name="rooms_info_general_link">ການເຊື່ອມຕໍ່ທົ່ວໄປ</string>
     <string name="rooms_info_additional_link">ການເຊື່ອມຕໍ່ເພີ່ມເຕີມ</string>
     <string name="rooms_info_additional_links">"ລິ້ງເພີ່ມເຕີມ (%1$d/%2$d)"</string>
@@ -986,7 +985,6 @@
     <string name="rooms_share_and_collect_desc">ແບ່ງປັນແບບຟອມຂອງເຈົ້າ ແລະເກັບກຳຄຳຕອບຜ່ານຫ້ອງຕື່ມແບບຟອມ.</string>
     <string name="rooms_upload_pdf_from_device">ອັບໂຫລດແບບຟອມ PDF ຈາກອຸປະກອນ</string>
     <string name="rooms_upload_pdf_from_docspace">ອັບໂຫລດແບບຟອມ PDF ຈາກ DocSpace</string>
-    <string name="rooms_user_type_employees">ພະນັກງານ</string>
     <string name="rooms_vdr">ຫ້ອງ​ຂໍ້​ມູນ​ສະ​ເໝືອນ</string>
     <string name="rooms_vdr_desc">ໃຊ້ VDR ເພື່ອຄວາມປອດໄພຂອງໄຟລ໌ຂັ້ນສູງ ແລະຄວາມໂປ່ງໃສໃນຂະນະທີ່ຕື່ມ ແລະເຊັນເອກະສານແບບເທື່ອລະຂັ້ນຕອນ. ຕັ້ງຄ່າລາຍນ້ຳ, ດັດສະນີອັດຕະໂນມັດ ແລະຕິດຕາມເນື້ອຫາທັງໝົດ, ຈຳກັດການດາວໂຫຼດ ແລະສຳເນົາ.</string>
     <string name="rooms_vdr_file_restrict_desc">ເປີດ​ໃຊ້​ງານ​ການ​ຕັ້ງ​ຄ່າ​ນີ້​ເພື່ອ​ປິດ​ການ​ດາວ​ໂຫຼດ, ການ​ພິມ, ແລະ​ການ​ຄັດ​ລອກ​ເນື້ອ​ຫາ​ສຳ​ລັບ​ຜູ້​ໃຊ້​ທີ່​ມີ​ບົດ​ບາດ “ຜູ້​ເບິ່ງ”</string>
@@ -1107,4 +1105,29 @@
     <string name="start_filling_ready_for_filling">ແບບຟອມພ້ອມແລ້ວສຳລັບການຕື່ມຂໍ້ມູນໃນຫ້ອງ</string>
     <string name="start_filling_ready_for_filling_desc">ການແຈ້ງເຕືອນໄດ້ຖືກສົ່ງໄປຫາຜູ້ໃຊ້ໃນບົດບາດທຳອິດແລ້ວ, ເຊິ່ງກະຕຸ້ນໃຫ້ເຂົາເຈົ້າຕື່ມຂໍ້ມູນໃນແບບຟອມ. ທ່ານສາມາດນຳທາງໄປຫາຫ້ອງ ຫຼື ແບ່ງປັນລິ້ງການຕື່ມຂໍ້ມູນກັບຜູ້ເຂົ້າຮ່ວມ.</string>
     <string name="list_context_reset_filling">ຕັ້ງຄ່າໃໝ່ ແລະ ເລີ່ມການຕື່ມຂໍ້ມູນ</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-25) -->
+    <string name="upload_manager_duplicate_title">ຕ້ອງມີການດຳເນີນການ</string>
+    <string name="upload_manager_duplicate_text">ຈຸດໝາຍປາຍທາງມີໄຟລ໌ທີ່ມີຊື່ວ່າ «%s» ຢູ່ແລ້ວ. ກະລຸນາເລືອກການກະທຳ:</string>
+    <string name="upload_manager_duplicates_text">ປາຍທາງມີໄຟລ໌ທີ່ມີຊື່ດຽວກັນຢູ່ແລ້ວ. ກະລຸນາເລືອກການກະທຳ:</string>
+    <string name="upload_manager_duplicate_overwrite">ຂຽນທັບດ້ວຍການອັບເດດເວີຊັນ</string>
+    <string name="upload_manager_duplicate_copy">ສ້າງສຳເນົາໄຟລ໌</string>
+    <string name="upload_manager_duplicate_skip">ຂ້າມ</string>
+    <string name="socials_failed_auth">ເຂົ້າສູ່ລະບົບບໍ່ສຳເລັດ</string>
+    <string name="rooms_info_access_desc">ຫ້ອງນີ້ສາມາດໃຊ້ໄດ້ສຳລັບທຸກຄົນທີ່ມີລິ້ງ. ການເຂົ້າເຖິງສຳລັບຜູ້ໃຊ້ພາຍນອກແມ່ນສະໜອງໃຫ້ໂດຍຂຶ້ນກັບປະເພດສິດການເຂົ້າເຖິງທີ່ເລືອກ.</string>
+    <string name="rooms_share_shared_links_count">ລິ້ງທີ່ແບ່ງປັນ (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">ເປີດໃຊ້ການຕັ້ງຄ່ານີ້ເພື່ອປິດການດາວໂຫຼດໄຟລ໌ ແລະ ໂຟນເດີຈາກໂຟນເດີນີ້ທີ່ແບ່ງປັນຜ່ານລິ້ງ</string>
+    <string name="share_link_file_restrict_desc">ເປີດໃຊ້ການຕັ້ງຄ່ານີ້ເພື່ອປິດການດາວໂຫຼດໄຟລ໌ນີ້ທີ່ແບ່ງປັນຜ່ານລິ້ງ</string>
+    <string name="share_link_file_restrict_warning">ທ່ານບໍ່ສາມາດປິດການໃຊ້ງານຂໍ້ຈຳກັດໃນການດາວໂຫຼດ ແລະ ສຳເນົາຂໍ້ມູນໄດ້ ເພາະວ່າການຕັ້ງຄ່ານີ້ຖືກບັງຄັບໃຊ້ໃນລະດັບຫ້ອງສຳລັບທຸກໄຟລ໌.</string>
+    <string name="share_link_file_restrict_warning_ok">OK</string>
+    <string name="rooms_user_type_members">ສະມາຊິກ</string>
+    <string name="share_goal_everyone">ທຸກໆຄົນ</string>
+    <string name="placeholder_no_shared_items">ຍັງບໍ່ມີລາຍການທີ່ແບ່ງປັນເທື່ອ</string>
+    <string name="placeholder_no_shared_items_desc">ທີ່ນີ້ທ່ານຈະພົບເຫັນໄຟລ໌ ແລະ ໂຟນເດີທີ່ສະມາຊິກ DocSpace ຄົນອື່ນໆໄດ້ແບ່ງປັນກັບທ່ານ. ໄຟລ໌ ແລະ ເນື້ອຫາຫ້ອງຂອງທ່ານເອງບໍ່ໄດ້ສະແດງຢູ່ທີ່ນີ້.</string>
+    <string name="rooms_share_shared_folder_desc">ໃຫ້ສິດການເຂົ້າເຖິງໂຟນເດີ ແລະ ຕັ້ງຄ່າລະດັບການອະນຸຍາດ.</string>
+    <string name="rooms_info_folder_desc">ໂຟນເດີນີ້ສາມາດເຂົ້າເຖິງໄດ້ຜ່ານລິ້ງທີ່ແບ່ງປັນຈາກໂຟນເດີຫຼັກຂອງມັນ, ແຕ່ທ່ານສາມາດສ້າງລິ້ງພາຍນອກທີ່ກຳນົດເອງດ້ວຍສິດອະນຸຍາດສະເພາະໄດ້.</string>
+    <string name="rooms_info_file_desc">ໄຟລ໌ນີ້ສາມາດເຂົ້າເຖິງໄດ້ຜ່ານລິ້ງທີ່ແບ່ງປັນຈາກໂຟນເດີຫຼັກຂອງມັນ, ແຕ່ທ່ານສາມາດສ້າງລິ້ງພາຍນອກທີ່ກຳນົດເອງດ້ວຍສິດອະນຸຍາດສະເພາະໄດ້.</string>
+    <string name="rooms_info_fill_form_desc">ຫ້ອງນີ້ສາມາດໃຊ້ໄດ້ສຳລັບທຸກຄົນທີ່ມີລິ້ງ. ຜູ້ໃຊ້ພາຍນອກຈະມີສິດອະນຸຍາດຕື່ມແບບຟອມສຳລັບທຸກໄຟລ໌.</string>
+    <string name="share_popup_access_editing">ການແກ້ໄຂ</string>
+    <string name="share_popup_access_remove">ລຶບອອກ</string>
 </resources>

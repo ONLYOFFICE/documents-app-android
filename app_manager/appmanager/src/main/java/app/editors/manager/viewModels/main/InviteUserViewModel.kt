@@ -3,9 +3,10 @@ package app.editors.manager.viewModels.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.documents.core.model.cloud.Access
+import app.documents.core.network.manager.models.explorer.AccessTarget
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.providers.RoomProvider
-import app.editors.manager.managers.utils.RoomUtils
+import app.editors.manager.managers.tools.ShareData
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -50,8 +51,10 @@ class InviteUserViewModel(
             _state.update { it.copy(requestLoading = true) }
             try {
                 if (enabled) {
-                    val access = RoomUtils.getAccessOptions(roomType, false).last()
-                    val link = roomProvider.addRoomInviteLink(roomId, access.code)
+                    val access = ShareData(roomType = roomType)
+                        .getAccessList(AccessTarget.ExternalLink)
+                        .last()
+                    val link = roomProvider.addRoomInviteLink(roomId, access.access.code)
                     _state.value = InviteUserState(externalLink = link)
                 } else {
                     roomProvider.removeRoomInviteLink(

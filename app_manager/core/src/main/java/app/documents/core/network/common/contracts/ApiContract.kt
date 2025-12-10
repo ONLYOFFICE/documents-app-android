@@ -46,6 +46,9 @@ object ApiContract {
         const val TWITTER = "twitter"
         const val FACEBOOK = "facebook"
         const val GOOGLE = "google"
+        const val ZOOM = "zoom"
+        const val LINKEDIN = "linkedin"
+        const val APPLE_ID = "appleid"
     }
 
     object Modules {
@@ -131,6 +134,7 @@ object ApiContract {
         const val ARG_FILTER_BY_SUBJECT_ID = "subjectId"
         const val ARG_FILTER_BY_AUTHOR = "userIdOrGroupId"
         const val ARG_FILTER_SUBFOLDERS = "withSubfolders"
+        const val ARG_FILTER_LOCATION = "location"
         const val ARG_UPDATED_SINCE = "updatedSince"
         const val VAL_ACTION_VIEW = "view"
         const val VAL_SORT_ORDER_ASC = "ascending"
@@ -180,6 +184,7 @@ object ApiContract {
         const val CLOUD_RECENT = 11
         const val CLOUD_PRIVATE_ROOM = 13
         const val CLOUD_VIRTUAL_ROOM = 14
+        const val FILLING_ROOM = 15
         const val CLOUD_ARCHIVE_ROOM = 20
         const val EDITING_ROOM = 16
         const val CUSTOM_ROOM = 19
@@ -202,6 +207,21 @@ object ApiContract {
         fun isRoom(type: Int): Boolean = type == 14
         fun isArchive(type: Int): Boolean = type == CLOUD_ARCHIVE_ROOM
         fun isTemplates(type: Int?): Boolean = type == ROOM_TEMPLATES_FOLDER
+
+        fun shouldShowShareBadge(type: Int): Boolean {
+            return type == EDITING_ROOM || type == CUSTOM_ROOM || type == VIRTUAL_DATA_ROOM
+        }
+
+        fun getRoomType(parentRoomType: Int): Int {
+            return when(parentRoomType) {
+                CUSTOM_ROOM -> RoomType.CUSTOM_ROOM
+                FILLING_ROOM -> RoomType.FILL_FORMS_ROOM
+                VIRTUAL_DATA_ROOM -> RoomType.VIRTUAL_ROOM
+                PUBLIC_ROOM -> RoomType.PUBLIC_ROOM
+                EDITING_ROOM -> RoomType.COLLABORATION_ROOM
+                else -> -1
+            }
+        }
     }
 
     sealed class Section(val type: Int) {
@@ -237,6 +257,7 @@ object ApiContract {
         val isLocalRecent: Boolean get() = this == LocalRecent
         val isDevice: Boolean get() = this == Device
         val isTrash: Boolean get() = this == Trash
+        val isShare: Boolean get() = this == Share
         val isStorage: Boolean get() = this is Storage
         val isWebdav: Boolean get() = this == Webdav
 
@@ -305,6 +326,22 @@ object ApiContract {
 
         fun hasExternalLink(roomType: Int?): Boolean =
             roomType in arrayOf(PUBLIC_ROOM, FILL_FORMS_ROOM, CUSTOM_ROOM)
+
+        fun toObj(type: Int): RoomTypeObj {
+            return when (type) {
+                FILL_FORMS_ROOM -> RoomTypeObj.FillingForms
+                COLLABORATION_ROOM -> RoomTypeObj.Collaboration
+                CUSTOM_ROOM -> RoomTypeObj.Custom
+                PUBLIC_ROOM -> RoomTypeObj.Public
+                VIRTUAL_ROOM -> RoomTypeObj.VDR
+                else -> error("invalid room type")
+            }
+        }
+    }
+
+    // rename to RoomType after refactoring
+    enum class RoomTypeObj {
+        Public, VDR, FillingForms, Collaboration, Custom
     }
 
     object SectionPath {

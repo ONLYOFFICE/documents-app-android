@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name">Dokumenty</string>
     <string name="app_name_full">Dokumenty ONLYOFFICE</string>
 
@@ -725,7 +725,6 @@
     <string name="rooms_add_public_room_des">Pozvěte uživatele prostřednictvím sdílených odkazů k prohlížení dokumentů bez registrace. Tuto místnost můžete také vložit do libovolného webového rozhraní.</string>
     <string name="rooms_move_to_public_title">Přesun do veřejné místnosti</string>
     <string name="rooms_move_to_public_title_desc">Tato místnost a veškerý její obsah jsou k dispozici komukoli, kdo na ni zadá odkaz. Chcete pokračovat?</string>
-    <string name="rooms_info_access_desc">Tato místnost je dostupná komukoli s odkazem. Externí uživatelé budou mít pro všechny soubory oprávnění pouze k prohlížení.</string>
     <string name="rooms_info_general_link">Obecný odkaz</string>
     <string name="rooms_info_additional_link">Doplňkový odkaz</string>
     <string name="rooms_info_additional_links">"Další odkazy (%1$d/%2$d)"</string>
@@ -873,11 +872,11 @@
     <string name="list_context_notification_enable">Povolení oznámení</string>
     <string name="list_context_notification_disable">Zakázat oznámení</string>
     <string name="share_goal_guest">Hosté</string>
-    <plurals name="app_settings_passcode_many_attempt_seconds" tools:ignore="MissingQuantity">
+    <plurals name="app_settings_passcode_many_attempt_seconds">
         <item quantity="one">Příliš mnoho pokusů.\nZkuste to znovu za %d sekund</item>
         <item quantity="other">Příliš mnoho pokusů.\nZkuste to znovu za %d sekund</item>
     </plurals>
-    <plurals name="app_settings_passcode_many_attempt_minutes" tools:ignore="MissingQuantity">
+    <plurals name="app_settings_passcode_many_attempt_minutes">
         <item quantity="one">Příliš mnoho pokusů.\nZkuste to znovu za %d minutu</item>
         <item quantity="other">Příliš mnoho pokusů.\nZkuste to znovu za %d minut</item>
     </plurals>
@@ -952,18 +951,17 @@
     <string name="rooms_protected_room">Chráněná místnost</string>
     <string name="rooms_invalid_password">Neplatné heslo</string>
     <string name="rooms_invite_access_description">Hosté, uživatelé a skupiny nemohou být přiřazeni jako správci místností. Pro zadanou roli jsou vhodní pouze správci místnosti a prostoru DocSpace.</string>
-    <string name="rooms_user_type_employees">Zaměstnanci</string>
     <string name="whats_new_title">Co je nového</string>
     <string name="whats_new_next">Začít</string>
     <string name="whats_new">Novinky ve verzi 9.1</string>
-    <string name="whats_new_1">AI asistent v editorech</string>
-    <string name="whats_new_1_desc">Pracujte chytřeji v dokumentech a tabulkách díky integrované AI. Připojte modely jako OpenAI, Anthropic, Google nebo Ollama.</string>
-    <string name="whats_new_2">Možnosti směru textu</string>
-    <string name="whats_new_2_desc">Snadno přepínejte mezi směrem textu zprava doleva a zleva doprava ve všech editorech.</string>
-    <string name="whats_new_3">Vyplňování formulářů na základě rolí v DocSpace</string>
-    <string name="whats_new_3_desc">Při zahájení procesu vyplňování formuláře při připojení k DocSpace přiřaďte účastníkům konkrétní role.</string>
-    <string name="whats_new_4">Obsah v dokumentech</string>
-    <string name="whats_new_4_desc">Vytvářejte a procházejte části dokumentů pomocí automatického obsahu.</string>
+    <string name="whats_new_1">Nové sekce New DocSpace</string>
+    <string name="whats_new_1_desc">Rychlejší přístup k souborům díky vyhrazeným oblastem DocSpace: Sdílené se mnou, Oblíbené a Nedávné.</string>
+    <string name="whats_new_2">Vylepšené sdílení souborů v DocSpace</string>
+    <string name="whats_new_2_desc">Sdílejte soubory snadněji a spravujte přístup pomocí vylepšených pracovních postupů pro sdílení v DocSpace 3.5.</string>
+    <string name="whats_new_3">Možnosti přihlášení přes sociální sítě</string>
+    <string name="whats_new_3_desc">Zaregistrujte se pomocí LinkedIn nebo Zoom, abyste mohli snadněji vytvořit a přistupovat ke svému účtu DocSpace.</string>
+    <string name="whats_new_4">Směr odstavců a buněk (RTL)</string>
+    <string name="whats_new_4_desc">Přepínejte směr odstavců a buněk tabulek mezi zprava doleva a zleva doprava ve všech editorech.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Já a %s</string>
@@ -1117,4 +1115,29 @@
     <string name="start_filling_ready_for_filling">Formulář je připraven k vyplnění v místnosti</string>
     <string name="start_filling_ready_for_filling_desc">Uživateli v první roli již bylo zasláno oznámení s výzvou k vyplnění formuláře. Můžete přejít do místnosti nebo sdílet odkaz na vyplnění s účastníky.</string>
     <string name="list_context_reset_filling">Resetovat a začít vyplňovat</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-28) -->
+    <string name="upload_manager_duplicate_title">Požadovaná akce</string>
+    <string name="upload_manager_duplicate_text">Cíl již obsahuje soubor s názvem „%s“. Vyberte akci:</string>
+    <string name="upload_manager_duplicates_text">Cíl již obsahuje soubory se stejným názvem. Vyberte akci:</string>
+    <string name="upload_manager_duplicate_overwrite">Přepsat aktualizací verze</string>
+    <string name="upload_manager_duplicate_copy">Vytvořit kopii souboru</string>
+    <string name="upload_manager_duplicate_skip">Přeskočit</string>
+    <string name="socials_failed_auth">Přihlášení se nezdařilo</string>
+    <string name="rooms_info_access_desc">Tato místnost je přístupná všem, kteří mají odkaz. Přístup pro externí uživatele je poskytován v závislosti na zvoleném typu přístupových práv.</string>
+    <string name="rooms_share_shared_links_count">Sdílené odkazy (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Povolit toto nastavení pro zakázání stahování souborů a složek z této složky sdílené prostřednictvím odkazu</string>
+    <string name="share_link_file_restrict_desc">Povolit toto nastavení, aby se zakázalo stahování tohoto souboru sdíleného prostřednictvím odkazu</string>
+    <string name="share_link_file_restrict_warning">Omezení stahování a kopírování dat nelze deaktivovat, protože toto nastavení je vynucováno na úrovni místnosti pro všechny soubory.</string>
+    <string name="share_link_file_restrict_warning_ok">OK</string>
+    <string name="rooms_user_type_members">Členové</string>
+    <string name="share_goal_everyone">Všichni</string>
+    <string name="placeholder_no_shared_items">Zatím nejsou žádné sdílené položky</string>
+    <string name="placeholder_no_shared_items_desc">Zde najdete soubory a složky, které s vámi sdíleli ostatní členové DocSpace. Vaše vlastní soubory a obsah místnosti se zde nezobrazují.</string>
+    <string name="rooms_share_shared_folder_desc">Poskytněte přístup k složce a nastavte úrovně oprávnění.</string>
+    <string name="rooms_info_folder_desc">Tento adresář je přístupný prostřednictvím sdíleného odkazu z nadřazeného adresáře, ale  můžete vytvořit vlastní externí odkaz s konkrétními oprávněními.</string>
+    <string name="rooms_info_file_desc">Tento soubor je přístupný prostřednictvím sdíleného odkazu z nadřazené složky, ale  můžete vytvořit vlastní externí odkaz s konkrétními oprávněními.</string>
+    <string name="rooms_info_fill_form_desc">Tato místnost je přístupná všem, kteří mají odkaz. Externí uživatelé budou mít oprávnění k vyplňování formulářů pro všechny soubory.</string>
+    <string name="share_popup_access_editing">Úprava</string>
+    <string name="share_popup_access_remove">Odstranit</string>
 </resources>

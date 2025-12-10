@@ -603,7 +603,6 @@
     <string name="rooms_add_public_room_des">Приглашайте пользователей с помощью ссылок, к которым предоставлен доступ, для просмотра документов без регистрации. Вы также можете встроить эту комнату в любой веб-интерфейс.</string>
     <string name="rooms_move_to_public_title">Переместить в Публичную комнату</string>
     <string name="rooms_move_to_public_title_desc">Эта комната и все ее содержимое доступны всем, у кого есть ссылка. Продолжить?</string>
-    <string name="rooms_info_access_desc">Эта комната доступна всем, у кого есть ссылка. Сторонние пользователи получат разрешение только на просмотр для всех файлов.</string>
     <string name="rooms_info_general_link">Общая ссылка</string>
     <string name="rooms_info_additional_link">Дополнительная ссылка</string>
     <string name="rooms_info_additional_links">"Дополнительные ссылки (%1$d/%2$d)"</string>
@@ -832,18 +831,17 @@
     <string name="rooms_protected_room">Защищенная комната</string>
     <string name="rooms_invalid_password">Неверный пароль</string>
     <string name="rooms_invite_access_description">Гости, Пользователи и Группы не могут быть назначены менеджерами комнат. Для указанной роли подходят только администраторы комнат и DocSpace.</string>
-    <string name="rooms_user_type_employees">Сотрудники</string>
     <string name="whats_new_title">Новые возможности</string>
     <string name="whats_new_next">Начать</string>
     <string name="whats_new">Что нового в v9.1</string>
-    <string name="whats_new_1">ИИ-ассистент в редакторах</string>
-    <string name="whats_new_1_desc">Работайте с помощью встроенного ИИ в документах и таблицах. Подключайте модели от OpenAI, Anthropic, Google или Ollama.</string>
-    <string name="whats_new_2">Направление текста</string>
-    <string name="whats_new_2_desc">Легко переключайтесь между направлением текста справа налево и слева направо во всех редакторах.</string>
-    <string name="whats_new_3">Заполнение форм по ролям в DocSpace</string>
-    <string name="whats_new_3_desc">Назначайте роли участникам при запуске процесса заполнения формы, работая через DocSpace.</string>
-    <string name="whats_new_4">Оглавление в документах</string>
-    <string name="whats_new_4_desc">Создавайте и быстро переходите между разделами с помощью автоматического оглавления.</string>
+    <string name="whats_new_1">Новые разделы DocSpace</string>
+    <string name="whats_new_1_desc">Быстро получайте доступ к файлам с помощью специальных разделов DocSpace: Shared with me, Favorites и Recent.</string>
+    <string name="whats_new_2">Улучшенный шаринг файлов в DocSpace</string>
+    <string name="whats_new_2_desc">Делитесь файлами проще и управляйте доступом с помощью обновлённых рабочих процессов в DocSpace 3.5.</string>
+    <string name="whats_new_3">Новые опции входа</string>
+    <string name="whats_new_3_desc">Входите с помощью LinkedIn или Zoom, чтобы быстрее создавать и использовать аккаунт DocSpace.</string>
+    <string name="whats_new_4">Настройка направления текста (RTL)</string>
+    <string name="whats_new_4_desc">Переключайте направление текста в абзацах и ячеек таблиц между справа налево и слева направо во всех редакторах.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="access_members_me_and_title">Я и %s</string>
@@ -997,4 +995,29 @@
     <string name="start_filling_ready_for_filling">Форма готова к заполнению в комнате</string>
     <string name="start_filling_ready_for_filling_desc">Пользователю с первой ролью отправлено уведомление с предложением заполнить форму. Вы можете перейти в комнату или поделиться ссылкой для заполнения с участниками.</string>
     <string name="list_context_reset_filling">Сбросить и начать заполнение</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-25) -->
+    <string name="upload_manager_duplicate_title">Требуется действие</string>
+    <string name="upload_manager_duplicate_text">В папке назначения уже есть файл с именем «%s». Выберите действие:</string>
+    <string name="upload_manager_duplicates_text">В папке назначения уже есть файлы с таким именем. Выберите действие:</string>
+    <string name="upload_manager_duplicate_overwrite">Перезаписать с обновлением версии</string>
+    <string name="upload_manager_duplicate_copy">Создать копию файла</string>
+    <string name="upload_manager_duplicate_skip">Пропустить</string>
+    <string name="socials_failed_auth">Не удалось войти в систему</string>
+    <string name="rooms_info_access_desc">Эта комната доступна всем, у кого есть ссылка. Доступ для внешних пользователей предоставляется в зависимости от выбранного типа прав доступа.</string>
+    <string name="rooms_share_shared_links_count">Общие ссылки (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Включите эту настройку, чтобы отключить загрузку файлов и папок из этой папки, доступ к которой предоставляется по ссылке</string>
+    <string name="share_link_file_restrict_desc">Включите эту настройку, чтобы отключить загрузку файла, доступ к которому предоставляется по ссылке</string>
+    <string name="share_link_file_restrict_warning">Вы не можете отключить ограничение на загрузку и копирование данных, поскольку эта настройка применяется на уровне комнаты для всех файлов.</string>
+    <string name="share_link_file_restrict_warning_ok">ОК</string>
+    <string name="rooms_user_type_members">Участники</string>
+    <string name="share_goal_everyone">Каждый</string>
+    <string name="placeholder_no_shared_items">Пока нет общих элементов</string>
+    <string name="placeholder_no_shared_items_desc">Здесь вы найдете файлы и папки, которыми с вами поделились другие участники DocSpace. Ваши собственные файлы и содержимое комнаты здесь не отображаются.</string>
+    <string name="rooms_share_shared_folder_desc">Предоставьте доступ к папке и установите уровни разрешений.</string>
+    <string name="rooms_info_folder_desc">Эта папка доступна по общей ссылке из корневой папки, но вы можете создать пользовательскую внешнюю ссылку с определенными разрешениями.</string>
+    <string name="rooms_info_file_desc">Этот файл доступен по общей ссылке из корневой папки, но вы можете создать пользовательскую внешнюю ссылку с определенными разрешениями.</string>
+    <string name="rooms_info_fill_form_desc">Эта комната доступна всем, у кого есть ссылка. Внешние пользователи получат разрешение на заполнение форм для всех файлов.</string>
+    <string name="share_popup_access_editing">Редактирование</string>
+    <string name="share_popup_access_remove">Удалить</string>
 </resources>

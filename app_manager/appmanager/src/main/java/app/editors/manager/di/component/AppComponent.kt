@@ -1,6 +1,7 @@
 package app.editors.manager.di.component
 
 import android.content.Context
+import app.documents.core.account.AccountPreferences
 import app.documents.core.account.AddAccountHelper
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
@@ -86,6 +87,7 @@ import app.editors.manager.viewModels.login.EnterprisePhoneViewModel
 import app.editors.manager.viewModels.login.EnterprisePortalViewModel
 import app.editors.manager.viewModels.login.RemoteUrlViewModel
 import app.editors.manager.viewModels.main.ExplorerContextViewModel
+import app.editors.manager.viewModels.main.UserListViewModel
 import app.editors.manager.viewModels.room.RoomOrderHelper
 import dagger.BindsInstance
 import dagger.Component
@@ -116,6 +118,7 @@ interface AppComponent {
     * */
     val context: Context
     val preference: PreferenceTool
+    val accountPreferences: AccountPreferences
     val countriesCodes: CountriesCodesTool
     val cacheTool: CacheTool
     val sectionsState: OperationsState
@@ -232,4 +235,5 @@ interface AppComponent {
     fun inject(filterAuthorPresenter: FilterAuthorPresenter)
     fun inject(roomOrderDialogFragment: RoomOrderDialogFragment)
     fun inject(roomOrderFragment: RoomOrderFragment)
+    fun inject(userListViewModel: UserListViewModel)
 }

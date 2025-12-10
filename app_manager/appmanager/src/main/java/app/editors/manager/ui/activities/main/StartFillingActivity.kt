@@ -45,6 +45,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import app.documents.core.model.login.User
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
@@ -128,7 +129,6 @@ class StartFillingActivity : ComponentActivity() {
                             roomId = roomId,
                             mode = UserListMode.StartFilling,
                             roomProvider = roomProvider,
-                            resourcesProvider = appComponent.resourcesProvider
                         )
                     }
                     val state = viewModel.state.collectAsState()
@@ -171,12 +171,6 @@ class StartFillingActivity : ComponentActivity() {
                         composable<Screen.UserList> { backStackEntry ->
                             val index = backStackEntry.toRoute<Screen.UserList>().index
 
-                            LaunchedEffect(Unit) {
-                                lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                                    userListViewModel.refreshMembers()
-                                }
-                            }
-
                             UserListScreen(
                                 viewModel = userListViewModel,
                                 title = R.string.setting_select_members_title,
@@ -200,7 +194,7 @@ class StartFillingActivity : ComponentActivity() {
                         }
                         composable<Screen.InviteToRoom> {
                             InviteUsersScreen(
-                                roomType = -1,
+                                roomType = ApiContract.RoomType.VIRTUAL_ROOM,
                                 roomId = roomId,
                                 roomProvider = roomProvider,
                                 fromList = true,
