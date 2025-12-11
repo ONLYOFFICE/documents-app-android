@@ -17,9 +17,9 @@ import app.documents.core.providers.CloudFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.managers.receivers.DownloadReceiver
-import app.editors.manager.managers.tools.BaseEvent
-import app.editors.manager.managers.tools.BaseEventSender
-import app.editors.manager.managers.tools.EventSender
+import lib.toolkit.base.managers.tools.BaseEvent
+import lib.toolkit.base.managers.tools.BaseEventSender
+import lib.toolkit.base.managers.tools.EventSender
 import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.DownloadWork
 import app.editors.manager.mvp.models.ui.FileVersionUi

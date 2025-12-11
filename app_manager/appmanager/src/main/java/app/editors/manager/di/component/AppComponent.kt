@@ -11,6 +11,7 @@ import app.documents.core.login.LoginComponent
 import app.documents.core.manager.ManagerRepository
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.interceptors.WebDavInterceptor
+import app.documents.core.network.login.owncloud.OwnCloudTokenDataSource
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.share.ShareService
@@ -150,7 +151,7 @@ interface AppComponent {
     val roomProvider: RoomProvider
     val webDavFileProvider: WebDavFileProvider
     val recentFileProvider: RecentFileProvider
-
+    val owncloudTokenDataSource: OwnCloudTokenDataSource
     val saveAccessSettingsUseCase: SaveAccessSettingsUseCase
 
     /*

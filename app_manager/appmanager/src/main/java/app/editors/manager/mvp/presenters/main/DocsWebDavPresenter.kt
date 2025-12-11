@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.core.net.toUri
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Recent
+import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.Explorer
@@ -34,6 +35,7 @@ import lib.toolkit.base.managers.utils.NetworkUtils.isWifiEnable
 import lib.toolkit.base.managers.utils.PermissionUtils.checkReadWritePermission
 import lib.toolkit.base.managers.utils.StringUtils
 import moxy.InjectViewState
+import retrofit2.HttpException
 
 
 @InjectViewState
@@ -85,6 +87,21 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView, WebDavFileProvider
 
     override fun getNextList() {
         // Stub
+    }
+
+    override fun fetchError(throwable: Throwable) {
+        App.getApp().oneDriveComponent
+        context.accountOnline?.let { account ->
+            val webdavProvider = (account.portal.provider as? PortalProvider.Webdav)?.provider
+            val config = App.getApp().appComponent.owncloudTokenDataSource.config
+            if (webdavProvider == WebdavProvider.OwnCloud && checkAuthException(throwable) && config != null) {
+                viewState.onOwnCloudAuthorization(config)
+            } else {
+                super.fetchError(throwable)
+            }
+        } ?: run {
+            super.fetchError(throwable)
+        }
     }
 
     override fun cloudFileToRecent(cloudFile: CloudFile): Recent {
@@ -275,5 +292,9 @@ class DocsWebDavPresenter : DocsBasePresenter<DocsWebDavView, WebDavFileProvider
                     deleteTempFile()
                 }
                 .subscribe()
+    }
+
+    private fun checkAuthException(e: Throwable) : Boolean {
+        return e is HttpException && e.code() == ApiContract.HttpCodes.CLIENT_UNAUTHORIZED
     }
 }

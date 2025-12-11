@@ -103,8 +103,8 @@ abstract class WebDavBaseFragment : BaseAppFragment(), BaseView {
         viewBinding?.storageWebDavServerLayout?.setError(R.string.errors_webdav_server)
     }
 
-    open fun initViews(isNextCloud: Boolean = false) {
-        textWatcher = FieldsWatcher(isNextCloud)
+    open fun initViews(onlyServer: Boolean = false) {
+        textWatcher = FieldsWatcher(onlyServer)
         viewBinding?.let { binding ->
             listOf(
                 binding.storageWebDavLoginEdit,
@@ -114,7 +114,7 @@ abstract class WebDavBaseFragment : BaseAppFragment(), BaseView {
         }
     }
 
-    inner class FieldsWatcher(private val isNextCloud: Boolean) : BaseWatcher() {
+    inner class FieldsWatcher(private val onlyServer: Boolean) : BaseWatcher() {
         override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
             viewBinding?.let { binding ->
                 listOf(
@@ -127,7 +127,7 @@ abstract class WebDavBaseFragment : BaseAppFragment(), BaseView {
         }
 
         private fun FragmentStorageWebDavBinding.checkFields(): Boolean {
-            return isNextCloud && !storageWebDavServerEdit.text.isNullOrBlank() ||
+            return onlyServer && !storageWebDavServerEdit.text.isNullOrBlank() ||
                     !storageWebDavLoginEdit.text.isNullOrBlank() &&
                     !storageWebDavPasswordEdit.text.isNullOrBlank() &&
                     !storageWebDavServerEdit.text.isNullOrBlank()

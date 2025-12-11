@@ -9,6 +9,7 @@ import app.documents.core.login.CheckLoginResult
 import app.documents.core.login.PortalResult
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.Scheme
+import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.network.common.NetworkResult
 import app.documents.core.providers.FileOpenResult
 import app.editors.manager.BuildConfig
@@ -65,6 +66,8 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         private set
 
     var isDialogOpen: Boolean = false
+    val isVPNChecked: Boolean
+        get() = preferenceTool.isVpnChecked
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -100,6 +103,12 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
             context.accountOnline?.let { account ->
                 if (isAppColdStart) {
                     App.getApp().refreshLoginComponent(account.portal)
+                    if (account.isDocSpace) {
+                        val isRegular = App.getApp().loginComponent.cloudLoginRepository.checkUserRegular()
+                        accountPreferences.isRegularUser = isRegular
+                    } else {
+                        accountPreferences.isRegularUser = false
+                    }
                     App.getApp().loginComponent.cloudLoginRepository.updatePortalSettings()
                     isAppColdStart = false
                 }
@@ -319,4 +328,9 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
             else -> Unit
         }
     }
+
+    fun setCheckVPN(checked: Boolean) {
+        preferenceTool.isVpnChecked = checked
+    }
+
 }

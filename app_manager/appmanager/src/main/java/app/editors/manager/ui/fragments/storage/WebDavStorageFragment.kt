@@ -96,7 +96,7 @@ class WebDavStorageFragment : WebDavBaseFragment(), ConnectView {
         }
     }
 
-    override fun initViews(isNextCloud: Boolean) {
+    override fun initViews(onlyServer: Boolean) {
         viewBinding?.let { binding ->
             binding.connectButton.setOnClickListener { onSaveClick() }
             binding.storageWebDavServerEdit.setText(url)
@@ -111,7 +111,7 @@ class WebDavStorageFragment : WebDavBaseFragment(), ConnectView {
                 binding.storageWebDavTitleEdit.isVisible = false
             }
         }
-        super.initViews(isNextCloud)
+        super.initViews(onlyServer)
     }
 
     private fun hideUrlLayout() {

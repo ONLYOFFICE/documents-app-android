@@ -99,6 +99,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     private var conversionJob: Job? = null
     private var thumbnailsJobs: MutableList<Job> = mutableListOf()
 
+    val roomContentCreator: Boolean
+        get() = currentFolder?.security?.editRoom == true
+                || currentFolder?.access == Access.ContentCreator
+                || currentFolder?.access == Access.RoomManager
 
     init {
         App.getApp().appComponent.inject(this)
@@ -334,6 +338,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         val lifetime = currentFolder?.lifetime
         toolbarState = when {
             currentFolder?.isTemplate == true -> ToolbarState.RoomTemplate
+            currentSectionType == ApiContract.SectionType.CLOUD_TRASH
+                    && !modelExplorerStack.isListEmpty -> ToolbarState.Trash
             lifetime != null -> ToolbarState.RoomLifetime(lifetime)
             else -> ToolbarState.None
         }

@@ -15,6 +15,7 @@ plugins {
     kotlin("android")
     kotlin("kapt")
     alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.kotlin.compose)
 //    id("org.owasp.dependencycheck")
 }
 
@@ -68,7 +69,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 671
+        versionCode = 673
         versionName = "9.2.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"

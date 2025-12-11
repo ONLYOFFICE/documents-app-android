@@ -244,7 +244,7 @@ class WebDavFileProvider @Inject constructor(
                     return@map listOf(operation)
                 } else {
                     val httpException = HttpException(responseBody)
-                    httpException.addSuppressed(Exception(getTitle(responseBody.raw().request().header("Destination"))))
+                    httpException.addSuppressed(Exception(getTitle(responseBody.raw().request.header("Destination"))))
                     throw httpException
                 }
             }
@@ -270,7 +270,7 @@ class WebDavFileProvider @Inject constructor(
                     return@map responseBody
                 } else {
                     val httpException = HttpException(responseBody)
-                    httpException.addSuppressed(Exception(getTitle(responseBody.raw().request().header("Destination"))))
+                    httpException.addSuppressed(Exception(getTitle(responseBody.raw().request.header("Destination"))))
                     throw httpException
                 }
             }

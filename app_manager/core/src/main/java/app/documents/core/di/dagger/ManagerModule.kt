@@ -1,13 +1,18 @@
 package app.documents.core.di.dagger
 
 import app.documents.core.account.AccountManager
+import app.documents.core.account.AccountRepository
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.manager.ManagerRepository
 import app.documents.core.manager.ManagerRepositoryImpl
 import app.documents.core.model.cloud.CloudAccount
+import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.PortalSettings
+import app.documents.core.model.cloud.WebdavProvider
 import app.documents.core.network.common.NetworkClient
+import app.documents.core.network.common.authenticators.OwnCloudTokenAuthenticator
 import app.documents.core.network.common.interceptors.WebDavInterceptor
+import app.documents.core.network.login.owncloud.OwnCloudTokenDataSource
 import app.documents.core.network.manager.ManagerService
 import app.documents.core.network.room.RoomService
 import app.documents.core.network.webdav.ConverterFactory
@@ -66,13 +71,17 @@ class ManagerModule {
     @Provides
     fun provideWebDavService(
         cloudAccount: CloudAccount?,
-        accountManager: AccountManager
+        accountManager: AccountManager,
+        authenticator: OwnCloudTokenAuthenticator?
     ): WebDavService {
+        val isOwnCloud = (cloudAccount?.portal?.provider as? PortalProvider.Webdav)?.provider == WebdavProvider.OwnCloud
         val okHttpClient = NetworkClient.getOkHttpBuilder(
             portalSettings = cloudAccount?.portal?.settings ?: PortalSettings(),
+            authenticator = authenticator.takeIf { isOwnCloud },
             WebDavInterceptor(
-                cloudAccount?.login.orEmpty(),
-                cloudAccount?.accountName?.let { accountManager.getPassword(it) }
+                login = cloudAccount?.login.orEmpty(),
+                password = cloudAccount?.accountName?.let { accountManager.getPassword(it) },
+                accessTokenProvider = { accountManager.getToken(cloudAccount?.accountName.orEmpty()) }
             )
         ).build()
 
@@ -83,5 +92,18 @@ class ManagerModule {
             .client(okHttpClient)
             .build()
             .create(WebDavService::class.java)
+    }
+
+    @Provides
+    fun provideOwnCloudAuthenticator(
+        cloudAccount: CloudAccount?,
+        accountRepository: AccountRepository,
+        ownCloudTokenDataSource: OwnCloudTokenDataSource,
+    ): OwnCloudTokenAuthenticator? {
+        return OwnCloudTokenAuthenticator(
+            ownCloudTokenDataSource = ownCloudTokenDataSource,
+            accountRepository = accountRepository,
+            serverUrl = cloudAccount?.portal?.urlWithScheme.orEmpty()
+        )
     }
 }

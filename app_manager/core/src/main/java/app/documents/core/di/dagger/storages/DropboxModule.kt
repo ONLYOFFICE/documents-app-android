@@ -16,7 +16,7 @@ import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.runBlocking
 import lib.toolkit.base.managers.utils.AccountUtils
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import retrofit2.Retrofit
@@ -42,7 +42,7 @@ class DropboxModule {
         Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(DropboxUtils.DROPBOX_BASE_URL)
-            .addConverterFactory(json.asConverterFactory(MediaType.get(ApiContract.VALUE_CONTENT_TYPE)))
+            .addConverterFactory(json.asConverterFactory(ApiContract.VALUE_CONTENT_TYPE.toMediaType()))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
             .create(DropboxService::class.java)
@@ -53,7 +53,7 @@ class DropboxModule {
         Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(DropboxUtils.DROPBOX_BASE_URL_CONTENT)
-            .addConverterFactory(json.asConverterFactory(MediaType.get(ApiContract.VALUE_CONTENT_TYPE)))
+            .addConverterFactory(json.asConverterFactory(ApiContract.VALUE_CONTENT_TYPE.toMediaType()))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
             .create(DropboxContentService::class.java)

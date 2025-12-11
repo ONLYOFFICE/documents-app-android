@@ -34,4 +34,5 @@ interface LoginComponent {
     val dropboxLoginRepository: DropboxLoginRepository
     val onedriveLoginRepository: OnedriveLoginRepository
     val webdavLoginRepository: WebdavLoginRepository
+    val owncloudLoginRepository: OwnCloudLoginRepository
 }

@@ -15,6 +15,7 @@ import androidx.core.net.toFile
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import app.documents.core.account.AccountPreferences
 import app.documents.core.database.datasource.CloudDataSource
 import app.documents.core.database.datasource.RecentDataSource
 import app.documents.core.model.cloud.Access
@@ -82,9 +83,9 @@ import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import moxy.presenterScope
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.ResponseBody
 import org.json.JSONException
 import retrofit2.HttpException
@@ -133,6 +134,9 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     lateinit var preferenceTool: PreferenceTool
 
     @Inject
+    lateinit var accountPreferences: AccountPreferences
+
+    @Inject
     lateinit var operationsState: OperationsState
 
     @Inject
@@ -177,6 +181,9 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
 
     val keepScreenOnSetting: Boolean
         get() = preferenceTool.keepScreenOn
+
+    val isRegularUser: Boolean
+        get() = accountPreferences.isRegularUser
 
     /**
      * Modes
@@ -1090,10 +1097,10 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                 PlaceholderViews.Type.SEARCH
             } else {
                 if (ApiContract.SectionType.isRoom(currentSectionType) && isRoot) {
-                    if (itemClicked?.security?.editRoom == true) {
-                        PlaceholderViews.Type.NO_ROOMS
+                    if (isRegularUser) {
+                        PlaceholderViews.Type.NO_ROOMS_VIEWER
                     } else {
-                        PlaceholderViews.Type.VISITOR_NO_ROOMS
+                        PlaceholderViews.Type.NO_ROOMS
                     }
                 } else {
                     PlaceholderViews.Type.EMPTY
@@ -1237,12 +1244,12 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
     fun selectAll() {
-        viewState.onItemsSelection(modelExplorerStack.setSelection(true).toString())
+        viewState.onItemsSelection(modelExplorerStack.setSelection(true))
         setSelection(true)
     }
 
     fun deselectAll() {
-        viewState.onItemsSelection(modelExplorerStack.setSelection(false).toString())
+        viewState.onItemsSelection(modelExplorerStack.setSelection(false))
         viewState.onStateUpdateSelection(false)
         getBackStack()
     }
@@ -1868,10 +1875,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             val body = MultipartBody.Part.createFormData(
                 file.name,
                 file.name,
-                RequestBody.create(
-                    MediaType.parse(ContentResolverUtils.getMimeType(context, uri)),
-                    file
-                )
+                file.asRequestBody(ContentResolverUtils.getMimeType(context, uri).toMediaType())
             )
             disposable.add(
                 provider.updateDocument(id, body)

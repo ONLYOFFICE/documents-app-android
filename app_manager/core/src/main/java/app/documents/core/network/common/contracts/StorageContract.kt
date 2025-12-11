@@ -50,4 +50,8 @@ object StorageContract {
         const val URL_KDRIVE = "https://connect.drive.infomaniak.com"
     }
 
+    object OwnCloud {
+        const val VALUE_RESPONSE_TYPE = "code id_token"
+        const val VALUE_SCOPE = "openid profile email offline_access"
+    }
 }

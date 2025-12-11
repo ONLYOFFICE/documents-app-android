@@ -70,9 +70,8 @@ class AuthenticatorAccounts(private val context: Context) : AbstractAccountAuthe
                     Bundle.EMPTY
                 }
             }
-        } ?: run {
-            return Bundle.EMPTY
         }
+        return Bundle.EMPTY
     }
 
     private fun getToken(

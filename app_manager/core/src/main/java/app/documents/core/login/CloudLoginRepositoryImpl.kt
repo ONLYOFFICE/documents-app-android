@@ -157,10 +157,6 @@ internal class CloudLoginRepositoryImpl(
                     }
 
                     try {
-                        val oldAccount = accountRepository.getAccount(result.oldAccountId)
-                        if (oldAccount != null) {
-                            unsubscribePush(oldAccount.apply { unsubToken = accountRepository.getToken(oldAccount.accountName).orEmpty() })
-                        }
 
                         val newAccount = accountRepository.getOnlineAccount()
                         val token = accountRepository.getToken(newAccount?.accountName.orEmpty())
@@ -227,6 +223,15 @@ internal class CloudLoginRepositoryImpl(
                 accountRepository.updateAccount { it.copy(portal = cloudPortal) }
             }
         } catch (_: Exception) {
+        }
+    }
+
+    override suspend fun checkUserRegular(): Boolean {
+        return try {
+            val token = accountRepository.getToken(accountRepository.getOnlineAccount()?.accountName.orEmpty())
+            cloudLoginDataSource.getUserInfo(token.orEmpty()).isRegularUser
+        } catch (_: Exception) {
+            false
         }
     }
 

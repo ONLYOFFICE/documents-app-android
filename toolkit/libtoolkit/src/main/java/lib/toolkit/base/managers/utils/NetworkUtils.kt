@@ -3,10 +3,9 @@ package lib.toolkit.base.managers.utils
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
-import android.os.Build
 import android.webkit.CookieManager
-import android.webkit.CookieSyncManager
 import java.net.URLDecoder
 import java.net.URLEncoder
 
@@ -18,6 +17,14 @@ object NetworkUtils {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val netInfo = connectivityManager.activeNetworkInfo
         return netInfo != null && netInfo.isConnected
+    }
+
+    @JvmStatic
+    fun isVPNConnected(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
+        return networkCapabilities?.hasTransport(NetworkCapabilities.TRANSPORT_VPN) ?: false
     }
 
     @JvmStatic

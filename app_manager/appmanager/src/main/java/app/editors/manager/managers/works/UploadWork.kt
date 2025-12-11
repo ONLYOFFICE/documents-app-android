@@ -3,6 +3,7 @@ package app.editors.manager.managers.works
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.core.net.toUri
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
@@ -16,18 +17,17 @@ import app.editors.manager.app.App
 import app.editors.manager.app.api
 import app.editors.manager.managers.receivers.UploadReceiver
 import app.editors.manager.managers.utils.NotificationUtils
+import app.editors.manager.mvp.models.ui.DuplicateFilesChoice
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import lib.toolkit.base.managers.utils.NetworkUtils
 import okhttp3.Headers
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import java.io.IOException
 import java.util.Collections
-import androidx.core.net.toUri
-import app.editors.manager.mvp.models.ui.DuplicateFilesChoice
-import okhttp3.MediaType
-import okhttp3.RequestBody
 
 class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
 
@@ -85,7 +85,7 @@ class UploadWork(context: Context, workerParams: WorkerParameters) : Worker(cont
         path = from?.path
         title = ContentResolverUtils.getName(applicationContext, from ?: Uri.EMPTY)
         val createNewIfExist = copy?.let {
-            RequestBody.create(MediaType.parse("text/plain"), (!it).toString())
+            (!it).toString().toRequestBody("text/plain".toMediaTypeOrNull())
         }
 
         call = if (action == ACTION_UPLOAD_MY) {

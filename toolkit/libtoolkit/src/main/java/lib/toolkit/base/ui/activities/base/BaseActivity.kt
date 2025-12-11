@@ -276,8 +276,11 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
     /*
     * Snackbar/Toast
     * */
-    protected fun showSnackBar(@StringRes resource: Int): Snackbar {
-        return showSnackBar(resources.getString(resource))
+    protected fun showSnackBar(@StringRes resource: Int, anchor: View? = null): Snackbar {
+        return showSnackBar(
+            string = resources.getString(resource),
+            anchor = anchor
+        )
     }
 
     @JvmOverloads
@@ -285,8 +288,10 @@ abstract class BaseActivity : MvpAppCompatActivity(), FragmentManager.OnBackStac
         string: String,
         button: String? = null,
         action: View.OnClickListener? = null,
+        anchor: View? = null,
     ): Snackbar {
         return UiUtils.getSnackBar(this).apply {
+            anchor?.let { anchorView = anchor }
             setText(string)
             setAction(button, action)
             show()

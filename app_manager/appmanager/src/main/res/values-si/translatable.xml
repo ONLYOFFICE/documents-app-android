@@ -575,13 +575,8 @@
     <string name="placeholder_connection_desc">ජාල සම්බන්ධතාවයක් අනාවරණය වී නොමැත. කරුණාකර ඔබගේ සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න</string>
     <string name="placeholder_empty">හිස් ෆෝල්ඩරය</string>
     <string name="placeholder_empty_archive">මෙහි තවමත් සංරක්ෂිත කාමර නොමැත</string>
-    <string name="placeholder_empty_archive_desc">ඔබ භාවිතා නොකරන කාමර සංරක්ෂණය කර ඕනෑම මොහොතක ඔබේ DocSpace හි ප්‍රතිසාධනය කිරීමට හෝ ස්ථිරවම මකා දැමීමට ඔබට හැකිය. මෙම කාමර මෙහි දිස්වනු ඇත</string>
-    <string name="placeholder_empty_folder">මෙහි තවමත් ලේඛන නොමැත</string>
-    <string name="placeholder_empty_recent_via_link_desc">බාහිර සබැඳියක් හරහා ඔබ සමඟ බෙදාගත් මෑතකදී විවෘත කරන ලද ගොනු ලැයිස්තුවක් මෙහිදී ඔබට සොයාගත හැකිය</string>
     <string name="placeholder_empty_room_visitor_desc">පරිපාලකයින් විසින් උඩුගත කරන ලද ගොනු සහ ෆෝල්ඩර මෙහි දිස්වනු ඇත</string>
     <string name="placeholder_empty_templates_folder">මෙහි තවමත් සැකිලි නොමැත</string>
-    <string name="placeholder_empty_templates_folder_desc">කාමර කොටසේ කාමරයකින් ඔබට අච්චුවක් සෑදිය හැක</string>
-    <string name="placeholder_empty_trash_desc">මකා දැමූ සියලුම ගොනු \'කුණු කූඩයට\' ගෙන යනු ලැබේ. වැරදීමකින් මකා දැමූ ගොනු ප්‍රතිසාධනය කරන්න හෝ ස්ථිරවම මකා දමන්න. \'කුණු කූඩයේ\' ඇති ගොනු දින 30කට පසු ස්වයංක්‍රීයව මකා දමනු ලැබේ. \'කුණු කූඩයෙන්\' මකා දැමූ ගොනු තවදුරටත් ප්‍රතිසාධනය කළ නොහැකි බව කරුණාවෙන් සලකන්න</string>
     <string name="placeholder_loading_files">ගොනු පූරණය වෙමින්…</string>
     <string name="placeholder_loading_groups">කණ්ඩායම් පූරණය වෙමින්…</string>
     <string name="placeholder_loading_users">පරිශීලකයින් පූරණය වෙමින්…</string>
@@ -591,8 +586,6 @@
     <string name="placeholder_no_members_found">සාමාජිකයින් හමු නොවීය</string>
     <string name="placeholder_no_members_found_desc">ඔබට නව කණ්ඩායම් සාමාජිකයින් අතින් එකතු කළ හැකිය, නැතහොත් සබැඳිය හරහා ඔවුන්ට ආරාධනා කළ හැකිය</string>
     <string name="placeholder_no_rooms">DocSpace වෙත සාදරයෙන් පිළිගනිමු!</string>
-    <string name="placeholder_no_rooms_desc">කරුණාකර පළමු කාමරය සාදන්න</string>
-    <string name="placeholder_no_rooms_visitor_desc">ඔබ සමඟ බෙදාගත් කාමර මෙහි දිස්වනු ඇත</string>
     <string name="placeholder_no_search_result">සෙවුම් ප්‍රතිඵලයක් නැත</string>
     <string name="placeholder_no_search_result_desc">ඔබගේ සෙවුමට ගැලපෙන ප්‍රතිඵල කිසිවක් සොයාගත නොහැකි විය. කරුණාකර වෙනත් වාක්‍ය ඛණ්ඩයක් උත්සාහ කරන්න</string>
     <string name="placeholder_no_subfolders">උප ෆෝල්ඩර නැත</string>
@@ -626,7 +619,7 @@
     <string name="room_duplicate_progress_title">අනුපිටපත ක්‍රියාත්මක වෙමින් පවතී</string>
     <string name="room_manage_room">කාමරය කළමනාකරණය කරන්න</string>
     <string name="room_placeholder_created_filling_form_room_subtitle">ඔබගේ ගොනු සංවිධානය කිරීමට සූදානම් PDF පෝරමයක් උඩුගත කරන්න හෝ නව ෆෝල්ඩර සාදන්න</string>
-    <string name="room_placeholder_created_filling_form_room_title">පෝරම පිරවුම් කාමරයට සාදරයෙන් පිළිගනිමු</string>
+    <string name="room_placeholder_form_room_creator_title">පෝරම පිරවුම් කාමරයට සාදරයෙන් පිළිගනිමු</string>
     <string name="room_placeholder_created_room_subtitle">ඔබගේ ගොනු සංවිධානය කිරීමට නව ෆෝල්ඩර සාදන්න.</string>
     <string name="room_placeholder_created_room_title">කාමරය නිර්මාණය කරන ලදී!</string>
     <string name="room_placeholder_created_template_title">සැකිල්ල නිර්මාණය කරන ලදී!</string>

@@ -4,8 +4,9 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.HttpException
 import retrofit2.Response
 
@@ -130,7 +131,7 @@ private val BaseResponse.httpExtension: HttpException
     get() = HttpException(
         Response.error<ResponseBody>(
             this.statusCode.toInt(),
-            ResponseBody.create(MediaType.parse(ApiContract.VALUE_CONTENT_TYPE), status)
+            status.toResponseBody(ApiContract.VALUE_CONTENT_TYPE.toMediaType())
         )
     )
 

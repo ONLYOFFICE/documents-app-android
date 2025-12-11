@@ -6,7 +6,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.exceptions.NoConnectivityException
 import lib.toolkit.base.managers.utils.NetworkUtils.isOnline
 import okhttp3.Interceptor
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody
@@ -33,7 +33,7 @@ class BaseInterceptor(
         try {
             checkConnection()
 
-            val token = if (chain.request().url().host().contains(ApiContract.PERSONAL_HOST)) {
+            val token = if (chain.request().url.host.contains(ApiContract.PERSONAL_HOST)) {
                 token
             } else {
                 if (type == HeaderType.AUTHORIZATION) {
@@ -44,7 +44,7 @@ class BaseInterceptor(
             }
 
             val newBuilder = chain.request().newBuilder().apply {
-                if (chain.request().headers()[ApiContract.HEADER_AUTHORIZATION] == null) {
+                if (chain.request().headers[ApiContract.HEADER_AUTHORIZATION] == null) {
                     addHeader(type.header, token.orEmpty())
                 }
             }
@@ -68,7 +68,7 @@ class BaseInterceptor(
 
         } catch (_: NoConnectivityException) {
             val responseBody = ResponseBody.create(
-                MediaType.parse("application/json"),
+                "application/json".toMediaType(),
                 "{\"error\":\"No internet connection\"}"
             )
 

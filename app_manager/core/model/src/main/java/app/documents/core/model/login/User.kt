@@ -8,6 +8,7 @@ data class User(
     override val id: String = "",
     val userName: String = "",
     val isVisitor: Boolean = false,
+    val isCollaborator: Boolean = false,
     val firstName: String = "",
     val lastName: String = "",
     val email: String? = "",
@@ -53,6 +54,9 @@ data class User(
             isGuest -> UserType.Guest
             else -> UserType.User
         }
+
+    val isRegularUser: Boolean
+        get() = isVisitor || isCollaborator
 
     val avatarUrl: String
         get() = avatarMax.takeIf { it.isNotBlank() }
