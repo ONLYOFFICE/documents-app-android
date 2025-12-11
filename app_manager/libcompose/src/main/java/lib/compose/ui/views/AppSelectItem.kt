@@ -27,7 +27,7 @@ fun AppSelectItem(
     subtitle: String? = null,
     enabled: Boolean = true,
     @DrawableRes startIcon: Int? = null,
-    startIconTint: Color = MaterialTheme.colors.primary,
+    startIconTint: Color? = null,
     dividerVisible: Boolean = true,
     onClick: () -> Unit,
 ) {
@@ -64,7 +64,7 @@ fun AppSelectItem(
     selected: Boolean,
     enabled: Boolean = true,
     @DrawableRes startIcon: Int? = null,
-    startIconTint: Color = MaterialTheme.colors.primary,
+    startIconTint: Color? = null,
     dividerVisible: Boolean = true,
     onClick: () -> Unit,
 ) {

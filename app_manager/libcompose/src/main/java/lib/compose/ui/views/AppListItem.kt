@@ -2,7 +2,6 @@ package lib.compose.ui.views
 
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -95,11 +94,12 @@ fun AppListItem(
                             contentDescription = null
                         )
                     } else {
-                        Image(
+                        Icon(
                             modifier = Modifier
                                 .padding(end = 16.dp)
                                 .size(24.dp),
                             painter = painterResource(id = startIcon),
+                            tint = Color.Unspecified,
                             contentDescription = null
                         )
                     }
@@ -165,7 +165,7 @@ fun AppListItemsInteractivePreview() {
                     enabled = false
                 )
                 AppHeaderItem(title = "Select item")
-                AppSelectItem(title = R.string.app_title, selected = state) {
+                AppSelectItem(title = R.string.app_title, selected = state, startIcon = R.drawable.drawable_ic_logo) {
                     state = true
                 }
                 AppSelectItem(title = R.string.app_title, selected = !state) {
