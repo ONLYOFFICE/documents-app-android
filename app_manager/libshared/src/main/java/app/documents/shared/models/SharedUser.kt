@@ -10,8 +10,8 @@ import kotlinx.serialization.Serializable
 data class SharedUser(
     val id: String,
     val displayName: String,
-    val email: String,
-    val avatarUrl: String?,
+    val email: String = "",
+    val avatarUrl: String? = null,
     @Contextual val avatarGlideUrl: GlideUrl? = null
 ) {
 

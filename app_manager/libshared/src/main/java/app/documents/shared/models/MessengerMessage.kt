@@ -19,4 +19,9 @@ internal sealed class MessengerMessage(
         const val EMAILS_KEY = "emails_key"
         const val COMMENT_KEY = "message_key"
     }
+
+    object GetUsersAvatars : MessengerMessage(5, 6) {
+        const val USERS_ID_KEY = "users_id_key"
+        const val RESPONSE_KEY = "response_key"
+    }
 }

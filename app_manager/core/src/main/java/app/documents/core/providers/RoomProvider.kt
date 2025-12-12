@@ -765,6 +765,10 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         roomService.sendMentionNotification(fileId, request)
     }
 
+    suspend fun getUserAvatar(id: String): String {
+        return roomService.getUserPhoto(id).response.max
+    }
+
     private fun <T> handleUnitResponse(apiCall: suspend () -> Response<T>): Flow<NetworkResult<Unit>> = flow {
         val response = apiCall()
         if (!response.isSuccessful) throw HttpException(response)

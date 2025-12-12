@@ -15,6 +15,7 @@ import androidx.lifecycle.LifecycleOwner
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.shared.models.MessengerMessage.GetAccessToken
 import app.documents.shared.models.MessengerMessage.GetSharedUsers
+import app.documents.shared.models.MessengerMessage.GetUsersAvatars
 import app.documents.shared.models.MessengerMessage.SendMentionNotifications
 import app.documents.shared.models.SharedUser
 import app.documents.shared.utils.decodeFromString
@@ -47,6 +48,8 @@ class MessengerClient(private val context: Context) {
     private var serviceMessenger: Messenger? = null
     private var sharedUsersCache: List<SharedUser>? = null
     private var accessToken: String? = null
+
+    private var avatarsCache: MutableMap<String, GlideUrl> = mutableMapOf()
 
     private val connection = object : ServiceConnection {
 
@@ -93,7 +96,9 @@ class MessengerClient(private val context: Context) {
                         val userWithAvatars = users
                             .filter { it.filterByNameOrEmail(filterValue) }
                             .map {
-                                it.copy(avatarGlideUrl = getGlideUrl(it.avatarUrl, accessToken))
+                                val glideUrl = getGlideUrl(it.avatarUrl, accessToken)
+                                avatarsCache.putIfAbsent(it.id, glideUrl)
+                                it.copy(avatarGlideUrl = glideUrl)
                             }
 
                         sharedUsersCache = userWithAvatars
@@ -120,6 +125,43 @@ class MessengerClient(private val context: Context) {
         )
 
         serviceMessenger?.send(message)
+    }
+
+    fun getUsersAvatars(userIds: List<String>): Flow<Map<String, GlideUrl>> = callbackFlow {
+        val notCachedAvatars = userIds
+            .mapNotNull { id -> id.takeUnless { avatarsCache.contains(it) } }
+
+        if (notCachedAvatars.isEmpty()) {
+            trySend(avatarsCache)
+            close()
+        }
+
+        waitForConnect()
+        checkAccessToken { accessToken ->
+            val message = Message.obtain(null, GetUsersAvatars.requestId)
+
+            message.data = bundleOf(GetUsersAvatars.USERS_ID_KEY to ArrayList(notCachedAvatars))
+            message.replyTo = replyMessenger
+
+            callbacks[GetUsersAvatars.responseId] = { message ->
+                val json = message.data.getString(GetUsersAvatars.RESPONSE_KEY).orEmpty()
+                val response = Json.decodeFromString<Map<String, String>>(json, true)
+
+                if (!response.isNullOrEmpty()) {
+                    val mappedToGlideUrl = response
+                        .mapValues { (_, avatarUrl) -> getGlideUrl(avatarUrl, accessToken) }
+                    avatarsCache.putAll(mappedToGlideUrl)
+                    trySend(avatarsCache)
+                    close()
+                }
+            }
+
+            serviceMessenger?.send(message)
+        }
+
+        awaitClose {
+            callbacks.remove(GetSharedUsers.responseId)
+        }
     }
 
     private fun getGlideUrl(avatarUrl: String?, accessToken: String): GlideUrl {

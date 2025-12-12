@@ -15,12 +15,15 @@ import app.documents.core.providers.RoomProvider
 import app.documents.shared.di.MessengerServiceApp
 import app.documents.shared.models.MessengerMessage.GetAccessToken
 import app.documents.shared.models.MessengerMessage.GetSharedUsers
+import app.documents.shared.models.MessengerMessage.GetUsersAvatars
 import app.documents.shared.models.MessengerMessage.SendMentionNotifications
 import app.documents.shared.models.SharedUser
 import app.documents.shared.utils.encodeToString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -47,6 +50,7 @@ class MessengerService : Service() {
                 GetSharedUsers.requestId -> replySharedUsers(message)
                 GetAccessToken.requestId -> replyAccessToken(message)
                 SendMentionNotifications.requestId -> sendMentionNotification(message)
+                GetUsersAvatars.requestId -> replyUsersAvatars(message)
             }
         }
     }
@@ -70,6 +74,35 @@ class MessengerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         app?.destroyMessengerServiceComponent()
+    }
+
+    private fun replyUsersAvatars(message: Message) {
+        val userIds = message.data.getStringArrayList(GetUsersAvatars.USERS_ID_KEY).orEmpty()
+        val replyTo = message.replyTo
+
+        coroutineScope.launch {
+            try {
+                val usersWithAvatars = userIds.map { userId ->
+                    async {
+                        val avatarUrl = runCatching { roomProvider.getUserAvatar(userId) }.getOrNull()
+                        userId to avatarUrl?.let { "$portalUrl$it" }
+                    }
+                }.awaitAll().toMap()
+
+                val replyMsg = Message
+                    .obtain(null, GetUsersAvatars.responseId)
+                    .apply {
+                        data = bundleOf(
+                            GetUsersAvatars.RESPONSE_KEY to
+                                    Json.encodeToString(usersWithAvatars, true)
+                        )
+                    }
+
+                replyTo.send(replyMsg)
+            } catch (e: Exception) {
+                Log.e("MessengerService", e.message.toString())
+            }
+        }
     }
 
     private fun sendMentionNotification(message: Message) {
