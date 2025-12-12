@@ -220,7 +220,8 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
         val data = Json.decodeFromString<OpenDataModel>(CryptUtils.decodeUri(uri.query))
         val hasToken = data.share.isNotEmpty()
         val account = context.accountOnline
-        val isAccountOnline = account?.portal?.urlWithScheme == data.portal &&
+
+        val isAccountOnline = account?.portal?.urlWithScheme == data.getCorrectPortal() &&
                 account?.login == data.email
 
         presenterScope.launch(Dispatchers.Default) {
@@ -290,7 +291,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
         context.cloudFileProvider
             .openDeeplink(
-                portal = data.portal.orEmpty(),
+                portal = data.getCorrectPortal().orEmpty(),
                 token = data.share,
                 login = data.email.orEmpty(),
                 id = data.file?.id.orEmpty(),
