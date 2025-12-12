@@ -45,7 +45,7 @@ room = "2.6.1"
 moxy = "2.2.2"
 
 #koin
-koin = "4.0.4"
+koin = "4.1.1"
 
 #firebase
 firebaseCore = "21.1.1"
