@@ -57,4 +57,6 @@ dependencies {
     implementation(libs.compose.uiToolingPreview)
     implementation(libs.compose.navigation)
     debugImplementation(libs.compose.uiTooling)
+
+    implementation(libs.glideCompose)
 }

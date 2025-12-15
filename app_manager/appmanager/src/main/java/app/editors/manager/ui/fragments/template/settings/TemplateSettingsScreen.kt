@@ -1,25 +1,19 @@
+@file:OptIn(ExperimentalGlideComposeApi::class)
+
 package app.editors.manager.ui.fragments.template.settings
 
 import android.net.Uri
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetDefaults
@@ -35,16 +29,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -54,36 +43,34 @@ import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
 import app.documents.core.network.common.NetworkResult
 import app.editors.manager.R
-import lib.toolkit.base.R as R2
 import app.editors.manager.managers.tools.BaseEvent
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.ui.SizeUnit
 import app.editors.manager.ui.dialogs.AddRoomItem
-import app.editors.manager.ui.fragments.template.rememberAccountContext
 import app.editors.manager.ui.fragments.room.add.ChooseImageBottomView
 import app.editors.manager.ui.fragments.room.add.QuotaBlock
 import app.editors.manager.ui.fragments.room.add.RoomLogo
-import app.editors.manager.ui.fragments.share.MemberAvatar
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
-import app.editors.manager.viewModels.main.TemplateInfoState
-import app.editors.manager.viewModels.main.TemplateSettingsEvent
-import app.editors.manager.viewModels.main.TemplateSettingsViewModel
+import app.editors.manager.ui.fragments.template.rememberAccountContext
 import app.editors.manager.viewModels.base.RoomSettingsLogoState
 import app.editors.manager.viewModels.main.TemplateAccessSettings
+import app.editors.manager.viewModels.main.TemplateInfoState
+import app.editors.manager.viewModels.main.TemplateSettingsEvent
 import app.editors.manager.viewModels.main.TemplateSettingsMode
+import app.editors.manager.viewModels.main.TemplateSettingsViewModel
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import kotlinx.coroutines.launch
 import lib.compose.ui.theme.ManagerTheme
-import lib.compose.ui.theme.colorTextSecondary
-import lib.compose.ui.theme.colorTextTertiary
 import lib.compose.ui.views.AnimatedVisibilityVerticalFade
 import lib.compose.ui.views.AppDescriptionItem
-import lib.compose.ui.views.AppDivider
 import lib.compose.ui.views.AppMultilineArrowItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTextFieldListItem
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.ChipList
 import lib.compose.ui.views.ChipsTextField
+import lib.compose.ui.views.MembersAvatarData
+import lib.compose.ui.views.MembersRow
 import lib.compose.ui.views.NestedColumn
 import lib.compose.ui.views.PlaceholderView
 import lib.toolkit.base.managers.utils.capitalize
@@ -374,11 +361,15 @@ private fun AccessBlock(
         if (settings.public) {
             PublicBlock(navigateToSettings = navigateToAccessSettings)
         } else {
+            val (token, portal) = rememberAccountContext()
+
             MembersRow(
-                currentUser = currentUser,
-                users = settings.selectedUsers,
-                groups = settings.selectedGroups,
-                navigateToAccessSettings = navigateToAccessSettings
+                currentUser = currentUser.toMembersRowItem(token, portal.urlWithScheme),
+                users = settings.selectedUsers
+                    .map { it.toMembersRowItem(token, portal.urlWithScheme) },
+                groups = settings.selectedGroups
+                    .map { it.toMembersRowItem(token, portal.urlWithScheme) },
+                onClick = navigateToAccessSettings
             )
         }
         AppDescriptionItem(
@@ -388,145 +379,35 @@ private fun AccessBlock(
     }
 }
 
-@Composable
-private fun MembersRow(
-    currentUser: User,
-    users: List<User>,
-    groups: List<Group>,
-    navigateToAccessSettings: () -> Unit
-) {
-    val onlyUsers = users.isNotEmpty() && groups.isEmpty()
-    val onlyGroups = groups.isNotEmpty() && users.isEmpty()
-    val hasBoth = users.isNotEmpty() && groups.isNotEmpty()
-    val hasOnlyMe = !(onlyUsers || onlyGroups || hasBoth)
-
-    val usersText = pluralStringResource(
-        R.plurals.access_members_users_title, users.size, users.size
-    )
-    val groupsText = pluralStringResource(
-        R.plurals.access_members_groups_title, groups.size, groups.size
-    )
-
-    val title = when {
-        hasOnlyMe -> currentUser.displayName
-        onlyUsers -> stringResource(R.string.access_members_me_and_title, usersText)
-        onlyGroups -> stringResource(R.string.access_members_me_and_title, groupsText)
-        else -> stringResource(R.string.access_members_me_users_groups_title, usersText, groupsText)
-    }
-
-    val membersList: List<Member> = buildList {
-        add(currentUser)
-        when {
-            onlyUsers -> addAll(users.take(2))
-            onlyGroups -> addAll(groups.take(2))
-            hasBoth -> {
-                add(users.first())
-                add(groups.first())
-            }
-        }
-    }
-
-    MembersRow(
-        membersList = membersList,
-        title = title,
-        hasOnlyMe = hasOnlyMe,
-        onClick = navigateToAccessSettings
-    )
-}
-
-@Composable
-private fun MembersRow(
-    membersList: List<Member>,
-    title: String,
-    hasOnlyMe: Boolean,
-    onClick: () -> Unit
-) {
-    val xOffset = 24.dp
-    val avatarSize = 40.dp
-    val avatarsRowWidth = avatarSize + xOffset * (membersList.size - 1)
-
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .clickable { onClick() }
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            MultiAvatarRow(
-                membersList = membersList,
-                xOffset = xOffset,
-                avatarSize = avatarSize,
-                avatarsRowWidth = avatarsRowWidth
+private fun Member.toMembersRowItem(
+    token: String,
+    portal: String
+): MembersAvatarData {
+    return when (this) {
+        is User -> {
+            MembersAvatarData(
+                memberId = id,
+                displayName = displayName,
+                avatarGlideUrl = GlideUtils.getCorrectLoad(
+                    url = avatarUrl,
+                    portal = portal,
+                    token = token
+                )
             )
-            Row(
-                modifier = Modifier.weight(1f),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                MemberTitle(
-                    name = title,
-                    isCurrentUser = hasOnlyMe,
-                    modifier = Modifier.weight(1f)
-                )
-                Icon(
-                    imageVector = ImageVector.vectorResource(
-                        id = R2.drawable.ic_arrow_right
-                    ),
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.colorTextTertiary
-                )
-            }
         }
-        AppDivider(startIndent = 16.dp + avatarsRowWidth + 16.dp)
-    }
-}
 
-@Composable
-private fun MultiAvatarRow(
-    membersList: List<Member>,
-    xOffset: Dp,
-    avatarSize: Dp,
-    avatarsRowWidth: Dp,
-    modifier: Modifier = Modifier
-) {
-    val accountContext = rememberAccountContext()
+        is Group -> {
+            MembersAvatarData(
+                memberId = id,
+                displayName = name
+            )
+        }
 
-    Box(modifier.width(avatarsRowWidth)) {
-        membersList.reversed().forEachIndexed { index, member ->
-            Box(
-                modifier = Modifier
-                    .offset(x = xOffset * (membersList.size - index - 1))
-                    .clip(CircleShape)
-                    .size(avatarSize)
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colors.colorTextTertiary,
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                when (member) {
-                    is User -> {
-                        MemberAvatar(
-                            name = member.displayName,
-                            avatar = GlideUtils.getCorrectLoad(
-                                member.avatarMedium,
-                                accountContext.token,
-                                accountContext.portal.urlWithScheme
-                            )
-                        )
-                    }
-
-                    is Group -> {
-                        MemberAvatar(
-                            name = member.name,
-                            avatar = null
-                        )
-                    }
-                }
-            }
+        else -> {
+            MembersAvatarData(
+                memberId = id,
+                displayName = ""
+            )
         }
     }
 }
@@ -538,22 +419,11 @@ fun PublicBlock(
 ) {
     AppMultilineArrowItem(
         icon = {
-            Box(
-                modifier = Modifier
-                    .padding(start = 16.dp)
-                    .size(40.dp)
-                    .background(
-                        color = colorResource(R2.color.colorIconBackground),
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_user),
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.colorTextSecondary
-                )
-            }
+            Image(
+                modifier = Modifier.padding(start = 16.dp),
+                imageVector = ImageVector.vectorResource(id = lib.toolkit.base.R.drawable.ic_avatar_default),
+                contentDescription = null
+            )
         },
         title = stringResource(R.string.setting_access_public),
         description = stringResource(R.string.setting_access_public_desc),

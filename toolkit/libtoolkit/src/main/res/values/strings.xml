@@ -7,4 +7,19 @@
     <string name="about_footer" translatable="false">20A-12 Ernesta Birznieka-Upisha street, Riga, Latvia, EU, LV-1050</string>
     <string name="about_footer_powered_by" translatable="false">© Ascensio System SIA %1d</string>
     <string name="about_url" translatable="false">www.onlyoffice.com</string>
+
+    <string name="access_members_me_and_title">Me and %s</string>
+    <string name="access_members_me_users_groups_title">Me, %1$s and %2$s</string>
+    <string name="access_members_me_subtitle">(Me)</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d user</item>
+        <item quantity="other">%d users</item>
+    </plurals>
+
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d group</item>
+        <item quantity="other">%d groups</item>
+    </plurals>
+
 </resources>

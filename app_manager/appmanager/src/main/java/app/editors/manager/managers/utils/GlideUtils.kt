@@ -16,7 +16,6 @@ import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.webdav.WebDavService
 import app.editors.manager.R
-import lib.toolkit.base.R as R2
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.utils.ManagerUiUtils.getFileThumbnail
 import com.bumptech.glide.Glide
@@ -43,6 +42,7 @@ import lib.toolkit.base.managers.utils.StringUtils
 import okhttp3.Credentials
 import java.net.URI
 import java.security.MessageDigest
+import lib.toolkit.base.R as R2
 
 
 object GlideUtils {
@@ -57,10 +57,8 @@ object GlideUtils {
         )
     }
 
-    fun getCorrectLoad(url: String?, token: String, portal: String? = null): Any {
-        if (url.isNullOrEmpty()) {
-            return Any()
-        }
+    fun getCorrectLoad(url: String?, token: String, portal: String? = null): GlideUrl? {
+        if (url.isNullOrEmpty()) return null
 
         val urlWithPortal = if (url.startsWith("http")) url else portal.orEmpty() + url
 

@@ -218,12 +218,13 @@ class MediaImageFragment : BaseAppFragment(), OnMediaListener, PlaceholderViews.
                     requireContext(),
                     Account(account.accountName, getString(lib.toolkit.base.R.string.account_type))
                 )?.let { token ->
-                    val url = GlideUtils.getCorrectLoad(image?.viewUrl!!, token)
-                    withContext(Dispatchers.Main) {
-                        if (StringUtils.isImageGif(image?.fileExst!!)) {
-                            glideTool.loadGif(gifTarget, url, false, gifRequestListener)
-                        } else {
-                            glideTool.load(bitmapTarget, url, false, bitmapRequestListener)
+                    GlideUtils.getCorrectLoad(image?.viewUrl, token)?.let { url ->
+                        withContext(Dispatchers.Main) {
+                            if (StringUtils.isImageGif(image?.fileExst!!)) {
+                                glideTool.loadGif(gifTarget, url, false, gifRequestListener)
+                            } else {
+                                glideTool.load(bitmapTarget, url, false, bitmapRequestListener)
+                            }
                         }
                     }
                 }
