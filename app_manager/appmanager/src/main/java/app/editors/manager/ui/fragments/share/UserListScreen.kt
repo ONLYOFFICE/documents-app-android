@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalGlideComposeApi::class)
+
 package app.editors.manager.ui.fragments.share
 
 import android.content.res.Configuration
@@ -51,7 +53,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
@@ -84,8 +85,7 @@ import app.editors.manager.viewModels.main.UserListMode
 import app.editors.manager.viewModels.main.UserListState
 import app.editors.manager.viewModels.main.UserListViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.integration.compose.placeholder
+import com.bumptech.glide.load.model.GlideUrl
 import kotlinx.coroutines.launch
 import lib.compose.ui.enabled
 import lib.compose.ui.theme.ManagerTheme
@@ -94,6 +94,7 @@ import lib.compose.ui.views.AppHeaderItem
 import lib.compose.ui.views.AppScaffold
 import lib.compose.ui.views.AppTabRow
 import lib.compose.ui.views.AppTopBar
+import lib.compose.ui.views.MemberAvatar
 import lib.compose.ui.views.PlaceholderView
 import lib.compose.ui.views.TabRowItem
 import lib.compose.ui.views.TopAppBarAction
@@ -514,7 +515,7 @@ private fun LazyItemScope.GroupItem(
             shared = shared,
             letter = null,
             subtitle = null,
-            avatar = if (isEveryone) R.drawable.drawable_list_share_image_item_group_placeholder else null,
+            avatar = null,
             selected = selected,
             onClick = { onClick.invoke(group) }
         )
@@ -586,7 +587,7 @@ private fun LazyItemScope.ListItem(
     shared: Boolean,
     letter: String?,
     withLetter: Boolean,
-    avatar: Any?,
+    avatar: GlideUrl?,
     subtitle: String?,
     onClick: () -> Unit,
 ) {
@@ -618,7 +619,10 @@ private fun LazyItemScope.ListItem(
                 .clip(CircleShape)
                 .size(40.dp)
         ) {
-            MemberAvatar(name, avatar)
+            MemberAvatar(
+                displayName = name,
+                avatarUrl = avatar,
+            )
             this@Row.AnimatedVisibility(visible = selected, enter = fadeIn(), exit = fadeOut()) {
                 Box(
                     modifier = Modifier
@@ -664,40 +668,6 @@ private fun LazyItemScope.ListItem(
                 style = MaterialTheme.typography.body2,
                 color = MaterialTheme.colors.colorTextSecondary
             )
-        }
-    }
-}
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun MemberAvatar(
-    name: String,
-    avatar: Any?,
-    modifier: Modifier = Modifier
-) {
-    Box(modifier) {
-        if (avatar != null) {
-            GlideImage(
-                modifier = Modifier.fillMaxSize(),
-                model = avatar,
-                contentDescription = null,
-                loading = placeholder(R.drawable.ic_account_placeholder),
-                failure = placeholder(R.drawable.ic_account_placeholder)
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(colorResource(id = R2.color.colorIconBackground))
-                    .size(40.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = lib.toolkit.base.managers.utils.StringUtils.getAvatarName(name),
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.colorTextSecondary
-                )
-            }
         }
     }
 }

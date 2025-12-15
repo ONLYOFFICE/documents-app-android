@@ -43,4 +43,19 @@
         <item quantity="one">අවුරුද්ද</item>
         <item quantity="other">අවුරුදු</item>
     </plurals>
+
+    <string name="access_members_me_and_title">මම සහ %s</string>
+    <string name="access_members_me_subtitle">(මම)</string>
+    <string name="access_members_me_users_groups_title">මම, %1$s සහ %2$s</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">පරිශීලකයන් %d</item>
+        <item quantity="other">පරිශීලකයින් %d</item>
+    </plurals>
+
+    <plurals name="access_members_groups_title">
+        <item quantity="one">කණ්ඩායම %d</item>
+        <item quantity="other">කණ්ඩායම් %d</item>
+    </plurals>
+
 </resources>

@@ -830,9 +830,6 @@ Nous vous recommandons de passer au service gratuit ONLYOFFICE DocSpace Cloud.</
     <string name="whats_new_4_desc">Créez et naviguez dans les sections du document grâce à une table des matières automatique.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
-    <string name="access_members_me_and_title">Moi et %s</string>
-    <string name="access_members_me_subtitle">(Moi)</string>
-    <string name="access_members_me_users_groups_title">Moi, %1$s et %2$s</string>
     <string name="cloud_create_account">Créer un compte gratuit</string>
     <string name="context_menu_desc">Plus</string>
     <string name="desc_create_from_template">Créez une salle à partir d\'un modèle. Tous les paramètres, utilisateurs, dossiers et fichiers seront repris du modèle de salle sélectionné.</string>
@@ -960,14 +957,6 @@ Nous vous recommandons de passer au service gratuit ONLYOFFICE DocSpace Cloud.</
     <plurals name="dialogs_question_delete_template_title">
         <item quantity="one">Supprimer le modèle</item>
         <item quantity="other">Supprimer les modèles</item>
-    </plurals>
-    <plurals name="access_members_users_title">
-        <item quantity="one">%d utilisateur</item>
-        <item quantity="other">%d utilisateurs</item>
-    </plurals>
-    <plurals name="access_members_groups_title">
-        <item quantity="one">%d groupe</item>
-        <item quantity="other">%d groupes</item>
     </plurals>
 
     <!-- Newly added translations (v9.1.0 - 2025-10-24) -->

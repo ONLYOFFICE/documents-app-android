@@ -47,4 +47,19 @@
     <string name="help_and_feedback_help_center">Centrum pomocy</string>
     <string name="help_and_feedback_suggest_a_feature">Zaproponuj funkcję</string>
     <string name="help_and_feedback_title">Pomoc i opinie</string>
+
+    <string name="access_members_me_and_title">Ja i %s</string>
+    <string name="access_members_me_subtitle">(Ja)</string>
+    <string name="access_members_me_users_groups_title">Ja, %1$s i %2$s</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d użytkownik</item>
+        <item quantity="other">%d użytkowników</item>
+    </plurals>
+
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d grupa</item>
+        <item quantity="other">%d grup</item>
+    </plurals>
+
 </resources>

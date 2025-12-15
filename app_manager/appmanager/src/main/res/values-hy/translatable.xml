@@ -978,9 +978,6 @@
     <string name="whats_new_4_desc">Ստեղծեք և անցեք փաստաթղթի բաժիններով՝ օգտագործելով ավտոմատ բովանդակության ցանկը։</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
-    <string name="access_members_me_and_title">Ես և %s-ը</string>
-    <string name="access_members_me_subtitle">(Ես)</string>
-    <string name="access_members_me_users_groups_title">Ես, %1$s-ը և %2$s-ը</string>
     <string name="cloud_create_account">Ստեղծել անվճար հաշիվ</string>
     <string name="context_menu_desc">Ավելին</string>
     <string name="desc_create_from_template">Ստեղծեք սենյակ՝ հիմնվելով ձևանմուշի վրա: Բոլոր կարգավորումները, օգտատերերը, թղթապանակները և ֆայլերը կվերցվեն ընտրված սենյակի ձևանմուշից:</string>
@@ -1108,14 +1105,6 @@
     <plurals name="dialogs_question_delete_template_title">
         <item quantity="one">Ջնջել ձևանմուշը</item>
         <item quantity="other">Ջնջել ձևանմուշները</item>
-    </plurals>
-    <plurals name="access_members_users_title">
-        <item quantity="one">%d օգտատեր</item>
-        <item quantity="other">%d օգտատերեր</item>
-    </plurals>
-    <plurals name="access_members_groups_title">
-        <item quantity="one">%d խումբ</item>
-        <item quantity="other">%d խմբեր</item>
     </plurals>
 
     <!-- Newly added translations (v9.1.0 - 2025-10-24) -->

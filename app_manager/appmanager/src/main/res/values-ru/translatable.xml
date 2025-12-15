@@ -839,9 +839,6 @@
     <string name="whats_new_4_desc">Создавайте и быстро переходите между разделами с помощью автоматического оглавления.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
-    <string name="access_members_me_and_title">Я и %s</string>
-    <string name="access_members_me_subtitle">(Я)</string>
-    <string name="access_members_me_users_groups_title">Я, %1$s и %2$s</string>
     <string name="cloud_create_account">Создать бесплатную учетную запись</string>
     <string name="context_menu_desc">Больше</string>
     <string name="desc_create_from_template">Создать комнату на основе шаблона. Все настройки, пользователи, папки и файлы будут взяты из выбранного шаблона комнаты.</string>
@@ -969,14 +966,6 @@
     <plurals name="dialogs_question_delete_template_title">
         <item quantity="one">Удалить шаблон</item>
         <item quantity="other">Удалить шаблоны</item>
-    </plurals>
-    <plurals name="access_members_users_title">
-        <item quantity="one">%d пользователь</item>
-        <item quantity="other">%d пользователей</item>
-    </plurals>
-    <plurals name="access_members_groups_title">
-        <item quantity="one">%d группа</item>
-        <item quantity="other">%d групп</item>
     </plurals>
 
     <!-- Newly added translations (v9.1.0 - 2025-10-24) -->

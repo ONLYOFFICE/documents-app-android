@@ -42,4 +42,19 @@
     <string name="help_and_feedback_help_center">Help Center</string>
     <string name="help_and_feedback_suggest_a_feature">Suggest a Feature</string>
     <string name="help_and_feedback_title">Help &amp; Feedback</string>
+
+    <string name="access_members_me_and_title">Me and %s</string>
+    <string name="access_members_me_subtitle">(Me)</string>
+    <string name="access_members_me_users_groups_title">Me, %1$s and %2$s</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d utente</item>
+        <item quantity="other">%d utenti</item>
+    </plurals>
+
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d gruppo</item>
+        <item quantity="other">%d gruppi</item>
+    </plurals>
+
 </resources>

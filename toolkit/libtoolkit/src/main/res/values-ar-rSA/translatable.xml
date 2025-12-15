@@ -52,4 +52,25 @@
         <item quantity="one">سنة</item>
         <item quantity="other">سنة</item>
     </plurals>
+
+    <string name="access_members_me_and_title">أنا و%s</string>
+    <string name="access_members_me_subtitle">(أنا)</string>
+    <string name="access_members_me_users_groups_title">أنا، %1$s و %2$s</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="zero">%d مستخدم</item>
+        <item quantity="one">%d مستخدم</item>
+        <item quantity="two">%d مستخدمان</item>
+        <item quantity="few">%d مستخدمين</item>
+        <item quantity="many">%d مستخدمًا</item>
+        <item quantity="other">%d مستخدمين</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="zero">%d مجموعة</item>
+        <item quantity="one">%d مجموعة</item>
+        <item quantity="two">%d مجموعتان</item>
+        <item quantity="few">%d مجموعات</item>
+        <item quantity="many">%d مجموعة</item>
+        <item quantity="other">%d مجموعات</item>
+    </plurals>
 </resources>

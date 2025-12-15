@@ -134,9 +134,6 @@
     <string name="about_terms">භාවිත නියමයන්</string>
     <string name="about_title">ගැන</string>
     <string name="about_website">ONLYOFFICE වෙබ් අඩවිය</string>
-    <string name="access_members_me_and_title">මම සහ %s</string>
-    <string name="access_members_me_subtitle">(මම)</string>
-    <string name="access_members_me_users_groups_title">මම, %1$s සහ %2$s</string>
     <string name="actionbar_title_main">ලේඛන</string>
     <string name="app_Settings_passcode_enable">මුර කේතය සක්‍රිය කරන්න</string>
     <string name="app_fragment_crash_error">කරුණාකර මෙම යෙදුම වසා නැවත උත්සාහ කරන්න</string>
@@ -940,14 +937,6 @@
     <plurals name="app_settings_passcode_many_attempt_minutes">
         <item quantity="one">උත්සාහයන් වැඩියි.\nමිනිත්තු %d කින් නැවත උත්සාහ කරන්න</item>
         <item quantity="other">උත්සාහයන් වැඩියි.\nමිනිත්තු %d කින් නැවත උත්සාහ කරන්න</item>
-    </plurals>
-    <plurals name="access_members_users_title">
-        <item quantity="one">පරිශීලකයන් %d</item>
-        <item quantity="other">පරිශීලකයින් %d</item>
-    </plurals>
-    <plurals name="access_members_groups_title">
-        <item quantity="one">කණ්ඩායම %d</item>
-        <item quantity="other">කණ්ඩායම් %d</item>
     </plurals>
 
     <!-- Newly added translations (v9.1.0 - 2025-10-24) -->

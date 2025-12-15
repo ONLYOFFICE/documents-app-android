@@ -824,9 +824,6 @@
     <string name="whats_new_4_desc">Crie e navegue pelas seções do documento com um sumário automático.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
-    <string name="access_members_me_and_title">Eu e %s</string>
-    <string name="access_members_me_subtitle">(Eu)</string>
-    <string name="access_members_me_users_groups_title">Eu, %1$s e %2$s</string>
     <string name="cloud_create_account">Criar conta gratuita</string>
     <string name="context_menu_desc">Mais</string>
     <string name="desc_create_from_template">Crie uma sala com base em um modelo. Todas as configurações, usuários, pastas e arquivos serão obtidos do modelo de sala selecionado.</string>
@@ -954,14 +951,6 @@
     <plurals name="dialogs_question_delete_template_title">
         <item quantity="one">Excluir modelo</item>
         <item quantity="other">Excluir modelos</item>
-    </plurals>
-    <plurals name="access_members_users_title">
-        <item quantity="one">%d usuário</item>
-        <item quantity="other">%d usuários</item>
-    </plurals>
-    <plurals name="access_members_groups_title">
-        <item quantity="one">%d grupo</item>
-        <item quantity="other">%d grupos</item>
     </plurals>
 
     <!-- Newly added translations (v9.1.0 - 2025-10-24) -->

@@ -823,9 +823,6 @@
     <string name="whats_new_4_desc">Crea e naviga tra le sezioni del documento con un sommario automatico.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
-    <string name="access_members_me_and_title">Me and %s</string>
-    <string name="access_members_me_subtitle">(Me)</string>
-    <string name="access_members_me_users_groups_title">Me, %1$s and %2$s</string>
     <string name="cloud_create_account">Create free account</string>
     <string name="context_menu_desc">More</string>
     <string name="desc_create_from_template">Create a room based on a template. All settings, users, folders and files will be taken from the selected room template.</string>
@@ -953,14 +950,6 @@
     <plurals name="dialogs_question_delete_template_title">
         <item quantity="one">Elimina modello</item>
         <item quantity="other">Elimina modelli</item>
-    </plurals>
-    <plurals name="access_members_users_title">
-        <item quantity="one">%d utente</item>
-        <item quantity="other">%d utenti</item>
-    </plurals>
-    <plurals name="access_members_groups_title">
-        <item quantity="one">%d gruppo</item>
-        <item quantity="other">%d gruppi</item>
     </plurals>
 
     <!-- Newly added translations (v9.1.0 - 2025-10-24) -->

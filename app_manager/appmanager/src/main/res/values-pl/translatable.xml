@@ -820,9 +820,6 @@ Aplikacja korzysta teraz z języka angielskiego, ponieważ zmieniono język syst
     <string name="whats_new_next">Rozpocznij</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
-    <string name="access_members_me_and_title">Ja i %s</string>
-    <string name="access_members_me_subtitle">(Ja)</string>
-    <string name="access_members_me_users_groups_title">Ja, %1$s i %2$s</string>
     <string name="cloud_create_account">Załóż darmowe konto</string>
     <string name="context_menu_desc">Więcej</string>
     <string name="desc_create_from_template">Utwórz pokój na podstawie szablonu. Wszystkie ustawienia, użytkownicy, katalogi i pliki zostaną wzięte z wybranego szablonu pokoju.</string>
@@ -958,14 +955,6 @@ Aplikacja korzysta teraz z języka angielskiego, ponieważ zmieniono język syst
     <plurals name="dialogs_question_delete_template_title">
         <item quantity="one">Usuń szablon</item>
         <item quantity="other">Usuń szablony</item>
-    </plurals>
-    <plurals name="access_members_users_title">
-        <item quantity="one">%d użytkownik</item>
-        <item quantity="other">%d użytkowników</item>
-    </plurals>
-    <plurals name="access_members_groups_title">
-        <item quantity="one">%d grupa</item>
-        <item quantity="other">%d grup</item>
     </plurals>
 
     <!-- Newly added translations (v9.1.0 - 2025-10-24) -->

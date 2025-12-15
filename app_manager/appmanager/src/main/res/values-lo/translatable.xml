@@ -823,9 +823,6 @@
     <string name="list_action_delete_image">ລຶບຮູບ</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
-    <string name="access_members_me_and_title">ຂ້ອຍ ແລະ %s</string>
-    <string name="access_members_me_subtitle">(ຂ້ອຍ)</string>
-    <string name="access_members_me_users_groups_title">ຂ້ອຍ, %1$s ແລະ %2$s</string>
     <string name="cloud_create_account">ສ້າງບັນຊີຟຣີ</string>
     <string name="context_menu_desc">ເພີ່ມເຕີມ</string>
     <string name="context_protection_title">ການປົກປ້ອງ</string>
@@ -1080,12 +1077,6 @@
     </plurals>
     <plurals name="app_settings_passcode_many_attempt_minutes">
         <item quantity="other">ພະຍາຍາມຫຼາຍເທື່ອເກີນໄປ.\nລອງໃໝ່ໃນອີກ %d ນາທີ</item>
-    </plurals>
-    <plurals name="access_members_users_title">
-        <item quantity="other">%d ຜູ້ໃຊ້</item>
-    </plurals>
-    <plurals name="access_members_groups_title">
-        <item quantity="other">%d ກຸ່ມ</item>
     </plurals>
 
     <!-- Newly added translations (v9.1.0 - 2025-10-24) -->

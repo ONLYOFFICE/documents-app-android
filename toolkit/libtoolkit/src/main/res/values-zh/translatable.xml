@@ -43,4 +43,19 @@
     <string name="help_and_feedback_help_center">帮助中心</string>
     <string name="help_and_feedback_suggest_a_feature">建议功能</string>
     <string name="help_and_feedback_title">帮助与反馈</string>
+
+    <string name="access_members_me_and_title">我和%s</string>
+    <string name="access_members_me_subtitle">（我）</string>
+    <string name="access_members_me_users_groups_title">我、%1$s和%2$s</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d 用户</item>
+        <item quantity="other">%d 用户</item>
+    </plurals>
+
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d 群组</item>
+        <item quantity="other">%d 群组</item>
+    </plurals>
+
 </resources>

@@ -45,4 +45,21 @@
     <string name="help_and_feedback_help_center">Справочный центр</string>
     <string name="help_and_feedback_suggest_a_feature">Предложить функцию</string>
     <string name="help_and_feedback_title">Помощь и обратная связь</string>
+
+    <string name="access_members_me_and_title">Я и %s</string>
+    <string name="access_members_me_subtitle">(Я)</string>
+    <string name="access_members_me_users_groups_title">Я, %1$s и %2$s</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d пользователь</item>
+        <item quantity="few">%d пользователя</item>
+        <item quantity="many">%d пользователей</item>
+    </plurals>
+
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d группа</item>
+        <item quantity="few">%d группы</item>
+        <item quantity="many">%d групп</item>
+    </plurals>
+
 </resources>

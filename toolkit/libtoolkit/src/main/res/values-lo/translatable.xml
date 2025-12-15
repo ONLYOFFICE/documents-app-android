@@ -44,4 +44,17 @@
         <item quantity="one">ປີ</item>
         <item quantity="other">ປີ</item>
     </plurals>
+
+    <string name="access_members_me_and_title">ຂ້ອຍ ແລະ %s</string>
+    <string name="access_members_me_subtitle">(ຂ້ອຍ)</string>
+    <string name="access_members_me_users_groups_title">ຂ້ອຍ, %1$s ແລະ %2$s</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="other">%d ຜູ້ໃຊ້</item>
+    </plurals>
+
+    <plurals name="access_members_groups_title">
+        <item quantity="other">%d ກຸ່ມ</item>
+    </plurals>
+
 </resources>

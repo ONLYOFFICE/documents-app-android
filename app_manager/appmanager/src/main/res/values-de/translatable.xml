@@ -826,9 +826,6 @@ Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</
     <string name="whats_new_4_desc">Erstellen und navigieren Sie mit einem automatischen Inhaltsverzeichnis durch Dokumentabschnitte.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
-    <string name="access_members_me_and_title">Ich und %s</string>
-    <string name="access_members_me_subtitle">(Ich)</string>
-    <string name="access_members_me_users_groups_title">Ich, %1$s und %2$s</string>
     <string name="cloud_create_account">Kostenloses Konto erstellen</string>
     <string name="context_menu_desc">Mehr</string>
     <string name="desc_create_from_template">Erstellen Sie einen Raum basierend auf einer Vorlage. Alle Einstellungen, Benutzer, Ordner und Dateien werden aus der ausgewählten Raumvorlage übernommen.</string>
@@ -956,14 +953,6 @@ Wir empfehlen Ihnen, auf die kostenlose ONLYOFFICE DocSpace Cloud umzusteigen.</
     <plurals name="dialogs_question_delete_template_title">
         <item quantity="one">Vorlage löschen</item>
         <item quantity="other">Vorlagen löschen</item>
-    </plurals>
-    <plurals name="access_members_users_title">
-        <item quantity="one">%d Benutzer</item>
-        <item quantity="other">%d Benutzer</item>
-    </plurals>
-    <plurals name="access_members_groups_title">
-        <item quantity="one">%d Gruppe</item>
-        <item quantity="other">%d Gruppen</item>
     </plurals>
 
     <!-- Newly added translations (v9.1.0 - 2025-10-24) -->

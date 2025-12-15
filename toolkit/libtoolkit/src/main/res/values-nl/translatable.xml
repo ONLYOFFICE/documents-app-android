@@ -41,4 +41,19 @@
         <item quantity="one">jaar</item>
         <item quantity="other">jaren</item>
     </plurals>
+
+    <string name="access_members_me_and_title">Me and %s</string>
+    <string name="access_members_me_users_groups_title">Me, %1$s and %2$s</string>
+    <string name="access_members_me_subtitle">(Me)</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d Gebruiker</item>
+        <item quantity="other">%d Gebruikers</item>
+    </plurals>
+
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d Groep</item>
+        <item quantity="other">%d Groepen</item>
+    </plurals>
+
 </resources>

@@ -43,4 +43,18 @@
     <string name="help_and_feedback_help_center">Centrum nápovědy</string>
     <string name="help_and_feedback_suggest_a_feature">Navrhnout funkci</string>
     <string name="help_and_feedback_title">Nápověda a zpětná vazba</string>
+
+    <string name="access_members_me_and_title">Já a %s</string>
+    <string name="access_members_me_subtitle">(Já)</string>
+    <string name="access_members_me_users_groups_title">Já, %1$s a %2$s</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d uživatel</item>
+        <item quantity="other">%d uživatelů</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d skupina</item>
+        <item quantity="other">%d skupin</item>
+    </plurals>
+
 </resources>

@@ -51,4 +51,19 @@
     <string name="help_and_feedback_help_center">Օգնության կենտրոն</string>
     <string name="help_and_feedback_suggest_a_feature">Առաջարկել ֆունկցիա</string>
     <string name="help_and_feedback_title">Օգնություն &amp; Հետադարձ կապ</string>
+
+    <string name="access_members_me_and_title">Ես և %s-ը</string>
+    <string name="access_members_me_subtitle">(Ես)</string>
+    <string name="access_members_me_users_groups_title">Ես, %1$s-ը և %2$s-ը</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d օգտատեր</item>
+        <item quantity="other">%d օգտատերեր</item>
+    </plurals>
+
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d խումբ</item>
+        <item quantity="other">%d խմբեր</item>
+    </plurals>
+
 </resources>

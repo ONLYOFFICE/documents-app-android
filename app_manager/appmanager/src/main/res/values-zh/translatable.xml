@@ -882,9 +882,6 @@
     <string name="whats_new_4_desc">支持自动生成目录，方便快速浏览文档的各个部分。</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
-    <string name="access_members_me_and_title">我和%s</string>
-    <string name="access_members_me_subtitle">（我）</string>
-    <string name="access_members_me_users_groups_title">我、%1$s和%2$s</string>
     <string name="cloud_create_account">创建免费帐户</string>
     <string name="context_menu_desc">更多</string>
     <string name="desc_create_from_template">基于模板创建房间。所有设置、用户、文件夹和文件都将取自所选的房间模板。</string>
@@ -1012,14 +1009,6 @@
     <plurals name="dialogs_question_delete_template_title">
         <item quantity="one">删除模板</item>
         <item quantity="other">删除模板</item>
-    </plurals>
-    <plurals name="access_members_users_title">
-        <item quantity="one">%d 用户</item>
-        <item quantity="other">%d 用户</item>
-    </plurals>
-    <plurals name="access_members_groups_title">
-        <item quantity="one">%d 群组</item>
-        <item quantity="other">%d 群组</item>
     </plurals>
 
     <!-- Newly added translations (v9.1.0 - 2025-10-24) -->

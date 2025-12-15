@@ -879,9 +879,6 @@
     <string name="desc_create_from_template">Create a room based on a template. All settings, users, folders and files will be taken from the selected room
  template.</string>
     <string name="desc_info_template">Room template. Use this template to quickly create a new room.</string>
-    <string name="access_members_me_and_title">Me and %s</string>
-    <string name="access_members_me_users_groups_title">Me, %1$s and %2$s</string>
-    <string name="access_members_me_subtitle">(Me)</string>
     <string name="settings_saved_successfully">Template settings saved</string>
     <string name="template_created_successfully">Template «%s» saved</string>
     <string name="room_created_successfully">Room created successfully</string>
@@ -985,14 +982,6 @@
         <item quantity="other">
         Alle gedeelde links in ruimtes worden actief en de inhoud ervan is beschikbaar voor iedereen met de link. Wilt u ruimtes herstellen?
         </item>
-    </plurals>
-    <plurals name="access_members_users_title">
-        <item quantity="one">%d Gebruiker</item>
-        <item quantity="other">%d Gebruikers</item>
-    </plurals>
-    <plurals name="access_members_groups_title">
-        <item quantity="one">%d Groep</item>
-        <item quantity="other">%d Groepen</item>
     </plurals>
 
     <!-- Newly added translations (v9.1.0 - 2025-10-24) -->

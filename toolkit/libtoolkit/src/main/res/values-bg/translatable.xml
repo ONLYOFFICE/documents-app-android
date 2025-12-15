@@ -43,4 +43,17 @@
     <string name="help_and_feedback_help_center">Помощен център</string>
     <string name="help_and_feedback_suggest_a_feature">Предложете характеристика</string>
     <string name="help_and_feedback_title">Помощ и Обратна връзка</string>
+
+    <string name="access_members_me_and_title">Аз и %s</string>
+    <string name="access_members_me_subtitle">(Аз)</string>
+    <string name="access_members_me_users_groups_title">Аз, %1$s и %2$s</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d потребител</item>
+        <item quantity="other">%d потребители</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d група</item>
+        <item quantity="other">%d групи</item>
+    </plurals>
 </resources>

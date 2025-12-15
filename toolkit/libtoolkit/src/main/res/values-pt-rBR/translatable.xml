@@ -42,4 +42,19 @@
     <string name="help_and_feedback_help_center">Central de Ajuda</string>
     <string name="help_and_feedback_suggest_a_feature">Sugerir um Recurso</string>
     <string name="help_and_feedback_title">Ajuda e Feedback</string>
+
+    <string name="access_members_me_and_title">Eu e %s</string>
+    <string name="access_members_me_subtitle">(Eu)</string>
+    <string name="access_members_me_users_groups_title">Eu, %1$s e %2$s</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d usuário</item>
+        <item quantity="other">%d usuários</item>
+    </plurals>
+
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d grupo</item>
+        <item quantity="other">%d grupos</item>
+    </plurals>
+
 </resources>

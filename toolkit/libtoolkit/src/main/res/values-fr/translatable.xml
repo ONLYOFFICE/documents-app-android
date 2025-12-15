@@ -42,4 +42,18 @@
     <string name="help_and_feedback_help_center">Centre d\'aide</string>
     <string name="help_and_feedback_suggest_a_feature">Suggérer une fonctionnalité</string>
     <string name="help_and_feedback_title">Aide &amp; Feedback</string>
+
+    <string name="access_members_me_and_title">Moi et %s</string>
+    <string name="access_members_me_subtitle">(Moi)</string>
+    <string name="access_members_me_users_groups_title">Moi, %1$s et %2$s</string>
+
+    <plurals name="access_members_users_title">
+        <item quantity="one">%d utilisateur</item>
+        <item quantity="other">%d utilisateurs</item>
+    </plurals>
+    <plurals name="access_members_groups_title">
+        <item quantity="one">%d groupe</item>
+        <item quantity="other">%d groupes</item>
+    </plurals>
+    
 </resources>

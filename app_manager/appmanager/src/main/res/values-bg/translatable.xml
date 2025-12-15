@@ -817,9 +817,7 @@
     <string name="whats_new_4_desc">Създавайте и навигирайте през раздели документи с автоматично съдържание.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
-    <string name="access_members_me_and_title">Аз и %s</string>
-    <string name="access_members_me_subtitle">(Аз)</string>
-    <string name="access_members_me_users_groups_title">Аз, %1$s и %2$s</string>
+
     <string name="cloud_create_account">Създай безплатен профил</string>
     <string name="context_menu_desc">Повече</string>
     <string name="desc_create_from_template">Създайте стая на базата на шаблон. Всички настройки, потребители, папки и файлове ще бъдат взети от избрания шаблон за стая.</string>
@@ -947,14 +945,6 @@
     <plurals name="dialogs_question_delete_template_title">
         <item quantity="one">Изтриване на шаблон</item>
         <item quantity="other">Изтриване на шаблони</item>
-    </plurals>
-    <plurals name="access_members_users_title">
-        <item quantity="one">%d потребител</item>
-        <item quantity="other">%d потребители</item>
-    </plurals>
-    <plurals name="access_members_groups_title">
-        <item quantity="one">%d група</item>
-        <item quantity="other">%d групи</item>
     </plurals>
 
     <!-- Newly added translations (v9.1.0 - 2025-10-24) -->
