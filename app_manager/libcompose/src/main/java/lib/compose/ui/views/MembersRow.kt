@@ -33,17 +33,19 @@ import com.bumptech.glide.load.model.GlideUrl
 import lib.compose.ui.theme.colorTextTertiary
 import lib.toolkit.base.R
 
-data class MembersAvatarData(
-    val memberId: String,
+data class MemberData(
+    val id: String,
     val displayName: String,
     val avatarGlideUrl: GlideUrl? = null
 )
 
 @Composable
 fun MembersRow(
-    currentUser: MembersAvatarData,
-    users: List<MembersAvatarData>,
-    groups: List<MembersAvatarData>,
+    modifier: Modifier = Modifier,
+    currentUser: MemberData,
+    users: List<MemberData>,
+    groups: List<MemberData> = emptyList(),
+    dividerVisible: Boolean = true,
     onClick: () -> Unit
 ) {
     val onlyUsers = users.isNotEmpty() && groups.isEmpty()
@@ -65,7 +67,7 @@ fun MembersRow(
         else -> stringResource(R.string.access_members_me_users_groups_title, usersText, groupsText)
     }
 
-    val membersList: List<MembersAvatarData> = buildList {
+    val membersList: List<MemberData> = buildList {
         add(currentUser)
         when {
             onlyUsers -> addAll(users.take(2))
@@ -78,30 +80,36 @@ fun MembersRow(
     }
 
     MembersRow(
+        modifier = modifier,
         membersList = membersList,
         title = title,
         hasOnlyMe = hasOnlyMe,
+        dividerVisible = dividerVisible,
         onClick = onClick
     )
 }
 
 @Composable
 private fun MembersRow(
-    membersList: List<MembersAvatarData>,
+    modifier: Modifier = Modifier,
+    membersList: List<MemberData>,
     title: String,
     hasOnlyMe: Boolean,
+    dividerVisible: Boolean,
     onClick: () -> Unit
 ) {
     val xOffset = 24.dp
     val avatarSize = 40.dp
     val avatarsRowWidth = avatarSize + xOffset * (membersList.size - 1)
 
-    Column {
+    Column(
+        modifier = modifier.clickable(onClick = onClick),
+        verticalArrangement = Arrangement.Center
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .clickable { onClick() }
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -130,13 +138,15 @@ private fun MembersRow(
                 )
             }
         }
-        AppDivider(startIndent = 16.dp + avatarsRowWidth + 16.dp)
+        if (dividerVisible) {
+            AppDivider(startIndent = 16.dp + avatarsRowWidth + 16.dp)
+        }
     }
 }
 
 @Composable
 private fun MultiAvatarRow(
-    membersData: List<MembersAvatarData>,
+    membersData: List<MemberData>,
     xOffset: Dp,
     avatarSize: Dp,
     avatarsRowWidth: Dp,

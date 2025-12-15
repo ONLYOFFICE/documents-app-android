@@ -69,7 +69,7 @@ import lib.compose.ui.views.AppTextFieldListItem
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.ChipList
 import lib.compose.ui.views.ChipsTextField
-import lib.compose.ui.views.MembersAvatarData
+import lib.compose.ui.views.MemberData
 import lib.compose.ui.views.MembersRow
 import lib.compose.ui.views.NestedColumn
 import lib.compose.ui.views.PlaceholderView
@@ -382,11 +382,11 @@ private fun AccessBlock(
 private fun Member.toMembersRowItem(
     token: String,
     portal: String
-): MembersAvatarData {
+): MemberData {
     return when (this) {
         is User -> {
-            MembersAvatarData(
-                memberId = id,
+            MemberData(
+                id = id,
                 displayName = displayName,
                 avatarGlideUrl = GlideUtils.getCorrectLoad(
                     url = avatarUrl,
@@ -397,15 +397,15 @@ private fun Member.toMembersRowItem(
         }
 
         is Group -> {
-            MembersAvatarData(
-                memberId = id,
+            MemberData(
+                id = id,
                 displayName = name
             )
         }
 
         else -> {
-            MembersAvatarData(
-                memberId = id,
+            MemberData(
+                id = id,
                 displayName = ""
             )
         }

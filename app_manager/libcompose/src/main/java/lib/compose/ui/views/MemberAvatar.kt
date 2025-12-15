@@ -58,7 +58,7 @@ fun MemberAvatar(
 @Composable
 fun MemberAvatar(
     modifier: Modifier = Modifier,
-    data: MembersAvatarData
+    data: MemberData
 ) {
     MemberAvatar(
         modifier = modifier,
