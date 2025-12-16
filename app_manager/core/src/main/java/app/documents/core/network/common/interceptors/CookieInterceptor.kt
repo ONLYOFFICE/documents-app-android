@@ -27,8 +27,8 @@ class CookieInterceptor : Interceptor {
     }
 
     private fun saveCookie(response: Response) {
-        val responseCookie = response.networkResponse()
-            ?.headers()
+        val responseCookie = response.networkResponse
+            ?.headers
             ?.get(KEY_HEADER_SET_COOKIE)
             .orEmpty()
             .split(";")

@@ -70,13 +70,14 @@ import app.documents.core.model.cloud.isDocSpace
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
-import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.manager.models.explorer.AccessTarget
 import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.tools.ShareData
 import app.editors.manager.managers.utils.GlideUtils
-import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.getTypeTitle
+import app.editors.manager.managers.utils.toUi
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.views.custom.SearchAppBar
 import app.editors.manager.ui.views.custom.UserListBottomContent
@@ -136,6 +137,7 @@ fun UserListScreen(
     topBarActions: @Composable () -> Unit = {},
     bottomContent: @Composable (Int, Access) -> Unit = { _, _ -> },
 ) {
+    val context = LocalContext.current
     val state by viewModel.viewState.collectAsState()
     val scaffoldState = rememberScaffoldState()
 
@@ -143,7 +145,10 @@ fun UserListScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is UserListEffect.Error -> {
-                    scaffoldState.snackbarHostState.showSnackbar(effect.message)
+                    val message = effect.errorCode?.let { code ->
+                        context.getString(R.string.errors_client_error) + code
+                    } ?: context.getString(R.string.errors_unknown_error)
+                    scaffoldState.snackbarHostState.showSnackbar(message)
                 }
                 is UserListEffect.Success -> onSuccess?.invoke(effect.user)
                 else -> Unit
@@ -199,11 +204,23 @@ private fun MainScreen(
         listOfNotNull(
             PagerTab.Users(portal.isDocSpace),
             PagerTab.Groups.takeIf {
-                state.mode in listOf(UserListMode.Invite, UserListMode.TemplateAccess)
+                when (state.mode) {
+                    is UserListMode.Invite,
+                    is UserListMode.TemplateAccess,
+                    is UserListMode.Share -> true
+
+                    else -> false
+                }
             },
             PagerTab.Guests.takeIf {
                 portal.isDocSpace &&
-                    state.mode in listOf(UserListMode.Invite, UserListMode.StartFilling)
+                        when (state.mode) {
+                            is UserListMode.Invite,
+                            is UserListMode.StartFilling,
+                            is UserListMode.Share -> true
+
+                            else -> false
+                        }
             }
         )
     }
@@ -764,8 +781,8 @@ private fun PreviewMainWithBottom() {
             UserListBottomContent(
                 nextButtonTitle = R.string.share_invite_title,
                 count = selected.size,
-                access = Access.Editor,
-                accessList = RoomUtils.getAccessOptions(ApiContract.RoomType.CUSTOM_ROOM, false),
+                access = Access.Editor.toUi(),
+                accessList = ShareData().getAccessList(AccessTarget.User),
                 {}, {}) {}
         }
     }

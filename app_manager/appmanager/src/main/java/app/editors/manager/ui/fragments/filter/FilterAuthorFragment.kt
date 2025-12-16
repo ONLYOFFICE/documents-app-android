@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.SearchView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
@@ -27,21 +28,25 @@ import moxy.presenter.InjectPresenter
 class FilterAuthorFragment : ListFragment(), FilterAuthorView {
 
     companion object {
+        private const val KEY_WITH_SELF = "key_with_self"
         private const val KEY_AUTHOR_ID = "key_author_id"
         private const val KEY_IS_GROUPS = "key_is_groups"
-        private const val KEY_IS_ROOM = "key_is_room"
         const val REQUEST_KEY_AUTHOR = "request_key_author"
         const val BUNDLE_KEY_AUTHOR = "bundle_key_author"
 
         val TAG = FilterAuthorFragment::class.simpleName
 
-        fun newInstance(authorId: String, isGroups: Boolean = false, isRoom: Boolean = false): FilterAuthorFragment {
+        fun newInstance(
+            authorId: String,
+            isGroups: Boolean = false,
+            withSelf: Boolean = true,
+        ): FilterAuthorFragment {
             return FilterAuthorFragment().apply {
-                arguments = Bundle(2).apply {
-                    putString(KEY_AUTHOR_ID, authorId)
-                    putBoolean(KEY_IS_GROUPS, isGroups)
-                    putBoolean(KEY_IS_ROOM, isRoom)
-                }
+                arguments = bundleOf(
+                    KEY_WITH_SELF to withSelf,
+                    KEY_AUTHOR_ID to authorId,
+                    KEY_IS_GROUPS to isGroups,
+                )
             }
         }
     }
@@ -207,7 +212,7 @@ class FilterAuthorFragment : ListFragment(), FilterAuthorView {
             if (isGroups) {
                 presenter.getGroups()
             } else {
-                presenter.getUsers(arguments?.getBoolean(KEY_IS_ROOM) != true)
+                presenter.getUsers(arguments?.getBoolean(KEY_WITH_SELF) == true)
             }
         }
     }

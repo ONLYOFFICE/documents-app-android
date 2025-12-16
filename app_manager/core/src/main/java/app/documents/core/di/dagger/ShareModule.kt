@@ -7,7 +7,7 @@ import app.documents.core.network.share.ShareService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 
@@ -20,7 +20,7 @@ object ShareModule {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(cloudAccount.portal.urlWithScheme)
-            .addConverterFactory(json.asConverterFactory(MediaType.get("application/json")))
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
             .create(ShareService::class.java)
     }

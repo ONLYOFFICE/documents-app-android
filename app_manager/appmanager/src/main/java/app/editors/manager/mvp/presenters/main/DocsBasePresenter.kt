@@ -83,9 +83,9 @@ import lib.toolkit.base.managers.utils.TimeUtils
 import moxy.InjectViewState
 import moxy.MvpPresenter
 import moxy.presenterScope
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.ResponseBody
 import org.json.JSONException
 import retrofit2.HttpException
@@ -977,10 +977,15 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
                 } else {
                     put(ApiContract.Parameters.ARG_FILTER_BY_TYPE, filter.type.filterVal)
                     if (filter.type != FilterType.None || isFilteringMode && filteringValue.isNotEmpty()) {
-                        put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
+                        if (currentSectionType != ApiContract.SectionType.CLOUD_FAVORITES) {
+                            put(ApiContract.Parameters.ARG_FILTER_SUBFOLDERS, (!filter.excludeSubfolder).toString())
+                        }
                     }
                     if (App.getApp().accountOnline?.isPersonal() == false) {
                         put(ApiContract.Parameters.ARG_FILTER_BY_AUTHOR, filter.author.id)
+                    }
+                    if (currentSectionType == ApiContract.SectionType.CLOUD_FAVORITES && filter.location > 0) {
+                        put(ApiContract.Parameters.ARG_FILTER_LOCATION, filter.location.toString())
                     }
                 }
                 putAll(filters)
@@ -1239,12 +1244,12 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     }
 
     fun selectAll() {
-        viewState.onItemsSelection(modelExplorerStack.setSelection(true).toString())
+        viewState.onItemsSelection(modelExplorerStack.setSelection(true))
         setSelection(true)
     }
 
     fun deselectAll() {
-        viewState.onItemsSelection(modelExplorerStack.setSelection(false).toString())
+        viewState.onItemsSelection(modelExplorerStack.setSelection(false))
         viewState.onStateUpdateSelection(false)
         getBackStack()
     }
@@ -1870,10 +1875,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             val body = MultipartBody.Part.createFormData(
                 file.name,
                 file.name,
-                RequestBody.create(
-                    MediaType.parse(ContentResolverUtils.getMimeType(context, uri)),
-                    file
-                )
+                file.asRequestBody(ContentResolverUtils.getMimeType(context, uri).toMediaType())
             )
             disposable.add(
                 provider.updateDocument(id, body)

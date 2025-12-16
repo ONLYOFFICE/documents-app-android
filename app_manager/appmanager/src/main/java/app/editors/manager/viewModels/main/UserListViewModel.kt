@@ -2,13 +2,15 @@ package app.editors.manager.viewModels.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.documents.core.account.AccountPreferences
 import app.documents.core.model.cloud.Access
 import app.documents.core.model.login.Group
 import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.utils.displayNameFromHtml
-import app.editors.manager.R
+import app.editors.manager.app.App
+import app.editors.manager.managers.tools.ShareData
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,15 +22,16 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import lib.toolkit.base.managers.tools.ResourcesProvider
 import retrofit2.HttpException
+import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
-sealed class UserListMode {
+sealed class UserListMode(val withSelf: Boolean = false) {
     data object Invite : UserListMode()
     data object ChangeOwner : UserListMode()
     data object TemplateAccess : UserListMode()
-    data object StartFilling : UserListMode()
+    data object StartFilling : UserListMode(withSelf = true)
+    data class Share(val shareData: ShareData) : UserListMode()
 }
 
 data class UserListState(
@@ -44,14 +47,13 @@ data class UserListState(
 
 sealed class UserListEffect {
     data class Success(val user: User) : UserListEffect()
-    data class Error(val message: String) : UserListEffect()
+    data class Error(val errorCode: Int? = null) : UserListEffect()
 }
 
 @OptIn(FlowPreview::class)
 abstract class UserListViewModel(
-    access: Access?,
-    mode: UserListMode,
-    private val resourcesProvider: ResourcesProvider,
+    private val mode: UserListMode,
+    access: Access?
 ) : ViewModel() {
 
     private val _viewState: MutableStateFlow<UserListState> =
@@ -65,16 +67,22 @@ abstract class UserListViewModel(
 
     protected abstract val cachedMembersFlow: SharedFlow<List<Member>>
 
+    @Inject
+    lateinit var accountPreferences: AccountPreferences
+
+    private val onlineAccountId: String by lazy { accountPreferences.onlineAccountId.orEmpty() }
+
     init {
+        App.getApp().appComponent.inject(this)
         collectSearchFlow()
     }
 
     protected fun handleError(error: Throwable) {
-        val message = when (error) {
-            is HttpException -> resourcesProvider.getString(R.string.errors_client_error) + error.code()
-            else -> resourcesProvider.getString(R.string.errors_unknown_error)
+        val errorCode = when (error) {
+            is HttpException -> error.code()
+            else -> null
         }
-        _effect.tryEmit(UserListEffect.Error(message))
+        _effect.tryEmit(UserListEffect.Error(errorCode))
     }
 
     private fun collectSearchFlow() {
@@ -99,6 +107,7 @@ abstract class UserListViewModel(
             val users = cachedMembers
                 .filterIsInstance<User>()
                 .filter { !it.isGuest && it.displayNameFromHtml.startsWith(searchValue, true) }
+                .filter { if (!mode.withSelf) it.id != onlineAccountId else true }
 
             val guests = cachedMembers
                 .filterIsInstance<User>()

@@ -112,6 +112,16 @@
         app:layout_constraintHorizontal_bias="1.0">
 
         <ImageView
+            android:id="@+id/link"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="@dimen/default_margin_medium"
+            android:src="@drawable/ic_room_link"
+            app:tint="@color/colorPrimary"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
             android:id="@+id/favorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

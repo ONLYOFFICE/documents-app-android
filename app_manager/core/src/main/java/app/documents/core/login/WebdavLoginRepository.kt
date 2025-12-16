@@ -6,8 +6,10 @@ import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.cloud.PortalProvider
 import app.documents.core.model.cloud.Scheme
 import app.documents.core.model.cloud.WebdavProvider
+import app.documents.core.model.login.OidcConfiguration
 import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.login.WebdavLoginDataSource
+import app.documents.core.network.login.owncloud.OwnCloudLoginDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -22,6 +24,7 @@ import java.util.UUID
 sealed class WebdavLoginResult {
 
     data class NextCloudLogin(val url: String) : WebdavLoginResult()
+    data class OwnCloudLogin(val config: OidcConfiguration?) : WebdavLoginResult()
     data class Error(val exception: Throwable) : WebdavLoginResult()
     data object Success : WebdavLoginResult()
 }
@@ -38,7 +41,8 @@ interface WebdavLoginRepository {
 
 internal class WebdavLoginRepositoryImpl(
     private val accountRepository: AccountRepository,
-    private val webdavLoginDataSource: WebdavLoginDataSource
+    private val webdavLoginDataSource: WebdavLoginDataSource,
+    private val ownCloudLoginDataSource: OwnCloudLoginDataSource
 ) : WebdavLoginRepository {
 
     override suspend fun signIn(
@@ -48,6 +52,13 @@ internal class WebdavLoginRepositoryImpl(
         password: String
     ): Flow<WebdavLoginResult> {
         return flow {
+
+            if (provider is WebdavProvider.OwnCloud && login.isEmpty()) {
+                checkOwnCloud(url).apply {
+                    return@flow emit(WebdavLoginResult.OwnCloudLogin(this))
+                }
+            }
+
             if (checkNextCloud(provider, url)) {
                 return@flow emit(WebdavLoginResult.NextCloudLogin(url))
             }
@@ -68,12 +79,16 @@ internal class WebdavLoginRepositoryImpl(
             return try {
                 webdavLoginDataSource.capability(url)
                 true
-            } catch (e: ConnectException) {
+            } catch (_: ConnectException) {
                 webdavLoginDataSource.capability(url.replace(Scheme.Https.value, Scheme.Http.value))
                 true
             }
         }
         return false
+    }
+
+    private suspend fun checkOwnCloud(url: String): OidcConfiguration? {
+        return ownCloudLoginDataSource.openidConfiguration(url)
     }
 
     private suspend fun checkCapabilities(
@@ -85,7 +100,7 @@ internal class WebdavLoginRepositoryImpl(
         var webStringUrl = buildWebStringUrl(url, provider, login)
         try {
             webdavLoginDataSource.capabilities(webStringUrl, Credentials.basic(login, password))
-        } catch (e: ConnectException) {
+        } catch (_: ConnectException) {
             webStringUrl = webStringUrl.replace(Scheme.Https.value, Scheme.Http.value)
             webdavLoginDataSource.capabilities(
                 webStringUrl,

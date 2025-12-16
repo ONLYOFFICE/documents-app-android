@@ -24,7 +24,7 @@ import app.documents.core.network.VALUE_GRANT_TYPE_AUTH
 import app.documents.core.network.VALUE_GRANT_TYPE_REFRESH
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.http.FieldMap
@@ -60,7 +60,7 @@ internal class OnedriveLoginDataSourceImpl(json: Json, okHttpClient: OkHttpClien
     private val api: OnedriveLoginApi = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(ONEDRIVE_AUTH_URL)
-        .addConverterFactory(json.asConverterFactory(MediaType.get(VALUE_CONTENT_TYPE)))
+        .addConverterFactory(json.asConverterFactory(VALUE_CONTENT_TYPE.toMediaType()))
         .build()
         .create(OnedriveLoginApi::class.java)
 

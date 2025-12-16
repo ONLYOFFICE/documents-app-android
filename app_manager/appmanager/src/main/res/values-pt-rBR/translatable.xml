@@ -590,7 +590,6 @@
     <string name="rooms_add_public_room_des">Convide usuários por meio de links compartilhados para visualizar documentos sem registro. Você também pode incorporar esta sala em qualquer interface web.</string>
     <string name="rooms_move_to_public_title">Mover para sala pública</string>
     <string name="rooms_move_to_public_title_desc">Esta sala e todo o seu conteúdo estão disponíveis para qualquer pessoa com o link. Você quer continuar?</string>
-    <string name="rooms_info_access_desc">Esta sala está disponível para qualquer pessoa com o link. Os usuários externos terão permissão Somente visualização para todos os arquivos.</string>
     <string name="rooms_info_general_link">Ligação geral</string>
     <string name="rooms_info_additional_link">Link adicional</string>
     <string name="rooms_info_additional_links">"Links adicionais (%1$d/%2$d)"</string>
@@ -814,14 +813,14 @@
     <string name="whats_new_title">O que há de novo?</string>
     <string name="whats_new_next">Começar</string>
     <string name="whats_new">Novidades na v9.1</string>
-    <string name="whats_new_1">Assistente de IA em editores</string>
-    <string name="whats_new_1_desc">Trabalhe de forma mais inteligente em documentos e planilhas com a IA integrada. Conecte modelos como OpenAI, Anthropic, Google ou Ollama.</string>
-    <string name="whats_new_2">Opções de direção de texto</string>
-    <string name="whats_new_2_desc">Alterne facilmente entre a direção de texto da direita para a esquerda e da esquerda para a direita em todos os editores.</string>
-    <string name="whats_new_3">Preenchimento de formulários baseado em funções no DocSpace</string>
-    <string name="whats_new_3_desc">Atribua funções específicas aos participantes ao iniciar um processo de preenchimento de formulário enquanto estiver conectado ao DocSpace.</string>
-    <string name="whats_new_4">Sumário em documentos</string>
-    <string name="whats_new_4_desc">Crie e navegue pelas seções do documento com um sumário automático.</string>
+    <string name="whats_new_1">Novas seções do DocSpace</string>
+    <string name="whats_new_1_desc">Acesse seus arquivos mais rápido com áreas DocSpace dedicadas: Compartilhado comigo, Favoritos e Recentes.</string>
+    <string name="whats_new_2">Compartilhamento de arquivos aprimorado no DocSpace</string>
+    <string name="whats_new_2_desc">Compartilhe arquivos com mais facilidade e gerencie o acesso com fluxos de trabalho de compartilhamento aprimorados no DocSpace 3.5.</string>
+    <string name="whats_new_3">Opções de login social</string>
+    <string name="whats_new_3_desc">Inicie sessão com LinkedIn ou Zoom para criar e aceder à sua conta DocSpace mais facilmente.</string>
+    <string name="whats_new_4">Direção do parágrafo e da célula (RTL)</string>
+    <string name="whats_new_4_desc">Alternar a direção do parágrafo e da célula da tabela entre da direita para a esquerda e da esquerda para a direita em todos os editores.</string>
 
     <!-- Newly added translations (v9.0.0 - 2025-06-09) -->
     <string name="cloud_create_account">Criar conta gratuita</string>
@@ -963,4 +962,29 @@
     <string name="start_filling_ready_for_filling">Formulário está pronto para preenchimento na sala</string>
     <string name="start_filling_ready_for_filling_desc">Uma notificação já foi enviada ao usuário na primeira função, solicitando que preencha o formulário. Você pode navegar até a sala ou compartilhar o link de preenchimento com os participantes.</string>
     <string name="list_context_reset_filling">Redefinir e iniciar preenchimento</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-25) -->
+    <string name="upload_manager_duplicate_title">Ação necessária</string>
+    <string name="upload_manager_duplicate_text">O destino já contém um arquivo chamado «%s». Selecione a ação:</string>
+    <string name="upload_manager_duplicates_text">O destino já contém arquivos com o mesmo nome. Selecione a ação:</string>
+    <string name="upload_manager_duplicate_overwrite">Substituir com atualização da versão</string>
+    <string name="upload_manager_duplicate_copy">Criar cópia do arquivo</string>
+    <string name="upload_manager_duplicate_skip">Pular</string>
+    <string name="socials_failed_auth">Falha no login</string>
+    <string name="rooms_info_access_desc">Esta sala está disponível para qualquer pessoa com o link. O acesso para usuários externos é fornecido dependendo do tipo de direitos de acesso selecionado.</string>
+    <string name="rooms_share_shared_links_count">Links compartilhados (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Habilite esta configuração para desativar o download de arquivos e pastas desta pasta compartilhada por meio de um link.</string>
+    <string name="share_link_file_restrict_desc">Habilite esta configuração para desativar o download deste arquivo compartilhado por meio de um link.</string>
+    <string name="share_link_file_restrict_warning">Não é possível desativar a restrição ao download e à cópia de dados, pois essa configuração é aplicada em nível de sala para todos os arquivos.</string>
+    <string name="share_link_file_restrict_warning_ok">OK</string>
+    <string name="rooms_user_type_members">Membros</string>
+    <string name="share_goal_everyone">Todos</string>
+    <string name="placeholder_no_shared_items">There are no shared items yet</string>
+    <string name="placeholder_no_shared_items_desc">Aqui você encontrará arquivos e pastas que outros membros do DocSpace compartilharam com você. Seus próprios arquivos e o conteúdo da sala não são exibidos aqui.</string>
+    <string name="rooms_share_shared_folder_desc">Forneça acesso à pasta e defina os níveis de permissão.</string>
+    <string name="rooms_info_folder_desc">Esta pasta pode ser acessada por meio de um link compartilhado da pasta pai, mas você pode criar um link externo personalizado com permissões específicas.</string>
+    <string name="rooms_info_file_desc">Este arquivo pode ser acessado por meio de um link compartilhado da pasta pai, mas você pode criar um link externo personalizado com permissões específicas..</string>
+    <string name="rooms_info_fill_form_desc">Esta sala está disponível para qualquer pessoa com o link. Os usuários externos terão permissão para preencher formulários em todos os arquivos..</string>
+    <string name="share_popup_access_editing">Edição</string>
+    <string name="share_popup_access_remove">Remover</string>
 </resources>

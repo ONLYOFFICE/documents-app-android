@@ -50,9 +50,9 @@ interface AdapterState {
     val sortBy: String?
 
     var currentFolderId: String
+    var sectionType: Int
     var isRoot: Boolean
     var isFooter: Boolean
-    var isSectionMy: Boolean
     var isTrash: Boolean
     var isIndexing: Boolean
     var isGridView: Boolean
@@ -110,9 +110,9 @@ class ExplorerAdapter(
     override val accountId: String? by lazy { context.accountOnline?.id }
 
     override var currentFolderId: String = ""
+    override var sectionType: Int = -1
     override var isRoot: Boolean = false
     override var isFooter: Boolean = false
-    override var isSectionMy: Boolean = false
     override var isTrash: Boolean = false
     override var isIndexing: Boolean = false
     override var isGridView: Boolean = initialGridView

@@ -4,14 +4,20 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import app.documents.core.model.cloud.WebdavProvider
+import app.documents.core.model.login.OidcConfiguration
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.utils.OwnCloudOcisUtils
 import app.documents.core.network.manager.models.explorer.Explorer
 import app.editors.manager.R
+import app.editors.manager.managers.utils.StorageUtils
 import app.editors.manager.mvp.presenters.main.DocsWebDavPresenter
 import app.editors.manager.mvp.views.main.DocsWebDavView
+import app.editors.manager.ui.activities.login.WebViewCloudLoginActivity
+import kotlinx.serialization.encodeToString
 import app.editors.manager.ui.activities.main.ActionButtonFragment
 import app.editors.manager.ui.activities.main.IMainActivity
 import app.editors.manager.ui.dialogs.ActionBottomDialog
+import kotlinx.serialization.json.Json
 import lib.toolkit.base.managers.utils.UiUtils.setMenuItemTint
 import lib.toolkit.base.managers.utils.getSerializableExt
 import moxy.presenter.InjectPresenter
@@ -106,6 +112,23 @@ open class DocsWebDavFragment : DocsBaseFragment(), DocsWebDavView, ActionButton
 
     private fun init() {
         presenter.checkBackStack()
+    }
+
+    override fun onOwnCloudAuthorization(config: OidcConfiguration) {
+        val storage = OwnCloudOcisUtils.storage
+        val url = StorageUtils.getStorageUrl(
+            providerKey = storage.name,
+            clientId = storage.clientId,
+            redirectUrl = config.issuer + storage.redirectUrl,
+            authUrl = config.authorizationEndpoint + "?"
+        ).orEmpty()
+
+        WebViewCloudLoginActivity.show(
+            activity = requireActivity(),
+            portal = url,
+            provider = WebdavProvider.OwnCloud.name,
+            config = Json.encodeToString(config)
+        )
     }
 
     companion object {

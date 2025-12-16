@@ -35,7 +35,7 @@ import app.documents.core.model.login.Group
 import app.documents.core.model.login.User
 import app.documents.core.network.common.NetworkResult
 import app.editors.manager.R
-import app.editors.manager.managers.tools.BaseEvent
+import lib.toolkit.base.managers.tools.BaseEvent
 import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
 import app.editors.manager.ui.fragments.template.settings.PublicBlock

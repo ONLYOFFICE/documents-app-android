@@ -33,6 +33,7 @@ object EditorsContract {
     const val EXTRA_THEME_COLOR = "EXTRA_THEME_COLOR"
     const val EXTRA_ITEM_ID = "EXTRA_ITEM_ID"
     const val EXTRA_ROOM_ID = "EXTRA_ROOM_ID"
+    const val EXTRA_FILE_EXTENSION = "EXTRA_FILE_EXTENSION"
 
     const val RESULT_FAILED_OPEN = 4000
     const val RESULT_START_FILLING_COMPLETE = 4001

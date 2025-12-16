@@ -10,6 +10,8 @@ import app.documents.core.login.GoogleLoginRepositoryImpl
 import app.documents.core.login.LoginScope
 import app.documents.core.login.OnedriveLoginRepository
 import app.documents.core.login.OnedriveLoginRepositoryImpl
+import app.documents.core.login.OwnCloudLoginRepository
+import app.documents.core.login.OwnCloudLoginRepositoryImpl
 import app.documents.core.login.WebdavLoginRepository
 import app.documents.core.login.WebdavLoginRepositoryImpl
 import app.documents.core.model.cloud.CloudPortal
@@ -19,6 +21,7 @@ import app.documents.core.network.login.GoogleLoginDataSource
 import app.documents.core.network.login.LoginNetworkModule
 import app.documents.core.network.login.OnedriveLoginDataSource
 import app.documents.core.network.login.WebdavLoginDataSource
+import app.documents.core.network.login.owncloud.OwnCloudLoginDataSource
 import dagger.Module
 import dagger.Provides
 
@@ -81,11 +84,25 @@ class LoginModule {
     @LoginScope
     fun provideWebdavLoginRepository(
         webdavLoginDataSource: WebdavLoginDataSource,
+        ownCloudLoginDataSource: OwnCloudLoginDataSource,
         accountRepository: AccountRepository
     ): WebdavLoginRepository {
         return WebdavLoginRepositoryImpl(
             accountRepository,
-            webdavLoginDataSource
+            webdavLoginDataSource,
+            ownCloudLoginDataSource
+        )
+    }
+
+    @Provides
+    @LoginScope
+    fun provideOwnCloudLoginRepository(
+        ownCloudLoginDataSource: OwnCloudLoginDataSource,
+        accountRepository: AccountRepository
+    ): OwnCloudLoginRepository {
+        return OwnCloudLoginRepositoryImpl(
+            accountRepository,
+            ownCloudLoginDataSource
         )
     }
 }

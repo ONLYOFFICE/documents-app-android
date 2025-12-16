@@ -6,9 +6,6 @@ import app.documents.core.model.login.User
 import app.documents.core.network.common.NetworkResult
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
-import app.editors.manager.managers.tools.BaseEvent
-import app.editors.manager.managers.tools.BaseEventSender
-import app.editors.manager.managers.tools.EventSender
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +13,9 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import lib.toolkit.base.managers.tools.BaseEvent
+import lib.toolkit.base.managers.tools.BaseEventSender
+import lib.toolkit.base.managers.tools.EventSender
 import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.FormRole
 

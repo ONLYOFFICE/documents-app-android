@@ -6,36 +6,35 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.createBitmap
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import app.documents.core.network.manager.models.base.Entity
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.managers.utils.StorageUtils
+import app.editors.manager.managers.utils.StringUtils
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.ExplorerAdapter
 
 
-abstract class BaseViewHolderExplorer<T>(
+abstract class BaseViewHolderExplorer<T : Entity>(
     itemView: View,
     @JvmField protected var adapter: ExplorerAdapter
 ) : RecyclerView.ViewHolder(itemView) {
 
     protected val icon: Bitmap
         get() {
-            val view = getCachedIcon() ?: return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+            val view = getCachedIcon() ?: return createBitmap(1, 1)
             return try {
-                val bitmap = Bitmap.createBitmap(
-                    view.measuredWidth,
-                    view.measuredHeight,
-                    Bitmap.Config.ARGB_8888
-                )
+                val bitmap = createBitmap(view.measuredWidth, view.measuredHeight)
                 val canvas = Canvas(bitmap)
                 view.draw(canvas)
                 bitmap
             } catch (_: Exception) {
-                Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+                createBitmap(1, 1)
             }
         }
 
@@ -50,6 +49,15 @@ abstract class BaseViewHolderExplorer<T>(
     }
 
     protected abstract fun getCachedIcon(): View?
+
+    protected open fun getSubtitleText(element: T): String? {
+        if (element !is Item) return null
+        return StringUtils.getCloudItemInfo(
+            context = adapter.context,
+            item = element,
+            state = adapter
+        )
+    }
 
     protected open fun initSelecting(element: T): Boolean {
         val selectable = when (adapter.pickerMode) {

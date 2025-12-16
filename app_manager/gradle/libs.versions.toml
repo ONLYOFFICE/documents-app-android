@@ -3,14 +3,14 @@ compileSdk = "36"
 minSdk = "26"
 targetSdk = "35"
 ndk = "28.2.13676358"
-gradle = "8.13.0"
+gradle = "8.13.1"
 
 #kotlin
-kotlin = "1.9.24"
-kotlinKsp = "1.9.24-1.0.20"
-kotlinSerialization = "1.6.3"
-kotlinReflect = "1.9.0"
-coroutines = "1.8.1"
+kotlin = "2.0.0"
+kotlinKsp = "2.0.0-1.0.21"
+kotlinSerialization = "1.7.1"
+kotlinReflect = "2.0.0"
+coroutines = "1.10.2"
 
 #android
 androidx = "1.7.1"
@@ -21,18 +21,18 @@ constraint = "2.2.1"
 ktx = "1.17.0"
 fragmentKtx = "1.8.9"
 biometric = "1.1.0"
-androidWorkManager = "2.10.3"
+androidWorkManager = "2.11.0"
 androidDocumentFile = "1.1.0"
 
 #compose
-composeMaterial = "1.7.8"
-composeMaterial3 = "1.3.1"
-composeUi = "1.7.8"
-composeUiTooling = "1.7.8"
-composeUiToolingPreview = "1.7.8"
-composeNavigation = "2.8.9"
-composeCompiler = "1.5.14"
-compose = "1.7.8"
+composeMaterial = "1.10.0"
+composeMaterial3 = "1.4.0"
+composeUi = "1.10.0"
+composeUiTooling = "1.10.0"
+composeUiToolingPreview = "1.10.0"
+composeNavigation = "2.9.6"
+composeCompiler = "2.0.0"
+compose = "1.10.0"
 composeConstrainLayout = "1.1.1"
 
 #dagger
@@ -49,18 +49,18 @@ koin = "4.0.4"
 
 #firebase
 firebaseCore = "21.1.1"
-firebaseConfig = "22.1.0"
-firebaseMessaging = "24.1.1"
-firebaseCrashlytics = "19.4.2"
+firebaseConfig = "23.0.1"
+firebaseMessaging = "25.0.1"
+firebaseCrashlytics = "20.0.3"
 
 #livedata
-lifecycle = "2.8.7"
+lifecycle = "2.10.0"
 
 #google
 playServieAuth = "21.4.0"
 playReview = "2.0.2"
-material = "1.12.0"
-gson = "2.13.1"
+material = "1.13.0"
+gson = "2.13.2"
 safetynet = "18.1.0"
 app-update = "2.1.0"
 text-recognition = "16.0.1"
@@ -70,11 +70,11 @@ jackson = "2.18.3"
 
 rxjava = "2.1.1"
 
-retrofit = "2.11.0"
+retrofit = "3.0.0"
 retrofitKtSerialization = "1.0.0"
 
 firebaseCrashlyticsGradle = "3.0.6"
-googleServices = "4.4.3"
+googleServices = "4.4.4"
 
 #other
 phoneNumber = "8.13.52"
@@ -85,6 +85,12 @@ glideOkHttpIntegration = "4.16.0"
 glideCompose = "1.0.0-beta01"
 photoView = "2.3.0"
 colorPicker = "2.3.0"
+customTabs = "1.9.0"
+
+#tests
+junit = "4.13.2"
+junitEx = "1.3.0"
+mockk = "1.13.17"
 
 [libraries]
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx" }
@@ -98,6 +104,7 @@ fragmentKtx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragme
 biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 androidWorkManager = { module = "androidx.work:work-runtime-ktx", version.ref = "androidWorkManager" }
 androidDocumentFile = { module = "androidx.documentfile:documentfile", version.ref = "androidDocumentFile" }
+androidCustomTabs = { module = "androidx.browser:browser", version.ref = "customTabs" }
 
 #compose
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "composeUi" }
@@ -189,9 +196,15 @@ glideCompose = { module = "com.github.bumptech.glide:compose", version.ref = "gl
 photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoView" }
 colorPicker = { module = "com.github.skydoves:colorpickerview", version.ref = "colorPicker" }
 
+#tests
+junit = { module = "junit:junit", version.ref = "junit" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+ext-junit = { module = "androidx.test.ext:junit", version.ref = "junitEx" }
+
 [plugins]
 android-library = { id = "com.android.library", version.ref = "gradle" }
 android-application = { id = "com.android.application", version.ref = "gradle" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlinKsp" }
 kotlin-serialization-plugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "composeCompiler" }

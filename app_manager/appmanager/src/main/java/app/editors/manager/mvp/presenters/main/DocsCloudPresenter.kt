@@ -338,6 +338,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         val lifetime = currentFolder?.lifetime
         toolbarState = when {
             currentFolder?.isTemplate == true -> ToolbarState.RoomTemplate
+            currentSectionType == ApiContract.SectionType.CLOUD_TRASH
+                    && !modelExplorerStack.isListEmpty -> ToolbarState.Trash
             lifetime != null -> ToolbarState.RoomLifetime(lifetime)
             else -> ToolbarState.None
         }
@@ -360,8 +362,8 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             viewState.onStateAdapterRoot(false)
             viewState.onStateUpdateRoot(false)
             // TODO check security...
-            if (isRoom) {
-                viewState.onStateActionButton(modelExplorerStack.last()?.current?.security?.create == true)
+            if (account.isDocSpace) {
+                viewState.onStateActionButton(currentFolder?.security?.create == true)
             } else {
                 viewState.onStateActionButton(isContextEditable && !isRecentViaLinkSection())
             }
@@ -594,17 +596,17 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun addToFavorite() {
         val requestFavorites = RequestFavorites()
-        requestFavorites.fileIds = listOf(itemClicked?.id!!)
         val item = itemClicked
-        if (item != null && item is CloudFile) {
+        if (item != null) {
+            if (item is CloudFolder) {
+                requestFavorites.folderIds = listOf(item.id)
+            } else if (item is CloudFile) {
+                requestFavorites.fileIds = listOf(item.id)
+            }
             val isAdd = !item.isFavorite
             disposable.add(fileProvider.addToFavorites(requestFavorites, isAdd)
                 .subscribe({
-                    if (isAdd) {
-                        item.fileStatus += ApiContract.FileStatus.FAVORITE
-                    } else {
-                        item.fileStatus -= ApiContract.FileStatus.FAVORITE
-                    }
+                    item.isFavorite = isAdd
                     viewState.onUpdateItemState()
                     viewState.onSnackBar(
                         if (isAdd) {
@@ -614,6 +616,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                         }
                     )
                 }) { throwable: Throwable -> fetchError(throwable) })
+        }
+    }
+
+    fun updateShareBadge(shared: Boolean) {
+        itemClicked?.let { item ->
+            if (item.shared != shared) {
+                item.shared = shared
+                viewState.onUpdateItemState()
+            }
         }
     }
 
@@ -735,7 +746,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         resetFilters()
         if (folderId != itemFolderId) {
             setFiltering(false)
-            modelExplorerStack.previous()?.let(modelExplorerStack::refreshStack)
+            if (currentSectionType != ApiContract.SectionType.CLOUD_FAVORITES) {
+                modelExplorerStack.previous()?.let(modelExplorerStack::refreshStack)
+            }
             getItemsById(itemFolderId)
         } else if (isRoot) {
             getBackStack()
@@ -776,6 +789,9 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     val isUserSection: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_USER
+
+    val isSharedWithMeSection: Boolean
+        get() = isShareSection && account.isDocSpace
 
     private val isShareSection: Boolean
         get() = currentSectionType == ApiContract.SectionType.CLOUD_SHARE

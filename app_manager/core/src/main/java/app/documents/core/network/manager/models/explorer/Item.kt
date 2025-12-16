@@ -30,6 +30,10 @@ open class Item : ItemProperties(), Serializable {
     @Expose
     var rootFolderType = "-1"
 
+    @SerializedName("parentRoomType")
+    @Expose
+    var parentRoomType: Int = -1
+
     @SerializedName("updatedBy")
     @Expose
     var updatedBy = UpdatedBy()
@@ -69,6 +73,22 @@ open class Item : ItemProperties(), Serializable {
     @SerializedName("order")
     @Expose
     var order: String = ""
+
+    @SerializedName("isFavorite")
+    @Expose
+    var isFavorite = false
+
+    @SerializedName("originTitle")
+    @Expose
+    var originTitle = ""
+
+    @SerializedName("originRoomTitle")
+    @Expose
+    var originRoomTitle = ""
+
+    @SerializedName("availableShareRights")
+    @Expose
+    val availableShareRights: AvailableShareRights? = null
 
     var index: Int
         get() = order.split(".").lastOrNull()?.toInt() ?: 0

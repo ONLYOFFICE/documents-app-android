@@ -68,7 +68,7 @@ fun SharedLinkItem(
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_room_link),
                 contentDescription = null,
-                tint = MaterialTheme.colors.colorTextTertiary
+                tint = MaterialTheme.colors.colorTextSecondary
             )
         }
         Column(

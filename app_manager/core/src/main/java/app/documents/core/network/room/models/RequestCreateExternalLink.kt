@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 data class RequestCreateExternalLink(
     val access: Int = Access.Read.code,
     val denyDownload: Boolean = false,
+    val internal: Boolean = false,
     val expirationDate: String? = null,
     val linkType: Int = 1,
     val password: String? = null,

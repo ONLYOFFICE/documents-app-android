@@ -12,6 +12,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import app.documents.core.network.common.contracts.ApiContract
+import app.editors.manager.managers.utils.SocialSignIn
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -188,8 +189,12 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
         viewBinding?.loginPersonalPortalEmailLayout?.error = message
     }
 
-    override fun onWaitingDialog(message: String, tag: String) {
-        showWaitingDialog(message, getString(R.string.dialogs_common_cancel_button), tag)
+    override fun onWaitingDialog() {
+        showWaitingDialog(
+            getString(R.string.dialogs_wait_title),
+            getString(R.string.dialogs_common_cancel_button),
+            TAG_DIALOG_WAITING
+        )
     }
 
     override fun onError(message: String?) {
@@ -198,11 +203,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     }
 
     override fun onTwitterSuccess(token: String) {
-        showWaitingDialog(
-            getString(R.string.dialogs_wait_title),
-            getString(R.string.dialogs_common_cancel_button),
-            TAG_DIALOG_WAITING
-        )
+        onWaitingDialog()
         personalSignInPresenter.signInWithProvider(token, ApiContract.Social.TWITTER)
     }
 
@@ -212,11 +213,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     }
 
     override fun onFacebookSuccess(token: String) {
-        showWaitingDialog(
-            getString(R.string.dialogs_wait_title),
-            getString(R.string.dialogs_common_cancel_button),
-            TAG_DIALOG_WAITING
-        )
+        onWaitingDialog()
         personalSignInPresenter.signInWithProvider(token, ApiContract.Social.FACEBOOK)
     }
 
@@ -238,11 +235,7 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     }
 
     override fun onGoogleSuccess(account: Account) {
-        showWaitingDialog(
-            getString(R.string.dialogs_wait_title),
-            getString(R.string.dialogs_common_cancel_button),
-            TAG_DIALOG_WAITING
-        )
+        onWaitingDialog()
         val scope = requireContext().getString(R.string.google_scope)
         val accessToken = GoogleAuthUtil.getToken(requireContext(), account, scope)
         personalSignInPresenter.signInWithProvider(accessToken, ApiContract.Social.GOOGLE)
@@ -255,6 +248,9 @@ class PersonalPortalFragment : BaseAppFragment(), CommonSignInView, OnSocialNetw
     override fun onGoogleCancelled() {
         showSnackBar(R.string.socials_google_cancel_auth)
     }
+
+    override fun onSocialAuth(socialSignIn: SocialSignIn?) = Unit
+    override fun onSocialClick(social: String) = Unit
 
     private fun init(savedInstanceState: Bundle?) {
         fieldsWatcher = FieldsWatcher()

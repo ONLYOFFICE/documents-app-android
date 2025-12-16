@@ -79,21 +79,21 @@ object RequestsCollector {
 
         val duration = System.currentTimeMillis() - startTime
 
-        val requestHeaders = request.headers().toMultimap().mapValues { it.value.firstOrNull() ?: "" }
+        val requestHeaders = request.headers.toMultimap().mapValues { it.value.firstOrNull() ?: "" }
 
-        val requestBody = request.body()?.let {
+        val requestBody = request.body?.let {
             val buffer = Buffer()
             it.writeTo(buffer)
             buffer.readUtf8()
         }
 
         logRequest(
-            method = request.method(),
-            url = request.url().toString(),
+            method = request.method,
+            url = request.url.toString(),
             headers = requestHeaders,
             requestBody = requestBody,
-            responseCode = response.code(),
-            responseMessage = response.message(),
+            responseCode = response.code,
+            responseMessage = response.message,
             responseBody = responseBodyString,
             timestamp = startTime,
             duration = duration

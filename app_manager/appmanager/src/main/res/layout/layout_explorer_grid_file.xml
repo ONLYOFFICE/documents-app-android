@@ -56,7 +56,7 @@
                 app:cardBackgroundColor="@color/colorSecondary"
                 app:cardCornerRadius="4dp"
                 app:cardElevation="4dp"
-                android:visibility="gone" >
+                android:visibility="visible" >
 
                 <TextView
                     android:id="@+id/badgeNew"
@@ -104,6 +104,16 @@
             android:layout_marginTop="@dimen/file_grid_status_margin"
             android:orientation="vertical"
             app:layout_constraintTop_toTopOf="@id/preview">
+
+            <ImageView
+                android:id="@+id/link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/default_margin_small"
+                android:importantForAccessibility="no"
+                android:visibility="gone"
+                android:src="@drawable/ic_link_badge"
+                app:layout_constraintVertical_chainStyle="packed"/>
 
             <ImageView
                 android:id="@+id/editing"

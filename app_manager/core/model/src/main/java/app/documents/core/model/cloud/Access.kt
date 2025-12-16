@@ -1,5 +1,8 @@
 package app.documents.core.model.cloud
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 sealed class Access(val type: String, val code: Int) {
 
     data object None : Access(TYPE_NONE, CODE_NONE)

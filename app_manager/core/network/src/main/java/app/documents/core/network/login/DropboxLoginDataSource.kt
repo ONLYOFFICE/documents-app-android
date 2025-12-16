@@ -18,7 +18,7 @@ import app.documents.core.network.VALUE_GRANT_TYPE_REFRESH
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.Credentials
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.http.Header
@@ -56,7 +56,7 @@ internal class DropboxLoginDataSourceImpl(json: Json, okHttpClient: OkHttpClient
     private val api: DropboxLoginApi = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(DROPBOX_BASE_URL)
-        .addConverterFactory(json.asConverterFactory(MediaType.get(VALUE_CONTENT_TYPE)))
+        .addConverterFactory(json.asConverterFactory(VALUE_CONTENT_TYPE.toMediaType()))
         .build()
         .create(DropboxLoginApi::class.java)
 

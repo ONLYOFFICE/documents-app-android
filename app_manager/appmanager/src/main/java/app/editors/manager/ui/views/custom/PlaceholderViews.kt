@@ -42,7 +42,7 @@ class PlaceholderViews(val view: View?) {
         EMPTY_VDR_ROOM_CREATOR, EMPTY_VDR_ROOM_VIEWER,
         EMPTY_COLLABORATION_ROOM_CREATOR, EMPTY_COLLABORATION_ROOM_VIEWER,
         EMPTY_CUSTOM_ROOM_CREATOR, EMPTY_CUSTOM_ROOM_VIEWER,
-        EMPTY_RECENT_VIA_LINK, SEARCH,
+        EMPTY_RECENT_VIA_LINK, SEARCH, EMPTY_SHARED_WITH_ME,
         PAYMENT_REQUIRED, EXTERNAL_STORAGE, CONNECTION,
 
         // Special compose screen
@@ -364,7 +364,10 @@ class PlaceholderViews(val view: View?) {
             subtitleRes = R.string.placeholder_connection_desc,
             buttonTitleRes = R.string.placeholder_connection_button
         )
-
+        Type.EMPTY_SHARED_WITH_ME -> PlaceholderConfig(
+            image = lib.toolkit.base.R.drawable.placeholder_no_shared_items,
+            titleRes = R.string.placeholder_no_shared_items,
+            subtitleRes = R.string.placeholder_no_shared_items_desc,)
         else -> PlaceholderConfig(
             image = null,
             titleRes = R.string.placeholder_empty_folder

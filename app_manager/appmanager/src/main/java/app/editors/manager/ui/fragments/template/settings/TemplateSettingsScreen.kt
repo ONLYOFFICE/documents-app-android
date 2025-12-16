@@ -43,6 +43,8 @@ import app.documents.core.model.login.Member
 import app.documents.core.model.login.User
 import app.documents.core.network.common.NetworkResult
 import app.editors.manager.R
+import lib.toolkit.base.R as R2
+import lib.toolkit.base.managers.tools.BaseEvent
 import app.editors.manager.managers.tools.BaseEvent
 import app.editors.manager.managers.utils.GlideUtils
 import app.editors.manager.mvp.models.ui.SizeUnit
