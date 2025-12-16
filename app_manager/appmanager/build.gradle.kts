@@ -15,6 +15,7 @@ plugins {
     kotlin("android")
     kotlin("kapt")
     alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.kotlin.compose)
 //    id("org.owasp.dependencycheck")
 }
 
@@ -68,7 +69,7 @@ android {
         manifestPlaceholders += mapOf()
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 663
+        versionCode = 673
         versionName = "9.2.0"
         multiDexEnabled = true
         applicationId = "com.onlyoffice.documents"
@@ -333,6 +334,7 @@ dependencies {
     implementation(libs.glideCompose)
     implementation(libs.photoView)
     implementation(libs.androidWorkManager)
+    implementation(libs.androidCustomTabs)
 
     //TODO add to base module
     implementation(libs.lifecycle.viewmodel)

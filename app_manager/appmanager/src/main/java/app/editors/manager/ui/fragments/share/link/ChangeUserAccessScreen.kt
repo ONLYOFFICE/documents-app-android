@@ -9,12 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.documents.core.model.cloud.Access
-import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.share.models.GroupShare
-import app.documents.core.network.share.models.ShareType
+import app.documents.core.network.share.models.ShareEntity
 import app.editors.manager.R
-import app.editors.manager.managers.utils.RoomUtils
-import app.editors.manager.managers.utils.toUi
+import app.editors.manager.mvp.models.ui.AccessUI
 import lib.compose.ui.theme.ManagerTheme
 import lib.compose.ui.views.AppDescriptionItem
 import lib.compose.ui.views.AppHeaderItem
@@ -23,15 +21,13 @@ import lib.compose.ui.views.AppSelectItem
 import lib.compose.ui.views.AppTopBar
 
 @Composable
-fun RoomAccessScreen(
-    roomType: Int,
+fun ChangeUserAccessScreen(
     currentAccess: Access,
-    ownerOrAdmin: Boolean,
-    portal: String,
-    isRemove: Boolean = false,
+    accessList: List<AccessUI>,
+    portal: String = "",
     users: List<GroupShare>? = null,
+    onUserClick: (ShareEntity) -> Unit = { },
     onChangeAccess: (newAccess: Access) -> Unit,
-    onUserClick: (String, Int, Boolean) -> Unit = { _, _, _ -> },
     onBack: () -> Unit
 ) {
     BackHandler(onBack = onBack)
@@ -42,40 +38,37 @@ fun RoomAccessScreen(
             AppTopBar(title = R.string.share_choose_access_title, backListener = onBack)
         }
     ) {
-        val options = RoomUtils.getAccessOptions(roomType, isRemove, ownerOrAdmin)
         if (users == null) {
             Column {
-                options.forEach { accessOption ->
-                    val accessUi = accessOption.toUi()
+                accessList.forEach { access ->
                     AppSelectItem(
-                        title = accessUi.title,
-                        selected = currentAccess == accessOption,
-                        startIcon = accessUi.icon,
-                        startIconTint = if (accessOption == Access.None)
+                        title = access.title,
+                        selected = currentAccess == access.access,
+                        startIcon = access.icon,
+                        startIconTint = if (access.access == Access.None)
                             MaterialTheme.colors.error else
                             MaterialTheme.colors.primary
                     ) {
-                        onChangeAccess.invoke(accessOption)
+                        onChangeAccess.invoke(access.access)
                         onBack.invoke()
                     }
                 }
             }
         } else {
-            val groupOptions = options.minus(Access.RoomManager)
+            val groupOptions = accessList.filter { it.access !is Access.RoomManager }
 
             Column {
                 AppHeaderItem(title = R.string.share_access_room_type)
-                groupOptions.forEach { accessOption ->
-                    val accessUi = accessOption.toUi()
+                groupOptions.forEach { access ->
                     AppSelectItem(
-                        title = accessUi.title,
-                        selected = currentAccess == accessOption,
-                        startIcon = accessUi.icon,
-                        startIconTint = if (accessOption == Access.None)
+                        title = access.title,
+                        selected = currentAccess == access.access,
+                        startIcon = access.icon,
+                        startIconTint = if (access.access == Access.None)
                             MaterialTheme.colors.error else
                             MaterialTheme.colors.primary
                     ) {
-                        onChangeAccess.invoke(accessOption)
+                        onChangeAccess.invoke(access.access)
                         onBack.invoke()
                     }
                 }
@@ -84,9 +77,10 @@ fun RoomAccessScreen(
                     text = R.string.share_access_room_group_desc
                 )
                 ShareUsersList(
+                    isRoom = true,
                     portal = portal,
                     shareList = users,
-                    type = ShareType.User,
+                    title = R.string.rooms_info_users_title,
                     onClick = onUserClick
                 )
             }
@@ -98,8 +92,7 @@ fun RoomAccessScreen(
 @Composable
 private fun Preview() {
     ManagerTheme {
-        RoomAccessScreen(
-            roomType = ApiContract.RoomType.COLLABORATION_ROOM,
+        ChangeUserAccessScreen(
             currentAccess = Access.Read,
             portal = "",
 //            users = listOf(
@@ -107,9 +100,8 @@ private fun Preview() {
 //                GroupShare(isOwner = true),
 //                GroupShare(),
 //            ),
-            ownerOrAdmin = true,
             onChangeAccess = {},
-            onUserClick = { _, _, _ -> }
+            accessList = emptyList()
         ) {}
     }
 }

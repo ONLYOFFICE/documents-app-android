@@ -7,6 +7,7 @@ import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
+import app.editors.manager.managers.tools.ShareData
 import app.editors.manager.viewModels.base.BaseViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,7 +23,7 @@ import retrofit2.HttpException
 
 data class ExternalLinkSettingsState(
     val loading: Boolean,
-    val link: ExternalLinkSharedTo,
+    val link: ExternalLink,
     val access: Access
 )
 
@@ -36,14 +37,14 @@ sealed class ExternalLinkSettingsEffect {
 
 class ExternalLinkSettingsViewModel(
     access: Access,
-    inputLink: ExternalLinkSharedTo,
-    private val roomId: String?,
+    inputLink: ExternalLink,
+    private val shareData: ShareData,
     private val roomProvider: RoomProvider,
 ) : BaseViewModel() {
 
     companion object {
 
-        private const val MAXIMUM_LINKS_ERROR = "The maximum number of links"
+        const val MAXIMUM_LINKS_ERROR = "The maximum number of links"
     }
 
     private val _state = MutableStateFlow(ExternalLinkSettingsState(false, inputLink, access))
@@ -55,6 +56,7 @@ class ExternalLinkSettingsViewModel(
     private var operationJob: Job? = null
 
     fun deleteOrRevoke() {
+        if (state.value.loading) return
         operationJob = viewModelScope.launch {
             updateLink(deleteOrRevoke = true)
             _effect.tryEmit(ExternalLinkSettingsEffect.Delete)
@@ -62,6 +64,7 @@ class ExternalLinkSettingsViewModel(
     }
 
     fun save() {
+        if (state.value.loading) return
         operationJob = viewModelScope.launch {
             updateLink()
             _effect.tryEmit(ExternalLinkSettingsEffect.Save)
@@ -73,20 +76,21 @@ class ExternalLinkSettingsViewModel(
     }
 
     fun updateViewState(body: ExternalLinkSharedTo.() -> ExternalLinkSharedTo) {
-        _state.update {
-            it.copy(link = body(it.link))
+        _state.update { state ->
+            state.copy(link = state.link.copy(sharedTo = body(state.link.sharedTo)))
         }
     }
 
-    fun createLink() {
-        if (!validatePassword()) return
+    fun createRoomLink() {
+        if (state.value.loading || !validatePassword()) return
         _state.update { it.copy(loading = true) }
         operationJob = viewModelScope.launch {
             try {
-                with(state.value.link) {
+                with(state.value.link.sharedTo) {
                     roomProvider.createRoomSharedLink(
-                        roomId = roomId.orEmpty(),
+                        roomId = shareData.itemId,
                         denyDownload = denyDownload,
+                        internal = internal == true,
                         expirationDate = expirationDate,
                         password = password,
                         title = title,
@@ -112,19 +116,22 @@ class ExternalLinkSettingsViewModel(
     }
 
     private suspend fun updateLink(deleteOrRevoke: Boolean = false): ExternalLink? {
-        if (!validatePassword()) return null
+        if (state.value.loading || !validatePassword()) return null
         _state.update { it.copy(loading = true) }
         return try {
-            with(state.value.link) {
+            val access = if (deleteOrRevoke) Access.None.code else state.value.access.code
+            if (shareData.isRoom) {
                 roomProvider.updateRoomSharedLink(
-                    roomId = roomId.orEmpty(),
-                    access = if (deleteOrRevoke) Access.None else state.value.access,
-                    linkId = id,
-                    linkType = linkType,
-                    denyDownload = denyDownload,
-                    expirationDate = expirationDate,
-                    password = password,
-                    title = title
+                    roomId = shareData.itemId,
+                    sharedLink = state.value.link.sharedTo,
+                    access = access,
+                )
+            } else {
+                roomProvider.updateSharedLink(
+                    itemId = shareData.itemId,
+                    sharedLink = state.value.link.sharedTo,
+                    isFolder = shareData.isFolder,
+                    access = access
                 )
             }
         } catch (httpException: HttpException) {
@@ -136,7 +143,7 @@ class ExternalLinkSettingsViewModel(
     }
 
     private fun validatePassword(): Boolean {
-        val password = state.value.link.password ?: return true
+        val password = state.value.link.sharedTo.password ?: return true
 
         if (password.length < 8) {
             _effect.tryEmit(ExternalLinkSettingsEffect.PasswordLength)

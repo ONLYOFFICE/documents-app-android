@@ -19,16 +19,15 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import app.documents.core.model.cloud.Access
 import app.editors.manager.R
-import app.editors.manager.managers.utils.toUi
+import app.editors.manager.mvp.models.ui.AccessUI
 import lib.compose.ui.theme.colorTextSecondary
 import lib.compose.ui.visible
 
 @Composable
 fun AccessIconButton(
-    modifier: Modifier = Modifier,
-    access: Access,
+    access: AccessUI,
     enabled: Boolean,
-    accessList: List<Access>,
+    accessList: List<AccessUI>,
     onAccess: (Access) -> Unit
 ) {
     var dropdown by remember { mutableStateOf(false) }
@@ -44,7 +43,7 @@ fun AccessIconButton(
             horizontalArrangement = Arrangement.End
         ) {
             Icon(
-                imageVector = ImageVector.vectorResource(access.toUi().icon),
+                imageVector = ImageVector.vectorResource(access.icon),
                 contentDescription = null,
                 tint = MaterialTheme.colors.colorTextSecondary
             )

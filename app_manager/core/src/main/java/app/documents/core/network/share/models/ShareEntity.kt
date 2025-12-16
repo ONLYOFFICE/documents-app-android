@@ -7,4 +7,7 @@ interface ShareEntity {
     val isOwner: Boolean
     val sharedTo: SharedTo
     val access: Access
+
+    val isOwnerOrAdmin: Boolean
+        get() = sharedTo.isOwnerOrAdmin
 }

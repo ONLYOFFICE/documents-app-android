@@ -21,6 +21,7 @@ import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.documents.core.network.manager.models.explorer.Item
+import app.documents.core.network.share.models.ShareType
 import app.editors.manager.R
 import app.editors.manager.managers.utils.GlideUtils.setRoomLogo
 import app.editors.manager.mvp.models.ui.AccessUI
@@ -240,43 +241,67 @@ object ManagerUiUtils {
         }
     }
 
-    fun getAccessList(
-        extension: StringUtils.Extension,
-        removable: Boolean = false,
-        isDocSpace: Boolean = false,
+    fun getItemAccessList(
+        extension: FileExtensions?,
+        forLink: Boolean = false,
+        withRemove: Boolean = false
+    ): List<Access> {
+        return if (extension != null) {
+            getFileAccessList(extension = extension, withRemove = withRemove, forLink = forLink)
+        } else {
+            getFolderAccessList(withRemove = withRemove, forLink = forLink)
+        }
+    }
+
+    fun getFolderAccessList(
+        withRemove: Boolean,
+        forLink: Boolean = false,
+    ): List<Access> {
+        return listOfNotNull(
+            Access.ReadWrite.takeIf { !forLink },
+            Access.Editor,
+            Access.Review,
+            Access.Comment,
+            Access.Read,
+            Access.Restrict.takeIf { !forLink },
+            Access.None.takeIf { withRemove && !forLink }
+        )
+    }
+
+    fun getFileAccessList(
+        extension: FileExtensions,
+        withRemove: Boolean = false,
+        forLink: Boolean = false,
     ): List<Access> {
         return buildList {
-            if (isDocSpace) {
-                add(Access.Editor)
-            } else {
-                add(Access.ReadWrite)
-            }
-            when (extension) {
-                StringUtils.Extension.DOC, StringUtils.Extension.DOCXF -> {
+            if (!forLink) add(Access.ReadWrite)
+            add(Access.Editor)
+            when (extension.group) {
+                FileGroup.DOCUMENT -> {
                     add(Access.Review)
                     add(Access.Comment)
+                    add(Access.Read)
                 }
 
-                StringUtils.Extension.PRESENTATION -> {
-                    add(Access.Comment)
-                }
-
-                StringUtils.Extension.SHEET -> {
+                FileGroup.SHEET -> {
                     add(Access.CustomFilter)
                     add(Access.Comment)
+                    add(Access.Read)
                 }
 
-                StringUtils.Extension.PDF, StringUtils.Extension.OFORM -> {
+                FileGroup.PRESENTATION -> {
+                    add(Access.Comment)
+                    add(Access.Read)
+                }
+
+                FileGroup.PDF -> {
                     add(Access.FormFiller)
                 }
 
                 else -> Unit
             }
-            add(Access.Read)
-            if (!isDocSpace) {
-                add(Access.Restrict)
-            }
-            if (removable) {
+            if (!forLink) add(Access.Restrict)
+            if (withRemove && !forLink) {
                 add(Access.None)
             }
         }
@@ -296,59 +321,88 @@ fun Modifier.fillMaxWidth(isTablet: Boolean): Modifier {
     return if (isTablet) fillMaxWidth(0.3f) else fillMaxWidth()
 }
 
-fun Access.toUi(): AccessUI {
-    val (icon, title) = when (this) {
-        Access.Comment -> arrayOf(
-            R.drawable.ic_access_comment,
-            R.string.share_access_room_commentator
+fun Access.toUi(useActionNames: Boolean = false): AccessUI {
+    return when (this) {
+        Access.Comment -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_comment,
+            title = if (useActionNames)
+                R.string.share_popup_access_comment else
+                R.string.share_access_room_commentator
         )
 
-        Access.CustomFilter -> arrayOf(
-            R.drawable.ic_access_custom_filter,
-            R.string.share_popup_access_custom_filter
+        Access.CustomFilter -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_custom_filter,
+            title = R.string.share_popup_access_custom_filter
         )
 
-        Access.ReadWrite, Access.Editor -> arrayOf(
-            R.drawable.ic_access_full,
-            R.string.share_access_room_editor
+        Access.ReadWrite -> AccessUI(
+            access = this,
+            icon = if (useActionNames)
+                R.drawable.ic_room_power_user else
+                R.drawable.ic_access_editing,
+            title = if (useActionNames)
+                R.string.share_popup_access_full else
+                R.string.share_access_room_editor
         )
 
-        Access.FormFiller -> arrayOf(
-            R.drawable.ic_access_fill_form,
-            R.string.share_access_room_form_filler
+        Access.Editor -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_editing,
+            title = if (useActionNames)
+                R.string.share_popup_access_editing else
+                R.string.share_access_room_editor
         )
 
-        Access.Read -> arrayOf(
-            R.drawable.ic_access_read,
-            R.string.share_access_room_viewer
+        Access.FormFiller -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_fill_form,
+            title = if (useActionNames)
+                R.string.share_popup_access_fill_forms else
+                R.string.share_access_room_form_filler
         )
 
-        Access.Review -> arrayOf(
-            R.drawable.ic_access_review,
-            R.string.share_access_room_reviewer
+        Access.Read -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_read,
+            title = if (useActionNames)
+                R.string.share_popup_access_read_only else
+                R.string.share_access_room_viewer
         )
 
-        Access.RoomManager -> arrayOf(
-            R.drawable.ic_room_manager,
-            R.string.share_access_room_manager
+        Access.Review -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_review,
+            title = if (useActionNames)
+                R.string.share_popup_access_review else
+                R.string.share_access_room_reviewer
         )
 
-        Access.ContentCreator -> arrayOf(
-            R.drawable.ic_room_power_user,
-            R.string.share_access_room_power_user
+        Access.RoomManager -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_room_manager,
+            title = R.string.share_access_room_manager
         )
 
-        Access.Restrict -> arrayOf(
-            R.drawable.ic_access_deny,
-            R.string.share_popup_access_deny_access
+        Access.ContentCreator -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_room_power_user,
+            title = R.string.share_access_room_power_user
         )
 
-        Access.None -> arrayOf(
-            R.drawable.ic_access_deny,
-            R.string.share_popup_access_deny_remove
+        Access.Restrict -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_access_deny,
+            title = R.string.share_popup_access_deny_access
+        )
+
+        Access.None -> AccessUI(
+            access = this,
+            icon = R.drawable.ic_list_context_delete,
+            title = R.string.share_popup_access_remove
         )
     }
-    return AccessUI(this, title, icon)
 }
 
 fun User.getTypeTitle(provider: PortalProvider?): Int {
@@ -367,3 +421,13 @@ fun User.getTypeTitle(provider: PortalProvider?): Int {
         UserType.Guest -> R.string.profile_type_visitor
     }
 }
+
+val ShareType.titleWithCount: Int
+    get() = when (this) {
+        ShareType.Admin -> R.string.rooms_info_admin_title
+        ShareType.User -> R.string.rooms_info_users_title
+        ShareType.Group -> R.string.rooms_info_groups_title
+        ShareType.Guests -> R.string.rooms_info_guests_title
+        ShareType.Expected -> R.string.rooms_info_expected_title
+        ShareType.Owner -> R.string.share_access_room_owner
+    }

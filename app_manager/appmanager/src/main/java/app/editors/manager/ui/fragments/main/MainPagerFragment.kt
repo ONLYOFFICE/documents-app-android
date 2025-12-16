@@ -19,6 +19,7 @@ import app.editors.manager.app.appComponent
 import app.editors.manager.databinding.FragmentMainPagerBinding
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.models.OpenDataModel
+import app.editors.manager.mvp.models.ui.SectionInfo
 import app.editors.manager.mvp.presenters.main.MainPagerPresenter
 import app.editors.manager.mvp.views.main.MainPagerView
 import app.editors.manager.ui.activities.main.ActionButtonFragment
@@ -30,6 +31,7 @@ import app.editors.manager.ui.views.pager.ViewPagerAdapter
 import app.editors.manager.ui.views.pager.ViewPagerAdapter.Container
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.managers.utils.clearIntent
+import lib.toolkit.base.managers.utils.getParcelableArrayListExt
 import moxy.presenter.InjectPresenter
 
 interface IMainPagerFragment {
@@ -48,8 +50,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
         private const val TAG_SELECTED_PAGE = "TAG_SELECTED_PAGE"
         private const val TAG_VISIBLE = "TAG_VISIBLE"
         private const val TAG_SCROLL = "TAG_SCROLL"
-        private const val TAG_TITLES = "TAG_TITLES"
-        private const val TAG_TYPE = "TAG_TYPE"
+        private const val TAG_SECTIONS_INFO = "TAG_SECTIONS_INFO"
         private const val TAG_PERSONAL_END = "TAG_PERSONAL_END"
         private const val TAG_PAYMENT_REQUIRED = "TAG_PAYMENT_REQUIRED"
         private const val TAG_CONNECTION = "TAG_CONNECTION"
@@ -74,8 +75,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
 
     private var preferenceTool: PreferenceTool? = null
 
-    private var tabTile: ArrayList<String>? = null
-    private var type: ArrayList<Int>? = null
+    private var sectionsInfo: ArrayList<SectionInfo>? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -84,7 +84,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 activity = context
             }
             preferenceTool = requireContext().appComponent.preference
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             throw RuntimeException(
                 MainPagerFragment::class.java.simpleName + " - must implement - " +
                         MainActivity::class.java.simpleName
@@ -136,8 +136,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             placeholderViews?.type == PlaceholderViews.Type.CONNECTION
         )
         outState.putInt(TAG_SELECTED_PAGE, selectedPage)
-        outState.putStringArrayList(TAG_TITLES, tabTile)
-        outState.putIntegerArrayList(TAG_TYPE, type)
+        outState.putParcelableArrayList(TAG_SECTIONS_INFO, sectionsInfo)
         super.onSaveInstanceState(outState)
     }
 
@@ -183,15 +182,18 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 placeholderViews?.setTemplatePlaceholder(PlaceholderViews.Type.CONNECTION, ::onRetryClick)
             }
         }
-        if (savedInstanceState.containsKey(TAG_TITLES) && savedInstanceState.containsKey(TAG_TYPE)) {
-            tabTile = savedInstanceState.getStringArrayList(TAG_TITLES)
-            type = savedInstanceState.getIntegerArrayList(TAG_TYPE)
-
+        if (savedInstanceState.containsKey(TAG_SECTIONS_INFO)) {
+            sectionsInfo = savedInstanceState.getParcelableArrayListExt(TAG_SECTIONS_INFO)
             val fragments: MutableList<MainPagerContainer> = mutableListOf()
-            childFragmentManager.fragments.forEachIndexed { index, fragment ->
-                if (fragment is DocsBaseFragment) {
-                    fragments.add(MainPagerContainer(fragment, tabTile?.get(index) ?: "", type?.get(index) ?: 0))
-                }
+
+            sectionsInfo?.forEach { section ->
+                fragments.add(
+                    MainPagerContainer(
+                        fragment = getSectionFragment(section.type, section.id),
+                        title = getTabTitle(section.type),
+                        sectionType = section.type
+                    )
+                )
             }
             setAdapter(fragments, true)
         } else {
@@ -246,30 +248,20 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
     }
 
     override fun onRender(sections: List<Explorer>?) {
-        type = arrayListOf()
-        tabTile = arrayListOf()
+        sectionsInfo = arrayListOf()
         sections?.let {
             val fragments = sections.mapNotNull { section ->
-                type?.add(section.current.rootFolderType)
                 when (val folderType = section.current.rootFolderType) {
                     ApiContract.SectionType.CLOUD_PRIVATE_ROOM -> null
                     else -> {
-                        tabTile?.add(getTabTitle(folderType))
+                        sectionsInfo?.add(
+                            SectionInfo(
+                                type = folderType,
+                                id = section.current.id
+                            )
+                        )
                         MainPagerContainer(
-                            fragment = when (folderType) {
-                                ApiContract.SectionType.CLOUD_TRASH,
-                                ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> {
-                                    DocsTrashFragment.newInstance(folderType, section.current.id)
-                                }
-
-                                ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> {
-                                    DocsRoomFragment.newInstance(folderType, "rooms")
-                                }
-
-                                else -> {
-                                    DocsCloudFragment.newInstance(folderType, section.current.id)
-                                }
-                            },
+                            fragment = getSectionFragment(folderType, section.current.id),
                             title = getTabTitle(folderType),
                             sectionType = folderType
                         )
@@ -277,6 +269,23 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
                 }
             }
             setAdapter(fragments)
+        }
+    }
+
+    private fun getSectionFragment(folderType: Int, id: String): DocsBaseFragment {
+        return when (folderType) {
+            ApiContract.SectionType.CLOUD_TRASH,
+            ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> {
+                DocsTrashFragment.newInstance(folderType, id)
+            }
+
+            ApiContract.SectionType.CLOUD_VIRTUAL_ROOM -> {
+                DocsRoomFragment.newInstance(folderType, "rooms")
+            }
+
+            else -> {
+                DocsCloudFragment.newInstance(folderType, id)
+            }
         }
     }
 
@@ -325,7 +334,7 @@ class MainPagerFragment : BaseAppFragment(), ActionButtonFragment, MainPagerView
             viewBinding?.mainViewPager?.addOnPageChangeListener(it)
         }
         viewBinding?.appBarTabs?.setupWithViewPager(viewBinding?.mainViewPager, true)
-        setToolbarState(true, true)
+        setToolbarState(isRoot = true, hideToolbarInfo = true)
         if (isRestore) {
             viewBinding?.mainViewPager?.currentItem = selectedPage
         } else {

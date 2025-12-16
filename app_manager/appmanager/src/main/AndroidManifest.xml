@@ -89,12 +89,19 @@
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name="app.editors.manager.ui.activities.login.SignInActivity"
+            android:exported="true"
             android:launchMode="singleTask"
             android:theme="@style/NoActionBarTheme"
             android:windowSoftInputMode="adjustResize|stateUnchanged">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="app.editors.manager.ui.activities.login.PortalsActivity" />
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="oauth2social" android:host="onlyoffice.app.manager"/>
+            </intent-filter>
         </activity>
         <activity
             android:name="app.editors.manager.ui.activities.main.MainActivity"
@@ -204,7 +211,7 @@
                 android:value="app.editors.manager.ui.activities.main.MainActivity" />
         </activity>
         <activity
-            android:name="app.editors.manager.ui.activities.login.NextCloudLoginActivity"
+            android:name="app.editors.manager.ui.activities.login.WebViewCloudLoginActivity"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|screenSize|smallestScreenSize|density|screenLayout|uiMode|keyboard|keyboardHidden|navigation|locale|layoutDirection"
             android:exported="false"

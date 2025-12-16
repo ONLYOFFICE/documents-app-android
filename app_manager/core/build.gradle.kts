@@ -5,7 +5,6 @@ plugins {
     id("com.android.library")
     id("kotlinx-serialization")
     kotlin("android")
-    kotlin("kapt")
     alias(libs.plugins.kotlin.ksp)
 }
 
@@ -85,6 +84,8 @@ dependencies {
     implementation(libs.ktx)
     implementation(libs.appcompat)
     implementation(libs.lifecycle.runtime)
+    implementation(libs.androidDocumentFile)
+
 
     // Firebase
     implementation(libs.firebase.messaging)
@@ -122,7 +123,7 @@ dependencies {
 
     implementation(libs.jackson)
 
-    testImplementation("junit:junit:4.+")
-    androidTestImplementation("androidx.test.ext:junit:1.1.2")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    androidTestImplementation(libs.ext.junit)
 }

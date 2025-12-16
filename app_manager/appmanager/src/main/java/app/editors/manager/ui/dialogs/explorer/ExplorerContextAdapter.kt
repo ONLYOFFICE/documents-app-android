@@ -80,7 +80,6 @@ class ExplorerContextAdapter(
 
         fun bind(item: ExplorerContextItem) {
             with(viewBinding) {
-                if (item is ExplorerContextItem.Favorites && item.favorite) icon.imageTintList = null
                 icon.setImageResource(item.icon)
                 title.setText(item.title)
                 divider.root.isVisible = dividerVisible(item)

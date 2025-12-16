@@ -44,6 +44,7 @@ import app.documents.core.network.room.models.RequestSetLogo
 import app.documents.core.network.room.models.RequestUpdateExternalLink
 import app.documents.core.network.room.models.RequestUpdatePublic
 import app.documents.core.network.share.models.ExternalLink
+import app.documents.core.network.share.models.ExternalLinkSharedTo
 import app.documents.core.network.share.models.GroupShare
 import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.request.EmailInvitation
@@ -53,7 +54,8 @@ import app.documents.core.network.share.models.request.RequestCreateSharedLink
 import app.documents.core.network.share.models.request.RequestCreateThirdPartyRoom
 import app.documents.core.network.share.models.request.RequestRemoveInviteLink
 import app.documents.core.network.share.models.request.RequestRoomShare
-import app.documents.core.network.share.models.request.RequestUpdateSharedLink
+import app.documents.core.network.share.models.request.RequestShare
+import app.documents.core.network.share.models.request.RequestShareItem
 import app.documents.core.network.share.models.request.UserIdInvitation
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -68,9 +70,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import lib.toolkit.base.managers.utils.FormRole
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import retrofit2.Response
 import java.util.UUID
@@ -133,7 +135,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return checkNotNull(response.body()?.response?.id)
     }
 
-    suspend fun getTags(): kotlin.Result<Array<String>> {
+    suspend fun getTags(): Result<Array<String>> {
         return runCatching {
             val response = roomService.getTags()
             if (!response.isSuccessful) throw HttpException(response)
@@ -229,23 +231,10 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
 
     suspend fun updateRoomSharedLink(
         roomId: String?,
-        access: Access?,
-        linkId: String?,
-        linkType: Int?,
-        denyDownload: Boolean?,
-        expirationDate: String?,
-        password: String?,
-        title: String?,
+        access: Int,
+        sharedLink: ExternalLinkSharedTo
     ): ExternalLink {
-        val request = RequestUpdateExternalLink(
-            access = access?.code ?: Access.None.code,
-            denyDownload = denyDownload == true,
-            expirationDate = expirationDate,
-            linkId = linkId,
-            linkType = linkType ?: 2,
-            password = password,
-            title = title
-        )
+        val request = RequestUpdateExternalLink.from(sharedLink, access)
         val response = roomService.updateRoomSharedLink(roomId.orEmpty(), request)
         val body = response.body()
         return if (response.isSuccessful && body != null)
@@ -258,10 +247,12 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         expirationDate: String?,
         password: String?,
         title: String,
+        internal: Boolean,
         access: Access
     ): ExternalLink {
         val request = RequestCreateExternalLink(
             denyDownload = denyDownload,
+            internal = internal,
             expirationDate = expirationDate,
             password = password,
             title = title,
@@ -274,23 +265,47 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         )
     }
 
-    suspend fun getSharedLinks(id: String): List<ExternalLink> {
-        val response = roomService.getSharedLinks(id)
+    suspend fun getSharedLinks(itemId: String, isFolder: Boolean): List<ExternalLink> {
+        val response = if (isFolder)
+            roomService.getSharedFolderLinks(itemId) else
+            roomService.getSharedFileLinks(itemId)
+
         val body = response.body()
-        return if (response.isSuccessful && body != null) body.response else throw HttpException(
-            response
-        )
+
+        return if (response.isSuccessful && body != null)
+            body.response else throw HttpException(response)
     }
 
-    suspend fun createSharedLink(fileId: String): ExternalLink {
-        return roomService.createSharedLink(fileId, RequestCreateSharedLink()).response
+    suspend fun createSharedLink(itemId: String, isFolder: Boolean, access: Int): ExternalLink {
+        val requestBody = RequestCreateSharedLink(access = access)
+        val request = if (isFolder)
+            roomService.createSharedFolderLink(itemId, requestBody) else
+            roomService.createSharedFileLink(itemId, requestBody)
+
+        return request.response
     }
 
-    suspend fun updateSharedLink(fileId: String, sharedLink: ExternalLink): ExternalLink {
-        return roomService.updateSharedLink(
-            fileId,
-            RequestUpdateSharedLink.from(sharedLink)
-        ).response
+    suspend fun getSharedUsers(itemId: String, isFolder: Boolean): List<Share> {
+        val request = if (isFolder)
+            roomService.getSharedFolderUsers(itemId) else
+            roomService.getSharedFileUsers(itemId)
+
+        return request.response
+    }
+
+    suspend fun updateSharedLink(
+        itemId: String,
+        sharedLink: ExternalLinkSharedTo,
+        isFolder: Boolean,
+        access: Int
+    ): ExternalLink {
+        val requestBody = RequestUpdateExternalLink.from(sharedLink, access)
+        val request = if (isFolder) {
+            roomService.updateSharedFolderLink(itemId, requestBody)
+        } else {
+            roomService.updateSharedFileLink(itemId, requestBody)
+        }
+        return request.response
     }
 
     suspend fun getRoomUsers(id: String): List<Share> {
@@ -333,7 +348,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             MultipartBody.Part.createFormData(
                 uuid,
                 "$uuid.png",
-                RequestBody.create(MediaType.get("image/*"), bitmap.toByteArray())
+                bitmap.toByteArray().toRequestBody("image/*".toMediaType())
             )
         ).response
         return response.data.takeIf { response.success } ?: throw RuntimeException()
@@ -740,14 +755,51 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
     }
 
     suspend fun getUsersByItemId(itemId: String, isFolder: Boolean, filterValue: String = ""): List<User> {
-//        uncomment when merging
-//        val response = if (isFolder) {
-//            roomService.getUsersByFolderId(itemId)
-//        } else {
-//            roomService.getUsersByFileId(itemId)
-//        }
+        val response = if (isFolder) {
+            roomService.getUsersByFolderId(itemId, filterValue)
+        } else {
+            roomService.getUsersByFileId(itemId, filterValue)
+        }
 
-        val response = roomService.getUsersByFileId(itemId, filterValue)
+        return response.response
+    }
+
+    suspend fun getGroupsByItemId(itemId: String, isFolder: Boolean): List<Group> {
+        val response = if (isFolder) {
+            roomService.getGroupsByFolderId(itemId)
+        } else {
+            roomService.getGroupsByFileId(itemId)
+        }
+
+        return response.response
+    }
+
+    suspend fun getGuestsByItemId(itemId: String, isFolder: Boolean): List<User> {
+        val response = if (isFolder) {
+            roomService.getGuestsByFolderId(itemId)
+        } else {
+            roomService.getGuestsByFileId(itemId)
+        }
+
+        return response.response.map { it.copy(isGuest = true) }
+    }
+
+    suspend fun setItemShare(itemId: String, isFolder: Boolean, members: Map<String, Access>): List<Share> {
+        val request = RequestShare(
+            isNotify = true,
+            share = members.map { (id, access) ->
+                RequestShareItem(
+                    shareTo = id,
+                    access = access.code
+                )
+            }
+        )
+        val response = if (isFolder) {
+            roomService.setFolderShare(itemId, request)
+        } else {
+            roomService.setFileShare(itemId, request)
+        }
+
         return response.response
     }
 

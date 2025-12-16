@@ -182,7 +182,13 @@ interface ExplorerContextItemVisible {
         get() = when {
             section.isWebdav -> false
             provider is PortalProvider.Cloud.DocSpace -> item.isCanShare
-            item is CloudFile && access in arrayOf(Access.ReadWrite, Access.None) && !item.isDenySharing -> true
+                    && (!section.isShare || access == Access.ReadWrite)
+
+            item is CloudFile && access in arrayOf(
+                Access.ReadWrite,
+                Access.None
+            ) && !item.isDenySharing -> true
+
             else -> isShareVisible(access, section)
         }
 
@@ -196,17 +202,15 @@ interface ExplorerContextItemVisible {
         get() = item.security?.pin == true
 
     private val ExplorerContextState.delete: Boolean
-        get() = when (section) {
-            ApiContract.Section.Share,
-            ApiContract.Section.Favorites,
-            ApiContract.Section.Projects -> false
-            ApiContract.Section.Device -> true
-            is ApiContract.Section.Room.Archive -> item.security?.delete == true
-            is ApiContract.Section.Room -> isRoot || item.security?.delete == true
-
-            else -> if (provider == PortalProvider.Cloud.DocSpace)
-                        item.security?.delete == true
-                    else true
+        get() = if (provider == PortalProvider.Cloud.DocSpace) {
+                item.security?.delete == true
+            } else {
+                when (section) {
+                    ApiContract.Section.Share,
+                    ApiContract.Section.Favorites,
+                    ApiContract.Section.Projects -> false
+                    else -> true
+            }
         }
 
     private val ExplorerContextState.createRoom: Boolean
@@ -218,16 +222,15 @@ interface ExplorerContextItemVisible {
 
 
     private val ExplorerContextState.location: Boolean
-        get() = isSearching
+        get() = isSearching || sectionType == ApiContract.SectionType.CLOUD_FAVORITES
 
     private val ExplorerContextState.lock: Boolean
         get() = (item is CloudFile) && item.security?.lock == true
 
     private val ExplorerContextState.customFilter: Boolean
-        get() = (item is CloudFile) && section.isRoom && !inTemplate
+        get() = (item is CloudFile) && item.security?.customFilter == true
                 && item.viewAccessibility?.webCustomFilterEditing == true
-                && item.security?.customFilter == true
-                && access in listOf(Access.None, Access.RoomManager)
+                && (!section.isShare || item.customFilterEnabledBy.isEmpty())
 
     private val ExplorerContextState.versionHistory: Boolean
         get() = item.security?.readHistory == true
@@ -245,7 +248,7 @@ interface ExplorerContextItemVisible {
         get() = section.isTemplates && item.security?.editAccess == true
 
     private fun ExplorerContextState.favorites(enabled: Boolean): Boolean =
-        enabled && !isFolder && !listOf(
+        enabled && !listOf(
             ApiContract.Section.Trash,
             ApiContract.Section.Webdav
         ).contains(section)

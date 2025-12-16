@@ -4,6 +4,8 @@ import android.content.Intent
 import app.documents.core.model.cloud.CloudAccount
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.model.login.request.RequestSignIn
+import app.editors.manager.managers.utils.SocialSignIn
+import app.editors.manager.managers.utils.SocialUtils
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.mvp.views.login.CommonSignInView
@@ -25,6 +27,9 @@ open class EnterpriseLoginPresenter : BaseLoginPresenter<CommonSignInView>() {
         get() = App.getApp().loginComponent.currentPortal
 
     var useLdap: Boolean = false
+
+    var socialSignIn: SocialSignIn? = null
+        private set
 
     init {
         App.getApp().appComponent.inject(this)
@@ -54,11 +59,18 @@ open class EnterpriseLoginPresenter : BaseLoginPresenter<CommonSignInView>() {
             return
         }
 
-        viewState.onWaitingDialog(context.getString(R.string.dialogs_sign_in_portal_header_text), TAG_DIALOG_WAITING)
+        viewState.onWaitingDialog()
         if (App.getApp().loginComponent.currentPortal == null) {
             App.getApp().refreshLoginComponent(portal)
         }
 
         signInWithEmail(login, password)
+    }
+
+    fun signInPortalSocial(social: String) {
+        socialSignIn = SocialUtils.getSocialSignIn(social)
+        socialSignIn?.let { social ->
+            viewState.onSocialAuth(socialSignIn)
+        }
     }
 }

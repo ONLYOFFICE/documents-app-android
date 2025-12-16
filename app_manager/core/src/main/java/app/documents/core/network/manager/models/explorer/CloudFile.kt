@@ -72,6 +72,10 @@ open class CloudFile : Item() {
     @Expose
     var customFilterEnabled = false
 
+    @SerializedName("customFilterEnabledBy")
+    @Expose
+    var customFilterEnabledBy = ""
+
     @SerializedName("locked")
     @Expose
     var isLocked = false
@@ -115,6 +119,9 @@ open class CloudFile : Item() {
     @SerializedName("expired")
     val expired: Date? = null
 
+    @SerializedName("requestToken")
+    val requestToken: String? = null
+
     val nextVersion: Int
         get() = ++version
 
@@ -124,14 +131,15 @@ open class CloudFile : Item() {
     val isPdfForm: Boolean
         get() = FileExtensions.fromExtension(fileExst) is FileExtensions.PDF && isForm
 
-    val isFavorite: Boolean
-        get() = (fileStatus and ApiContract.FileStatus.FAVORITE) != 0
 
     val isNew: Boolean
         get() = (fileStatus and ApiContract.FileStatus.IS_NEW) != 0
 
     val isEditing: Boolean
         get() = (fileStatus and ApiContract.FileStatus.IS_EDITING) != 0
+
+    val isSharedByLink: Boolean
+        get() = !requestToken.isNullOrEmpty()
 
     val isExpiringSoon: Boolean
         get() {

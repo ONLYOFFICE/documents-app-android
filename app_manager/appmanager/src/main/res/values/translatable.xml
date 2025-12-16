@@ -551,7 +551,7 @@
     <string name="storage_web_dav_settings_login">Login</string>
     <string name="storage_web_dav_settings_password">Password</string>
     <string name="storage_web_dav_settings_title">Input title for service</string>
-    <string name="storage_web_dav_settings_hint" tools:ignore="MissingTranslation" translatable="false">https://cloud.yourdomain.com</string>
+    <string name="storage_web_dav_settings_hint" translatable="false" tools:ignore="MissingTranslation">https://cloud.yourdomain.com</string>
     <string name="storage_web_dav_settings_server">Server</string>
     <string name="storage_web_dav_settings_required">Required</string>
 
@@ -653,6 +653,7 @@
     <string name="socials_facebook_failed_auth">Failed login with Facebook</string>
     <string name="socials_google_failed_auth">Failed login with Google</string>
     <string name="socials_google_cancel_auth">Cancel login with Google</string>
+    <string name="socials_failed_auth">Failed login</string>
 
     <!-- ======================================================================================= -->
     <!-- On boarding -->
@@ -889,7 +890,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="rooms_move_to_public_title">Move to Public room</string>
     <string name="rooms_move_to_public_title_desc">This room and all its contents are available to anyone with the link. Do you want to continue?</string>
 
-    <string name="rooms_info_access_desc">This room is available to anyone with the link. External users will have View Only permission for all the files.</string>
+    <string name="rooms_info_access_desc">This room is available to anyone with the link. Access for external users is provided depending on the selected type of access rights.</string>
     <string name="rooms_info_general_link">General link</string>
     <string name="rooms_info_edit_link">Edit link</string>
     <string name="rooms_info_create_link_title">Create link</string>
@@ -930,6 +931,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="rooms_info_dont_save_button">Don\'t save</string>
 
     <string name="rooms_share_shared_links">Shared links</string>
+    <string name="rooms_share_shared_links_count">Shared links (%d/6)</string>
     <string name="rooms_share_shared_link_title">Shared link</string>
     <string name="rooms_share_shared_desc">Provide access to the document and set the permission levels.</string>
     <string name="rooms_share_lifetime_hours_12">12 hours</string>
@@ -945,6 +947,10 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="rooms_share_regenerate_link">Regenerate link</string>
     <string name="rooms_share_general_header">General</string>
     <string name="rooms_share_link_life_time">Link life time</string>
+    <string name="share_link_folder_restrict_desc">Enable this setting to disable downloading of files and folders from this folder shared via a link</string>
+    <string name="share_link_file_restrict_desc">Enable this setting to disable downloading of this file shared via a link</string>
+    <string name="share_link_file_restrict_warning">You cannot disable the restriction on downloading and copying data because this setting is enforced at the room level for all files.</string>
+    <string name="share_link_file_restrict_warning_ok">OK</string>
 
     <string name="rooms_filter_type_filling_forms">Filling form</string>
     <string name="rooms_filter_type_virtual_room">Virtual data room</string>
@@ -1099,7 +1105,7 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="rooms_index_reorder_complete_title">File exported</string>
     <string name="rooms_index_reorder_complete_desc">%s file exported to Documents</string>
     <string name="rooms_index_reorder_open_file">Open file</string>
-    
+
     <string name="rooms_protected_room">Protected room</string>
     <string name="rooms_invalid_password">Invalid password</string>
 
@@ -1203,16 +1209,16 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
     <string name="filling_form_version_incompatible_desc">The client and server versions are incompatible. You can only open the document in view mode.</string>
     <string name="dev_mode_system_logs">System logs</string>
     <string name="dev_mode_network_requests">Network requests</string>
-<!--    Wats new-->
+    <!--    Wats new-->
     <string name="whats_new">What\'s new in v9.1</string>
-    <string name="whats_new_1">AI assistant in editors</string>
-    <string name="whats_new_1_desc">Work smarter in documents and spreadsheets with built-in AI. Connect models like OpenAI, Anthropic, Google, or Ollama.</string>
-    <string name="whats_new_2">Text direction options</string>
-    <string name="whats_new_2_desc">Easily switch between Right-to-left and Left-to-right text direction in all editors.</string>
-    <string name="whats_new_3">Role-based form filling in DocSpace</string>
-    <string name="whats_new_3_desc">Assign specific roles to participants when starting a form-filling process while connected to DocSpace.</string>
-    <string name="whats_new_4">Table of contents in documents</string>
-    <string name="whats_new_4_desc">Create and navigate through document sections with an automatic table of contents.</string>
+    <string name="whats_new_1">New DocSpace sections</string>
+    <string name="whats_new_1_desc">Access your files faster with dedicated DocSpace areas: Shared with me, Favorites, and Recent.</string>
+    <string name="whats_new_2">Enhanced file sharing in DocSpace</string>
+    <string name="whats_new_2_desc">Share files more easily and manage access with improved sharing workflows in DocSpace 3.5.</string>
+    <string name="whats_new_3">Social sign-in options</string>
+    <string name="whats_new_3_desc">Sign in with LinkedIn, or Zoom to create and access your DocSpace account more easily.</string>
+    <string name="whats_new_4">Paragraph and cell direction (RTL)</string>
+    <string name="whats_new_4_desc">Switch paragraph and table cell direction between Right-to-left and Left-to-right across all editors.</string>
 
     <string name="start_filling_title">Start filling</string>
     <string name="start_filling_start">Start</string>
@@ -1223,4 +1229,14 @@ In online mode, use real-time co-editing features of ONLYOFFICE to work on docum
 
     <string name="list_context_reset_filling">Reset and start filling</string>
 
+    <string name="placeholder_no_shared_items">There are no shared items yet</string>
+    <string name="placeholder_no_shared_items_desc">Here you\'ll find files and folders that other DocSpace members shared with you. Your own files and room content are not shown here.</string>
+
+    <string name="rooms_share_shared_folder_desc">Provide access to the folder and set the permission levels.</string>
+    <string name="rooms_info_folder_desc">This folder is accessible via a shared link from its parent folder, but you can create a custom external link with specific permissions.</string>
+    <string name="rooms_info_file_desc">This file is accessible via a shared link from its parent folder, but you can create a custom external link with specific permissions.</string>
+    <string name="rooms_info_fill_form_desc">This room is available to anyone with the link. External users will have Form Filler permission for all the files.</string>
+
+    <string name="share_popup_access_editing">Editing</string>
+    <string name="share_popup_access_remove">Remove</string>
 </resources>

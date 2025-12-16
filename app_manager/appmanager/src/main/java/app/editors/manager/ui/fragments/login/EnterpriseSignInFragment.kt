@@ -9,9 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import app.documents.core.model.cloud.CloudPortal
 import app.documents.core.network.common.contracts.ApiContract
+import app.editors.manager.managers.utils.SocialSignIn
 import app.editors.manager.BuildConfig
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -71,7 +74,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         App.getApp().appComponent.inject(this)
         signInActivity = try {
             context as SignInActivity
-        } catch (e: ClassCastException) {
+        } catch (_: ClassCastException) {
             throw RuntimeException(
                 EnterpriseSignInFragment::class.java.simpleName + " - must implement - " +
                         EnterpriseSignInFragment::class.java.simpleName
@@ -260,8 +263,12 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         viewBinding?.loginEnterprisePortalEmailLayout?.error = message
     }
 
-    override fun onWaitingDialog(message: String, tag: String) {
-        showWaitingDialog(message, getString(R.string.dialogs_common_cancel_button), tag)
+    override fun onWaitingDialog() {
+        showWaitingDialog(
+            getString(R.string.dialogs_wait_title),
+            getString(R.string.dialogs_common_cancel_button),
+            EnterpriseLoginPresenter.TAG_DIALOG_WAITING
+        )
     }
 
     override fun onError(message: String?) {
@@ -270,11 +277,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
     override fun onTwitterSuccess(token: String) {
-        showWaitingDialog(
-            getString(R.string.dialogs_wait_title),
-            getString(R.string.dialogs_common_cancel_button),
-            EnterpriseLoginPresenter.TAG_DIALOG_WAITING
-        )
+        onWaitingDialog()
         presenter.signInWithProvider(token, ApiContract.Social.TWITTER)
     }
 
@@ -284,11 +287,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
     override fun onFacebookSuccess(token: String) {
-        showWaitingDialog(
-            getString(R.string.dialogs_wait_title),
-            getString(R.string.dialogs_common_cancel_button),
-            EnterpriseLoginPresenter.TAG_DIALOG_WAITING
-        )
+        onWaitingDialog()
         presenter.signInWithProvider(token, ApiContract.Social.FACEBOOK)
     }
 
@@ -313,11 +312,7 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
     }
 
     override fun onGoogleSuccess(account: Account) {
-        showWaitingDialog(
-            getString(R.string.dialogs_wait_title),
-            getString(R.string.dialogs_common_cancel_button),
-            EnterpriseLoginPresenter.TAG_DIALOG_WAITING
-        )
+        onWaitingDialog()
         val scope = requireContext().getString(R.string.google_scope)
         val accessToken = GoogleAuthUtil.getToken(requireContext(), account, scope)
         presenter.signInWithProvider(accessToken, ApiContract.Social.GOOGLE)
@@ -339,6 +334,31 @@ class EnterpriseSignInFragment : BaseAppFragment(), CommonSignInView, CommonDial
         args
         intent
         restoreViews(savedInstanceState)
+    }
+
+    override fun onSocialClick(social: String) {
+        presenter.signInPortalSocial(social)
+    }
+
+    override fun onSocialAuth(socialSignIn: SocialSignIn?) {
+        socialSignIn?.let { social ->
+            val url = social.getUrl()
+            val customTabsIntent = CustomTabsIntent.Builder().build()
+            customTabsIntent.launchUrl(requireContext(), url.toUri())
+        }
+    }
+
+    fun handleSocialOAuthCode(code: String?) {
+        if (!code.isNullOrEmpty()) {
+            onWaitingDialog()
+            presenter.signInWithProvider(
+                accessToken = null,
+                codeOauth = code,
+                provider = presenter.socialSignIn?.providerKey.orEmpty(),
+            )
+        } else {
+            showSnackBar(R.string.socials_failed_auth)
+        }
     }
 
     private val args: Unit

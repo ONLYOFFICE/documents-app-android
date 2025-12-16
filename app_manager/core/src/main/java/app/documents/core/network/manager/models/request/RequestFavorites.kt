@@ -6,5 +6,9 @@ import com.google.gson.annotations.SerializedName
 data class RequestFavorites(
     @SerializedName("fileIds")
     @Expose
-    var fileIds: List<String> = emptyList()
+    var fileIds: List<String> = emptyList(),
+
+    @SerializedName("folderIds")
+    @Expose
+    var folderIds: List<String> = emptyList()
 )

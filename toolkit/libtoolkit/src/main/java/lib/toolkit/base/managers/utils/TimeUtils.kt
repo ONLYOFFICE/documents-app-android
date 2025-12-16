@@ -14,6 +14,7 @@ import lib.toolkit.base.R
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Instant
+import java.time.OffsetDateTime
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -159,7 +160,12 @@ object TimeUtils {
             return null
         }
 
-        val time = Instant.parse(date).toEpochMilli()
+        val normalizedDate = date.replace(Regex("\\.(\\d{3})\\d*"), ".$1")
+        val time = try {
+            OffsetDateTime.parse(normalizedDate).toInstant().toEpochMilli()
+        } catch (_: Exception) {
+            return null
+        }
         val timeLeft = (time - Instant.now().toEpochMilli()).toFloat()
         val second = 1000
         val minute = 60 * second

@@ -68,26 +68,37 @@ abstract class BaseLoginPresenter<View : BaseView> : BasePresenter<View>() {
         }
     }
 
-    fun signInWithProvider(accessToken: String?, provider: String, smsCode: String? = null) {
+    fun signInWithProvider(
+        accessToken: String?,
+        provider: String,
+        smsCode: String? = null,
+        codeOauth: String? = null
+    ) {
         signInJob = presenterScope.launch {
-            loginRepository.signInWithProvider(accessToken, provider, smsCode)
-                .collect { result ->
-                    when (result) {
-                        is LoginResult.Success -> onAccountCreateSuccess(result.cloudAccount)
-                        is LoginResult.Error -> when (val exception = result.exception) {
-                            is UserRecoverableAuthException -> onGooglePermission(exception.intent)
-                            else -> fetchError(exception)
-                        }
-                        is LoginResult.Sms -> onTwoFactorAuth(
-                            result.phoneNoise,
-                            RequestSignIn(accessToken = accessToken.orEmpty(), provider = provider)
-                        )
-                        is LoginResult.Tfa -> onTwoFactorAuthApp(
-                            result.key,
-                            RequestSignIn(accessToken = accessToken.orEmpty(), provider = provider)
-                        )
+            loginRepository.signInWithProvider(
+                accessToken = accessToken,
+                provider = provider,
+                code = smsCode,
+                codeOauth = codeOauth
+            ).collect { result ->
+                when (result) {
+                    is LoginResult.Success -> onAccountCreateSuccess(result.cloudAccount)
+                    is LoginResult.Error -> when (val exception = result.exception) {
+                        is UserRecoverableAuthException -> onGooglePermission(exception.intent)
+                        else -> fetchError(exception)
                     }
+
+                    is LoginResult.Sms -> onTwoFactorAuth(
+                        result.phoneNoise,
+                        RequestSignIn(accessToken = accessToken.orEmpty(), provider = provider)
+                    )
+
+                    is LoginResult.Tfa -> onTwoFactorAuthApp(
+                        result.key,
+                        RequestSignIn(accessToken = accessToken.orEmpty(), provider = provider)
+                    )
                 }
+            }
         }
     }
 

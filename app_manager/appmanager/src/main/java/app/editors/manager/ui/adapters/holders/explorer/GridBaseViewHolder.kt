@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import app.documents.core.network.manager.models.explorer.Item
-import app.editors.manager.managers.utils.StringUtils
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.ExplorerAdapter
 import app.editors.manager.ui.adapters.holders.BaseViewHolderExplorer
@@ -60,11 +59,4 @@ abstract class GridBaseViewHolder<T : Item>(view: View, adapter: ExplorerAdapter
         }
     }
 
-    protected open fun getSubtitleText(element: T): String? {
-        return StringUtils.getCloudItemInfo(
-            context = adapter.context,
-            item = element,
-            state = adapter
-        )
-    }
 }

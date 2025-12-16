@@ -589,7 +589,6 @@
     <string name="rooms_add_public_room_des">Zaproś użytkowników do przeglądania dokumentów za pośrednictwem udostępnionych przez Ciebie linków bez konieczności rejestracji. Możesz również osadzić ten pokój w dowolnym interfejsie internetowym.</string>
     <string name="rooms_move_to_public_title">Przenieś do pokoju publicznego</string>
     <string name="rooms_move_to_public_title_desc">Ten pokój i cała jego zawartość są dostępne dla każdego, kto ma link. Czy chcesz kontynuować?</string>
-    <string name="rooms_info_access_desc">Ten pokój jest dostępny dla każdego, kto ma link. Użytkownicy zewnętrzni będą mieli uprawnienie tylko do odczytu dla wszystkich plików.</string>
     <string name="rooms_info_general_link">Link główny</string>
     <string name="rooms_info_additional_link">Link dodatkowy</string>
     <string name="rooms_info_additional_links">"Linki dodatkowe (%1$d/%2$d)"</string>
@@ -979,4 +978,29 @@ Aplikacja korzysta teraz z języka angielskiego, ponieważ zmieniono język syst
     <string name="start_filling_ready_for_filling">Formularz jest gotowy do wypełnienia pokoju</string>
     <string name="start_filling_ready_for_filling_desc">Powiadomienie z prośbą o wypełnienie formularza zostało już wysłane do użytkownika w pierwszej roli. Możesz przejść do pokoju lub udostępnić uczestnikom link umożliwiający wypełnienie formularza.</string>
     <string name="list_context_reset_filling">Zresetuj i rozpocznij wypełnianie</string>
+
+    <!-- Newly added translations (v9.2.0 - 2025-11-26) -->
+    <string name="upload_manager_duplicate_title">Wymagane działanie</string>
+    <string name="upload_manager_duplicate_text">Lokalizacja docelowa zawiera już plik o nazwie «%s». Wybierz działanie:</string>
+    <string name="upload_manager_duplicates_text">Lokalizacja docelowa zawiera już pliki o tej samej nazwie. Wybierz działanie:</string>
+    <string name="upload_manager_duplicate_overwrite">Zastąp przy aktualizacji wersji</string>
+    <string name="upload_manager_duplicate_copy">Utwórz kopię pliku</string>
+    <string name="upload_manager_duplicate_skip">Pomiń</string>
+    <string name="socials_failed_auth">Nieudana próba logowania</string>
+    <string name="rooms_info_access_desc">Ten pokój jest dostępny dla każdego, kto ma link. Dostęp dla użytkowników zewnętrznych jest przyznawany w zależności od wybranego typu praw dostępu.</string>
+    <string name="rooms_share_shared_links_count">Udostępnione linki (%d/6)</string>
+    <string name="share_link_folder_restrict_desc">Włącz to ustawienie, aby uniemożliwić pobieranie plików i katalogów z tego katalogu udostępnionych za pośrednictwem linku</string>
+    <string name="share_link_file_restrict_desc">Włącz to ustawienie, aby uniemożliwić pobieranie tego pliku udostępnionego za pośrednictwem linku</string>
+    <string name="share_link_file_restrict_warning">Nie możesz wyłączyć ograniczenia pobierania i kopiowania danych, ponieważ dane ustawienie jest wymuszane na poziomie pokoju dla wszystkich plików.</string>
+    <string name="share_link_file_restrict_warning_ok">OK</string>
+    <string name="rooms_user_type_members">Członkowie</string>
+    <string name="share_goal_everyone">Wszyscy</string>
+    <string name="placeholder_no_shared_items">Nie ma tu jeszcze żadnych udostępnionych plików.</string>
+    <string name="placeholder_no_shared_items_desc">Tutaj znajdziesz pliki i katalogi udostępnione Ci przez innych członków DocSpace. Twoje własne pliki i zawartość pokoju nie są tu wyświetlane.</string>
+    <string name="rooms_share_shared_folder_desc">Zapewnij dostęp do katalogu i skonfiguruj poziomy uprawnień.</string>
+    <string name="rooms_info_folder_desc">Dany katalog jest dostępny za pośrednictwem linku udostępnionego z katalogu nadrzędnego, ale możesz utworzyć niestandardowy link zewnętrzny z określonymi uprawnieniami.</string>
+    <string name="rooms_info_file_desc">Dany plik jest dostępny za pośrednictwem linku udostępnionego z katalogu nadrzędnego, ale możesz utworzyć niestandardowy link zewnętrzny z określonymi uprawnieniami.</string>
+    <string name="rooms_info_fill_form_desc">Ten pokój jest dostępny dla każdego, kto ma link. Użytkownicy zewnętrzni będą mieli uprawnienie umożliwiające wypełnienie formularza dla wszystkich plików.</string>
+    <string name="share_popup_access_editing">Edycja</string>
+    <string name="share_popup_access_remove">Usuń</string>
 </resources>

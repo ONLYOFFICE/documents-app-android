@@ -7,19 +7,29 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
-class WebDavInterceptor(val login: String?, val password: String?) : Interceptor {
+class WebDavInterceptor(
+    private val login: String?,
+    private val password: String?,
+    private val accessTokenProvider: () -> String?
+) : Interceptor {
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        if (login == null && password == null) {
+        val accessToken = accessTokenProvider.invoke()
+        if (accessToken == null && login == null && password == null) {
             return chain.proceed(chain.request())
         } else {
             val auth = chain.request().header(WebDavService.HEADER_AUTHORIZATION)
+            val header = if (accessToken.isNullOrEmpty()) {
+                Credentials.basic(login ?: "", password ?: "")
+            } else {
+                "Bearer $accessToken"
+            }
             val request: Request = if (auth == null) {
                 chain.request().newBuilder()
                     .addHeader(
                         WebDavService.HEADER_AUTHORIZATION,
-                        Credentials.basic(login ?: "", password ?: "")
+                        header
                     )
                     .build()
             } else {

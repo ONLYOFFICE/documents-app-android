@@ -63,7 +63,10 @@ import app.documents.core.network.share.models.Share
 import app.documents.core.network.share.models.SharedTo
 import app.editors.manager.R
 import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.tools.ShareData
 import app.editors.manager.managers.utils.GlideUtils
+import app.editors.manager.managers.utils.toUi
+import app.editors.manager.mvp.models.ui.AccessUI
 import app.editors.manager.ui.fragments.share.InviteAccessScreen
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.ui.views.custom.AccessIconButton
@@ -92,7 +95,6 @@ import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.PlaceholderView
 import lib.compose.ui.views.TopAppBarAction
 import lib.compose.ui.views.VerticalSpacer
-import lib.toolkit.base.managers.tools.ResourcesProvider
 import lib.toolkit.base.managers.utils.AccountUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
@@ -108,8 +110,7 @@ private enum class Screens {
 
 @Composable
 fun ShareScreen(
-    itemId: String,
-    isFolder: Boolean,
+    shareData: ShareData,
     useTabletPaddings: Boolean,
     shareApi: ShareService,
     managerService: ManagerService,
@@ -118,10 +119,9 @@ fun ShareScreen(
     val navController = rememberNavController()
     val viewModel = viewModel {
         ShareViewModel(
-            itemId = itemId,
+            shareData = shareData,
             shareApi = shareApi,
             managerApi = managerService,
-            folder = isFolder
         )
     }
     val state by viewModel.state.collectAsState()
@@ -138,7 +138,7 @@ fun ShareScreen(
 
     val accessListWithOutRestricted = state
         .accessList
-        .filter { access -> access !in listOf(Access.Restrict, Access.None) }
+        .filter { access -> access.access !in listOf(Access.Restrict, Access.None) }
 
     fun onSnackBar(text: String) {
         UiUtils.getSnackBar(context as ComponentActivity)
@@ -207,8 +207,7 @@ fun ShareScreen(
             val userListViewModel = viewModel {
                 CloudUserListViewModel(
                     mode = UserListMode.Invite,
-                    access = accessListWithOutRestricted.last(),
-                    resourcesProvider = ResourcesProvider(context),
+                    access = accessListWithOutRestricted.last().access,
                     shareService = shareApi,
                     invitedIds = state.users.map { it.sharedTo.id } + state.groups.map { it.sharedTo.id },
                 )
@@ -224,7 +223,7 @@ fun ShareScreen(
                     UserListBottomContent(
                         nextButtonTitle = lib.toolkit.base.R.string.common_next,
                         count = count,
-                        access = access,
+                        access = accessListWithOutRestricted.find { it.access == access },
                         accessList = accessListWithOutRestricted,
                         onAccess = userListViewModel::setAccess,
                         onDelete = userListViewModel::onDelete
@@ -259,9 +258,8 @@ fun ShareScreen(
                     access = Access.get(it.arguments?.getInt("access")),
                     users = it.arguments?.getJsonString<List<User>>("users", true).orEmpty(),
                     groups = it.arguments?.getJsonString<List<Group>>("groups", true).orEmpty(),
-                    isFolder = isFolder,
+                    shareData = shareData,
                     shareService = shareApi,
-                    itemId = itemId
                 )
             }
             InviteAccessScreen(
@@ -370,7 +368,7 @@ private fun MainScreen(
                         AnimatedVisibilityVerticalFade(visible = !searchState && !shareState.folder) {
                             ExternalLinkContent(
                                 externalLink = shareState.externalLink,
-                                accessList = shareState.accessList.filter { it != Access.None },
+                                accessList = shareState.accessList.filter { it.access != Access.None },
                                 onAccess = onLinkAccess,
                                 onCopy = onCopyExternalLink,
                                 onSend = onSendExternalLink
@@ -402,7 +400,7 @@ private fun MainScreen(
 @Composable
 private fun ExternalLinkContent(
     externalLink: Share,
-    accessList: List<Access>,
+    accessList: List<AccessUI>,
     onAccess: (Access) -> Unit,
     onCopy: () -> Unit,
     onSend: () -> Unit,
@@ -422,7 +420,7 @@ private fun ExternalLinkContent(
                 )
             }
             AccessIconButton(
-                access = externalLink.access,
+                access = externalLink.access.toUi(),
                 enabled = !externalLink.isLocked,
                 accessList = accessList,
                 onAccess = onAccess::invoke
@@ -456,7 +454,7 @@ private fun LazyListScope.ListContent(
     portalWithScheme: String,
     token: String,
     shareList: List<Share>,
-    accessList: List<Access>,
+    accessList: List<AccessUI>,
     onAccess: (String, Access) -> Unit
 ) {
     if (shareList.isNotEmpty()) {
@@ -487,7 +485,7 @@ private fun UserItem(
     share: Share,
     portalWithScheme: String,
     token: String,
-    accessList: List<Access>,
+    accessList: List<AccessUI>,
     onAccess: (String, Access) -> Unit
 ) {
     Row(
@@ -562,7 +560,7 @@ private fun UserItem(
                     }
                 }
                 AccessIconButton(
-                    access = share.access,
+                    access = share.access.toUi(true),
                     enabled = !share.isLocked,
                     accessList = accessList,
                     onAccess = { access -> onAccess.invoke(share.sharedTo.id, access) }

@@ -4,7 +4,7 @@ package app.documents.core.network.webdav
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Converter
@@ -56,5 +56,5 @@ class ConverterFactory : Converter.Factory() {
         get() = Json {
             isLenient = true
             ignoreUnknownKeys = true
-        }.asConverterFactory(MediaType.get("application/json"))
+        }.asConverterFactory("application/json".toMediaType())
 }

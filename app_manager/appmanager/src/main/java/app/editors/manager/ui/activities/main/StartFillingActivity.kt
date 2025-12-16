@@ -45,11 +45,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import app.documents.core.model.login.User
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.utils.displayNameFromHtml
 import app.editors.manager.R
 import app.editors.manager.app.appComponent
 import app.editors.manager.app.roomProvider
-import app.editors.manager.managers.tools.BaseEvent
 import app.editors.manager.managers.utils.GlideAvatarImage
 import app.editors.manager.ui.fragments.share.InviteUsersScreen
 import app.editors.manager.ui.fragments.share.UserListScreen
@@ -71,6 +71,7 @@ import lib.compose.ui.views.AppTextButton
 import lib.compose.ui.views.AppTopBar
 import lib.compose.ui.views.NestedColumn
 import lib.compose.ui.views.TopAppBarAction
+import lib.toolkit.base.managers.tools.BaseEvent
 import lib.toolkit.base.managers.utils.EditorsContract
 import lib.toolkit.base.managers.utils.FormRole
 import lib.toolkit.base.managers.utils.FormRoleList
@@ -128,7 +129,6 @@ class StartFillingActivity : ComponentActivity() {
                             roomId = roomId,
                             mode = UserListMode.StartFilling,
                             roomProvider = roomProvider,
-                            resourcesProvider = appComponent.resourcesProvider
                         )
                     }
                     val state = viewModel.state.collectAsState()
@@ -171,12 +171,6 @@ class StartFillingActivity : ComponentActivity() {
                         composable<Screen.UserList> { backStackEntry ->
                             val index = backStackEntry.toRoute<Screen.UserList>().index
 
-                            LaunchedEffect(Unit) {
-                                lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                                    userListViewModel.refreshMembers()
-                                }
-                            }
-
                             UserListScreen(
                                 viewModel = userListViewModel,
                                 title = R.string.setting_select_members_title,
@@ -200,7 +194,7 @@ class StartFillingActivity : ComponentActivity() {
                         }
                         composable<Screen.InviteToRoom> {
                             InviteUsersScreen(
-                                roomType = -1,
+                                roomType = ApiContract.RoomType.VIRTUAL_ROOM,
                                 roomId = roomId,
                                 roomProvider = roomProvider,
                                 fromList = true,

@@ -594,8 +594,10 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
                 PortalProvider.Onedrive -> DocsOneDriveFragment.newInstance()
                 is PortalProvider.Webdav -> DocsWebDavFragment.newInstance(WebdavProvider.valueOf(accountOnline?.portal?.provider!!))
                 is PortalProvider.Cloud -> {
-                    showActionButton(false)
-                    setAppBarStates(true)
+                    if (presenter.isAppColdStart) {
+                        showActionButton(false)
+                        setAppBarStates(true)
+                    }
                     showMainPagerFragment()
                     checkVPNConnection()
                     return
