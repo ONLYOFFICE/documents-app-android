@@ -28,6 +28,7 @@ object DatabaseModule {
     fun providesRecentDatabase(context: Context): RecentDatabase {
         return Room
             .databaseBuilder(context, RecentDatabase::class.java, RecentDatabase.NAME)
+            .addMigrations(RecentDatabase.MIGRATION_1_2)
             .build()
     }
 

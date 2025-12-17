@@ -1,7 +1,12 @@
 package app.editors.manager.ui.fragments.main.settings
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.WebView
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -217,6 +222,21 @@ private fun LogsContent() {
     var searchQuery by remember { mutableStateOf("") }
     var refreshTrigger by remember { mutableIntStateOf(0) }
 
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = CreateDocumentContract(),
+        onResult = { uri ->
+            if (uri != null) {
+                try {
+                    val logText = logs.joinToString("\n")
+                    writeTextToUri(context, uri, logText)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    )
+
     LaunchedEffect(refreshTrigger) {
         isLoading = true
         // Load logs and reverse the list to show the most recent messages first
@@ -256,6 +276,20 @@ private fun LogsContent() {
                     painter = painterResource(id = lib.editors.gbase.R.drawable.ic_clear),
                     contentDescription = "Clear"
                 )
+            }
+
+            if (logs.isNotEmpty()) {
+                IconButton(
+                    onClick = {
+                        val fileName = "app_logs_${System.currentTimeMillis()}.txt"
+                        launcher.launch(fileName)
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_list_context_download),
+                        contentDescription = "Copy all logs"
+                    )
+                }
             }
 
             // Search field
@@ -318,8 +352,8 @@ private fun NetworkContent() {
     var requests by remember { mutableStateOf<List<NetworkRequest>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
-    var refreshTrigger by remember { mutableStateOf(0) }
-    var expandedRequestId by remember { mutableStateOf<Int?>(null) }
+    var refreshTrigger by remember { mutableIntStateOf(0) }
+    var expandedRequest by remember { mutableStateOf<NetworkRequest?>(null) }
 
     LaunchedEffect(refreshTrigger) {
         isLoading = true
@@ -405,16 +439,15 @@ private fun NetworkContent() {
                     .fillMaxSize()
                     .padding(horizontal = 8.dp)
             ) {
-                items(filteredRequests.size) { index ->
-                    val request = filteredRequests[index]
-                    val isExpanded = expandedRequestId == index
+                items(filteredRequests) { request ->
+                    val isExpanded = expandedRequest == request
 
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                             .clickable {
-                                expandedRequestId = if (isExpanded) null else index
+                                expandedRequest = if (isExpanded) null else request
                             }
                     ) {
                         // Request header row
@@ -535,4 +568,25 @@ private fun Preview() {
         navController = rememberNavController(),
         sdkVersion = "5.4.21",
         onClick = {})
+}
+
+private class CreateDocumentContract : ActivityResultContract<String, Uri?>() {
+    override fun createIntent(context: Context, input: String): Intent {
+        return Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TITLE, input)
+        }
+    }
+
+    override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+        return intent?.data
+    }
+}
+
+private fun writeTextToUri(context: Context, uri: Uri, text: String) {
+    context.contentResolver.openOutputStream(uri)?.use { stream ->
+        stream.write(text.toByteArray())
+        stream.flush()
+    }
 }
