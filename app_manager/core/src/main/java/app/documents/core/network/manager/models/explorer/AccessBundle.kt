@@ -25,7 +25,7 @@ data class AvailableShareRights(
 
     @SerializedName("PrimaryExternalLink")
     val primaryExternalLink: List<String> = emptyList()
-) {
+) : java.io.Serializable {
 
     fun toBundle(): AccessBundle {
         return AccessBundle.fromAvailable(this)
