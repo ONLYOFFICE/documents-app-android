@@ -892,7 +892,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         if (isRoom) {
             copyRoomLink()
         } else {
-            (itemClicked as? CloudFolder)?.let { saveLink(getInternalLink(it)) }
+            saveExternalLinkToClipboard()
         }
     }
 
