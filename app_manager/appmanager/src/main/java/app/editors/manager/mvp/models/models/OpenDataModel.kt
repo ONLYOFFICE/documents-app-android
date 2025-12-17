@@ -55,6 +55,21 @@ data class OpenDataModel(
         return portal
     }
 
+    fun getCorrectPortal(): String? {
+        if (portal.isNullOrEmpty()) return null
+
+        var result = portal
+
+        if (!result.startsWith("http://", true) && !result.startsWith("https://", true)) {
+            result = "https://$result"
+        }
+
+        if (!result.endsWith("/")) {
+            result += "/"
+        }
+
+        return result
+    }
 
     val share: String
         get() = runCatching {
