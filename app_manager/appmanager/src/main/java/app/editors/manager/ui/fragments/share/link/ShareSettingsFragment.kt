@@ -54,7 +54,7 @@ class ShareSettingsFragment : ComposeDialogFragment() {
     }
 
     private fun dismissWithResult(shared: Boolean?) {
-        if (shared != null && shareData.roomType != null){
+        if (shared != null) {
             parentFragmentManager.setFragmentResult(
                 TAG_FRAGMENT_RESULT,
                 bundleOf(KEY_RESULT_SHARED to shared)

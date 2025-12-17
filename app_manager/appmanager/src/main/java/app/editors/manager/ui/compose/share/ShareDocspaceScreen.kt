@@ -154,7 +154,7 @@ fun ShareDocSpaceScreen(
         }
     }
 
-    BackHandler(onBack = { onClose(viewModel.hasLinks) })
+    BackHandler(onBack = { onClose(viewModel.isShared) })
 
     NavHost(
         modifier = Modifier.background(MaterialTheme.colors.background),
@@ -167,7 +167,7 @@ fun ShareDocSpaceScreen(
                 shareData = shareData,
                 useTabletPaddings = useTabletPadding,
                 onShareLink = onSendLink,
-                onBack = { onClose(viewModel.hasLinks) },
+                onBack = { onClose(viewModel.isShared) },
                 onAddUsers = { navController.navigate(Screen.AddUser) },
                 onLinkClick = { link ->
                     val json =

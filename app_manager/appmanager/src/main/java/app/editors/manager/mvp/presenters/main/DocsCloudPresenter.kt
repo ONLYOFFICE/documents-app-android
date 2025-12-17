@@ -616,10 +616,11 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun updateShareBadge(shared: Boolean) {
+    fun updateShareBadge(shared: Boolean, forUser: Boolean? = null) {
         itemClicked?.let { item ->
             if (item.shared != shared) {
                 item.shared = shared
+                if (isUserSection) item.sharedForUser = forUser ?: shared
                 viewState.onUpdateItemState()
             }
         }
@@ -1305,6 +1306,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     if (externalLink.isNullOrEmpty()) {
                         viewState.onError(context.getString(R.string.errors_unknown_error))
                     } else {
+                        if (!isRoom) updateShareBadge(true, forUser = false)
                         saveLink(externalLink)
                     }
                 }

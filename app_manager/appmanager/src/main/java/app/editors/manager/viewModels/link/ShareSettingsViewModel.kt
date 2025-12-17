@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.share.models.ExternalLink
 import app.documents.core.network.share.models.Share
+import app.documents.core.network.share.models.ShareType
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.managers.tools.ShareData
@@ -45,8 +46,11 @@ class ShareSettingsViewModel(
     private val _effect: MutableSharedFlow<ShareSettingsEffect> = MutableSharedFlow(1)
     val effect: SharedFlow<ShareSettingsEffect> = _effect.asSharedFlow()
 
-    val hasLinks: Boolean?
-        get() = (state.value as? ShareSettingsState.Success)?.links?.isNotEmpty()
+    val isShared: Boolean?
+        get() = (state.value as? ShareSettingsState.Success)?.run {
+            links.isNotEmpty() || shareData.roomType == null
+                    && members.any { it.itemAccessType != ShareType.Owner }
+        }
 
     fun create() {
         viewModelScope.launch {
