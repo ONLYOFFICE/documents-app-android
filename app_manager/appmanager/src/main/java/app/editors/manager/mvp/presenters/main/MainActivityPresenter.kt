@@ -230,7 +230,7 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                 return@launch
             }
 
-            when (val result = accountRepository.checkLoginWithEmailAndPortal(email = data.email.orEmpty(), portalUrl = data.portal)) {
+            when (val result = accountRepository.checkLoginWithEmailAndPortal(email = data.email.orEmpty(), portalUrl = data.getCorrectPortal())) {
                 is CheckLoginResult.Success -> {
                     viewState.restartActivity(deeplink = uri)
                 }
@@ -249,12 +249,13 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
             ?: data.originalUrl?.toUri()?.scheme?.let { Scheme.valueOf("$it://") }
             ?: Scheme.Https
 
+        val portalUrl = portalUri.host.takeIf { !it.isNullOrEmpty() } ?: portalUri.toString()
         App.getApp().refreshLoginComponent(
-            CloudPortal(url = portalUri.host.takeIf { it.isNullOrEmpty() } ?: portalUri.toString(), scheme = portalScheme)
+            CloudPortal(url = portalUrl, scheme = portalScheme)
         )
 
         App.getApp().loginComponent.cloudLoginRepository
-            .checkPortal(portalUri.host.orEmpty(), portalScheme)
+            .checkPortal(portalUrl, portalScheme)
             .collect { result ->
                 withContext(Dispatchers.Main) {
                     when (result) {

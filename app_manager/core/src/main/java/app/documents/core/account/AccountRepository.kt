@@ -110,7 +110,7 @@ internal class AccountRepositoryImpl(
 
         if (accountId.isNotEmpty() && portalUrl != null) {
             val account = cloudDataSource.getAccount(accountId)
-            if (account != null && account.portal.url != portalUrl) {
+            if (account != null && account.portal.urlWithScheme != portalUrl) {
                 return CheckLoginResult.NeedLogin
             }
         }
@@ -120,7 +120,7 @@ internal class AccountRepositoryImpl(
 
     override suspend fun checkLogin(accountId: String): CheckLoginResult {
         val oldAccountId = accountPreferences.onlineAccountId.orEmpty()
-        if (accountId == oldAccountId) return CheckLoginResult.AlreadyUse
+//        if (accountId == oldAccountId) return CheckLoginResult.AlreadyUse
         val account = cloudDataSource.getAccount(accountId) ?: return CheckLoginResult.NeedLogin
         val accessToken = accountManager.getToken(account.accountName) ?: return CheckLoginResult.NeedLogin
 
