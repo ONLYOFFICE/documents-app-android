@@ -49,6 +49,7 @@ class EntityDiffUtilsCallback(
                         && newEntity.formFillingStatusType == oldEntity.formFillingStatusType
                         && newEntity.isLocked == oldEntity.isLocked
                         && newEntity.shared == oldEntity.shared
+                        && newEntity.sharedForUser == oldEntity.sharedForUser
                         && newEntity.isSharedByLink == oldEntity.isSharedByLink
 
             oldEntity is CloudFolder && newEntity is CloudFolder ->
@@ -56,6 +57,7 @@ class EntityDiffUtilsCallback(
                         && newEntity.filesCount == oldEntity.filesCount
                         && newEntity.updated == oldEntity.updated
                         && newEntity.shared == oldEntity.shared
+                        && newEntity.sharedForUser == oldEntity.sharedForUser
 
             oldEntity is Footer && newEntity is Footer -> true
 

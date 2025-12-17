@@ -207,8 +207,9 @@ object ApiContract {
         fun isRoom(type: Int): Boolean = type == 14
         fun isArchive(type: Int): Boolean = type == CLOUD_ARCHIVE_ROOM
         fun isTemplates(type: Int?): Boolean = type == ROOM_TEMPLATES_FOLDER
+        fun isUserSection(type: Int?): Boolean = type == CLOUD_USER
 
-        fun shouldShowShareBadge(type: Int): Boolean {
+        fun shouldShowLinkBadge(type: Int): Boolean {
             return type == EDITING_ROOM || type == CUSTOM_ROOM || type == VIRTUAL_DATA_ROOM
         }
 

@@ -122,6 +122,15 @@
             tools:ignore="ContentDescription" />
 
         <ImageView
+            android:id="@+id/shared"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="@dimen/default_margin_medium"
+            android:src="@drawable/ic_sharing_badge"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
+
+        <ImageView
             android:id="@+id/favorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

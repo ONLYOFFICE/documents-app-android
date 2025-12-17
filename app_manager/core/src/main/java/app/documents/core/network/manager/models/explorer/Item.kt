@@ -27,6 +27,10 @@ open class Item : ItemProperties(), Serializable {
     @Expose
     var shared = false
 
+    @SerializedName("sharedForUser")
+    @Expose
+    var sharedForUser = false
+
     @SerializedName("rootFolderType")
     @Expose
     var rootFolderType = "-1"
@@ -116,6 +120,9 @@ open class Item : ItemProperties(), Serializable {
         set(value) {
             _access = value.code.toString()
         }
+
+    val showShareBadge: Boolean
+        get() = isUserSection(rootFolderType.toIntOrNull()) && (shared || sharedForUser)
 
     fun setItem(item: Item) {
         id = item.id
