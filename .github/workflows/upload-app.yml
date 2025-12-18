@@ -41,7 +41,7 @@ jobs:
       - name: Invalidate AWS CLOUDFRONT cache
         if: ${{ steps.upload-apk.outputs.apk_uploaded == 'true' }}
         run: |
-             aws cloudfront create-invalidation \
-                --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} \
-                --paths \
-                "/install/mobile/android/onlyoffice-documents.apk"
+             API_STATUS=$(aws apigateway test-invoke-method --rest-api-id ${{ secrets.AWS_REST_API_ID }} --resource-id "${{ secrets.AWS_RESOURCE_ID }}" \
+               --http-method PUT --path-with-query-string "/prod/download-oo-com" --body "$(jq -c -n '.paths = $ARGS.positional' --args "/install/mobile/android/onlyoffice-documents.apk")" \
+               --region us-east-1 --query 'status' --output text || :)
+             echo "API Gateway test-invoke status: ${API_STATUS:-<failed>}"
