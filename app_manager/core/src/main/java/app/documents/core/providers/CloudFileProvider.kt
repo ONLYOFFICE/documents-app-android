@@ -230,7 +230,7 @@ class CloudFileProvider @Inject constructor(
     }
 
     override fun delete(items: List<Item>, from: CloudFolder?): Observable<List<Operation>> {
-        return managerService.deleteBatch(getDeleteRequest(items))
+        return managerService.deleteBatch(getDeleteRequest(items, from))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { responseOperationResponse: Response<ResponseOperation> ->
@@ -242,8 +242,11 @@ class CloudFileProvider @Inject constructor(
             }
     }
 
-    private fun getDeleteRequest(items: List<Item>): RequestBatchBase {
+    private fun getDeleteRequest(items: List<Item>, from: CloudFolder?): RequestBatchBase {
         val isArchive = roomCallback?.isArchive() == true
+        val isTemplate = from?.let {
+            roomCallback?.isTemplatesRoot(from.id) == true || from.isTemplate
+        } ?: false
         val filesId: MutableList<String> = mutableListOf()
         val foldersId: MutableList<String> = mutableListOf()
 
@@ -263,7 +266,7 @@ class CloudFileProvider @Inject constructor(
 
         return RequestBatchBase().apply {
             isDeleteAfter = isArchive
-            isImmediately = isArchive
+            isImmediately = isArchive || isTemplate
             fileIds = filesId
             folderIds = foldersId
         }
