@@ -373,7 +373,13 @@ class DocsOnDeviceFragment : DocsBaseFragment(), DocsOnDeviceView, ActionButtonF
 
     override val actionMenuClickListener: (ActionMenuItem) -> Unit = { item ->
         when (item) {
-            is ActionMenuItem.Operation -> showFolderChooser(item.value)
+            is ActionMenuItem.Operation -> {
+                if (item == ActionMenuItem.Delete) {
+                    presenter.delete()
+                } else {
+                    showFolderChooser(item.value)
+                }
+            }
             else -> super.actionMenuClickListener(item)
         }
     }
