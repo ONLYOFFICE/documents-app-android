@@ -14,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +37,7 @@ import app.editors.manager.managers.utils.RoomUtils
 import app.editors.manager.managers.utils.StringUtils
 import app.editors.manager.ui.fragments.template.rememberAccountContext
 import app.editors.manager.ui.fragments.share.link.LoadingPlaceholder
+import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.viewModels.main.RoomFromTemplateViewModel
 import app.editors.manager.viewModels.main.TemplateListState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -107,16 +109,29 @@ private fun RoomFromTemplateScreenContent(
     state: TemplateListState,
     onTemplateClick: (String) -> Unit
 ) {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.padding(vertical = 12.dp)
-    ) {
-        items(state.templates, key = CloudFolder::id) { item ->
-            TemplateItem(
-                template = item,
-                sortBy = state.sortBy,
-                onClick = onTemplateClick
+    if (state.templates.isEmpty()) {
+        val placeholder = remember {
+            PlaceholderViews.getPlaceholderConfig(
+                type = PlaceholderViews.Type.EMPTY_FROM_TEMPLATE
             )
+        }
+        PlaceholderView(
+            image = placeholder.image,
+            title = stringResource(placeholder.titleRes),
+            subtitle = placeholder.subtitleRes?.let { stringResource(it) }.orEmpty()
+        )
+    } else {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.padding(vertical = 12.dp)
+        ) {
+            items(state.templates, key = CloudFolder::id) { item ->
+                TemplateItem(
+                    template = item,
+                    sortBy = state.sortBy,
+                    onClick = onTemplateClick
+                )
+            }
         }
     }
 }
@@ -223,6 +238,22 @@ private fun RoomFromTemplateScreenContentPreview() {
                             created = Date()
                         }
                     ),
+                    sortBy = ""
+                )
+            ),
+            onTemplateClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RoomFromTemplateScreenEmptyPreview() {
+    ManagerTheme {
+        RoomFromTemplateScreenContent(
+            loadingResult = NetworkResult.Success(
+                TemplateListState(
+                    templates = emptyList(),
                     sortBy = ""
                 )
             ),
