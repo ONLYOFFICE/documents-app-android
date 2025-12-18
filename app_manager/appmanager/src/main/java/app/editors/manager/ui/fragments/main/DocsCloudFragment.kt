@@ -535,7 +535,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     protected open fun getFilters(): Boolean {
-        val filter = presenter.preferenceTool.filter
+        val filter = presenter.filterManager.getFilter(section)
         return filter.type != FilterType.None || filter.author.id.isNotEmpty() || filter.excludeSubfolder
     }
 

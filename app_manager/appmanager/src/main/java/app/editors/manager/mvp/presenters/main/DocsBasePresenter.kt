@@ -42,6 +42,7 @@ import app.documents.core.providers.WebDavFileProvider
 import app.editors.manager.R
 import app.editors.manager.app.App
 import app.editors.manager.app.accountOnline
+import app.editors.manager.managers.tools.FilterManager
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.utils.FirebaseUtils.addCrash
@@ -144,6 +145,9 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
 
     @Inject
     lateinit var recentDataSource: RecentDataSource
+
+    @Inject
+    lateinit var filterManager: FilterManager
 
     @Inject
     lateinit var fileProvider: FP
@@ -339,8 +343,8 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             setPlaceholderType(PlaceholderViews.Type.LOAD)
             disposable.add(
                 fileProvider.getFiles(id, getArgs(filteringValue).putFilters())
-                    .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
-                    .subscribe({ explorer: Explorer? -> loadSuccess(explorer) }, this::fetchError)
+                    .doOnNext { it.filterType = filterManager.getFilter(currentSectionType).type.filterVal }
+                    .subscribe(::loadSuccess, ::fetchError)
             )
         }
     }
@@ -350,7 +354,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
         modelExplorerStack.currentId?.let { id ->
             disposable.add(
                 fileProvider.getFiles(id, getArgs(filteringValue).putFilters())
-                    .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
+                    .doOnNext { it.filterType = filterManager.getFilter(currentSectionType).type.filterVal }
                     .flatMap { explorer ->
                         modelExplorerStack.refreshStack(explorer)
                         Observable.just(getListWithHeaders(modelExplorerStack.last(), true))
@@ -396,7 +400,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
             modelExplorerStack.currentId?.let { id ->
                 filteringValue = value
                 fileProvider.getFiles(id, getArgs(value).putFilters())
-                    .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
+                    .doOnNext { it.filterType = filterManager.getFilter(currentSectionType).type.filterVal }
                     .subscribe({ explorer ->
                         modelExplorerStack.setFilter(explorer)
                         setPlaceholderType(
@@ -962,13 +966,16 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
     protected open fun Map<String, String>.putFilters(): Map<String, String> {
         return plus(
             mutableMapOf<String, String>().apply {
-                val filter = preferenceTool.filter
-                if (ApiContract.SectionType.isRoom(currentSectionType) && isRoot || isTemplatesFolder) {
+                val filter = filterManager.getFilter(currentSectionType)
+                if (ApiContract.SectionType.isRoom(currentSectionType) ||
+                    ApiContract.SectionType.isArchive(currentSectionType) &&
+                    isRoot || isTemplatesFolder
+                ) {
                     if (filter.roomType != RoomFilterType.None) {
                         put(ApiContract.Parameters.ARG_FILTER_BY_TYPE_ROOM, filter.roomType.filterVal.toString())
                     }
                     if (filter.provider != null) {
-                        put(ApiContract.Parameters.ARG_FILTER_BY_PROVIDER_ROOM, filter.provider?.filterValue.orEmpty())
+                        put(ApiContract.Parameters.ARG_FILTER_BY_PROVIDER_ROOM, filter.provider.filterValue)
                     }
                     if (filter.tags.isNotEmpty()) {
                         put(ApiContract.Parameters.ARG_FILTER_BY_TAG_ROOM, filter.tags.joinToString())

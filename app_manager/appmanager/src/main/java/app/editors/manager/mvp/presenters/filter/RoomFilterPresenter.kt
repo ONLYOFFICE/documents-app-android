@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import moxy.presenterScope
 
-class RoomFilterPresenter(private val isTemplatesSection: Boolean) : BaseFilterPresenter() {
+class RoomFilterPresenter(private val section: Int?) : BaseFilterPresenter() {
 
     var filterType: RoomFilterType = RoomFilterType.None
         set(value) {
@@ -43,9 +43,14 @@ class RoomFilterPresenter(private val isTemplatesSection: Boolean) : BaseFilterP
             update()
         }
 
+    private val isTemplatesSection: Boolean
+        get() = ApiContract.SectionType.isTemplates(section)
+
     override val hasFilter: Boolean
-        get() = preferenceTool.filter.roomType != RoomFilterType.None || filterAuthor != FilterAuthor() ||
-                filterTags.isNotEmpty() || filterProvider != null
+        get() = filterManager.getFilter(section).roomType != RoomFilterType.None ||
+                filterAuthor != FilterAuthor() ||
+                filterTags.isNotEmpty() ||
+                filterProvider != null
 
     private val filters: Map<String, String>
         get() = mutableMapOf<String, String>().apply {
@@ -69,7 +74,7 @@ class RoomFilterPresenter(private val isTemplatesSection: Boolean) : BaseFilterP
     }
 
     override fun loadFilter() {
-        val filter = preferenceTool.filter
+        val filter = filterManager.getFilter(section)
         filterType = filter.roomType
         filterAuthor = filter.author
         filterProvider = filter.provider?.let { FilterProvider(it) }
@@ -110,13 +115,14 @@ class RoomFilterPresenter(private val isTemplatesSection: Boolean) : BaseFilterP
     }
 
     override fun saveFilter() {
-        preferenceTool.filter =
-            preferenceTool.filter.copy(
+        filterManager.saveFilter(section) { filter ->
+            filter.copy(
                 roomType = filterType,
                 author = filterAuthor,
                 tags = filterTags,
                 provider = filterProvider?.storage
             )
+        }
     }
 
     override fun update(initialCall: Boolean) {
@@ -126,7 +132,9 @@ class RoomFilterPresenter(private val isTemplatesSection: Boolean) : BaseFilterP
         val apiCall = if (isTemplatesSection) {
             context.cloudFileProvider.getRoomTemplates(filters)
         } else {
-            context.cloudFileProvider.getRooms(filters)
+            context.cloudFileProvider.getRooms(filters) {
+                section == ApiContract.SectionType.CLOUD_ARCHIVE_ROOM
+            }
         }
         disposable?.add(
             apiCall.doOnSubscribe { viewState.onFilterProgress() }

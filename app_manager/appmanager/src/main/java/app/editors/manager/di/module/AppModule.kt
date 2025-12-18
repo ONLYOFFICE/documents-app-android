@@ -9,6 +9,7 @@ import app.documents.core.utils.FirebaseTool
 import app.editors.manager.managers.providers.DropboxStorageHelper
 import app.editors.manager.managers.providers.GoogleDriveStorageHelper
 import app.editors.manager.managers.providers.OneDriveStorageHelper
+import app.editors.manager.managers.tools.FilterManager
 import app.editors.manager.managers.utils.FirebaseUtils
 import dagger.Module
 import dagger.Provides
@@ -75,4 +76,8 @@ object AppModule {
             }
         }
     }
+
+    @Provides
+    @Singleton
+    fun provideFilterManager(): FilterManager = FilterManager()
 }

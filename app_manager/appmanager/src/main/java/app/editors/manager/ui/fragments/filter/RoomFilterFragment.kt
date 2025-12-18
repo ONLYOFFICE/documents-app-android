@@ -1,6 +1,5 @@
 package app.editors.manager.ui.fragments.filter
 
-import android.os.Bundle
 import app.documents.core.model.cloud.CloudAccount
 import app.editors.manager.R
 import app.editors.manager.app.App
@@ -15,6 +14,7 @@ import app.editors.manager.mvp.presenters.filter.BaseFilterPresenter
 import app.editors.manager.mvp.presenters.filter.RoomFilterPresenter
 import app.editors.manager.ui.views.custom.MultiChoiceChipGroupView
 import app.editors.manager.ui.views.custom.SingleChoiceChipGroupView
+import lib.toolkit.base.managers.utils.putArgs
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 
@@ -22,14 +22,10 @@ class RoomFilterFragment : BaseFilterFragment() {
 
     companion object {
         val TAG = RoomFilterFragment::class.simpleName
-        private const val KEY_IS_TEMPLATES_SECTION = "key_is_template_section"
+        private const val KEY_SECTION: String = "key_section"
 
-        fun newInstance(isTemplatesFolder: Boolean = false): RoomFilterFragment {
-            return RoomFilterFragment().apply {
-                arguments = Bundle(1).apply {
-                    putBoolean(KEY_IS_TEMPLATES_SECTION, isTemplatesFolder)
-                }
-            }
+        fun newInstance(section: Int): RoomFilterFragment {
+            return RoomFilterFragment().putArgs(KEY_SECTION to section)
         }
     }
 
@@ -38,7 +34,7 @@ class RoomFilterFragment : BaseFilterFragment() {
 
     @ProvidePresenter
     fun providePresenter(): RoomFilterPresenter {
-        return RoomFilterPresenter(arguments?.getBoolean(KEY_IS_TEMPLATES_SECTION) ?: false)
+        return RoomFilterPresenter(arguments?.getInt(KEY_SECTION))
     }
 
     private var authorChipGroup: SingleChoiceChipGroupView? = null

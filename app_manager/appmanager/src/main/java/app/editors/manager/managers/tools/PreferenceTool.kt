@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import app.documents.core.network.common.contracts.ApiContract
-import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.states.PasscodeLockState
 import app.editors.manager.mvp.models.states.toJson
 import javax.inject.Inject
@@ -40,7 +39,6 @@ class PreferenceTool @Inject constructor(val context: Context) {
         private const val KEY_PASSCODE = "KEY_PASSCODE"
         private const val KEY_TIMESTAMP = "KEY_TIMESTAMP"
         private const val KEY_DEVICE_TOKEN = "KEY_DEVICE_TOKEN"
-        private const val KEY_FILTER = "KEY_FILTER"
         private const val KEY_SYSTEM_LOCALE = "KEY_SYSTEM_LOCALE"
         private const val KEY_SKIP_LOCALE_CONFIRMATION = "KEY_SKIP_LOCALE_CONFIRMATION"
         internal const val KEY_IS_GRID_VIEW = "KEY_IS_GRID_VIEW"
@@ -151,12 +149,6 @@ class PreferenceTool @Inject constructor(val context: Context) {
         get() = sharedPreferences.getString(KEY_DEVICE_TOKEN, "") ?: ""
         set(value) {
             sharedPreferences.edit().putString(KEY_DEVICE_TOKEN, value).apply()
-        }
-
-    var filter: Filter
-        get() = Filter.toObject(sharedPreferences.getString(KEY_FILTER, Filter.toJson(Filter())))
-        set(filter) {
-            sharedPreferences.edit().putString(KEY_FILTER, Filter.toJson(filter)).apply()
         }
 
     var systemLocale: String?

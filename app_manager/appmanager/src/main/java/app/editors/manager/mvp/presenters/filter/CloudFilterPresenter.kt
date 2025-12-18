@@ -43,7 +43,7 @@ class CloudFilterPresenter(private val folderId: String?, private val section: I
     }
 
     override fun loadFilter() {
-        val filter = preferenceTool.filter
+        val filter = filterManager.getFilter(section)
         filterType = filter.type
         excludeSubfolder = filter.excludeSubfolder
         filterAuthor = filter.author
@@ -51,12 +51,14 @@ class CloudFilterPresenter(private val folderId: String?, private val section: I
     }
 
     override fun saveFilter() {
-        preferenceTool.filter = preferenceTool.filter.copy(
-            type = filterType,
-            author = filterAuthor,
-            excludeSubfolder = excludeSubfolder,
-            location = location
-        )
+        filterManager.saveFilter(section) { filter ->
+            filter.copy(
+                type = filterType,
+                author = filterAuthor,
+                excludeSubfolder = excludeSubfolder,
+                location = location
+            )
+        }
     }
 
     override fun update(initialCall: Boolean) {

@@ -123,7 +123,7 @@ class DocsTrashFragment : DocsCloudFragment() {
 
     override fun getFilters(): Boolean {
         return if (isArchive) {
-            val filter = presenter.preferenceTool.filter
+            val filter = presenter.filterManager.getFilter(section)
             filter.roomType != RoomFilterType.None || filter.author.id.isNotEmpty()
         } else super.getFilters()
     }

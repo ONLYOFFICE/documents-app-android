@@ -79,7 +79,7 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
                             fileProvider.getFiles(path, getArgs(filteringValue).putFilters())
                         }
                     }
-                    .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
+                    .doOnNext { it.filterType = filterManager.getFilter(currentSectionType).type.filterVal }
                     .doOnNext(::loadSuccess)
                     .doOnError(::fetchError)
                     .subscribe()

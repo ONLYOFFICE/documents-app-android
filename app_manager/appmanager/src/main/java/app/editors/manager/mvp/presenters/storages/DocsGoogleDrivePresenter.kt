@@ -20,7 +20,6 @@ import app.editors.manager.managers.works.BaseDownloadWork
 import app.editors.manager.managers.works.googledrive.DownloadWork
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.base.DocsGoogleDriveView
-import app.editors.manager.ui.views.custom.PlaceholderViews
 import kotlinx.coroutines.launch
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.KeyboardUtils
@@ -104,17 +103,6 @@ class DocsGoogleDrivePresenter : BaseStorageDocsPresenter<DocsGoogleDriveView, G
                 .map { it.folders + it.files }
                 .subscribe(viewState::onDocsNext, ::fetchError)
         )
-    }
-
-    override fun getItemsById(id: String?) {
-        id?.let {
-            setPlaceholderType(PlaceholderViews.Type.LOAD)
-            disposable.add(
-                fileProvider.getFiles(id, getArgs(filteringValue).putFilters())
-                    .doOnNext { it.filterType = preferenceTool.filter.type.filterVal }
-                    .subscribe(::loadSuccess, ::fetchError)
-            )
-        }
     }
 
     override fun startDownload(downloadTo: Uri, item: Item?) {
