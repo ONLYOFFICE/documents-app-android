@@ -43,6 +43,7 @@ import app.editors.manager.mvp.models.filter.Filter
 import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.list.Templates
 import app.editors.manager.mvp.models.states.OperationsState
+import app.editors.manager.mvp.models.ui.SharingType
 import app.editors.manager.mvp.views.main.DocsCloudView
 import app.editors.manager.ui.dialogs.MoveCopyDialog
 import app.editors.manager.ui.fragments.main.DocsRoomFragment.Companion.TAG_DELETE_TEMPLATE
@@ -616,11 +617,21 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         }
     }
 
-    fun updateShareBadge(shared: Boolean, forUser: Boolean? = null) {
+    fun updateShareBadge(sharedType: SharingType) {
         itemClicked?.let { item ->
-            if (item.shared != shared) {
+            val (shared, forUser) = sharedType.toFlags()
+            if (item.shared != shared || (isUserSection && item.sharedForUser != forUser)) {
                 item.shared = shared
-                if (isUserSection) item.sharedForUser = forUser ?: shared
+                if (isUserSection) item.sharedForUser = forUser
+                viewState.onUpdateItemState()
+            }
+        }
+    }
+
+    private fun updateShareBadge() {
+        itemClicked?.let { item ->
+            if (!item.shared && !item.showShareBadge) {
+                item.shared = true
                 viewState.onUpdateItemState()
             }
         }
@@ -1306,7 +1317,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
                     if (externalLink.isNullOrEmpty()) {
                         viewState.onError(context.getString(R.string.errors_unknown_error))
                     } else {
-                        if (!isRoom) updateShareBadge(true, forUser = false)
+                        if (!isRoom) updateShareBadge()
                         saveLink(externalLink)
                     }
                 }

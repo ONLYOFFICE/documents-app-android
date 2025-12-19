@@ -9,6 +9,7 @@ import app.documents.core.network.manager.models.explorer.Item
 import app.editors.manager.R
 import app.editors.manager.app.roomProvider
 import app.editors.manager.managers.tools.ShareData
+import app.editors.manager.mvp.models.ui.SharingType
 import app.editors.manager.ui.compose.share.ShareDocSpaceScreen
 import lib.compose.ui.fragments.ComposeDialogFragment
 import lib.compose.ui.theme.ManagerTheme
@@ -53,11 +54,11 @@ class ShareSettingsFragment : ComposeDialogFragment() {
         arguments?.getSerializableExt(KEY_SHARE_DATA) ?: ShareData()
     }
 
-    private fun dismissWithResult(shared: Boolean?) {
+    private fun dismissWithResult(shared: SharingType?) {
         if (shared != null) {
             parentFragmentManager.setFragmentResult(
                 TAG_FRAGMENT_RESULT,
-                bundleOf(KEY_RESULT_SHARED to shared)
+                bundleOf(KEY_RESULT_SHARED to shared.name)
             )
         }
         dismiss()

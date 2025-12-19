@@ -9,6 +9,7 @@ import app.documents.core.network.share.models.ShareType
 import app.documents.core.providers.RoomProvider
 import app.editors.manager.R
 import app.editors.manager.managers.tools.ShareData
+import app.editors.manager.mvp.models.ui.SharingType
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,10 +47,13 @@ class ShareSettingsViewModel(
     private val _effect: MutableSharedFlow<ShareSettingsEffect> = MutableSharedFlow(1)
     val effect: SharedFlow<ShareSettingsEffect> = _effect.asSharedFlow()
 
-    val isShared: Boolean?
+    private val hasLinks: Boolean
+        get() = (state.value as? ShareSettingsState.Success)?.links?.isEmpty() == false
+
+    val isShared: SharingType?
         get() = (state.value as? ShareSettingsState.Success)?.run {
-            links.isNotEmpty() || shareData.roomType == null
-                    && members.any { it.itemAccessType != ShareType.Owner }
+            val hasUsers = shareData.roomType == null && members.any { it.itemAccessType != ShareType.Owner }
+            SharingType.fromFlags(hasLinks, hasUsers)
         }
 
     fun create() {
