@@ -27,7 +27,7 @@ jobs:
 
           release_info=$(curl -H "Authorization: token $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3+json" -s $GITHUB_API_URL)
 
-          apk_url=$(echo "$release_info" | jq -r '.assets[] | select(.name | test("onlyoffice-manager-.*\\.apk")) | .browser_download_url')
+          apk_url=$(echo "$release_info" | jq -r '.assets[] | select(.name | test("onlyoffice-manager-.*\\-arm64-v8a.apk")) | .browser_download_url')
 
           if [ ! -z "$apk_url" ]; then
               curl -o onlyoffice-documents.apk -L "$apk_url"
