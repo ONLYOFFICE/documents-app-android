@@ -172,9 +172,20 @@ interface RoomService {
         ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
-    @GET("api/" + ApiContract.API_VERSION + "/files/folder/{id}/link")
+    @POST("api/" + ApiContract.API_VERSION + "/files/file/{id}/link")
+    suspend fun getPublicExternalFileLink(
+        @Path("id") id: String,
+        @Body body: RequestCreateExternalLink,
+    ): app.documents.core.network.BaseResponse<ExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/files/folder/{id}/link")
     suspend fun getPublicExternalFolderLink(
         @Path("id") id: String,
+        @Body body: RequestCreateExternalLink,
     ): app.documents.core.network.BaseResponse<ExternalLink>
 
     @Headers(

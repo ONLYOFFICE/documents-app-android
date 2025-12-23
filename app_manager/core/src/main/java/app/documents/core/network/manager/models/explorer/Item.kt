@@ -1,6 +1,7 @@
 package app.documents.core.network.manager.models.explorer
 
 import app.documents.core.model.cloud.Access
+import app.documents.core.network.common.contracts.ApiContract
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.base.ItemProperties
 import com.google.gson.annotations.Expose
@@ -96,6 +97,14 @@ open class Item : ItemProperties(), Serializable {
             val indices = order.split(".").toMutableList()
             indices[indices.lastIndex] = value.toString()
             order = if (indices.size > 1) indices.joinToString(".") else indices[0]
+        }
+
+    val linkAccess: Int
+        get() = when {
+            ApiContract.SectionType.getRoomType(parentRoomType) == ApiContract.RoomType.FILL_FORMS_ROOM
+                -> Access.FormFiller.code
+            (this as? CloudFile)?.isForm == true -> Access.Editor.code
+            else -> Access.Read.code
         }
 
     var access: Access

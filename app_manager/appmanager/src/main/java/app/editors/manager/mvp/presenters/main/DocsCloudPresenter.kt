@@ -574,6 +574,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         itemClicked?.let { item ->
             handleExternalLink(
                 id = item.id,
+                access = item.linkAccess,
                 isRoom = false,
                 isFolder = item is CloudFolder
             )
@@ -897,11 +898,10 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
     }
 
     fun copyLinkFromContextMenu() {
-        val item = itemClicked
-        when {
-            item is CloudFile && currentFolder?.roomType == ApiContract.RoomType.PUBLIC_ROOM -> copyRoomLink(item.id)
-            (item as? CloudFolder)?.isRoom == true -> copyRoomLink()
-            else -> saveExternalLinkToClipboard()
+        if ((itemClicked as? CloudFolder)?.isRoom == true) {
+            copyRoomLink()
+        } else {
+            saveExternalLinkToClipboard()
         }
     }
 
@@ -1260,26 +1260,37 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         )
     }
 
-    private fun copyRoomLink(itemId: String? = null) {
-        if (itemId != null) {
-            handleExternalLink(id = itemId, isRoom = false)
-        } else {
-            roomClicked?.let { room ->
-                if (isTemplatesFolder || room.roomType == ApiContract.RoomType.COLLABORATION_ROOM
-                    || room.roomType == ApiContract.RoomType.VIRTUAL_ROOM
-                ) {
-                    setDataToClipboard(getInternalLink(room))
-                } else {
-                    handleExternalLink(room.id)
-                }
+    private fun copyRoomLink() {
+        roomClicked?.let { room ->
+            if (isTemplatesFolder || room.roomType == ApiContract.RoomType.COLLABORATION_ROOM
+                || room.roomType == ApiContract.RoomType.VIRTUAL_ROOM
+            ) {
+                setDataToClipboard(getInternalLink(room))
+            } else {
+                handleExternalLink(room.id)
             }
         }
     }
 
-    private fun handleExternalLink(id: String, isRoom: Boolean = true, isFolder: Boolean = false) {
+    private fun handleExternalLink(
+        id: String,
+        access: Int = Access.Read.code,
+        isRoom: Boolean = true,
+        isFolder: Boolean = false
+    ) {
         presenterScope.launch {
             try {
-                val externalLink = roomProvider?.getExternalLink(id, isRoom, isFolder)
+                val externalLink = if (isRoom || checkDocSpaceVersion("3.0.0")) {
+                    roomProvider?.getExternalLink(
+                        id = id,
+                        access = access,
+                        isRoom = isRoom,
+                        isFolder = isFolder
+                    )
+                } else {
+                    roomProvider?.getExternalLink(id)
+                }?.sharedTo?.shareLink
+
                 withContext(Dispatchers.Main) {
                     if (externalLink.isNullOrEmpty()) {
                         viewState.onError(context.getString(R.string.errors_unknown_error))
