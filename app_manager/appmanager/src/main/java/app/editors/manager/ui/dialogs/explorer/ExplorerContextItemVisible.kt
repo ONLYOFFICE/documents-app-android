@@ -147,7 +147,7 @@ interface ExplorerContextItemVisible {
 
     private val ExplorerContextState.externalLink: Boolean
         get() = when {
-            section.isRoom && isRoot -> true
+            section.isRoom -> true
             isDocSpaceUser() -> item.security?.copyLink == true
             provider == PortalProvider.Cloud.DocSpace -> item.isCanShare
             else -> isShareVisible(access, section)

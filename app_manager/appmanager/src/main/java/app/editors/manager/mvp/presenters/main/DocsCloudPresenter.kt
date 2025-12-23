@@ -572,12 +572,22 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     fun saveExternalLinkToClipboard() {
         itemClicked?.let { item ->
-            handleExternalLink(
-                id = item.id,
-                access = item.linkAccess,
-                isRoom = false,
-                isFolder = item is CloudFolder
-            )
+            if (item.isCanShare) {
+                handleExternalLink(
+                    id = item.id,
+                    access = item.linkAccess,
+                    isRoom = false,
+                    isFolder = item is CloudFolder
+                )
+            } else {
+                setDataToClipboard(
+                    getInternalLink(
+                        id = item.id,
+                        isRoom = false,
+                        extension = (item as? CloudFile)?.fileExst
+                    )
+                )
+            }
         }
     }
 
@@ -1265,7 +1275,7 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
             if (isTemplatesFolder || room.roomType == ApiContract.RoomType.COLLABORATION_ROOM
                 || room.roomType == ApiContract.RoomType.VIRTUAL_ROOM
             ) {
-                setDataToClipboard(getInternalLink(room))
+                setDataToClipboard(getInternalLink(room.id, isRoom = true))
             } else {
                 handleExternalLink(room.id)
             }
@@ -1309,12 +1319,15 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
         viewState.onSnackBar(context.getString(R.string.rooms_info_copy_link_to_clipboard))
     }
 
-    private fun getInternalLink(folder: CloudFolder): String {
-        return "${context.accountOnline?.portal?.urlWithScheme}" + if (folder.isRoom) {
-            "/rooms/shared/filter?folder=${folder.id}"
-        } else {
-            "rooms/shared/${folder.id}/filter?folder=${folder.id}"
-        }
+    private fun getInternalLink(id: String, isRoom: Boolean, extension: String? = null): String {
+        return "${context.accountOnline?.portal?.urlWithScheme}" +
+                when {
+                    isRoom -> "/rooms/shared/filter?folder=$id"
+                    extension == null -> "/rooms/shared/$id/filter?folder=$id"
+                    StringUtils.isDocument(extension) -> "/doceditor?fileId=$id"
+                    StringUtils.isMedia(extension) -> "/media/view/$id"
+                    else -> ""
+                }
     }
 
     fun muteRoomNotifications(muted: Boolean) {
