@@ -64,7 +64,8 @@ class ShareSettingsViewModel(
                 val link = roomProvider.createSharedLink(
                     itemId = shareData.itemId,
                     isFolder = shareData.isFolder,
-                    access = access.code
+                    access = access.code,
+                    isPrimary = !hasLinks
                 )
                 _effect.emit(ShareSettingsEffect.OnCreate(false))
                 _effect.emit(ShareSettingsEffect.Copy(link.sharedTo.shareLink))

@@ -2,6 +2,7 @@ package app.documents.core.network.manager.models.explorer
 
 import app.documents.core.model.cloud.Access
 import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.contracts.ApiContract.SectionType.isUserSection
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.base.ItemProperties
 import com.google.gson.annotations.Expose

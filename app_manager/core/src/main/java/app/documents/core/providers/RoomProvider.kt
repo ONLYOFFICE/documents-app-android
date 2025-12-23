@@ -275,8 +275,13 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             body.response else throw HttpException(response)
     }
 
-    suspend fun createSharedLink(itemId: String, isFolder: Boolean, access: Int): ExternalLink {
-        val requestBody = RequestCreateSharedLink(access = access)
+    suspend fun createSharedLink(
+        itemId: String,
+        isFolder: Boolean,
+        access: Int,
+        isPrimary: Boolean
+    ): ExternalLink {
+        val requestBody = RequestCreateSharedLink(access = access, primary = isPrimary)
         val request = if (isFolder)
             roomService.createSharedFolderLink(itemId, requestBody) else
             roomService.createSharedFileLink(itemId, requestBody)
