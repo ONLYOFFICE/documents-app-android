@@ -1,6 +1,4 @@
-@file:Suppress("PackageDirectoryMismatch")
-
-package lib.editors.base.snapshots
+package lib.bootstrap.snapshot
 
 import android.annotation.SuppressLint
 import android.content.Context

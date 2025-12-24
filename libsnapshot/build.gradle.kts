@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "app.documents.snapshot"
+    namespace = "lib.bootstrap.snapshot"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
