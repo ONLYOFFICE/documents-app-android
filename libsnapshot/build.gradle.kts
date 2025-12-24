@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 
 plugins {
     id("com.android.library")
@@ -35,6 +36,8 @@ dependencies {
     implementation(libs.kotlin.core)
     implementation(libs.ktx)
 }
+
+tasks.preBuild.dependsOn("copyLibbootstrap")
 
 tasks.register("copyLibbootstrap", Copy::class) {
     description = "Copies libbootstrap_jni.so for all ABIs into jniLibs"
