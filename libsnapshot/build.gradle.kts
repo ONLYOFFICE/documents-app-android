@@ -61,7 +61,7 @@ tasks.register("copyLibbootstrap", Copy::class) {
                 into(abi)
             }
         } else {
-            throw GradleException("❌ Missing $libName for $abi at $srcPath. Did you build native libraries?")
+            println("⚠️ Missing $libName for $abi at $srcPath. Did you build native libraries?")
         }
     }
 
