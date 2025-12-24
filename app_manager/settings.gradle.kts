@@ -37,6 +37,7 @@ if (shouldIncludeEditors() == true) {
     includeEditorModule("../../document-android-editors/editors_cells/libgcells", ":libgcells")
     includeEditorModule("../../document-android-editors/editors_docs/libgdocs", ":libgdocs")
     includeEditorModule("../../document-android-editors/editors_slides/libgslides", ":libgslides")
+    includeEditorModule("../libsnapshot", ":libsnapshot")
 }
 
 project(":libtoolkit").projectDir = File(settingsDir, "../toolkit/libtoolkit")

@@ -27,6 +27,7 @@ import app.editors.manager.ui.views.custom.PlaceholderViews
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
+import lib.editors.base.snapshots.SnapshotCreator
 import lib.toolkit.base.managers.tools.LocalContentTools
 import lib.toolkit.base.managers.utils.ContentResolverUtils
 import lib.toolkit.base.managers.utils.EditType
@@ -412,6 +413,8 @@ class DocsOnDevicePresenter : DocsBasePresenter<DocsOnDeviceView, LocalFileProvi
     }
 
     private fun openFile(uri: Uri, extension: String, editType: EditType) {
+        //TODO for tests
+        SnapshotCreator.stop()
         when (StringUtils.getExtension(extension)) {
             Extension.PDF -> {
                 if (FileUtils.isOformPdf(context.contentResolver.openInputStream(uri))) {

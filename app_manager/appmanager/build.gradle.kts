@@ -252,7 +252,8 @@ dependencies {
             ":libgeditors",
             ":libgcells",
             ":libgdocs",
-            ":libgslides"
+            ":libgslides",
+            ":libsnapshot"
         )
 
         editorModules.forEach { modulePath ->

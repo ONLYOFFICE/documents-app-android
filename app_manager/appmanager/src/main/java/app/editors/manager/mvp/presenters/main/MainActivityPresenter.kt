@@ -29,9 +29,11 @@ import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import lib.editors.base.snapshots.SnapshotCreator
 import lib.toolkit.base.managers.utils.CryptUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import moxy.InjectViewState
@@ -76,6 +78,12 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
+        presenterScope.launch() {
+            val assetsPath = async {
+                SnapshotCreator.unpackAssets(context)
+            }
+            SnapshotCreator.start("${assetsPath}/snapshots", assetsPath.await())
+        }
         preferenceTool.setUserSession()
         preferenceTool.filter = Filter()
         checkSdk()

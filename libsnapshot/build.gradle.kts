@@ -30,6 +30,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":libtoolkit"))
+
     implementation(libs.kotlin.core)
     implementation(libs.ktx)
 }
