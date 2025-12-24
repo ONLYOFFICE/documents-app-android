@@ -174,7 +174,7 @@ object ManagerUiUtils {
         } else if (room.providerItem && room.providerKey.isNotEmpty()) {
             publicBadge.setImageResource(StorageUtils.getStorageIcon(room.providerKey))
             publicBadge.isVisible = true
-        } else if (room.roomType == ApiContract.RoomType.PUBLIC_ROOM) {
+        } else if (ApiContract.RoomType.hasExternalLink(room.roomType)) {
             publicBadge.setImageResource(
                 if (isGrid) {
                     R.drawable.ic_public_room_big
