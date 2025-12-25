@@ -14,7 +14,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
-import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
 import app.documents.core.model.cloud.Access
@@ -54,8 +53,6 @@ import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -257,10 +254,6 @@ class MainActivity : BaseAppActivity(), MainActivityView, BaseBottomDialog.OnBot
                 showBrowser(it)
             }
         }
-
-        App.getApp().appComponent.recentDataSource.getRecentListFlow().flowWithLifecycle(lifecycle)
-            .onEach { viewBinding.bottomNavigation.menu.getItem(0).isEnabled = it.isNotEmpty() }
-            .launchIn(lifecycleScope)
 
         checkState(savedInstanceState)
 
