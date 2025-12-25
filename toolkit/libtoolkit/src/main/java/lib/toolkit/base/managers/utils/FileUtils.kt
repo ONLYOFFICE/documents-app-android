@@ -168,7 +168,7 @@ object FileUtils {
         }
     }
 
-    fun getAssetsPath(context: Context, isExternal: Boolean = true): String = "${getCachePath(context, isExternal)}/assets"
+    fun getAssetsPath(context: Context, isExternal: Boolean = false): String = "${getCachePath(context, isExternal)}/assets"
 
     @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
