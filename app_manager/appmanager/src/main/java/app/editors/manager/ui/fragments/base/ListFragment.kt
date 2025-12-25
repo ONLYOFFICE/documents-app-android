@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import app.editors.manager.R
 import app.editors.manager.databinding.FragmentListBinding
-import app.editors.manager.ui.adapters.holders.explorer.RecentViaLinkViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.TemplatesFolderViewHolder
 import app.editors.manager.ui.views.custom.PlaceholderViews
 import app.editors.manager.ui.views.recyclers.LoadingScroll
@@ -112,11 +111,7 @@ abstract class ListFragment : BaseAppFragment(), SwipeRefreshLayout.OnRefreshLis
     private fun getSpanSizeLookup(): GridLayoutManager.SpanSizeLookup =
         object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (recyclerView?.adapter?.getItemViewType(position) in listOf(
-                        RecentViaLinkViewHolder.LAYOUT,
-                        TemplatesFolderViewHolder.LAYOUT
-                    )
-                ) {
+                return if (recyclerView?.adapter?.getItemViewType(position) in listOf(TemplatesFolderViewHolder.LAYOUT)) {
                     getSpanCount()
                 } else {
                     1

@@ -5,7 +5,6 @@ import app.documents.core.network.manager.models.explorer.CloudFile
 import app.documents.core.network.manager.models.explorer.CloudFolder
 import app.editors.manager.mvp.models.list.Footer
 import app.editors.manager.mvp.models.list.Header
-import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.list.Templates
 
 class EntityDiffUtilsCallback(
@@ -20,7 +19,6 @@ class EntityDiffUtilsCallback(
         return when {
             oldEntity is Header && newEntity is Header -> true
             oldEntity is Templates && newEntity is Templates -> true
-            oldEntity is RecentViaLink && newEntity is RecentViaLink -> true
             oldEntity is CloudFile && newEntity is CloudFile -> newEntity.id == oldEntity.id
             oldEntity is CloudFolder && newEntity is CloudFolder -> newEntity.id == oldEntity.id
             oldEntity is Footer && newEntity is Footer -> true
@@ -34,7 +32,6 @@ class EntityDiffUtilsCallback(
 
         return when {
             oldEntity is Templates && newEntity is Templates -> true
-            oldEntity is RecentViaLink && newEntity is RecentViaLink -> true
             oldEntity is Header && newEntity is Header -> newEntity.title == oldEntity.title
 
             oldEntity is CloudFile && newEntity is CloudFile ->

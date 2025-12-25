@@ -42,7 +42,6 @@ import app.editors.manager.managers.receivers.UploadReceiver.OnUploadListener
 import app.editors.manager.managers.utils.FirebaseUtils
 import app.editors.manager.managers.works.RoomDuplicateWork
 import app.editors.manager.mvp.models.filter.Filter
-import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.list.Templates
 import app.editors.manager.mvp.models.states.OperationsState
 import app.editors.manager.mvp.views.main.DocsCloudView
@@ -157,58 +156,60 @@ class DocsCloudPresenter(private val account: CloudAccount) : DocsBasePresenter<
 
     override fun onItemClick(item: Item, position: Int) {
         onClickEvent(item, position)
-        itemClicked?.let { itemClicked ->
-            if (isSelectionMode) {
-                val pickerMode = this.pickerMode
-                if (pickerMode is PickerMode.Files) {
-                    if (itemClicked is CloudFolder) {
-                        openFolder(itemClicked.id, position)
-                    } else if (itemClicked is CloudFile) {
-                        if (itemClicked.isPdfForm) pickerMode.selectId(itemClicked.id)
-                        modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
-                        viewState.onStateUpdateSelection(true)
-                        viewState.onItemSelected(
-                            position,
-                            pickerMode.selectedIds.size.toString()
-                        )
-                    }
-                    return
-                }
-                modelExplorerStack.setSelectById(item, !itemClicked.isSelected)
-                if (!isSelectedItemsEmpty) {
-                    viewState.onItemSelected(
-                        position,
-                        modelExplorerStack.countSelectedItems.toString()
-                    )
-                }
-            } else if (isTrashMode && currentSectionType != ApiContract.SectionType.CLOUD_ARCHIVE_ROOM) {
+        val clickedItem = itemClicked ?: return
+
+        when {
+            isSelectionMode -> handleSelectionModeClick(clickedItem, position)
+            isTrashMode && currentSectionType != ApiContract.SectionType.CLOUD_ARCHIVE_ROOM -> {
                 viewState.onSnackBarWithAction(
                     context.getString(R.string.trash_snackbar_move_text),
                     context.getString(R.string.trash_snackbar_move_button)
                 ) { moveCopySelected(OperationsState.OperationType.RESTORE) }
-            } else {
-                if (itemClicked is CloudFolder) {
-                    if (itemClicked.isRoom && itemClicked.passwordProtected) {
-                        viewState.onRoomViaLinkPasswordRequired(false, TAG_PROTECTED_ROOM_OPEN_FOLDER)
-                    } else {
-                        openFolder(itemClicked.id, position)
-                    }
-                } else if (itemClicked is CloudFile) {
-                    if (FileExtensions.isOpenFormat(itemClicked.clearExt)) {
-                        viewState.onConversionQuestion()
-                    } else {
-                        if (StringUtils.getExtension(itemClicked.fileExst) == Extension.PDF) {
-                            openFillFormFile()
-                        } else {
-                            openFile(EditType.Edit())
-                        }
-                    }
-                } else if (itemClicked is RecentViaLink) {
-                    openRecentViaLink()
-                } else if (itemClicked is Templates){
-                    openTemplates()
+            }
+            else -> handleNormalModeClick(clickedItem, position)
+        }
+    }
+
+    private fun handleSelectionModeClick(item: Item, position: Int) {
+        val picker = pickerMode
+        if (picker is PickerMode.Files) {
+            when (item) {
+                is CloudFolder -> openFolder(item.id, position)
+                is CloudFile -> {
+                    if (item.isPdfForm) picker.selectId(item.id)
+                    modelExplorerStack.setSelectById(item, !item.isSelected)
+                    viewState.onStateUpdateSelection(true)
+                    viewState.onItemSelected(position, picker.selectedIds.size.toString())
                 }
             }
+            return
+        }
+
+        modelExplorerStack.setSelectById(item, !item.isSelected)
+        if (!isSelectedItemsEmpty) {
+            viewState.onItemSelected(position, modelExplorerStack.countSelectedItems.toString())
+        }
+    }
+
+    private fun handleNormalModeClick(item: Item, position: Int) {
+        when (item) {
+            is CloudFolder -> {
+                if (item.isRoom && item.passwordProtected) {
+                    viewState.onRoomViaLinkPasswordRequired(false, TAG_PROTECTED_ROOM_OPEN_FOLDER)
+                } else {
+                    openFolder(item.id, position)
+                }
+            }
+            is CloudFile -> {
+                if (FileExtensions.isOpenFormat(item.clearExt)) {
+                    viewState.onConversionQuestion()
+                } else if (StringUtils.getExtension(item.fileExst) == Extension.PDF) {
+                    openFillFormFile()
+                } else {
+                    openFile(EditType.Edit())
+                }
+            }
+            is Templates -> openTemplates()
         }
     }
 

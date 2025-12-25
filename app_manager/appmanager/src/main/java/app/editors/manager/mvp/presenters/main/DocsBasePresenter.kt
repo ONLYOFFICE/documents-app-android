@@ -51,7 +51,6 @@ import app.editors.manager.managers.works.UploadWork
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.filter.RoomFilterType
 import app.editors.manager.mvp.models.filter.joinToString
-import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.list.Templates
 import app.editors.manager.mvp.models.models.ExplorerStackMap
 import app.editors.manager.mvp.models.models.ModelExplorerStack
@@ -1263,7 +1262,7 @@ abstract class DocsBasePresenter<V : DocsBaseView, FP : BaseFileProvider> : MvpP
 
     fun onClickEvent(item: Item?, position: Int, isContext: Boolean = false) {
         itemClickedPosition = position
-        itemClicked = if (item is RecentViaLink || item is Templates) item else modelExplorerStack.getItemById(item)
+        itemClicked = item as? Templates ?: modelExplorerStack.getItemById(item)
         if (item is CloudFolder && item.isRoom) roomClicked = item
         isContextClick = isContext
     }

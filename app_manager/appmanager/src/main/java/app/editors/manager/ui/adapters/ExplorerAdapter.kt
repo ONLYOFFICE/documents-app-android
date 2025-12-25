@@ -15,7 +15,6 @@ import app.editors.manager.app.App.Companion.getApp
 import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.PreferenceTool
 import app.editors.manager.mvp.models.list.Footer
-import app.editors.manager.mvp.models.list.RecentViaLink
 import app.editors.manager.mvp.models.list.Templates
 import app.editors.manager.mvp.presenters.main.PickerMode
 import app.editors.manager.ui.adapters.base.BaseAdapter
@@ -31,7 +30,6 @@ import app.editors.manager.ui.adapters.holders.explorer.ListFolderViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.ListFooterViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.ListRoomViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.ListTemplateViewHolder
-import app.editors.manager.ui.adapters.holders.explorer.RecentViaLinkViewHolder
 import app.editors.manager.ui.adapters.holders.explorer.TemplatesFolderViewHolder
 import app.editors.manager.ui.adapters.holders.factory.TypeFactoryExplorer
 import lib.toolkit.base.ui.adapters.factory.inflate
@@ -203,7 +201,6 @@ class ExplorerAdapter(
             when (val item = itemList[position]) {
                 is CloudFile -> if (isGridView) GridFileViewHolder.LAYOUT else ListFileViewHolder.LAYOUT
                 is CloudFolder -> getFolderLayout(item)
-                RecentViaLink -> RecentViaLinkViewHolder.LAYOUT
                 Templates -> TemplatesFolderViewHolder.LAYOUT
                 else -> 0
             }
