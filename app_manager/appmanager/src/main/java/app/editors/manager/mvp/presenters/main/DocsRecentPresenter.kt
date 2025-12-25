@@ -107,14 +107,16 @@ class DocsRecentPresenter : DocsBasePresenter<DocsRecentView, RecentFileProvider
     }
 
     override fun filter(value: String) {
-        filteringValue = value
-        presenterScope.launch {
-            val list = recentDataSource.getRecentList()
-                .filter { recent -> recent.name.contains(value, true) }
-                .sort()
+        if (isFilteringMode) {
+            filteringValue = value
+            presenterScope.launch {
+                val list = recentDataSource.getRecentList()
+                    .filter { recent -> recent.name.contains(value, true) }
+                    .sort()
 
-            withContext(Dispatchers.Main) {
-                updateFiles(list)
+                withContext(Dispatchers.Main) {
+                    updateFiles(list)
+                }
             }
         }
     }
