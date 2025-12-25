@@ -25,6 +25,7 @@ import app.documents.core.network.manager.models.request.RequestCreate
 import app.documents.core.network.manager.models.request.RequestCreateThumbnails
 import app.documents.core.network.manager.models.request.RequestDeleteRecent
 import app.documents.core.network.manager.models.request.RequestFavorites
+import app.documents.core.network.manager.models.request.RequestMarkAsRead
 import app.documents.core.network.manager.models.request.RequestRenameFile
 import app.documents.core.network.manager.models.request.RequestStopFilling
 import app.documents.core.network.manager.models.request.RequestTitle
@@ -622,6 +623,11 @@ class CloudFileProvider @Inject constructor(
     ): Flow<NetworkResult<FileOpenResult>> {
         return flow {
             emit(FileOpenResult.Loading())
+
+            if (cloudFile.isNew) {
+                managerService.markAsRead(RequestMarkAsRead(filesIds = listOf(cloudFile.id)))
+            }
+
             val token = checkNotNull(accountRepository.getOnlineToken())
             when {
                 StringUtils.isDocument(cloudFile.fileExst) -> {

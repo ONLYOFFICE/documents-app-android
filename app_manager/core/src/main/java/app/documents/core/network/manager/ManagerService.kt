@@ -15,6 +15,7 @@ import app.documents.core.network.manager.models.request.RequestDeleteShare
 import app.documents.core.network.manager.models.request.RequestDownload
 import app.documents.core.network.manager.models.request.RequestExternal
 import app.documents.core.network.manager.models.request.RequestFavorites
+import app.documents.core.network.manager.models.request.RequestMarkAsRead
 import app.documents.core.network.manager.models.request.RequestRenameFile
 import app.documents.core.network.manager.models.request.RequestStopFilling
 import app.documents.core.network.manager.models.request.RequestStorage
@@ -604,4 +605,11 @@ interface ManagerService {
         @Path(value = "item_id") folderId: String,
         @QueryMap options: Map<String, String>?
     ): Response<ResponseExplorer>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_OPERATION_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @PUT("api/" + ApiContract.API_VERSION + "/files/fileops/markasread")
+    suspend fun markAsRead(@Body body: RequestMarkAsRead): Response<ResponseBody>
 }
