@@ -120,7 +120,7 @@ object NetworkClient {
         return okHttpClient.connectionSpecs(getConnectionSpec())
     }
 
-    private fun getConnectionSpec(): List<ConnectionSpec?> {
+    private fun getConnectionSpec(): List<ConnectionSpec> {
         val spec = ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
             .tlsVersions(TlsVersion.TLS_1_2)
             .cipherSuites(

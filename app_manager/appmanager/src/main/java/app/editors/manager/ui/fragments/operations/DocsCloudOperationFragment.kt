@@ -103,7 +103,8 @@ open class DocsCloudOperationFragment : DocsCloudFragment(),
         if (isRoomsRoot) {
             operationDialogFragment?.setCreateFolderClickListener {
                 AddRoomFragment.show(
-                    activity = requireActivity(),
+                    fragmentManager = parentFragmentManager,
+                    lifecycleOwner = viewLifecycleOwner,
                     type = ApiContract.RoomType.FILL_FORMS_ROOM,
                     copyItems = CopyItems(fileIds = listOf())
                 ) { bundle ->

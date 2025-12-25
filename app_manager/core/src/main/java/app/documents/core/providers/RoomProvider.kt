@@ -69,9 +69,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import lib.toolkit.base.managers.utils.FileUtils.toByteArray
 import lib.toolkit.base.managers.utils.FormRole
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import retrofit2.Response
 import java.util.UUID
@@ -347,7 +347,7 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             MultipartBody.Part.createFormData(
                 uuid,
                 "$uuid.png",
-                RequestBody.create(MediaType.get("image/*"), bitmap.toByteArray())
+                bitmap.toByteArray().toRequestBody("image/*".toMediaType())
             )
         ).response
         return response.data.takeIf { response.success } ?: throw RuntimeException()

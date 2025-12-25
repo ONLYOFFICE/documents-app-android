@@ -28,7 +28,7 @@ import app.documents.core.network.VALUE_CACHE
 import app.documents.core.network.VALUE_CONTENT_TYPE
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.http.Body
@@ -163,7 +163,7 @@ internal class CloudLoginDataSourceImpl(
 
     private val api: LoginApi = Retrofit.Builder()
         .client(okHttpClient)
-        .addConverterFactory(json.asConverterFactory(MediaType.get(VALUE_CONTENT_TYPE)))
+        .addConverterFactory(json.asConverterFactory(VALUE_CONTENT_TYPE.toMediaType()))
         .baseUrl(cloudPortal?.urlWithScheme ?: "https://localhost")
         .build()
         .create(LoginApi::class.java)

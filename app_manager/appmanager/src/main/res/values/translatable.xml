@@ -457,6 +457,8 @@
     <string name="placeholder_empty_archive_visitor_desc">Rooms that have been archived will appear here.</string>
     <string name="placeholder_empty_templates_folder">No templates here yet</string>
     <string name="placeholder_empty_templates_folder_desc">Create a template from a room in the Rooms section.</string>
+    <string name="placeholder_empty_from_template">No templates found</string>
+    <string name="placeholder_empty_from_template_desc">Create your first room template and then you can create new rooms based on it.</string>
     <string name="placeholder_no_search_result">No search result</string>
     <string name="placeholder_no_search_result_desc">No results matching your search could be found. Please try another phrase</string>
     <string name="placeholder_empty_room_visitor_desc">Files and folders uploaded by admins will appeared here</string>
@@ -566,6 +568,7 @@
     <string name="operation_select_room_title">Select room</string>
     <string name="operation_choose_section">Choose section</string>
     <string name="operation_complete_message">Operation complete</string>
+    <string name="operation_cancel_message">Operation canceled</string>
     <string name="operation_delete_impossible">Cannot delete file. File is opened on the portal.</string>
     <string name="operation_delete_multiple">. One or more files haven`t been deleted due to open on the portal</string>
     <string name="operation_panel_move_button">Move here</string>

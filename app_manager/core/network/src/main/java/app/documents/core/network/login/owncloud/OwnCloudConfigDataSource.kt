@@ -20,7 +20,7 @@ import app.documents.core.network.VALUE_GRANT_TYPE_AUTH
 import app.documents.core.network.VALUE_GRANT_TYPE_REFRESH
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.HttpException
@@ -57,7 +57,7 @@ abstract class BaseOwnCloudDataSource(protected val json: Json, okHttpClient: Ok
     protected val api: OwnCloudApi = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl("http://stub")
-        .addConverterFactory(json.asConverterFactory(MediaType.get(VALUE_CONTENT_TYPE)))
+        .addConverterFactory(json.asConverterFactory(VALUE_CONTENT_TYPE.toMediaType()))
         .build()
         .create(OwnCloudApi::class.java)
 

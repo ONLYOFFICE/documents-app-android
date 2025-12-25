@@ -104,15 +104,21 @@ class DocsTrashFragment : DocsCloudFragment() {
     override fun onResume() {
         super.onResume()
         presenter.isTrashMode = true
-        if (!isArchive) {
-            mainPagerFragment?.setToolbarInfo(getString(R.string.trash_toolbar_info))
-        }
     }
 
     override fun onPause() {
         super.onPause()
         presenter.isTrashMode = false
         mainPagerFragment?.setToolbarInfo(null)
+    }
+
+    override fun setToolbarState(state: ToolbarState) {
+        if (!isActivePage) return
+        if (state is ToolbarState.Trash) {
+            mainPagerFragment?.setToolbarInfo(getString(R.string.trash_toolbar_info))
+        } else {
+            mainPagerFragment?.setToolbarInfo(null)
+        }
     }
 
     override fun getFilters(): Boolean {
@@ -137,19 +143,15 @@ class DocsTrashFragment : DocsCloudFragment() {
     }
 
     override fun onPlaceholder(type: PlaceholderViews.Type) {
-        val placeholder = when {
-            type == PlaceholderViews.Type.EMPTY && isRoot && isArchive && presenter.isRegularUser ->
-                PlaceholderViews.Type.EMPTY_ARCHIVE_VIEWER
-
-            type == PlaceholderViews.Type.EMPTY && isRoot && isArchive ->
-                PlaceholderViews.Type.EMPTY_ARCHIVE
-
-            type == PlaceholderViews.Type.EMPTY && isRoot && !isArchive ->
-                PlaceholderViews.Type.EMPTY_TRASH
-
-            else -> type
+        if (type == PlaceholderViews.Type.EMPTY && isActivePage) {
+            mainPagerFragment?.setToolbarInfo(null)
         }
-
+        val placeholder = when {
+            type != PlaceholderViews.Type.EMPTY || !isRoot -> type
+            isArchive && presenter.isRegularUser -> PlaceholderViews.Type.EMPTY_ARCHIVE_VIEWER
+            isArchive -> PlaceholderViews.Type.EMPTY_ARCHIVE
+            else -> PlaceholderViews.Type.EMPTY_TRASH
+        }
         super.onPlaceholder(placeholder)
     }
 

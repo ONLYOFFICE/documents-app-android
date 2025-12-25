@@ -24,8 +24,8 @@ class LoginInterceptor(val context: Context) : Interceptor {
         val startTime = System.currentTimeMillis()
         val response = chain.proceed(newRequest)
 
-        val responseBody = response.body()?.string()
-        val contentType = response.body()?.contentType()
+        val responseBody = response.body?.string()
+        val contentType = response.body?.contentType()
 
         val loggedResponseBody = RequestsCollector.logRequest(
             request = newRequest,

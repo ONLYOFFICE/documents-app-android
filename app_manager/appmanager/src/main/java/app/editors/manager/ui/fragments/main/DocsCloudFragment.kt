@@ -82,6 +82,7 @@ import moxy.presenter.ProvidePresenter
 sealed interface ToolbarState {
     data class RoomLifetime(val lifetime: Lifetime) : ToolbarState
     data object RoomTemplate : ToolbarState
+    data object Trash : ToolbarState
     data object None : ToolbarState
 }
 
@@ -610,7 +611,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun showAddRoomFragment(type: Int, copyItems: CopyItems?) {
         AddRoomFragment.show(
-            activity = requireActivity(),
+            parentFragmentManager,
+            viewLifecycleOwner,
             type = type,
             copyItems = copyItems
         ) { bundle ->
@@ -623,7 +625,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun showEditRoomFragment(room: CloudFolder) {
-        EditRoomFragment.show(activity = requireActivity(), room.id) { onRefresh() }
+        EditRoomFragment.show(
+            parentFragmentManager,
+            viewLifecycleOwner,
+            room.id
+        ) { onRefresh() }
     }
 
     override fun showFillFormChooserFragment() {
@@ -661,7 +667,7 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     )
                 }
 
-                ToolbarState.None -> Unit
+                else -> Unit
             }
         }
     }

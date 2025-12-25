@@ -2,6 +2,7 @@ package app.editors.manager.mvp.presenters.main
 
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.core.net.toUri
 import app.documents.core.account.AccountPreferences
 import app.documents.core.account.AccountRepository
@@ -32,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import lib.bootstrap.snapshot.SnapshotCreator
 import lib.toolkit.base.managers.utils.CryptUtils
 import lib.toolkit.base.managers.utils.FileUtils
 import moxy.InjectViewState
@@ -83,6 +85,8 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
 
     private fun checkSdk() {
         presenterScope.launch(Dispatchers.IO) {
+            createSnapshots()
+
             val version = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode
             } else {
@@ -95,6 +99,15 @@ class MainActivityPresenter : BasePresenter<MainActivityView>() {
                 context.cacheDir?.let(FileUtils::deletePath)
             }
             preferenceTool.appVersion = BuildConfig.VERSION_NAME + "." + version
+        }
+    }
+
+    private fun createSnapshots() {
+        val assetsPath = SnapshotCreator.unpackAssets(context)
+        try {
+            SnapshotCreator.start("${assetsPath}/../snapshots", assetsPath)
+        } catch (error: UnsatisfiedLinkError) {
+            Log.e(TAG, "createSnapshots: ", error)
         }
     }
 

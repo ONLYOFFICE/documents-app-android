@@ -12,6 +12,7 @@ import app.documents.core.network.login.LoginOkHttpClient
 import app.documents.core.network.manager.models.explorer.PathPart
 import app.documents.core.network.manager.models.explorer.PathPartTypeAdapter
 import com.google.gson.GsonBuilder
+import com.google.gson.Strictness
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.json.Json
@@ -85,7 +86,7 @@ object CoreModule {
     fun provideConverterFactory(): GsonConverterFactory {
         return GsonConverterFactory.create(
             GsonBuilder()
-                .setLenient()
+                .setStrictness(Strictness.LENIENT)
                 .setPrettyPrinting()
                 .setDateFormat(TimeUtils.OUTPUT_PATTERN_DEFAULT)
                 .serializeNulls()

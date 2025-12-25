@@ -5,7 +5,6 @@ plugins {
     id("com.android.library")
     id("kotlinx-serialization")
     kotlin("android")
-    kotlin("kapt")
     alias(libs.plugins.kotlin.ksp)
 }
 
@@ -85,6 +84,8 @@ dependencies {
     implementation(libs.ktx)
     implementation(libs.appcompat)
     implementation(libs.lifecycle.runtime)
+    implementation(libs.androidDocumentFile)
+
 
     // Firebase
     implementation(libs.firebase.messaging)
