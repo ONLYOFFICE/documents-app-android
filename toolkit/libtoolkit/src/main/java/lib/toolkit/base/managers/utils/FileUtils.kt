@@ -168,6 +168,8 @@ object FileUtils {
         }
     }
 
+    fun getAssetsPath(context: Context, isExternal: Boolean = true): String = "${getCachePath(context, isExternal)}/assets"
+
     @RequiresPermission(WRITE_EXTERNAL_STORAGE)
     @JvmStatic
     fun assetUnpack(context: Context, from: List<String>, to: String): Boolean {
@@ -316,7 +318,7 @@ object FileUtils {
         return getCache(context, dstFileName, dstFolderName, isExternal)?.apply {
             to = if (uri.scheme == "content") {
                 addExtension(getExtension(StringUtils.getExtensionFromPath(DocumentFile.fromSingleUri(context, uri)?.name ?: "")), to!!)
-            } else{
+            } else {
                 addExtension(getExtension(StringUtils.getExtensionFromPath(uri.path ?: "")), to!!)
             }
             copyFile(context, uri, to!!)
@@ -549,9 +551,11 @@ object FileUtils {
 
     fun isOformPdf(inputStream: InputStream?): Boolean {
         return ByteArray(110)
-            .apply { inputStream.use { stream ->
-                stream?.read(this, 0, size)
-            } }
+            .apply {
+                inputStream.use { stream ->
+                    stream?.read(this, 0, size)
+                }
+            }
             .decodeToString()
             .contains("/ONLYOFFICEFORM")
     }
