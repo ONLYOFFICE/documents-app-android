@@ -611,7 +611,8 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
 
     override fun showAddRoomFragment(type: Int, copyItems: CopyItems?) {
         AddRoomFragment.show(
-            activity = requireActivity(),
+            parentFragmentManager,
+            viewLifecycleOwner,
             type = type,
             copyItems = copyItems
         ) { bundle ->
@@ -624,7 +625,11 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
     }
 
     override fun showEditRoomFragment(room: CloudFolder) {
-        EditRoomFragment.show(activity = requireActivity(), room.id) { onRefresh() }
+        EditRoomFragment.show(
+            parentFragmentManager,
+            viewLifecycleOwner,
+            room.id
+        ) { onRefresh() }
     }
 
     override fun showFillFormChooserFragment() {

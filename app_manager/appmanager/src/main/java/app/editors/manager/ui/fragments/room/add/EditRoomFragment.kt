@@ -9,7 +9,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -41,14 +42,18 @@ class EditRoomFragment : ComposeDialogFragment() {
         private fun newInstance(roomId: String): EditRoomFragment =
             EditRoomFragment().putArgs(KEY_ROOM_ID to roomId)
 
-        fun show(activity: FragmentActivity, roomId: String, onResult: () -> Unit) {
-            activity.supportFragmentManager
-                .setFragmentResultListener(
-                    TAG_RESULT,
-                    activity,
-                ) { _, _ -> onResult() }
+        fun show(
+            fragmentManager: FragmentManager,
+            lifecycleOwner: LifecycleOwner,
+            roomId: String,
+            onResult: () -> Unit
+        ) {
+            fragmentManager.setFragmentResultListener(
+                TAG_RESULT,
+                lifecycleOwner,
+            ) { _, _ -> onResult() }
 
-            newInstance(roomId).show(activity.supportFragmentManager, TAG)
+            newInstance(roomId).show(fragmentManager, TAG)
         }
     }
 

@@ -11,7 +11,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.core.os.bundleOf
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -60,16 +61,17 @@ class AddRoomFragment : ComposeDialogFragment() {
             )
 
         fun show(
-            activity: FragmentActivity,
+            fragmentManager: FragmentManager,
+            lifecycleOwner: LifecycleOwner,
             type: Int? = null,
             copyItems: CopyItems? = null,
             onResult: (Bundle) -> Unit
         ) {
-            activity.supportFragmentManager.setFragmentResultListener(
-                TAG_RESULT, activity
+            fragmentManager.setFragmentResultListener(
+                TAG_RESULT, lifecycleOwner
             ) { _, bundle -> onResult(bundle) }
 
-            newInstance(type, copyItems).show(activity.supportFragmentManager, TAG)
+            newInstance(type, copyItems).show(fragmentManager, TAG)
         }
     }
 
