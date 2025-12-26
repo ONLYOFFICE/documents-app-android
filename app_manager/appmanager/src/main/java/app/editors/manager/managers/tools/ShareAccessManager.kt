@@ -89,7 +89,7 @@ private object ShareAccessManager {
         roomType: ApiContract.RoomTypeObj,
         target: AccessTarget,
     ): List<AccessUI> {
-        if (target.isLink) return getLinkAccessList()
+        if (target.isLink) return getLinkAccessList(roomType)
 
         return buildList {
             add(Access.RoomManager)
@@ -122,13 +122,17 @@ private object ShareAccessManager {
         }.map { it.toUi() }
     }
 
-    fun getLinkAccessList(): List<AccessUI> {
-        return listOfNotNull(
-            Access.Editor,
-            Access.Review,
-            Access.Comment,
-            Access.Read,
-        ).map { it.toUi() }
+    fun getLinkAccessList(roomType: ApiContract.RoomTypeObj? = null): List<AccessUI> {
+        return if (roomType == ApiContract.RoomTypeObj.FillingForms) {
+            listOf(Access.FormFiller.toUi())
+        } else {
+            listOfNotNull(
+                Access.Editor,
+                Access.Review,
+                Access.Comment,
+                Access.Read,
+            ).map { it.toUi() }
+        }
     }
 
     fun getFolderAccessList(target: AccessTarget): List<AccessUI> {
