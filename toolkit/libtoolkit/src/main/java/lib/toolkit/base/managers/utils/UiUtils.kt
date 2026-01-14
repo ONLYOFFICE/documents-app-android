@@ -62,6 +62,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import lib.toolkit.base.R
+import lib.toolkit.base.ui.dialogs.base.DialogAnchorAlignment
 import java.lang.ref.WeakReference
 import java.nio.IntBuffer
 import java.text.SimpleDateFormat
@@ -185,11 +186,30 @@ object UiUtils {
     }
 
     @JvmStatic
-    fun getOverlapViewRect(anchor: Rect, view: Rect, restrict: Rect, offset: Point): Rect {
+    fun getOverlapViewRect(
+        anchor: Rect,
+        view: Rect,
+        restrict: Rect,
+        offset: Point,
+        alignment: DialogAnchorAlignment = DialogAnchorAlignment.Start
+    ): Rect {
         val position = Rect().apply {
-            left = anchor.left
+            when (alignment) {
+                DialogAnchorAlignment.Start -> {
+                    left = anchor.left
+                    right = anchor.left + view.width()
+                }
+                DialogAnchorAlignment.Center -> {
+                    val anchorCenter = anchor.left + anchor.width() / 2
+                    left = anchorCenter - view.width() / 2
+                    right = left + view.width()
+                }
+                DialogAnchorAlignment.End -> {
+                    right = anchor.right
+                    left = anchor.right - view.width()
+                }
+            }
             top = anchor.top
-            right = anchor.left + view.width()
             bottom = anchor.top + view.height()
         }
 

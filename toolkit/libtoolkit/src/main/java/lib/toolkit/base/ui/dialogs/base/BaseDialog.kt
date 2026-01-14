@@ -25,6 +25,9 @@ import lib.toolkit.base.managers.utils.KeyboardUtils
 import lib.toolkit.base.managers.utils.UiUtils
 import lib.toolkit.base.ui.activities.base.BaseActivity
 
+enum class DialogAnchorAlignment {
+    Start, Center, End
+}
 
 abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     BaseInterfaceDialog {
@@ -39,6 +42,7 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
     protected lateinit var baseActivity: BaseActivity
     protected var closeHandler: Handler = Handler(Looper.getMainLooper())
     protected var anchorRect: Rect? = null
+    protected var anchorAlignment: DialogAnchorAlignment = DialogAnchorAlignment.Start
     protected var marginOffset: Int = 0
 
     protected val dialogSize: Rect?
@@ -174,7 +178,13 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
         if (anchorRect != null && dialog != null) {
             val offset = Point(marginOffset, marginOffset)
             val restrict = UiUtils.getWindowVisibleRect(requireActivity().window.decorView)
-            val position = UiUtils.getOverlapViewRect(anchorRect!!, dialogSize!!, restrict, offset)
+            val position = UiUtils.getOverlapViewRect(
+                anchorRect!!,
+                dialogSize!!,
+                restrict,
+                offset,
+                anchorAlignment
+            )
 
             dialog?.window?.let { window ->
                 window.setGravity(Gravity.START or Gravity.LEFT or Gravity.TOP)
@@ -190,10 +200,11 @@ abstract class BaseDialog : DialogFragment(), DialogInterface.OnShowListener,
         }
     }
 
-    fun setAnchor(rect: Rect?) {
+    fun setAnchor(rect: Rect?, alignment: DialogAnchorAlignment = DialogAnchorAlignment.Start) {
         anchorRect = rect
+        anchorAlignment = alignment
     }
-    
+
     protected fun showKeyboard(editText: AppCompatEditText) {
         KeyboardUtils.showKeyboard(editText)
     }
