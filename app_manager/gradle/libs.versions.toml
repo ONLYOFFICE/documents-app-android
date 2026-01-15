@@ -86,6 +86,7 @@ glideCompose = "1.0.0-beta01"
 photoView = "2.3.0"
 colorPicker = "2.3.0"
 customTabs = "1.9.0"
+hCaptcha = "4.4.0"
 
 #tests
 junit = "4.13.2"
@@ -195,6 +196,7 @@ glideOkhttp = { module = "com.github.bumptech.glide:okhttp3-integration", versio
 glideCompose = { module = "com.github.bumptech.glide:compose", version.ref = "glideCompose" }
 photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoView" }
 colorPicker = { module = "com.github.skydoves:colorpickerview", version.ref = "colorPicker" }
+hCaptcha = { module = "com.github.hCaptcha.hcaptcha-android-sdk:sdk", version.ref = "hCaptcha" }
 
 #tests
 junit = { module = "junit:junit", version.ref = "junit" }

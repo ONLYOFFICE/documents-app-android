@@ -2,6 +2,13 @@ package app.documents.core.model.login.request
 
 import kotlinx.serialization.Serializable
 
+//enum RecaptchaType
+//{
+//    Default = 0,
+//    AndroidV2 = 1,
+//    iOSV2 = 2,
+//    hCaptcha = 3
+//}
 @Serializable
 data class RequestRegister(
     var firstName: String = "",
@@ -13,5 +20,5 @@ data class RequestRegister(
     var phone: String = "+15115555555",
     var timeZoneName: String = "",
     var recaptchaResponse: String = "",
-    var recaptchaType: Int = 1
+    var recaptchaType: Int = 3
 )

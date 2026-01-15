@@ -335,6 +335,7 @@ dependencies {
     implementation(libs.photoView)
     implementation(libs.androidWorkManager)
     implementation(libs.androidCustomTabs)
+    implementation(libs.hCaptcha)
 
     //TODO add to base module
     implementation(libs.lifecycle.viewmodel)

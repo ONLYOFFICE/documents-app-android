@@ -79,6 +79,7 @@
         android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
+        tools:replace="android:usesCleartextTraffic"
         tools:ignore="UnusedAttribute">
         <activity
             android:name="app.editors.manager.ui.activities.login.PortalsActivity"
