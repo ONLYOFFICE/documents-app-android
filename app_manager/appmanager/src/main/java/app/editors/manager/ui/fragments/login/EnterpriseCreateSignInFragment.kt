@@ -51,17 +51,6 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
     private var viewBinding: FragmentLoginEnterpriseCreateSigninBinding? = null
     private var hCaptcha: HCaptcha? = null
 
-    private var portalName: String? = null
-    private var email: String? = null
-    private var first: String? = null
-    private var last: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        getArgs()
-        initHCaptcha()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -90,6 +79,7 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
     }
 
     private fun initHCaptcha() {
+        val portalName = arguments?.getString(TAG_PORTAL)
         val siteKey = if (portalName?.endsWith(".info") == true) {
             BuildConfig.CAPTCHA_PUBLIC_KEY_INFO
         } else {
@@ -102,9 +92,9 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
                 if (result.tokenResult?.isNotEmpty() == true) {
                     signInPortalPresenter.createPortal(
                         password = viewBinding?.loginSigninPasswordEdit?.text.toString(),
-                        email = checkNotNull(email),
-                        first = checkNotNull(first),
-                        last = checkNotNull(last),
+                        email = checkNotNull(arguments?.getString(TAG_EMAIL)),
+                        first = checkNotNull(arguments?.getString(TAG_FIRST)),
+                        last = checkNotNull(arguments?.getString(TAG_LAST)),
                         recaptcha = checkNotNull(result.tokenResult)
                     )
                 }
@@ -128,6 +118,9 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
             return
         }
 
+        if (hCaptcha == null) {
+            initHCaptcha()
+        }
         hCaptcha?.verifyWithHCaptcha()
     }
 
@@ -205,15 +198,6 @@ class EnterpriseCreateSignInFragment : BaseAppFragment(), EnterpriseCreateSignIn
 
         viewBinding?.loginSigninPasswordEdit?.addTextChangedListener {
             viewBinding?.loginSigninPasswordLayout?.error = null
-        }
-    }
-
-    private fun getArgs() {
-        arguments?.let { bundle ->
-            portalName = bundle.getString(TAG_PORTAL)
-            email = bundle.getString(TAG_EMAIL)
-            first = bundle.getString(TAG_FIRST)
-            last = bundle.getString(TAG_LAST)
         }
     }
 
