@@ -6,8 +6,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import app.documents.core.network.common.contracts.ApiContract
-import app.documents.core.network.common.contracts.ApiContract.SectionType.getRoomType
-import app.documents.core.network.common.contracts.ApiContract.SectionType.shouldShowShareBadge
+import app.documents.core.network.common.contracts.ApiContract.SectionType.shouldShowLinkBadge
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerGridFileBinding
@@ -59,8 +58,9 @@ class GridFileViewHolder(view: View, adapter: ExplorerAdapter) :
                 itemView.context.getString(R.string.badge_doc_version, element.version)
         }
         binding.editing.isVisible = element.isEditing
-        binding.link.isVisible = element.isSharedByLink && getRoomType(element.parentRoomType) == -1
-                || element.shared && shouldShowShareBadge(element.parentRoomType)
+        binding.link.isVisible = element.isSharedByLink
+                || element.shared && shouldShowLinkBadge(element.parentRoomType)
+        binding.shared.isVisible = element.showShareBadge
         binding.badgeFormStatus.setFormStatus(UiFormFillingStatus.from(element.formFillingStatus))
         setFileExpiring(element, binding.title)
     }

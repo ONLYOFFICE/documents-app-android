@@ -29,6 +29,7 @@ import app.editors.manager.managers.tools.ActionMenuItem
 import app.editors.manager.mvp.models.filter.FilterType
 import app.editors.manager.mvp.models.states.OperationsState.OperationType
 import app.editors.manager.mvp.models.ui.DuplicateFilesChoice
+import app.editors.manager.mvp.models.ui.SharingType
 import app.editors.manager.mvp.presenters.main.DocsBasePresenter
 import app.editors.manager.mvp.presenters.main.DocsCloudPresenter
 import app.editors.manager.mvp.views.main.DocsCloudView
@@ -319,7 +320,15 @@ open class DocsCloudFragment : DocsBaseFragment(), DocsCloudView {
                     roomType = roomType
                 ) { bundle ->
                     if (bundle.contains(ShareSettingsFragment.KEY_RESULT_SHARED)) {
-                        val shared = bundle.getBoolean(ShareSettingsFragment.KEY_RESULT_SHARED)
+                        val shared = try {
+                            SharingType.valueOf(
+                                bundle.getString(
+                                    ShareSettingsFragment.KEY_RESULT_SHARED
+                                ).orEmpty()
+                            )
+                        } catch (_: Throwable) {
+                            SharingType.NONE
+                        }
                         presenter.updateShareBadge(shared)
                     }
                 }

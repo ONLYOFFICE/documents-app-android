@@ -48,7 +48,6 @@ import app.documents.core.network.share.models.request.RequestCreateThirdPartyRo
 import app.documents.core.network.share.models.request.RequestRemoveInviteLink
 import app.documents.core.network.share.models.request.RequestRoomShare
 import app.documents.core.network.share.models.request.RequestShare
-import app.documents.core.network.share.models.request.RequestUpdateSharedLink
 import app.documents.core.network.share.models.response.ResponseExternalLink
 import app.documents.core.network.share.models.response.ResponseShare
 import io.reactivex.Observable
@@ -156,7 +155,7 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/rooms/{id}/link")
-    suspend fun getExternalLink(
+    suspend fun getExternalRoomLink(
         @Path("id") id: String,
     ): app.documents.core.network.BaseResponse<ExternalLink>
 
@@ -165,8 +164,28 @@ interface RoomService {
         ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
     )
     @GET("api/" + ApiContract.API_VERSION + "/files/file/{id}/link")
-    suspend fun getPublicExternalLink(
+    suspend fun getPublicExternalFileLink(
         @Path("id") id: String,
+    ): app.documents.core.network.BaseResponse<ExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/files/file/{id}/link")
+    suspend fun getPublicExternalFileLink(
+        @Path("id") id: String,
+        @Body body: RequestCreateExternalLink,
+    ): app.documents.core.network.BaseResponse<ExternalLink>
+
+    @Headers(
+        ApiContract.HEADER_CONTENT_TYPE + ": " + ApiContract.VALUE_CONTENT_TYPE,
+        ApiContract.HEADER_ACCEPT + ": " + ApiContract.VALUE_ACCEPT
+    )
+    @POST("api/" + ApiContract.API_VERSION + "/files/folder/{id}/link")
+    suspend fun getPublicExternalFolderLink(
+        @Path("id") id: String,
+        @Body body: RequestCreateExternalLink,
     ): app.documents.core.network.BaseResponse<ExternalLink>
 
     @Headers(

@@ -53,6 +53,7 @@ import app.editors.manager.app.accountOnline
 import app.editors.manager.managers.tools.ShareData
 import app.editors.manager.managers.utils.titleWithCount
 import app.editors.manager.managers.utils.toUi
+import app.editors.manager.mvp.models.ui.SharingType
 import app.editors.manager.ui.fragments.share.InviteAccessScreen
 import app.editors.manager.ui.fragments.share.UserListScreen
 import app.editors.manager.ui.fragments.share.link.ChangeUserAccessScreen
@@ -119,7 +120,7 @@ fun ShareDocSpaceScreen(
     shareData: ShareData,
     useTabletPadding: Boolean,
     onSendLink: (String) -> Unit,
-    onClose: (Boolean?) -> Unit,
+    onClose: (SharingType?) -> Unit,
     onShowSnackbar: (String) -> Unit,
 ) {
     val navController = rememberNavController()
@@ -154,7 +155,7 @@ fun ShareDocSpaceScreen(
         }
     }
 
-    BackHandler(onBack = { onClose(viewModel.hasLinks) })
+    BackHandler(onBack = { onClose(viewModel.isShared) })
 
     NavHost(
         modifier = Modifier.background(MaterialTheme.colors.background),
@@ -167,7 +168,7 @@ fun ShareDocSpaceScreen(
                 shareData = shareData,
                 useTabletPaddings = useTabletPadding,
                 onShareLink = onSendLink,
-                onBack = { onClose(viewModel.hasLinks) },
+                onBack = { onClose(viewModel.isShared) },
                 onAddUsers = { navController.navigate(Screen.AddUser) },
                 onLinkClick = { link ->
                     val json =

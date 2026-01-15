@@ -114,6 +114,15 @@
             tools:ignore="ContentDescription"
             tools:visibility="visible" />
 
+        <ImageView
+            android:id="@+id/shared"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="@dimen/default_margin_medium"
+            android:src="@drawable/ic_sharing_badge"
+            android:visibility="gone"
+            tools:ignore="ContentDescription" />
+
     </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView

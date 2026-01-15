@@ -111,9 +111,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/default_margin_small"
                 android:importantForAccessibility="no"
-                android:visibility="gone"
                 android:src="@drawable/ic_link_badge"
-                app:layout_constraintVertical_chainStyle="packed"/>
+                android:visibility="gone"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <ImageView
+                android:id="@+id/shared"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/default_margin_small"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_sharing_badge"
+                android:visibility="gone"/>
 
             <ImageView
                 android:id="@+id/editing"

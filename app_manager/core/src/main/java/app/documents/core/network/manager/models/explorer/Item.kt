@@ -1,6 +1,8 @@
 package app.documents.core.network.manager.models.explorer
 
 import app.documents.core.model.cloud.Access
+import app.documents.core.network.common.contracts.ApiContract
+import app.documents.core.network.common.contracts.ApiContract.SectionType.isUserSection
 import app.documents.core.network.common.models.BaseResponse
 import app.documents.core.network.manager.models.base.ItemProperties
 import com.google.gson.annotations.Expose
@@ -25,6 +27,10 @@ open class Item : ItemProperties(), Serializable {
     @SerializedName("shared")
     @Expose
     var shared = false
+
+    @SerializedName("sharedForUser")
+    @Expose
+    var sharedForUser = false
 
     @SerializedName("rootFolderType")
     @Expose
@@ -98,6 +104,14 @@ open class Item : ItemProperties(), Serializable {
             order = if (indices.size > 1) indices.joinToString(".") else indices[0]
         }
 
+    val linkAccess: Int
+        get() = when {
+            ApiContract.SectionType.getRoomType(parentRoomType) == ApiContract.RoomType.FILL_FORMS_ROOM
+                -> Access.FormFiller.code
+            (this as? CloudFile)?.isForm == true -> Access.Editor.code
+            else -> Access.Read.code
+        }
+
     var access: Access
         get() = runCatching {
             Access.get(_access.toInt())
@@ -107,6 +121,9 @@ open class Item : ItemProperties(), Serializable {
         set(value) {
             _access = value.code.toString()
         }
+
+    val showShareBadge: Boolean
+        get() = isUserSection(rootFolderType.toIntOrNull()) && (shared || sharedForUser)
 
     fun setItem(item: Item) {
         id = item.id

@@ -275,8 +275,13 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
             body.response else throw HttpException(response)
     }
 
-    suspend fun createSharedLink(itemId: String, isFolder: Boolean, access: Int): ExternalLink {
-        val requestBody = RequestCreateSharedLink(access = access)
+    suspend fun createSharedLink(
+        itemId: String,
+        isFolder: Boolean,
+        access: Int,
+        isPrimary: Boolean
+    ): ExternalLink {
+        val requestBody = RequestCreateSharedLink(access = access, primary = isPrimary)
         val request = if (isFolder)
             roomService.createSharedFolderLink(itemId, requestBody) else
             roomService.createSharedFileLink(itemId, requestBody)
@@ -404,12 +409,23 @@ class RoomProvider @Inject constructor(private val roomService: RoomService) {
         return roomService.getGroupUsers(roomId, groupId).response
     }
 
-    suspend fun getExternalLink(id: String, isFile: Boolean = false): String {
-        return if (isFile) {
-            roomService.getPublicExternalLink(id).response.sharedTo.shareLink
-        } else {
-            roomService.getExternalLink(id).response.sharedTo.shareLink
+    suspend fun getExternalLink(
+        id: String,
+        access: Int,
+        isRoom: Boolean = false,
+        isFolder: Boolean = false
+    ): ExternalLink {
+        val body = RequestCreateExternalLink(access = access)
+        val response = when {
+            isRoom -> roomService.getExternalRoomLink(id)
+            isFolder -> roomService.getPublicExternalFolderLink(id, body)
+            else -> roomService.getPublicExternalFileLink(id, body)
         }
+        return response.response
+    }
+
+    suspend fun getExternalLink(id: String): ExternalLink {
+        return roomService.getPublicExternalFileLink(id).response
     }
 
     suspend fun copyItems(roomId: String, folderIds: List<String>, fileIds: List<String>) {

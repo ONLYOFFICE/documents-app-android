@@ -8,8 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
-import app.documents.core.network.common.contracts.ApiContract.SectionType.shouldShowShareBadge
-import app.documents.core.network.common.contracts.ApiContract.SectionType.getRoomType
+import app.documents.core.network.common.contracts.ApiContract.SectionType.shouldShowLinkBadge
 import app.documents.core.network.manager.models.explorer.CloudFile
 import app.editors.manager.R
 import app.editors.manager.databinding.LayoutExplorerListFileBinding
@@ -59,8 +58,9 @@ class ListFileViewHolder(itemView: View, adapter: ExplorerAdapter) :
         binding.locked.isVisible = element.isLocked
         binding.customFilter.isVisible = element.customFilterEnabled
         binding.badgeFormStatus.setFormStatus(UiFormFillingStatus.from(element.formFillingStatus))
-        binding.link.isVisible = element.isSharedByLink && getRoomType(element.parentRoomType) == -1
-                || element.shared && shouldShowShareBadge(element.parentRoomType)
+        binding.link.isVisible = element.isSharedByLink
+                || element.shared && shouldShowLinkBadge(element.parentRoomType)
+        binding.shared.isVisible = element.showShareBadge
         setFileExpiring(element, binding.title)
         if (adapter.pickerMode == PickerMode.Ordering) {
             initOrderingMode(binding.dragIcon, binding.contextButtonLayout)

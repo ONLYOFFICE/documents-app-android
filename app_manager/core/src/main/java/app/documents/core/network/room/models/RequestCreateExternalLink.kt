@@ -11,5 +11,5 @@ data class RequestCreateExternalLink(
     val expirationDate: String? = null,
     val linkType: Int = 1,
     val password: String? = null,
-    val title: String
+    val title: String? = null
 )
