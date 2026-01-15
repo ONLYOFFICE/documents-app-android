@@ -61,7 +61,6 @@ playServieAuth = "21.4.0"
 playReview = "2.0.2"
 material = "1.13.0"
 gson = "2.13.2"
-safetynet = "18.1.0"
 app-update = "2.1.0"
 text-recognition = "16.0.1"
 object-detection = "17.0.2"
@@ -122,7 +121,6 @@ google-playServiceAuth = { module = "com.google.android.gms:play-services-auth",
 google-playReview = { module = "com.google.android.play:review", version.ref = "playReview" }
 google-material = { module = "com.google.android.material:material", version.ref = "material" }
 google-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
-google-safetynet = { module = "com.google.android.gms:play-services-safetynet", version.ref = "safetynet" }
 google-update = { module = "com.google.android.play:app-update-ktx", version.ref = "app-update" }
 google-ml-text-recognition = { module = "com.google.mlkit:text-recognition", version.ref = "text-recognition" }
 google-ml-text-recognitionchinese = { module = "com.google.mlkit:text-recognition-chinese", version.ref = "text-recognition" }
